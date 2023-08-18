@@ -30,7 +30,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -240,7 +239,7 @@ type gRPCClient struct {
 	client recaptchaenterprisepb.RecaptchaEnterpriseServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new recaptcha enterprise service client based on gRPC.
@@ -289,7 +288,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -299,9 +298,10 @@ func (c *gRPCClient) Close() error {
 }
 
 func (c *gRPCClient) CreateAssessment(ctx context.Context, req *recaptchaenterprisepb.CreateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Assessment, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateAssessment[0:len((*c.CallOptions).CreateAssessment):len((*c.CallOptions).CreateAssessment)], opts...)
 	var resp *recaptchaenterprisepb.Assessment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -316,9 +316,10 @@ func (c *gRPCClient) CreateAssessment(ctx context.Context, req *recaptchaenterpr
 }
 
 func (c *gRPCClient) AnnotateAssessment(ctx context.Context, req *recaptchaenterprisepb.AnnotateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AnnotateAssessmentResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AnnotateAssessment[0:len((*c.CallOptions).AnnotateAssessment):len((*c.CallOptions).AnnotateAssessment)], opts...)
 	var resp *recaptchaenterprisepb.AnnotateAssessmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -333,9 +334,10 @@ func (c *gRPCClient) AnnotateAssessment(ctx context.Context, req *recaptchaenter
 }
 
 func (c *gRPCClient) CreateKey(ctx context.Context, req *recaptchaenterprisepb.CreateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateKey[0:len((*c.CallOptions).CreateKey):len((*c.CallOptions).CreateKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -350,9 +352,10 @@ func (c *gRPCClient) CreateKey(ctx context.Context, req *recaptchaenterprisepb.C
 }
 
 func (c *gRPCClient) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKeysRequest, opts ...gax.CallOption) *KeyIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListKeys[0:len((*c.CallOptions).ListKeys):len((*c.CallOptions).ListKeys)], opts...)
 	it := &KeyIterator{}
 	req = proto.Clone(req).(*recaptchaenterprisepb.ListKeysRequest)
@@ -395,9 +398,10 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *recaptchaenterprisepb.Li
 }
 
 func (c *gRPCClient) RetrieveLegacySecretKey(ctx context.Context, req *recaptchaenterprisepb.RetrieveLegacySecretKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.RetrieveLegacySecretKeyResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "key", url.QueryEscape(req.GetKey())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "key", url.QueryEscape(req.GetKey()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RetrieveLegacySecretKey[0:len((*c.CallOptions).RetrieveLegacySecretKey):len((*c.CallOptions).RetrieveLegacySecretKey)], opts...)
 	var resp *recaptchaenterprisepb.RetrieveLegacySecretKeyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -412,9 +416,10 @@ func (c *gRPCClient) RetrieveLegacySecretKey(ctx context.Context, req *recaptcha
 }
 
 func (c *gRPCClient) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetKey[0:len((*c.CallOptions).GetKey):len((*c.CallOptions).GetKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -429,9 +434,10 @@ func (c *gRPCClient) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetK
 }
 
 func (c *gRPCClient) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.UpdateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "key.name", url.QueryEscape(req.GetKey().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "key.name", url.QueryEscape(req.GetKey().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateKey[0:len((*c.CallOptions).UpdateKey):len((*c.CallOptions).UpdateKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -446,9 +452,10 @@ func (c *gRPCClient) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.U
 }
 
 func (c *gRPCClient) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.DeleteKeyRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteKey[0:len((*c.CallOptions).DeleteKey):len((*c.CallOptions).DeleteKey)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -459,9 +466,10 @@ func (c *gRPCClient) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.D
 }
 
 func (c *gRPCClient) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.MigrateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).MigrateKey[0:len((*c.CallOptions).MigrateKey):len((*c.CallOptions).MigrateKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -476,9 +484,10 @@ func (c *gRPCClient) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.
 }
 
 func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.GetMetricsRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetMetrics[0:len((*c.CallOptions).GetMetrics):len((*c.CallOptions).GetMetrics)], opts...)
 	var resp *recaptchaenterprisepb.Metrics
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -493,9 +502,10 @@ func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.
 }
 
 func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, opts ...gax.CallOption) *RelatedAccountGroupIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListRelatedAccountGroups[0:len((*c.CallOptions).ListRelatedAccountGroups):len((*c.CallOptions).ListRelatedAccountGroups)], opts...)
 	it := &RelatedAccountGroupIterator{}
 	req = proto.Clone(req).(*recaptchaenterprisepb.ListRelatedAccountGroupsRequest)
@@ -538,9 +548,10 @@ func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptch
 }
 
 func (c *gRPCClient) ListRelatedAccountGroupMemberships(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest, opts ...gax.CallOption) *RelatedAccountGroupMembershipIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListRelatedAccountGroupMemberships[0:len((*c.CallOptions).ListRelatedAccountGroupMemberships):len((*c.CallOptions).ListRelatedAccountGroupMemberships)], opts...)
 	it := &RelatedAccountGroupMembershipIterator{}
 	req = proto.Clone(req).(*recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest)
@@ -583,9 +594,10 @@ func (c *gRPCClient) ListRelatedAccountGroupMemberships(ctx context.Context, req
 }
 
 func (c *gRPCClient) SearchRelatedAccountGroupMemberships(ctx context.Context, req *recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest, opts ...gax.CallOption) *RelatedAccountGroupMembershipIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SearchRelatedAccountGroupMemberships[0:len((*c.CallOptions).SearchRelatedAccountGroupMemberships):len((*c.CallOptions).SearchRelatedAccountGroupMemberships)], opts...)
 	it := &RelatedAccountGroupMembershipIterator{}
 	req = proto.Clone(req).(*recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest)

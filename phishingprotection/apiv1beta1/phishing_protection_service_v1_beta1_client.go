@@ -34,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -141,7 +140,7 @@ type phishingProtectionServiceV1Beta1GRPCClient struct {
 	phishingProtectionServiceV1Beta1Client phishingprotectionpb.PhishingProtectionServiceV1Beta1Client
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewPhishingProtectionServiceV1Beta1Client creates a new phishing protection service v1 beta1 client based on gRPC.
@@ -190,7 +189,7 @@ func (c *phishingProtectionServiceV1Beta1GRPCClient) Connection() *grpc.ClientCo
 func (c *phishingProtectionServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -207,8 +206,8 @@ type phishingProtectionServiceV1Beta1RESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing PhishingProtectionServiceV1Beta1Client
 	CallOptions **PhishingProtectionServiceV1Beta1CallOptions
@@ -250,7 +249,7 @@ func defaultPhishingProtectionServiceV1Beta1RESTClientOptions() []option.ClientO
 func (c *phishingProtectionServiceV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -268,9 +267,10 @@ func (c *phishingProtectionServiceV1Beta1RESTClient) Connection() *grpc.ClientCo
 	return nil
 }
 func (c *phishingProtectionServiceV1Beta1GRPCClient) ReportPhishing(ctx context.Context, req *phishingprotectionpb.ReportPhishingRequest, opts ...gax.CallOption) (*phishingprotectionpb.ReportPhishingResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ReportPhishing[0:len((*c.CallOptions).ReportPhishing):len((*c.CallOptions).ReportPhishing)], opts...)
 	var resp *phishingprotectionpb.ReportPhishingResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -310,9 +310,11 @@ func (c *phishingProtectionServiceV1Beta1RESTClient) ReportPhishing(ctx context.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ReportPhishing[0:len((*c.CallOptions).ReportPhishing):len((*c.CallOptions).ReportPhishing)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &phishingprotectionpb.ReportPhishingResponse{}

@@ -34,7 +34,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -223,7 +222,7 @@ type webRiskServiceV1Beta1GRPCClient struct {
 	webRiskServiceV1Beta1Client webriskpb.WebRiskServiceV1Beta1Client
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewWebRiskServiceV1Beta1Client creates a new web risk service v1 beta1 client based on gRPC.
@@ -273,7 +272,7 @@ func (c *webRiskServiceV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 func (c *webRiskServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -290,8 +289,8 @@ type webRiskServiceV1Beta1RESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing WebRiskServiceV1Beta1Client
 	CallOptions **WebRiskServiceV1Beta1CallOptions
@@ -334,7 +333,7 @@ func defaultWebRiskServiceV1Beta1RESTClientOptions() []option.ClientOption {
 func (c *webRiskServiceV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -352,7 +351,7 @@ func (c *webRiskServiceV1Beta1RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *webRiskServiceV1Beta1GRPCClient) ComputeThreatListDiff(ctx context.Context, req *webriskpb.ComputeThreatListDiffRequest, opts ...gax.CallOption) (*webriskpb.ComputeThreatListDiffResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ComputeThreatListDiff[0:len((*c.CallOptions).ComputeThreatListDiff):len((*c.CallOptions).ComputeThreatListDiff)], opts...)
 	var resp *webriskpb.ComputeThreatListDiffResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -367,7 +366,7 @@ func (c *webRiskServiceV1Beta1GRPCClient) ComputeThreatListDiff(ctx context.Cont
 }
 
 func (c *webRiskServiceV1Beta1GRPCClient) SearchUris(ctx context.Context, req *webriskpb.SearchUrisRequest, opts ...gax.CallOption) (*webriskpb.SearchUrisResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).SearchUris[0:len((*c.CallOptions).SearchUris):len((*c.CallOptions).SearchUris)], opts...)
 	var resp *webriskpb.SearchUrisResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -382,7 +381,7 @@ func (c *webRiskServiceV1Beta1GRPCClient) SearchUris(ctx context.Context, req *w
 }
 
 func (c *webRiskServiceV1Beta1GRPCClient) SearchHashes(ctx context.Context, req *webriskpb.SearchHashesRequest, opts ...gax.CallOption) (*webriskpb.SearchHashesResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).SearchHashes[0:len((*c.CallOptions).SearchHashes):len((*c.CallOptions).SearchHashes)], opts...)
 	var resp *webriskpb.SearchHashesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -425,7 +424,8 @@ func (c *webRiskServiceV1Beta1RESTClient) ComputeThreatListDiff(ctx context.Cont
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ComputeThreatListDiff[0:len((*c.CallOptions).ComputeThreatListDiff):len((*c.CallOptions).ComputeThreatListDiff)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &webriskpb.ComputeThreatListDiffResponse{}
@@ -487,7 +487,8 @@ func (c *webRiskServiceV1Beta1RESTClient) SearchUris(ctx context.Context, req *w
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SearchUris[0:len((*c.CallOptions).SearchUris):len((*c.CallOptions).SearchUris)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &webriskpb.SearchUrisResponse{}
@@ -555,7 +556,8 @@ func (c *webRiskServiceV1Beta1RESTClient) SearchHashes(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SearchHashes[0:len((*c.CallOptions).SearchHashes):len((*c.CallOptions).SearchHashes)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &webriskpb.SearchHashesResponse{}

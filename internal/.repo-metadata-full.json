@@ -349,6 +349,26 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/bigquery/biglake/apiv1": {
+    "api_shortname": "biglake",
+    "distribution_name": "cloud.google.com/go/bigquery/biglake/apiv1",
+    "description": "BigLake API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/biglake/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/bigquery/biglake/apiv1alpha1": {
+    "api_shortname": "biglake",
+    "distribution_name": "cloud.google.com/go/bigquery/biglake/apiv1alpha1",
+    "description": "BigLake API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/biglake/apiv1alpha1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/bigquery/connection/apiv1": {
     "api_shortname": "bigqueryconnection",
     "distribution_name": "cloud.google.com/go/bigquery/connection/apiv1",
@@ -1246,6 +1266,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/language/latest/apiv1beta2",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/language/apiv2": {
+    "api_shortname": "language",
+    "distribution_name": "cloud.google.com/go/language/apiv2",
+    "description": "Cloud Natural Language API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/language/latest/apiv2",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
