@@ -2,6 +2,7 @@
 name: new_client
 on:
   push:
+    # Per GitHub Action docs, specifying both branch and paths joins them with AND.
     branches:
       - main
     paths:
