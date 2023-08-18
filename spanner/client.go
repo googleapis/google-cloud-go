@@ -579,6 +579,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.txReadOnly.qo = c.qo
 		t.txReadOnly.ro = c.ro
 		t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
+		t.wb = []*Mutation{}
 		t.txOpts = c.txo.merge(options)
 		t.ct = c.ct
 
