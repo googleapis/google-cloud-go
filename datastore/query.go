@@ -1026,7 +1026,6 @@ func DecodeCursor(s string) (Cursor, error) {
 // NewAggregationQuery returns an AggregationQuery with this query as its
 // base query.
 func (q *Query) NewAggregationQuery() *AggregationQuery {
-	q.eventual = true
 	return &AggregationQuery{
 		query:              q,
 		aggregationQueries: make([]*pb.AggregationQuery_Aggregation, 0),

@@ -126,11 +126,6 @@ func fakeRunAggregationQuery(req *pb.RunAggregationQueryRequest) (*pb.RunAggrega
 				},
 			},
 		},
-		ReadOptions: &pb.ReadOptions{
-			ConsistencyType: &pb.ReadOptions_ReadConsistency_{
-				ReadConsistency: pb.ReadOptions_EVENTUAL,
-			},
-		},
 	}
 	if !proto.Equal(req, expectedIn) {
 		return nil, fmt.Errorf("unsupported argument: got %v want %v", req, expectedIn)

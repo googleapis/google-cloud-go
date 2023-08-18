@@ -718,6 +718,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	for i := range keys {
 		keys[i] = IncompleteKey("SQChild", parent)
 	}
+	beforeCreate := time.Now()
 	keys, err := client.PutMulti(ctx, keys, children)
 	if err != nil {
 		t.Fatalf("client.PutMulti: %v", err)
@@ -729,28 +730,55 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		}
 	}()
 
-	baseQuery := NewQuery("SQChild").Ancestor(parent)
+	// Create transaction with read before create
+	txBeforeCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(beforeCreate)}...)
+	if err != nil {
+		t.Fatalf("client.NewTransaction: %v", err)
+	}
+
+	// Create transaction with read after create
+	txAfterCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(time.Now())}...)
+	if err != nil {
+		t.Fatalf("client.NewTransaction: %v", err)
+	}
+
 	testCases := []struct {
-		desc          string
-		aggQuery      *AggregationQuery
-		wantFailure   bool
-		wantErrMsg    string
-		wantAggResult AggregationResult
+		desc            string
+		aggQuery        *AggregationQuery
+		transactionOpts []TransactionOption
+		wantFailure     bool
+		wantErrMsg      string
+		wantAggResult   AggregationResult
 	}{
+
 		{
 			desc:          "Count Failure - Missing index",
-			aggQuery:      baseQuery.Filter("T>=", now).NewAggregationQuery().WithCount("count"),
+			aggQuery:      NewQuery("SQChild").Ancestor(parent).Filter("T>=", now).NewAggregationQuery().WithCount("count"),
 			wantFailure:   true,
 			wantErrMsg:    "no matching index found",
 			wantAggResult: nil,
 		},
 		{
 			desc:        "Count Success",
-			aggQuery:    baseQuery.Filter("T=", now).Filter("I>=", 3).NewAggregationQuery().WithCount("count"),
+			aggQuery:    NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).NewAggregationQuery().WithCount("count"),
 			wantFailure: false,
 			wantErrMsg:  "",
 			wantAggResult: map[string]interface{}{
 				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+			},
+		},
+		{
+			desc:     "Count in transaction before creating entities",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Transaction(txBeforeCreate).NewAggregationQuery().WithCount("count"),
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
+			},
+		},
+		{
+			desc:     "Count in transaction after creating entities",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Transaction(txAfterCreate).NewAggregationQuery().WithCount("count"),
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 8}},
 			},
 		},
 	}
