@@ -1,5 +1,9 @@
 name: action_syntax
 on: [pull_request]
+
+permission:
+  pull-requests: write
+
 jobs:
   lint:
     runs-on: ubuntu-latest
