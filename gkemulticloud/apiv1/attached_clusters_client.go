@@ -34,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -331,7 +330,7 @@ type attachedClustersGRPCClient struct {
 	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewAttachedClustersClient creates a new attached clusters client based on gRPC.
@@ -394,7 +393,7 @@ func (c *attachedClustersGRPCClient) Connection() *grpc.ClientConn {
 func (c *attachedClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -404,9 +403,10 @@ func (c *attachedClustersGRPCClient) Close() error {
 }
 
 func (c *attachedClustersGRPCClient) CreateAttachedCluster(ctx context.Context, req *gkemulticloudpb.CreateAttachedClusterRequest, opts ...gax.CallOption) (*CreateAttachedClusterOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateAttachedCluster[0:len((*c.CallOptions).CreateAttachedCluster):len((*c.CallOptions).CreateAttachedCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -423,9 +423,10 @@ func (c *attachedClustersGRPCClient) CreateAttachedCluster(ctx context.Context, 
 }
 
 func (c *attachedClustersGRPCClient) UpdateAttachedCluster(ctx context.Context, req *gkemulticloudpb.UpdateAttachedClusterRequest, opts ...gax.CallOption) (*UpdateAttachedClusterOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attached_cluster.name", url.QueryEscape(req.GetAttachedCluster().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attached_cluster.name", url.QueryEscape(req.GetAttachedCluster().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateAttachedCluster[0:len((*c.CallOptions).UpdateAttachedCluster):len((*c.CallOptions).UpdateAttachedCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -442,9 +443,10 @@ func (c *attachedClustersGRPCClient) UpdateAttachedCluster(ctx context.Context, 
 }
 
 func (c *attachedClustersGRPCClient) ImportAttachedCluster(ctx context.Context, req *gkemulticloudpb.ImportAttachedClusterRequest, opts ...gax.CallOption) (*ImportAttachedClusterOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ImportAttachedCluster[0:len((*c.CallOptions).ImportAttachedCluster):len((*c.CallOptions).ImportAttachedCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -461,9 +463,10 @@ func (c *attachedClustersGRPCClient) ImportAttachedCluster(ctx context.Context, 
 }
 
 func (c *attachedClustersGRPCClient) GetAttachedCluster(ctx context.Context, req *gkemulticloudpb.GetAttachedClusterRequest, opts ...gax.CallOption) (*gkemulticloudpb.AttachedCluster, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetAttachedCluster[0:len((*c.CallOptions).GetAttachedCluster):len((*c.CallOptions).GetAttachedCluster)], opts...)
 	var resp *gkemulticloudpb.AttachedCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -478,9 +481,10 @@ func (c *attachedClustersGRPCClient) GetAttachedCluster(ctx context.Context, req
 }
 
 func (c *attachedClustersGRPCClient) ListAttachedClusters(ctx context.Context, req *gkemulticloudpb.ListAttachedClustersRequest, opts ...gax.CallOption) *AttachedClusterIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListAttachedClusters[0:len((*c.CallOptions).ListAttachedClusters):len((*c.CallOptions).ListAttachedClusters)], opts...)
 	it := &AttachedClusterIterator{}
 	req = proto.Clone(req).(*gkemulticloudpb.ListAttachedClustersRequest)
@@ -523,9 +527,10 @@ func (c *attachedClustersGRPCClient) ListAttachedClusters(ctx context.Context, r
 }
 
 func (c *attachedClustersGRPCClient) DeleteAttachedCluster(ctx context.Context, req *gkemulticloudpb.DeleteAttachedClusterRequest, opts ...gax.CallOption) (*DeleteAttachedClusterOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteAttachedCluster[0:len((*c.CallOptions).DeleteAttachedCluster):len((*c.CallOptions).DeleteAttachedCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -542,9 +547,10 @@ func (c *attachedClustersGRPCClient) DeleteAttachedCluster(ctx context.Context, 
 }
 
 func (c *attachedClustersGRPCClient) GetAttachedServerConfig(ctx context.Context, req *gkemulticloudpb.GetAttachedServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AttachedServerConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetAttachedServerConfig[0:len((*c.CallOptions).GetAttachedServerConfig):len((*c.CallOptions).GetAttachedServerConfig)], opts...)
 	var resp *gkemulticloudpb.AttachedServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -559,9 +565,10 @@ func (c *attachedClustersGRPCClient) GetAttachedServerConfig(ctx context.Context
 }
 
 func (c *attachedClustersGRPCClient) GenerateAttachedClusterInstallManifest(ctx context.Context, req *gkemulticloudpb.GenerateAttachedClusterInstallManifestRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAttachedClusterInstallManifestResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GenerateAttachedClusterInstallManifest[0:len((*c.CallOptions).GenerateAttachedClusterInstallManifest):len((*c.CallOptions).GenerateAttachedClusterInstallManifest)], opts...)
 	var resp *gkemulticloudpb.GenerateAttachedClusterInstallManifestResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -576,9 +583,10 @@ func (c *attachedClustersGRPCClient) GenerateAttachedClusterInstallManifest(ctx 
 }
 
 func (c *attachedClustersGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -589,9 +597,10 @@ func (c *attachedClustersGRPCClient) CancelOperation(ctx context.Context, req *l
 }
 
 func (c *attachedClustersGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -602,9 +611,10 @@ func (c *attachedClustersGRPCClient) DeleteOperation(ctx context.Context, req *l
 }
 
 func (c *attachedClustersGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -619,9 +629,10 @@ func (c *attachedClustersGRPCClient) GetOperation(ctx context.Context, req *long
 }
 
 func (c *attachedClustersGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

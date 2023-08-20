@@ -33,7 +33,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -143,7 +142,7 @@ type quotaControllerGRPCClient struct {
 	quotaControllerClient servicecontrolpb.QuotaControllerClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewQuotaControllerClient creates a new quota controller client based on gRPC.
@@ -195,7 +194,7 @@ func (c *quotaControllerGRPCClient) Connection() *grpc.ClientConn {
 func (c *quotaControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -212,8 +211,8 @@ type quotaControllerRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing QuotaControllerClient
 	CallOptions **QuotaControllerCallOptions
@@ -258,7 +257,7 @@ func defaultQuotaControllerRESTClientOptions() []option.ClientOption {
 func (c *quotaControllerRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -276,9 +275,10 @@ func (c *quotaControllerRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *quotaControllerGRPCClient) AllocateQuota(ctx context.Context, req *servicecontrolpb.AllocateQuotaRequest, opts ...gax.CallOption) (*servicecontrolpb.AllocateQuotaResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AllocateQuota[0:len((*c.CallOptions).AllocateQuota):len((*c.CallOptions).AllocateQuota)], opts...)
 	var resp *servicecontrolpb.AllocateQuotaResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -322,9 +322,11 @@ func (c *quotaControllerRESTClient) AllocateQuota(ctx context.Context, req *serv
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).AllocateQuota[0:len((*c.CallOptions).AllocateQuota):len((*c.CallOptions).AllocateQuota)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicecontrolpb.AllocateQuotaResponse{}

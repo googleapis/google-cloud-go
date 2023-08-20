@@ -35,7 +35,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -194,7 +193,7 @@ type authorizedCertificatesGRPCClient struct {
 	authorizedCertificatesClient appenginepb.AuthorizedCertificatesClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewAuthorizedCertificatesClient creates a new authorized certificates client based on gRPC.
@@ -244,7 +243,7 @@ func (c *authorizedCertificatesGRPCClient) Connection() *grpc.ClientConn {
 func (c *authorizedCertificatesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -261,8 +260,8 @@ type authorizedCertificatesRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing AuthorizedCertificatesClient
 	CallOptions **AuthorizedCertificatesCallOptions
@@ -305,7 +304,7 @@ func defaultAuthorizedCertificatesRESTClientOptions() []option.ClientOption {
 func (c *authorizedCertificatesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -323,9 +322,10 @@ func (c *authorizedCertificatesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *authorizedCertificatesGRPCClient) ListAuthorizedCertificates(ctx context.Context, req *appenginepb.ListAuthorizedCertificatesRequest, opts ...gax.CallOption) *AuthorizedCertificateIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListAuthorizedCertificates[0:len((*c.CallOptions).ListAuthorizedCertificates):len((*c.CallOptions).ListAuthorizedCertificates)], opts...)
 	it := &AuthorizedCertificateIterator{}
 	req = proto.Clone(req).(*appenginepb.ListAuthorizedCertificatesRequest)
@@ -368,9 +368,10 @@ func (c *authorizedCertificatesGRPCClient) ListAuthorizedCertificates(ctx contex
 }
 
 func (c *authorizedCertificatesGRPCClient) GetAuthorizedCertificate(ctx context.Context, req *appenginepb.GetAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetAuthorizedCertificate[0:len((*c.CallOptions).GetAuthorizedCertificate):len((*c.CallOptions).GetAuthorizedCertificate)], opts...)
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -385,9 +386,10 @@ func (c *authorizedCertificatesGRPCClient) GetAuthorizedCertificate(ctx context.
 }
 
 func (c *authorizedCertificatesGRPCClient) CreateAuthorizedCertificate(ctx context.Context, req *appenginepb.CreateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateAuthorizedCertificate[0:len((*c.CallOptions).CreateAuthorizedCertificate):len((*c.CallOptions).CreateAuthorizedCertificate)], opts...)
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -402,9 +404,10 @@ func (c *authorizedCertificatesGRPCClient) CreateAuthorizedCertificate(ctx conte
 }
 
 func (c *authorizedCertificatesGRPCClient) UpdateAuthorizedCertificate(ctx context.Context, req *appenginepb.UpdateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateAuthorizedCertificate[0:len((*c.CallOptions).UpdateAuthorizedCertificate):len((*c.CallOptions).UpdateAuthorizedCertificate)], opts...)
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -419,9 +422,10 @@ func (c *authorizedCertificatesGRPCClient) UpdateAuthorizedCertificate(ctx conte
 }
 
 func (c *authorizedCertificatesGRPCClient) DeleteAuthorizedCertificate(ctx context.Context, req *appenginepb.DeleteAuthorizedCertificateRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteAuthorizedCertificate[0:len((*c.CallOptions).DeleteAuthorizedCertificate):len((*c.CallOptions).DeleteAuthorizedCertificate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -467,7 +471,8 @@ func (c *authorizedCertificatesRESTClient) ListAuthorizedCertificates(ctx contex
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -539,9 +544,11 @@ func (c *authorizedCertificatesRESTClient) GetAuthorizedCertificate(ctx context.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetAuthorizedCertificate[0:len((*c.CallOptions).GetAuthorizedCertificate):len((*c.CallOptions).GetAuthorizedCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.AuthorizedCertificate{}
@@ -604,9 +611,11 @@ func (c *authorizedCertificatesRESTClient) CreateAuthorizedCertificate(ctx conte
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateAuthorizedCertificate[0:len((*c.CallOptions).CreateAuthorizedCertificate):len((*c.CallOptions).CreateAuthorizedCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.AuthorizedCertificate{}
@@ -680,9 +689,11 @@ func (c *authorizedCertificatesRESTClient) UpdateAuthorizedCertificate(ctx conte
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateAuthorizedCertificate[0:len((*c.CallOptions).UpdateAuthorizedCertificate):len((*c.CallOptions).UpdateAuthorizedCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.AuthorizedCertificate{}
@@ -738,9 +749,11 @@ func (c *authorizedCertificatesRESTClient) DeleteAuthorizedCertificate(ctx conte
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

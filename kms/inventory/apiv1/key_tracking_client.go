@@ -34,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -155,7 +154,7 @@ type keyTrackingGRPCClient struct {
 	keyTrackingClient inventorypb.KeyTrackingServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewKeyTrackingClient creates a new key tracking service client based on gRPC.
@@ -205,7 +204,7 @@ func (c *keyTrackingGRPCClient) Connection() *grpc.ClientConn {
 func (c *keyTrackingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -222,8 +221,8 @@ type keyTrackingRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing KeyTrackingClient
 	CallOptions **KeyTrackingCallOptions
@@ -266,7 +265,7 @@ func defaultKeyTrackingRESTClientOptions() []option.ClientOption {
 func (c *keyTrackingRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -284,9 +283,10 @@ func (c *keyTrackingRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *keyTrackingGRPCClient) GetProtectedResourcesSummary(ctx context.Context, req *inventorypb.GetProtectedResourcesSummaryRequest, opts ...gax.CallOption) (*inventorypb.ProtectedResourcesSummary, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetProtectedResourcesSummary[0:len((*c.CallOptions).GetProtectedResourcesSummary):len((*c.CallOptions).GetProtectedResourcesSummary)], opts...)
 	var resp *inventorypb.ProtectedResourcesSummary
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -301,9 +301,10 @@ func (c *keyTrackingGRPCClient) GetProtectedResourcesSummary(ctx context.Context
 }
 
 func (c *keyTrackingGRPCClient) SearchProtectedResources(ctx context.Context, req *inventorypb.SearchProtectedResourcesRequest, opts ...gax.CallOption) *ProtectedResourceIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SearchProtectedResources[0:len((*c.CallOptions).SearchProtectedResources):len((*c.CallOptions).SearchProtectedResources)], opts...)
 	it := &ProtectedResourceIterator{}
 	req = proto.Clone(req).(*inventorypb.SearchProtectedResourcesRequest)
@@ -363,9 +364,11 @@ func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetProtectedResourcesSummary[0:len((*c.CallOptions).GetProtectedResourcesSummary):len((*c.CallOptions).GetProtectedResourcesSummary)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &inventorypb.ProtectedResourcesSummary{}
@@ -447,7 +450,8 @@ func (c *keyTrackingRESTClient) SearchProtectedResources(ctx context.Context, re
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path

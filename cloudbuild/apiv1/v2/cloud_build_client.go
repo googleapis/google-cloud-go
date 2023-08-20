@@ -41,7 +41,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -615,7 +614,7 @@ type gRPCClient struct {
 	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new cloud build client based on gRPC.
@@ -682,7 +681,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -704,8 +703,8 @@ type restClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
@@ -764,7 +763,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -791,9 +790,10 @@ func (c *gRPCClient) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBu
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBuild[0:len((*c.CallOptions).CreateBuild):len((*c.CallOptions).CreateBuild)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -819,9 +819,10 @@ func (c *gRPCClient) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildReq
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetBuild[0:len((*c.CallOptions).GetBuild):len((*c.CallOptions).GetBuild)], opts...)
 	var resp *cloudbuildpb.Build
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -845,9 +846,10 @@ func (c *gRPCClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuild
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListBuilds[0:len((*c.CallOptions).ListBuilds):len((*c.CallOptions).ListBuilds)], opts...)
 	it := &BuildIterator{}
 	req = proto.Clone(req).(*cloudbuildpb.ListBuildsRequest)
@@ -899,9 +901,10 @@ func (c *gRPCClient) CancelBuild(ctx context.Context, req *cloudbuildpb.CancelBu
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelBuild[0:len((*c.CallOptions).CancelBuild):len((*c.CallOptions).CancelBuild)], opts...)
 	var resp *cloudbuildpb.Build
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -925,9 +928,10 @@ func (c *gRPCClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RetryBuild[0:len((*c.CallOptions).RetryBuild):len((*c.CallOptions).RetryBuild)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -953,9 +957,10 @@ func (c *gRPCClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.Approve
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ApproveBuild[0:len((*c.CallOptions).ApproveBuild):len((*c.CallOptions).ApproveBuild)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -981,9 +986,10 @@ func (c *gRPCClient) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.C
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBuildTrigger[0:len((*c.CallOptions).CreateBuildTrigger):len((*c.CallOptions).CreateBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1007,9 +1013,10 @@ func (c *gRPCClient) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetB
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetBuildTrigger[0:len((*c.CallOptions).GetBuildTrigger):len((*c.CallOptions).GetBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1033,9 +1040,10 @@ func (c *gRPCClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.Li
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListBuildTriggers[0:len((*c.CallOptions).ListBuildTriggers):len((*c.CallOptions).ListBuildTriggers)], opts...)
 	it := &BuildTriggerIterator{}
 	req = proto.Clone(req).(*cloudbuildpb.ListBuildTriggersRequest)
@@ -1087,9 +1095,10 @@ func (c *gRPCClient) DeleteBuildTrigger(ctx context.Context, req *cloudbuildpb.D
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteBuildTrigger[0:len((*c.CallOptions).DeleteBuildTrigger):len((*c.CallOptions).DeleteBuildTrigger)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1109,9 +1118,10 @@ func (c *gRPCClient) UpdateBuildTrigger(ctx context.Context, req *cloudbuildpb.U
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateBuildTrigger[0:len((*c.CallOptions).UpdateBuildTrigger):len((*c.CallOptions).UpdateBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1135,9 +1145,10 @@ func (c *gRPCClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RunBuildTrigger[0:len((*c.CallOptions).RunBuildTrigger):len((*c.CallOptions).RunBuildTrigger)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1154,9 +1165,10 @@ func (c *gRPCClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 }
 
 func (c *gRPCClient) ReceiveTriggerWebhook(ctx context.Context, req *cloudbuildpb.ReceiveTriggerWebhookRequest, opts ...gax.CallOption) (*cloudbuildpb.ReceiveTriggerWebhookResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger", url.QueryEscape(req.GetTrigger()), "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger", url.QueryEscape(req.GetTrigger()), "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ReceiveTriggerWebhook[0:len((*c.CallOptions).ReceiveTriggerWebhook):len((*c.CallOptions).ReceiveTriggerWebhook)], opts...)
 	var resp *cloudbuildpb.ReceiveTriggerWebhookResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1180,9 +1192,10 @@ func (c *gRPCClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.Cre
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateWorkerPool[0:len((*c.CallOptions).CreateWorkerPool):len((*c.CallOptions).CreateWorkerPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1208,9 +1221,10 @@ func (c *gRPCClient) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWor
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetWorkerPool[0:len((*c.CallOptions).GetWorkerPool):len((*c.CallOptions).GetWorkerPool)], opts...)
 	var resp *cloudbuildpb.WorkerPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1234,9 +1248,10 @@ func (c *gRPCClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.Del
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteWorkerPool[0:len((*c.CallOptions).DeleteWorkerPool):len((*c.CallOptions).DeleteWorkerPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1262,9 +1277,10 @@ func (c *gRPCClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateWorkerPool[0:len((*c.CallOptions).UpdateWorkerPool):len((*c.CallOptions).UpdateWorkerPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1290,9 +1306,10 @@ func (c *gRPCClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.List
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListWorkerPools[0:len((*c.CallOptions).ListWorkerPools):len((*c.CallOptions).ListWorkerPools)], opts...)
 	it := &WorkerPoolIterator{}
 	req = proto.Clone(req).(*cloudbuildpb.ListWorkerPoolsRequest)
@@ -1371,9 +1388,11 @@ func (c *restClient) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBu
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1448,9 +1467,11 @@ func (c *restClient) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildReq
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetBuild[0:len((*c.CallOptions).GetBuild):len((*c.CallOptions).GetBuild)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.Build{}
@@ -1534,7 +1555,8 @@ func (c *restClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuild
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1618,9 +1640,11 @@ func (c *restClient) CancelBuild(ctx context.Context, req *cloudbuildpb.CancelBu
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CancelBuild[0:len((*c.CallOptions).CancelBuild):len((*c.CallOptions).CancelBuild)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.Build{}
@@ -1719,9 +1743,11 @@ func (c *restClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1801,9 +1827,11 @@ func (c *restClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.Approve
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1884,9 +1912,11 @@ func (c *restClient) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.C
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBuildTrigger[0:len((*c.CallOptions).CreateBuildTrigger):len((*c.CallOptions).CreateBuildTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.BuildTrigger{}
@@ -1956,9 +1986,11 @@ func (c *restClient) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetB
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetBuildTrigger[0:len((*c.CallOptions).GetBuildTrigger):len((*c.CallOptions).GetBuildTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.BuildTrigger{}
@@ -2038,7 +2070,8 @@ func (c *restClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.Li
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2121,9 +2154,11 @@ func (c *restClient) DeleteBuildTrigger(ctx context.Context, req *cloudbuildpb.D
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2186,9 +2221,11 @@ func (c *restClient) UpdateBuildTrigger(ctx context.Context, req *cloudbuildpb.U
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateBuildTrigger[0:len((*c.CallOptions).UpdateBuildTrigger):len((*c.CallOptions).UpdateBuildTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.BuildTrigger{}
@@ -2269,9 +2306,11 @@ func (c *restClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2345,9 +2384,11 @@ func (c *restClient) ReceiveTriggerWebhook(ctx context.Context, req *cloudbuildp
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger", url.QueryEscape(req.GetTrigger()), "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger", url.QueryEscape(req.GetTrigger()), "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ReceiveTriggerWebhook[0:len((*c.CallOptions).ReceiveTriggerWebhook):len((*c.CallOptions).ReceiveTriggerWebhook)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.ReceiveTriggerWebhookResponse{}
@@ -2423,9 +2464,11 @@ func (c *restClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.Cre
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2494,9 +2537,11 @@ func (c *restClient) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWor
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetWorkerPool[0:len((*c.CallOptions).GetWorkerPool):len((*c.CallOptions).GetWorkerPool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudbuildpb.WorkerPool{}
@@ -2570,9 +2615,11 @@ func (c *restClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.Del
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2658,9 +2705,11 @@ func (c *restClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
 	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	md := metadata.Pairs("x-goog-request-params", routingHeaders)
+	hds := []string{"x-goog-request-params", routingHeaders}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2739,7 +2788,8 @@ func (c *restClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.List
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path

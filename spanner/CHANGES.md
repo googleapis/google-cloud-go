@@ -1,5 +1,21 @@
 # Changes
 
+## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.47.0...spanner/v1.48.0) (2023-08-18)
+
+
+### Features
+
+* **spanner/spansql:** Add complete set of math functions ([#8246](https://github.com/googleapis/google-cloud-go/issues/8246)) ([d7a238e](https://github.com/googleapis/google-cloud-go/commit/d7a238eca2a9b08e968cea57edc3708694673e22))
+* **spanner/spansql:** Add support for foreign key actions ([#8296](https://github.com/googleapis/google-cloud-go/issues/8296)) ([d78b851](https://github.com/googleapis/google-cloud-go/commit/d78b8513b13a9a2c04b8097f0d89f85dcfd73797))
+* **spanner/spansql:** Add support for IF NOT EXISTS and IF EXISTS clause ([#8245](https://github.com/googleapis/google-cloud-go/issues/8245)) ([96840ab](https://github.com/googleapis/google-cloud-go/commit/96840ab1232bbdb788e37f81cf113ee0f1b4e8e7))
+* **spanner:** Add integration tests for Bit Reversed Sequences ([#7924](https://github.com/googleapis/google-cloud-go/issues/7924)) ([9b6e7c6](https://github.com/googleapis/google-cloud-go/commit/9b6e7c6061dc69683d7f558faed7f4249da5b7cb))
+
+
+### Bug Fixes
+
+* **spanner:** Reset buffer after abort on first SQL statement ([#8440](https://github.com/googleapis/google-cloud-go/issues/8440)) ([d980b42](https://github.com/googleapis/google-cloud-go/commit/d980b42f33968ef25061be50e18038d73b0503b6))
+* **spanner:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.46.0...spanner/v1.47.0) (2023-06-20)
 
 

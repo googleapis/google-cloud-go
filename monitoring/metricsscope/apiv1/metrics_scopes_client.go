@@ -32,7 +32,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 var newMetricsScopesClientHook clientHook
@@ -174,7 +173,7 @@ type metricsScopesGRPCClient struct {
 	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewMetricsScopesClient creates a new metrics scopes client based on gRPC.
@@ -235,7 +234,7 @@ func (c *metricsScopesGRPCClient) Connection() *grpc.ClientConn {
 func (c *metricsScopesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -245,9 +244,10 @@ func (c *metricsScopesGRPCClient) Close() error {
 }
 
 func (c *metricsScopesGRPCClient) GetMetricsScope(ctx context.Context, req *metricsscopepb.GetMetricsScopeRequest, opts ...gax.CallOption) (*metricsscopepb.MetricsScope, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetMetricsScope[0:len((*c.CallOptions).GetMetricsScope):len((*c.CallOptions).GetMetricsScope)], opts...)
 	var resp *metricsscopepb.MetricsScope
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -262,7 +262,7 @@ func (c *metricsScopesGRPCClient) GetMetricsScope(ctx context.Context, req *metr
 }
 
 func (c *metricsScopesGRPCClient) ListMetricsScopesByMonitoredProject(ctx context.Context, req *metricsscopepb.ListMetricsScopesByMonitoredProjectRequest, opts ...gax.CallOption) (*metricsscopepb.ListMetricsScopesByMonitoredProjectResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ListMetricsScopesByMonitoredProject[0:len((*c.CallOptions).ListMetricsScopesByMonitoredProject):len((*c.CallOptions).ListMetricsScopesByMonitoredProject)], opts...)
 	var resp *metricsscopepb.ListMetricsScopesByMonitoredProjectResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -277,9 +277,10 @@ func (c *metricsScopesGRPCClient) ListMetricsScopesByMonitoredProject(ctx contex
 }
 
 func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, req *metricsscopepb.CreateMonitoredProjectRequest, opts ...gax.CallOption) (*CreateMonitoredProjectOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateMonitoredProject[0:len((*c.CallOptions).CreateMonitoredProject):len((*c.CallOptions).CreateMonitoredProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -296,9 +297,10 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, re
 }
 
 func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, req *metricsscopepb.DeleteMonitoredProjectRequest, opts ...gax.CallOption) (*DeleteMonitoredProjectOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteMonitoredProject[0:len((*c.CallOptions).DeleteMonitoredProject):len((*c.CallOptions).DeleteMonitoredProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
