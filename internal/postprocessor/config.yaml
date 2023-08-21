@@ -612,6 +612,9 @@ service-configs:
   - input-directory: google/cloud/notebooks/v1beta1
     service-config: notebooks_v1beta1.yaml
     import-path: cloud.google.com/go/notebooks/apiv1beta1
+  - input-directory: google/cloud/notebooks/v2
+    service-config: notebooks_v2.yaml
+    import-path: cloud.google.com/go/notebooks/apiv2
   - input-directory: google/cloud/optimization/v1
     service-config: cloudoptimization_v1.yaml
     import-path: cloud.google.com/go/optimization/apiv1
