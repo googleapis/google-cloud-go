@@ -718,8 +718,15 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	for i := range keys {
 		keys[i] = IncompleteKey("SQChild", parent)
 	}
-	beforeCreate := time.Now()
-	keys, err := client.PutMulti(ctx, keys, children)
+
+	// Create transaction with read before creating entities
+	readTime := time.Now()
+	txBeforeCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
+	if err != nil {
+		t.Fatalf("client.NewTransaction: %v", err)
+	}
+
+	keys, err = client.PutMulti(ctx, keys, children)
 	if err != nil {
 		t.Fatalf("client.PutMulti: %v", err)
 	}
@@ -730,14 +737,9 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		}
 	}()
 
-	// Create transaction with read before create
-	txBeforeCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(beforeCreate)}...)
-	if err != nil {
-		t.Fatalf("client.NewTransaction: %v", err)
-	}
-
-	// Create transaction with read after create
-	txAfterCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(time.Now())}...)
+	// Create transaction with read after creating entities
+	readTime = time.Now()
+	txAfterCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
 	if err != nil {
 		t.Fatalf("client.NewTransaction: %v", err)
 	}
