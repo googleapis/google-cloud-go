@@ -133,6 +133,9 @@ var generateList = []string{
 	"google.golang.org/genproto/googleapis/type/postaladdress",
 	"google.golang.org/genproto/googleapis/firebase/fcm/connection/v1alpha1",
 	"google.golang.org/genproto/googleapis/assistant/embedded/v1alpha2",
+	"google.golang.org/genproto/googleapis/datastore/v1",
+	"google.golang.org/genproto/googleapis/datastore/admin/v1",
+	"google.golang.org/genproto/googleapis/datastore/admin/v1beta1",
 }
 
 // Regen regenerates the genproto repository.
