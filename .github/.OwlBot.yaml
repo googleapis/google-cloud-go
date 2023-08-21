@@ -263,6 +263,7 @@ deep-remove-regex:
   - /internal/generated/snippets/networksecurity/apiv1beta1/
   - /internal/generated/snippets/notebooks/apiv1/
   - /internal/generated/snippets/notebooks/apiv1beta1/
+  - /internal/generated/snippets/notebooks/apiv2/
   - /internal/generated/snippets/optimization/apiv1/
   - /internal/generated/snippets/orchestration/airflow/service/apiv1/
   - /internal/generated/snippets/orgpolicy/apiv2/
@@ -379,6 +380,7 @@ deep-remove-regex:
   - /networksecurity/apiv1beta1/
   - /notebooks/apiv1/
   - /notebooks/apiv1beta1/
+  - /notebooks/apiv2/
   - /optimization/apiv1/
   - /orchestration/airflow/service/apiv1/
   - /orgpolicy/apiv1/
@@ -800,6 +802,8 @@ deep-copy-regex:
   - source: /google/cloud/notebooks/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/notebooks/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/notebooks/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/optimization/v1/cloud.google.com/go
     dest: /
