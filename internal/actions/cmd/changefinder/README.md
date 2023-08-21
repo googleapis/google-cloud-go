@@ -16,6 +16,8 @@ The available flags are as follows:
  format mode. Defaults to `submodules`.
  * `-base=[ref name]`: The base ref to compare `HEAD` to. Default is
  `origin/main`.
+ * `-path-filter=[path filter]`: The path filter to diff for.
+ * `-content-pattern=[regex]`: A regex to match on diff contents.
 
 Example usages from this repo root:
 
