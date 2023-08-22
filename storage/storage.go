@@ -1085,11 +1085,11 @@ func parseKey(key []byte) (*rsa.PrivateKey, error) {
 func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 	var ret string
 	if !o.RetentionExpirationTime.IsZero() {
-		ret = o.RetentionExpirationTime.Format(time.RFC3339)
+		ret = o.RetentionExpirationTime.Format(time.RFC3339Nano)
 	}
 	var ct string
 	if !o.CustomTime.IsZero() {
-		ct = o.CustomTime.Format(time.RFC3339)
+		ct = o.CustomTime.Format(time.RFC3339Nano)
 	}
 	return &raw.Object{
 		Bucket:                  bucket,
@@ -1348,7 +1348,7 @@ type ObjectAttrs struct {
 func convertTime(t string) time.Time {
 	var r time.Time
 	if t != "" {
-		r, _ = time.Parse(time.RFC3339, t)
+		r, _ = time.Parse(time.RFC3339Nano, t)
 	}
 	return r
 }
