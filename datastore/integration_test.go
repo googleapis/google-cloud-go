@@ -777,32 +777,32 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		{
 			desc: "Aggregations in transaction before creating entities",
 			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
-        Transaction(txBeforeCreate).
-        NewAggregationQuery().
-        WithCount("count").
-        WithSum("I", "sum").
-        WithAvg("I", "avg"),
+				Transaction(txBeforeCreate).
+				NewAggregationQuery().
+				WithCount("count").
+				WithSum("I", "sum").
+				WithAvg("I", "avg"),
 			wantAggResult: map[string]interface{}{
 				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
-        "sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
-				"avg":   &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 0}},
+				"sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
+				"avg":   &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
 			},
 		},
 		{
 			desc: "Aggregations in transaction after creating entities",
 			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
-        Transaction(txAfterCreate).
-        NewAggregationQuery().
-        WithCount("count").
-        WithSum("I", "sum").
-        WithAvg("I", "avg"),
+				Transaction(txAfterCreate).
+				NewAggregationQuery().
+				WithCount("count").
+				WithSum("I", "sum").
+				WithAvg("I", "avg"),
 			wantAggResult: map[string]interface{}{
 				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 8}},
-        "sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 28}},
+				"sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 28}},
 				"avg":   &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
 			},
 		},
-    {
+		{
 			desc: "Multiple aggregations",
 			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
 				NewAggregationQuery().
