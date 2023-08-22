@@ -1539,6 +1539,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/notebooks/apiv2": {
+    "api_shortname": "notebooks",
+    "distribution_name": "cloud.google.com/go/notebooks/apiv2",
+    "description": "Notebooks API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/notebooks/latest/apiv2",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/optimization/apiv1": {
     "api_shortname": "cloudoptimization",
     "distribution_name": "cloud.google.com/go/optimization/apiv1",
@@ -1667,6 +1677,16 @@
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/policytroubleshooter/latest/apiv1",
     "release_level": "stable",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/policytroubleshooter/iam/apiv3": {
+    "api_shortname": "policytroubleshooter",
+    "distribution_name": "cloud.google.com/go/policytroubleshooter/iam/apiv3",
+    "description": "Policy Troubleshooter API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/policytroubleshooter/latest/iam/apiv3",
+    "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/privatecatalog/apiv1beta1": {
