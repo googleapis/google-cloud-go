@@ -43,7 +43,7 @@ func newConf(url string) *Config3LO {
 		Scopes:       []string{"scope1", "scope2"},
 		AuthURL:      url + "/auth",
 		TokenURL:     url + "/token",
-		AuthStyle:    AuthStyleInHeader,
+		AuthStyle:    StyleInHeader,
 	}
 }
 
@@ -214,18 +214,18 @@ func TestConfig3LO_ExchangeJSONResponseExpiry(t *testing.T) {
 		nullExpires bool
 	}{
 		{"normal", fmt.Sprintf(`"expires_in": %d`, seconds), true, false},
-		{"null", fmt.Sprintf(`"expires_in": null`), true, true},
+		{"null", `"expires_in": null`, true, true},
 		{"wrong_type", `"expires_in": false`, false, false},
 		{"wrong_type2", `"expires_in": {}`, false, false},
 		{"wrong_value", `"expires_in": "zzz"`, false, false},
 	} {
 		t.Run(c.name, func(t *testing.T) {
-			testConfig3LO_ExchangeJSONResponseExpiry(t, c.expires, c.want, c.nullExpires)
+			testConfig3LOExchangeJSONResponseExpiry(t, c.expires, c.want, c.nullExpires)
 		})
 	}
 }
 
-func testConfig3LO_ExchangeJSONResponseExpiry(t *testing.T, exp string, want, nullExpires bool) {
+func testConfig3LOExchangeJSONResponseExpiry(t *testing.T, exp string, want, nullExpires bool) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(fmt.Sprintf(`{"access_token": "90d", "scope": "user", "token_type": "bearer", %s}`, exp)))
@@ -353,10 +353,10 @@ func TestConfig3LO_AuthHandlerExchangeSuccess(t *testing.T) {
 		Scopes:    []string{"pubsub"},
 		AuthURL:   "testAuthCodeURL",
 		TokenURL:  ts.URL,
-		AuthStyle: AuthStyleInHeader,
+		AuthStyle: StyleInHeader,
 	}
 
-	tok, err := conf.TokenProviderWithAuthHandler(AuthHandlerOptions{
+	tok, err := conf.TokenProviderWithAuthHandler(AuthenticationHandlerOptions{
 		State:                "testState",
 		AuthorizationHandler: authhandler,
 	}).Token(context.Background())
@@ -404,12 +404,12 @@ func TestConfig3LO_AuthHandlerExchangeStateMismatch(t *testing.T) {
 		TokenURL: ts.URL,
 	}
 
-	_, err := conf.TokenProviderWithAuthHandler(AuthHandlerOptions{
+	_, err := conf.TokenProviderWithAuthHandler(AuthenticationHandlerOptions{
 		State:                "testState",
 		AuthorizationHandler: authhandler,
 	}).Token(context.Background())
-	if want_err := "auth: state mismatch in 3-legged-OAuth flow"; err == nil || err.Error() != want_err {
-		t.Errorf("err = %q; want %q", err, want_err)
+	if wantErr := "auth: state mismatch in 3-legged-OAuth flow"; err == nil || err.Error() != wantErr {
+		t.Errorf("err = %q; want %q", err, wantErr)
 	}
 }
 
@@ -440,7 +440,7 @@ func TestConfig3LO_PKCEExchangeWithSuccess(t *testing.T) {
 		Scopes:    []string{"pubsub"},
 		AuthURL:   "testAuthCodeURL",
 		TokenURL:  ts.URL,
-		AuthStyle: AuthStyleInParams,
+		AuthStyle: StyleInParams,
 	}
 	pkce := PKCEConfig{
 		Challenge:       "codeChallenge",
@@ -448,7 +448,7 @@ func TestConfig3LO_PKCEExchangeWithSuccess(t *testing.T) {
 		Verifier:        "codeChallenge",
 	}
 
-	tok, err := conf.TokenProviderWithAuthHandler(AuthHandlerOptions{
+	tok, err := conf.TokenProviderWithAuthHandler(AuthenticationHandlerOptions{
 		State:                "testState",
 		AuthorizationHandler: authhandler,
 		PKCEConfig:           &pkce,

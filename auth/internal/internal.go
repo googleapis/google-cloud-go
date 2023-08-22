@@ -27,6 +27,7 @@ import (
 )
 
 const (
+	// TokenTypeBearer is the auth header prefix for bearer tokens.
 	TokenTypeBearer = "Bearer"
 
 	quotaProjectEnvVar = "GOOGLE_CLOUD_QUOTA_PROJECT"

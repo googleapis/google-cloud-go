@@ -117,7 +117,8 @@ func (ctpo *CachedTokenProviderOptions) expireEarly() time.Duration {
 	return ctpo.ExpireEarly
 }
 
-// May need to also pass a token for the user-auth flow?
+// NewCachedTokenProvider wraps a [TokenProvider] to cache the tokens returned
+// by the underlying provider.
 func NewCachedTokenProvider(tp TokenProvider, opts *CachedTokenProviderOptions) TokenProvider {
 	if ctp, ok := tp.(*cachedTokenProvider); ok {
 		return ctp
@@ -152,6 +153,8 @@ func (c *cachedTokenProvider) Token(ctx context.Context) (*Token, error) {
 	return t, nil
 }
 
+// Error is a error associated with retrieving a [Token]. It can hold useful
+// additional details for debugging.
 type Error struct {
 	// Response is the HTTP response associated with error. The body will always
 	// be already closed and consumed.
@@ -183,6 +186,8 @@ func (r *Error) Error() string {
 	return fmt.Sprintf("auth: cannot fetch token: %v\nResponse: %s", r.Response.StatusCode, r.Body)
 }
 
+// Temporary returns true if the error is considered temporary and may be able
+// to be retried.
 func (e *Error) Temporary() bool {
 	if e.Response == nil {
 		return false
@@ -195,18 +200,18 @@ func (e *Error) Unwrap() error {
 	return e.Err
 }
 
-// AuthStyle describes how the token endpoint wants receive the ClientID and
+// Style describes how the token endpoint wants receive the ClientID and
 // ClientSecret.
-type AuthStyle int
+type Style int
 
 const (
-	// AuthStyleUnknown means the value has not been initiated. Sending this in
+	// StyleUnknown means the value has not been initiated. Sending this in
 	// a request will cause the token exchange to fail.
-	AuthStyleUnknown AuthStyle = 0
-	// AuthStyleInParams sends client info in the body of a POST request.
-	AuthStyleInParams AuthStyle = 1
-	// AuthStyleInHeader sends client info using Basic Authorization header.
-	AuthStyleInHeader AuthStyle = 2
+	StyleUnknown Style = 0
+	// StyleInParams sends client info in the body of a POST request.
+	StyleInParams Style = 1
+	// StyleInHeader sends client info using Basic Authorization header.
+	StyleInHeader Style = 2
 )
 
 // ConfigJWT2LO is the configuration settings for doing a 2-legged JWT OAuth2 flow.
@@ -250,6 +255,8 @@ func (c *ConfigJWT2LO) client() *http.Client {
 	return internal.CloneDefaultClient()
 }
 
+// TokenProvider returns a [TokenProvider] based on the provided fields set on
+// [ConfigJWT2LO].
 func (c *ConfigJWT2LO) TokenProvider() TokenProvider {
 	return tokenProvider2LO{c: c, Client: c.client()}
 }

@@ -57,7 +57,7 @@ type Config3LO struct {
 	// Optional.
 	Client *http.Client
 	// AuthStyle is used to describe how to client info in the token request.
-	AuthStyle AuthStyle
+	AuthStyle Style
 	// EarlyTokenExpiry is the time before the token expires that it should be
 	// refreshed. If not set the default value is 10 seconds. Optional.
 	EarlyTokenExpiry time.Duration
@@ -65,7 +65,7 @@ type Config3LO struct {
 	pkceConf *PKCEConfig
 }
 
-// PKCEParams holds parameters to support PKCE.
+// PKCEConfig holds parameters to support PKCE.
 type PKCEConfig struct {
 	// Challenge is the un-padded, base64-url-encoded string of the encrypted code verifier.
 	Challenge string // The un-padded, base64-url-encoded string of the encrypted code verifier.
@@ -135,7 +135,7 @@ func (c *Config3LO) authCodeURL(state string, values url.Values) string {
 	return buf.String()
 }
 
-// TokenProvider returns a TokenProvider based the the 3-legged OAuth2
+// TokenProvider returns a TokenProvider based on the 3-legged OAuth2
 // configuration. The TokenProvider is caches and auto-refreshes tokens by
 // default.
 func (c *Config3LO) TokenProvider(refreshToken string) TokenProvider {
@@ -144,9 +144,9 @@ func (c *Config3LO) TokenProvider(refreshToken string) TokenProvider {
 	})
 }
 
-// AuthHandlerOptions provides a set of options to specify for doing a
+// AuthenticationHandlerOptions provides a set of options to specify for doing a
 // 3-legged OAuth2 flow with a custom [AuthorizationHandler].
-type AuthHandlerOptions struct {
+type AuthenticationHandlerOptions struct {
 	// AuthorizationHandler specifies the handler used to for the authorization
 	// part of the flow.
 	AuthorizationHandler AuthorizationHandler
@@ -157,7 +157,9 @@ type AuthHandlerOptions struct {
 	PKCEConfig *PKCEConfig
 }
 
-func (c *Config3LO) TokenProviderWithAuthHandler(opts AuthHandlerOptions) TokenProvider {
+// TokenProviderWithAuthHandler returns a [TokenProvider] based on the 3-legged
+// OAuth2 configuration and authentication handler options.
+func (c *Config3LO) TokenProviderWithAuthHandler(opts AuthenticationHandlerOptions) TokenProvider {
 	c.pkceConf = opts.PKCEConfig
 	return NewCachedTokenProvider(&tokenProviderWithHandler{c: c, handler: opts.AuthorizationHandler, state: opts.State}, &CachedTokenProviderOptions{
 		ExpireEarly: c.EarlyTokenExpiry,
@@ -236,10 +238,10 @@ func (tp tokenProviderWithHandler) Token(ctx context.Context) (*Token, error) {
 // fetchToken returns a Token, refresh token, and/or an error.
 func fetchToken(ctx context.Context, c *Config3LO, v url.Values) (*Token, string, error) {
 	var refreshToken string
-	if c.AuthStyle == AuthStyleUnknown {
+	if c.AuthStyle == StyleUnknown {
 		return nil, refreshToken, fmt.Errorf("auth: missing required field AuthStyle")
 	}
-	if c.AuthStyle == AuthStyleInParams {
+	if c.AuthStyle == StyleInParams {
 		if c.ClientID != "" {
 			v.Set("client_id", c.ClientID)
 		}
@@ -252,7 +254,7 @@ func fetchToken(ctx context.Context, c *Config3LO, v url.Values) (*Token, string
 		return nil, refreshToken, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	if c.AuthStyle == AuthStyleInHeader {
+	if c.AuthStyle == StyleInHeader {
 		req.SetBasicAuth(url.QueryEscape(c.ClientID), url.QueryEscape(c.ClientSecret))
 	}
 

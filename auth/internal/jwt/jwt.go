@@ -29,11 +29,15 @@ import (
 )
 
 const (
+	// HeaderAlgRSA256 is the RS256 [Header.Algorithm].
 	HeaderAlgRSA256 = "RS256"
-	HeaderAlgES256  = "ES256"
-	HeaderType      = "JWT"
+	// HeaderAlgES256 is the ES256 [Header.Algorithm].
+	HeaderAlgES256 = "ES256"
+	// HeaderType is the standard [Header.Type].
+	HeaderType = "JWT"
 )
 
+// Header represents a JWT header.
 type Header struct {
 	Algorithm string `json:"alg"`
 	Type      string `json:"typ"`
@@ -48,6 +52,7 @@ func (h *Header) encode() (string, error) {
 	return base64.RawURLEncoding.EncodeToString(b), nil
 }
 
+// Claims represents the claims set of a JWT.
 type Claims struct {
 	// Iss is the issuer JWT claim.
 	Iss string `json:"iss"`
