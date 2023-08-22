@@ -1057,5 +1057,49 @@ func (aq *AggregationQuery) WithCount(alias string) *AggregationQuery {
 	return aq
 }
 
+// WithSum specifies that the aggregation query should provide a sum of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Datastore entity property name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Datastore
+// will autogenerate a key.
+func (aq *AggregationQuery) WithSum(fieldName string, alias string) *AggregationQuery {
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.AggregationQuery_Aggregation_Sum_{
+			Sum: &pb.AggregationQuery_Aggregation_Sum{
+				Property: &pb.PropertyReference{
+					Name: fieldName,
+				},
+			},
+		},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// WithAvg specifies that the aggregation query should provide an average of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Datastore entity property name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Datastore
+// will autogenerate a key.
+func (aq *AggregationQuery) WithAvg(fieldName string, alias string) *AggregationQuery {
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.AggregationQuery_Aggregation_Avg_{
+			Avg: &pb.AggregationQuery_Aggregation_Avg{
+				Property: &pb.PropertyReference{
+					Name: fieldName,
+				},
+			},
+		},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
 // AggregationResult contains the results of an aggregation query.
 type AggregationResult map[string]interface{}
