@@ -27,16 +27,8 @@ import (
 
 const day = 24 * time.Hour
 
-type mockTransport struct {
-	rt func(req *http.Request) (resp *http.Response, err error)
-}
-
-func (t *mockTransport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
-	return t.rt(req)
-}
-
-func newConf(url string) *Config3LO {
-	return &Config3LO{
+func newOpts(url string) *Options3LO {
+	return &Options3LO{
 		ClientID:     "CLIENT_ID",
 		ClientSecret: "CLIENT_SECRET",
 		RedirectURL:  "REDIRECT_URL",
@@ -57,7 +49,7 @@ func TestConfig3LO_URLUnsafe(t *testing.T) {
 		w.Write([]byte("access_token=90d64460d14870c08c81352a05dedd3465940a7c&scope=user&token_type=bearer"))
 	}))
 	defer ts.Close()
-	conf := newConf(ts.URL)
+	conf := newOpts(ts.URL)
 	conf.ClientID = "CLIENT_ID??"
 	conf.ClientSecret = "CLIENT_SECRET??"
 	_, _, err := conf.exchange(context.Background(), "exchange-code")
@@ -90,7 +82,7 @@ func TestConfig3LO_StandardExchange(t *testing.T) {
 		w.Write([]byte("access_token=90d64460d14870c08c81352a05dedd3465940a7c&scope=user&token_type=bearer"))
 	}))
 	defer ts.Close()
-	conf := newConf(ts.URL)
+	conf := newOpts(ts.URL)
 	tok, _, err := conf.exchange(context.Background(), "exchange-code")
 	if err != nil {
 		t.Error(err)
@@ -134,7 +126,7 @@ func TestConfig3LO_ExchangeCustomParams(t *testing.T) {
 		w.Write([]byte("access_token=90d64460d14870c08c81352a05dedd3465940a7c&scope=user&token_type=bearer"))
 	}))
 	defer ts.Close()
-	conf := newConf(ts.URL)
+	conf := newOpts(ts.URL)
 	conf.URLParams = url.Values{}
 	conf.URLParams.Set("foo", "bar")
 
@@ -181,7 +173,7 @@ func TestConfig3LO_ExchangeJSONResponse(t *testing.T) {
 		w.Write([]byte(`{"access_token": "90d64460d14870c08c81352a05dedd3465940a7c", "scope": "user", "token_type": "bearer", "expires_in": 86400}`))
 	}))
 	defer ts.Close()
-	conf := newConf(ts.URL)
+	conf := newOpts(ts.URL)
 	tok, _, err := conf.exchange(context.Background(), "exchange-code")
 	if err != nil {
 		t.Error(err)
@@ -231,7 +223,7 @@ func testConfig3LOExchangeJSONResponseExpiry(t *testing.T, exp string, want, nul
 		w.Write([]byte(fmt.Sprintf(`{"access_token": "90d", "scope": "user", "token_type": "bearer", %s}`, exp)))
 	}))
 	defer ts.Close()
-	conf := newConf(ts.URL)
+	conf := newOpts(ts.URL)
 	t1 := time.Now().Add(day)
 	tok, _, err := conf.exchange(context.Background(), "exchange-code")
 	t2 := t1.Add(day)
@@ -265,7 +257,7 @@ func TestConfig3LO_ExchangeBadResponse(t *testing.T) {
 		w.Write([]byte(`{"scope": "user", "token_type": "bearer"}`))
 	}))
 	defer ts.Close()
-	conf := newConf(ts.URL)
+	conf := newOpts(ts.URL)
 	_, _, err := conf.exchange(context.Background(), "code")
 	if err == nil {
 		t.Error("expected error from missing access_token")
@@ -278,7 +270,7 @@ func TestConfig3LO_ExchangeBadResponseType(t *testing.T) {
 		w.Write([]byte(`{"access_token":123,  "scope": "user", "token_type": "bearer"}`))
 	}))
 	defer ts.Close()
-	conf := newConf(ts.URL)
+	conf := newOpts(ts.URL)
 	_, _, err := conf.exchange(context.Background(), "exchange-code")
 	if err == nil {
 		t.Error("expected error from non-string access_token")
@@ -289,14 +281,15 @@ func TestConfig3LO_RefreshTokenReplacement(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"access_token":"ACCESS_TOKEN",  "scope": "user", "token_type": "bearer", "refresh_token": "NEW_REFRESH_TOKEN"}`))
-		return
 	}))
 	defer ts.Close()
-	conf := newConf(ts.URL)
+	opts := newOpts(ts.URL)
 	const oldRefreshToken = "OLD_REFRESH_TOKEN"
-	tp := conf.TokenProvider(oldRefreshToken)
-	_, err := tp.Token(context.Background())
+	tp, err := New3LOTokenProvider(oldRefreshToken, opts)
 	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := tp.Token(context.Background()); err != nil {
 		t.Errorf("got err = %v; want none", err)
 		return
 	}
@@ -310,15 +303,17 @@ func TestConfig3LO_RefreshTokenPreservation(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"access_token":"ACCESS_TOKEN",  "scope": "user", "token_type": "bearer"}`))
-		return
 	}))
 	defer ts.Close()
-	conf := newConf(ts.URL)
+	opts := newOpts(ts.URL)
 	const oldRefreshToken = "OLD_REFRESH_TOKEN"
-	tp := conf.TokenProvider(oldRefreshToken)
-	_, err := tp.Token(context.Background())
+	tp, err := New3LOTokenProvider(oldRefreshToken, opts)
 	if err != nil {
-		t.Fatalf("got err = %v; want none", err)
+		t.Fatal(err)
+	}
+	if _, err := tp.Token(context.Background()); err != nil {
+		t.Errorf("got err = %v; want none", err)
+		return
 	}
 	innerTP := tp.(*cachedTokenProvider).tp.(*tokenProvider3LO)
 	if innerTP.refreshToken != oldRefreshToken {
@@ -348,18 +343,23 @@ func TestConfig3LO_AuthHandlerExchangeSuccess(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	conf := &Config3LO{
+	opts := &Options3LO{
 		ClientID:  "testClientID",
 		Scopes:    []string{"pubsub"},
 		AuthURL:   "testAuthCodeURL",
 		TokenURL:  ts.URL,
 		AuthStyle: StyleInHeader,
+		AuthHandlerOpts: &AuthorizationHandlerOptions{
+			State:   "testState",
+			Handler: authhandler,
+		},
 	}
 
-	tok, err := conf.TokenProviderWithAuthHandler(AuthenticationHandlerOptions{
-		State:                "testState",
-		AuthorizationHandler: authhandler,
-	}).Token(context.Background())
+	tp, err := New3LOTokenProvider("", opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tok, err := tp.Token(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -397,17 +397,21 @@ func TestConfig3LO_AuthHandlerExchangeStateMismatch(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	conf := &Config3LO{
+	opts := &Options3LO{
 		ClientID: "testClientID",
 		Scopes:   []string{"pubsub"},
 		AuthURL:  "testAuthCodeURL",
 		TokenURL: ts.URL,
+		AuthHandlerOpts: &AuthorizationHandlerOptions{
+			State:   "testState",
+			Handler: authhandler,
+		},
 	}
-
-	_, err := conf.TokenProviderWithAuthHandler(AuthenticationHandlerOptions{
-		State:                "testState",
-		AuthorizationHandler: authhandler,
-	}).Token(context.Background())
+	tp, err := New3LOTokenProvider("", opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = tp.Token(context.Background())
 	if wantErr := "auth: state mismatch in 3-legged-OAuth flow"; err == nil || err.Error() != wantErr {
 		t.Errorf("err = %q; want %q", err, wantErr)
 	}
@@ -435,24 +439,28 @@ func TestConfig3LO_PKCEExchangeWithSuccess(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	conf := &Config3LO{
+	opts := &Options3LO{
 		ClientID:  "testClientID",
 		Scopes:    []string{"pubsub"},
 		AuthURL:   "testAuthCodeURL",
 		TokenURL:  ts.URL,
 		AuthStyle: StyleInParams,
-	}
-	pkce := PKCEConfig{
-		Challenge:       "codeChallenge",
-		ChallengeMethod: "plain",
-		Verifier:        "codeChallenge",
+		AuthHandlerOpts: &AuthorizationHandlerOptions{
+			State:   "testState",
+			Handler: authhandler,
+			PKCEConfig: &PKCEConfig{
+				Challenge:       "codeChallenge",
+				ChallengeMethod: "plain",
+				Verifier:        "codeChallenge",
+			},
+		},
 	}
 
-	tok, err := conf.TokenProviderWithAuthHandler(AuthenticationHandlerOptions{
-		State:                "testState",
-		AuthorizationHandler: authhandler,
-		PKCEConfig:           &pkce,
-	}).Token(context.Background())
+	tp, err := New3LOTokenProvider("", opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tok, err := tp.Token(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}

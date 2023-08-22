@@ -36,8 +36,8 @@ import (
 // state upon approval.
 type AuthorizationHandler func(authCodeURL string) (code string, state string, err error)
 
-// Config3LO is the configuration settings for doing a 3-legged OAuth2 flow.
-type Config3LO struct {
+// Options3LO are the options for doing a 3-legged OAuth2 flow.
+type Options3LO struct {
 	// ClientID is the application's ID.
 	ClientID string
 	// ClientSecret is the application's secret.
@@ -62,7 +62,9 @@ type Config3LO struct {
 	// refreshed. If not set the default value is 10 seconds. Optional.
 	EarlyTokenExpiry time.Duration
 
-	pkceConf *PKCEConfig
+	// AuthHandlerOpts provides a set of options for doing a
+	// 3-legged OAuth2 flow with a custom [AuthorizationHandler]. Optional.
+	AuthHandlerOpts *AuthorizationHandlerOptions
 }
 
 // PKCEConfig holds parameters to support PKCE.
@@ -93,7 +95,7 @@ func (e *tokenJSON) expiry() (t time.Time) {
 	return
 }
 
-func (c *Config3LO) client() *http.Client {
+func (c *Options3LO) client() *http.Client {
 	if c.Client != nil {
 		return c.Client
 	}
@@ -101,7 +103,7 @@ func (c *Config3LO) client() *http.Client {
 }
 
 // authCodeURL returns a URL that points to a OAuth2 consent page.
-func (c *Config3LO) authCodeURL(state string, values url.Values) string {
+func (c *Options3LO) authCodeURL(state string, values url.Values) string {
 	var buf bytes.Buffer
 	buf.WriteString(c.AuthURL)
 	v := url.Values{
@@ -117,11 +119,15 @@ func (c *Config3LO) authCodeURL(state string, values url.Values) string {
 	if state != "" {
 		v.Set("state", state)
 	}
-	if c.pkceConf != nil && c.pkceConf.Challenge != "" && c.pkceConf.ChallengeMethod != "" {
-		v.Set(codeChallengeKey, c.pkceConf.Challenge)
-	}
-	if c.pkceConf != nil && c.pkceConf.ChallengeMethod != "" {
-		v.Set(codeChallengeMethodKey, c.pkceConf.ChallengeMethod)
+	if c.AuthHandlerOpts != nil {
+		if c.AuthHandlerOpts.PKCEConfig != nil &&
+			c.AuthHandlerOpts.PKCEConfig.Challenge != "" {
+			v.Set(codeChallengeKey, c.AuthHandlerOpts.PKCEConfig.Challenge)
+		}
+		if c.AuthHandlerOpts.PKCEConfig != nil &&
+			c.AuthHandlerOpts.PKCEConfig.ChallengeMethod != "" {
+			v.Set(codeChallengeMethodKey, c.AuthHandlerOpts.PKCEConfig.ChallengeMethod)
+		}
 	}
 	for k := range values {
 		v.Set(k, v.Get(k))
@@ -135,21 +141,25 @@ func (c *Config3LO) authCodeURL(state string, values url.Values) string {
 	return buf.String()
 }
 
-// TokenProvider returns a TokenProvider based on the 3-legged OAuth2
+// New3LOTokenProvider returns a [TokenProvider] based on the 3-legged OAuth2
 // configuration. The TokenProvider is caches and auto-refreshes tokens by
 // default.
-func (c *Config3LO) TokenProvider(refreshToken string) TokenProvider {
-	return NewCachedTokenProvider(&tokenProvider3LO{config: c, refreshToken: refreshToken, client: c.client()}, &CachedTokenProviderOptions{
-		ExpireEarly: c.EarlyTokenExpiry,
-	})
+func New3LOTokenProvider(refreshToken string, opts *Options3LO) (TokenProvider, error) {
+	if opts.AuthHandlerOpts != nil {
+		return new3LOTokenProviderWithAuthHandler(opts), nil
+	}
+	// TODO(codyoss): validate the things
+	return NewCachedTokenProvider(&tokenProvider3LO{opts: opts, refreshToken: refreshToken, client: opts.client()}, &CachedTokenProviderOptions{
+		ExpireEarly: opts.EarlyTokenExpiry,
+	}), nil
 }
 
-// AuthenticationHandlerOptions provides a set of options to specify for doing a
+// AuthorizationHandlerOptions provides a set of options to specify for doing a
 // 3-legged OAuth2 flow with a custom [AuthorizationHandler].
-type AuthenticationHandlerOptions struct {
+type AuthorizationHandlerOptions struct {
 	// AuthorizationHandler specifies the handler used to for the authorization
 	// part of the flow.
-	AuthorizationHandler AuthorizationHandler
+	Handler AuthorizationHandler
 	// State is used verify that the "state" is identical in the request and
 	// response before exchanging the auth code for OAuth2 token.
 	State string
@@ -157,18 +167,15 @@ type AuthenticationHandlerOptions struct {
 	PKCEConfig *PKCEConfig
 }
 
-// TokenProviderWithAuthHandler returns a [TokenProvider] based on the 3-legged
-// OAuth2 configuration and authentication handler options.
-func (c *Config3LO) TokenProviderWithAuthHandler(opts AuthenticationHandlerOptions) TokenProvider {
-	c.pkceConf = opts.PKCEConfig
-	return NewCachedTokenProvider(&tokenProviderWithHandler{c: c, handler: opts.AuthorizationHandler, state: opts.State}, &CachedTokenProviderOptions{
-		ExpireEarly: c.EarlyTokenExpiry,
+func new3LOTokenProviderWithAuthHandler(opts *Options3LO) TokenProvider {
+	return NewCachedTokenProvider(&tokenProviderWithHandler{opts: opts, state: opts.AuthHandlerOpts.State}, &CachedTokenProviderOptions{
+		ExpireEarly: opts.EarlyTokenExpiry,
 	})
 }
 
 // exchange handles the final exchange portion of the 3lo flow. Returns a Token,
 // refreshToken, and error.
-func (c *Config3LO) exchange(ctx context.Context, code string) (*Token, string, error) {
+func (c *Options3LO) exchange(ctx context.Context, code string) (*Token, string, error) {
 	// Build request
 	v := url.Values{
 		"grant_type": {"authorization_code"},
@@ -177,8 +184,10 @@ func (c *Config3LO) exchange(ctx context.Context, code string) (*Token, string, 
 	if c.RedirectURL != "" {
 		v.Set("redirect_uri", c.RedirectURL)
 	}
-	if c.pkceConf != nil && c.pkceConf.Verifier != "" {
-		v.Set(codeVerifierKey, c.pkceConf.Verifier)
+	if c.AuthHandlerOpts != nil &&
+		c.AuthHandlerOpts.PKCEConfig != nil &&
+		c.AuthHandlerOpts.PKCEConfig.Verifier != "" {
+		v.Set(codeVerifierKey, c.AuthHandlerOpts.PKCEConfig.Verifier)
 	}
 	for k := range c.URLParams {
 		v.Set(k, c.URLParams.Get(k))
@@ -189,7 +198,7 @@ func (c *Config3LO) exchange(ctx context.Context, code string) (*Token, string, 
 // This struct is not safe for concurrent access alone, but the way it is used
 // in this package by wrapping it with a cachedTokenProvider makes it so.
 type tokenProvider3LO struct {
-	config       *Config3LO
+	opts         *Options3LO
 	client       *http.Client
 	refreshToken string
 }
@@ -202,11 +211,11 @@ func (tp *tokenProvider3LO) Token(ctx context.Context) (*Token, error) {
 		"grant_type":    {"refresh_token"},
 		"refresh_token": {tp.refreshToken},
 	}
-	for k := range tp.config.URLParams {
-		v.Set(k, tp.config.URLParams.Get(k))
+	for k := range tp.opts.URLParams {
+		v.Set(k, tp.opts.URLParams.Get(k))
 	}
 
-	tk, rt, err := fetchToken(ctx, tp.config, v)
+	tk, rt, err := fetchToken(ctx, tp.opts, v)
 	if err != nil {
 		return nil, err
 	}
@@ -217,26 +226,25 @@ func (tp *tokenProvider3LO) Token(ctx context.Context) (*Token, error) {
 }
 
 type tokenProviderWithHandler struct {
-	c       *Config3LO
-	handler AuthorizationHandler
-	state   string
+	opts  *Options3LO
+	state string
 }
 
 func (tp tokenProviderWithHandler) Token(ctx context.Context) (*Token, error) {
-	url := tp.c.authCodeURL(tp.state, nil)
-	code, state, err := tp.handler(url)
+	url := tp.opts.authCodeURL(tp.state, nil)
+	code, state, err := tp.opts.AuthHandlerOpts.Handler(url)
 	if err != nil {
 		return nil, err
 	}
 	if state != tp.state {
 		return nil, errors.New("auth: state mismatch in 3-legged-OAuth flow")
 	}
-	tok, _, err := tp.c.exchange(ctx, code)
+	tok, _, err := tp.opts.exchange(ctx, code)
 	return tok, err
 }
 
 // fetchToken returns a Token, refresh token, and/or an error.
-func fetchToken(ctx context.Context, c *Config3LO, v url.Values) (*Token, string, error) {
+func fetchToken(ctx context.Context, c *Options3LO, v url.Values) (*Token, string, error) {
 	var refreshToken string
 	if c.AuthStyle == StyleUnknown {
 		return nil, refreshToken, fmt.Errorf("auth: missing required field AuthStyle")

@@ -214,8 +214,8 @@ const (
 	StyleInHeader Style = 2
 )
 
-// ConfigJWT2LO is the configuration settings for doing a 2-legged JWT OAuth2 flow.
-type ConfigJWT2LO struct {
+// Options2LO is the configuration settings for doing a 2-legged JWT OAuth2 flow.
+type Options2LO struct {
 	// Email is the OAuth2 client ID. This value is set as the "iss" in the
 	// JWT.
 	Email string
@@ -248,46 +248,46 @@ type ConfigJWT2LO struct {
 	UseIDToken bool
 }
 
-func (c *ConfigJWT2LO) client() *http.Client {
+func (c *Options2LO) client() *http.Client {
 	if c.Client != nil {
 		return c.Client
 	}
 	return internal.CloneDefaultClient()
 }
 
-// TokenProvider returns a [TokenProvider] based on the provided fields set on
-// [ConfigJWT2LO].
-func (c *ConfigJWT2LO) TokenProvider() TokenProvider {
-	return tokenProvider2LO{c: c, Client: c.client()}
+// New2LOTokenProvider returns a [TokenProvider] from the provided options.
+func New2LOTokenProvider(opts *Options2LO) (TokenProvider, error) {
+	// TODO(codyoss): add validation
+	return tokenProvider2LO{opts: opts, Client: opts.client()}, nil
 }
 
 type tokenProvider2LO struct {
-	c      *ConfigJWT2LO
+	opts   *Options2LO
 	Client *http.Client
 }
 
 func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
-	pk, err := internal.ParseKey(tp.c.PrivateKey)
+	pk, err := internal.ParseKey(tp.opts.PrivateKey)
 	if err != nil {
 		return nil, err
 	}
 	claimSet := &jwt.Claims{
-		Iss:              tp.c.Email,
-		Scope:            strings.Join(tp.c.Scopes, " "),
-		Aud:              tp.c.TokenURL,
-		AdditionalClaims: tp.c.PrivateClaims,
+		Iss:              tp.opts.Email,
+		Scope:            strings.Join(tp.opts.Scopes, " "),
+		Aud:              tp.opts.TokenURL,
+		AdditionalClaims: tp.opts.PrivateClaims,
 	}
-	if subject := tp.c.Subject; subject != "" {
+	if subject := tp.opts.Subject; subject != "" {
 		claimSet.Sub = subject
 	}
-	if t := tp.c.Expires; t > 0 {
+	if t := tp.opts.Expires; t > 0 {
 		claimSet.Exp = time.Now().Add(t).Unix()
 	}
-	if aud := tp.c.Audience; aud != "" {
+	if aud := tp.opts.Audience; aud != "" {
 		claimSet.Aud = aud
 	}
 	h := *defaultHeader
-	h.KeyID = tp.c.PrivateKeyID
+	h.KeyID = tp.opts.PrivateKeyID
 	payload, err := jwt.EncodeJWS(&h, claimSet, pk)
 	if err != nil {
 		return nil, err
@@ -295,7 +295,7 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 	v := url.Values{}
 	v.Set("grant_type", defaultGrantType)
 	v.Set("assertion", payload)
-	resp, err := tp.Client.PostForm(tp.c.TokenURL, v)
+	resp, err := tp.Client.PostForm(tp.opts.TokenURL, v)
 	if err != nil {
 		return nil, fmt.Errorf("auth: cannot fetch token: %w", err)
 	}
@@ -338,7 +338,7 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		}
 		token.Expiry = time.Unix(claimSet.Exp, 0)
 	}
-	if tp.c.UseIDToken {
+	if tp.opts.UseIDToken {
 		if tokenRes.IDToken == "" {
 			return nil, fmt.Errorf("auth: response doesn't have JWT token")
 		}

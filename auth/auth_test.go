@@ -190,12 +190,16 @@ func TestConfigJWT2LO_JSONResponse(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	conf := &ConfigJWT2LO{
+	opts := &Options2LO{
 		Email:      "aaa@xxx.com",
 		PrivateKey: fakePrivateKey,
 		TokenURL:   ts.URL,
 	}
-	tok, err := conf.TokenProvider().Token(context.Background())
+	tp, err := New2LOTokenProvider(opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tok, err := tp.Token(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -224,12 +228,16 @@ func TestConfigJWT2LO_BadResponse(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	conf := &ConfigJWT2LO{
+	opts := &Options2LO{
 		Email:      "aaa@xxx.com",
 		PrivateKey: fakePrivateKey,
 		TokenURL:   ts.URL,
 	}
-	tok, err := conf.TokenProvider().Token(context.Background())
+	tp, err := New2LOTokenProvider(opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tok, err := tp.Token(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -257,12 +265,16 @@ func TestConfigJWT2LO_BadResponseType(t *testing.T) {
 		w.Write([]byte(`{"access_token":123, "scope": "user", "token_type": "bearer"}`))
 	}))
 	defer ts.Close()
-	conf := &ConfigJWT2LO{
+	opts := &Options2LO{
 		Email:      "aaa@xxx.com",
 		PrivateKey: fakePrivateKey,
 		TokenURL:   ts.URL,
 	}
-	tok, err := conf.TokenProvider().Token(context.Background())
+	tp, err := New2LOTokenProvider(opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tok, err := tp.Token(context.Background())
 	if err == nil {
 		t.Error("got a token; expected error")
 		if got, want := tok.Value, ""; got != want {
@@ -287,14 +299,18 @@ func TestConfigJWT2LO_Assertion(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	conf := &ConfigJWT2LO{
+	opts := &Options2LO{
 		Email:        "aaa@xxx.com",
 		PrivateKey:   fakePrivateKey,
 		PrivateKeyID: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 		TokenURL:     ts.URL,
 	}
 
-	_, err := conf.TokenProvider().Token(context.Background())
+	tp, err := New2LOTokenProvider(opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = tp.Token(context.Background())
 	if err != nil {
 		t.Fatalf("Failed to fetch token: %v", err)
 	}
@@ -339,7 +355,7 @@ func TestConfigJWT2LO_AssertionPayload(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	for _, conf := range []*ConfigJWT2LO{
+	for _, opts := range []*Options2LO{
 		{
 			Email:        "aaa1@xxx.com",
 			PrivateKey:   fakePrivateKey,
@@ -364,8 +380,12 @@ func TestConfigJWT2LO_AssertionPayload(t *testing.T) {
 			},
 		},
 	} {
-		t.Run(conf.Email, func(t *testing.T) {
-			_, err := conf.TokenProvider().Token(context.Background())
+		t.Run(opts.Email, func(t *testing.T) {
+			tp, err := New2LOTokenProvider(opts)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = tp.Token(context.Background())
 			if err != nil {
 				t.Fatalf("Failed to fetch token: %v", err)
 			}
@@ -384,29 +404,29 @@ func TestConfigJWT2LO_AssertionPayload(t *testing.T) {
 				t.Errorf("failed to unmarshal json token payload = %q; err = %v", gotjson, err)
 			}
 
-			if got, want := claimSet.Iss, conf.Email; got != want {
+			if got, want := claimSet.Iss, opts.Email; got != want {
 				t.Errorf("payload email = %q; want %q", got, want)
 			}
-			if got, want := claimSet.Scope, strings.Join(conf.Scopes, " "); got != want {
+			if got, want := claimSet.Scope, strings.Join(opts.Scopes, " "); got != want {
 				t.Errorf("payload scope = %q; want %q", got, want)
 			}
-			aud := conf.TokenURL
-			if conf.Audience != "" {
-				aud = conf.Audience
+			aud := opts.TokenURL
+			if opts.Audience != "" {
+				aud = opts.Audience
 			}
 			if got, want := claimSet.Aud, aud; got != want {
 				t.Errorf("payload audience = %q; want %q", got, want)
 			}
-			if got, want := claimSet.Sub, conf.Subject; got != want {
+			if got, want := claimSet.Sub, opts.Subject; got != want {
 				t.Errorf("payload subject = %q; want %q", got, want)
 			}
-			if len(conf.PrivateClaims) > 0 {
+			if len(opts.PrivateClaims) > 0 {
 				var got interface{}
 				if err := json.Unmarshal(gotjson, &got); err != nil {
 					t.Errorf("failed to parse payload; err = %q", err)
 				}
 				m := got.(map[string]interface{})
-				for v, k := range conf.PrivateClaims {
+				for v, k := range opts.PrivateClaims {
 					if !reflect.DeepEqual(m[v], k) {
 						t.Errorf("payload private claims key = %q: got %#v; want %#v", v, m[v], k)
 					}
@@ -424,13 +444,17 @@ func TestConfigJWT2LO_TokenError(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	conf := &ConfigJWT2LO{
+	opts := &Options2LO{
 		Email:      "aaa@xxx.com",
 		PrivateKey: fakePrivateKey,
 		TokenURL:   ts.URL,
 	}
 
-	_, err := conf.TokenProvider().Token(context.Background())
+	tp, err := New2LOTokenProvider(opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = tp.Token(context.Background())
 	if err == nil {
 		t.Fatalf("got no error, expected one")
 	}

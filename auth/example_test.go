@@ -18,10 +18,10 @@ import (
 	"cloud.google.com/go/auth"
 )
 
-func ExampleConfigJWT2LO() {
+func ExampleNew2LOTokenProvider() {
 	// Your credentials should be obtained from the Google
 	// Developer Console (https://console.developers.google.com).
-	conf := &auth.ConfigJWT2LO{
+	opts := &auth.Options2LO{
 		Email: "xxx@developer.gserviceaccount.com",
 		// The contents of your RSA private key or your PEM file
 		// that contains a private key.
@@ -45,7 +45,10 @@ func ExampleConfigJWT2LO() {
 		Subject: "user@example.com",
 	}
 
-	tp := conf.TokenProvider()
+	tp, err := auth.New2LOTokenProvider(opts)
+	if err != nil {
+		// handler error
+	}
 	// TODO(codyoss): Fixup once more code is merged
 	// client, err := httptransport.NewClient(&httptransport.Options{
 	// 	TokenProvider: tp,
