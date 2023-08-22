@@ -556,7 +556,9 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		)
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 			//  retry with explicit begin transaction
-			t.setTransactionID(nil)
+			if t != nil {
+				t.setTransactionID(nil)
+			}
 			// Session handle hasn't been allocated or has been destroyed.
 			sh, err = c.idleSessions.take(ctx)
 			if err != nil {
