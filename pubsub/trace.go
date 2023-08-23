@@ -16,6 +16,7 @@ package pubsub
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"sync"
 
@@ -309,13 +310,26 @@ const (
 	// span names
 	publisherSpanName          = "send"
 	publishFlowControlSpanName = "publisher flow control"
-	publishSchedulerSpanName   = "publish scheduler"
+	publishBatcherSpanName     = "publish batcher"
 	publishRPCSpanName         = "publish"
 
 	// custom pubsub specific attributes
 	numBatchedMessagesAttribute = "messaging.pubsub.num_messages_in_batch"
 	orderingAttribute           = "messaging.pubsub.ordering_key"
 )
+
+func startPublishSpan(ctx context.Context, m *Message, topicName string) (context.Context, trace.Span) {
+	opts := getPublishSpanAttributes(topicName, m)
+	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicName, publisherSpanName), opts...)
+}
+
+func startPublishFlowControlSpan(ctx context.Context) (context.Context, trace.Span) {
+	return tracer().Start(ctx, publishFlowControlSpanName)
+}
+
+func startBatcherSpan(ctx context.Context) (context.Context, trace.Span) {
+	return tracer().Start(ctx, publishBatcherSpanName)
+}
 
 func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
 	// TODO(hongalex): benchmark this to make sure no significant performance degradation
@@ -341,6 +355,20 @@ func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyV
 	return ss
 }
 
+// injectPropagation injects context data into the Pub/Sub message's Attributes field.
+func injectPropagation(ctx context.Context, msg *Message) {
+	// only inject propagation if a valid span context was detected.
+	if trace.SpanFromContext(ctx).SpanContext().IsValid() {
+		if msg.Attributes == nil {
+			msg.Attributes = make(map[string]string)
+		}
+		otel.GetTextMapPropagator().Inject(ctx, newMessageCarrier(msg))
+	}
+}
+
+// spanRecordError records the error, sets the status to error, and ends the span.
+// This is recommended by https://opentelemetry.io/docs/instrumentation/go/manual/#record-errors
+// since RecordError doesn't set the status of a span.
 func spanRecordError(span trace.Span, err error) {
 	span.RecordError(err)
 	span.SetStatus(otelcodes.Error, err.Error())

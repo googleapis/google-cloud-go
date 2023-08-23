@@ -572,8 +572,7 @@ var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, 
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
-	opts := getPublishSpanAttributes(t.String(), msg)
-	ctx, span := tracer().Start(ctx, fmt.Sprintf("%s %s", t.String(), publisherSpanName), opts...)
+	ctx, publishSpan := startPublishSpan(ctx, msg, t.String())
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
@@ -582,7 +581,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errTopicOrderingNotEnabled)
-		spanRecordError(span, errTopicOrderingNotEnabled)
+		spanRecordError(publishSpan, errTopicOrderingNotEnabled)
 		return r
 	}
 
@@ -593,7 +592,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		Attributes:  msg.Attributes,
 		OrderingKey: msg.OrderingKey,
 	})
-	span.SetAttributes(semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize))
+	publishSpan.SetAttributes(semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize))
 
 	t.initBundler()
 	t.mu.RLock()
@@ -601,41 +600,36 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
 		ipubsub.SetPublishResult(r, "", ErrTopicStopped)
-		spanRecordError(span, ErrTopicStopped)
+		spanRecordError(publishSpan, ErrTopicStopped)
 		return r
 	}
 
-	ctx2, fcSpan := tracer().Start(ctx, publishFlowControlSpanName)
+	ctx2, fcSpan := startPublishFlowControlSpan(ctx)
 	if err := t.flowController.acquire(ctx2, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
-		spanRecordError(span, err)
+		spanRecordError(fcSpan, err)
 		return r
 	}
 	fcSpan.End()
 
-	_, batchSpan := tracer().Start(ctx2, publishSchedulerSpanName)
+	_, batcherSpan := startBatcherSpan(ctx)
 
 	bmsg := &bundledMessage{
-		msg:       msg,
-		res:       r,
-		size:      msgSize,
-		span:      span,
-		batchSpan: batchSpan,
+		msg:         msg,
+		res:         r,
+		size:        msgSize,
+		span:        publishSpan,
+		batcherSpan: batcherSpan,
 	}
 
-	if span.SpanContext().IsValid() {
-		if msg.Attributes == nil {
-			msg.Attributes = make(map[string]string)
-		}
-		// Inject the context from the first publish span rather than from flow control / batching.
-		otel.GetTextMapPropagator().Inject(ctx, newMessageCarrier(msg))
-	}
+	// Inject the context from the first publish span rather than from flow control / batching.
+	injectPropagation(ctx, msg)
 
 	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
-		spanRecordError(span, err)
+		spanRecordError(publishSpan, err)
 	}
 
 	return r
@@ -669,8 +663,8 @@ type bundledMessage struct {
 	size int
 	// span is the entire publish span (from user calling Publish to the publish RPC resolving).
 	span trace.Span
-	// batchSpan traces the message batching operation in publish scheduler.
-	batchSpan trace.Span
+	// batcherSpan traces the message batching operation in publish scheduler.
+	batcherSpan trace.Span
 }
 
 func (t *Topic) initBundler() {
@@ -707,7 +701,7 @@ func (t *Topic) initBundler() {
 		}
 		bmsgs := bundle.([]*bundledMessage)
 		for _, m := range bmsgs {
-			m.batchSpan.End()
+			m.batcherSpan.End()
 		}
 		t.publishMessageBundle(ctx2, bmsgs)
 	})
