@@ -861,7 +861,7 @@ func TestIntegration_TransactionWasStartedInDifferentSession(t *testing.T) {
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
 		attempts++
 		if attempts == 1 {
-			deleteTestSession(ctx, t, client, transaction.sh.getID())
+			deleteTestSession(ctx, t, transaction.sh.getID())
 		}
 		if _, err := readAll(transaction.Query(ctx, NewStatement("select * from singers"))); err != nil {
 			return err
@@ -876,8 +876,7 @@ func TestIntegration_TransactionWasStartedInDifferentSession(t *testing.T) {
 	}
 }
 
-
-func deleteTestSession(ctx context.Context, t *testing.T, client *Client, sessionName string) {
+func deleteTestSession(ctx context.Context, t *testing.T, sessionName string) {
 	var opts []option.ClientOption
 	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
 		emulatorOpts := []option.ClientOption{
@@ -892,43 +891,9 @@ func deleteTestSession(ctx context.Context, t *testing.T, client *Client, sessio
 	if err != nil {
 		t.Fatalf("could not create gapic client: %v", err)
 	}
+	defer gapic.Close()
 	if err := gapic.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: sessionName}); err != nil {
 		t.Fatal(err)
-	}
-}
-
-func deleteAllSessions(ctx context.Context, t *testing.T, client *Client) {
-	var opts []option.ClientOption
-	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
-		emulatorOpts := []option.ClientOption{
-			option.WithEndpoint(emulatorAddr),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
-			option.WithoutAuthentication(),
-			internaloption.SkipDialSettingsValidation(),
-		}
-		opts = append(emulatorOpts, opts...)
-	}
-	gapic, err := v1.NewClient(ctx, opts...)
-	if err != nil {
-		t.Fatalf("could not create gapic client: %v", err)
-	}
-	deleted := 0
-	iter := gapic.ListSessions(ctx, &sppb.ListSessionsRequest{Database: client.DatabaseName()})
-	for {
-		session, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		if err := gapic.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: session.Name}); err != nil {
-			t.Fatal(err)
-		}
-		deleted++
-	}
-	if g, w := deleted, 100; g != w {
-		t.Fatalf("deleted session count mismatch\nGot:  %v\nWant: %v", g, w)
 	}
 }
 
