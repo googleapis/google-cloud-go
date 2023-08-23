@@ -29,14 +29,12 @@ import (
 )
 
 type localConfig struct {
-	googleapisDir   string
-	genprotoDir     string
-	protoDir        string
-	gapicToGenerate string
-	onlyGapics      bool
-	regenOnly       bool
-	forceAll        bool
-	genAlias        bool
+	googleapisDir string
+	genprotoDir   string
+	protoDir      string
+	regenOnly     bool
+	forceAll      bool
+	genAlias      bool
 }
 
 func genLocal(ctx context.Context, c localConfig) error {
@@ -61,19 +59,16 @@ func genLocal(ctx context.Context, c localConfig) error {
 
 	// Regen.
 	conf := &generator.Config{
-		GoogleapisDir:     defaultDir(tmpGoogleapisDir, c.googleapisDir),
-		GenprotoDir:       defaultDir(tmpGenprotoDir, c.genprotoDir),
-		ProtoDir:          defaultDir(tmpProtoDir, c.protoDir),
-		GapicToGenerate:   c.gapicToGenerate,
-		OnlyGenerateGapic: c.onlyGapics,
-		LocalMode:         true,
-		RegenOnly:         c.regenOnly,
-		ForceAll:          c.forceAll,
-		GenAlias:          c.genAlias,
+		GoogleapisDir: defaultDir(tmpGoogleapisDir, c.googleapisDir),
+		GenprotoDir:   defaultDir(tmpGenprotoDir, c.genprotoDir),
+		ProtoDir:      defaultDir(tmpProtoDir, c.protoDir),
+		LocalMode:     true,
+		RegenOnly:     c.regenOnly,
+		ForceAll:      c.forceAll,
+		GenAlias:      c.genAlias,
 	}
 	if _, err := generator.Generate(ctx, conf); err != nil {
-		log.Printf("Generator ran (and failed) in %s\n", tmpDir)
-		log.Fatal(err)
+		return err
 	}
 	return nil
 }

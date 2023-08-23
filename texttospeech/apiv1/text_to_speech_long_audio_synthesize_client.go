@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -37,7 +37,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -62,13 +61,17 @@ func defaultTextToSpeechLongAudioSynthesizeGRPCClientOptions() []option.ClientOp
 
 func defaultTextToSpeechLongAudioSynthesizeCallOptions() *TextToSpeechLongAudioSynthesizeCallOptions {
 	return &TextToSpeechLongAudioSynthesizeCallOptions{
-		SynthesizeLongAudio: []gax.CallOption{},
+		SynthesizeLongAudio: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultTextToSpeechLongAudioSynthesizeRESTCallOptions() *TextToSpeechLongAudioSynthesizeCallOptions {
 	return &TextToSpeechLongAudioSynthesizeCallOptions{
-		SynthesizeLongAudio: []gax.CallOption{},
+		SynthesizeLongAudio: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
+		},
 	}
 }
 
@@ -139,9 +142,6 @@ type textToSpeechLongAudioSynthesizeGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing TextToSpeechLongAudioSynthesizeClient
 	CallOptions **TextToSpeechLongAudioSynthesizeCallOptions
 
@@ -154,7 +154,7 @@ type textToSpeechLongAudioSynthesizeGRPCClient struct {
 	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewTextToSpeechLongAudioSynthesizeClient creates a new text to speech long audio synthesize client based on gRPC.
@@ -171,11 +171,6 @@ func NewTextToSpeechLongAudioSynthesizeClient(ctx context.Context, opts ...optio
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -184,7 +179,6 @@ func NewTextToSpeechLongAudioSynthesizeClient(ctx context.Context, opts ...optio
 
 	c := &textToSpeechLongAudioSynthesizeGRPCClient{
 		connPool:                              connPool,
-		disableDeadlines:                      disableDeadlines,
 		textToSpeechLongAudioSynthesizeClient: texttospeechpb.NewTextToSpeechLongAudioSynthesizeClient(connPool),
 		CallOptions:                           &client.CallOptions,
 	}
@@ -218,9 +212,9 @@ func (c *textToSpeechLongAudioSynthesizeGRPCClient) Connection() *grpc.ClientCon
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *textToSpeechLongAudioSynthesizeGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -242,8 +236,8 @@ type textToSpeechLongAudioSynthesizeRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing TextToSpeechLongAudioSynthesizeClient
 	CallOptions **TextToSpeechLongAudioSynthesizeCallOptions
@@ -293,9 +287,9 @@ func defaultTextToSpeechLongAudioSynthesizeRESTClientOptions() []option.ClientOp
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *textToSpeechLongAudioSynthesizeRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -313,14 +307,10 @@ func (c *textToSpeechLongAudioSynthesizeRESTClient) Connection() *grpc.ClientCon
 	return nil
 }
 func (c *textToSpeechLongAudioSynthesizeGRPCClient) SynthesizeLongAudio(ctx context.Context, req *texttospeechpb.SynthesizeLongAudioRequest, opts ...gax.CallOption) (*SynthesizeLongAudioOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SynthesizeLongAudio[0:len((*c.CallOptions).SynthesizeLongAudio):len((*c.CallOptions).SynthesizeLongAudio)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -356,9 +346,11 @@ func (c *textToSpeechLongAudioSynthesizeRESTClient) SynthesizeLongAudio(ctx cont
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -382,13 +374,13 @@ func (c *textToSpeechLongAudioSynthesizeRESTClient) SynthesizeLongAudio(ctx cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

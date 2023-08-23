@@ -209,6 +209,19 @@ In support of the retry changes, the AppendResult returned as part of an append 
 TotalAttempts(), which returns the number of times that specific append was enqueued to the service.
 Values larger than 1 are indicative of a specific append being enqueued multiple times.
 
+# Usage of Contexts
+
+The underlying rpc mechanism used to transmit requests and responses between this client and
+the service uses a gRPC bidirectional streaming protocol, and the context provided when invoking
+NewClient to instantiate the client is used to maintain those background connections.
+
+This package also exposes context when instantiating a new writer (NewManagedStream), as well as
+allowing a per-request context when invoking the AppendRows function to send a set of rows.  If the
+context becomes invalid on the writer all subsequent AppendRows requests will be blocked.
+
+Finally, there is a per-request context supplied as part of the AppendRows call on the ManagedStream
+writer itself, useful for bounding individual requests.
+
 # Connection Sharing (Multiplexing)
 
 Note: This feature is EXPERIMENTAL and subject to change.
@@ -240,8 +253,14 @@ To enable multiplexing for writes to default streams, simply instantiate the cli
 		// TODO: Handle error.
 	}
 
-Special Consideration:  Users who would like to utilize many connections associated with a single Client
-may benefit from setting the WithGRPCConnectionPool ClientOption, documented here:
+Special Consideration:  The gRPC architecture is capable of its own sharing of underlying HTTP/2 connections.
+For users who are sending significant traffic on multiple writers (independent of whether they're leveraging
+multiplexing or not) may also wish to consider further tuning of this behavior.  The managedwriter library
+sets a reasonable default, but this can be tuned further by leveraging the WithGRPCConnectionPool ClientOption,
+documented here:
 https://pkg.go.dev/google.golang.org/api/option#WithGRPCConnectionPool
+
+A reasonable upper bound for the connection pool size is the number of concurrent writers for explicit stream
+plus the configured size of the multiplex pool.
 */
 package managedwriter

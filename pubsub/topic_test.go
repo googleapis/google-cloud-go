@@ -17,6 +17,7 @@ package pubsub
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -167,8 +168,8 @@ func TestStopPublishOrder(t *testing.T) {
 	topic.Stop()
 	r := topic.Publish(ctx, &Message{})
 	_, err := r.Get(ctx)
-	if err != errTopicStopped {
-		t.Errorf("got %v, want errTopicStopped", err)
+	if !errors.Is(err, ErrTopicStopped) {
+		t.Errorf("got %v, want ErrTopicStopped", err)
 	}
 }
 
@@ -341,8 +342,8 @@ func TestUpdateTopic_SchemaSettings(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !testutil.Equal(config3.SchemaSettings, settings, opt) {
-		t.Errorf("\ngot  %+v\nwant %+v", config3.SchemaSettings, settings)
+	if config3.SchemaSettings != nil {
+		t.Errorf("got: %+v, want nil", config3.SchemaSettings)
 	}
 }
 
@@ -460,8 +461,8 @@ func TestFlushStopTopic(t *testing.T) {
 	r5 := topic.Publish(ctx, &Message{
 		Data: []byte("this should fail"),
 	})
-	if _, err := r5.Get(ctx); err != errTopicStopped {
-		t.Errorf("got %v, want errTopicStopped", err)
+	if _, err := r5.Get(ctx); !errors.Is(err, ErrTopicStopped) {
+		t.Errorf("got %v, want ErrTopicStopped", err)
 	}
 }
 
@@ -672,4 +673,20 @@ func addSingleResponse(srv *pstest.Server, id string) {
 	srv.AddPublishResponse(&pb.PublishResponse{
 		MessageIds: []string{id},
 	}, nil)
+}
+
+func TestPublishOrderingNotEnabled(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic, err := c.CreateTopic(ctx, "test-topic")
+	if err != nil {
+		t.Fatal(err)
+	}
+	res := publishSingleMessageWithKey(ctx, topic, "test", "non-existent-key")
+	if _, err := res.Get(ctx); !errors.Is(err, errTopicOrderingNotEnabled) {
+		t.Errorf("got %v, want errTopicOrderingNotEnabled", err)
+	}
 }

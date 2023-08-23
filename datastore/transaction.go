@@ -130,7 +130,10 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 }
 
 func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ *Transaction, err error) {
-	req := &pb.BeginTransactionRequest{ProjectId: c.dataset}
+	req := &pb.BeginTransactionRequest{
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+	}
 	if s.readOnly {
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction")
 		defer func() { trace.EndSpan(ctx, err) }()
@@ -225,6 +228,7 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 	}
 	req := &pb.CommitRequest{
 		ProjectId:           t.client.dataset,
+		DatabaseId:          t.client.databaseID,
 		TransactionSelector: &pb.CommitRequest_Transaction{Transaction: t.id},
 		Mutations:           t.mutations,
 		Mode:                pb.CommitRequest_TRANSACTIONAL,
@@ -267,6 +271,7 @@ func (t *Transaction) Rollback() (err error) {
 	t.id = nil
 	_, err = t.client.client.Rollback(t.ctx, &pb.RollbackRequest{
 		ProjectId:   t.client.dataset,
+		DatabaseId:  t.client.databaseID,
 		Transaction: id,
 	})
 	return err

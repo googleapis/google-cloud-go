@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/firestore/apiv1",
-    "version": "1.9.0",
+    "version": "1.12.0",
     "language": "GO",
     "apis": [
       {
@@ -563,7 +563,7 @@
     {
       "regionTag": "firestore_v1_generated_Firestore_Listen_sync",
       "title": "firestore Listen Sample",
-      "description": "Listen listens to changes. This method is only available via the gRPC API (not\nREST).\n\n\nThis method is not supported for the REST transport.",
+      "description": "Listen listens to changes. This method is only available via gRPC or WebChannel\n(not REST).\n\n\nThis method is not supported for the REST transport.",
       "file": "Client/Listen/main.go",
       "language": "GO",
       "clientMethod": {
@@ -742,7 +742,7 @@
     {
       "regionTag": "firestore_v1_generated_Firestore_Write_sync",
       "title": "firestore Write Sample",
-      "description": "Write streams batches of document updates and deletes, in order. This method is\nonly available via the gRPC API (not REST).\n\n\nThis method is not supported for the REST transport.",
+      "description": "Write streams batches of document updates and deletes, in order. This method is\nonly available via gRPC or WebChannel (not REST).\n\n\nThis method is not supported for the REST transport.",
       "file": "Client/Write/main.go",
       "language": "GO",
       "clientMethod": {

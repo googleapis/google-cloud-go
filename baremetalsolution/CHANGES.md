@@ -1,6 +1,34 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.1.1...baremetalsolution/v1.2.0) (2023-08-14)
+
+
+### Features
+
+* **baremetalsolution:** Several new resources and RPCs ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.1.0...baremetalsolution/v1.1.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.0.1...baremetalsolution/v1.1.0) (2023-05-30)
+
+
+### Features
+
+* **baremetalsolution:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.0.0...baremetalsolution/v1.0.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v0.5.0...baremetalsolution/v1.0.0) (2023-04-04)
 
 

@@ -17,7 +17,6 @@ package proxy
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"mime"
 	"mime/multipart"
 	"net/http"
@@ -80,8 +79,9 @@ var (
 		"Via",
 		"X-Forwarded-*",
 		// Google-specific
-		"X-Cloud-Trace-Context", // OpenCensus traces have a random ID
-		"X-Goog-Api-Client",     // can differ for, e.g., different Go versions
+		"X-Cloud-Trace-Context",        // OpenCensus traces have a random ID
+		"X-Goog-Api-Client",            // can differ for, e.g., different Go versions
+		"X-Goog-Gcs-Idempotency-Token", // Used by Cloud Storage
 	}
 
 	defaultRemoveBothHeaders = []string{
@@ -174,7 +174,7 @@ func parseRequestBody(contentType string, body []byte) (string, [][]byte, error)
 			if err != nil {
 				return "", nil, err
 			}
-			part, err := ioutil.ReadAll(p)
+			part, err := io.ReadAll(p)
 			if err != nil {
 				return "", nil, err
 			}
@@ -204,12 +204,12 @@ func (c *Converter) convertResponse(res *http.Response) (*Response, error) {
 }
 
 func snapshotBody(body *io.ReadCloser) ([]byte, error) {
-	data, err := ioutil.ReadAll(*body)
+	data, err := io.ReadAll(*body)
 	if err != nil {
 		return nil, err
 	}
 	(*body).Close()
-	*body = ioutil.NopCloser(bytes.NewReader(data))
+	*body = io.NopCloser(bytes.NewReader(data))
 	return data, nil
 }
 

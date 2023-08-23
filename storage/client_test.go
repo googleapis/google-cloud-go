@@ -1120,6 +1120,194 @@ func TestHMACKeyCRUDEmulated(t *testing.T) {
 	})
 }
 
+func TestObjectConditionsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+
+		// Create test bucket
+		if _, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{Name: bucket}); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		cases := []struct {
+			name string
+			call func() error
+		}{
+			{
+				name: "Object update generation",
+				call: func() error {
+					objName, gen, _, err := createObject(ctx, bucket)
+					if err != nil {
+						return fmt.Errorf("creating object: %w", err)
+					}
+					uattrs := &ObjectAttrsToUpdate{CustomTime: time.Now()}
+					_, err = client.UpdateObject(ctx, bucket, objName, uattrs, gen, nil, nil)
+					return err
+				},
+			},
+			{
+				name: "Object update ifMetagenerationMatch",
+				call: func() error {
+					objName, gen, metaGen, err := createObject(ctx, bucket)
+					if err != nil {
+						return fmt.Errorf("creating object: %w", err)
+					}
+					uattrs := &ObjectAttrsToUpdate{CustomTime: time.Now()}
+					conds := &Conditions{
+						GenerationMatch:     gen,
+						MetagenerationMatch: metaGen,
+					}
+					_, err = client.UpdateObject(ctx, bucket, objName, uattrs, gen, nil, conds)
+					return err
+				},
+			},
+			{
+				name: "Object write ifGenerationMatch",
+				call: func() error {
+					var err error
+					_, err = client.OpenWriter(&openWriterParams{
+						ctx:                ctx,
+						chunkSize:          256 * 1024,
+						chunkRetryDeadline: 0,
+						bucket:             bucket,
+						attrs:              &ObjectAttrs{},
+						conds:              &Conditions{DoesNotExist: true},
+						encryptionKey:      nil,
+						sendCRC32C:         false,
+						donec:              nil,
+						setError: func(e error) {
+							if e != nil {
+								err = e
+							}
+						},
+						progress: nil,
+						setObj:   nil,
+					})
+					return err
+				},
+			},
+			{
+				name: "Object rewrite ifMetagenerationMatch",
+				call: func() error {
+					objName, gen, metaGen, err := createObject(ctx, bucket)
+					if err != nil {
+						return fmt.Errorf("creating object: %w", err)
+					}
+					_, err = client.RewriteObject(ctx, &rewriteObjectRequest{
+						srcObject: sourceObject{
+							name:   objName,
+							bucket: bucket,
+							gen:    gen,
+							conds: &Conditions{
+								GenerationMatch:     gen,
+								MetagenerationMatch: metaGen,
+							},
+						},
+						dstObject: destinationObject{
+							name:   fmt.Sprintf("%d-object", time.Now().Nanosecond()),
+							bucket: bucket,
+							conds: &Conditions{
+								DoesNotExist: true,
+							},
+							attrs: &ObjectAttrs{},
+						},
+					})
+					return err
+				},
+			},
+			{
+				name: "Object compose ifGenerationMatch",
+				call: func() error {
+					obj1, obj1Gen, _, err := createObject(ctx, bucket)
+					if err != nil {
+						return fmt.Errorf("creating object: %w", err)
+					}
+					obj2, obj2Gen, _, err := createObject(ctx, bucket)
+					if err != nil {
+						return fmt.Errorf("creating object: %w", err)
+					}
+					_, err = client.ComposeObject(ctx, &composeObjectRequest{
+						dstBucket: bucket,
+						dstObject: destinationObject{
+							name:   fmt.Sprintf("%d-object", time.Now().Nanosecond()),
+							bucket: bucket,
+							conds:  &Conditions{DoesNotExist: true},
+							attrs:  &ObjectAttrs{},
+						},
+						srcs: []sourceObject{
+							{
+								name:   obj1,
+								bucket: bucket,
+								gen:    obj1Gen,
+								conds: &Conditions{
+									GenerationMatch: obj1Gen,
+								},
+							},
+							{
+								name:   obj2,
+								bucket: bucket,
+								conds: &Conditions{
+									GenerationMatch: obj2Gen,
+								},
+							},
+						},
+					})
+					return err
+				},
+			},
+			{
+				name: "Object delete ifGenerationMatch",
+				call: func() error {
+					objName, gen, _, err := createObject(ctx, bucket)
+					if err != nil {
+						return fmt.Errorf("creating object: %w", err)
+					}
+					err = client.DeleteObject(ctx, bucket, objName, gen, &Conditions{GenerationMatch: gen})
+					return err
+				},
+			},
+			{
+				name: "Object get ifMetagenerationMatch",
+				call: func() error {
+					objName, gen, metaGen, err := createObject(ctx, bucket)
+					if err != nil {
+						return fmt.Errorf("creating object: %w", err)
+					}
+					_, err = client.GetObject(ctx, bucket, objName, gen, nil, &Conditions{GenerationMatch: gen, MetagenerationMatch: metaGen})
+					return err
+				},
+			},
+		}
+		for _, c := range cases {
+			t.Run(c.name, func(r *testing.T) {
+				if err := c.call(); err != nil {
+					r.Errorf("error: %v", err)
+				}
+			})
+		}
+	})
+}
+
+// createObject creates an object in the emulator and returns its name, generation, and
+// metageneration.
+func createObject(ctx context.Context, bucket string) (string, int64, int64, error) {
+	prefix := time.Now().Nanosecond()
+	objName := fmt.Sprintf("%d-object", prefix)
+
+	w := veneerClient.Bucket(bucket).Object(objName).NewWriter(ctx)
+	if _, err := w.Write(randomBytesToWrite); err != nil {
+		return "", 0, 0, fmt.Errorf("failed to populate test data: %w", err)
+	}
+	if err := w.Close(); err != nil {
+		return "", 0, 0, fmt.Errorf("closing object: %v", err)
+	}
+	attrs, err := veneerClient.Bucket(bucket).Object(objName).Attrs(ctx)
+	if err != nil {
+		return "", 0, 0, fmt.Errorf("update object: %v", err)
+	}
+	return objName, attrs.Generation, attrs.Metageneration, nil
+}
+
 // transportClienttest executes the given function with a sub-test, a project name
 // based on the transport, a unique bucket name also based on the transport, and
 // the transport-specific client to run the test with. It also checks the environment

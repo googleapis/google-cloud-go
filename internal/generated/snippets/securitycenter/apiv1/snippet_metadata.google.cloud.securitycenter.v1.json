@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securitycenter/apiv1",
-    "version": "1.19.0",
+    "version": "1.23.0",
     "language": "GO",
     "apis": [
       {
@@ -1020,7 +1020,7 @@
     {
       "regionTag": "securitycenter_v1_generated_SecurityCenter_GroupAssets_sync",
       "title": "securitycenter GroupAssets Sample",
-      "description": "GroupAssets filters an organization's assets and  groups them by their specified\nproperties.",
+      "description": "GroupAssets filters an organization's assets and  groups them by their specified\nproperties.\n\n\nDeprecated: GroupAssets may be removed in a future version.",
       "file": "Client/GroupAssets/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1112,7 +1112,7 @@
     {
       "regionTag": "securitycenter_v1_generated_SecurityCenter_ListAssets_sync",
       "title": "securitycenter ListAssets Sample",
-      "description": "ListAssets lists an organization's assets.",
+      "description": "ListAssets lists an organization's assets.\n\n\nDeprecated: ListAssets may be removed in a future version.",
       "file": "Client/ListAssets/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1572,7 +1572,7 @@
     {
       "regionTag": "securitycenter_v1_generated_SecurityCenter_RunAssetDiscovery_sync",
       "title": "securitycenter RunAssetDiscovery Sample",
-      "description": "RunAssetDiscovery runs asset discovery. The discovery is tracked with a long-running\noperation.\n\nThis API can only be called with limited frequency for an organization. If\nit is called too frequently the caller will receive a TOO_MANY_REQUESTS\nerror.",
+      "description": "RunAssetDiscovery runs asset discovery. The discovery is tracked with a long-running\noperation.\n\nThis API can only be called with limited frequency for an organization. If\nit is called too frequently the caller will receive a TOO_MANY_REQUESTS\nerror.\n\n\nDeprecated: RunAssetDiscovery may be removed in a future version.",
       "file": "Client/RunAssetDiscovery/main.go",
       "language": "GO",
       "clientMethod": {
