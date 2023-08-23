@@ -15,6 +15,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/csv"
 	"flag"
@@ -26,6 +27,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	epb "github.com/cloudprober/cloudprober/probes/external/proto"
+	"github.com/cloudprober/cloudprober/probes/external/serverutils"
 
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	octrace "go.opencensus.io/trace"
@@ -39,6 +43,8 @@ import (
 
 	// Install google-c2p resolver, which is required for direct path.
 	_ "google.golang.org/grpc/xds/googledirectpath"
+	"google.golang.org/protobuf/proto"
+
 	// Install RLS load balancer policy, which is needed for gRPC RLS.
 	_ "google.golang.org/grpc/balancer/rls"
 )
@@ -52,8 +58,9 @@ const (
 var (
 	projectID, outputFile string
 
-	opts    = &benchmarkOptions{}
-	results chan benchmarkResult
+	opts       = &benchmarkOptions{}
+	results    chan benchmarkResult
+	serverMode bool
 )
 
 type benchmarkOptions struct {
@@ -194,6 +201,8 @@ func parseFlags() {
 	flag.IntVar(&opts.workload, "workload", 1, "which workload to run")
 	flag.IntVar(&opts.numObjectsPerDirectory, "directory_num_objects", 1000, "total number of objects in directory")
 
+	flag.BoolVar(&serverMode, "server", false, "if true, script runs in cloudprober server mode")
+
 	flag.Parse()
 
 	if len(projectID) < 1 {
@@ -241,7 +250,7 @@ func main() {
 		defer cleanUp()
 	}
 
-	// Create output file
+	// Create output file if necessary
 	var file *os.File
 	if outputFile != "" {
 		f, err := os.Create(outputFile)
@@ -283,64 +292,16 @@ func main() {
 		log.Fatalf("populateDependencyVersions: %v", err)
 	}
 
-	recordResultGroup, _ := errgroup.WithContext(ctx)
-	startRecordingResults(w, recordResultGroup, opts.outType)
-
-	simultaneousGoroutines := opts.numWorkers
-
-	// Directories parallelize on the object level, so only run one benchmark at a time
-	if opts.workload == 6 {
-		simultaneousGoroutines = 1
-	}
-
-	benchGroup, ctx := errgroup.WithContext(ctx)
-	benchGroup.SetLimit(simultaneousGoroutines)
-
-	exitWithErrorCode := false
-
 	if opts.enableTracing {
 		cleanup := enableTracing(ctx, opts.traceSampleRate)
 		defer cleanup()
 	}
 
-	// Run benchmarks
-	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
-		benchGroup.Go(func() error {
-			var benchmark benchmark
-			benchmark = &w1r3{opts: opts, bucketName: opts.bucket}
-
-			if opts.workload == 6 {
-				benchmark = &directoryBenchmark{opts: opts, bucketName: opts.bucket, numWorkers: opts.numWorkers}
-			}
-
-			if err := benchmark.setup(ctx); err != nil {
-				// If setup failed once, it will probably continue failing.
-				// Returning the error here will cancel the context to stop the
-				// benchmarking.
-				return fmt.Errorf("run setup failed: %v", err)
-			}
-			if err := benchmark.run(ctx); err != nil {
-				// If a run fails, we continue, as it could be a temporary issue.
-				// We log the error and make sure the program exits with an error
-				// to indicate that we did see an error, even though we continue.
-				log.Printf("run failed: %v", err)
-				exitWithErrorCode = true
-			}
-			if err := benchmark.cleanup(); err != nil {
-				// If cleanup fails, we continue, as a single fail is not critical.
-				// We log the error and make sure the program exits with an error
-				// to indicate that we did see an error, even though we continue.
-				// Cleanup may be expected to fail if there is an issue with the run.
-				log.Printf("run cleanup failed: %v", err)
-				exitWithErrorCode = true
-			}
-			return nil
-		})
+	if serverMode {
+		runInServerMode(ctx, opts)
 	}
 
-	err := benchGroup.Wait()
-	close(results)
-	recordResultGroup.Wait()
+	err := runSamples(ctx, opts, w)
 
 	if outputFile != "" {
 		// if sending output to a file, we can use stdout for informational logs
@@ -348,11 +309,7 @@ func main() {
 	}
 
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	if exitWithErrorCode {
-		os.Exit(1)
+		log.Fatalln(err)
 	}
 }
 
@@ -485,6 +442,138 @@ func startRecordingResults(w io.Writer, g *errgroup.Group, oType outputType) {
 			}
 		}
 		return nil
+	})
+}
+
+type multiError []error
+
+func (e multiError) Error() string {
+	var sb strings.Builder
+
+	for _, err := range e {
+		sb.WriteString(err.Error())
+	}
+
+	return sb.String()
+}
+
+func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) error {
+	multiErr := multiError{}
+	deadline, _ := ctx.Deadline()
+
+	// Record results async
+	recordResultGroup, _ := errgroup.WithContext(ctx)
+	startRecordingResults(out, recordResultGroup, opts.outType)
+
+	// Create a group to run benchmarks
+	benchGroup, ctx := errgroup.WithContext(ctx)
+
+	// Select concurrency
+	var concurrentBenchmarkRuns int
+	switch opts.workload {
+	default:
+		concurrentBenchmarkRuns = opts.numWorkers
+	case 6:
+		// Directory benchmarks parallelize on the object level, so only run one
+		// benchmark at a time
+		concurrentBenchmarkRuns = 1
+	}
+
+	benchGroup.SetLimit(concurrentBenchmarkRuns)
+
+	// Run benchmarks
+	for i := 0; i < opts.numSamples && !time.Now().After(deadline); i++ {
+		benchGroup.Go(func() error {
+			var benchmark benchmark
+			switch opts.workload {
+			default:
+				benchmark = &w1r3{opts: opts, bucketName: opts.bucket}
+			case 6:
+				benchmark = &directoryBenchmark{opts: opts, bucketName: opts.bucket, numWorkers: opts.numWorkers}
+			}
+
+			if err := benchmark.setup(ctx); err != nil {
+				// If setup failed once, it will probably continue failing.
+				// Returning the error here will cancel the context to stop the
+				// benchmarking.
+				return fmt.Errorf("run setup failed: %v\n", err)
+			}
+			if err := benchmark.run(ctx); err != nil {
+				// If a run fails, we continue, as it could be a temporary issue.
+				// We log the error and make sure the program exits with an error
+				// to indicate that we did see an error, even though we continue.
+				multiErr = append(multiErr, fmt.Errorf("run failed: %v\n", err))
+			}
+			if err := benchmark.cleanup(); err != nil {
+				// If cleanup fails, we continue, as a single fail is not critical.
+				// We log the error and make sure the program exits with an error
+				// to indicate that we did see an error, even though we continue.
+				// Cleanup may be expected to fail if there is an issue with the run.
+				multiErr = append(multiErr, fmt.Errorf("run cleanup failed: %v\n", err))
+			}
+			return nil
+		})
+	}
+
+	if err := benchGroup.Wait(); err != nil {
+		multiErr = append(multiErr, err)
+	}
+
+	close(results)
+	recordResultGroup.Wait()
+
+	log.Println(multiErr)
+
+	if len(multiErr) > 0 {
+		return multiErr
+	}
+	return nil
+}
+
+// num samples is ignored in this mode
+func runInServerMode(ctx context.Context, opts *benchmarkOptions) {
+	results = make(chan benchmarkResult, 4)
+
+	serverutils.Serve(func(request *epb.ProbeRequest, reply *epb.ProbeReply) {
+
+		// options := request.GetOptions()
+
+		// reply.ErrorMessage(options)
+
+		var benchmark benchmark
+		benchmark = &w1r3{opts: opts, bucketName: opts.bucket}
+
+		if opts.workload == 6 {
+			benchmark = &directoryBenchmark{opts: opts, bucketName: opts.bucket, numWorkers: opts.numWorkers}
+		}
+
+		if err := benchmark.setup(ctx); err != nil {
+			reply.ErrorMessage = proto.String(err.Error())
+		}
+		if err := benchmark.run(ctx); err != nil {
+			reply.ErrorMessage = proto.String(fmt.Errorf("run failed: %v", err).Error())
+		}
+		if err := benchmark.cleanup(); err != nil {
+			reply.ErrorMessage = proto.String(fmt.Errorf("run cleanup failed: %v", err).Error())
+		}
+
+		numResults := 2 // 1 write, 1 read
+
+		if opts.workload != 6 {
+			numResults += 2 // add 2 reads for w1r3
+		}
+
+		var payload string
+		for i := 0; i < numResults; i++ {
+			result := <-results
+
+			buf := new(bytes.Buffer)
+			writeResultAsCloudMonitoring(buf, &result)
+
+			payload += buf.String()
+		}
+
+		reply.Payload = proto.String(payload)
 	})
 }
 
