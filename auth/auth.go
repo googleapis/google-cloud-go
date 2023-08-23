@@ -118,7 +118,9 @@ func (ctpo *CachedTokenProviderOptions) expireEarly() time.Duration {
 }
 
 // NewCachedTokenProvider wraps a [TokenProvider] to cache the tokens returned
-// by the underlying provider.
+// by the underlying provider. By default it will refresh tokens ten seconds
+// before they expire, but this time can be configured with the optional
+// options.
 func NewCachedTokenProvider(tp TokenProvider, opts *CachedTokenProviderOptions) TokenProvider {
 	if ctp, ok := tp.(*cachedTokenProvider); ok {
 		return ctp
@@ -200,7 +202,7 @@ func (e *Error) Unwrap() error {
 	return e.Err
 }
 
-// Style describes how the token endpoint wants receive the ClientID and
+// Style describes how the token endpoint wants to receive the ClientID and
 // ClientSecret.
 type Style int
 
