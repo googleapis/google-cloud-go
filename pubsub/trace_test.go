@@ -84,7 +84,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 				attribute.String(orderingAttribute, m.OrderingKey),
 				semconv.MessagingSystemKey.String("pubsub"),
 			},
-			ChildSpanCount: 1,
+			ChildSpanCount: 2,
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
@@ -98,7 +98,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 			},
 		},
 		tracetest.SpanStub{
-			Name: publishSchedulerSpanName,
+			Name: publishBatcherSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
@@ -130,13 +130,13 @@ func TestTrace_PublishSpan(t *testing.T) {
 	}
 	defer topic.Stop()
 
-	spans := getSpans(e)
+	got := getSpans(e)
 	opts := []cmp.Option{
 		cmp.Comparer(spanStubComparer),
 		cmpopts.SortSlices(sortSpanStub),
 	}
-	if diff := testutil.Diff(spans, expectedSpans, opts...); diff != "" {
-		log.Printf("print spans: %+v\n", spans)
+	if diff := testutil.Diff(got, expectedSpans, opts...); diff != "" {
+		log.Printf("print spans: %+v\n", got)
 		log.Printf("\n\nprint expected spans: %+v\n", expectedSpans)
 		t.Errorf("diff: -got, +want:\n%s\n", diff)
 	}
@@ -155,7 +155,7 @@ func TestTrace_PublishSpanError(t *testing.T) {
 
 	m := &Message{
 		Data:        []byte("test"),
-		OrderingKey: "my-key",
+		OrderingKey: "m",
 	}
 
 	msgSize := proto.Size(&pb.PubsubMessage{
@@ -167,50 +167,91 @@ func TestTrace_PublishSpanError(t *testing.T) {
 	topicID := "t"
 	topicName := fmt.Sprintf("projects/P/topics/%s", topicID)
 
-	expectedSpans := tracetest.SpanStubs{
-		tracetest.SpanStub{
-			Name:     fmt.Sprintf("%s %s", topicName, publisherSpanName),
-			SpanKind: trace.SpanKindProducer,
-			Attributes: []attribute.KeyValue{
-				semconv.MessagingDestinationKindTopic,
-				semconv.MessagingDestinationKey.String(topicName),
-				semconv.MessagingMessageIDKey.String(""),
-				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
-				attribute.String(orderingAttribute, m.OrderingKey),
-				semconv.MessagingSystemKey.String("pubsub"),
-			},
-			ChildSpanCount: 0,
-			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub",
-				Version: internal.Version,
-			},
-			Status: sdktrace.Status{
-				Code:        codes.Error,
-				Description: errTopicOrderingNotEnabled.Error(),
-			},
-		},
-	}
-
 	topic, err := c.CreateTopic(ctx, topicID)
 	if err != nil {
 		t.Fatalf("failed to create topic: %v", err)
 	}
 
-	r := topic.Publish(ctx, m)
-	_, err = r.Get(ctx)
-	if err == nil {
-		t.Fatal("expected err, got nil")
-	}
-	defer topic.Stop()
+	// Publishing a message with an ordering key without enabling ordering topic ordering
+	// should fail.
+	t.Run("no ordering key", func(t *testing.T) {
+		r := topic.Publish(ctx, m)
+		_, err = r.Get(ctx)
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
 
-	spans := getSpans(e)
-	opts := []cmp.Option{
-		cmp.Comparer(spanStubComparer),
-		cmpopts.SortSlices(sortSpanStub),
-	}
-	if diff := testutil.Diff(spans, expectedSpans, opts...); diff != "" {
-		t.Errorf("diff: -got, +want:\n%s\n", diff)
-	}
+		want := getPublishSpanStubsWithError(topicName, m, msgSize, errTopicOrderingNotEnabled)
+
+		got := getSpans(e)
+		opts := []cmp.Option{
+			cmp.Comparer(spanStubComparer),
+			cmpopts.SortSlices(sortSpanStub),
+		}
+		if diff := testutil.Diff(got, want, opts...); diff != "" {
+			t.Errorf("diff: -got, +want:\n%s\n", diff)
+		}
+		e.Reset()
+		topic.ResumePublish(m.OrderingKey)
+	})
+
+	t.Run("stopped topic", func(t *testing.T) {
+		// Publishing a message with a stopped publisher should fail too
+		topic.ResumePublish(m.OrderingKey)
+		topic.EnableMessageOrdering = true
+		topic.Stop()
+		r := topic.Publish(ctx, m)
+		_, err = r.Get(ctx)
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
+
+		got := getSpans(e)
+		want := getPublishSpanStubsWithError(topicName, m, msgSize, ErrTopicStopped)
+		opts := []cmp.Option{
+			cmp.Comparer(spanStubComparer),
+			cmpopts.SortSlices(sortSpanStub),
+		}
+		if diff := testutil.Diff(got, want, opts...); diff != "" {
+			t.Errorf("diff: -got, +want:\n%s\n", diff)
+		}
+		e.Reset()
+		topic.ResumePublish(m.OrderingKey)
+	})
+
+	t.Run("flow control error", func(t *testing.T) {
+		// Use a different topic here than above since
+		// we need to adjust the flow control settings,
+		// which are immutable after publish.
+		topicID := "t2"
+
+		topic, err := c.CreateTopic(ctx, topicID)
+		if err != nil {
+			t.Fatalf("failed to create topic: %v", err)
+		}
+		topic.EnableMessageOrdering = true
+		topic.PublishSettings.FlowControlSettings = FlowControlSettings{
+			LimitExceededBehavior: FlowControlSignalError,
+			MaxOutstandingBytes:   1,
+		}
+
+		r := topic.Publish(ctx, m)
+		_, err = r.Get(ctx)
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
+
+		got := getSpans(e)
+		want := getFlowControlSpanStubs(ErrFlowControllerMaxOutstandingBytes)
+		opts := []cmp.Option{
+			cmp.Comparer(spanStubComparer),
+			cmpopts.SortSlices(sortSpanStub),
+		}
+		if diff := testutil.Diff(got, want, opts...); diff != "" {
+			t.Errorf("diff: -got, +want:\n%s\n", diff)
+		}
+	})
+
 }
 
 func spanStubComparer(a, b tracetest.SpanStub) bool {
@@ -244,4 +285,45 @@ func getSpans(e *tracetest.InMemoryExporter) tracetest.SpanStubs {
 	time.Sleep(100 * time.Millisecond)
 
 	return e.GetSpans()
+}
+
+func getPublishSpanStubsWithError(topicName string, m *Message, msgSize int, err error) tracetest.SpanStubs {
+	return tracetest.SpanStubs{
+		tracetest.SpanStub{
+			Name:     fmt.Sprintf("%s %s", topicName, publisherSpanName),
+			SpanKind: trace.SpanKindProducer,
+			Attributes: []attribute.KeyValue{
+				semconv.MessagingDestinationKindTopic,
+				semconv.MessagingDestinationKey.String(topicName),
+				semconv.MessagingMessageIDKey.String(""),
+				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+				attribute.String(orderingAttribute, m.OrderingKey),
+				semconv.MessagingSystemKey.String("pubsub"),
+			},
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+			Status: sdktrace.Status{
+				Code:        codes.Error,
+				Description: err.Error(),
+			},
+		},
+	}
+}
+
+func getFlowControlSpanStubs(err error) tracetest.SpanStubs {
+	return tracetest.SpanStubs{
+		tracetest.SpanStub{
+			Name: publishFlowControlSpanName,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+			Status: sdktrace.Status{
+				Code:        codes.Error,
+				Description: err.Error(),
+			},
+		},
+	}
 }
