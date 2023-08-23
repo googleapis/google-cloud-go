@@ -58,9 +58,9 @@ type Claims struct {
 	Iss string `json:"iss"`
 	// Scope is the scope JWT claim.
 	Scope string `json:"scope,omitempty"`
-	// Exp is the expiry JWT claim.
+	// Exp is the expiry JWT claim. If unset, default is in one hour from now.
 	Exp int64 `json:"exp"`
-	// Iat is the subject issued at claim.
+	// Iat is the subject issued at claim. If unset, default is now.
 	Iat int64 `json:"iat"`
 	// Aud is the audience JWT claim. Optional.
 	Aud string `json:"aud"`
@@ -95,7 +95,7 @@ func (c *Claims) encode() (string, error) {
 	// Marshal private claim set and then append it to b.
 	prv, err := json.Marshal(c.AdditionalClaims)
 	if err != nil {
-		return "", fmt.Errorf("invalid map of additional claims %v", c.AdditionalClaims)
+		return "", fmt.Errorf("invalid map of additional claims %v: %w", c.AdditionalClaims, err)
 	}
 
 	// Concatenate public and private claim JSON objects.

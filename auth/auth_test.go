@@ -65,27 +65,27 @@ func TestError_Temporary(t *testing.T) {
 	}{
 		{
 			name: "temporary with 500",
-			code: 500,
+			code: http.StatusInternalServerError,
 			want: true,
 		},
 		{
 			name: "temporary with 503",
-			code: 503,
+			code: http.StatusServiceUnavailable,
 			want: true,
 		},
 		{
 			name: "temporary with 408",
-			code: 408,
+			code: http.StatusRequestTimeout,
 			want: true,
 		},
 		{
 			name: "temporary with 429",
-			code: 429,
+			code: http.StatusTooManyRequests,
 			want: true,
 		},
 		{
 			name: "temporary with 418",
-			code: 418,
+			code: http.StatusTeapot,
 			want: false,
 		},
 	}
@@ -148,14 +148,14 @@ func TestError_Error(t *testing.T) {
 		{
 			name: "basic",
 			Response: &http.Response{
-				StatusCode: 418,
+				StatusCode: http.StatusTeapot,
 			},
 			Body: []byte("I'm a teapot"),
 			want: "auth: cannot fetch token: 418\nResponse: I'm a teapot",
 		},
 		{
 			name:        "from query",
-			code:        "418",
+			code:        fmt.Sprint(http.StatusTeapot),
 			description: "I'm a teapot",
 			uri:         "somewhere",
 			want:        "auth: \"418\" \"I'm a teapot\" \"somewhere\"",
@@ -191,7 +191,7 @@ func TestConfigJWT2LO_JSONResponse(t *testing.T) {
 	defer ts.Close()
 
 	opts := &Options2LO{
-		Email:      "aaa@xxx.com",
+		Email:      "aaa@example.com",
 		PrivateKey: fakePrivateKey,
 		TokenURL:   ts.URL,
 	}
@@ -229,7 +229,7 @@ func TestConfigJWT2LO_BadResponse(t *testing.T) {
 	defer ts.Close()
 
 	opts := &Options2LO{
-		Email:      "aaa@xxx.com",
+		Email:      "aaa@example.com",
 		PrivateKey: fakePrivateKey,
 		TokenURL:   ts.URL,
 	}
@@ -266,7 +266,7 @@ func TestConfigJWT2LO_BadResponseType(t *testing.T) {
 	}))
 	defer ts.Close()
 	opts := &Options2LO{
-		Email:      "aaa@xxx.com",
+		Email:      "aaa@example.com",
 		PrivateKey: fakePrivateKey,
 		TokenURL:   ts.URL,
 	}
@@ -300,7 +300,7 @@ func TestConfigJWT2LO_Assertion(t *testing.T) {
 	defer ts.Close()
 
 	opts := &Options2LO{
-		Email:        "aaa@xxx.com",
+		Email:        "aaa@example.com",
 		PrivateKey:   fakePrivateKey,
 		PrivateKeyID: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 		TokenURL:     ts.URL,
@@ -357,20 +357,20 @@ func TestConfigJWT2LO_AssertionPayload(t *testing.T) {
 
 	for _, opts := range []*Options2LO{
 		{
-			Email:        "aaa1@xxx.com",
+			Email:        "aaa1@example.com",
 			PrivateKey:   fakePrivateKey,
 			PrivateKeyID: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 			TokenURL:     ts.URL,
 		},
 		{
-			Email:        "aaa2@xxx.com",
+			Email:        "aaa2@example.com",
 			PrivateKey:   fakePrivateKey,
 			PrivateKeyID: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 			TokenURL:     ts.URL,
 			Audience:     "https://example.com",
 		},
 		{
-			Email:        "aaa2@xxx.com",
+			Email:        "aaa2@example.com",
 			PrivateKey:   fakePrivateKey,
 			PrivateKeyID: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 			TokenURL:     ts.URL,
@@ -445,7 +445,7 @@ func TestConfigJWT2LO_TokenError(t *testing.T) {
 	defer ts.Close()
 
 	opts := &Options2LO{
-		Email:      "aaa@xxx.com",
+		Email:      "aaa@example.com",
 		PrivateKey: fakePrivateKey,
 		TokenURL:   ts.URL,
 	}

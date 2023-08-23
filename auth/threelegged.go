@@ -284,6 +284,7 @@ func fetchToken(ctx context.Context, c *Options3LO, v url.Values) (*Token, strin
 	}
 
 	var token *Token
+	// errors ignored because of default switch on content
 	content, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
 	switch content {
 	case "application/x-www-form-urlencoded", "text/plain":

@@ -99,7 +99,7 @@ type CachedTokenProviderOptions struct {
 	// even if it is expired.
 	DisableAutoRefresh bool
 	// ExpireEarly configures the amount of time before a token expires, that it
-	// should be refreshed.
+	// should be refreshed. If unset, the default value is 10 seconds.
 	ExpireEarly time.Duration
 }
 
@@ -193,7 +193,7 @@ func (e *Error) Temporary() bool {
 		return false
 	}
 	sc := e.Response.StatusCode
-	return sc == 500 || sc == 503 || sc == 408 || sc == 429
+	return sc == http.StatusInternalServerError || sc == http.StatusServiceUnavailable || sc == http.StatusRequestTimeout || sc == http.StatusTooManyRequests
 }
 
 func (e *Error) Unwrap() error {
@@ -207,11 +207,11 @@ type Style int
 const (
 	// StyleUnknown means the value has not been initiated. Sending this in
 	// a request will cause the token exchange to fail.
-	StyleUnknown Style = 0
+	StyleUnknown Style = iota
 	// StyleInParams sends client info in the body of a POST request.
-	StyleInParams Style = 1
+	StyleInParams
 	// StyleInHeader sends client info using Basic Authorization header.
-	StyleInHeader Style = 2
+	StyleInHeader
 )
 
 // Options2LO is the configuration settings for doing a 2-legged JWT OAuth2 flow.
@@ -276,9 +276,7 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 		Scope:            strings.Join(tp.opts.Scopes, " "),
 		Aud:              tp.opts.TokenURL,
 		AdditionalClaims: tp.opts.PrivateClaims,
-	}
-	if subject := tp.opts.Subject; subject != "" {
-		claimSet.Sub = subject
+		Sub:              tp.opts.Subject,
 	}
 	if t := tp.opts.Expires; t > 0 {
 		claimSet.Exp = time.Now().Add(t).Unix()
@@ -304,7 +302,7 @@ func (tp tokenProvider2LO) Token(ctx context.Context) (*Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("auth: cannot fetch token: %w", err)
 	}
-	if c := resp.StatusCode; c < 200 || c > 299 {
+	if c := resp.StatusCode; c < http.StatusOK || c >= http.StatusMultipleChoices {
 		return nil, &Error{
 			Response: resp,
 			Body:     body,
