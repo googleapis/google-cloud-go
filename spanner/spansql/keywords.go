@@ -145,6 +145,9 @@ func init() {
 	// Spacial case of INTERVAL arg for TIMESTAMP_ADD, TIMESTAMP_SUB
 	funcArgParsers["TIMESTAMP_ADD"] = timestampIntervalArgParser
 	funcArgParsers["TIMESTAMP_SUB"] = timestampIntervalArgParser
+	// Special case of SEQUENCE arg for GET_NEXT_SEQUENCE_VALUE, GET_INTERNAL_SEQUENCE_STATE
+	funcArgParsers["GET_NEXT_SEQUENCE_VALUE"] = sequenceArgParser
+	funcArgParsers["GET_INTERNAL_SEQUENCE_STATE"] = sequenceArgParser
 }
 
 var allFuncs = []string{
@@ -280,4 +283,15 @@ var allFuncs = []string{
 
 	// JSON functions.
 	"JSON_VALUE",
+
+	// Bit functions.
+	"BIT_COUNT",
+	"BIT_REVERSE",
+
+	// Sequence functions.
+	"GET_NEXT_SEQUENCE_VALUE",
+	"GET_INTERNAL_SEQUENCE_STATE",
+
+	// Utility functions.
+	"GENERATE_UUID",
 }
