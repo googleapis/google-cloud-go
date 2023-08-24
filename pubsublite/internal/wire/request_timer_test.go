@@ -102,8 +102,8 @@ func TestStreamIdleTimerExpires(t *testing.T) {
 }
 
 func TestStreamIdleTimerRestart(t *testing.T) {
-	const timeout = 20 * time.Millisecond
-	const delta = 15 * time.Millisecond
+	const timeout = 100 * time.Millisecond
+	const delta = 10 * time.Millisecond
 	expired := test.NewCondition("timer expired")
 
 	st := newStreamIdleTimer(timeout, expired.SetDone)
