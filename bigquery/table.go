@@ -226,7 +226,7 @@ func bqToForeignKeys(tc *bq.TableConstraints, c *Client) []*ForeignKey {
 		}
 		fks = append(fks, &ForeignKey{
 			Name:             fk.Name,
-			ReferencedTable:  c.DatasetInProject(fk.ReferencedTable.DatasetId, fk.ReferencedTable.ProjectId).Table(fk.ReferencedTable.TableId),
+			ReferencedTable:  c.DatasetInProject(fk.ReferencedTable.ProjectId, fk.ReferencedTable.DatasetId).Table(fk.ReferencedTable.TableId),
 			ColumnReferences: colRefs,
 		})
 	}

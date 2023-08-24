@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.9.1...notebooks/v1.10.0) (2023-08-21)
+
+
+### Features
+
+* **notebooks:** Clients for Notebooks API V2 ([#8455](https://github.com/googleapis/google-cloud-go/issues/8455)) ([1859e6c](https://github.com/googleapis/google-cloud-go/commit/1859e6ca01499ed297167aef60ae1d34a2ed24ea))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.9.0...notebooks/v1.9.1) (2023-06-20)
 
 
