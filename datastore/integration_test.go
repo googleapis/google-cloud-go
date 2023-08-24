@@ -725,6 +725,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 
 	// Create transaction with read before creating entities
 	readTime := time.Now().Add(-59 * time.Minute).Truncate(time.Microsecond)
+	fmt.Printf("readTime before create: %v\n", readTime)
 	txBeforeCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
 	if err != nil {
 		t.Fatalf("client.NewTransaction: %v", err)
@@ -734,15 +735,17 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	if err != nil {
 		t.Fatalf("client.PutMulti: %v", err)
 	}
-	defer func() {
-		err := client.DeleteMulti(ctx, keys)
-		if err != nil {
-			t.Errorf("client.DeleteMulti: %v", err)
-		}
-	}()
+	// defer func() {
+	// 	err := client.DeleteMulti(ctx, keys)
+	// 	if err != nil {
+	// 		t.Errorf("client.DeleteMulti: %v", err)
+	// 	}
+	// }()
 
+	time.Sleep(1000 * time.Millisecond)
 	// Create transaction with read after creating entities
 	readTime = time.Now().Truncate(time.Microsecond)
+	fmt.Printf("readTime after create: %v\n", readTime)
 	txAfterCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
 	if err != nil {
 		t.Fatalf("client.NewTransaction: %v", err)
