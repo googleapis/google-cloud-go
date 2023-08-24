@@ -706,6 +706,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	defer client.Close()
 
 	parent := NameKey("SQParent", keyPrefix+"AggregationQueries"+suffix, nil)
+	fmt.Printf("Parent: %v\n", keyPrefix+"AggregationQueries"+suffix)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
 		{I: 0, T: now, U: now, V: 1.5, W: "str"},
