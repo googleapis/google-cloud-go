@@ -291,4 +291,7 @@ var allFuncs = []string{
 	// Sequence functions.
 	"GET_NEXT_SEQUENCE_VALUE",
 	"GET_INTERNAL_SEQUENCE_STATE",
+
+	// Utility functions.
+	"GENERATE_UUID",
 }
