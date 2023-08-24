@@ -28,8 +28,12 @@ func boolAddr(b bool) *bool {
 	return &b
 }
 
-func addr[T any](v T) *T {
-	return &v
+func stringAddr(s string) *string {
+	return &s
+}
+
+func intAddr(i int) *int {
+	return &i
 }
 
 func TestSQL(t *testing.T) {
@@ -767,10 +771,10 @@ func TestSQL(t *testing.T) {
 				Name:        "sname",
 				IfNotExists: true,
 				Options: SequenceOptions{
-					SequenceKind:     addr("bit_reversed_sequence"),
-					SkipRangeMin:     addr(1),
-					SkipRangeMax:     addr(1234567),
-					StartWithCounter: addr(50),
+					SequenceKind:     stringAddr("bit_reversed_sequence"),
+					SkipRangeMin:     intAddr(1),
+					SkipRangeMax:     intAddr(1234567),
+					StartWithCounter: intAddr(50),
 				},
 				Position: line(1),
 			},
@@ -781,7 +785,7 @@ func TestSQL(t *testing.T) {
 			&CreateSequence{
 				Name: "sname",
 				Options: SequenceOptions{
-					SequenceKind: addr("bit_reversed_sequence"),
+					SequenceKind: stringAddr("bit_reversed_sequence"),
 				},
 				Position: line(1),
 			},
@@ -793,10 +797,10 @@ func TestSQL(t *testing.T) {
 				Name: "sname",
 				Alteration: SetSequenceOptions{
 					Options: SequenceOptions{
-						SequenceKind:     addr("bit_reversed_sequence"),
-						SkipRangeMin:     addr(1),
-						SkipRangeMax:     addr(1234567),
-						StartWithCounter: addr(50),
+						SequenceKind:     stringAddr("bit_reversed_sequence"),
+						SkipRangeMin:     intAddr(1),
+						SkipRangeMax:     intAddr(1234567),
+						StartWithCounter: intAddr(50),
 					},
 				},
 				Position: line(1),
@@ -809,7 +813,7 @@ func TestSQL(t *testing.T) {
 				Name: "sname",
 				Alteration: SetSequenceOptions{
 					Options: SequenceOptions{
-						StartWithCounter: addr(1),
+						StartWithCounter: intAddr(1),
 					},
 				},
 				Position: line(1),

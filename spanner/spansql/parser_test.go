@@ -1134,10 +1134,10 @@ func TestParseDDL(t *testing.T) {
 			&CreateSequence{
 				Name: "MySequence",
 				Options: SequenceOptions{
-					SequenceKind:     addr("bit_reversed_positive"),
-					SkipRangeMin:     addr(1),
-					SkipRangeMax:     addr(1000),
-					StartWithCounter: addr(50),
+					SequenceKind:     stringAddr("bit_reversed_positive"),
+					SkipRangeMin:     intAddr(1),
+					SkipRangeMax:     intAddr(1000),
+					StartWithCounter: intAddr(50),
 				},
 				Position: line(108),
 			},
@@ -1145,10 +1145,10 @@ func TestParseDDL(t *testing.T) {
 				Name: "MySequence",
 				Alteration: SetSequenceOptions{
 					Options: SequenceOptions{
-						SequenceKind:     addr("bit_reversed_positive"),
-						SkipRangeMin:     addr(1),
-						SkipRangeMax:     addr(1000),
-						StartWithCounter: addr(50),
+						SequenceKind:     stringAddr("bit_reversed_positive"),
+						SkipRangeMin:     intAddr(1),
+						SkipRangeMax:     intAddr(1000),
+						StartWithCounter: intAddr(50),
 					},
 				},
 				Position: line(114),
@@ -1656,7 +1656,7 @@ func TestParseDDL(t *testing.T) {
 						Name:        "sname",
 						IfNotExists: true,
 						Options: SequenceOptions{
-							SequenceKind: addr("bit_reversed_positive"),
+							SequenceKind: stringAddr("bit_reversed_positive"),
 						},
 						Position: line(1),
 					},
@@ -1664,7 +1664,7 @@ func TestParseDDL(t *testing.T) {
 						Name: "sname",
 						Alteration: SetSequenceOptions{
 							Options: SequenceOptions{
-								StartWithCounter: addr(1),
+								StartWithCounter: intAddr(1),
 							},
 						},
 						Position: line(2),
