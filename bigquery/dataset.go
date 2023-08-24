@@ -936,3 +936,33 @@ func bqToDatasetAccessEntry(entry *bq.DatasetAccessEntry, c *Client) *DatasetAcc
 		TargetTypes: entry.TargetTypes,
 	}
 }
+
+// ExternalDatasetReference provides information about external dataset metadata.
+type ExternalDatasetReference struct {
+	//The connection id that is used to access the external_source.
+	// Format: projects/{project_id}/locations/{location_id}/connections/{connection_id}
+	Connection string
+
+	// External source that backs this dataset.
+	ExternalSource string
+}
+
+func bqToExternalDatasetReference(bq *bq.ExternalDatasetReference) *ExternalDatasetReference {
+	if ref == nil {
+		return nil
+	}
+	return &ExternalDatasetReference{
+		Connection:     bq.Connection,
+		ExternalSource: bq.ExternalSource,
+	}
+}
+
+func (edr *ExternalDatasetReference) toBQ() *bq.ExternalDatasetReference {
+	if edr == nil {
+		return nil
+	}
+	return &bq.ExternalDatasetReference{
+		Connection:     edr.Connection,
+		ExternalSource: edr.ExternalSource,
+	}
+}
