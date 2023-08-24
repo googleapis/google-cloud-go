@@ -798,6 +798,12 @@ type IntervalExpr struct {
 func (IntervalExpr) isBoolExpr() {} // possibly bool
 func (IntervalExpr) isExpr()     {}
 
+type SequenceExpr struct {
+	Name ID
+}
+
+func (SequenceExpr) isExpr() {}
+
 // Paren represents a parenthesised expression.
 type Paren struct {
 	Expr Expr

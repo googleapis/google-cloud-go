@@ -947,6 +947,12 @@ func (ie IntervalExpr) addSQL(sb *strings.Builder) {
 	sb.WriteString(ie.DatePart)
 }
 
+func (se SequenceExpr) SQL() string { return buildSQL(se) }
+func (se SequenceExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString("SEQUENCE ")
+	sb.WriteString(se.Name.SQL())
+}
+
 func idList(l []ID, join string) string {
 	var ss []string
 	for _, s := range l {

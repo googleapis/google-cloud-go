@@ -3555,6 +3555,17 @@ var dateIntervalArgParser = intervalArgParser((*parser).parseDateIntervalDatePar
 // Special argument parser for TIMESTAMP_ADD, TIMESTAMP_SUB
 var timestampIntervalArgParser = intervalArgParser((*parser).parseTimestampIntervalDatePart)
 
+var sequenceArgParser = func(p *parser) (Expr, *parseError) {
+	if p.eat("SEQUENCE") {
+		name, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		return SequenceExpr{Name: name}, nil
+	}
+	return p.parseExpr()
+}
+
 /*
 Expressions
 
