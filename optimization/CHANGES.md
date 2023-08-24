@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.4.2](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.4.1...optimization/v1.4.2) (2023-08-17)
+
+
+### Documentation
+
+* **optimization:** Minor formatting ([#8417](https://github.com/googleapis/google-cloud-go/issues/8417)) ([b3dbdde](https://github.com/googleapis/google-cloud-go/commit/b3dbdde48ddfa215c3c3bb110e0051fd8158f451))
+
 ## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.4.0...optimization/v1.4.1) (2023-06-20)
 
 

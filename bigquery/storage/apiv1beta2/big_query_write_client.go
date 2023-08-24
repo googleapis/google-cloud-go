@@ -242,6 +242,10 @@ type internalBigQueryWriteClient interface {
 // BigQuery Write API.
 //
 // The Write API can be used to write data to BigQuery.
+//
+// The google.cloud.bigquery.storage.v1
+// API (at /bigquery/docs/reference/storage/rpc/google.cloud.bigquery.storage.v1)
+// should be used instead of the v1beta2 API for BigQueryWrite operations.
 type BigQueryWriteClient struct {
 	// The internal transport-dependent client.
 	internalClient internalBigQueryWriteClient
@@ -361,6 +365,10 @@ type bigQueryWriteGRPCClient struct {
 // BigQuery Write API.
 //
 // The Write API can be used to write data to BigQuery.
+//
+// The google.cloud.bigquery.storage.v1
+// API (at /bigquery/docs/reference/storage/rpc/google.cloud.bigquery.storage.v1)
+// should be used instead of the v1beta2 API for BigQueryWrite operations.
 func NewBigQueryWriteClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryWriteClient, error) {
 	clientOpts := defaultBigQueryWriteGRPCClientOptions()
 	if newBigQueryWriteClientHook != nil {
@@ -432,6 +440,10 @@ type bigQueryWriteRESTClient struct {
 // BigQuery Write API.
 //
 // The Write API can be used to write data to BigQuery.
+//
+// The google.cloud.bigquery.storage.v1
+// API (at /bigquery/docs/reference/storage/rpc/google.cloud.bigquery.storage.v1)
+// should be used instead of the v1beta2 API for BigQueryWrite operations.
 func NewBigQueryWriteRESTClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryWriteClient, error) {
 	clientOpts := append(defaultBigQueryWriteRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
