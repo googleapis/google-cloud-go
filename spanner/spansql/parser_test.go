@@ -416,6 +416,8 @@ func TestParseExpr(t *testing.T) {
 		{`GENERATE_DATE_ARRAY('2022-01-01', CURRENT_DATE(), INTERVAL 1 MONTH)`, Func{Name: "GENERATE_DATE_ARRAY", Args: []Expr{StringLiteral("2022-01-01"), Func{Name: "CURRENT_DATE"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "MONTH"}}}},
 		{`TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)`, Func{Name: "TIMESTAMP_ADD", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "HOUR"}}}},
 		{`TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 MINUTE)`, Func{Name: "TIMESTAMP_SUB", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "MINUTE"}}}},
+		{`GET_NEXT_SEQUENCE_VALUE(SEQUENCE MySequence)`, Func{Name: "GET_NEXT_SEQUENCE_VALUE", Args: []Expr{SequenceExpr{Name: ID("MySequence")}}}},
+		{`GET_INTERNAL_SEQUENCE_STATE(SEQUENCE MySequence)`, Func{Name: "GET_INTERNAL_SEQUENCE_STATE", Args: []Expr{SequenceExpr{Name: ID("MySequence")}}}},
 
 		// Conditional expressions
 		{
