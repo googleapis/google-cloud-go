@@ -18,6 +18,7 @@ use (
 	./artifactregistry
 	./asset
 	./assuredworkloads
+	./auth
 	./automl
 	./baremetalsolution
 	./batch
