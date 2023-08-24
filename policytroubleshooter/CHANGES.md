@@ -1,5 +1,14 @@
 # Changes
 
+
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.8.0...policytroubleshooter/v1.9.0) (2023-08-18)
+
+
+### Features
+
+* **policytroubleshooter/iam:** Start generating apiv3 ([#8444](https://github.com/googleapis/google-cloud-go/issues/8444)) ([fb1a8cc](https://github.com/googleapis/google-cloud-go/commit/fb1a8ccfa81b8b36658207e333ee83666c87be75))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.7.1...policytroubleshooter/v1.8.0) (2023-07-24)
 
 

@@ -563,6 +563,10 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			}
 		}
 		if t.shouldExplicitBegin(attempt) {
+			// Make sure we set the current session handle before calling BeginTransaction.
+			// Note that the t.begin(ctx) call could change the session that is being used by the transaction, as the
+			// BeginTransaction RPC invocation will be retried on a new session if it returns SessionNotFound.
+			t.txReadOnly.sh = sh
 			if err = t.begin(ctx); err != nil {
 				trace.TracePrintf(ctx, nil, "Error while BeginTransaction during retrying a ReadWrite transaction: %v", ToSpannerError(err))
 				return ToSpannerError(err)
@@ -571,14 +575,15 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			t = &ReadWriteTransaction{
 				txReadyOrClosed: make(chan struct{}),
 			}
+			t.txReadOnly.sh = sh
 		}
 		attempt++
-		t.txReadOnly.sh = sh
 		t.txReadOnly.sp = c.idleSessions
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
 		t.txReadOnly.ro = c.ro
 		t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
+		t.wb = []*Mutation{}
 		t.txOpts = c.txo.merge(options)
 		t.ct = c.ct
 
