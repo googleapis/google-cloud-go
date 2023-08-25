@@ -459,6 +459,61 @@ func (dsc DropStoredColumn) SQL() string {
 	return "DROP STORED COLUMN " + dsc.Name.SQL()
 }
 
+func (cs CreateSequence) SQL() string {
+	str := "CREATE SEQUENCE "
+	if cs.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	return str + cs.Name.SQL() + " " + cs.Options.SQL()
+}
+
+func (as AlterSequence) SQL() string {
+	return "ALTER SEQUENCE " + as.Name.SQL() + " " + as.Alteration.SQL()
+}
+
+func (sa SetSequenceOptions) SQL() string {
+	return "SET " + sa.Options.SQL()
+}
+
+func (so SequenceOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if so.SequenceKind != nil {
+		hasOpt = true
+		str += fmt.Sprintf("sequence_kind='%s'", *so.SequenceKind)
+	}
+	if so.SkipRangeMin != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("skip_range_min=%v", *so.SkipRangeMin)
+	}
+	if so.SkipRangeMax != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("skip_range_max=%v", *so.SkipRangeMax)
+	}
+	if so.StartWithCounter != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("start_with_counter=%v", *so.StartWithCounter)
+	}
+	return str + ")"
+}
+
+func (do DropSequence) SQL() string {
+	str := "DROP SEQUENCE "
+	if do.IfExists {
+		str += "IF EXISTS "
+	}
+	return str + do.Name.SQL()
+}
+
 func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
 }

@@ -28,6 +28,14 @@ func boolAddr(b bool) *bool {
 	return &b
 }
 
+func stringAddr(s string) *string {
+	return &s
+}
+
+func intAddr(i int) *int {
+	return &i
+}
+
 func TestSQL(t *testing.T) {
 	reparseDDL := func(s string) (interface{}, error) {
 		ddl, err := ParseDDLStmt(s)
@@ -756,6 +764,79 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			`ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (cname2) REFERENCES tname2 (cname3) ON DELETE CASCADE`,
+			reparseDDL,
+		},
+		{
+			&CreateSequence{
+				Name:        "sname",
+				IfNotExists: true,
+				Options: SequenceOptions{
+					SequenceKind:     stringAddr("bit_reversed_sequence"),
+					SkipRangeMin:     intAddr(1),
+					SkipRangeMax:     intAddr(1234567),
+					StartWithCounter: intAddr(50),
+				},
+				Position: line(1),
+			},
+			`CREATE SEQUENCE IF NOT EXISTS sname OPTIONS (sequence_kind='bit_reversed_sequence', skip_range_min=1, skip_range_max=1234567, start_with_counter=50)`,
+			reparseDDL,
+		},
+		{
+			&CreateSequence{
+				Name: "sname",
+				Options: SequenceOptions{
+					SequenceKind: stringAddr("bit_reversed_sequence"),
+				},
+				Position: line(1),
+			},
+			`CREATE SEQUENCE sname OPTIONS (sequence_kind='bit_reversed_sequence')`,
+			reparseDDL,
+		},
+		{
+			&AlterSequence{
+				Name: "sname",
+				Alteration: SetSequenceOptions{
+					Options: SequenceOptions{
+						SequenceKind:     stringAddr("bit_reversed_sequence"),
+						SkipRangeMin:     intAddr(1),
+						SkipRangeMax:     intAddr(1234567),
+						StartWithCounter: intAddr(50),
+					},
+				},
+				Position: line(1),
+			},
+			`ALTER SEQUENCE sname SET OPTIONS (sequence_kind='bit_reversed_sequence', skip_range_min=1, skip_range_max=1234567, start_with_counter=50)`,
+			reparseDDL,
+		},
+		{
+			&AlterSequence{
+				Name: "sname",
+				Alteration: SetSequenceOptions{
+					Options: SequenceOptions{
+						StartWithCounter: intAddr(1),
+					},
+				},
+				Position: line(1),
+			},
+			`ALTER SEQUENCE sname SET OPTIONS (start_with_counter=1)`,
+			reparseDDL,
+		},
+		{
+			&DropSequence{
+				Name:     "sname",
+				IfExists: true,
+				Position: line(1),
+			},
+			`DROP SEQUENCE IF EXISTS sname`,
+			reparseDDL,
+		},
+		{
+			&DropSequence{
+				Name:     "sname",
+				IfExists: false,
+				Position: line(1),
+			},
+			`DROP SEQUENCE sname`,
 			reparseDDL,
 		},
 		{
