@@ -743,7 +743,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	// 	}
 	// }()
 
-	time.Sleep(1000 * time.Millisecond)
+	time.Sleep(10000 * time.Millisecond)
 	// Create transaction with read after creating entities
 	readTime = time.Now().Truncate(time.Microsecond)
 	fmt.Printf("readTime after create: %v\n", readTime)
