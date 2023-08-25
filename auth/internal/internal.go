@@ -21,6 +21,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -110,4 +111,10 @@ func GetProjectID(b []byte, override string) string {
 		return v.ProjectID
 	}
 	return v.Project
+}
+
+// ReadAll consumes the whole reader and safely reads the content of its body
+// with some overflow protection.
+func ReadAll(r io.Reader) ([]byte, error) {
+	return io.ReadAll(io.LimitReader(r, 1<<20))
 }
