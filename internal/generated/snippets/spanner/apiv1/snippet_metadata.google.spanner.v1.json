@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/spanner/apiv1",
-    "version": "1.48.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {

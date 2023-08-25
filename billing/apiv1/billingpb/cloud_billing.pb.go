@@ -21,11 +21,8 @@
 package billingpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -142,12 +141,11 @@ type ProjectBillingInfo struct {
 	// Output only. The resource name for the `ProjectBillingInfo`; has the form
 	// `projects/{project_id}/billingInfo`. For example, the resource name for the
 	// billing information for project `tokyo-rain-123` would be
-	// `projects/tokyo-rain-123/billingInfo`. This field is read-only.
+	// `projects/tokyo-rain-123/billingInfo`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The ID of the project that this `ProjectBillingInfo`
 	// represents, such as `tokyo-rain-123`. This is a convenience field so that
-	// you don't need to parse the `name` field to obtain a project ID. This field
-	// is read-only.
+	// you don't need to parse the `name` field to obtain a project ID.
 	ProjectId string `protobuf:"bytes,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// The resource name of the billing account associated with the project, if
 	// any. For example, `billingAccounts/012345-567890-ABCDEF`.
@@ -155,7 +153,7 @@ type ProjectBillingInfo struct {
 	// Output only. True if the project is associated with an open billing
 	// account, to which usage on the project is charged. False if the project is
 	// associated with a closed billing account, or no billing account at all, and
-	// therefore cannot use paid services. This field is read-only.
+	// therefore cannot use paid services.
 	BillingEnabled bool `protobuf:"varint,4,opt,name=billing_enabled,json=billingEnabled,proto3" json:"billing_enabled,omitempty"`
 }
 
@@ -718,8 +716,9 @@ type UpdateProjectBillingInfoRequest struct {
 	// information that you want to update. For example,
 	// `projects/tokyo-rain-123`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The new billing information for the project. Read-only fields are ignored;
-	// thus, you can leave empty all fields except `billing_account_name`.
+	// The new billing information for the project. Output-only fields are
+	// ignored; thus, you can leave empty all fields except
+	// `billing_account_name`.
 	ProjectBillingInfo *ProjectBillingInfo `protobuf:"bytes,2,opt,name=project_billing_info,json=projectBillingInfo,proto3" json:"project_billing_info,omitempty"`
 }
 

@@ -21,12 +21,9 @@
 package datacatalogpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -565,7 +564,7 @@ type SearchCatalogRequest struct {
 	//
 	// If this parameter is omitted, it defaults to the descending `relevance`.
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	// Optional. If set, uses searchAll permission granted on organizations from
+	// Optional. If set, use searchAll permission granted on organizations from
 	// `include_org_ids` and projects from `include_project_ids` instead of the
 	// fine grained per resource permissions when filtering the search results.
 	// The only allowed `order_by` criteria for admin_search mode is `default`.
