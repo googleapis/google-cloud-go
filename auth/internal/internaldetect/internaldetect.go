@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// internaldetect is meant to hide implementation details from the pubic surface
-// of the detect package. It should not import any other packages in this module.
-// It is located under the main internal package so other sub-packages can use
-// these parsed types as well.
+// Package internaldetect is meant to hide implementation details from the pubic
+// surface of the detect package. It should not import any other packages in
+// this module. It is located under the main internal package so other
+// sub-packages can use these parsed types as well.
 package internaldetect
 
 import (

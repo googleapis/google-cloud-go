@@ -121,7 +121,7 @@ func handleImpersonatedServiceAccount(f *internaldetect.ImpersonatedServiceAccou
 	if err != nil {
 		return nil, err
 	}
-	return impersonate.NewImpersonatedTokenProvider(&impersonate.Options{
+	return impersonate.NewTokenProvider(&impersonate.Options{
 		URL:       f.ServiceAccountImpersonationURL,
 		Scopes:    opts.scopes(),
 		Tp:        tp,
@@ -131,7 +131,7 @@ func handleImpersonatedServiceAccount(f *internaldetect.ImpersonatedServiceAccou
 }
 
 func handleGDCHServiceAccount(f *internaldetect.GDCHServiceAccountFile, opts *Options) (auth.TokenProvider, error) {
-	return gdch.TokenProvider(f, &gdch.Options{
+	return gdch.NewTokenProvider(f, &gdch.Options{
 		STSAudience: opts.STSAudience,
 		Client:      opts.client(),
 	})

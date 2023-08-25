@@ -34,9 +34,10 @@ import (
 )
 
 const (
+	// GrantType is the grant type for the token request.
 	GrantType        = "urn:ietf:params:oauth:token-type:token-exchange"
-	RequestTokenType = "urn:ietf:params:oauth:token-type:access_token"
-	SubjectTokenType = "urn:k8s:params:oauth:token-type:serviceaccount"
+	requestTokenType = "urn:ietf:params:oauth:token-type:access_token"
+	subjectTokenType = "urn:k8s:params:oauth:token-type:serviceaccount"
 )
 
 var (
@@ -45,12 +46,15 @@ var (
 	}
 )
 
+// Options for [NewTokenProvider].
 type Options struct {
 	STSAudience string
 	Client      *http.Client
 }
 
-func TokenProvider(f *internaldetect.GDCHServiceAccountFile, o *Options) (auth.TokenProvider, error) {
+// NewTokenProvider returns a [cloud.google.com/go/auth.TokenProvider] from a
+// GDCH cred file.
+func NewTokenProvider(f *internaldetect.GDCHServiceAccountFile, o *Options) (auth.TokenProvider, error) {
 	if !gdchSupportFormatVersions[f.FormatVersion] {
 		return nil, fmt.Errorf("detect: unsupported gdch_service_account format %q", f.FormatVersion)
 	}
@@ -122,9 +126,9 @@ func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 	v := url.Values{}
 	v.Set("grant_type", GrantType)
 	v.Set("audience", g.aud)
-	v.Set("requested_token_type", RequestTokenType)
+	v.Set("requested_token_type", requestTokenType)
 	v.Set("subject_token", payload)
-	v.Set("subject_token_type", SubjectTokenType)
+	v.Set("subject_token_type", subjectTokenType)
 	resp, err := g.client.PostForm(g.tokenURL, v)
 	if err != nil {
 		return nil, fmt.Errorf("detect: cannot fetch token: %w", err)

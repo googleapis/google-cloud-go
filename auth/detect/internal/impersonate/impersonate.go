@@ -39,13 +39,14 @@ type impersonateTokenResponse struct {
 	ExpireTime  string `json:"expireTime"`
 }
 
-func NewImpersonatedTokenProvider(opts *Options) (auth.TokenProvider, error) {
+// NewTokenProvider uses a source credential, stored in Ts, to request an access token to the provided URL.
+// Scopes can be defined when the access token is requested.
+func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	// TODO(codyoss): add validation
 	return opts, nil
 }
 
-// ImpersonateTokenProvider uses a source credential, stored in Ts, to request an access token to the provided URL.
-// Scopes can be defined when the access token is requested.
+// Options for [NewTokenProvider].
 type Options struct {
 	// Tp is the source credential used to generate a token on the
 	// impersonated service account. Required.

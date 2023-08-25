@@ -100,11 +100,11 @@ func TestTokenProvider(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, err := TokenProvider(f, &Options{}); err == nil {
+	if _, err := NewTokenProvider(f, &Options{}); err == nil {
 		t.Fatal("STSAudience should be required")
 	}
 
-	cred, err := TokenProvider(f, &Options{
+	cred, err := NewTokenProvider(f, &Options{
 		STSAudience: aud,
 		Client:      internal.CloneDefaultClient(),
 	})

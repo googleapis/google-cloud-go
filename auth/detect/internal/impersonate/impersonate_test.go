@@ -50,7 +50,7 @@ func TestNewImpersonatedTokenProvider(t *testing.T) {
 		}
 	}))
 
-	creds, err := NewImpersonatedTokenProvider(&Options{
+	creds, err := NewTokenProvider(&Options{
 		Tp:        mockProvider("fake_token_base"),
 		URL:       ts.URL,
 		Delegates: []string{"sa1@developer.gserviceaccount.com", "sa2@developer.gserviceaccount.com"},

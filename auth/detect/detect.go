@@ -46,6 +46,8 @@ var (
 	allowOnGCECheck = true
 )
 
+// Credentials holds Google credentials, including
+// [Application Default Credentials](https://developers.google.com/accounts/docs/application-default-credentials).
 type Credentials struct {
 	json           []byte
 	projectID      string
