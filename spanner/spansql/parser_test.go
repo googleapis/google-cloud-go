@@ -693,6 +693,20 @@ func TestParseDDL(t *testing.T) {
 		ALTER INDEX MyFirstIndex ADD STORED COLUMN UpdatedAt;
 		ALTER INDEX MyFirstIndex DROP STORED COLUMN UpdatedAt;
 
+		CREATE SEQUENCE MySequence OPTIONS (
+			sequence_kind='bit_reversed_positive',
+			skip_range_min = 1,
+			skip_range_max = 1000,
+			start_with_counter = 50
+		);
+		ALTER SEQUENCE MySequence SET OPTIONS (
+			sequence_kind='bit_reversed_positive',
+			skip_range_min = 1,
+			skip_range_max = 1000,
+			start_with_counter = 50
+		);
+		DROP SEQUENCE MySequence;
+
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
 			&CreateTable{
@@ -1119,6 +1133,29 @@ func TestParseDDL(t *testing.T) {
 				Alteration: DropStoredColumn{Name: "UpdatedAt"},
 				Position:   line(106),
 			},
+			&CreateSequence{
+				Name: "MySequence",
+				Options: SequenceOptions{
+					SequenceKind:     stringAddr("bit_reversed_positive"),
+					SkipRangeMin:     intAddr(1),
+					SkipRangeMax:     intAddr(1000),
+					StartWithCounter: intAddr(50),
+				},
+				Position: line(108),
+			},
+			&AlterSequence{
+				Name: "MySequence",
+				Alteration: SetSequenceOptions{
+					Options: SequenceOptions{
+						SequenceKind:     stringAddr("bit_reversed_positive"),
+						SkipRangeMin:     intAddr(1),
+						SkipRangeMax:     intAddr(1000),
+						StartWithCounter: intAddr(50),
+					},
+				},
+				Position: line(114),
+			},
+			&DropSequence{Name: "MySequence", Position: line(120)},
 		}, Comments: []*Comment{
 			{
 				Marker: "#", Start: line(2), End: line(2),
@@ -1154,7 +1191,7 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Table has a column with a default value."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(108), End: line(108), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(122), End: line(122), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -1606,6 +1643,38 @@ func TestParseDDL(t *testing.T) {
 							Constraint: TableConstraint{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: NoActionOnDelete, Position: line(4)}, Position: line(4)},
 						},
 						Position: line(4),
+					},
+				},
+			},
+		},
+		{
+			`CREATE SEQUENCE IF NOT EXISTS sname OPTIONS (sequence_kind='bit_reversed_positive');
+			ALTER SEQUENCE sname SET OPTIONS (start_with_counter=1);
+			DROP SEQUENCE IF EXISTS sname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateSequence{
+						Name:        "sname",
+						IfNotExists: true,
+						Options: SequenceOptions{
+							SequenceKind: stringAddr("bit_reversed_positive"),
+						},
+						Position: line(1),
+					},
+					&AlterSequence{
+						Name: "sname",
+						Alteration: SetSequenceOptions{
+							Options: SequenceOptions{
+								StartWithCounter: intAddr(1),
+							},
+						},
+						Position: line(2),
+					},
+					&DropSequence{
+						Name:     "sname",
+						IfExists: true,
+						Position: line(3),
 					},
 				},
 			},
