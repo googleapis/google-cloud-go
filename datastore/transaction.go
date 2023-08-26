@@ -17,7 +17,6 @@ package datastore
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -135,7 +134,6 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 		ProjectId:  c.dataset,
 		DatabaseId: c.databaseID,
 	}
-	fmt.Printf("req: %v\n", req)
 	if s.readOnly {
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction")
 		defer func() { trace.EndSpan(ctx, err) }()

@@ -706,7 +706,6 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	defer client.Close()
 
 	parent := NameKey("SQParent", keyPrefix+"AggregationQueries"+suffix, nil)
-	fmt.Printf("Parent: %v\n", keyPrefix+"AggregationQueries"+suffix)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
 		{I: 0, T: now, U: now, V: 1.5, W: "str"},
@@ -726,7 +725,6 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 
 	// Create transaction with read before creating entities
 	readTime := time.Now().Add(-59 * time.Minute).Truncate(time.Microsecond)
-	fmt.Printf("readTime before create: %v\n", readTime)
 	txBeforeCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
 	if err != nil {
 		t.Fatalf("client.NewTransaction: %v", err)
@@ -736,17 +734,16 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	if err != nil {
 		t.Fatalf("client.PutMulti: %v", err)
 	}
-	// defer func() {
-	// 	err := client.DeleteMulti(ctx, keys)
-	// 	if err != nil {
-	// 		t.Errorf("client.DeleteMulti: %v", err)
-	// 	}
-	// }()
+	defer func() {
+		err := client.DeleteMulti(ctx, keys)
+		if err != nil {
+			t.Errorf("client.DeleteMulti: %v", err)
+		}
+	}()
 
-	time.Sleep(10000 * time.Millisecond)
+	time.Sleep(10 * time.Second)
 	// Create transaction with read after creating entities
 	readTime = time.Now().Truncate(time.Microsecond)
-	fmt.Printf("readTime after create: %v\n", readTime)
 	txAfterCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
 	if err != nil {
 		t.Fatalf("client.NewTransaction: %v", err)
