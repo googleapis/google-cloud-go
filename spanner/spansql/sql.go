@@ -913,7 +913,27 @@ func (f Func) SQL() string { return buildSQL(f) }
 func (f Func) addSQL(sb *strings.Builder) {
 	sb.WriteString(f.Name)
 	sb.WriteString("(")
+	if f.Distinct {
+		sb.WriteString("DISTINCT ")
+	}
 	addExprList(sb, f.Args, ", ")
+	switch f.NullsHandling {
+	case RespectNulls:
+		sb.WriteString(" RESPECT NULLS")
+	case IgnoreNulls:
+		sb.WriteString(" IGNORE NULLS")
+	}
+	if ah := f.Having; ah != nil {
+		sb.WriteString(" HAVING")
+		switch ah.Condition {
+		case HavingMax:
+			sb.WriteString(" MAX")
+		case HavingMin:
+			sb.WriteString(" MIN")
+		}
+		sb.WriteString(" ")
+		sb.WriteString(ah.Expr.SQL())
+	}
 	sb.WriteString(")")
 }
 

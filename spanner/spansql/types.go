@@ -757,7 +757,9 @@ type Func struct {
 	Name string // not ID
 	Args []Expr
 
-	// TODO: various functions permit as-expressions, which might warrant different types in here.
+	Distinct      bool
+	NullsHandling NullsHandling
+	Having        *AggregateHaving
 }
 
 func (Func) isBoolExpr() {} // possibly bool
@@ -803,6 +805,29 @@ type SequenceExpr struct {
 }
 
 func (SequenceExpr) isExpr() {}
+
+// NullsHandling represents the method of dealing with NULL values in aggregate functions.
+type NullsHandling int
+
+const (
+	NullsHandlingUnspecified NullsHandling = iota
+	RespectNulls
+	IgnoreNulls
+)
+
+// AggregateHaving represents the HAVING clause specific to aggregate functions, restricting rows based on a maximal or minimal value.
+type AggregateHaving struct {
+	Condition AggregateHavingCondition
+	Expr      Expr
+}
+
+// AggregateHavingCondition represents the condition (MAX or MIN) for the AggregateHaving clause.
+type AggregateHavingCondition int
+
+const (
+	HavingMax AggregateHavingCondition = iota
+	HavingMin
+)
 
 // Paren represents a parenthesised expression.
 type Paren struct {
