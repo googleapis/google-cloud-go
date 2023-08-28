@@ -3566,6 +3566,65 @@ var sequenceArgParser = func(p *parser) (Expr, *parseError) {
 	return p.parseExpr()
 }
 
+func (p *parser) parseAggregateFunc() (Func, *parseError) {
+	tok := p.next()
+	if tok.err != nil {
+		return Func{}, tok.err
+	}
+	name := strings.ToUpper(tok.value)
+	if err := p.expect("("); err != nil {
+		return Func{}, err
+	}
+	var distinct bool
+	if p.eat("DISTINCT") {
+		distinct = true
+	}
+	args, err := p.parseExprList()
+	if err != nil {
+		return Func{}, err
+	}
+	var nullsHandling NullsHandling
+	if p.eat("IGNORE", "NULLS") {
+		nullsHandling = IgnoreNulls
+	} else if p.eat("RESPECT", "NULLS") {
+		nullsHandling = RespectNulls
+	}
+	var having *AggregateHaving
+	if p.eat("HAVING") {
+		tok := p.next()
+		if tok.err != nil {
+			return Func{}, tok.err
+		}
+		var cond AggregateHavingCondition
+		switch tok.value {
+		case "MAX":
+			cond = HavingMax
+		case "MIN":
+			cond = HavingMin
+		default:
+			return Func{}, p.errorf("got %q, want MAX or MIN", tok.value)
+		}
+		expr, err := p.parseExpr()
+		if err != nil {
+			return Func{}, err
+		}
+		having = &AggregateHaving{
+			Condition: cond,
+			Expr:      expr,
+		}
+	}
+	if err := p.expect(")"); err != nil {
+		return Func{}, err
+	}
+	return Func{
+		Name:          name,
+		Args:          args,
+		Distinct:      distinct,
+		NullsHandling: nullsHandling,
+		Having:        having,
+	}, nil
+}
+
 /*
 Expressions
 
@@ -3918,6 +3977,10 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	// this is a function invocation.
 	// The `funcs` map is keyed by upper case strings.
 	if name := strings.ToUpper(tok.value); funcs[name] && p.sniff("(") {
+		if aggregateFuncs[name] {
+			p.back()
+			return p.parseAggregateFunc()
+		}
 		var list []Expr
 		var err *parseError
 		if f, ok := funcArgParsers[name]; ok {
