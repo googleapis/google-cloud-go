@@ -306,7 +306,7 @@ func TestDefaultCredentials_ClientCredentials(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseClientCredential(b)
+	f, err := internaldetect.ParseClientCredentials(b)
 	if err != nil {
 		t.Fatal(err)
 	}

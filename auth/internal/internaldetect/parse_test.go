@@ -109,7 +109,7 @@ func TestParseClientCredential_Web(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := ParseClientCredential(b)
+	got, err := ParseClientCredentials(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -132,7 +132,7 @@ func TestParseClientCredential_Installed(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := ParseClientCredential(b)
+	got, err := ParseClientCredentials(b)
 	if err != nil {
 		t.Fatal(err)
 	}

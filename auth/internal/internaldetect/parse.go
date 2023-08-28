@@ -27,9 +27,9 @@ func ParseServiceAccount(b []byte) (*ServiceAccountFile, error) {
 	return f, nil
 }
 
-// ParseClientCredential parses bytes into a
+// ParseClientCredentials parses bytes into a
 // [internaldetect.ClientCredentialsFile].
-func ParseClientCredential(b []byte) (*ClientCredentialsFile, error) {
+func ParseClientCredentials(b []byte) (*ClientCredentialsFile, error) {
 	var f *ClientCredentialsFile
 	if err := json.Unmarshal(b, &f); err != nil {
 		return nil, err
