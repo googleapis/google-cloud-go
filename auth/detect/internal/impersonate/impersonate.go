@@ -27,6 +27,10 @@ import (
 	"cloud.google.com/go/auth/internal/transport"
 )
 
+const (
+	defaultTokenLifetime = "3600s"
+)
+
 // generateAccesstokenReq is used for service account impersonation
 type generateAccessTokenReq struct {
 	Delegates []string `json:"delegates,omitempty"`
@@ -71,12 +75,12 @@ type Options struct {
 
 // Token performs the exchange to get a temporary service account token to allow access to GCP.
 func (tp *Options) Token(ctx context.Context) (*auth.Token, error) {
-	lifetimeString := "3600s"
+	lifetime := defaultTokenLifetime
 	if tp.TokenLifetimeSeconds != 0 {
-		lifetimeString = fmt.Sprintf("%ds", tp.TokenLifetimeSeconds)
+		lifetime = fmt.Sprintf("%ds", tp.TokenLifetimeSeconds)
 	}
 	reqBody := generateAccessTokenReq{
-		Lifetime:  lifetimeString,
+		Lifetime:  lifetime,
 		Scope:     tp.Scopes,
 		Delegates: tp.Delegates,
 	}

@@ -57,13 +57,16 @@ type metadataTokenResp struct {
 func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 	// TODO(codyoss): account may need to be configurable if we have a constructor for
 	// the provider.
-	tokenURI := computeTokenURI
+	tokenURI, err := url.Parse(computeTokenURI)
+	if err != nil {
+		return nil, err
+	}
 	if len(cs.scopes) > 0 {
 		v := url.Values{}
 		v.Set("scopes", strings.Join(cs.scopes, ","))
-		tokenURI = tokenURI + "?" + v.Encode()
+		tokenURI.RawQuery = v.Encode()
 	}
-	tokenJSON, err := metadata.Get(tokenURI)
+	tokenJSON, err := metadata.Get(tokenURI.String())
 	if err != nil {
 		return nil, err
 	}

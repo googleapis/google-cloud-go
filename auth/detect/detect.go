@@ -30,8 +30,6 @@ import (
 const (
 	// jwtTokenURL is Google's OAuth 2.0 token URL to use with the JWT(2LO) flow.
 	jwtTokenURL = "https://oauth2.googleapis.com/token"
-	// mtlsTokenURL is Google's OAuth 2.0 default mTLS endpoint.
-	//mtlsTokenURL = "https://oauth2.mtls.googleapis.com/token"
 
 	// Google's OAuth 2.0 default endpoints.
 	googleAuthURL  = "https://accounts.google.com/o/oauth2/auth"

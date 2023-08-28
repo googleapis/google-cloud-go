@@ -19,7 +19,6 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/auth"
-	// 	"cloud.google.com/go/auth/detect/internal/externalaccount"
 	"cloud.google.com/go/auth/detect/internal/gdch"
 	"cloud.google.com/go/auth/detect/internal/impersonate"
 	"cloud.google.com/go/auth/internal/internaldetect"

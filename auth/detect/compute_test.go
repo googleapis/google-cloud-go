@@ -36,7 +36,6 @@ func TestComputeTokenProvider(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"access_token": "90d64460d14870c08c81352a05dedd3465940a7c", "token_type": "bearer", "expires_in": 86400}`))
 	}))
-	t.Log(ts.URL)
 	t.Setenv(computeMetadataEnvVar, strings.TrimPrefix(ts.URL, "http://"))
 	tp := computeTokenProvider(0, scope)
 	tok, err := tp.Token(context.Background())
