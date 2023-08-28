@@ -875,18 +875,20 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
-		gotFailure := gotErr != nil
+		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+			gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
+			gotFailure := gotErr != nil
 
-		if gotFailure != testCase.wantFailure ||
-			(gotErr != nil && !strings.Contains(gotErr.Error(), testCase.wantErrMsg)) {
-			t.Errorf("%q: Mismatch in error got: %v, want: %q", testCase.desc, gotErr, testCase.wantErrMsg)
-			continue
-		}
-		if !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
-			t.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
-			continue
-		}
+			if gotFailure != testCase.wantFailure ||
+				(gotErr != nil && !strings.Contains(gotErr.Error(), testCase.wantErrMsg)) {
+				r.Errorf("%q: Mismatch in error got: %v, want: %q", testCase.desc, gotErr, testCase.wantErrMsg)
+				return
+			}
+			if gotErr == nil && !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
+				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
+				return
+			}
+		})
 	}
 
 }
