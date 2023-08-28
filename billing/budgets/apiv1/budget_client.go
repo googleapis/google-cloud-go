@@ -770,6 +770,9 @@ func (c *budgetRESTClient) ListBudgets(ctx context.Context, req *budgetspb.ListB
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if req.GetScope() != "" {
+			params.Add("scope", fmt.Sprintf("%v", req.GetScope()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
