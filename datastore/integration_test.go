@@ -741,7 +741,6 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		}
 	}()
 
-	time.Sleep(10 * time.Second)
 	// Create transaction with read after creating entities
 	readTime = time.Now().Truncate(time.Microsecond)
 	txAfterCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
