@@ -135,7 +135,7 @@ type readSession struct {
 
 // Start initiates a read session
 func (rs *readSession) start() error {
-	preferredMinStreamCount := int32(0)
+	var preferredMinStreamCount int32
 	maxStreamCount := int32(rs.settings.maxStreamCount)
 	if maxStreamCount == 0 {
 		preferredMinStreamCount = int32(rs.settings.maxWorkerCount)
