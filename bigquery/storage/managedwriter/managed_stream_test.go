@@ -421,6 +421,17 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 		// Issue two closes, to ensure we're not deadlocking there either.
 		ms.Close()
 		ms.Close()
+
+		// Issue two more appends, ensure we're not deadlocked as the writer is closed.
+		gotErr = ms.appendWithRetry(pw)
+		if !errors.Is(gotErr, io.EOF) {
+			t.Errorf("expected io.EOF, got %v", gotErr)
+		}
+		gotErr = ms.appendWithRetry(pw)
+		if !errors.Is(gotErr, io.EOF) {
+			t.Errorf("expected io.EOF, got %v", gotErr)
+		}
+
 	}
 
 }
