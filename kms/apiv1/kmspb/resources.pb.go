@@ -21,15 +21,14 @@
 package kmspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -254,11 +253,11 @@ func (KeyOperationAttestation_AttestationFormat) EnumDescriptor() ([]byte, []int
 // [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose]
 // [ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].
 //
-// Algorithms beginning with `RSA_SIGN_` are usable with
+// Algorithms beginning with "RSA_SIGN_" are usable with
 // [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose]
 // [ASYMMETRIC_SIGN][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ASYMMETRIC_SIGN].
 //
-// The fields in the name after `RSA_SIGN_` correspond to the following
+// The fields in the name after "RSA_SIGN_" correspond to the following
 // parameters: padding algorithm, modulus bit length, and digest algorithm.
 //
 // For PSS, the salt length used is equal to the length of digest
@@ -266,25 +265,25 @@ func (KeyOperationAttestation_AttestationFormat) EnumDescriptor() ([]byte, []int
 // [RSA_SIGN_PSS_2048_SHA256][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithm.RSA_SIGN_PSS_2048_SHA256]
 // will use PSS with a salt length of 256 bits or 32 bytes.
 //
-// Algorithms beginning with `RSA_DECRYPT_` are usable with
+// Algorithms beginning with "RSA_DECRYPT_" are usable with
 // [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose]
 // [ASYMMETRIC_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ASYMMETRIC_DECRYPT].
 //
-// The fields in the name after `RSA_DECRYPT_` correspond to the following
+// The fields in the name after "RSA_DECRYPT_" correspond to the following
 // parameters: padding algorithm, modulus bit length, and digest algorithm.
 //
-// Algorithms beginning with `EC_SIGN_` are usable with
+// Algorithms beginning with "EC_SIGN_" are usable with
 // [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose]
 // [ASYMMETRIC_SIGN][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ASYMMETRIC_SIGN].
 //
-// The fields in the name after `EC_SIGN_` correspond to the following
+// The fields in the name after "EC_SIGN_" correspond to the following
 // parameters: elliptic curve, digest algorithm.
 //
-// Algorithms beginning with `HMAC_` are usable with
+// Algorithms beginning with "HMAC_" are usable with
 // [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose]
 // [MAC][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.MAC].
 //
-// The suffix following `HMAC_` corresponds to the hash algorithm being used
+// The suffix following "HMAC_" corresponds to the hash algorithm being used
 // (eg. SHA256).
 //
 // For more information, see [Key purposes and algorithms]
