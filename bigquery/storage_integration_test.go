@@ -15,13 +15,19 @@
 package bigquery
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/apache/arrow/go/v12/arrow"
+	"github.com/apache/arrow/go/v12/arrow/array"
+	"github.com/apache/arrow/go/v12/arrow/ipc"
+	"github.com/apache/arrow/go/v12/arrow/math"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 )
@@ -423,6 +429,106 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 	if !arrowIt.isDone() {
 		t.Fatal("expected stream to be done")
 	}
+}
+
+func TestIntegration_StorageReadArrow(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := "`bigquery-public-data.usa_names.usa_1910_current`"
+	sql := fmt.Sprintf(`SELECT name, number, state FROM %s where state = "CA"`, table)
+
+	q := storageOptimizedClient.Query(sql)
+	job, err := q.Run(ctx) // force usage of Storage API by skipping fast paths
+	if err != nil {
+		t.Fatal(err)
+	}
+	it, err := job.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	arrowIt, err := it.ArrowIterator()
+	if err != nil {
+		t.Fatalf("expected iterator to be accelerated: %v", err)
+	}
+	var arrowSchema *arrow.Schema
+	records := []arrow.Record{}
+	r, err := ipc.NewReader(&arrowIteratorReader{
+		it: arrowIt,
+	})
+	numrec := 0
+	for r.Next() {
+		rec := r.Record()
+		rec.Retain()
+		records = append(records, rec)
+		numrec += int(rec.NumRows())
+	}
+	arrowSchema = r.Schema()
+	r.Release()
+	t.Logf("decoded %d records", numrec)
+
+	if arrowSchema == nil {
+		t.Fatal("should have Arrow table available, but nil found")
+	}
+	t.Logf("decoded total of %d record batches", len(records))
+	arrowTable := array.NewTableFromRecords(arrowSchema, records)
+	defer arrowTable.Release()
+	if arrowTable.NumRows() != int64(it.TotalRows) {
+		t.Fatalf("should have a table with %d rows, but found %d", it.TotalRows, arrowTable.NumRows())
+	}
+	if arrowTable.NumCols() != 3 {
+		t.Fatalf("should have a table with 3 columns, but found %d", arrowTable.NumCols())
+	}
+
+	sumSQL := fmt.Sprintf(`SELECT sum(number) as total FROM %s where state = "CA"`, table)
+	sumQuery := client.Query(sumSQL)
+	sumIt, err := sumQuery.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sumValues := []Value{}
+	err = sumIt.Next(&sumValues)
+	if err != nil {
+		t.Fatal(err)
+	}
+	totalFromSQL := sumValues[0].(int64)
+
+	tr := array.NewTableReader(arrowTable, arrowTable.NumRows())
+	var totalFromArrow int64
+	for tr.Next() {
+		rec := tr.Record()
+		vec := array.NewInt64Data(rec.Column(1).Data())
+		totalFromArrow += math.Int64.Sum(vec)
+	}
+	if totalFromArrow != totalFromSQL {
+		t.Fatalf("expected total to be %d, but with arrow we got %d", totalFromSQL, totalFromArrow)
+	}
+}
+
+// Helper struct that implements io.Reader to read
+// full ArrowIterator with ipc.Reader
+type arrowIteratorReader struct {
+	buf *bytes.Buffer
+	it  ArrowIterator
+}
+
+// Read makes arrowIteratorReader implement io.Reader
+func (r *arrowIteratorReader) Read(p []byte) (int, error) {
+	if r.buf == nil { // init with schema
+		buf := bytes.NewBuffer(r.it.SerializedArrowSchema())
+		r.buf = buf
+	}
+	n, err := r.buf.Read(p)
+	if err == io.EOF {
+		batch, err := r.it.Next()
+		if err == iterator.Done {
+			return -1, io.EOF
+		}
+		r.buf.Write(batch.Data)
+		return r.Read(p)
+	}
+	return n, err
 }
 
 func countIteratorRows(it *RowIterator) (total uint64, err error) {

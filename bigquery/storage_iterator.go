@@ -349,3 +349,15 @@ func (it *storageArrowIterator) Schema() Schema {
 func (it *RowIterator) IsAccelerated() bool {
 	return it.arrowIterator != nil
 }
+
+// ArrowIterator gives access to the raw Arrow Record Batch stream to be consumed directly.
+// Experimental: this interface is experimental and may be modified or removed in future versions,
+// regardless of any other documented package stability guarantees.
+// Don't try to mix RowIterator.Next and ArrowIterator.Next calls.
+func (it *RowIterator) ArrowIterator() (ArrowIterator, error) {
+	if !it.IsAccelerated() {
+		// TODO: can we convert plain RowIterator based on JSON API to an Arrow Stream ?
+		return nil, errors.New("bigquery: require storage read API to be enabled")
+	}
+	return it.arrowIterator, nil
+}
