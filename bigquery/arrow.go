@@ -17,8 +17,8 @@ package bigquery
 import (
 	"bytes"
 	"encoding/base64"
-	"errors"
 	"fmt"
+	"io"
 	"math/big"
 
 	"cloud.google.com/go/civil"
@@ -27,18 +27,42 @@ import (
 	"github.com/apache/arrow/go/v12/arrow/ipc"
 )
 
-type arrowDecoder struct {
-	tableSchema    Schema
-	rawArrowSchema []byte
-	arrowSchema    *arrow.Schema
+// ArrowRecordBatch represents an Arrow RecordBatch with the source PartitionID
+type ArrowRecordBatch struct {
+	reader io.Reader
+	// Serialized Arrow Record Batch.
+	Data []byte
+	// Serialized Arrow Schema.
+	Schema []byte
+	// Source partition ID. In the Storage API world, it represents the ReadStream.
+	PartitionID string
 }
 
-func newArrowDecoderFromSession(session *readSession, schema Schema) (*arrowDecoder, error) {
-	bqSession := session.bqSession
-	if bqSession == nil {
-		return nil, errors.New("read session not initialized")
+// Read makes ArrowRecordBatch implements io.Reader
+func (r *ArrowRecordBatch) Read(p []byte) (int, error) {
+	if r.reader == nil {
+		buf := bytes.NewBuffer(r.Schema)
+		buf.Write(r.Data)
+		r.reader = buf
 	}
-	arrowSerializedSchema := bqSession.GetArrowSchema().GetSerializedSchema()
+	return r.reader.Read(p)
+}
+
+// ArrowIterator represents a way to iterate through a stream of arrow records.
+// Experimental: this interface is experimental and may be modified or removed in future versions,
+// regardless of any other documented package stability guarantees.
+type ArrowIterator interface {
+	Next() (*ArrowRecordBatch, error)
+	Schema() Schema
+	SerializedArrowSchema() []byte
+}
+
+type arrowDecoder struct {
+	tableSchema Schema
+	arrowSchema *arrow.Schema
+}
+
+func newArrowDecoder(arrowSerializedSchema []byte, schema Schema) (*arrowDecoder, error) {
 	buf := bytes.NewBuffer(arrowSerializedSchema)
 	r, err := ipc.NewReader(buf)
 	if err != nil {
@@ -46,22 +70,19 @@ func newArrowDecoderFromSession(session *readSession, schema Schema) (*arrowDeco
 	}
 	defer r.Release()
 	p := &arrowDecoder{
-		tableSchema:    schema,
-		rawArrowSchema: arrowSerializedSchema,
-		arrowSchema:    r.Schema(),
+		tableSchema: schema,
+		arrowSchema: r.Schema(),
 	}
 	return p, nil
 }
 
-func (ap *arrowDecoder) createIPCReaderForBatch(serializedArrowRecordBatch []byte) (*ipc.Reader, error) {
-	buf := bytes.NewBuffer(ap.rawArrowSchema)
-	buf.Write(serializedArrowRecordBatch)
-	return ipc.NewReader(buf, ipc.WithSchema(ap.arrowSchema))
+func (ap *arrowDecoder) createIPCReaderForBatch(arrowRecordBatch *ArrowRecordBatch) (*ipc.Reader, error) {
+	return ipc.NewReader(arrowRecordBatch, ipc.WithSchema(ap.arrowSchema))
 }
 
 // decodeArrowRecords decodes BQ ArrowRecordBatch into rows of []Value.
-func (ap *arrowDecoder) decodeArrowRecords(serializedArrowRecordBatch []byte) ([][]Value, error) {
-	r, err := ap.createIPCReaderForBatch(serializedArrowRecordBatch)
+func (ap *arrowDecoder) decodeArrowRecords(arrowRecordBatch *ArrowRecordBatch) ([][]Value, error) {
+	r, err := ap.createIPCReaderForBatch(arrowRecordBatch)
 	if err != nil {
 		return nil, err
 	}
@@ -79,8 +100,8 @@ func (ap *arrowDecoder) decodeArrowRecords(serializedArrowRecordBatch []byte) ([
 }
 
 // decodeRetainedArrowRecords decodes BQ ArrowRecordBatch into a list of retained arrow.Record.
-func (ap *arrowDecoder) decodeRetainedArrowRecords(serializedArrowRecordBatch []byte) ([]arrow.Record, error) {
-	r, err := ap.createIPCReaderForBatch(serializedArrowRecordBatch)
+func (ap *arrowDecoder) decodeRetainedArrowRecords(arrowRecordBatch *ArrowRecordBatch) ([]arrow.Record, error) {
+	r, err := ap.createIPCReaderForBatch(arrowRecordBatch)
 	if err != nil {
 		return nil, err
 	}
