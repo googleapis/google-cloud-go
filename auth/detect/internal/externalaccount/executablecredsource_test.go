@@ -128,13 +128,13 @@ func TestCreateExecutableCredential(t *testing.T) {
 func TestExecutableCredentialGetEnvironment(t *testing.T) {
 	var tests = []struct {
 		name            string
-		config          Config
+		opts            Options
 		environment     testEnvironment
 		wantEnvironment []string
 	}{
 		{
 			name: "Minimal Executable Config",
-			config: Config{
+			opts: Options{
 				Audience:         "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				SubjectTokenType: "urn:ietf:params:oauth:token-type:jwt",
 				CredentialSource: internaldetect.CredentialSource{
@@ -157,7 +157,7 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 		},
 		{
 			name: "Full Impersonation URL",
-			config: Config{
+			opts: Options{
 				Audience:                       "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/test@project.iam.gserviceaccount.com:generateAccessToken",
 				SubjectTokenType:               "urn:ietf:params:oauth:token-type:jwt",
@@ -184,7 +184,7 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 		},
 		{
 			name: "Impersonation Email",
-			config: Config{
+			opts: Options{
 				Audience:                       "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				ServiceAccountImpersonationURL: "test@project.iam.gserviceaccount.com",
 				SubjectTokenType:               "urn:ietf:params:oauth:token-type:jwt",
@@ -211,9 +211,9 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			config := tt.config
+			opts := tt.opts
 
-			ecs, err := CreateExecutableCredential(internal.CloneDefaultClient(), config.CredentialSource.Executable, &config)
+			ecs, err := CreateExecutableCredential(internal.CloneDefaultClient(), opts.CredentialSource.Executable, &opts)
 			if err != nil {
 				t.Fatalf("creation failed %v", err)
 			}
@@ -242,10 +242,10 @@ func TestRetrieveExecutableSubjectTokenExecutableErrors(t *testing.T) {
 		},
 	}
 
-	tfc := testFileConfig
+	tfc := testFileOpts
 	tfc.CredentialSource = cs
 
-	base, err := tfc.parse()
+	base, err := tfc.baseProvider()
 	if err != nil {
 		t.Fatalf("parse() failed %v", err)
 	}
@@ -471,10 +471,10 @@ func TestRetrieveExecutableSubjectTokenSuccesses(t *testing.T) {
 		},
 	}
 
-	tfc := testFileConfig
+	tfc := testFileOpts
 	tfc.CredentialSource = cs
 
-	base, err := tfc.parse()
+	base, err := tfc.baseProvider()
 	if err != nil {
 		t.Fatalf("parse() failed %v", err)
 	}
@@ -581,10 +581,10 @@ func TestRetrieveOutputFileSubjectTokenNotJSON(t *testing.T) {
 		},
 	}
 
-	tfc := testFileConfig
+	tfc := testFileOpts
 	tfc.CredentialSource = cs
 
-	base, err := tfc.parse()
+	base, err := tfc.baseProvider()
 	if err != nil {
 		t.Fatalf("parse() failed %v", err)
 	}
@@ -729,10 +729,10 @@ func TestRetrieveOutputFileSubjectTokenFailureTests(t *testing.T) {
 				},
 			}
 
-			tfc := testFileConfig
+			tfc := testFileOpts
 			tfc.CredentialSource = cs
 
-			base, err := tfc.parse()
+			base, err := tfc.baseProvider()
 			if err != nil {
 				t.Fatalf("parse() failed %v", err)
 			}
@@ -831,10 +831,10 @@ func TestRetrieveOutputFileSubjectTokenInvalidCache(t *testing.T) {
 				},
 			}
 
-			tfc := testFileConfig
+			tfc := testFileOpts
 			tfc.CredentialSource = cs
 
-			base, err := tfc.parse()
+			base, err := tfc.baseProvider()
 			if err != nil {
 				t.Fatalf("parse() failed %v", err)
 			}
@@ -936,10 +936,10 @@ func TestRetrieveOutputFileSubjectTokenJwt(t *testing.T) {
 				},
 			}
 
-			tfc := testFileConfig
+			tfc := testFileOpts
 			tfc.CredentialSource = cs
 
-			base, err := tfc.parse()
+			base, err := tfc.baseProvider()
 			if err != nil {
 				t.Fatalf("parse() failed %v", err)
 			}

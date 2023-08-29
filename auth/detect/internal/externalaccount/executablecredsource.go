@@ -108,13 +108,13 @@ type executableCredentialProvider struct {
 	Timeout    time.Duration
 	OutputFile string
 	client     *http.Client
-	config     *Config
+	opts     *Options
 	env        environment
 }
 
 // CreateExecutableCredential creates an executableCredentialSource given an internaldetect.ExecutableConfig.
 // It also performs defaulting and type conversions.
-func CreateExecutableCredential(client *http.Client, ec *internaldetect.ExecutableConfig, config *Config) (*executableCredentialProvider, error) {
+func CreateExecutableCredential(client *http.Client, ec *internaldetect.ExecutableConfig, opts *Options) (*executableCredentialProvider, error) {
 	if ec.Command == "" {
 		return nil, errors.New("detect: missing `command` field — executable command must be provided")
 	}
@@ -131,7 +131,7 @@ func CreateExecutableCredential(client *http.Client, ec *internaldetect.Executab
 	}
 	result.OutputFile = ec.OutputFile
 	result.client = client
-	result.config = config
+	result.opts = opts
 	result.env = runtimeEnvironment{}
 	return result, nil
 }
@@ -237,11 +237,11 @@ func (cs *executableCredentialProvider) getTokenFromOutputFile() (token string, 
 
 func (cs *executableCredentialProvider) executableEnvironment() []string {
 	result := cs.env.existingEnv()
-	result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_AUDIENCE=%v", cs.config.Audience))
-	result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_TOKEN_TYPE=%v", cs.config.SubjectTokenType))
+	result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_AUDIENCE=%v", cs.opts.Audience))
+	result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_TOKEN_TYPE=%v", cs.opts.SubjectTokenType))
 	result = append(result, "GOOGLE_EXTERNAL_ACCOUNT_INTERACTIVE=0")
-	if cs.config.ServiceAccountImpersonationURL != "" {
-		matches := serviceAccountImpersonationRE.FindStringSubmatch(cs.config.ServiceAccountImpersonationURL)
+	if cs.opts.ServiceAccountImpersonationURL != "" {
+		matches := serviceAccountImpersonationRE.FindStringSubmatch(cs.opts.ServiceAccountImpersonationURL)
 		if matches != nil {
 			result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_IMPERSONATED_EMAIL=%v", matches[1]))
 		}

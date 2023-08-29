@@ -123,7 +123,7 @@ func handleUserCredential(f *internaldetect.UserCredentialsFile, opts *Options) 
 }
 
 func handleExternalAccount(f *internaldetect.ExternalAccountFile, opts *Options) (auth.TokenProvider, error) {
-	cfg := &externalaccount.Config{
+	externalOpts := &externalaccount.Options{
 		Audience:                       f.Audience,
 		SubjectTokenType:               f.SubjectTokenType,
 		TokenURL:                       f.TokenURL,
@@ -138,7 +138,7 @@ func handleExternalAccount(f *internaldetect.ExternalAccountFile, opts *Options)
 		WorkforcePoolUserProject: f.WorkforcePoolUserProject,
 		Client:                   opts.client(),
 	}
-	return cfg.TokenProvider()
+	return externalaccount.NewTokenProvider(externalOpts)
 }
 
 func handleImpersonatedServiceAccount(f *internaldetect.ImpersonatedServiceAccountFile, opts *Options) (auth.TokenProvider, error) {

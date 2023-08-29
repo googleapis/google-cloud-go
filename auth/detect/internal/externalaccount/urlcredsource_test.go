@@ -41,10 +41,10 @@ func TestRetrieveURLSubjectToken_Text(t *testing.T) {
 		Format:  internaldetect.Format{Type: fileTypeText},
 		Headers: heads,
 	}
-	tfc := testFileConfig
+	tfc := testFileOpts
 	tfc.CredentialSource = cs
 
-	base, err := tfc.parse()
+	base, err := tfc.baseProvider()
 	if err != nil {
 		t.Fatalf("parse() failed %v", err)
 	}
@@ -70,10 +70,10 @@ func TestRetrieveURLSubjectToken_Untyped(t *testing.T) {
 	cs := internaldetect.CredentialSource{
 		URL: ts.URL,
 	}
-	tfc := testFileConfig
+	tfc := testFileOpts
 	tfc.CredentialSource = cs
 
-	base, err := tfc.parse()
+	base, err := tfc.baseProvider()
 	if err != nil {
 		t.Fatalf("parse() failed %v", err)
 	}
@@ -99,10 +99,10 @@ func TestRetrieveURLSubjectToken_JSON(t *testing.T) {
 		URL:    ts.URL,
 		Format: internaldetect.Format{Type: fileTypeJSON, SubjectTokenFieldName: "SubjToken"},
 	}
-	tfc := testFileConfig
+	tfc := testFileOpts
 	tfc.CredentialSource = cs
 
-	base, err := tfc.parse()
+	base, err := tfc.baseProvider()
 	if err != nil {
 		t.Fatalf("tfc.parse() = %v", err)
 	}

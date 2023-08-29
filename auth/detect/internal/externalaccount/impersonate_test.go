@@ -32,12 +32,12 @@ var (
 func TestImpersonation(t *testing.T) {
 	var impersonationTests = []struct {
 		name     string
-		config   Config
+		opts     *Options
 		wantBody string
 	}{
 		{
 			name: "Base Impersonation",
-			config: Config{
+			opts: &Options{
 				Audience:         "32555940559.apps.googleusercontent.com",
 				SubjectTokenType: "urn:ietf:params:oauth:token-type:jwt",
 				TokenInfoURL:     "http://localhost:8080/v1/tokeninfo",
@@ -50,7 +50,7 @@ func TestImpersonation(t *testing.T) {
 		},
 		{
 			name: "With TokenLifetime Set",
-			config: Config{
+			opts: &Options{
 				Audience:         "32555940559.apps.googleusercontent.com",
 				SubjectTokenType: "urn:ietf:params:oauth:token-type:jwt",
 				TokenInfoURL:     "http://localhost:8080/v1/tokeninfo",
@@ -108,12 +108,12 @@ func TestImpersonation(t *testing.T) {
 			}))
 			defer ts.Close()
 
-			testImpersonateConfig := tt.config
-			testImpersonateConfig.ServiceAccountImpersonationURL = ts.URL + "/impersonate"
-			testImpersonateConfig.TokenURL = ts.URL + "/target"
-			testImpersonateConfig.Client = internal.CloneDefaultClient()
+			testImpersonateOpts := tt.opts
+			testImpersonateOpts.ServiceAccountImpersonationURL = ts.URL + "/impersonate"
+			testImpersonateOpts.TokenURL = ts.URL + "/target"
+			testImpersonateOpts.Client = internal.CloneDefaultClient()
 
-			tp, err := testImpersonateConfig.tokenProvider("http")
+			tp, err := NewTokenProvider(testImpersonateOpts)
 			if err != nil {
 				t.Fatalf("Failed to create TokenSource: %v", err)
 			}

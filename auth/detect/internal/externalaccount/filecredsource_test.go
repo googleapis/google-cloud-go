@@ -23,7 +23,7 @@ import (
 )
 
 var (
-	testFileConfig = Config{
+	testFileOpts = Options{
 		Audience:                       "32555940559.apps.googleusercontent.com",
 		SubjectTokenType:               "urn:ietf:params:oauth:token-type:jwt",
 		TokenURL:                       "http://localhost:8080/v1/token",
@@ -68,11 +68,11 @@ func TestRetrieveFileSubjectToken(t *testing.T) {
 
 	for _, test := range tests {
 		test := test
-		tfc := testFileConfig
+		tfc := testFileOpts
 		tfc.CredentialSource = test.cs
 
 		t.Run(test.name, func(t *testing.T) {
-			base, err := tfc.parse()
+			base, err := tfc.baseProvider()
 			if err != nil {
 				t.Fatalf("parse() failed %v", err)
 			}

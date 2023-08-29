@@ -45,8 +45,8 @@ var (
 	validWorkforceAudiencePattern *regexp.Regexp = regexp.MustCompile(`//iam\.googleapis\.com/locations/[^/]+/workforcePools/`)
 )
 
-// Config stores the configuration for fetching tokens with external credentials.
-type Config struct {
+// Options stores the configuration for fetching tokens with external credentials.
+type Options struct {
 	// Audience is the Secure Token Service (STS) audience which contains the resource name for the workload
 	// identity pool or the workforce pool and the provider identifier in that pool.
 	Audience string
@@ -88,41 +88,29 @@ type Config struct {
 	Client *http.Client
 }
 
-func validateWorkforceAudience(input string) bool {
-	return validWorkforceAudiencePattern.MatchString(input)
-}
-
-// TokenProvider returns an external account TokenSource struct. This is to be called by package google to construct a google.Credentials.
-func (c *Config) TokenProvider() (auth.TokenProvider, error) {
-	return c.tokenProvider("https")
-}
-
-// tokenProvider is a private function that's directly called by some of the tests,
-// because the unit test URLs are mocked, and would otherwise fail the
-// validity check.
-func (c *Config) tokenProvider(scheme string) (auth.TokenProvider, error) {
-	if c.WorkforcePoolUserProject != "" {
-		valid := validateWorkforceAudience(c.Audience)
+func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
+	if opts.WorkforcePoolUserProject != "" {
+		valid := validateWorkforceAudience(opts.Audience)
 		if !valid {
 			return nil, fmt.Errorf("detect: workforce_pool_user_project should not be set for non-workforce pool credentials")
 		}
 	}
 
 	tp := tokenProvider{
-		client: c.Client,
-		conf:   c,
+		client: opts.Client,
+		opts:   opts,
 	}
-	if c.ServiceAccountImpersonationURL == "" {
+	if opts.ServiceAccountImpersonationURL == "" {
 		return auth.NewCachedTokenProvider(tp, nil), nil
 	}
-	scopes := c.Scopes
-	tp.conf.Scopes = []string{"https://www.googleapis.com/auth/cloud-platform"}
+	scopes := opts.Scopes
+	tp.opts.Scopes = []string{"https://www.googleapis.com/auth/cloud-platform"}
 	imp, err := impersonate.NewTokenProvider(&impersonate.Options{
-		Client:               c.Client,
-		URL:                  c.ServiceAccountImpersonationURL,
+		Client:               opts.Client,
+		URL:                  opts.ServiceAccountImpersonationURL,
 		Scopes:               scopes,
 		Tp:                   auth.NewCachedTokenProvider(tp, nil),
-		TokenLifetimeSeconds: c.ServiceAccountImpersonationLifetimeSeconds,
+		TokenLifetimeSeconds: opts.ServiceAccountImpersonationLifetimeSeconds,
 	})
 	if err != nil {
 		return nil, err
@@ -130,52 +118,56 @@ func (c *Config) tokenProvider(scheme string) (auth.TokenProvider, error) {
 	return auth.NewCachedTokenProvider(imp, nil), nil
 }
 
-// parse determines the type of  internaldetect.CredentialSource needed.
-func (c *Config) parse() (baseCredentialProvider, error) {
-	if len(c.CredentialSource.EnvironmentID) > 3 && c.CredentialSource.EnvironmentID[:3] == "aws" {
-		if awsVersion, err := strconv.Atoi(c.CredentialSource.EnvironmentID[3:]); err == nil {
+func validateWorkforceAudience(input string) bool {
+	return validWorkforceAudiencePattern.MatchString(input)
+}
+
+// baseProvider determines the type of  internaldetect.CredentialSource needed.
+func (o *Options) baseProvider() (subjectTokenProvider, error) {
+	if len(o.CredentialSource.EnvironmentID) > 3 && o.CredentialSource.EnvironmentID[:3] == "aws" {
+		if awsVersion, err := strconv.Atoi(o.CredentialSource.EnvironmentID[3:]); err == nil {
 			if awsVersion != 1 {
 				return nil, fmt.Errorf("detect: aws version '%d' is not supported in the current build", awsVersion)
 			}
 
 			awsCreds := &awsCredentialProvider{
-				EnvironmentID:               c.CredentialSource.EnvironmentID,
-				RegionURL:                   c.CredentialSource.RegionURL,
-				RegionalCredVerificationURL: c.CredentialSource.RegionalCredVerificationURL,
-				CredVerificationURL:         c.CredentialSource.URL,
-				TargetResource:              c.Audience,
-				Client:                      c.Client,
+				EnvironmentID:               o.CredentialSource.EnvironmentID,
+				RegionURL:                   o.CredentialSource.RegionURL,
+				RegionalCredVerificationURL: o.CredentialSource.RegionalCredVerificationURL,
+				CredVerificationURL:         o.CredentialSource.URL,
+				TargetResource:              o.Audience,
+				Client:                      o.Client,
 			}
-			if c.CredentialSource.IMDSv2SessionTokenURL != "" {
-				awsCreds.IMDSv2SessionTokenURL = c.CredentialSource.IMDSv2SessionTokenURL
+			if o.CredentialSource.IMDSv2SessionTokenURL != "" {
+				awsCreds.IMDSv2SessionTokenURL = o.CredentialSource.IMDSv2SessionTokenURL
 			}
 
 			return awsCreds, nil
 		}
-	} else if c.CredentialSource.File != "" {
-		return fileCredentialProvider{File: c.CredentialSource.File, Format: c.CredentialSource.Format}, nil
-	} else if c.CredentialSource.URL != "" {
-		return urlCredentialProvider{URL: c.CredentialSource.URL, Headers: c.CredentialSource.Headers, Format: c.CredentialSource.Format, Client: c.Client}, nil
-	} else if c.CredentialSource.Executable != nil {
-		return CreateExecutableCredential(c.Client, c.CredentialSource.Executable, c)
+	} else if o.CredentialSource.File != "" {
+		return fileCredentialProvider{File: o.CredentialSource.File, Format: o.CredentialSource.Format}, nil
+	} else if o.CredentialSource.URL != "" {
+		return urlCredentialProvider{URL: o.CredentialSource.URL, Headers: o.CredentialSource.Headers, Format: o.CredentialSource.Format, Client: o.Client}, nil
+	} else if o.CredentialSource.Executable != nil {
+		return CreateExecutableCredential(o.Client, o.CredentialSource.Executable, o)
 	}
 	return nil, errors.New("detect: unable to parse credential source")
 }
 
-type baseCredentialProvider interface {
+type subjectTokenProvider interface {
 	subjectToken(ctx context.Context) (string, error)
 }
 
 // tokenProvider is the provider that handles external credentials. It is used to retrieve Tokens.
 type tokenProvider struct {
 	client *http.Client
-	conf   *Config
+	opts   *Options
 }
 
 func (ts tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	conf := ts.conf
+	conf := ts.opts
 
-	credSource, err := conf.parse()
+	credSource, err := conf.baseProvider()
 	if err != nil {
 		return nil, err
 	}

@@ -39,7 +39,7 @@ const (
 )
 
 var (
-	testConfig = Config{
+	testOpts = &Options{
 		Audience:         "32555940559.apps.googleusercontent.com",
 		SubjectTokenType: "urn:ietf:params:oauth:token-type:jwt",
 		TokenInfoURL:     "http://localhost:8080/v1/tokeninfo",
@@ -57,7 +57,7 @@ var (
 )
 
 func TestToken(t *testing.T) {
-	config := Config{
+	opts := Options{
 		Audience:         "32555940559.apps.googleusercontent.com",
 		SubjectTokenType: "urn:ietf:params:oauth:token-type:id_token",
 		ClientSecret:     "notsosecret",
@@ -74,7 +74,7 @@ func TestToken(t *testing.T) {
 		response:      baseCredsResponseBody,
 	}
 
-	tok, err := run(t, &config, &server)
+	tok, err := run(t, &opts, &server)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -82,7 +82,7 @@ func TestToken(t *testing.T) {
 }
 
 func TestWorkforcePoolTokenWithClientID(t *testing.T) {
-	config := Config{
+	opts := Options{
 		Audience:                 "//iam.googleapis.com/locations/eu/workforcePools/pool-id/providers/provider-id",
 		SubjectTokenType:         "urn:ietf:params:oauth:token-type:id_token",
 		ClientSecret:             "notsosecret",
@@ -100,7 +100,7 @@ func TestWorkforcePoolTokenWithClientID(t *testing.T) {
 		response:      baseCredsResponseBody,
 	}
 
-	tok, err := run(t, &config, &server)
+	tok, err := run(t, &opts, &server)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,7 +108,7 @@ func TestWorkforcePoolTokenWithClientID(t *testing.T) {
 }
 
 func TestWorkforcePoolTokenWithoutClientID(t *testing.T) {
-	config := Config{
+	opts := Options{
 		Audience:                 "//iam.googleapis.com/locations/eu/workforcePools/pool-id/providers/provider-id",
 		SubjectTokenType:         "urn:ietf:params:oauth:token-type:id_token",
 		ClientSecret:             "notsosecret",
@@ -125,7 +125,7 @@ func TestWorkforcePoolTokenWithoutClientID(t *testing.T) {
 		response:      baseCredsResponseBody,
 	}
 
-	tok, err := run(t, &config, &server)
+	tok, err := run(t, &opts, &server)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,7 +133,7 @@ func TestWorkforcePoolTokenWithoutClientID(t *testing.T) {
 }
 
 func TestNonworkforceWithWorkforcePoolUserProject(t *testing.T) {
-	config := Config{
+	opts := &Options{
 		Audience:                 "32555940559.apps.googleusercontent.com",
 		SubjectTokenType:         "urn:ietf:params:oauth:token-type:id_token",
 		TokenURL:                 "https://sts.googleapis.com",
@@ -145,7 +145,7 @@ func TestNonworkforceWithWorkforcePoolUserProject(t *testing.T) {
 		Client:                   internal.CloneDefaultClient(),
 	}
 
-	_, err := config.TokenProvider()
+	_, err := NewTokenProvider(opts)
 	if err == nil {
 		t.Fatalf("got nil, want an error")
 	}
@@ -174,12 +174,12 @@ func TestWorkforcePoolCreation(t *testing.T) {
 	}
 	for _, tt := range audienceValidatyTests {
 		t.Run(" "+tt.audience, func(t *testing.T) { // We prepend a space ahead of the test input when outputting for sake of readability.
-			config := testConfig
-			config.TokenURL = "https://sts.googleapis.com" // Setting the most basic acceptable tokenURL
-			config.ServiceAccountImpersonationURL = "https://iamcredentials.googleapis.com"
-			config.Audience = tt.audience
-			config.WorkforcePoolUserProject = "myProject"
-			_, err := config.TokenProvider()
+			opts := testOpts
+			opts.TokenURL = "https://sts.googleapis.com" // Setting the most basic acceptable tokenURL
+			opts.ServiceAccountImpersonationURL = "https://iamcredentials.googleapis.com"
+			opts.Audience = tt.audience
+			opts.WorkforcePoolUserProject = "myProject"
+			_, err := NewTokenProvider(opts)
 
 			if tt.expectSuccess && err != nil {
 				t.Errorf("got %v, want nil", err)
@@ -198,7 +198,7 @@ type testExchangeTokenServer struct {
 	response      string
 }
 
-func run(t *testing.T, config *Config, tets *testExchangeTokenServer) (*auth.Token, error) {
+func run(t *testing.T, opts *Options, tets *testExchangeTokenServer) (*auth.Token, error) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if got, want := r.URL.String(), tets.url; got != want {
 			t.Errorf("got %v, want %v", got, want)
@@ -222,14 +222,14 @@ func run(t *testing.T, config *Config, tets *testExchangeTokenServer) (*auth.Tok
 		w.Write([]byte(tets.response))
 	}))
 	defer server.Close()
-	config.TokenURL = server.URL
+	opts.TokenURL = server.URL
 
 	oldNow := now
 	defer func() { now = oldNow }()
 	now = testNow
 
 	tp := tokenProvider{
-		conf:   config,
+		opts:   opts,
 		client: internal.CloneDefaultClient(),
 	}
 
