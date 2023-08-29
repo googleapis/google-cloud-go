@@ -448,7 +448,7 @@ func TestConfig3LO_PKCEExchangeWithSuccess(t *testing.T) {
 		AuthHandlerOpts: &AuthorizationHandlerOptions{
 			State:   "testState",
 			Handler: authhandler,
-			PKCEConfig: &PKCEConfig{
+			PKCEOpts: &PKCEOptions{
 				Challenge:       "codeChallenge",
 				ChallengeMethod: "plain",
 				Verifier:        "codeChallenge",

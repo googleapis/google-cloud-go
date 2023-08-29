@@ -21,12 +21,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/auth/internal/jwt"
+	"github.com/google/go-cmp/cmp"
 )
 
 var fakePrivateKey = []byte(`-----BEGIN RSA PRIVATE KEY-----
@@ -427,7 +427,7 @@ func TestConfigJWT2LO_AssertionPayload(t *testing.T) {
 				}
 				m := got.(map[string]interface{})
 				for v, k := range opts.PrivateClaims {
-					if !reflect.DeepEqual(m[v], k) {
+					if !cmp.Equal(m[v], k) {
 						t.Errorf("payload private claims key = %q: got %#v; want %#v", v, m[v], k)
 					}
 				}
