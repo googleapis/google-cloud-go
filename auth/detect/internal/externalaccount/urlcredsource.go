@@ -25,23 +25,23 @@ import (
 	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
-type urlCredentialProvider struct {
+type urlSubjectProvider struct {
 	URL     string
 	Headers map[string]string
 	Format  internaldetect.Format
 	Client  *http.Client
 }
 
-func (cs urlCredentialProvider) subjectToken(ctx context.Context) (string, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", cs.URL, nil)
+func (sp *urlSubjectProvider) subjectToken(ctx context.Context) (string, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", sp.URL, nil)
 	if err != nil {
 		return "", fmt.Errorf("detect: HTTP request for URL-sourced credential failed: %w", err)
 	}
 
-	for key, val := range cs.Headers {
+	for key, val := range sp.Headers {
 		req.Header.Add(key, val)
 	}
-	resp, err := cs.Client.Do(req)
+	resp, err := sp.Client.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("detect: invalid response when retrieving subject token: %w", err)
 	}
@@ -55,14 +55,14 @@ func (cs urlCredentialProvider) subjectToken(ctx context.Context) (string, error
 		return "", fmt.Errorf("detect: status code %d: %s", c, respBody)
 	}
 
-	switch cs.Format.Type {
+	switch sp.Format.Type {
 	case "json":
 		jsonData := make(map[string]interface{})
 		err = json.Unmarshal(respBody, &jsonData)
 		if err != nil {
 			return "", fmt.Errorf("detect: failed to unmarshal subject token file: %w", err)
 		}
-		val, ok := jsonData[cs.Format.SubjectTokenFieldName]
+		val, ok := jsonData[sp.Format.SubjectTokenFieldName]
 		if !ok {
 			return "", errors.New("detect: provided subject_token_field_name not found in credentials")
 		}

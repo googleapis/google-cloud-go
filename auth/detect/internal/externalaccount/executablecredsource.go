@@ -28,7 +28,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
 const (
@@ -103,37 +102,13 @@ func (r runtimeEnvironment) run(ctx context.Context, command string, env []strin
 	return bytes.TrimSpace(stderr.Bytes()), nil
 }
 
-type executableCredentialProvider struct {
+type executableSubjectProvider struct {
 	Command    string
 	Timeout    time.Duration
 	OutputFile string
 	client     *http.Client
-	opts     *Options
+	opts       *Options
 	env        environment
-}
-
-// CreateExecutableCredential creates an executableCredentialSource given an internaldetect.ExecutableConfig.
-// It also performs defaulting and type conversions.
-func CreateExecutableCredential(client *http.Client, ec *internaldetect.ExecutableConfig, opts *Options) (*executableCredentialProvider, error) {
-	if ec.Command == "" {
-		return nil, errors.New("detect: missing `command` field — executable command must be provided")
-	}
-
-	result := &executableCredentialProvider{}
-	result.Command = ec.Command
-	if ec.TimeoutMillis == nil {
-		result.Timeout = defaultTimeout
-	} else {
-		result.Timeout = time.Duration(*ec.TimeoutMillis) * time.Millisecond
-		if result.Timeout < timeoutMinimum || result.Timeout > timeoutMaximum {
-			return nil, errors.New("detect: invalid `timeout_millis` field — executable timeout must be between 5 and 120 seconds")
-		}
-	}
-	result.OutputFile = ec.OutputFile
-	result.client = client
-	result.opts = opts
-	result.env = runtimeEnvironment{}
-	return result, nil
 }
 
 type executableResponse struct {
@@ -147,7 +122,7 @@ type executableResponse struct {
 	Message        string `json:"message,omitempty"`
 }
 
-func (cs *executableCredentialProvider) parseSubjectTokenFromSource(response []byte, source string, now int64) (string, error) {
+func (cs *executableSubjectProvider) parseSubjectTokenFromSource(response []byte, source string, now int64) (string, error) {
 	var result executableResponse
 	if err := json.Unmarshal(response, &result); err != nil {
 		return "", jsonParsingError(source, string(response))
@@ -194,14 +169,14 @@ func (cs *executableCredentialProvider) parseSubjectTokenFromSource(response []b
 	}
 }
 
-func (cs *executableCredentialProvider) subjectToken(ctx context.Context) (string, error) {
+func (cs *executableSubjectProvider) subjectToken(ctx context.Context) (string, error) {
 	if token, err := cs.getTokenFromOutputFile(); token != "" || err != nil {
 		return token, err
 	}
 	return cs.getTokenFromExecutableCommand(ctx)
 }
 
-func (cs *executableCredentialProvider) getTokenFromOutputFile() (token string, err error) {
+func (cs *executableSubjectProvider) getTokenFromOutputFile() (token string, err error) {
 	if cs.OutputFile == "" {
 		// This ExecutableCredentialSource doesn't use an OutputFile.
 		return "", nil
@@ -235,7 +210,7 @@ func (cs *executableCredentialProvider) getTokenFromOutputFile() (token string, 
 	return token, nil
 }
 
-func (cs *executableCredentialProvider) executableEnvironment() []string {
+func (cs *executableSubjectProvider) executableEnvironment() []string {
 	result := cs.env.existingEnv()
 	result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_AUDIENCE=%v", cs.opts.Audience))
 	result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_TOKEN_TYPE=%v", cs.opts.SubjectTokenType))
@@ -252,7 +227,7 @@ func (cs *executableCredentialProvider) executableEnvironment() []string {
 	return result
 }
 
-func (cs *executableCredentialProvider) getTokenFromExecutableCommand(ctx context.Context) (string, error) {
+func (cs *executableSubjectProvider) getTokenFromExecutableCommand(ctx context.Context) (string, error) {
 	// For security reasons, we need our consumers to set this environment variable to allow executables to be run.
 	if cs.env.getenv(allowExecutablesEnvVar) != "1" {
 		return "", errors.New("detect: executables need to be explicitly allowed (set GOOGLE_EXTERNAL_ACCOUNT_ALLOW_EXECUTABLES to '1') to run")

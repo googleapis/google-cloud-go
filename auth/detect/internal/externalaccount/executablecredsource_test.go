@@ -95,7 +95,12 @@ func TestCreateExecutableCredential(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ecs, err := CreateExecutableCredential(internal.CloneDefaultClient(), &tt.executableConfig, nil)
+			ecs, err := newSubjectTokenProvider(&Options{
+				Client: internal.CloneDefaultClient(),
+				CredentialSource: internaldetect.CredentialSource{
+					Executable: &tt.executableConfig,
+				},
+			})
 			if tt.wantErr != nil || tt.skipErrorEquals {
 				if err == nil {
 					t.Fatalf("got nil, want an error")
@@ -114,11 +119,12 @@ func TestCreateExecutableCredential(t *testing.T) {
 
 				t.Fatalf("CreateExecutableCredential with %v returned error: %v", ecJson, err)
 			} else {
-				if ecs.Command != "blarg" {
-					t.Errorf("got %v, want %v", ecs.Command, "blarg")
+				p := ecs.(*executableSubjectProvider)
+				if p.Command != "blarg" {
+					t.Errorf("got %v, want %v", p.Command, "blarg")
 				}
-				if ecs.Timeout != tt.wantTimeout {
-					t.Errorf("got %v, want %v", ecs.Timeout, tt.wantTimeout)
+				if p.Timeout != tt.wantTimeout {
+					t.Errorf("got %v, want %v", p.Timeout, tt.wantTimeout)
 				}
 			}
 		})
@@ -128,13 +134,13 @@ func TestCreateExecutableCredential(t *testing.T) {
 func TestExecutableCredentialGetEnvironment(t *testing.T) {
 	var tests = []struct {
 		name            string
-		opts            Options
+		opts            *Options
 		environment     testEnvironment
 		wantEnvironment []string
 	}{
 		{
 			name: "Minimal Executable Config",
-			opts: Options{
+			opts: &Options{
 				Audience:         "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				SubjectTokenType: "urn:ietf:params:oauth:token-type:jwt",
 				CredentialSource: internaldetect.CredentialSource{
@@ -157,7 +163,7 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 		},
 		{
 			name: "Full Impersonation URL",
-			opts: Options{
+			opts: &Options{
 				Audience:                       "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/test@project.iam.gserviceaccount.com:generateAccessToken",
 				SubjectTokenType:               "urn:ietf:params:oauth:token-type:jwt",
@@ -184,7 +190,7 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 		},
 		{
 			name: "Impersonation Email",
-			opts: Options{
+			opts: &Options{
 				Audience:                       "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				ServiceAccountImpersonationURL: "test@project.iam.gserviceaccount.com",
 				SubjectTokenType:               "urn:ietf:params:oauth:token-type:jwt",
@@ -213,12 +219,12 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			opts := tt.opts
 
-			ecs, err := CreateExecutableCredential(internal.CloneDefaultClient(), opts.CredentialSource.Executable, &opts)
+			newSubjectTokenProvider(opts)
+			ecs, err := newSubjectTokenProvider(opts)
 			if err != nil {
 				t.Fatalf("creation failed %v", err)
 			}
-
-			ecs.env = &tt.environment
+			ecs.(*executableSubjectProvider).env = &tt.environment
 
 			// This Transformer sorts a []string.
 			sorter := cmp.Transformer("Sort", func(in []string) []string {
@@ -227,7 +233,7 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 				return out
 			})
 
-			if got, want := ecs.executableEnvironment(), tt.wantEnvironment; !cmp.Equal(got, want, sorter) {
+			if got, want := ecs.(*executableSubjectProvider).executableEnvironment(), tt.wantEnvironment; !cmp.Equal(got, want, sorter) {
 				t.Errorf("ecs.executableEnvironment() = %v, want %v", got, want)
 			}
 		})
@@ -242,15 +248,15 @@ func TestRetrieveExecutableSubjectTokenExecutableErrors(t *testing.T) {
 		},
 	}
 
-	tfc := testFileOpts
-	tfc.CredentialSource = cs
+	opts := testFileOpts()
+	opts.CredentialSource = cs
 
-	base, err := tfc.baseProvider()
+	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
 		t.Fatalf("parse() failed %v", err)
 	}
 
-	ecs, ok := base.(*executableCredentialProvider)
+	ecs, ok := base.(*executableSubjectProvider)
 	if !ok {
 		t.Fatalf("Wrong credential type created.")
 	}
@@ -471,15 +477,15 @@ func TestRetrieveExecutableSubjectTokenSuccesses(t *testing.T) {
 		},
 	}
 
-	tfc := testFileOpts
-	tfc.CredentialSource = cs
+	opts := testFileOpts()
+	opts.CredentialSource = cs
 
-	base, err := tfc.baseProvider()
+	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
 		t.Fatalf("parse() failed %v", err)
 	}
 
-	ecs, ok := base.(*executableCredentialProvider)
+	ecs, ok := base.(*executableSubjectProvider)
 	if !ok {
 		t.Fatalf("Wrong credential type created.")
 	}
@@ -581,15 +587,15 @@ func TestRetrieveOutputFileSubjectTokenNotJSON(t *testing.T) {
 		},
 	}
 
-	tfc := testFileOpts
-	tfc.CredentialSource = cs
+	opts := testFileOpts()
+	opts.CredentialSource = cs
 
-	base, err := tfc.baseProvider()
+	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
 		t.Fatalf("parse() failed %v", err)
 	}
 
-	ecs, ok := base.(*executableCredentialProvider)
+	ecs, ok := base.(*executableSubjectProvider)
 	if !ok {
 		t.Fatalf("Wrong credential type created.")
 	}
@@ -729,15 +735,15 @@ func TestRetrieveOutputFileSubjectTokenFailureTests(t *testing.T) {
 				},
 			}
 
-			tfc := testFileOpts
-			tfc.CredentialSource = cs
+			opts := testFileOpts()
+			opts.CredentialSource = cs
 
-			base, err := tfc.baseProvider()
+			base, err := newSubjectTokenProvider(opts)
 			if err != nil {
 				t.Fatalf("parse() failed %v", err)
 			}
 
-			ecs, ok := base.(*executableCredentialProvider)
+			ecs, ok := base.(*executableSubjectProvider)
 			if !ok {
 				t.Fatalf("Wrong credential type created.")
 			}
@@ -831,10 +837,10 @@ func TestRetrieveOutputFileSubjectTokenInvalidCache(t *testing.T) {
 				},
 			}
 
-			tfc := testFileOpts
-			tfc.CredentialSource = cs
+			opts := testFileOpts()
+			opts.CredentialSource = cs
 
-			base, err := tfc.baseProvider()
+			base, err := newSubjectTokenProvider(opts)
 			if err != nil {
 				t.Fatalf("parse() failed %v", err)
 			}
@@ -850,7 +856,7 @@ func TestRetrieveOutputFileSubjectTokenInvalidCache(t *testing.T) {
 				},
 			}
 
-			ecs, ok := base.(*executableCredentialProvider)
+			ecs, ok := base.(*executableSubjectProvider)
 			if !ok {
 				t.Fatalf("Wrong credential type created.")
 			}
@@ -936,10 +942,10 @@ func TestRetrieveOutputFileSubjectTokenJwt(t *testing.T) {
 				},
 			}
 
-			tfc := testFileOpts
-			tfc.CredentialSource = cs
+			opts := testFileOpts()
+			opts.CredentialSource = cs
 
-			base, err := tfc.baseProvider()
+			base, err := newSubjectTokenProvider(opts)
 			if err != nil {
 				t.Fatalf("parse() failed %v", err)
 			}
@@ -949,7 +955,7 @@ func TestRetrieveOutputFileSubjectTokenJwt(t *testing.T) {
 				byteResponse: []byte{},
 			}
 
-			ecs, ok := base.(*executableCredentialProvider)
+			ecs, ok := base.(*executableSubjectProvider)
 			if !ok {
 				t.Fatalf("Wrong credential type created.")
 			}

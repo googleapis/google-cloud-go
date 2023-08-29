@@ -26,12 +26,12 @@ import (
 	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
-type fileCredentialProvider struct {
+type fileSubjectProvider struct {
 	File   string
 	Format internaldetect.Format
 }
 
-func (cs fileCredentialProvider) subjectToken(context.Context) (string, error) {
+func (cs *fileSubjectProvider) subjectToken(context.Context) (string, error) {
 	tokenFile, err := os.Open(cs.File)
 	if err != nil {
 		return "", fmt.Errorf("detect: failed to open credential file %q: %w", cs.File, err)

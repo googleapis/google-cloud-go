@@ -46,8 +46,10 @@ type awsRequestSigner struct {
 	AwsSecurityCredentials awsSecurityCredentials
 }
 
-// getenv aliases os.Getenv for testing
-var getenv = os.Getenv
+var (
+	// getenv aliases os.Getenv for testing
+	getenv = os.Getenv
+)
 
 const (
 	// AWS Signature Version 4 signing algorithm identifier.
@@ -249,7 +251,7 @@ func (rs *awsRequestSigner) generateAuthentication(req *http.Request, timestamp 
 	return fmt.Sprintf("%s Credential=%s/%s, SignedHeaders=%s, Signature=%s", awsAlgorithm, rs.AwsSecurityCredentials.AccessKeyID, credentialScope, canonicalHeaderColumns, hex.EncodeToString(signingKey)), nil
 }
 
-type awsCredentialProvider struct {
+type awsSubjectProvider struct {
 	EnvironmentID               string
 	RegionURL                   string
 	RegionalCredVerificationURL string
@@ -288,7 +290,7 @@ func shouldUseMetadataServer() bool {
 	return !canRetrieveRegionFromEnvironment() || !canRetrieveSecurityCredentialFromEnvironment()
 }
 
-func (cs *awsCredentialProvider) subjectToken(ctx context.Context) (string, error) {
+func (cs *awsSubjectProvider) subjectToken(ctx context.Context) (string, error) {
 	if cs.requestSigner == nil {
 		headers := make(map[string]string)
 		if shouldUseMetadataServer() {
@@ -374,7 +376,7 @@ func (cs *awsCredentialProvider) subjectToken(ctx context.Context) (string, erro
 	return url.QueryEscape(string(result)), nil
 }
 
-func (cs *awsCredentialProvider) getAWSSessionToken(ctx context.Context) (string, error) {
+func (cs *awsSubjectProvider) getAWSSessionToken(ctx context.Context) (string, error) {
 	if cs.IMDSv2SessionTokenURL == "" {
 		return "", nil
 	}
@@ -400,7 +402,7 @@ func (cs *awsCredentialProvider) getAWSSessionToken(ctx context.Context) (string
 	return string(respBody), nil
 }
 
-func (cs *awsCredentialProvider) getRegion(ctx context.Context, headers map[string]string) (string, error) {
+func (cs *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]string) (string, error) {
 	if canRetrieveRegionFromEnvironment() {
 		if envAwsRegion := getenv(awsRegionEnvVar); envAwsRegion != "" {
 			return envAwsRegion, nil
@@ -445,7 +447,7 @@ func (cs *awsCredentialProvider) getRegion(ctx context.Context, headers map[stri
 	return string(respBody[:respBodyEnd]), nil
 }
 
-func (cs *awsCredentialProvider) getSecurityCredentials(ctx context.Context, headers map[string]string) (result awsSecurityCredentials, err error) {
+func (cs *awsSubjectProvider) getSecurityCredentials(ctx context.Context, headers map[string]string) (result awsSecurityCredentials, err error) {
 	if canRetrieveSecurityCredentialFromEnvironment() {
 		return awsSecurityCredentials{
 			AccessKeyID:     getenv(awsAccessKeyIdEnvVar),
@@ -475,7 +477,7 @@ func (cs *awsCredentialProvider) getSecurityCredentials(ctx context.Context, hea
 	return credentials, nil
 }
 
-func (cs *awsCredentialProvider) getMetadataSecurityCredentials(ctx context.Context, roleName string, headers map[string]string) (awsSecurityCredentials, error) {
+func (cs *awsSubjectProvider) getMetadataSecurityCredentials(ctx context.Context, roleName string, headers map[string]string) (awsSecurityCredentials, error) {
 	var result awsSecurityCredentials
 
 	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/%s", cs.CredVerificationURL, roleName), nil)
@@ -507,7 +509,7 @@ func (cs *awsCredentialProvider) getMetadataSecurityCredentials(ctx context.Cont
 	return result, err
 }
 
-func (cs *awsCredentialProvider) getMetadataRoleName(ctx context.Context, headers map[string]string) (string, error) {
+func (cs *awsSubjectProvider) getMetadataRoleName(ctx context.Context, headers map[string]string) (string, error) {
 	if cs.CredVerificationURL == "" {
 		return "", errors.New("detect: unable to determine the AWS metadata server security credentials endpoint")
 	}

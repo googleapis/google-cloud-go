@@ -22,19 +22,6 @@ import (
 	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
-var (
-	testFileOpts = Options{
-		Audience:                       "32555940559.apps.googleusercontent.com",
-		SubjectTokenType:               "urn:ietf:params:oauth:token-type:jwt",
-		TokenURL:                       "http://localhost:8080/v1/token",
-		TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
-		ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
-		ClientSecret:                   "notsosecret",
-		ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
-		Client:                         internal.CloneDefaultClient(),
-	}
-)
-
 func TestRetrieveFileSubjectToken(t *testing.T) {
 	var tests = []struct {
 		name string
@@ -68,11 +55,11 @@ func TestRetrieveFileSubjectToken(t *testing.T) {
 
 	for _, test := range tests {
 		test := test
-		tfc := testFileOpts
-		tfc.CredentialSource = test.cs
+		opts := testFileOpts()
+		opts.CredentialSource = test.cs
 
 		t.Run(test.name, func(t *testing.T) {
-			base, err := tfc.baseProvider()
+			base, err := newSubjectTokenProvider(opts)
 			if err != nil {
 				t.Fatalf("parse() failed %v", err)
 			}
@@ -85,5 +72,18 @@ func TestRetrieveFileSubjectToken(t *testing.T) {
 			}
 
 		})
+	}
+}
+
+func testFileOpts() *Options {
+	return &Options{
+		Audience:                       "32555940559.apps.googleusercontent.com",
+		SubjectTokenType:               "urn:ietf:params:oauth:token-type:jwt",
+		TokenURL:                       "http://localhost:8080/v1/token",
+		TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+		ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+		ClientSecret:                   "notsosecret",
+		ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+		Client:                         internal.CloneDefaultClient(),
 	}
 }

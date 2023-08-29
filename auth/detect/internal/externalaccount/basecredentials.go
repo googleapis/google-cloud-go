@@ -90,8 +90,7 @@ type Options struct {
 
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if opts.WorkforcePoolUserProject != "" {
-		valid := validateWorkforceAudience(opts.Audience)
-		if !valid {
+		if valid := validWorkforceAudiencePattern.MatchString(opts.Audience); !valid {
 			return nil, fmt.Errorf("detect: workforce_pool_user_project should not be set for non-workforce pool credentials")
 		}
 	}
@@ -103,7 +102,10 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if opts.ServiceAccountImpersonationURL == "" {
 		return auth.NewCachedTokenProvider(tp, nil), nil
 	}
-	scopes := opts.Scopes
+
+	scopes := make([]string, len(opts.Scopes))
+	copy(scopes, opts.Scopes)
+	// needed for impersonation
 	tp.opts.Scopes = []string{"https://www.googleapis.com/auth/cloud-platform"}
 	imp, err := impersonate.NewTokenProvider(&impersonate.Options{
 		Client:               opts.Client,
@@ -118,19 +120,16 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	return auth.NewCachedTokenProvider(imp, nil), nil
 }
 
-func validateWorkforceAudience(input string) bool {
-	return validWorkforceAudiencePattern.MatchString(input)
-}
-
-// baseProvider determines the type of  internaldetect.CredentialSource needed.
-func (o *Options) baseProvider() (subjectTokenProvider, error) {
+// newSubjectTokenProvider determines the type of internaldetect.CredentialSource needed to create a
+// subjectTokenProvider
+func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 	if len(o.CredentialSource.EnvironmentID) > 3 && o.CredentialSource.EnvironmentID[:3] == "aws" {
 		if awsVersion, err := strconv.Atoi(o.CredentialSource.EnvironmentID[3:]); err == nil {
 			if awsVersion != 1 {
 				return nil, fmt.Errorf("detect: aws version '%d' is not supported in the current build", awsVersion)
 			}
 
-			awsCreds := &awsCredentialProvider{
+			awsProvider := &awsSubjectProvider{
 				EnvironmentID:               o.CredentialSource.EnvironmentID,
 				RegionURL:                   o.CredentialSource.RegionURL,
 				RegionalCredVerificationURL: o.CredentialSource.RegionalCredVerificationURL,
@@ -139,17 +138,36 @@ func (o *Options) baseProvider() (subjectTokenProvider, error) {
 				Client:                      o.Client,
 			}
 			if o.CredentialSource.IMDSv2SessionTokenURL != "" {
-				awsCreds.IMDSv2SessionTokenURL = o.CredentialSource.IMDSv2SessionTokenURL
+				awsProvider.IMDSv2SessionTokenURL = o.CredentialSource.IMDSv2SessionTokenURL
 			}
 
-			return awsCreds, nil
+			return awsProvider, nil
 		}
 	} else if o.CredentialSource.File != "" {
-		return fileCredentialProvider{File: o.CredentialSource.File, Format: o.CredentialSource.Format}, nil
+		return &fileSubjectProvider{File: o.CredentialSource.File, Format: o.CredentialSource.Format}, nil
 	} else if o.CredentialSource.URL != "" {
-		return urlCredentialProvider{URL: o.CredentialSource.URL, Headers: o.CredentialSource.Headers, Format: o.CredentialSource.Format, Client: o.Client}, nil
+		return &urlSubjectProvider{URL: o.CredentialSource.URL, Headers: o.CredentialSource.Headers, Format: o.CredentialSource.Format, Client: o.Client}, nil
 	} else if o.CredentialSource.Executable != nil {
-		return CreateExecutableCredential(o.Client, o.CredentialSource.Executable, o)
+		ec := o.CredentialSource.Executable
+		if ec.Command == "" {
+			return nil, errors.New("detect: missing `command` field — executable command must be provided")
+		}
+
+		execProvider := &executableSubjectProvider{}
+		execProvider.Command = ec.Command
+		if ec.TimeoutMillis == nil {
+			execProvider.Timeout = defaultTimeout
+		} else {
+			execProvider.Timeout = time.Duration(*ec.TimeoutMillis) * time.Millisecond
+			if execProvider.Timeout < timeoutMinimum || execProvider.Timeout > timeoutMaximum {
+				return nil, errors.New("detect: invalid `timeout_millis` field — executable timeout must be between 5 and 120 seconds")
+			}
+		}
+		execProvider.OutputFile = ec.OutputFile
+		execProvider.client = o.Client
+		execProvider.opts = o
+		execProvider.env = runtimeEnvironment{}
+		return execProvider, nil
 	}
 	return nil, errors.New("detect: unable to parse credential source")
 }
@@ -165,41 +183,39 @@ type tokenProvider struct {
 }
 
 func (ts tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	conf := ts.opts
-
-	credSource, err := conf.baseProvider()
+	subjectTokenProvider, err := newSubjectTokenProvider(ts.opts)
 	if err != nil {
 		return nil, err
 	}
-	subjectToken, err := credSource.subjectToken(ctx)
-
+	subjectToken, err := subjectTokenProvider.subjectToken(ctx)
 	if err != nil {
 		return nil, err
 	}
+
 	stsRequest := stsTokenExchangeRequest{
 		GrantType:          stsGrantType,
-		Audience:           conf.Audience,
-		Scope:              conf.Scopes,
+		Audience:           ts.opts.Audience,
+		Scope:              ts.opts.Scopes,
 		RequestedTokenType: stsTokenType,
 		SubjectToken:       subjectToken,
-		SubjectTokenType:   conf.SubjectTokenType,
+		SubjectTokenType:   ts.opts.SubjectTokenType,
 	}
 	header := make(http.Header)
 	header.Add("Content-Type", "application/x-www-form-urlencoded")
 	clientAuth := clientAuthentication{
 		AuthStyle:    auth.StyleInHeader,
-		ClientID:     conf.ClientID,
-		ClientSecret: conf.ClientSecret,
+		ClientID:     ts.opts.ClientID,
+		ClientSecret: ts.opts.ClientSecret,
 	}
 	var options map[string]interface{}
 	// Do not pass workforce_pool_user_project when client authentication is used.
 	// The client ID is sufficient for determining the user project.
-	if conf.WorkforcePoolUserProject != "" && conf.ClientID == "" {
+	if ts.opts.WorkforcePoolUserProject != "" && ts.opts.ClientID == "" {
 		options = map[string]interface{}{
-			"userProject": conf.WorkforcePoolUserProject,
+			"userProject": ts.opts.WorkforcePoolUserProject,
 		}
 	}
-	stsResp, err := exchangeToken(ctx, ts.client, conf.TokenURL, &stsRequest, clientAuth, header, options)
+	stsResp, err := exchangeToken(ctx, ts.client, ts.opts.TokenURL, &stsRequest, clientAuth, header, options)
 	if err != nil {
 		return nil, err
 	}

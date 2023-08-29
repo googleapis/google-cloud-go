@@ -41,10 +41,10 @@ func TestRetrieveURLSubjectToken_Text(t *testing.T) {
 		Format:  internaldetect.Format{Type: fileTypeText},
 		Headers: heads,
 	}
-	tfc := testFileOpts
-	tfc.CredentialSource = cs
+	opts := testFileOpts()
+	opts.CredentialSource = cs
 
-	base, err := tfc.baseProvider()
+	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
 		t.Fatalf("parse() failed %v", err)
 	}
@@ -70,10 +70,10 @@ func TestRetrieveURLSubjectToken_Untyped(t *testing.T) {
 	cs := internaldetect.CredentialSource{
 		URL: ts.URL,
 	}
-	tfc := testFileOpts
-	tfc.CredentialSource = cs
+	opts := testFileOpts()
+	opts.CredentialSource = cs
 
-	base, err := tfc.baseProvider()
+	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
 		t.Fatalf("parse() failed %v", err)
 	}
@@ -99,12 +99,12 @@ func TestRetrieveURLSubjectToken_JSON(t *testing.T) {
 		URL:    ts.URL,
 		Format: internaldetect.Format{Type: fileTypeJSON, SubjectTokenFieldName: "SubjToken"},
 	}
-	tfc := testFileOpts
-	tfc.CredentialSource = cs
+	opts := testFileOpts()
+	opts.CredentialSource = cs
 
-	base, err := tfc.baseProvider()
+	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
-		t.Fatalf("tfc.parse() = %v", err)
+		t.Fatalf("opts.parse() = %v", err)
 	}
 
 	got, err := base.subjectToken(context.Background())
