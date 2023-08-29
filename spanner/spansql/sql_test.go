@@ -971,6 +971,31 @@ func TestSQL(t *testing.T) {
 			reparseQuery,
 		},
 		{
+			Func{Name: "COUNT", Args: []Expr{Star}},
+			`COUNT(*)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "COUNTIF", Args: []Expr{ID("cname")}, Distinct: true},
+			`COUNTIF(DISTINCT cname)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "ARRAY_AGG", Args: []Expr{ID("Foo")}, NullsHandling: IgnoreNulls},
+			`ARRAY_AGG(Foo IGNORE NULLS)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "ANY_VALUE", Args: []Expr{ID("Foo")}, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}},
+			`ANY_VALUE(Foo HAVING MAX Bar)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "STRING_AGG", Args: []Expr{ID("Foo"), StringLiteral(",")}, Distinct: true, NullsHandling: IgnoreNulls, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}},
+			`STRING_AGG(DISTINCT Foo, "," IGNORE NULLS HAVING MAX Bar)`,
+			reparseExpr,
+		},
+		{
 			ComparisonOp{LHS: ID("X"), Op: NotBetween, RHS: ID("Y"), RHS2: ID("Z")},
 			`X NOT BETWEEN Y AND Z`,
 			reparseExpr,
