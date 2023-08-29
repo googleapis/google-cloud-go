@@ -724,7 +724,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	// Create transaction with read before creating entities
-	readTime := time.Now().Truncate(time.Microsecond)
+	readTime := time.Now().Add(-59 * time.Minute).Truncate(time.Microsecond)
 	txBeforeCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
 	if err != nil {
 		t.Fatalf("client.NewTransaction: %v", err)
