@@ -31,8 +31,8 @@ var (
 
 func TestImpersonation(t *testing.T) {
 	var impersonationTests = []struct {
-		name                      string
-		config                    Config
+		name     string
+		config   Config
 		wantBody string
 	}{
 		{
