@@ -28,6 +28,14 @@ func boolAddr(b bool) *bool {
 	return &b
 }
 
+func stringAddr(s string) *string {
+	return &s
+}
+
+func intAddr(i int) *int {
+	return &i
+}
+
 func TestSQL(t *testing.T) {
 	reparseDDL := func(s string) (interface{}, error) {
 		ddl, err := ParseDDLStmt(s)
@@ -759,6 +767,79 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateSequence{
+				Name:        "sname",
+				IfNotExists: true,
+				Options: SequenceOptions{
+					SequenceKind:     stringAddr("bit_reversed_sequence"),
+					SkipRangeMin:     intAddr(1),
+					SkipRangeMax:     intAddr(1234567),
+					StartWithCounter: intAddr(50),
+				},
+				Position: line(1),
+			},
+			`CREATE SEQUENCE IF NOT EXISTS sname OPTIONS (sequence_kind='bit_reversed_sequence', skip_range_min=1, skip_range_max=1234567, start_with_counter=50)`,
+			reparseDDL,
+		},
+		{
+			&CreateSequence{
+				Name: "sname",
+				Options: SequenceOptions{
+					SequenceKind: stringAddr("bit_reversed_sequence"),
+				},
+				Position: line(1),
+			},
+			`CREATE SEQUENCE sname OPTIONS (sequence_kind='bit_reversed_sequence')`,
+			reparseDDL,
+		},
+		{
+			&AlterSequence{
+				Name: "sname",
+				Alteration: SetSequenceOptions{
+					Options: SequenceOptions{
+						SequenceKind:     stringAddr("bit_reversed_sequence"),
+						SkipRangeMin:     intAddr(1),
+						SkipRangeMax:     intAddr(1234567),
+						StartWithCounter: intAddr(50),
+					},
+				},
+				Position: line(1),
+			},
+			`ALTER SEQUENCE sname SET OPTIONS (sequence_kind='bit_reversed_sequence', skip_range_min=1, skip_range_max=1234567, start_with_counter=50)`,
+			reparseDDL,
+		},
+		{
+			&AlterSequence{
+				Name: "sname",
+				Alteration: SetSequenceOptions{
+					Options: SequenceOptions{
+						StartWithCounter: intAddr(1),
+					},
+				},
+				Position: line(1),
+			},
+			`ALTER SEQUENCE sname SET OPTIONS (start_with_counter=1)`,
+			reparseDDL,
+		},
+		{
+			&DropSequence{
+				Name:     "sname",
+				IfExists: true,
+				Position: line(1),
+			},
+			`DROP SEQUENCE IF EXISTS sname`,
+			reparseDDL,
+		},
+		{
+			&DropSequence{
+				Name:     "sname",
+				IfExists: false,
+				Position: line(1),
+			},
+			`DROP SEQUENCE sname`,
+			reparseDDL,
+		},
+		{
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
@@ -888,6 +969,31 @@ func TestSQL(t *testing.T) {
 			},
 			`SELECT SAFE_CAST(7 AS DATE)`,
 			reparseQuery,
+		},
+		{
+			Func{Name: "COUNT", Args: []Expr{Star}},
+			`COUNT(*)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "COUNTIF", Args: []Expr{ID("cname")}, Distinct: true},
+			`COUNTIF(DISTINCT cname)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "ARRAY_AGG", Args: []Expr{ID("Foo")}, NullsHandling: IgnoreNulls},
+			`ARRAY_AGG(Foo IGNORE NULLS)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "ANY_VALUE", Args: []Expr{ID("Foo")}, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}},
+			`ANY_VALUE(Foo HAVING MAX Bar)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "STRING_AGG", Args: []Expr{ID("Foo"), StringLiteral(",")}, Distinct: true, NullsHandling: IgnoreNulls, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}},
+			`STRING_AGG(DISTINCT Foo, "," IGNORE NULLS HAVING MAX Bar)`,
+			reparseExpr,
 		},
 		{
 			ComparisonOp{LHS: ID("X"), Op: NotBetween, RHS: ID("Y"), RHS2: ID("Z")},

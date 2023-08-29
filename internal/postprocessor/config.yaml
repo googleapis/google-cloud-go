@@ -31,6 +31,7 @@ modules:
   - commerce
   - compute
   - confidentialcomputing
+  - config
   - contactcenterinsights
   - container
   - containeranalysis
@@ -431,6 +432,9 @@ service-configs:
   - input-directory: google/cloud/compute/v1
     service-config: compute_v1.yaml
     import-path: cloud.google.com/go/compute/apiv1
+  - input-directory: google/cloud/config/v1
+    service-config: config_v1.yaml
+    import-path: cloud.google.com/go/config/apiv1
   - input-directory: google/cloud/contactcenterinsights/v1
     service-config: contactcenterinsights_v1.yaml
     import-path: cloud.google.com/go/contactcenterinsights/apiv1
@@ -612,6 +616,9 @@ service-configs:
   - input-directory: google/cloud/notebooks/v1beta1
     service-config: notebooks_v1beta1.yaml
     import-path: cloud.google.com/go/notebooks/apiv1beta1
+  - input-directory: google/cloud/notebooks/v2
+    service-config: notebooks_v2.yaml
+    import-path: cloud.google.com/go/notebooks/apiv2
   - input-directory: google/cloud/optimization/v1
     service-config: cloudoptimization_v1.yaml
     import-path: cloud.google.com/go/optimization/apiv1
