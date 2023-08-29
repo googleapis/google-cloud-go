@@ -35,7 +35,7 @@ func startRecordingMemory(w io.Writer, oType outputType, interval time.Duration)
 		writeMemoryHeader(w)
 	}
 
-	go (func() {
+	go func() {
 		ticker := time.NewTicker(interval)
 
 		for {
@@ -52,7 +52,7 @@ func startRecordingMemory(w io.Writer, oType outputType, interval time.Duration)
 				}
 			}
 		}
-	})()
+	}()
 
 	return func() { done <- true }
 }
