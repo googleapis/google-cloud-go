@@ -17,6 +17,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"runtime"
 	"time"
 
 	"golang.org/x/sync/errgroup"
@@ -29,7 +30,7 @@ func warmupW1R3(ctx context.Context, opts *benchmarkOptions) error {
 	discardBenchmarkResults(ctx)
 
 	warmupGroup, ctx := errgroup.WithContext(ctx)
-	warmupGroup.SetLimit(opts.numWorkers)
+	warmupGroup.SetLimit(runtime.NumCPU())
 
 	for deadline := time.Now().Add(opts.warmup); time.Now().Before(deadline); {
 		warmupGroup.Go(func() error {
