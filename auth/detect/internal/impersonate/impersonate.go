@@ -57,7 +57,7 @@ type Options struct {
 	Tp auth.TokenProvider
 
 	// URL is the endpoint to call to generate a token
-	// on behalf the service account. Required.
+	// on behalf of the service account. Required.
 	URL string
 	// Scopes that the impersonated credential should have. Required.
 	Scopes []string
@@ -66,7 +66,7 @@ type Options struct {
 	// on the next service account in the chain. Optional.
 	Delegates []string
 	// TokenLifetimeSeconds is the number of seconds the impersonation token will
-	// be valid for.
+	// be valid for. Defaults to 1 hour if unset. Optional.
 	TokenLifetimeSeconds int
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Required.
