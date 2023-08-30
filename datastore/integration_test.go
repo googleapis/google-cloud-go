@@ -37,6 +37,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // TODO(djd): Make test entity clean up more robust: some test entities may
@@ -52,6 +53,7 @@ var suffix string
 const (
 	replayFilename = "datastore.replay"
 	envDatabases   = "GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES"
+	keyPrefix      = "TestIntegration_"
 )
 
 type replayInfo struct {
@@ -471,6 +473,8 @@ func TestIntegration_NilKey(t *testing.T) {
 type SQChild struct {
 	I, J int
 	T, U int64
+	V    float64
+	W    string
 }
 
 type SQTestCase struct {
@@ -701,24 +705,32 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
-	parent := NameKey("SQParent", "TestIntegration_Filters"+suffix, nil)
+	parent := NameKey("SQParent", keyPrefix+"AggregationQueries"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
-		{I: 0, T: now, U: now},
-		{I: 1, T: now, U: now},
-		{I: 2, T: now, U: now},
-		{I: 3, T: now, U: now},
-		{I: 4, T: now, U: now},
-		{I: 5, T: now, U: now},
-		{I: 6, T: now, U: now},
-		{I: 7, T: now, U: now},
+		{I: 0, T: now, U: now, V: 1.5, W: "str"},
+		{I: 1, T: now, U: now, V: 1.5, W: "str"},
+		{I: 2, T: now, U: now, V: 1.5, W: "str"},
+		{I: 3, T: now, U: now, V: 1.5, W: "str"},
+		{I: 4, T: now, U: now, V: 1.5, W: "str"},
+		{I: 5, T: now, U: now, V: 1.5, W: "str"},
+		{I: 6, T: now, U: now, V: 1.5, W: "str"},
+		{I: 7, T: now, U: now, V: 1.5, W: "str"},
 	}
 
 	keys := make([]*Key, len(children))
 	for i := range keys {
 		keys[i] = IncompleteKey("SQChild", parent)
 	}
-	keys, err := client.PutMulti(ctx, keys, children)
+
+	// Create transaction with read before creating entities
+	readTime := time.Now().Add(-59 * time.Minute).Truncate(time.Microsecond)
+	txBeforeCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
+	if err != nil {
+		t.Fatalf("client.NewTransaction: %v", err)
+	}
+
+	keys, err = client.PutMulti(ctx, keys, children)
 	if err != nil {
 		t.Fatalf("client.PutMulti: %v", err)
 	}
@@ -729,45 +741,153 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		}
 	}()
 
-	baseQuery := NewQuery("SQChild").Ancestor(parent)
+	// Create transaction with read after creating entities
+	readTime = time.Now().Truncate(time.Microsecond)
+	txAfterCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
+	if err != nil {
+		t.Fatalf("client.NewTransaction: %v", err)
+	}
+
 	testCases := []struct {
-		desc          string
-		aggQuery      *AggregationQuery
-		wantFailure   bool
-		wantErrMsg    string
-		wantAggResult AggregationResult
+		desc            string
+		aggQuery        *AggregationQuery
+		transactionOpts []TransactionOption
+		wantFailure     bool
+		wantErrMsg      string
+		wantAggResult   AggregationResult
 	}{
+
 		{
-			desc:          "Count Failure - Missing index",
-			aggQuery:      baseQuery.Filter("T>=", now).NewAggregationQuery().WithCount("count"),
-			wantFailure:   true,
-			wantErrMsg:    "no matching index found",
-			wantAggResult: nil,
+			desc: "Count Failure - Missing index",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T>=", now).
+				NewAggregationQuery().
+				WithCount("count"),
+			wantFailure: true,
+			wantErrMsg:  "no matching index found",
 		},
 		{
-			desc:        "Count Success",
-			aggQuery:    baseQuery.Filter("T=", now).Filter("I>=", 3).NewAggregationQuery().WithCount("count"),
-			wantFailure: false,
-			wantErrMsg:  "",
+			desc: "Count Success",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).
+				NewAggregationQuery().
+				WithCount("count"),
 			wantAggResult: map[string]interface{}{
 				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
 			},
 		},
+		{
+			desc: "Aggregations in transaction before creating entities",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				Transaction(txBeforeCreate).
+				NewAggregationQuery().
+				WithCount("count").
+				WithSum("I", "sum").
+				WithAvg("I", "avg"),
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
+				"sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
+				"avg":   &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+			},
+		},
+		{
+			desc: "Aggregations in transaction after creating entities",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				Transaction(txAfterCreate).
+				NewAggregationQuery().
+				WithCount("count").
+				WithSum("I", "sum").
+				WithAvg("I", "avg"),
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 8}},
+				"sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 28}},
+				"avg":   &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
+			},
+		},
+		{
+			desc: "Multiple aggregations",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				NewAggregationQuery().
+				WithSum("I", "i_sum").
+				WithAvg("I", "avg").
+				WithSum("V", "v_sum"),
+			wantAggResult: map[string]interface{}{
+				"i_sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 28}},
+				"v_sum": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 12}},
+				"avg":   &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
+			},
+		},
+		{
+			desc: "Multiple aggregations with limit ",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Limit(2).
+				NewAggregationQuery().
+				WithSum("I", "sum").
+				WithAvg("I", "avg"),
+			wantAggResult: map[string]interface{}{
+				"sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+				"avg": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 0.5}},
+			},
+		},
+		{
+			desc: "Multiple aggregations on non-numeric field",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Limit(2).
+				NewAggregationQuery().
+				WithSum("W", "sum").
+				WithAvg("W", "avg"),
+			wantAggResult: map[string]interface{}{
+				"sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+				"avg": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+			},
+		},
+		{
+			desc: "Sum aggregation without alias",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				NewAggregationQuery().
+				WithSum("I", ""),
+			wantAggResult: map[string]interface{}{
+				"property_1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 28}},
+			},
+		},
+		{
+			desc: "Average aggregation without alias",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				NewAggregationQuery().
+				WithAvg("I", ""),
+			wantAggResult: map[string]interface{}{
+				"property_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
+			},
+		},
+		{
+			desc: "Sum aggregation on '__key__'",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				NewAggregationQuery().
+				WithSum("__key__", ""),
+			wantFailure: true,
+			wantErrMsg:  "Aggregations are not supported for the property",
+		},
+		{
+			desc: "Average aggregation on '__key__'",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				NewAggregationQuery().
+				WithAvg("__key__", ""),
+			wantFailure: true,
+			wantErrMsg:  "Aggregations are not supported for the property",
+		},
 	}
 
 	for _, testCase := range testCases {
-		gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
-		gotFailure := gotErr != nil
+		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+			gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
+			gotFailure := gotErr != nil
 
-		if gotFailure != testCase.wantFailure ||
-			(gotErr != nil && !strings.Contains(gotErr.Error(), testCase.wantErrMsg)) {
-			t.Errorf("%q: Mismatch in error got: %v, want: %q", testCase.desc, gotErr, testCase.wantErrMsg)
-			continue
-		}
-		if !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
-			t.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
-			continue
-		}
+			if gotFailure != testCase.wantFailure ||
+				(gotErr != nil && !strings.Contains(gotErr.Error(), testCase.wantErrMsg)) {
+				r.Errorf("%q: Mismatch in error got: %v, want: %q", testCase.desc, gotErr, testCase.wantErrMsg)
+				return
+			}
+			if gotErr == nil && !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
+				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
+				return
+			}
+		})
 	}
 
 }

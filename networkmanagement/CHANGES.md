@@ -1,5 +1,17 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.8.0...networkmanagement/v1.9.0) (2023-08-14)
+
+
+### Features
+
+* **networkmanagement:** Add dynamic probing fields to v1 API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **networkmanagement:** Add fields related to Google services to API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **networkmanagement:** Add fields related to load balancers to API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **networkmanagement:** Add fields related to PBR and NCC routes to API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **networkmanagement:** Add new abort and drop causes to API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **networkmanagement:** Add new enum values for network firewall policies to API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.7.1...networkmanagement/v1.8.0) (2023-06-27)
 
 

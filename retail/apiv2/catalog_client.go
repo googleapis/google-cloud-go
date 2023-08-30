@@ -32,7 +32,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -426,7 +425,7 @@ type catalogGRPCClient struct {
 	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewCatalogClient creates a new catalog service client based on gRPC.
@@ -476,7 +475,7 @@ func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 func (c *catalogGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -486,9 +485,10 @@ func (c *catalogGRPCClient) Close() error {
 }
 
 func (c *catalogGRPCClient) ListCatalogs(ctx context.Context, req *retailpb.ListCatalogsRequest, opts ...gax.CallOption) *CatalogIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListCatalogs[0:len((*c.CallOptions).ListCatalogs):len((*c.CallOptions).ListCatalogs)], opts...)
 	it := &CatalogIterator{}
 	req = proto.Clone(req).(*retailpb.ListCatalogsRequest)
@@ -531,9 +531,10 @@ func (c *catalogGRPCClient) ListCatalogs(ctx context.Context, req *retailpb.List
 }
 
 func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateCatalogRequest, opts ...gax.CallOption) (*retailpb.Catalog, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog.name", url.QueryEscape(req.GetCatalog().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "catalog.name", url.QueryEscape(req.GetCatalog().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateCatalog[0:len((*c.CallOptions).UpdateCatalog):len((*c.CallOptions).UpdateCatalog)], opts...)
 	var resp *retailpb.Catalog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -548,9 +549,10 @@ func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 }
 
 func (c *catalogGRPCClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetDefaultBranch[0:len((*c.CallOptions).SetDefaultBranch):len((*c.CallOptions).SetDefaultBranch)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -561,9 +563,10 @@ func (c *catalogGRPCClient) SetDefaultBranch(ctx context.Context, req *retailpb.
 }
 
 func (c *catalogGRPCClient) GetDefaultBranch(ctx context.Context, req *retailpb.GetDefaultBranchRequest, opts ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDefaultBranch[0:len((*c.CallOptions).GetDefaultBranch):len((*c.CallOptions).GetDefaultBranch)], opts...)
 	var resp *retailpb.GetDefaultBranchResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -578,9 +581,10 @@ func (c *catalogGRPCClient) GetDefaultBranch(ctx context.Context, req *retailpb.
 }
 
 func (c *catalogGRPCClient) GetCompletionConfig(ctx context.Context, req *retailpb.GetCompletionConfigRequest, opts ...gax.CallOption) (*retailpb.CompletionConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetCompletionConfig[0:len((*c.CallOptions).GetCompletionConfig):len((*c.CallOptions).GetCompletionConfig)], opts...)
 	var resp *retailpb.CompletionConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -595,9 +599,10 @@ func (c *catalogGRPCClient) GetCompletionConfig(ctx context.Context, req *retail
 }
 
 func (c *catalogGRPCClient) UpdateCompletionConfig(ctx context.Context, req *retailpb.UpdateCompletionConfigRequest, opts ...gax.CallOption) (*retailpb.CompletionConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "completion_config.name", url.QueryEscape(req.GetCompletionConfig().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "completion_config.name", url.QueryEscape(req.GetCompletionConfig().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateCompletionConfig[0:len((*c.CallOptions).UpdateCompletionConfig):len((*c.CallOptions).UpdateCompletionConfig)], opts...)
 	var resp *retailpb.CompletionConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -612,9 +617,10 @@ func (c *catalogGRPCClient) UpdateCompletionConfig(ctx context.Context, req *ret
 }
 
 func (c *catalogGRPCClient) GetAttributesConfig(ctx context.Context, req *retailpb.GetAttributesConfigRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetAttributesConfig[0:len((*c.CallOptions).GetAttributesConfig):len((*c.CallOptions).GetAttributesConfig)], opts...)
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -629,9 +635,10 @@ func (c *catalogGRPCClient) GetAttributesConfig(ctx context.Context, req *retail
 }
 
 func (c *catalogGRPCClient) UpdateAttributesConfig(ctx context.Context, req *retailpb.UpdateAttributesConfigRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config.name", url.QueryEscape(req.GetAttributesConfig().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config.name", url.QueryEscape(req.GetAttributesConfig().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateAttributesConfig[0:len((*c.CallOptions).UpdateAttributesConfig):len((*c.CallOptions).UpdateAttributesConfig)], opts...)
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -646,9 +653,10 @@ func (c *catalogGRPCClient) UpdateAttributesConfig(ctx context.Context, req *ret
 }
 
 func (c *catalogGRPCClient) AddCatalogAttribute(ctx context.Context, req *retailpb.AddCatalogAttributeRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AddCatalogAttribute[0:len((*c.CallOptions).AddCatalogAttribute):len((*c.CallOptions).AddCatalogAttribute)], opts...)
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -663,9 +671,10 @@ func (c *catalogGRPCClient) AddCatalogAttribute(ctx context.Context, req *retail
 }
 
 func (c *catalogGRPCClient) RemoveCatalogAttribute(ctx context.Context, req *retailpb.RemoveCatalogAttributeRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RemoveCatalogAttribute[0:len((*c.CallOptions).RemoveCatalogAttribute):len((*c.CallOptions).RemoveCatalogAttribute)], opts...)
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -680,9 +689,10 @@ func (c *catalogGRPCClient) RemoveCatalogAttribute(ctx context.Context, req *ret
 }
 
 func (c *catalogGRPCClient) ReplaceCatalogAttribute(ctx context.Context, req *retailpb.ReplaceCatalogAttributeRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ReplaceCatalogAttribute[0:len((*c.CallOptions).ReplaceCatalogAttribute):len((*c.CallOptions).ReplaceCatalogAttribute)], opts...)
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -697,9 +707,10 @@ func (c *catalogGRPCClient) ReplaceCatalogAttribute(ctx context.Context, req *re
 }
 
 func (c *catalogGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -714,9 +725,10 @@ func (c *catalogGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 }
 
 func (c *catalogGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

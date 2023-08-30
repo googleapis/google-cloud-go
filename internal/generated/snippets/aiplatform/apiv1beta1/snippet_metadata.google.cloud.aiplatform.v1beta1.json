@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.48.0",
+    "version": "1.49.0",
     "language": "GO",
     "apis": [
       {
@@ -13090,7 +13090,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PersistentResourceService_CreatePersistentResource_sync",
       "title": "aiplatform CreatePersistentResource Sample",
-      "description": "CreatePersistentResource uploads a Model artifact into Vertex AI.",
+      "description": "CreatePersistentResource creates a PersistentResource.",
       "file": "PersistentResourceClient/CreatePersistentResource/main.go",
       "language": "GO",
       "clientMethod": {
@@ -13634,6 +13634,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PersistentResourceService_UpdatePersistentResource_sync",
+      "title": "aiplatform UpdatePersistentResource Sample",
+      "description": "UpdatePersistentResource updates a PersistentResource.",
+      "file": "PersistentResourceClient/UpdatePersistentResource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePersistentResource",
+        "fullName": "google.cloud.aiplatform.v1beta1.PersistentResourceClient.UpdatePersistentResource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdatePersistentResourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdatePersistentResourceOperation",
+        "client": {
+          "shortName": "PersistentResourceClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PersistentResourceClient"
+        },
+        "method": {
+          "shortName": "UpdatePersistentResource",
+          "fullName": "google.cloud.aiplatform.v1beta1.PersistentResourceService.UpdatePersistentResource",
+          "service": {
+            "shortName": "PersistentResourceService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PersistentResourceService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -14641,6 +14687,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_CountTokens_sync",
+      "title": "aiplatform CountTokens Sample",
+      "description": "CountTokens perform a token counting.",
+      "file": "PredictionClient/CountTokens/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CountTokens",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.CountTokens",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CountTokensRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.CountTokensResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "CountTokens",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.CountTokens",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

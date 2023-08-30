@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.2.0...confidentialcomputing/v1.3.0) (2023-08-14)
+
+
+### Features
+
+* **confidentialcomputing:** Add a new field partial_errors to VerifyAttestationResponse proto ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.1.0...confidentialcomputing/v1.2.0) (2023-08-08)
 
 

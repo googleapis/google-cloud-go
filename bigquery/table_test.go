@@ -19,10 +19,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
 func TestBQToTableMetadata(t *testing.T) {
+	bqClient := &Client{}
 	aTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
 	aTimeMillis := aTime.UnixNano() / 1e6
 	aDurationMillis := int64(1800000)
@@ -76,6 +78,22 @@ func TestBQToTableMetadata(t *testing.T) {
 					PrimaryKey: &bq.TableConstraintsPrimaryKey{
 						Columns: []string{"id"},
 					},
+					ForeignKeys: []*bq.TableConstraintsForeignKeys{
+						{
+							Name: "fk",
+							ColumnReferences: []*bq.TableConstraintsForeignKeysColumnReferences{
+								{
+									ReferencedColumn:  "id",
+									ReferencingColumn: "parent",
+								},
+							},
+							ReferencedTable: &bq.TableConstraintsForeignKeysReferencedTable{
+								DatasetId: "dataset_id",
+								ProjectId: "project_id",
+								TableId:   "table_id",
+							},
+						},
+					},
 				},
 			},
 			&TableMetadata{
@@ -119,16 +137,32 @@ func TestBQToTableMetadata(t *testing.T) {
 					PrimaryKey: &PrimaryKey{
 						Columns: []string{"id"},
 					},
-					ForeignKeys: []*ForeignKey{},
+					ForeignKeys: []*ForeignKey{
+						{
+							Name: "fk",
+							ReferencedTable: &Table{
+								c:         bqClient,
+								ProjectID: "project_id",
+								DatasetID: "dataset_id",
+								TableID:   "table_id",
+							},
+							ColumnReferences: []*ColumnReference{
+								{
+									ReferencedColumn:  "id",
+									ReferencingColumn: "parent",
+								},
+							},
+						},
+					},
 				},
 			},
 		},
 	} {
-		got, err := bqToTableMetadata(test.in, &Client{})
+		got, err := bqToTableMetadata(test.in, bqClient)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if diff := testutil.Diff(got, test.want); diff != "" {
+		if diff := testutil.Diff(got, test.want, cmp.AllowUnexported(Client{}, Table{})); diff != "" {
 			t.Errorf("%+v:\n, -got, +want:\n%s", test.in, diff)
 		}
 	}

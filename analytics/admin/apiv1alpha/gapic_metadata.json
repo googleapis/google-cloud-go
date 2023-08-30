@@ -550,6 +550,11 @@
                 "UpdateChannelGroup"
               ]
             },
+            "UpdateConversionEvent": {
+              "methods": [
+                "UpdateConversionEvent"
+              ]
+            },
             "UpdateCustomDimension": {
               "methods": [
                 "UpdateCustomDimension"
@@ -1163,6 +1168,11 @@
             "UpdateChannelGroup": {
               "methods": [
                 "UpdateChannelGroup"
+              ]
+            },
+            "UpdateConversionEvent": {
+              "methods": [
+                "UpdateConversionEvent"
               ]
             },
             "UpdateCustomDimension": {
