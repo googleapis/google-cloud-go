@@ -220,7 +220,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 //
 // The storage gRPC API is still in preview and not yet publicly available.
 // If you would like to use the API, please first contact your GCP account rep to
-// request access.
+// request access. The API may be subject to breaking changes.
 //
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.

@@ -336,7 +336,8 @@ to add a [custom audit logging] header:
 This package includes support for the Cloud Storage gRPC API, which is currently
 in preview. This implementation uses gRPC rather than the current JSON & XML
 APIs to make requests to Cloud Storage. If you would like to try the API,
-please contact your GCP account rep for more information.
+please contact your GCP account rep for more information. The gRPC API is not
+yet generally available, so it may be subject to breaking changes.
 
 To create a client which will use gRPC, use the alternate constructor:
 
@@ -348,7 +349,7 @@ To create a client which will use gRPC, use the alternate constructor:
 	// Use client as usual.
 
 If the application is running within GCP, users may get better performance by
-enabling DirectPath (enabling requests to skip load balancing steps). To enable,
+enabling DirectPath (enabling requests to skip some proxy steps). To enable,
 set the environment variable `GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS=true` and add
 the following side-effect imports to your application:
 
