@@ -24,6 +24,11 @@ import (
 )
 
 func warmupW1R3(ctx context.Context, opts *benchmarkOptions) error {
+	// Return immediately if warmup duration is zero.
+	if opts.warmup == 0 {
+		return nil
+	}
+
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
