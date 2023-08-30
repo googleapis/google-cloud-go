@@ -53,6 +53,7 @@ func (nce nonCacheableError) Error() string {
 	return nce.message
 }
 
+// environment is a contract for testing
 type environment interface {
 	existingEnv() []string
 	getenv(string) string
@@ -65,11 +66,9 @@ type runtimeEnvironment struct{}
 func (r runtimeEnvironment) existingEnv() []string {
 	return os.Environ()
 }
-
 func (r runtimeEnvironment) getenv(key string) string {
 	return os.Getenv(key)
 }
-
 func (r runtimeEnvironment) now() time.Time {
 	return time.Now().UTC()
 }
@@ -87,11 +86,9 @@ func (r runtimeEnvironment) run(ctx context.Context, command string, env []strin
 		if ctx.Err() == context.DeadlineExceeded {
 			return nil, context.DeadlineExceeded
 		}
-
 		if exitError, ok := err.(*exec.ExitError); ok {
-			return nil, exitCodeError(exitError.ExitCode())
+			return nil, exitCodeError(exitError)
 		}
-
 		return nil, executableError(err)
 	}
 
@@ -210,19 +207,19 @@ func (cs *executableSubjectProvider) getTokenFromOutputFile() (token string, err
 	return token, nil
 }
 
-func (cs *executableSubjectProvider) executableEnvironment() []string {
-	result := cs.env.existingEnv()
-	result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_AUDIENCE=%v", cs.opts.Audience))
-	result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_TOKEN_TYPE=%v", cs.opts.SubjectTokenType))
+func (sp *executableSubjectProvider) executableEnvironment() []string {
+	result := sp.env.existingEnv()
+	result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_AUDIENCE=%v", sp.opts.Audience))
+	result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_TOKEN_TYPE=%v", sp.opts.SubjectTokenType))
 	result = append(result, "GOOGLE_EXTERNAL_ACCOUNT_INTERACTIVE=0")
-	if cs.opts.ServiceAccountImpersonationURL != "" {
-		matches := serviceAccountImpersonationRE.FindStringSubmatch(cs.opts.ServiceAccountImpersonationURL)
+	if sp.opts.ServiceAccountImpersonationURL != "" {
+		matches := serviceAccountImpersonationRE.FindStringSubmatch(sp.opts.ServiceAccountImpersonationURL)
 		if matches != nil {
 			result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_IMPERSONATED_EMAIL=%v", matches[1]))
 		}
 	}
-	if cs.OutputFile != "" {
-		result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_OUTPUT_FILE=%v", cs.OutputFile))
+	if sp.OutputFile != "" {
+		result = append(result, fmt.Sprintf("GOOGLE_EXTERNAL_ACCOUNT_OUTPUT_FILE=%v", sp.OutputFile))
 	}
 	return result
 }
@@ -271,10 +268,10 @@ func tokenTypeError(source string) error {
 	return fmt.Errorf("detect: %v contains unsupported token type", source)
 }
 
-func exitCodeError(exitCode int) error {
-	return fmt.Errorf("detect: executable command failed with exit code %v", exitCode)
+func exitCodeError(err *exec.ExitError) error {
+	return fmt.Errorf("detect: executable command failed with exit code %v: %w", err.ExitCode(), err)
 }
 
 func executableError(err error) error {
-	return fmt.Errorf("detect: executable command failed: %v", err)
+	return fmt.Errorf("detect: executable command failed: %w", err)
 }

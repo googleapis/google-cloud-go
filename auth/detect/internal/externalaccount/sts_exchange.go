@@ -28,42 +28,50 @@ import (
 	"cloud.google.com/go/auth/internal"
 )
 
+type exchangeOptions struct {
+	client         *http.Client
+	endpoint       string
+	request        *stsTokenExchangeRequest
+	authentication clientAuthentication
+	headers        http.Header
+	extraOpts      map[string]interface{}
+}
+
 // exchangeToken performs an oauth2 token exchange with the provided endpoint.
 // The first 4 fields are all mandatory.  headers can be used to pass additional
 // headers beyond the bare minimum required by the token exchange.  options can
 // be used to pass additional JSON-structured options to the remote server.
-func exchangeToken(ctx context.Context, client *http.Client, endpoint string, request *stsTokenExchangeRequest, authentication clientAuthentication, headers http.Header, options map[string]interface{}) (*stsTokenExchangeResponse, error) {
+func exchangeToken(ctx context.Context, opts *exchangeOptions) (*stsTokenExchangeResponse, error) {
 	data := url.Values{}
-	data.Set("audience", request.Audience)
+	data.Set("audience", opts.request.Audience)
 	data.Set("grant_type", stsGrantType)
 	data.Set("requested_token_type", stsTokenType)
-	data.Set("subject_token_type", request.SubjectTokenType)
-	data.Set("subject_token", request.SubjectToken)
-	data.Set("scope", strings.Join(request.Scope, " "))
-	if options != nil {
-		opts, err := json.Marshal(options)
+	data.Set("subject_token_type", opts.request.SubjectTokenType)
+	data.Set("subject_token", opts.request.SubjectToken)
+	data.Set("scope", strings.Join(opts.request.Scope, " "))
+	if opts.extraOpts != nil {
+		opts, err := json.Marshal(opts.extraOpts)
 		if err != nil {
 			return nil, fmt.Errorf("detect: failed to marshal additional options: %w", err)
 		}
 		data.Set("options", string(opts))
 	}
-
-	authentication.InjectAuthentication(data, headers)
+	opts.authentication.InjectAuthentication(data, opts.headers)
 	encodedData := data.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, "POST", endpoint, strings.NewReader(encodedData))
+	req, err := http.NewRequestWithContext(ctx, "POST", opts.endpoint, strings.NewReader(encodedData))
 	if err != nil {
 		return nil, fmt.Errorf("detect: failed to properly build http request: %w", err)
 
 	}
-	for key, list := range headers {
+	for key, list := range opts.headers {
 		for _, val := range list {
 			req.Header.Add(key, val)
 		}
 	}
 	req.Header.Add("Content-Length", strconv.Itoa(len(encodedData)))
 
-	resp, err := client.Do(req)
+	resp, err := opts.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("detect: invalid response from Secure Token Server: %w", err)
 	}
@@ -126,10 +134,7 @@ func (c *clientAuthentication) InjectAuthentication(values url.Values, headers h
 	if c.ClientID == "" || c.ClientSecret == "" || values == nil || headers == nil {
 		return
 	}
-
 	switch c.AuthStyle {
-	// AuthStyleInHeader corresponds to basic authentication as defined in
-	// rfc7617#2
 	case auth.StyleInHeader:
 		plainHeader := c.ClientID + ":" + c.ClientSecret
 		headers.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(plainHeader)))

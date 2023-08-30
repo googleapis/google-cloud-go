@@ -34,18 +34,6 @@ import (
 	"cloud.google.com/go/auth/internal"
 )
 
-type awsSecurityCredentials struct {
-	AccessKeyID     string `json:"AccessKeyID"`
-	SecretAccessKey string `json:"SecretAccessKey"`
-	SecurityToken   string `json:"Token"`
-}
-
-// awsRequestSigner is a utility class to sign http requests using a AWS V4 signature.
-type awsRequestSigner struct {
-	RegionName             string
-	AwsSecurityCredentials awsSecurityCredentials
-}
-
 var (
 	// getenv aliases os.Getenv for testing
 	getenv = os.Getenv
@@ -82,6 +70,324 @@ const (
 	awsTimeFormatLong  = "20060102T150405Z"
 	awsTimeFormatShort = "20060102"
 )
+
+type awsSubjectProvider struct {
+	EnvironmentID               string
+	RegionURL                   string
+	RegionalCredVerificationURL string
+	CredVerificationURL         string
+	IMDSv2SessionTokenURL       string
+	TargetResource              string
+	requestSigner               *awsRequestSigner
+	region                      string
+
+	Client *http.Client
+}
+
+func (sp *awsSubjectProvider) subjectToken(ctx context.Context) (string, error) {
+	if sp.requestSigner == nil {
+		headers := make(map[string]string)
+		if shouldUseMetadataServer() {
+			awsSessionToken, err := sp.getAWSSessionToken(ctx)
+			if err != nil {
+				return "", err
+			}
+
+			if awsSessionToken != "" {
+				headers[awsIMDSv2SessionTokenHeader] = awsSessionToken
+			}
+		}
+
+		awsSecurityCredentials, err := sp.getSecurityCredentials(ctx, headers)
+		if err != nil {
+			return "", err
+		}
+		if sp.region, err = sp.getRegion(ctx, headers); err != nil {
+			return "", err
+		}
+		sp.requestSigner = &awsRequestSigner{
+			RegionName:             sp.region,
+			AwsSecurityCredentials: awsSecurityCredentials,
+		}
+	}
+
+	// Generate the signed request to AWS STS GetCallerIdentity API.
+	// Use the required regional endpoint. Otherwise, the request will fail.
+	req, err := http.NewRequest("POST", strings.Replace(sp.RegionalCredVerificationURL, "{region}", sp.region, 1), nil)
+	if err != nil {
+		return "", err
+	}
+	// The full, canonical resource name of the workload identity pool
+	// provider, with or without the HTTPS prefix.
+	// Including this header as part of the signature is recommended to
+	// ensure data integrity.
+	if sp.TargetResource != "" {
+		req.Header.Add("x-goog-cloud-target-resource", sp.TargetResource)
+	}
+	sp.requestSigner.SignRequest(req)
+
+	/*
+	   The GCP STS endpoint expects the headers to be formatted as:
+	   # [
+	   #   {key: 'x-amz-date', value: '...'},
+	   #   {key: 'Authorization', value: '...'},
+	   #   ...
+	   # ]
+	   # And then serialized as:
+	   # quote(json.dumps({
+	   #   url: '...',
+	   #   method: 'POST',
+	   #   headers: [{key: 'x-amz-date', value: '...'}, ...]
+	   # }))
+	*/
+
+	awsSignedReq := awsRequest{
+		URL:    req.URL.String(),
+		Method: "POST",
+	}
+	for headerKey, headerList := range req.Header {
+		for _, headerValue := range headerList {
+			awsSignedReq.Headers = append(awsSignedReq.Headers, awsRequestHeader{
+				Key:   headerKey,
+				Value: headerValue,
+			})
+		}
+	}
+	sort.Slice(awsSignedReq.Headers, func(i, j int) bool {
+		headerCompare := strings.Compare(awsSignedReq.Headers[i].Key, awsSignedReq.Headers[j].Key)
+		if headerCompare == 0 {
+			return strings.Compare(awsSignedReq.Headers[i].Value, awsSignedReq.Headers[j].Value) < 0
+		}
+		return headerCompare < 0
+	})
+
+	result, err := json.Marshal(awsSignedReq)
+	if err != nil {
+		return "", err
+	}
+	return url.QueryEscape(string(result)), nil
+}
+
+func (cs *awsSubjectProvider) getAWSSessionToken(ctx context.Context) (string, error) {
+	if cs.IMDSv2SessionTokenURL == "" {
+		return "", nil
+	}
+	req, err := http.NewRequestWithContext(ctx, "PUT", cs.IMDSv2SessionTokenURL, nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Add(awsIMDSv2SessionTtlHeader, awsIMDSv2SessionTtl)
+
+	resp, err := cs.Client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	respBody, err := internal.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("detect: unable to retrieve AWS session token: %s", respBody)
+	}
+	return string(respBody), nil
+}
+
+func (cs *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]string) (string, error) {
+	if canRetrieveRegionFromEnvironment() {
+		if envAwsRegion := getenv(awsRegionEnvVar); envAwsRegion != "" {
+			return envAwsRegion, nil
+		}
+		return getenv(awsDefaultRegionEnvVar), nil
+	}
+
+	if cs.RegionURL == "" {
+		return "", errors.New("detect: unable to determine AWS region")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", cs.RegionURL, nil)
+	if err != nil {
+		return "", err
+	}
+
+	for name, value := range headers {
+		req.Header.Add(name, value)
+	}
+
+	resp, err := cs.Client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	respBody, err := internal.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("detect: unable to retrieve AWS region - %s", respBody)
+	}
+
+	// This endpoint will return the region in format: us-east-2b.
+	// Only the us-east-2 part should be used.
+	respBodyEnd := 0
+	if len(respBody) > 1 {
+		respBodyEnd = len(respBody) - 1
+	}
+	return string(respBody[:respBodyEnd]), nil
+}
+
+func (cs *awsSubjectProvider) getSecurityCredentials(ctx context.Context, headers map[string]string) (result awsSecurityCredentials, err error) {
+	if canRetrieveSecurityCredentialFromEnvironment() {
+		return awsSecurityCredentials{
+			AccessKeyID:     getenv(awsAccessKeyIdEnvVar),
+			SecretAccessKey: getenv(awsSecretAccessKeyEnvVar),
+			SecurityToken:   getenv(awsSessionTokenEnvVar),
+		}, nil
+	}
+
+	roleName, err := cs.getMetadataRoleName(ctx, headers)
+	if err != nil {
+		return
+	}
+	credentials, err := cs.getMetadataSecurityCredentials(ctx, roleName, headers)
+	if err != nil {
+		return
+	}
+
+	if credentials.AccessKeyID == "" {
+		return result, errors.New("detect: missing AccessKeyId credential")
+	}
+	if credentials.SecretAccessKey == "" {
+		return result, errors.New("detect: missing SecretAccessKey credential")
+	}
+
+	return credentials, nil
+}
+
+func (cs *awsSubjectProvider) getMetadataSecurityCredentials(ctx context.Context, roleName string, headers map[string]string) (awsSecurityCredentials, error) {
+	var result awsSecurityCredentials
+
+	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/%s", cs.CredVerificationURL, roleName), nil)
+	if err != nil {
+		return result, err
+	}
+	req.Header.Add("Content-Type", "application/json")
+	for name, value := range headers {
+		req.Header.Add(name, value)
+	}
+
+	resp, err := cs.Client.Do(req)
+	if err != nil {
+		return result, err
+	}
+	defer resp.Body.Close()
+
+	respBody, err := internal.ReadAll(resp.Body)
+	if err != nil {
+		return result, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return result, fmt.Errorf("detect: unable to retrieve AWS security credentials - %s", respBody)
+	}
+	err = json.Unmarshal(respBody, &result)
+	return result, err
+}
+
+func (cs *awsSubjectProvider) getMetadataRoleName(ctx context.Context, headers map[string]string) (string, error) {
+	if cs.CredVerificationURL == "" {
+		return "", errors.New("detect: unable to determine the AWS metadata server security credentials endpoint")
+	}
+	req, err := http.NewRequestWithContext(ctx, "GET", cs.CredVerificationURL, nil)
+	if err != nil {
+		return "", err
+	}
+	for name, value := range headers {
+		req.Header.Add(name, value)
+	}
+
+	resp, err := cs.Client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	respBody, err := internal.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("detect: unable to retrieve AWS role name - %s", respBody)
+	}
+	return string(respBody), nil
+}
+
+type awsSecurityCredentials struct {
+	AccessKeyID     string `json:"AccessKeyID"`
+	SecretAccessKey string `json:"SecretAccessKey"`
+	SecurityToken   string `json:"Token"`
+}
+
+// awsRequestSigner is a utility class to sign http requests using a AWS V4 signature.
+type awsRequestSigner struct {
+	RegionName             string
+	AwsSecurityCredentials awsSecurityCredentials
+}
+
+// SignRequest adds the appropriate headers to an http.Request
+// or returns an error if something prevented this.
+func (rs *awsRequestSigner) SignRequest(req *http.Request) error {
+	signedRequest := cloneRequest(req)
+	timestamp := now()
+	signedRequest.Header.Add("host", requestHost(req))
+	if rs.AwsSecurityCredentials.SecurityToken != "" {
+		signedRequest.Header.Add(awsSecurityTokenHeader, rs.AwsSecurityCredentials.SecurityToken)
+	}
+	if signedRequest.Header.Get("date") == "" {
+		signedRequest.Header.Add(awsDateHeader, timestamp.Format(awsTimeFormatLong))
+	}
+	authorizationCode, err := rs.generateAuthentication(signedRequest, timestamp)
+	if err != nil {
+		return err
+	}
+	signedRequest.Header.Set("Authorization", authorizationCode)
+	req.Header = signedRequest.Header
+	return nil
+}
+
+func (rs *awsRequestSigner) generateAuthentication(req *http.Request, timestamp time.Time) (string, error) {
+	canonicalHeaderColumns, canonicalHeaderData := canonicalHeaders(req)
+	dateStamp := timestamp.Format(awsTimeFormatShort)
+	serviceName := ""
+
+	if splitHost := strings.Split(requestHost(req), "."); len(splitHost) > 0 {
+		serviceName = splitHost[0]
+	}
+	credentialScope := fmt.Sprintf("%s/%s/%s/%s", dateStamp, rs.RegionName, serviceName, awsRequestType)
+	requestString, err := canonicalRequest(req, canonicalHeaderColumns, canonicalHeaderData)
+	if err != nil {
+		return "", err
+	}
+	requestHash, err := getSha256([]byte(requestString))
+	if err != nil {
+		return "", err
+	}
+
+	stringToSign := fmt.Sprintf("%s\n%s\n%s\n%s", awsAlgorithm, timestamp.Format(awsTimeFormatLong), credentialScope, requestHash)
+	signingKey := []byte("AWS4" + rs.AwsSecurityCredentials.SecretAccessKey)
+	for _, signingInput := range []string{
+		dateStamp, rs.RegionName, serviceName, awsRequestType, stringToSign,
+	} {
+		signingKey, err = getHmacSha256(signingKey, []byte(signingInput))
+		if err != nil {
+			return "", err
+		}
+	}
+
+	return fmt.Sprintf("%s Credential=%s/%s, SignedHeaders=%s, Signature=%s", awsAlgorithm, rs.AwsSecurityCredentials.AccessKeyID, credentialScope, canonicalHeaderColumns, hex.EncodeToString(signingKey)), nil
+}
 
 func getSha256(input []byte) (string, error) {
 	hash := sha256.New()
@@ -198,72 +504,6 @@ func canonicalRequest(req *http.Request, canonicalHeaderColumns, canonicalHeader
 	return fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n%s", req.Method, canonicalPath(req), canonicalQuery(req), canonicalHeaderData, canonicalHeaderColumns, dataHash), nil
 }
 
-// SignRequest adds the appropriate headers to an http.Request
-// or returns an error if something prevented this.
-func (rs *awsRequestSigner) SignRequest(req *http.Request) error {
-	signedRequest := cloneRequest(req)
-	timestamp := now()
-	signedRequest.Header.Add("host", requestHost(req))
-	if rs.AwsSecurityCredentials.SecurityToken != "" {
-		signedRequest.Header.Add(awsSecurityTokenHeader, rs.AwsSecurityCredentials.SecurityToken)
-	}
-	if signedRequest.Header.Get("date") == "" {
-		signedRequest.Header.Add(awsDateHeader, timestamp.Format(awsTimeFormatLong))
-	}
-	authorizationCode, err := rs.generateAuthentication(signedRequest, timestamp)
-	if err != nil {
-		return err
-	}
-	signedRequest.Header.Set("Authorization", authorizationCode)
-	req.Header = signedRequest.Header
-	return nil
-}
-
-func (rs *awsRequestSigner) generateAuthentication(req *http.Request, timestamp time.Time) (string, error) {
-	canonicalHeaderColumns, canonicalHeaderData := canonicalHeaders(req)
-	dateStamp := timestamp.Format(awsTimeFormatShort)
-	serviceName := ""
-
-	if splitHost := strings.Split(requestHost(req), "."); len(splitHost) > 0 {
-		serviceName = splitHost[0]
-	}
-	credentialScope := fmt.Sprintf("%s/%s/%s/%s", dateStamp, rs.RegionName, serviceName, awsRequestType)
-	requestString, err := canonicalRequest(req, canonicalHeaderColumns, canonicalHeaderData)
-	if err != nil {
-		return "", err
-	}
-	requestHash, err := getSha256([]byte(requestString))
-	if err != nil {
-		return "", err
-	}
-
-	stringToSign := fmt.Sprintf("%s\n%s\n%s\n%s", awsAlgorithm, timestamp.Format(awsTimeFormatLong), credentialScope, requestHash)
-	signingKey := []byte("AWS4" + rs.AwsSecurityCredentials.SecretAccessKey)
-	for _, signingInput := range []string{
-		dateStamp, rs.RegionName, serviceName, awsRequestType, stringToSign,
-	} {
-		signingKey, err = getHmacSha256(signingKey, []byte(signingInput))
-		if err != nil {
-			return "", err
-		}
-	}
-
-	return fmt.Sprintf("%s Credential=%s/%s, SignedHeaders=%s, Signature=%s", awsAlgorithm, rs.AwsSecurityCredentials.AccessKeyID, credentialScope, canonicalHeaderColumns, hex.EncodeToString(signingKey)), nil
-}
-
-type awsSubjectProvider struct {
-	EnvironmentID               string
-	RegionURL                   string
-	RegionalCredVerificationURL string
-	CredVerificationURL         string
-	IMDSv2SessionTokenURL       string
-	TargetResource              string
-	requestSigner               *awsRequestSigner
-	region                      string
-
-	Client *http.Client
-}
-
 type awsRequestHeader struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
@@ -288,252 +528,4 @@ func canRetrieveSecurityCredentialFromEnvironment() bool {
 
 func shouldUseMetadataServer() bool {
 	return !canRetrieveRegionFromEnvironment() || !canRetrieveSecurityCredentialFromEnvironment()
-}
-
-func (cs *awsSubjectProvider) subjectToken(ctx context.Context) (string, error) {
-	if cs.requestSigner == nil {
-		headers := make(map[string]string)
-		if shouldUseMetadataServer() {
-			awsSessionToken, err := cs.getAWSSessionToken(ctx)
-			if err != nil {
-				return "", err
-			}
-
-			if awsSessionToken != "" {
-				headers[awsIMDSv2SessionTokenHeader] = awsSessionToken
-			}
-		}
-
-		awsSecurityCredentials, err := cs.getSecurityCredentials(ctx, headers)
-		if err != nil {
-			return "", err
-		}
-
-		if cs.region, err = cs.getRegion(ctx, headers); err != nil {
-			return "", err
-		}
-
-		cs.requestSigner = &awsRequestSigner{
-			RegionName:             cs.region,
-			AwsSecurityCredentials: awsSecurityCredentials,
-		}
-	}
-
-	// Generate the signed request to AWS STS GetCallerIdentity API.
-	// Use the required regional endpoint. Otherwise, the request will fail.
-	req, err := http.NewRequest("POST", strings.Replace(cs.RegionalCredVerificationURL, "{region}", cs.region, 1), nil)
-	if err != nil {
-		return "", err
-	}
-	// The full, canonical resource name of the workload identity pool
-	// provider, with or without the HTTPS prefix.
-	// Including this header as part of the signature is recommended to
-	// ensure data integrity.
-	if cs.TargetResource != "" {
-		req.Header.Add("x-goog-cloud-target-resource", cs.TargetResource)
-	}
-	cs.requestSigner.SignRequest(req)
-
-	/*
-	   The GCP STS endpoint expects the headers to be formatted as:
-	   # [
-	   #   {key: 'x-amz-date', value: '...'},
-	   #   {key: 'Authorization', value: '...'},
-	   #   ...
-	   # ]
-	   # And then serialized as:
-	   # quote(json.dumps({
-	   #   url: '...',
-	   #   method: 'POST',
-	   #   headers: [{key: 'x-amz-date', value: '...'}, ...]
-	   # }))
-	*/
-
-	awsSignedReq := awsRequest{
-		URL:    req.URL.String(),
-		Method: "POST",
-	}
-	for headerKey, headerList := range req.Header {
-		for _, headerValue := range headerList {
-			awsSignedReq.Headers = append(awsSignedReq.Headers, awsRequestHeader{
-				Key:   headerKey,
-				Value: headerValue,
-			})
-		}
-	}
-	sort.Slice(awsSignedReq.Headers, func(i, j int) bool {
-		headerCompare := strings.Compare(awsSignedReq.Headers[i].Key, awsSignedReq.Headers[j].Key)
-		if headerCompare == 0 {
-			return strings.Compare(awsSignedReq.Headers[i].Value, awsSignedReq.Headers[j].Value) < 0
-		}
-		return headerCompare < 0
-	})
-
-	result, err := json.Marshal(awsSignedReq)
-	if err != nil {
-		return "", err
-	}
-	return url.QueryEscape(string(result)), nil
-}
-
-func (cs *awsSubjectProvider) getAWSSessionToken(ctx context.Context) (string, error) {
-	if cs.IMDSv2SessionTokenURL == "" {
-		return "", nil
-	}
-	req, err := http.NewRequestWithContext(ctx, "PUT", cs.IMDSv2SessionTokenURL, nil)
-	if err != nil {
-		return "", err
-	}
-	req.Header.Add(awsIMDSv2SessionTtlHeader, awsIMDSv2SessionTtl)
-
-	resp, err := cs.Client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	respBody, err := internal.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("detect: unable to retrieve AWS session token - %s", respBody)
-	}
-	return string(respBody), nil
-}
-
-func (cs *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]string) (string, error) {
-	if canRetrieveRegionFromEnvironment() {
-		if envAwsRegion := getenv(awsRegionEnvVar); envAwsRegion != "" {
-			return envAwsRegion, nil
-		}
-		return getenv(awsDefaultRegionEnvVar), nil
-	}
-
-	if cs.RegionURL == "" {
-		return "", errors.New("detect: unable to determine AWS region")
-	}
-
-	req, err := http.NewRequestWithContext(ctx, "GET", cs.RegionURL, nil)
-	if err != nil {
-		return "", err
-	}
-
-	for name, value := range headers {
-		req.Header.Add(name, value)
-	}
-
-	resp, err := cs.Client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	respBody, err := internal.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("detect: unable to retrieve AWS region - %s", respBody)
-	}
-
-	// This endpoint will return the region in format: us-east-2b.
-	// Only the us-east-2 part should be used.
-	respBodyEnd := 0
-	if len(respBody) > 1 {
-		respBodyEnd = len(respBody) - 1
-	}
-	return string(respBody[:respBodyEnd]), nil
-}
-
-func (cs *awsSubjectProvider) getSecurityCredentials(ctx context.Context, headers map[string]string) (result awsSecurityCredentials, err error) {
-	if canRetrieveSecurityCredentialFromEnvironment() {
-		return awsSecurityCredentials{
-			AccessKeyID:     getenv(awsAccessKeyIdEnvVar),
-			SecretAccessKey: getenv(awsSecretAccessKeyEnvVar),
-			SecurityToken:   getenv(awsSessionTokenEnvVar),
-		}, nil
-	}
-
-	roleName, err := cs.getMetadataRoleName(ctx, headers)
-	if err != nil {
-		return
-	}
-
-	credentials, err := cs.getMetadataSecurityCredentials(ctx, roleName, headers)
-	if err != nil {
-		return
-	}
-
-	if credentials.AccessKeyID == "" {
-		return result, errors.New("detect: missing AccessKeyId credential")
-	}
-
-	if credentials.SecretAccessKey == "" {
-		return result, errors.New("detect: missing SecretAccessKey credential")
-	}
-
-	return credentials, nil
-}
-
-func (cs *awsSubjectProvider) getMetadataSecurityCredentials(ctx context.Context, roleName string, headers map[string]string) (awsSecurityCredentials, error) {
-	var result awsSecurityCredentials
-
-	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/%s", cs.CredVerificationURL, roleName), nil)
-	if err != nil {
-		return result, err
-	}
-	req.Header.Add("Content-Type", "application/json")
-
-	for name, value := range headers {
-		req.Header.Add(name, value)
-	}
-
-	resp, err := cs.Client.Do(req)
-	if err != nil {
-		return result, err
-	}
-	defer resp.Body.Close()
-
-	respBody, err := internal.ReadAll(resp.Body)
-	if err != nil {
-		return result, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return result, fmt.Errorf("detect: unable to retrieve AWS security credentials - %s", respBody)
-	}
-
-	err = json.Unmarshal(respBody, &result)
-	return result, err
-}
-
-func (cs *awsSubjectProvider) getMetadataRoleName(ctx context.Context, headers map[string]string) (string, error) {
-	if cs.CredVerificationURL == "" {
-		return "", errors.New("detect: unable to determine the AWS metadata server security credentials endpoint")
-	}
-	req, err := http.NewRequestWithContext(ctx, "GET", cs.CredVerificationURL, nil)
-	if err != nil {
-		return "", err
-	}
-	for name, value := range headers {
-		req.Header.Add(name, value)
-	}
-
-	resp, err := cs.Client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	respBody, err := internal.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("detect: unable to retrieve AWS role name - %s", respBody)
-	}
-
-	return string(respBody), nil
 }

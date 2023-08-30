@@ -57,7 +57,7 @@ var (
 )
 
 func TestToken(t *testing.T) {
-	opts := Options{
+	opts := &Options{
 		Audience:         "32555940559.apps.googleusercontent.com",
 		SubjectTokenType: "urn:ietf:params:oauth:token-type:id_token",
 		ClientSecret:     "notsosecret",
@@ -66,7 +66,7 @@ func TestToken(t *testing.T) {
 		Scopes:           []string{"https://www.googleapis.com/auth/devstorage.full_control"},
 	}
 
-	server := testExchangeTokenServer{
+	server := &testExchangeTokenServer{
 		url:           "/",
 		authorization: "Basic cmJyZ25vZ25yaG9uZ28zYmk0Z2I5Z2hnOWc6bm90c29zZWNyZXQ=",
 		contentType:   "application/x-www-form-urlencoded",
@@ -74,7 +74,7 @@ func TestToken(t *testing.T) {
 		response:      baseCredsResponseBody,
 	}
 
-	tok, err := run(t, &opts, &server)
+	tok, err := run(t, opts, server)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -228,9 +228,14 @@ func run(t *testing.T, opts *Options, tets *testExchangeTokenServer) (*auth.Toke
 	defer func() { now = oldNow }()
 	now = testNow
 
-	tp := tokenProvider{
+	stp, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tp := &tokenProvider{
 		opts:   opts,
 		client: internal.CloneDefaultClient(),
+		stp:    stp,
 	}
 
 	return tp.Token(context.Background())
@@ -246,5 +251,18 @@ func validateToken(t *testing.T, tok *auth.Token) {
 
 	if got, want := tok.Expiry, testNow().Add(time.Duration(3600)*time.Second); got != want {
 		t.Errorf("got %v, want %v", got, want)
+	}
+}
+
+func cloneTestOpts() *Options {
+	return &Options{
+		Audience:                       "32555940559.apps.googleusercontent.com",
+		SubjectTokenType:               "urn:ietf:params:oauth:token-type:jwt",
+		TokenURL:                       "http://localhost:8080/v1/token",
+		TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+		ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+		ClientSecret:                   "notsosecret",
+		ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+		Client:                         internal.CloneDefaultClient(),
 	}
 }

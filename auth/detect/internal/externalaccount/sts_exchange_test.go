@@ -85,7 +85,14 @@ func TestExchangeToken(t *testing.T) {
 	headers := http.Header{}
 	headers.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	resp, err := exchangeToken(context.Background(), internal.CloneDefaultClient(), ts.URL, &tokenRequest, clientAuth, headers, nil)
+	resp, err := exchangeToken(context.Background(), &exchangeOptions{
+		client:         internal.CloneDefaultClient(),
+		endpoint:       ts.URL,
+		request:        &tokenRequest,
+		authentication: clientAuth,
+		headers:        headers,
+		extraOpts:      nil,
+	})
 	if err != nil {
 		t.Fatalf("exchangeToken() = %v", err)
 	}
@@ -104,7 +111,14 @@ func TestExchangeToken_Err(t *testing.T) {
 
 	headers := http.Header{}
 	headers.Add("Content-Type", "application/x-www-form-urlencoded")
-	if _, err := exchangeToken(context.Background(), internal.CloneDefaultClient(), ts.URL, &tokenRequest, clientAuth, headers, nil); err == nil {
+	if _, err := exchangeToken(context.Background(), &exchangeOptions{
+		client:         internal.CloneDefaultClient(),
+		endpoint:       ts.URL,
+		request:        &tokenRequest,
+		authentication: clientAuth,
+		headers:        headers,
+		extraOpts:      nil,
+	}); err == nil {
 		t.Errorf("got nil, want an error")
 	}
 }
@@ -186,7 +200,15 @@ func TestExchangeToken_Opts(t *testing.T) {
 	inputOpts := make(map[string]interface{})
 	inputOpts["one"] = firstOption
 	inputOpts["two"] = secondOption
-	exchangeToken(context.Background(), internal.CloneDefaultClient(), ts.URL, &tokenRequest, clientAuth, headers, inputOpts)
+
+	exchangeToken(context.Background(), &exchangeOptions{
+		client:         internal.CloneDefaultClient(),
+		endpoint:       ts.URL,
+		request:        &tokenRequest,
+		authentication: clientAuth,
+		headers:        headers,
+		extraOpts:      inputOpts,
+	})
 }
 
 var (

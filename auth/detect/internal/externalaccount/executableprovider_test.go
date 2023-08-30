@@ -248,7 +248,7 @@ func TestRetrieveExecutableSubjectTokenExecutableErrors(t *testing.T) {
 		},
 	}
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = cs
 
 	base, err := newSubjectTokenProvider(opts)
@@ -477,7 +477,7 @@ func TestRetrieveExecutableSubjectTokenSuccesses(t *testing.T) {
 		},
 	}
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = cs
 
 	base, err := newSubjectTokenProvider(opts)
@@ -587,7 +587,7 @@ func TestRetrieveOutputFileSubjectTokenNotJSON(t *testing.T) {
 		},
 	}
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = cs
 
 	base, err := newSubjectTokenProvider(opts)
@@ -735,7 +735,7 @@ func TestRetrieveOutputFileSubjectTokenFailureTests(t *testing.T) {
 				},
 			}
 
-			opts := testFileOpts()
+			opts := cloneTestOpts()
 			opts.CredentialSource = cs
 
 			base, err := newSubjectTokenProvider(opts)
@@ -837,7 +837,7 @@ func TestRetrieveOutputFileSubjectTokenInvalidCache(t *testing.T) {
 				},
 			}
 
-			opts := testFileOpts()
+			opts := cloneTestOpts()
 			opts.CredentialSource = cs
 
 			base, err := newSubjectTokenProvider(opts)
@@ -942,7 +942,7 @@ func TestRetrieveOutputFileSubjectTokenJwt(t *testing.T) {
 				},
 			}
 
-			opts := testFileOpts()
+			opts := cloneTestOpts()
 			opts.CredentialSource = cs
 
 			base, err := newSubjectTokenProvider(opts)

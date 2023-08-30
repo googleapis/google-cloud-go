@@ -28,37 +28,36 @@ func TestRetrieveURLSubjectToken_Text(t *testing.T) {
 		if want := http.MethodGet; r.Method != want {
 			t.Errorf("got %v, want %v", r.Method, want)
 		}
-		if r.Header.Get("Metadata") != "True" {
-			t.Errorf("Metadata header not properly included.")
+		if got, want := r.Header.Get("Metadata"), "True"; got != want {
+			t.Errorf("got %v, want %v", got, want)
 		}
 		w.Write([]byte("testTokenValue"))
 	}))
 	defer ts.Close()
-	heads := make(map[string]string)
-	heads["Metadata"] = "True"
-	cs := internaldetect.CredentialSource{
-		URL:     ts.URL,
-		Format:  internaldetect.Format{Type: fileTypeText},
-		Headers: heads,
+
+	opts := cloneTestOpts()
+	opts.CredentialSource = internaldetect.CredentialSource{
+		URL:    ts.URL,
+		Format: internaldetect.Format{Type: fileTypeText},
+		Headers: map[string]string{
+			"Metadata": "True",
+		},
 	}
-	opts := testFileOpts()
-	opts.CredentialSource = cs
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
-		t.Fatalf("parse() failed %v", err)
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
 	}
 
 	got, err := base.subjectToken(context.Background())
 	if err != nil {
-		t.Fatalf("retrieveSubjectToken() failed: %v", err)
+		t.Fatalf("base.subjectToken() = %v", err)
 	}
 	if want := "testTokenValue"; got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
-// Checking that retrieveSubjectToken properly defaults to type text
 func TestRetrieveURLSubjectToken_Untyped(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if want := http.MethodGet; r.Method != want {
@@ -67,20 +66,20 @@ func TestRetrieveURLSubjectToken_Untyped(t *testing.T) {
 		w.Write([]byte("testTokenValue"))
 	}))
 	defer ts.Close()
-	cs := internaldetect.CredentialSource{
+
+	opts := cloneTestOpts()
+	opts.CredentialSource = internaldetect.CredentialSource{
 		URL: ts.URL,
 	}
-	opts := testFileOpts()
-	opts.CredentialSource = cs
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
-		t.Fatalf("parse() failed %v", err)
+		t.Fatalf("newSubjectTokenProvider() failed %v", err)
 	}
 
 	got, err := base.subjectToken(context.Background())
 	if err != nil {
-		t.Fatalf("Failed to retrieve URL subject token: %v", err)
+		t.Fatalf("base.subjectToken() = %v", err)
 	}
 	if want := "testTokenValue"; got != want {
 		t.Errorf("got %v, want %v", got, want)
@@ -95,21 +94,21 @@ func TestRetrieveURLSubjectToken_JSON(t *testing.T) {
 		w.Write([]byte(`{"SubjToken":"testTokenValue"}`))
 	}))
 	defer ts.Close()
-	cs := internaldetect.CredentialSource{
+
+	opts := cloneTestOpts()
+	opts.CredentialSource = internaldetect.CredentialSource{
 		URL:    ts.URL,
 		Format: internaldetect.Format{Type: fileTypeJSON, SubjectTokenFieldName: "SubjToken"},
 	}
-	opts := testFileOpts()
-	opts.CredentialSource = cs
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
-		t.Fatalf("opts.parse() = %v", err)
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
 	}
 
 	got, err := base.subjectToken(context.Background())
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("base.subjectToken() = %v", err)
 	}
 	if want := "testTokenValue"; got != want {
 		t.Errorf("got %v, want %v", got, want)

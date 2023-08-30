@@ -504,7 +504,7 @@ func (server *testAwsServer) getCredentialSource(url string) internaldetect.Cred
 
 func getExpectedSubjectToken(url, region, accessKeyID, secretAccessKey, securityToken string) string {
 	req, _ := http.NewRequest("POST", url, nil)
-	req.Header.Add("x-goog-cloud-target-resource", testFileOpts().Audience)
+	req.Header.Add("x-goog-cloud-target-resource", cloneTestOpts().Audience)
 	signer := &awsRequestSigner{
 		RegionName: region,
 		AwsSecurityCredentials: awsSecurityCredentials{
@@ -541,7 +541,7 @@ func getExpectedSubjectToken(url, region, accessKeyID, secretAccessKey, security
 
 	result.Headers = append(result.Headers, awsRequestHeader{
 		Key:   "X-Goog-Cloud-Target-Resource",
-		Value: testFileOpts().Audience,
+		Value: cloneTestOpts().Audience,
 	})
 
 	str, _ := json.Marshal(result)
@@ -552,7 +552,7 @@ func TestAWSCredential_BasicRequest(t *testing.T) {
 	server := createDefaultAwsTestServer()
 	ts := httptest.NewServer(server)
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -582,8 +582,8 @@ func TestAWSCredential_BasicRequest(t *testing.T) {
 		securityToken,
 	)
 
-	if !cmp.Equal(got, want) {
-		t.Errorf("subjectToken = \n%q\n want \n%q", got, want)
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
@@ -591,7 +591,7 @@ func TestAWSCredential_IMDSv2(t *testing.T) {
 	server := createDefaultAwsTestServerWithImdsv2(t)
 	ts := httptest.NewServer(server)
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -621,8 +621,8 @@ func TestAWSCredential_IMDSv2(t *testing.T) {
 		securityToken,
 	)
 
-	if !cmp.Equal(got, want) {
-		t.Errorf("subjectToken = \n%q\n want \n%q", got, want)
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
@@ -631,7 +631,7 @@ func TestAWSCredential_BasicRequestWithoutSecurityToken(t *testing.T) {
 	ts := httptest.NewServer(server)
 	delete(server.Credentials, "Token")
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -661,8 +661,8 @@ func TestAWSCredential_BasicRequestWithoutSecurityToken(t *testing.T) {
 		"",
 	)
 
-	if !cmp.Equal(got, want) {
-		t.Errorf("subjectToken = \n%q\n want \n%q", got, want)
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
@@ -670,7 +670,7 @@ func TestAWSCredential_BasicRequestWithEnv(t *testing.T) {
 	server := createDefaultAwsTestServer()
 	ts := httptest.NewServer(server)
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -704,8 +704,8 @@ func TestAWSCredential_BasicRequestWithEnv(t *testing.T) {
 		"",
 	)
 
-	if !cmp.Equal(got, want) {
-		t.Errorf("subjectToken = \n%q\n want \n%q", got, want)
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
@@ -713,7 +713,7 @@ func TestAWSCredential_BasicRequestWithDefaultEnv(t *testing.T) {
 	server := createDefaultAwsTestServer()
 	ts := httptest.NewServer(server)
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -746,15 +746,15 @@ func TestAWSCredential_BasicRequestWithDefaultEnv(t *testing.T) {
 		"",
 	)
 
-	if !cmp.Equal(got, want) {
-		t.Errorf("subjectToken = \n%q\n want \n%q", got, want)
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
 func TestAWSCredential_BasicRequestWithTwoRegions(t *testing.T) {
 	server := createDefaultAwsTestServer()
 	ts := httptest.NewServer(server)
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -788,8 +788,8 @@ func TestAWSCredential_BasicRequestWithTwoRegions(t *testing.T) {
 		"",
 	)
 
-	if !cmp.Equal(got, want) {
-		t.Errorf("subjectToken = \n%q\n want \n%q", got, want)
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
@@ -797,7 +797,7 @@ func TestAWSCredential_RequestWithBadVersion(t *testing.T) {
 	server := createDefaultAwsTestServer()
 	ts := httptest.NewServer(server)
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 	opts.CredentialSource.EnvironmentID = "aws3"
 
@@ -808,7 +808,7 @@ func TestAWSCredential_RequestWithBadVersion(t *testing.T) {
 	getenv = setEnvironment(map[string]string{})
 
 	_, err := newSubjectTokenProvider(opts)
-	if got, want := err.Error(), "detect: aws version '3' is not supported in the current build"; !cmp.Equal(got, want) {
+	if got, want := err.Error(), "detect: aws version '3' is not supported in the current build"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -817,7 +817,7 @@ func TestAWSCredential_RequestWithNoRegionURL(t *testing.T) {
 	server := createDefaultAwsTestServer()
 	ts := httptest.NewServer(server)
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 	opts.CredentialSource.RegionURL = ""
 
@@ -837,7 +837,7 @@ func TestAWSCredential_RequestWithNoRegionURL(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: unable to determine AWS region"; !cmp.Equal(got, want) {
+	if got, want := err.Error(), "detect: unable to determine AWS region"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -847,7 +847,7 @@ func TestAWSCredential_RequestWithBadRegionURL(t *testing.T) {
 	ts := httptest.NewServer(server)
 	server.WriteRegion = notFound
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -866,7 +866,7 @@ func TestAWSCredential_RequestWithBadRegionURL(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: unable to retrieve AWS region - Not Found"; !cmp.Equal(got, want) {
+	if got, want := err.Error(), "detect: unable to retrieve AWS region - Not Found"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -878,7 +878,7 @@ func TestAWSCredential_RequestWithMissingCredential(t *testing.T) {
 		w.Write([]byte("{}"))
 	}
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -897,7 +897,7 @@ func TestAWSCredential_RequestWithMissingCredential(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: missing AccessKeyId credential"; !cmp.Equal(got, want) {
+	if got, want := err.Error(), "detect: missing AccessKeyId credential"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -909,7 +909,7 @@ func TestAWSCredential_RequestWithIncompleteCredential(t *testing.T) {
 		w.Write([]byte(`{"AccessKeyId":"FOOBARBAS"}`))
 	}
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -928,7 +928,7 @@ func TestAWSCredential_RequestWithIncompleteCredential(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: missing SecretAccessKey credential"; !cmp.Equal(got, want) {
+	if got, want := err.Error(), "detect: missing SecretAccessKey credential"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -937,7 +937,7 @@ func TestAWSCredential_RequestWithNoCredentialURL(t *testing.T) {
 	server := createDefaultAwsTestServer()
 	ts := httptest.NewServer(server)
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 	opts.CredentialSource.URL = ""
 
@@ -957,7 +957,7 @@ func TestAWSCredential_RequestWithNoCredentialURL(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: unable to determine the AWS metadata server security credentials endpoint"; !cmp.Equal(got, want) {
+	if got, want := err.Error(), "detect: unable to determine the AWS metadata server security credentials endpoint"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -967,7 +967,7 @@ func TestAWSCredential_RequestWithBadCredentialURL(t *testing.T) {
 	ts := httptest.NewServer(server)
 	server.WriteRolename = notFound
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -986,7 +986,7 @@ func TestAWSCredential_RequestWithBadCredentialURL(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: unable to retrieve AWS role name - Not Found"; !cmp.Equal(got, want) {
+	if got, want := err.Error(), "detect: unable to retrieve AWS role name - Not Found"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -996,7 +996,7 @@ func TestAWSCredential_RequestWithBadFinalCredentialURL(t *testing.T) {
 	ts := httptest.NewServer(server)
 	server.WriteSecurityCredentials = notFound
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -1015,7 +1015,7 @@ func TestAWSCredential_RequestWithBadFinalCredentialURL(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: unable to retrieve AWS security credentials - Not Found"; !cmp.Equal(got, want) {
+	if got, want := err.Error(), "detect: unable to retrieve AWS security credentials - Not Found"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -1028,7 +1028,7 @@ func TestAWSCredential_ShouldNotCallMetadataEndpointWhenCredsAreInEnv(t *testing
 		t.Error("Metadata server should not have been called.")
 	}))
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 	opts.CredentialSource.IMDSv2SessionTokenURL = metadataTs.URL
 
@@ -1063,8 +1063,8 @@ func TestAWSCredential_ShouldNotCallMetadataEndpointWhenCredsAreInEnv(t *testing
 		"",
 	)
 
-	if !cmp.Equal(got, want) {
-		t.Errorf("subjectToken = \n%q\n want \n%q", got, want)
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
@@ -1072,7 +1072,7 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoRegion(t *testing.T) {
 	server := createDefaultAwsTestServerWithImdsv2(t)
 	ts := httptest.NewServer(server)
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -1105,8 +1105,8 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoRegion(t *testing.T) {
 		"",
 	)
 
-	if !cmp.Equal(got, want) {
-		t.Errorf("subjectToken = \n%q\n want \n%q", got, want)
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
@@ -1114,7 +1114,7 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoAccessKey(t *testing.T) {
 	server := createDefaultAwsTestServerWithImdsv2(t)
 	ts := httptest.NewServer(server)
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -1147,8 +1147,8 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoAccessKey(t *testing.T) {
 		securityToken,
 	)
 
-	if !cmp.Equal(got, want) {
-		t.Errorf("subjectToken = \n%q\n want \n%q", got, want)
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
@@ -1156,7 +1156,7 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoSecretAccessKey(t *testin
 	server := createDefaultAwsTestServerWithImdsv2(t)
 	ts := httptest.NewServer(server)
 
-	opts := testFileOpts()
+	opts := cloneTestOpts()
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
@@ -1189,8 +1189,8 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoSecretAccessKey(t *testin
 		securityToken,
 	)
 
-	if !cmp.Equal(got, want) {
-		t.Errorf("subjectToken = \n%q\n want \n%q", got, want)
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
@@ -1229,7 +1229,7 @@ func TestAWSCredential_Validations(t *testing.T) {
 
 	for _, tt := range metadataServerValidityTests {
 		t.Run(tt.name, func(t *testing.T) {
-			opts := testFileOpts()
+			opts := cloneTestOpts()
 			opts.CredentialSource = tt.credSource
 
 			oldGetenv := getenv
@@ -1286,10 +1286,10 @@ func testRequestSigner(t *testing.T, rs *awsRequestSigner, input, wantOutput *ht
 		t.Fatal(err)
 	}
 
-	if got, want := input.URL.String(), wantOutput.URL.String(); !cmp.Equal(got, want) {
+	if got, want := input.URL.String(), wantOutput.URL.String(); got != want {
 		t.Errorf("url = %q, want %q", got, want)
 	}
-	if got, want := input.Method, wantOutput.Method; !cmp.Equal(got, want) {
+	if got, want := input.Method, wantOutput.Method; got != want {
 		t.Errorf("method = %q, want %q", got, want)
 	}
 	for header := range wantOutput.Header {

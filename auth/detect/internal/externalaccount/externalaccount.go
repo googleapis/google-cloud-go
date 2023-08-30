@@ -90,10 +90,14 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 			return nil, fmt.Errorf("detect: workforce_pool_user_project should not be set for non-workforce pool credentials")
 		}
 	}
-
-	tp := tokenProvider{
+	stp, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		return nil, err
+	}
+	tp := &tokenProvider{
 		client: opts.Client,
 		opts:   opts,
+		stp:    stp,
 	}
 	if opts.ServiceAccountImpersonationURL == "" {
 		return auth.NewCachedTokenProvider(tp, nil), nil
@@ -114,6 +118,70 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 		return nil, err
 	}
 	return auth.NewCachedTokenProvider(imp, nil), nil
+}
+
+type subjectTokenProvider interface {
+	subjectToken(ctx context.Context) (string, error)
+}
+
+// tokenProvider is the provider that handles external credentials. It is used to retrieve Tokens.
+type tokenProvider struct {
+	client *http.Client
+	opts   *Options
+	stp    subjectTokenProvider
+}
+
+func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	subjectToken, err := tp.stp.subjectToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	stsRequest := &stsTokenExchangeRequest{
+		GrantType:          stsGrantType,
+		Audience:           tp.opts.Audience,
+		Scope:              tp.opts.Scopes,
+		RequestedTokenType: stsTokenType,
+		SubjectToken:       subjectToken,
+		SubjectTokenType:   tp.opts.SubjectTokenType,
+	}
+	header := make(http.Header)
+	header.Add("Content-Type", "application/x-www-form-urlencoded")
+	clientAuth := clientAuthentication{
+		AuthStyle:    auth.StyleInHeader,
+		ClientID:     tp.opts.ClientID,
+		ClientSecret: tp.opts.ClientSecret,
+	}
+	var options map[string]interface{}
+	// Do not pass workforce_pool_user_project when client authentication is used.
+	// The client ID is sufficient for determining the user project.
+	if tp.opts.WorkforcePoolUserProject != "" && tp.opts.ClientID == "" {
+		options = map[string]interface{}{
+			"userProject": tp.opts.WorkforcePoolUserProject,
+		}
+	}
+	stsResp, err := exchangeToken(ctx, &exchangeOptions{
+		client:         tp.client,
+		endpoint:       tp.opts.TokenURL,
+		request:        stsRequest,
+		authentication: clientAuth,
+		headers:        header,
+		extraOpts:      options,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	tok := &auth.Token{
+		Value: stsResp.AccessToken,
+		Type:  stsResp.TokenType,
+	}
+	if stsResp.ExpiresIn < 0 {
+		return nil, fmt.Errorf("detect: got invalid expiry from security token service")
+	} else if stsResp.ExpiresIn >= 0 {
+		tok.Expiry = now().Add(time.Duration(stsResp.ExpiresIn) * time.Second)
+	}
+	return tok, nil
 }
 
 // newSubjectTokenProvider determines the type of internaldetect.CredentialSource needed to create a
@@ -166,64 +234,4 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 		return execProvider, nil
 	}
 	return nil, errors.New("detect: unable to parse credential source")
-}
-
-type subjectTokenProvider interface {
-	subjectToken(ctx context.Context) (string, error)
-}
-
-// tokenProvider is the provider that handles external credentials. It is used to retrieve Tokens.
-type tokenProvider struct {
-	client *http.Client
-	opts   *Options
-}
-
-func (ts tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	subjectTokenProvider, err := newSubjectTokenProvider(ts.opts)
-	if err != nil {
-		return nil, err
-	}
-	subjectToken, err := subjectTokenProvider.subjectToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	stsRequest := stsTokenExchangeRequest{
-		GrantType:          stsGrantType,
-		Audience:           ts.opts.Audience,
-		Scope:              ts.opts.Scopes,
-		RequestedTokenType: stsTokenType,
-		SubjectToken:       subjectToken,
-		SubjectTokenType:   ts.opts.SubjectTokenType,
-	}
-	header := make(http.Header)
-	header.Add("Content-Type", "application/x-www-form-urlencoded")
-	clientAuth := clientAuthentication{
-		AuthStyle:    auth.StyleInHeader,
-		ClientID:     ts.opts.ClientID,
-		ClientSecret: ts.opts.ClientSecret,
-	}
-	var options map[string]interface{}
-	// Do not pass workforce_pool_user_project when client authentication is used.
-	// The client ID is sufficient for determining the user project.
-	if ts.opts.WorkforcePoolUserProject != "" && ts.opts.ClientID == "" {
-		options = map[string]interface{}{
-			"userProject": ts.opts.WorkforcePoolUserProject,
-		}
-	}
-	stsResp, err := exchangeToken(ctx, ts.client, ts.opts.TokenURL, &stsRequest, clientAuth, header, options)
-	if err != nil {
-		return nil, err
-	}
-
-	accessToken := &auth.Token{
-		Value: stsResp.AccessToken,
-		Type:  stsResp.TokenType,
-	}
-	if stsResp.ExpiresIn < 0 {
-		return nil, fmt.Errorf("detect: got invalid expiry from security token service")
-	} else if stsResp.ExpiresIn >= 0 {
-		accessToken.Expiry = now().Add(time.Duration(stsResp.ExpiresIn) * time.Second)
-	}
-	return accessToken, nil
 }
