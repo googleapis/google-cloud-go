@@ -3635,6 +3635,52 @@
       ]
     },
     {
+      "regionTag": "dialogflow_v2_generated_Conversations_SearchKnowledge_sync",
+      "title": "dialogflow SearchKnowledge Sample",
+      "description": "SearchKnowledge get answers for the given query based on knowledge documents.",
+      "file": "ConversationsClient/SearchKnowledge/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchKnowledge",
+        "fullName": "google.cloud.dialogflow.v2.ConversationsClient.SearchKnowledge",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.SearchKnowledgeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.SearchKnowledgeResponse",
+        "client": {
+          "shortName": "ConversationsClient",
+          "fullName": "google.cloud.dialogflow.v2.ConversationsClient"
+        },
+        "method": {
+          "shortName": "SearchKnowledge",
+          "fullName": "google.cloud.dialogflow.v2.Conversations.SearchKnowledge",
+          "service": {
+            "shortName": "Conversations",
+            "fullName": "google.cloud.dialogflow.v2.Conversations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dialogflow_v2_generated_Conversations_SuggestConversationSummary_sync",
       "title": "dialogflow SuggestConversationSummary Sample",
       "description": "SuggestConversationSummary suggests summary for a conversation based on specific historical messages.\nThe range of the messages to be used for summary can be specified in the\nrequest.",

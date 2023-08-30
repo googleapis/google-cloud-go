@@ -149,7 +149,7 @@ func (r *w1r3) cleanup() error {
 
 func (r *w1r3) run(ctx context.Context) error {
 	// Use the same client for write and reads as the api is the same
-	client := getClient(ctx, r.writeResult.params.api)
+	client := getClient(ctx, r.readResults[0].params.api)
 
 	var span trace.Span
 	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "w1r3")
