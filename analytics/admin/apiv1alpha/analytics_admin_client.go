@@ -80,6 +80,11 @@ type AnalyticsAdminCallOptions struct {
 	DeleteMeasurementProtocolSecret              []gax.CallOption
 	UpdateMeasurementProtocolSecret              []gax.CallOption
 	AcknowledgeUserDataCollection                []gax.CallOption
+	GetSKAdNetworkConversionValueSchema          []gax.CallOption
+	CreateSKAdNetworkConversionValueSchema       []gax.CallOption
+	DeleteSKAdNetworkConversionValueSchema       []gax.CallOption
+	UpdateSKAdNetworkConversionValueSchema       []gax.CallOption
+	ListSKAdNetworkConversionValueSchemas        []gax.CallOption
 	SearchChangeHistoryEvents                    []gax.CallOption
 	GetGoogleSignalsSettings                     []gax.CallOption
 	UpdateGoogleSignalsSettings                  []gax.CallOption
@@ -359,6 +364,71 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		AcknowledgeUserDataCollection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetSKAdNetworkConversionValueSchema: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateSKAdNetworkConversionValueSchema: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteSKAdNetworkConversionValueSchema: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSKAdNetworkConversionValueSchema: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSKAdNetworkConversionValueSchemas: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1667,6 +1737,66 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		GetSKAdNetworkConversionValueSchema: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateSKAdNetworkConversionValueSchema: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteSKAdNetworkConversionValueSchema: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateSKAdNetworkConversionValueSchema: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListSKAdNetworkConversionValueSchemas: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 		SearchChangeHistoryEvents: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -2737,6 +2867,11 @@ type internalAnalyticsAdminClient interface {
 	DeleteMeasurementProtocolSecret(context.Context, *adminpb.DeleteMeasurementProtocolSecretRequest, ...gax.CallOption) error
 	UpdateMeasurementProtocolSecret(context.Context, *adminpb.UpdateMeasurementProtocolSecretRequest, ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error)
 	AcknowledgeUserDataCollection(context.Context, *adminpb.AcknowledgeUserDataCollectionRequest, ...gax.CallOption) (*adminpb.AcknowledgeUserDataCollectionResponse, error)
+	GetSKAdNetworkConversionValueSchema(context.Context, *adminpb.GetSKAdNetworkConversionValueSchemaRequest, ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error)
+	CreateSKAdNetworkConversionValueSchema(context.Context, *adminpb.CreateSKAdNetworkConversionValueSchemaRequest, ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error)
+	DeleteSKAdNetworkConversionValueSchema(context.Context, *adminpb.DeleteSKAdNetworkConversionValueSchemaRequest, ...gax.CallOption) error
+	UpdateSKAdNetworkConversionValueSchema(context.Context, *adminpb.UpdateSKAdNetworkConversionValueSchemaRequest, ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error)
+	ListSKAdNetworkConversionValueSchemas(context.Context, *adminpb.ListSKAdNetworkConversionValueSchemasRequest, ...gax.CallOption) *SKAdNetworkConversionValueSchemaIterator
 	SearchChangeHistoryEvents(context.Context, *adminpb.SearchChangeHistoryEventsRequest, ...gax.CallOption) *ChangeHistoryEventIterator
 	GetGoogleSignalsSettings(context.Context, *adminpb.GetGoogleSignalsSettingsRequest, ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error)
 	UpdateGoogleSignalsSettings(context.Context, *adminpb.UpdateGoogleSignalsSettingsRequest, ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error)
@@ -3095,6 +3230,32 @@ func (c *AnalyticsAdminClient) AcknowledgeUserDataCollection(ctx context.Context
 	return c.internalClient.AcknowledgeUserDataCollection(ctx, req, opts...)
 }
 
+// GetSKAdNetworkConversionValueSchema looks up a single SKAdNetworkConversionValueSchema.
+func (c *AnalyticsAdminClient) GetSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.GetSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error) {
+	return c.internalClient.GetSKAdNetworkConversionValueSchema(ctx, req, opts...)
+}
+
+// CreateSKAdNetworkConversionValueSchema creates a SKAdNetworkConversionValueSchema.
+func (c *AnalyticsAdminClient) CreateSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.CreateSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error) {
+	return c.internalClient.CreateSKAdNetworkConversionValueSchema(ctx, req, opts...)
+}
+
+// DeleteSKAdNetworkConversionValueSchema deletes target SKAdNetworkConversionValueSchema.
+func (c *AnalyticsAdminClient) DeleteSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.DeleteSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSKAdNetworkConversionValueSchema(ctx, req, opts...)
+}
+
+// UpdateSKAdNetworkConversionValueSchema updates a SKAdNetworkConversionValueSchema.
+func (c *AnalyticsAdminClient) UpdateSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.UpdateSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error) {
+	return c.internalClient.UpdateSKAdNetworkConversionValueSchema(ctx, req, opts...)
+}
+
+// ListSKAdNetworkConversionValueSchemas lists SKAdNetworkConversionValueSchema on a stream.
+// Properties can have at most one SKAdNetworkConversionValueSchema.
+func (c *AnalyticsAdminClient) ListSKAdNetworkConversionValueSchemas(ctx context.Context, req *adminpb.ListSKAdNetworkConversionValueSchemasRequest, opts ...gax.CallOption) *SKAdNetworkConversionValueSchemaIterator {
+	return c.internalClient.ListSKAdNetworkConversionValueSchemas(ctx, req, opts...)
+}
+
 // SearchChangeHistoryEvents searches through all changes to an account or its children given the
 // specified set of filters.
 func (c *AnalyticsAdminClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
@@ -3198,10 +3359,10 @@ func (c *AnalyticsAdminClient) ApproveDisplayVideo360AdvertiserLinkProposal(ctx 
 // CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.
 // Cancelling can mean either:
 //
-//	Declining a proposal initiated from Display & Video 360
+//   Declining a proposal initiated from Display & Video 360
 //
-//	Withdrawing a proposal initiated from Google Analytics
-//	After being cancelled, a proposal will eventually be deleted automatically.
+//   Withdrawing a proposal initiated from Google Analytics
+//   After being cancelled, a proposal will eventually be deleted automatically.
 func (c *AnalyticsAdminClient) CancelDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
 	return c.internalClient.CancelDisplayVideo360AdvertiserLinkProposal(ctx, req, opts...)
 }
@@ -4552,6 +4713,120 @@ func (c *analyticsAdminGRPCClient) AcknowledgeUserDataCollection(ctx context.Con
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.GetSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).GetSKAdNetworkConversionValueSchema):len((*c.CallOptions).GetSKAdNetworkConversionValueSchema)], opts...)
+	var resp *adminpb.SKAdNetworkConversionValueSchema
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetSKAdNetworkConversionValueSchema(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) CreateSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.CreateSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).CreateSKAdNetworkConversionValueSchema):len((*c.CallOptions).CreateSKAdNetworkConversionValueSchema)], opts...)
+	var resp *adminpb.SKAdNetworkConversionValueSchema
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateSKAdNetworkConversionValueSchema(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.DeleteSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).DeleteSKAdNetworkConversionValueSchema):len((*c.CallOptions).DeleteSKAdNetworkConversionValueSchema)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteSKAdNetworkConversionValueSchema(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) UpdateSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.UpdateSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "skadnetwork_conversion_value_schema.name", url.QueryEscape(req.GetSkadnetworkConversionValueSchema().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema):len((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema)], opts...)
+	var resp *adminpb.SKAdNetworkConversionValueSchema
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateSKAdNetworkConversionValueSchema(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListSKAdNetworkConversionValueSchemas(ctx context.Context, req *adminpb.ListSKAdNetworkConversionValueSchemasRequest, opts ...gax.CallOption) *SKAdNetworkConversionValueSchemaIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSKAdNetworkConversionValueSchemas[0:len((*c.CallOptions).ListSKAdNetworkConversionValueSchemas):len((*c.CallOptions).ListSKAdNetworkConversionValueSchemas)], opts...)
+	it := &SKAdNetworkConversionValueSchemaIterator{}
+	req = proto.Clone(req).(*adminpb.ListSKAdNetworkConversionValueSchemasRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SKAdNetworkConversionValueSchema, string, error) {
+		resp := &adminpb.ListSKAdNetworkConversionValueSchemasResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListSKAdNetworkConversionValueSchemas(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSkadnetworkConversionValueSchemas(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *analyticsAdminGRPCClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
@@ -8937,6 +9212,339 @@ func (c *analyticsAdminRESTClient) AcknowledgeUserDataCollection(ctx context.Con
 	return resp, nil
 }
 
+// GetSKAdNetworkConversionValueSchema looks up a single SKAdNetworkConversionValueSchema.
+func (c *analyticsAdminRESTClient) GetSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.GetSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).GetSKAdNetworkConversionValueSchema):len((*c.CallOptions).GetSKAdNetworkConversionValueSchema)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SKAdNetworkConversionValueSchema{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateSKAdNetworkConversionValueSchema creates a SKAdNetworkConversionValueSchema.
+func (c *analyticsAdminRESTClient) CreateSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.CreateSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSkadnetworkConversionValueSchema()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/sKAdNetworkConversionValueSchema", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).CreateSKAdNetworkConversionValueSchema):len((*c.CallOptions).CreateSKAdNetworkConversionValueSchema)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SKAdNetworkConversionValueSchema{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteSKAdNetworkConversionValueSchema deletes target SKAdNetworkConversionValueSchema.
+func (c *analyticsAdminRESTClient) DeleteSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.DeleteSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// UpdateSKAdNetworkConversionValueSchema updates a SKAdNetworkConversionValueSchema.
+func (c *analyticsAdminRESTClient) UpdateSKAdNetworkConversionValueSchema(ctx context.Context, req *adminpb.UpdateSKAdNetworkConversionValueSchemaRequest, opts ...gax.CallOption) (*adminpb.SKAdNetworkConversionValueSchema, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSkadnetworkConversionValueSchema()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetSkadnetworkConversionValueSchema().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "skadnetwork_conversion_value_schema.name", url.QueryEscape(req.GetSkadnetworkConversionValueSchema().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema[0:len((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema):len((*c.CallOptions).UpdateSKAdNetworkConversionValueSchema)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SKAdNetworkConversionValueSchema{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSKAdNetworkConversionValueSchemas lists SKAdNetworkConversionValueSchema on a stream.
+// Properties can have at most one SKAdNetworkConversionValueSchema.
+func (c *analyticsAdminRESTClient) ListSKAdNetworkConversionValueSchemas(ctx context.Context, req *adminpb.ListSKAdNetworkConversionValueSchemasRequest, opts ...gax.CallOption) *SKAdNetworkConversionValueSchemaIterator {
+	it := &SKAdNetworkConversionValueSchemaIterator{}
+	req = proto.Clone(req).(*adminpb.ListSKAdNetworkConversionValueSchemasRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SKAdNetworkConversionValueSchema, string, error) {
+		resp := &adminpb.ListSKAdNetworkConversionValueSchemasResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/sKAdNetworkConversionValueSchema", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSkadnetworkConversionValueSchemas(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // SearchChangeHistoryEvents searches through all changes to an account or its children given the
 // specified set of filters.
 func (c *analyticsAdminRESTClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
@@ -10161,10 +10769,10 @@ func (c *analyticsAdminRESTClient) ApproveDisplayVideo360AdvertiserLinkProposal(
 // CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.
 // Cancelling can mean either:
 //
-//	Declining a proposal initiated from Display & Video 360
+//   Declining a proposal initiated from Display & Video 360
 //
-//	Withdrawing a proposal initiated from Google Analytics
-//	After being cancelled, a proposal will eventually be deleted automatically.
+//   Withdrawing a proposal initiated from Google Analytics
+//   After being cancelled, a proposal will eventually be deleted automatically.
 func (c *analyticsAdminRESTClient) CancelDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -15721,6 +16329,53 @@ func (it *PropertyIterator) bufLen() int {
 }
 
 func (it *PropertyIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// SKAdNetworkConversionValueSchemaIterator manages a stream of *adminpb.SKAdNetworkConversionValueSchema.
+type SKAdNetworkConversionValueSchemaIterator struct {
+	items    []*adminpb.SKAdNetworkConversionValueSchema
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.SKAdNetworkConversionValueSchema, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SKAdNetworkConversionValueSchemaIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SKAdNetworkConversionValueSchemaIterator) Next() (*adminpb.SKAdNetworkConversionValueSchema, error) {
+	var item *adminpb.SKAdNetworkConversionValueSchema
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SKAdNetworkConversionValueSchemaIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SKAdNetworkConversionValueSchemaIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
