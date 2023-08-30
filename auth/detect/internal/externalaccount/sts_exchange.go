@@ -16,6 +16,7 @@ package externalaccount
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -23,6 +24,7 @@ import (
 	"strconv"
 	"strings"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 )
 
@@ -107,4 +109,32 @@ type stsTokenExchangeResponse struct {
 	ExpiresIn       int    `json:"expires_in"`
 	Scope           string `json:"scope"`
 	// TODO(codyoss): original impl parsed but did not use a refresh token here, do we need it?
+}
+
+// clientAuthentication represents an OAuth client ID and secret and the
+// mechanism for passing these credentials as stated in rfc6749#2.3.1.
+type clientAuthentication struct {
+	AuthStyle    auth.Style
+	ClientID     string
+	ClientSecret string
+}
+
+// InjectAuthentication is used to add authentication to a Secure Token Service
+// exchange request.  It modifies either the passed url.Values or http.Header
+// depending on the desired authentication format.
+func (c *clientAuthentication) InjectAuthentication(values url.Values, headers http.Header) {
+	if c.ClientID == "" || c.ClientSecret == "" || values == nil || headers == nil {
+		return
+	}
+
+	switch c.AuthStyle {
+	// AuthStyleInHeader corresponds to basic authentication as defined in
+	// rfc7617#2
+	case auth.StyleInHeader:
+		plainHeader := c.ClientID + ":" + c.ClientSecret
+		headers.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(plainHeader)))
+	default:
+		values.Set("client_id", c.ClientID)
+		values.Set("client_secret", c.ClientSecret)
+	}
 }

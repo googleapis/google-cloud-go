@@ -29,10 +29,6 @@ import (
 )
 
 const (
-	// Subject token file types.
-	fileTypeText = "text"
-	fileTypeJSON = "json"
-
 	stsGrantType = "urn:ietf:params:oauth:grant-type:token-exchange"
 	stsTokenType = "urn:ietf:params:oauth:token-type:access_token"
 )
