@@ -1125,54 +1125,42 @@ func TestBucketConditionsEmulated(t *testing.T) {
 		ctx := context.Background()
 		cases := []struct {
 			name string
-			call func() error
+			call func(bucket string, metaGen int64) error
 		}{
 			{
 				name: "get",
-				call: func() error {
-					bucket, metaGen, err := createBucket(ctx, project)
-					if err != nil {
-						return fmt.Errorf("creating bucket: %w", err)
-					}
-					_, err = client.GetBucket(ctx, bucket, &BucketConditions{MetagenerationMatch: metaGen})
+				call: func(bucket string, metaGen int64) error {
+					_, err := client.GetBucket(ctx, bucket, &BucketConditions{MetagenerationMatch: metaGen})
 					return err
 				},
 			},
 			{
 				name: "update",
-				call: func() error {
-					bucket, metaGen, err := createBucket(ctx, project)
-					if err != nil {
-						return fmt.Errorf("creating bucket: %w", err)
-					}
-					_, err = client.UpdateBucket(ctx, bucket, &BucketAttrsToUpdate{StorageClass: "ARCHIVE"}, &BucketConditions{MetagenerationMatch: metaGen})
+				call: func(bucket string, metaGen int64) error {
+					_, err := client.UpdateBucket(ctx, bucket, &BucketAttrsToUpdate{StorageClass: "ARCHIVE"}, &BucketConditions{MetagenerationMatch: metaGen})
 					return err
 				},
 			},
 			{
 				name: "delete",
-				call: func() error {
-					bucket, metaGen, err := createBucket(ctx, project)
-					if err != nil {
-						return fmt.Errorf("creating bucket: %w", err)
-					}
+				call: func(bucket string, metaGen int64) error {
 					return client.DeleteBucket(ctx, bucket, &BucketConditions{MetagenerationMatch: metaGen})
 				},
 			},
 			{
 				name: "lockRetentionPolicy",
-				call: func() error {
-					bucket, metaGen, err := createBucket(ctx, project)
-					if err != nil {
-						return fmt.Errorf("creating bucket: %w", err)
-					}
+				call: func(bucket string, metaGen int64) error {
 					return client.LockBucketRetentionPolicy(ctx, bucket, &BucketConditions{MetagenerationMatch: metaGen})
 				},
 			},
 		}
 		for _, c := range cases {
 			t.Run(c.name, func(r *testing.T) {
-				if err := c.call(); err != nil {
+				bucket, metaGen, err := createBucket(ctx, project)
+				if err != nil {
+					r.Fatalf("creating bucket: %v", err)
+				}
+				if err := c.call(bucket, metaGen); err != nil {
 					r.Errorf("error: %v", err)
 				}
 			})
