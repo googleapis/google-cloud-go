@@ -380,6 +380,52 @@
       ]
     },
     {
+      "regionTag": "recommender_v1_generated_Recommender_MarkRecommendationDismissed_sync",
+      "title": "recommender MarkRecommendationDismissed Sample",
+      "description": "MarkRecommendationDismissed mark the Recommendation State as Dismissed. Users can use this method to\nindicate to the Recommender API that an ACTIVE recommendation has to\nbe marked back as DISMISSED.\n\nMarkRecommendationDismissed can be applied to recommendations in ACTIVE\nstate.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender.",
+      "file": "Client/MarkRecommendationDismissed/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MarkRecommendationDismissed",
+        "fullName": "google.cloud.recommender.v1.Client.MarkRecommendationDismissed",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recommenderpb.MarkRecommendationDismissedRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recommenderpb.Recommendation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recommender.v1.Client"
+        },
+        "method": {
+          "shortName": "MarkRecommendationDismissed",
+          "fullName": "google.cloud.recommender.v1.Recommender.MarkRecommendationDismissed",
+          "service": {
+            "shortName": "Recommender",
+            "fullName": "google.cloud.recommender.v1.Recommender"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "recommender_v1_generated_Recommender_MarkRecommendationFailed_sync",
       "title": "recommender MarkRecommendationFailed Sample",
       "description": "MarkRecommendationFailed marks the Recommendation State as Failed. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation failed. This stops the recommendation content\nfrom being updated. Associated insights are frozen and placed in the\nACCEPTED state.\n\nMarkRecommendationFailed can be applied to recommendations in ACTIVE,\nCLAIMED, SUCCEEDED, or FAILED state.\n\nRequires the recommender.*.update IAM permission for the specified\nrecommender.",
