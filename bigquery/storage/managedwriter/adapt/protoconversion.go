@@ -286,8 +286,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 //
 // Messages are always nullable, and repeated fields are as well.
 func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, useProto3 bool) (*descriptorpb.FieldDescriptorProto, error) {
-
-	name := strings.ToLower(field.GetName())
+	name := field.GetName()
 	var fdp *descriptorpb.FieldDescriptorProto
 
 	if field.GetType() == storagepb.TableFieldSchema_STRUCT {
