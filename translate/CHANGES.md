@@ -1,5 +1,20 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/translate/v1.8.2...translate/v1.9.0) (2023-08-08)
+
+
+### Features
+
+* **translate:** Added shadow removal and rotation correction options to Document Translation and Batch Document Translation API ([#8391](https://github.com/googleapis/google-cloud-go/issues/8391)) ([c38e910](https://github.com/googleapis/google-cloud-go/commit/c38e910f4a3114cd92e2bdceb18e53f1689f3bf8))
+
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/translate/v1.8.1...translate/v1.8.2) (2023-07-31)
+
+
+### Documentation
+
+* **translate:** Minor formatting ([#8341](https://github.com/googleapis/google-cloud-go/issues/8341)) ([95178ca](https://github.com/googleapis/google-cloud-go/commit/95178ca078eaff56fc6eab52e11e28386c822aa0))
+* **translate:** Minor formatting ([#8344](https://github.com/googleapis/google-cloud-go/issues/8344)) ([b890425](https://github.com/googleapis/google-cloud-go/commit/b8904253a0f8424ea4548469e5feef321bd7396a))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/translate/v1.8.0...translate/v1.8.1) (2023-06-20)
 
 

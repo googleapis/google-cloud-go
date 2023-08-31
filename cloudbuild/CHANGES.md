@@ -1,5 +1,30 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.13.0...cloudbuild/v1.14.0) (2023-08-08)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add update_mask to UpdateBuildTriggerRequest proto ([#8358](https://github.com/googleapis/google-cloud-go/issues/8358)) ([58b5851](https://github.com/googleapis/google-cloud-go/commit/58b5851b3f38aeeefcdb3507e29b9a02ccfb1bba))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.12.0...cloudbuild/v1.13.0) (2023-07-26)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add automap_substitutions flag to use substitutions as envs in Cloud Build ([327e101](https://github.com/googleapis/google-cloud-go/commit/327e10188a2e22dd7b7e6c12a8cf66729f65974c))
+* **cloudbuild/apiv1:** Add git_file_source and git_repo_source to build_trigger ([7cb7f66](https://github.com/googleapis/google-cloud-go/commit/7cb7f66f0646617c27aa9a9b4fe38b9f368eb3bb))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.11.0...cloudbuild/v1.12.0) (2023-07-24)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add repositoryevent to buildtrigger ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Add routing information in Cloud Build GRPC clients ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Added e2-medium machine type ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Update third party clodubuild.proto library to include git_source ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.10.1...cloudbuild/v1.11.0) (2023-07-10)
 
 

@@ -35,7 +35,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -243,7 +242,7 @@ type identityAwareProxyOAuthGRPCClient struct {
 	identityAwareProxyOAuthClient iappb.IdentityAwareProxyOAuthServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewIdentityAwareProxyOAuthClient creates a new identity aware proxyo auth service client based on gRPC.
@@ -294,7 +293,7 @@ func (c *identityAwareProxyOAuthGRPCClient) Connection() *grpc.ClientConn {
 func (c *identityAwareProxyOAuthGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -311,8 +310,8 @@ type identityAwareProxyOAuthRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing IdentityAwareProxyOAuthClient
 	CallOptions **IdentityAwareProxyOAuthCallOptions
@@ -356,7 +355,7 @@ func defaultIdentityAwareProxyOAuthRESTClientOptions() []option.ClientOption {
 func (c *identityAwareProxyOAuthRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -374,9 +373,10 @@ func (c *identityAwareProxyOAuthRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *identityAwareProxyOAuthGRPCClient) ListBrands(ctx context.Context, req *iappb.ListBrandsRequest, opts ...gax.CallOption) (*iappb.ListBrandsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListBrands[0:len((*c.CallOptions).ListBrands):len((*c.CallOptions).ListBrands)], opts...)
 	var resp *iappb.ListBrandsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -391,9 +391,10 @@ func (c *identityAwareProxyOAuthGRPCClient) ListBrands(ctx context.Context, req 
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) CreateBrand(ctx context.Context, req *iappb.CreateBrandRequest, opts ...gax.CallOption) (*iappb.Brand, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBrand[0:len((*c.CallOptions).CreateBrand):len((*c.CallOptions).CreateBrand)], opts...)
 	var resp *iappb.Brand
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -408,9 +409,10 @@ func (c *identityAwareProxyOAuthGRPCClient) CreateBrand(ctx context.Context, req
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) GetBrand(ctx context.Context, req *iappb.GetBrandRequest, opts ...gax.CallOption) (*iappb.Brand, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetBrand[0:len((*c.CallOptions).GetBrand):len((*c.CallOptions).GetBrand)], opts...)
 	var resp *iappb.Brand
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -425,9 +427,10 @@ func (c *identityAwareProxyOAuthGRPCClient) GetBrand(ctx context.Context, req *i
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) CreateIdentityAwareProxyClient(ctx context.Context, req *iappb.CreateIdentityAwareProxyClientRequest, opts ...gax.CallOption) (*iappb.IdentityAwareProxyClient, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateIdentityAwareProxyClient[0:len((*c.CallOptions).CreateIdentityAwareProxyClient):len((*c.CallOptions).CreateIdentityAwareProxyClient)], opts...)
 	var resp *iappb.IdentityAwareProxyClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -442,9 +445,10 @@ func (c *identityAwareProxyOAuthGRPCClient) CreateIdentityAwareProxyClient(ctx c
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) ListIdentityAwareProxyClients(ctx context.Context, req *iappb.ListIdentityAwareProxyClientsRequest, opts ...gax.CallOption) *IdentityAwareProxyClientIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListIdentityAwareProxyClients[0:len((*c.CallOptions).ListIdentityAwareProxyClients):len((*c.CallOptions).ListIdentityAwareProxyClients)], opts...)
 	it := &IdentityAwareProxyClientIterator{}
 	req = proto.Clone(req).(*iappb.ListIdentityAwareProxyClientsRequest)
@@ -487,9 +491,10 @@ func (c *identityAwareProxyOAuthGRPCClient) ListIdentityAwareProxyClients(ctx co
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) GetIdentityAwareProxyClient(ctx context.Context, req *iappb.GetIdentityAwareProxyClientRequest, opts ...gax.CallOption) (*iappb.IdentityAwareProxyClient, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIdentityAwareProxyClient[0:len((*c.CallOptions).GetIdentityAwareProxyClient):len((*c.CallOptions).GetIdentityAwareProxyClient)], opts...)
 	var resp *iappb.IdentityAwareProxyClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -504,9 +509,10 @@ func (c *identityAwareProxyOAuthGRPCClient) GetIdentityAwareProxyClient(ctx cont
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) ResetIdentityAwareProxyClientSecret(ctx context.Context, req *iappb.ResetIdentityAwareProxyClientSecretRequest, opts ...gax.CallOption) (*iappb.IdentityAwareProxyClient, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ResetIdentityAwareProxyClientSecret[0:len((*c.CallOptions).ResetIdentityAwareProxyClientSecret):len((*c.CallOptions).ResetIdentityAwareProxyClientSecret)], opts...)
 	var resp *iappb.IdentityAwareProxyClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -521,9 +527,10 @@ func (c *identityAwareProxyOAuthGRPCClient) ResetIdentityAwareProxyClientSecret(
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) DeleteIdentityAwareProxyClient(ctx context.Context, req *iappb.DeleteIdentityAwareProxyClientRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteIdentityAwareProxyClient[0:len((*c.CallOptions).DeleteIdentityAwareProxyClient):len((*c.CallOptions).DeleteIdentityAwareProxyClient)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -547,9 +554,11 @@ func (c *identityAwareProxyOAuthRESTClient) ListBrands(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ListBrands[0:len((*c.CallOptions).ListBrands):len((*c.CallOptions).ListBrands)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.ListBrandsResponse{}
@@ -619,9 +628,11 @@ func (c *identityAwareProxyOAuthRESTClient) CreateBrand(ctx context.Context, req
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBrand[0:len((*c.CallOptions).CreateBrand):len((*c.CallOptions).CreateBrand)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.Brand{}
@@ -677,9 +688,11 @@ func (c *identityAwareProxyOAuthRESTClient) GetBrand(ctx context.Context, req *i
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetBrand[0:len((*c.CallOptions).GetBrand):len((*c.CallOptions).GetBrand)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.Brand{}
@@ -744,9 +757,11 @@ func (c *identityAwareProxyOAuthRESTClient) CreateIdentityAwareProxyClient(ctx c
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateIdentityAwareProxyClient[0:len((*c.CallOptions).CreateIdentityAwareProxyClient):len((*c.CallOptions).CreateIdentityAwareProxyClient)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.IdentityAwareProxyClient{}
@@ -821,7 +836,8 @@ func (c *identityAwareProxyOAuthRESTClient) ListIdentityAwareProxyClients(ctx co
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -891,9 +907,11 @@ func (c *identityAwareProxyOAuthRESTClient) GetIdentityAwareProxyClient(ctx cont
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIdentityAwareProxyClient[0:len((*c.CallOptions).GetIdentityAwareProxyClient):len((*c.CallOptions).GetIdentityAwareProxyClient)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.IdentityAwareProxyClient{}
@@ -956,9 +974,11 @@ func (c *identityAwareProxyOAuthRESTClient) ResetIdentityAwareProxyClientSecret(
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ResetIdentityAwareProxyClientSecret[0:len((*c.CallOptions).ResetIdentityAwareProxyClientSecret):len((*c.CallOptions).ResetIdentityAwareProxyClientSecret)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iappb.IdentityAwareProxyClient{}
@@ -1016,9 +1036,11 @@ func (c *identityAwareProxyOAuthRESTClient) DeleteIdentityAwareProxyClient(ctx c
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

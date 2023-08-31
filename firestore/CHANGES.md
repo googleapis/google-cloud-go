@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.11.0...firestore/v1.12.0) (2023-08-01)
+
+
+### Features
+
+* **firestore:** Publish proto definitions for SUM/AVG in Firestore ([e3f8c89](https://github.com/googleapis/google-cloud-go/commit/e3f8c89429a207c05fee36d5d93efe76f9e29efe))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.10.0...firestore/v1.11.0) (2023-06-26)
 
 

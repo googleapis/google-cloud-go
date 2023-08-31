@@ -727,7 +727,8 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 		pageCursor:   q.start,
 		entityCursor: q.start,
 		req: &pb.RunQueryRequest{
-			ProjectId: c.dataset,
+			ProjectId:  c.dataset,
+			DatabaseId: c.databaseID,
 		},
 	}
 
@@ -766,7 +767,8 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	}
 
 	req := &pb.RunAggregationQueryRequest{
-		ProjectId: c.dataset,
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
 		QueryType: &pb.RunAggregationQueryRequest_AggregationQuery{
 			AggregationQuery: &pb.AggregationQuery{
 				QueryType: &pb.AggregationQuery_NestedQuery{
@@ -1024,7 +1026,6 @@ func DecodeCursor(s string) (Cursor, error) {
 // NewAggregationQuery returns an AggregationQuery with this query as its
 // base query.
 func (q *Query) NewAggregationQuery() *AggregationQuery {
-	q.eventual = true
 	return &AggregationQuery{
 		query:              q,
 		aggregationQueries: make([]*pb.AggregationQuery_Aggregation, 0),
@@ -1048,6 +1049,50 @@ func (aq *AggregationQuery) WithCount(alias string) *AggregationQuery {
 	aqpb := &pb.AggregationQuery_Aggregation{
 		Alias:    alias,
 		Operator: &pb.AggregationQuery_Aggregation_Count_{},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// WithSum specifies that the aggregation query should provide a sum of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Datastore entity property name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Datastore
+// will autogenerate a key.
+func (aq *AggregationQuery) WithSum(fieldName string, alias string) *AggregationQuery {
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.AggregationQuery_Aggregation_Sum_{
+			Sum: &pb.AggregationQuery_Aggregation_Sum{
+				Property: &pb.PropertyReference{
+					Name: fieldName,
+				},
+			},
+		},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// WithAvg specifies that the aggregation query should provide an average of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Datastore entity property name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Datastore
+// will autogenerate a key.
+func (aq *AggregationQuery) WithAvg(fieldName string, alias string) *AggregationQuery {
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.AggregationQuery_Aggregation_Avg_{
+			Avg: &pb.AggregationQuery_Aggregation_Avg{
+				Property: &pb.PropertyReference{
+					Name: fieldName,
+				},
+			},
+		},
 	}
 
 	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)

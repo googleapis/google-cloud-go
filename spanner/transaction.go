@@ -1380,15 +1380,13 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 	}()
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
-		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
+		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts)
+		if isSessionNotFoundError(err) {
+			sh.destroy()
 			sh, err = t.sp.take(ctx)
 			if err != nil {
 				return err
 			}
-		}
-		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts)
-		if isSessionNotFoundError(err) {
-			sh.destroy()
 			continue
 		} else {
 			err = ToSpannerError(err)
@@ -1399,7 +1397,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 		t.mu.Lock()
 		t.tx = tx
 		t.sh = sh
-		// State transite to txActive.
+		// Transition state to txActive.
 		t.state = txActive
 		t.mu.Unlock()
 	}

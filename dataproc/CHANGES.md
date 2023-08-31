@@ -1,5 +1,12 @@
 # Changes
 
+## [2.0.2](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.0.1...dataproc/v2.0.2) (2023-08-08)
+
+
+### Documentation
+
+* **dataproc:** Minor formatting ([b4349cc](https://github.com/googleapis/google-cloud-go/commit/b4349cc507870ff8629bbc07de578b63bb889626))
+
 ## [2.0.1](https://github.com/googleapis/google-cloud-go/compare/dataproc-v2.0.0...dataproc/v2.0.1) (2023-06-20)
 
 

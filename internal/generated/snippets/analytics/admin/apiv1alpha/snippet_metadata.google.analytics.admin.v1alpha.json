@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.21.2",
+    "version": "0.21.3",
     "language": "GO",
     "apis": [
       {
@@ -4943,6 +4943,52 @@
         "method": {
           "shortName": "UpdateChannelGroup",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateChannelGroup",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateConversionEvent_sync",
+      "title": "analyticsadmin UpdateConversionEvent Sample",
+      "description": "UpdateConversionEvent updates a conversion event with the specified attributes.",
+      "file": "AnalyticsAdminClient/UpdateConversionEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConversionEvent",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateConversionEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateConversionEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ConversionEvent",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateConversionEvent",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateConversionEvent",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
