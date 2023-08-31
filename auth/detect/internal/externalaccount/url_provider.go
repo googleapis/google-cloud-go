@@ -79,7 +79,7 @@ func (sp *urlSubjectProvider) subjectToken(ctx context.Context) (string, error) 
 	case fileTypeText, "":
 		return string(respBody), nil
 	default:
-		return "", errors.New("detect: invalid credential_source file format type")
+		return "", errors.New("detect: invalid credential_source file format type: " + sp.Format.Type)
 	}
 
 }

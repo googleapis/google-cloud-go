@@ -32,13 +32,15 @@ import (
 
 const (
 	executableSupportedMaxVersion = 1
-	defaultTimeout                = 30 * time.Second
-	timeoutMinimum                = 5 * time.Second
-	timeoutMaximum                = 120 * time.Second
+	executableDefaultTimeout      = 30 * time.Second
 	executableSource              = "response"
 	outputFileSource              = "output file"
 
 	allowExecutablesEnvVar = "GOOGLE_EXTERNAL_ACCOUNT_ALLOW_EXECUTABLES"
+
+	jwtTokenType   = "urn:ietf:params:oauth:token-type:jwt"
+	idTokenType    = "urn:ietf:params:oauth:token-type:id_token"
+	saml2TokenType = "urn:ietf:params:oauth:token-type:saml2"
 )
 
 var (
@@ -151,12 +153,12 @@ func (cs *executableSubjectProvider) parseSubjectTokenFromSource(response []byte
 	}
 
 	switch result.TokenType {
-	case "urn:ietf:params:oauth:token-type:jwt", "urn:ietf:params:oauth:token-type:id_token":
+	case jwtTokenType, idTokenType:
 		if result.IDToken == "" {
 			return "", missingFieldError(source, "id_token")
 		}
 		return result.IDToken, nil
-	case "urn:ietf:params:oauth:token-type:saml2":
+	case saml2TokenType:
 		if result.SamlResponse == "" {
 			return "", missingFieldError(source, "saml_response")
 		}

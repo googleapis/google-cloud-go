@@ -31,6 +31,9 @@ import (
 const (
 	stsGrantType = "urn:ietf:params:oauth:grant-type:token-exchange"
 	stsTokenType = "urn:ietf:params:oauth:token-type:access_token"
+
+	timeoutMinimum = 5 * time.Second
+	timeoutMaximum = 120 * time.Second
 )
 
 var (
@@ -148,7 +151,7 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 		SubjectTokenType:   tp.opts.SubjectTokenType,
 	}
 	header := make(http.Header)
-	header.Add("Content-Type", "application/x-www-form-urlencoded")
+	header.Set("Content-Type", "application/x-www-form-urlencoded")
 	clientAuth := clientAuthentication{
 		AuthStyle:    auth.StyleInHeader,
 		ClientID:     tp.opts.ClientID,
@@ -222,11 +225,11 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 		execProvider := &executableSubjectProvider{}
 		execProvider.Command = ec.Command
 		if ec.TimeoutMillis == nil {
-			execProvider.Timeout = defaultTimeout
+			execProvider.Timeout = executableDefaultTimeout
 		} else {
 			execProvider.Timeout = time.Duration(*ec.TimeoutMillis) * time.Millisecond
 			if execProvider.Timeout < timeoutMinimum || execProvider.Timeout > timeoutMaximum {
-				return nil, errors.New("detect: invalid `timeout_millis` field — executable timeout must be between 5 and 120 seconds")
+				return nil, fmt.Errorf("detect: invalid `timeout_millis` field — executable timeout must be between %v and %v seconds", timeoutMinimum.Seconds(), timeoutMaximum.Seconds())
 			}
 		}
 		execProvider.OutputFile = ec.OutputFile

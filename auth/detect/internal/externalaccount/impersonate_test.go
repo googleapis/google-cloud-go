@@ -39,7 +39,7 @@ func TestImpersonation(t *testing.T) {
 			name: "Base Impersonation",
 			opts: &Options{
 				Audience:         "32555940559.apps.googleusercontent.com",
-				SubjectTokenType: "urn:ietf:params:oauth:token-type:jwt",
+				SubjectTokenType: jwtTokenType,
 				TokenInfoURL:     "http://localhost:8080/v1/tokeninfo",
 				ClientSecret:     "notsosecret",
 				ClientID:         "rbrgnognrhongo3bi4gb9ghg9g",
@@ -52,7 +52,7 @@ func TestImpersonation(t *testing.T) {
 			name: "With TokenLifetime Set",
 			opts: &Options{
 				Audience:         "32555940559.apps.googleusercontent.com",
-				SubjectTokenType: "urn:ietf:params:oauth:token-type:jwt",
+				SubjectTokenType: jwtTokenType,
 				TokenInfoURL:     "http://localhost:8080/v1/tokeninfo",
 				ClientSecret:     "notsosecret",
 				ClientID:         "rbrgnognrhongo3bi4gb9ghg9g",

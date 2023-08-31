@@ -69,7 +69,7 @@ func exchangeToken(ctx context.Context, opts *exchangeOptions) (*stsTokenExchang
 			req.Header.Add(key, val)
 		}
 	}
-	req.Header.Add("Content-Length", strconv.Itoa(len(encodedData)))
+	req.Header.Set("Content-Length", strconv.Itoa(len(encodedData)))
 
 	resp, err := opts.client.Do(req)
 	if err != nil {
@@ -137,7 +137,7 @@ func (c *clientAuthentication) InjectAuthentication(values url.Values, headers h
 	switch c.AuthStyle {
 	case auth.StyleInHeader:
 		plainHeader := c.ClientID + ":" + c.ClientSecret
-		headers.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(plainHeader)))
+		headers.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(plainHeader)))
 	default:
 		values.Set("client_id", c.ClientID)
 		values.Set("client_secret", c.ClientSecret)

@@ -61,6 +61,6 @@ func (sp *fileSubjectProvider) subjectToken(context.Context) (string, error) {
 	case fileTypeText, "":
 		return string(tokenBytes), nil
 	default:
-		return "", errors.New("detect: invalid credential_source file format type")
+		return "", errors.New("detect: invalid credential_source file format type: " + sp.Format.Type)
 	}
 }

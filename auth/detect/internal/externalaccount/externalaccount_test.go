@@ -41,7 +41,7 @@ const (
 var (
 	testOpts = &Options{
 		Audience:         "32555940559.apps.googleusercontent.com",
-		SubjectTokenType: "urn:ietf:params:oauth:token-type:jwt",
+		SubjectTokenType: jwtTokenType,
 		TokenInfoURL:     "http://localhost:8080/v1/tokeninfo",
 		ClientSecret:     "notsosecret",
 		ClientID:         "rbrgnognrhongo3bi4gb9ghg9g",
@@ -59,7 +59,7 @@ var (
 func TestToken(t *testing.T) {
 	opts := &Options{
 		Audience:         "32555940559.apps.googleusercontent.com",
-		SubjectTokenType: "urn:ietf:params:oauth:token-type:id_token",
+		SubjectTokenType: idTokenType,
 		ClientSecret:     "notsosecret",
 		ClientID:         "rbrgnognrhongo3bi4gb9ghg9g",
 		CredentialSource: testBaseCredSource,
@@ -84,7 +84,7 @@ func TestToken(t *testing.T) {
 func TestWorkforcePoolTokenWithClientID(t *testing.T) {
 	opts := Options{
 		Audience:                 "//iam.googleapis.com/locations/eu/workforcePools/pool-id/providers/provider-id",
-		SubjectTokenType:         "urn:ietf:params:oauth:token-type:id_token",
+		SubjectTokenType:         idTokenType,
 		ClientSecret:             "notsosecret",
 		ClientID:                 "rbrgnognrhongo3bi4gb9ghg9g",
 		CredentialSource:         testBaseCredSource,
@@ -110,7 +110,7 @@ func TestWorkforcePoolTokenWithClientID(t *testing.T) {
 func TestWorkforcePoolTokenWithoutClientID(t *testing.T) {
 	opts := Options{
 		Audience:                 "//iam.googleapis.com/locations/eu/workforcePools/pool-id/providers/provider-id",
-		SubjectTokenType:         "urn:ietf:params:oauth:token-type:id_token",
+		SubjectTokenType:         idTokenType,
 		ClientSecret:             "notsosecret",
 		CredentialSource:         testBaseCredSource,
 		Scopes:                   []string{"https://www.googleapis.com/auth/devstorage.full_control"},
@@ -135,7 +135,7 @@ func TestWorkforcePoolTokenWithoutClientID(t *testing.T) {
 func TestNonworkforceWithWorkforcePoolUserProject(t *testing.T) {
 	opts := &Options{
 		Audience:                 "32555940559.apps.googleusercontent.com",
-		SubjectTokenType:         "urn:ietf:params:oauth:token-type:id_token",
+		SubjectTokenType:         idTokenType,
 		TokenURL:                 "https://sts.googleapis.com",
 		ClientSecret:             "notsosecret",
 		ClientID:                 "rbrgnognrhongo3bi4gb9ghg9g",
@@ -257,7 +257,7 @@ func validateToken(t *testing.T, tok *auth.Token) {
 func cloneTestOpts() *Options {
 	return &Options{
 		Audience:                       "32555940559.apps.googleusercontent.com",
-		SubjectTokenType:               "urn:ietf:params:oauth:token-type:jwt",
+		SubjectTokenType:               jwtTokenType,
 		TokenURL:                       "http://localhost:8080/v1/token",
 		TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
 		ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",

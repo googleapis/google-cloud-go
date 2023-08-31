@@ -45,7 +45,7 @@ var (
 		Scope:              []string{"https://www.googleapis.com/auth/devstorage.full_control"},
 		RequestedTokenType: stsTokenType,
 		SubjectToken:       "Sample.Subject.Token",
-		SubjectTokenType:   "urn:ietf:params:oauth:token-type:jwt",
+		SubjectTokenType:   jwtTokenType,
 	}
 
 	responseBody = `{"access_token":"Sample.Access.Token","issued_token_type":"urn:ietf:params:oauth:token-type:access_token","token_type":"Bearer","expires_in":3600,"scope":"https://www.googleapis.com/auth/cloud-platform"}`
@@ -83,7 +83,7 @@ func TestExchangeToken(t *testing.T) {
 	defer ts.Close()
 
 	headers := http.Header{}
-	headers.Add("Content-Type", "application/x-www-form-urlencoded")
+	headers.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := exchangeToken(context.Background(), &exchangeOptions{
 		client:         internal.CloneDefaultClient(),
@@ -110,7 +110,7 @@ func TestExchangeToken_Err(t *testing.T) {
 	defer ts.Close()
 
 	headers := http.Header{}
-	headers.Add("Content-Type", "application/x-www-form-urlencoded")
+	headers.Set("Content-Type", "application/x-www-form-urlencoded")
 	if _, err := exchangeToken(context.Background(), &exchangeOptions{
 		client:         internal.CloneDefaultClient(),
 		endpoint:       ts.URL,
@@ -189,7 +189,7 @@ func TestExchangeToken_Opts(t *testing.T) {
 	}))
 	defer ts.Close()
 	headers := http.Header{}
-	headers.Add("Content-Type", "application/x-www-form-urlencoded")
+	headers.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	type testOpts struct {
 		First  string `json:"first"`
@@ -217,7 +217,7 @@ var (
 	audience           = []string{"32555940559.apps.googleusercontent.com"}
 	grantType          = []string{stsGrantType}
 	requestedTokenType = []string{stsTokenType}
-	subjectTokenType   = []string{"urn:ietf:params:oauth:token-type:jwt"}
+	subjectTokenType   = []string{jwtTokenType}
 	subjectToken       = []string{"eyJhbGciOiJSUzI1NiIsImtpZCI6IjJjNmZhNmY1OTUwYTdjZTQ2NWZjZjI0N2FhMGIwOTQ4MjhhYzk1MmMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMjU1NTk0MDU1OS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsImF1ZCI6IjMyNTU1OTQwNTU5LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTEzMzE4NTQxMDA5MDU3Mzc4MzI4IiwiaGQiOiJnb29nbGUuY29tIiwiZW1haWwiOiJpdGh1cmllbEBnb29nbGUuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiI5OVJVYVFrRHJsVDFZOUV0SzdiYXJnIiwiaWF0IjoxNjAxNTgxMzQ5LCJleHAiOjE2MDE1ODQ5NDl9.SZ-4DyDcogDh_CDUKHqPCiT8AKLg4zLMpPhGQzmcmHQ6cJiV0WRVMf5Lq911qsvuekgxfQpIdKNXlD6yk3FqvC2rjBbuEztMF-OD_2B8CEIYFlMLGuTQimJlUQksLKM-3B2ITRDCxnyEdaZik0OVssiy1CBTsllS5MgTFqic7w8w0Cd6diqNkfPFZRWyRYsrRDRlHHbH5_TUnv2wnLVHBHlNvU4wU2yyjDIoqOvTRp8jtXdq7K31CDhXd47-hXsVFQn2ZgzuUEAkH2Q6NIXACcVyZOrjBcZiOQI9IRWz-g03LzbzPSecO7I8dDrhqUSqMrdNUz_f8Kr8JFhuVMfVug"}
 	scope              = []string{"https://www.googleapis.com/auth/devstorage.full_control"}
 	ContentType        = []string{"application/x-www-form-urlencoded"}

@@ -197,7 +197,7 @@ func TestAWSv4Signature_GetRequestWithUtf8Query(t *testing.T) {
 func TestAWSv4Signature_PostRequest(t *testing.T) {
 	input, _ := http.NewRequest("POST", "https://host.foo.com/", nil)
 	setDefaultTime(input)
-	input.Header.Add("ZOO", "zoobar")
+	input.Header.Set("ZOO", "zoobar")
 
 	output, _ := http.NewRequest("POST", "https://host.foo.com/", nil)
 	output.Header = http.Header{
@@ -217,7 +217,7 @@ func TestAWSv4Signature_PostRequest(t *testing.T) {
 func TestAWSv4Signature_PostRequestWithCapitalizedHeaderValue(t *testing.T) {
 	input, _ := http.NewRequest("POST", "https://host.foo.com/", nil)
 	setDefaultTime(input)
-	input.Header.Add("zoo", "ZOOBAR")
+	input.Header.Set("zoo", "ZOOBAR")
 
 	output, _ := http.NewRequest("POST", "https://host.foo.com/", nil)
 	output.Header = http.Header{
@@ -237,7 +237,7 @@ func TestAWSv4Signature_PostRequestWithCapitalizedHeaderValue(t *testing.T) {
 func TestAWSv4Signature_PostRequestPhfft(t *testing.T) {
 	input, _ := http.NewRequest("POST", "https://host.foo.com/", nil)
 	setDefaultTime(input)
-	input.Header.Add("p", "phfft")
+	input.Header.Set("p", "phfft")
 
 	output, _ := http.NewRequest("POST", "https://host.foo.com/", nil)
 	output.Header = http.Header{
@@ -257,7 +257,7 @@ func TestAWSv4Signature_PostRequestPhfft(t *testing.T) {
 func TestAWSv4Signature_PostRequestWithBody(t *testing.T) {
 	input, _ := http.NewRequest("POST", "https://host.foo.com/", strings.NewReader("foo=bar"))
 	setDefaultTime(input)
-	input.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	input.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	output, _ := http.NewRequest("POST", "https://host.foo.com/", nil)
 	output.Header = http.Header{
@@ -331,8 +331,8 @@ func TestAWSv4Signature_PostRequestWithSecurityToken(t *testing.T) {
 func TestAWSv4Signature_PostRequestWithSecurityTokenAndAdditionalHeaders(t *testing.T) {
 	requestParams := "{\"KeySchema\":[{\"KeyType\":\"HASH\",\"AttributeName\":\"Id\"}],\"TableName\":\"TestTable\",\"AttributeDefinitions\":[{\"AttributeName\":\"Id\",\"AttributeType\":\"S\"}],\"ProvisionedThroughput\":{\"WriteCapacityUnits\":5,\"ReadCapacityUnits\":5}}"
 	input, _ := http.NewRequest("POST", "https://dynamodb.us-east-2.amazonaws.com/", strings.NewReader(requestParams))
-	input.Header.Add("Content-Type", "application/x-amz-json-1.0")
-	input.Header.Add("x-amz-target", "DynamoDB_20120810.CreateTable")
+	input.Header.Set("Content-Type", "application/x-amz-json-1.0")
+	input.Header.Set("x-amz-target", "DynamoDB_20120810.CreateTable")
 
 	output, _ := http.NewRequest("POST", "https://dynamodb.us-east-2.amazonaws.com/", strings.NewReader(requestParams))
 	output.Header = http.Header{
@@ -504,7 +504,7 @@ func (server *testAwsServer) getCredentialSource(url string) internaldetect.Cred
 
 func getExpectedSubjectToken(url, region, accessKeyID, secretAccessKey, securityToken string) string {
 	req, _ := http.NewRequest("POST", url, nil)
-	req.Header.Add("x-goog-cloud-target-resource", cloneTestOpts().Audience)
+	req.Header.Set("x-goog-cloud-target-resource", cloneTestOpts().Audience)
 	signer := &awsRequestSigner{
 		RegionName: region,
 		AwsSecurityCredentials: awsSecurityCredentials{
@@ -513,7 +513,7 @@ func getExpectedSubjectToken(url, region, accessKeyID, secretAccessKey, security
 			SecurityToken:   securityToken,
 		},
 	}
-	signer.SignRequest(req)
+	signer.signRequest(req)
 
 	result := awsRequest{
 		URL:    url,
@@ -1275,13 +1275,13 @@ var defaultRequestSigner = &awsRequestSigner{
 func setDefaultTime(req *http.Request) {
 	// Don't use time.Format for this
 	// Our output signature expects this to be a Monday, even though Sept 9, 2011 is a Friday
-	req.Header.Add("date", "Mon, 09 Sep 2011 23:36:00 GMT")
+	req.Header.Set("date", "Mon, 09 Sep 2011 23:36:00 GMT")
 }
 
 func testRequestSigner(t *testing.T, rs *awsRequestSigner, input, wantOutput *http.Request) {
 	t.Helper()
 
-	err := rs.SignRequest(input)
+	err := rs.signRequest(input)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -122,9 +122,9 @@ func (sp *awsSubjectProvider) subjectToken(ctx context.Context) (string, error) 
 	// Including this header as part of the signature is recommended to
 	// ensure data integrity.
 	if sp.TargetResource != "" {
-		req.Header.Add("x-goog-cloud-target-resource", sp.TargetResource)
+		req.Header.Set("x-goog-cloud-target-resource", sp.TargetResource)
 	}
-	sp.requestSigner.SignRequest(req)
+	sp.requestSigner.signRequest(req)
 
 	/*
 	   The GCP STS endpoint expects the headers to be formatted as:
@@ -176,7 +176,7 @@ func (cs *awsSubjectProvider) getAWSSessionToken(ctx context.Context) (string, e
 	if err != nil {
 		return "", err
 	}
-	req.Header.Add(awsIMDSv2SessionTTLHeader, awsIMDSv2SessionTTL)
+	req.Header.Set(awsIMDSv2SessionTTLHeader, awsIMDSv2SessionTTL)
 
 	resp, err := cs.Client.Do(req)
 	if err != nil {
@@ -232,11 +232,12 @@ func (cs *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]
 
 	// This endpoint will return the region in format: us-east-2b.
 	// Only the us-east-2 part should be used.
-	respBodyEnd := 0
-	if len(respBody) > 1 {
-		respBodyEnd = len(respBody) - 1
+	bodyLen := len(respBody)
+	if bodyLen == 0 {
+		// TODO(codyoss): this was the old behaviour, but maybe this should be an error
+		return "", nil
 	}
-	return string(respBody[:respBodyEnd]), nil
+	return string(respBody[:bodyLen-1]), nil
 }
 
 func (cs *awsSubjectProvider) getSecurityCredentials(ctx context.Context, headers map[string]string) (result awsSecurityCredentials, err error) {
@@ -274,7 +275,7 @@ func (cs *awsSubjectProvider) getMetadataSecurityCredentials(ctx context.Context
 	if err != nil {
 		return result, err
 	}
-	req.Header.Add("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 	for name, value := range headers {
 		req.Header.Add(name, value)
 	}
@@ -336,17 +337,18 @@ type awsRequestSigner struct {
 	AwsSecurityCredentials awsSecurityCredentials
 }
 
-// SignRequest adds the appropriate headers to an http.Request
+// signRequest adds the appropriate headers to an http.Request
 // or returns an error if something prevented this.
-func (rs *awsRequestSigner) SignRequest(req *http.Request) error {
+func (rs *awsRequestSigner) signRequest(req *http.Request) error {
+	// req is assumed non-nil
 	signedRequest := cloneRequest(req)
 	timestamp := now()
-	signedRequest.Header.Add("host", requestHost(req))
+	signedRequest.Header.Set("host", requestHost(req))
 	if rs.AwsSecurityCredentials.SecurityToken != "" {
-		signedRequest.Header.Add(awsSecurityTokenHeader, rs.AwsSecurityCredentials.SecurityToken)
+		signedRequest.Header.Set(awsSecurityTokenHeader, rs.AwsSecurityCredentials.SecurityToken)
 	}
 	if signedRequest.Header.Get("date") == "" {
-		signedRequest.Header.Add(awsDateHeader, timestamp.Format(awsTimeFormatLong))
+		signedRequest.Header.Set(awsDateHeader, timestamp.Format(awsTimeFormatLong))
 	}
 	authorizationCode, err := rs.generateAuthentication(signedRequest, timestamp)
 	if err != nil {
@@ -365,7 +367,7 @@ func (rs *awsRequestSigner) generateAuthentication(req *http.Request, timestamp 
 	if splitHost := strings.Split(requestHost(req), "."); len(splitHost) > 0 {
 		serviceName = splitHost[0]
 	}
-	credentialScope := fmt.Sprintf("%s/%s/%s/%s", dateStamp, rs.RegionName, serviceName, awsRequestType)
+	credentialScope := strings.Join([]string{dateStamp, rs.RegionName, serviceName, awsRequestType}, "/")
 	requestString, err := canonicalRequest(req, canonicalHeaderColumns, canonicalHeaderData)
 	if err != nil {
 		return "", err
@@ -375,7 +377,7 @@ func (rs *awsRequestSigner) generateAuthentication(req *http.Request, timestamp 
 		return "", err
 	}
 
-	stringToSign := fmt.Sprintf("%s\n%s\n%s\n%s", awsAlgorithm, timestamp.Format(awsTimeFormatLong), credentialScope, requestHash)
+	stringToSign := strings.Join([]string{awsAlgorithm, timestamp.Format(awsTimeFormatLong), credentialScope, requestHash}, "\n")
 	signingKey := []byte("AWS4" + rs.AwsSecurityCredentials.SecretAccessKey)
 	for _, signingInput := range []string{
 		dateStamp, rs.RegionName, serviceName, awsRequestType, stringToSign,
