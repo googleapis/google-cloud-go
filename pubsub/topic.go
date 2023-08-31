@@ -33,6 +33,11 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	otelcodes "go.opentelemetry.io/otel/codes"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -567,6 +572,7 @@ var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, 
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+	ctx, publishSpan := startPublishSpan(ctx, msg, t.String())
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
@@ -575,6 +581,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errTopicOrderingNotEnabled)
+		spanRecordError(publishSpan, errTopicOrderingNotEnabled)
 		return r
 	}
 
@@ -585,6 +592,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		Attributes:  msg.Attributes,
 		OrderingKey: msg.OrderingKey,
 	})
+	publishSpan.SetAttributes(semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize))
 
 	t.initBundler()
 	t.mu.RLock()
@@ -592,19 +600,38 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
 		ipubsub.SetPublishResult(r, "", ErrTopicStopped)
+		spanRecordError(publishSpan, ErrTopicStopped)
 		return r
 	}
 
-	if err := t.flowController.acquire(ctx, msgSize); err != nil {
+	ctx2, fcSpan := startPublishFlowControlSpan(ctx)
+	if err := t.flowController.acquire(ctx2, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
+		spanRecordError(fcSpan, err)
 		return r
 	}
-	err = t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
-	if err != nil {
+	fcSpan.End()
+
+	_, batcherSpan := startBatcherSpan(ctx)
+
+	bmsg := &bundledMessage{
+		msg:         msg,
+		res:         r,
+		size:        msgSize,
+		span:        publishSpan,
+		batcherSpan: batcherSpan,
+	}
+
+	// Inject the context from the first publish span rather than from flow control / batching.
+	injectPropagation(ctx, msg)
+
+	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
+		spanRecordError(publishSpan, err)
 	}
+
 	return r
 }
 
@@ -634,6 +661,10 @@ type bundledMessage struct {
 	msg  *Message
 	res  *PublishResult
 	size int
+	// span is the entire publish span (from user calling Publish to the publish RPC resolving).
+	span trace.Span
+	// batcherSpan traces the message batching operation in publish scheduler.
+	batcherSpan trace.Span
 }
 
 func (t *Topic) initBundler() {
@@ -662,13 +693,17 @@ func (t *Topic) initBundler() {
 
 	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle interface{}) {
 		// TODO(jba): use a context detached from the one passed to NewClient.
-		ctx := context.TODO()
+		ctx2 := context.TODO()
 		if timeout != 0 {
 			var cancel func()
-			ctx, cancel = context.WithTimeout(ctx, timeout)
+			ctx2, cancel = context.WithTimeout(ctx2, timeout)
 			defer cancel()
 		}
-		t.publishMessageBundle(ctx, bundle.([]*bundledMessage))
+		bmsgs := bundle.([]*bundledMessage)
+		for _, m := range bmsgs {
+			m.batcherSpan.End()
+		}
+		t.publishMessageBundle(ctx2, bmsgs)
 	})
 	t.scheduler.DelayThreshold = t.PublishSettings.DelayThreshold
 	t.scheduler.BundleCountThreshold = t.PublishSettings.CountThreshold
@@ -721,17 +756,31 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in publishMessageBundle: %v", err)
 	}
-	pbMsgs := make([]*pb.PubsubMessage, len(bms))
+	numMsgs := len(bms)
+	pbMsgs := make([]*pb.PubsubMessage, numMsgs)
 	var orderingKey string
+	if numMsgs != 0 {
+		// extract the ordering key for this batch. since
+		// messages in the same batch share the same ordering
+		// key, it doesn't matter which we read from.
+		orderingKey = bms[0].msg.OrderingKey
+	}
 	for i, bm := range bms {
-		orderingKey = bm.msg.OrderingKey
 		pbMsgs[i] = &pb.PubsubMessage{
 			Data:        bm.msg.Data,
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
+		if bm.msg.Attributes != nil {
+			ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(bm.msg))
+		}
+		_, pSpan := tracer().Start(ctx, publishRPCSpanName)
+		pSpan.SetAttributes(attribute.Int(numBatchedMessagesAttribute, numMsgs))
+		defer bm.span.End()
+		defer pSpan.End()
 		bm.msg = nil // release bm.msg for GC
 	}
+
 	var res *pb.PublishResponse
 	start := time.Now()
 	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
@@ -766,8 +815,11 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		t.flowController.release(ctx, bm.size)
 		if err != nil {
 			ipubsub.SetPublishResult(bm.res, "", err)
+			bm.span.RecordError(err)
+			bm.span.SetStatus(otelcodes.Error, err.Error())
 		} else {
 			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
+			bm.span.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
 		}
 	}
 }
