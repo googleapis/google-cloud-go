@@ -381,7 +381,7 @@ type testAwsServer struct {
 	securityCredentialURL       string
 	regionURL                   string
 	regionalCredVerificationURL string
-	imdsv2SessionTokenUrl       string
+	imdsv2SessionTokenURL       string
 
 	Credentials map[string]string
 
@@ -397,7 +397,7 @@ func createAwsTestServer(url, regionURL, regionalCredVerificationURL, imdsv2Sess
 		securityCredentialURL:       fmt.Sprintf("%s/%s", url, rolename),
 		regionURL:                   regionURL,
 		regionalCredVerificationURL: regionalCredVerificationURL,
-		imdsv2SessionTokenUrl:       imdsv2SessionTokenUrl,
+		imdsv2SessionTokenURL:       imdsv2SessionTokenUrl,
 		Credentials:                 credentials,
 		WriteRolename: func(w http.ResponseWriter, r *http.Request) {
 			validateHeaders(r)
@@ -443,9 +443,9 @@ func createDefaultAwsTestServer() *testAwsServer {
 func createDefaultAwsTestServerWithImdsv2(t *testing.T) *testAwsServer {
 	validateSessionTokenHeaders := func(r *http.Request) {
 		if r.URL.Path == "/latest/api/token" {
-			headerValue := r.Header.Get(awsIMDSv2SessionTtlHeader)
-			if headerValue != awsIMDSv2SessionTtl {
-				t.Errorf("%q = \n%q\n want \n%q", awsIMDSv2SessionTtlHeader, headerValue, awsIMDSv2SessionTtl)
+			headerValue := r.Header.Get(awsIMDSv2SessionTTLHeader)
+			if headerValue != awsIMDSv2SessionTTL {
+				t.Errorf("%q = \n%q\n want \n%q", awsIMDSv2SessionTTLHeader, headerValue, awsIMDSv2SessionTTL)
 			}
 		} else {
 			headerValue := r.Header.Get(awsIMDSv2SessionTokenHeader)
@@ -480,7 +480,7 @@ func (server *testAwsServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		server.WriteSecurityCredentials(w, r)
 	case server.regionURL:
 		server.WriteRegion(w, r)
-	case server.imdsv2SessionTokenUrl:
+	case server.imdsv2SessionTokenURL:
 		server.WriteIMDSv2SessionToken(w, r)
 	}
 }
@@ -498,7 +498,7 @@ func (server *testAwsServer) getCredentialSource(url string) internaldetect.Cred
 		URL:                         url + server.url,
 		RegionURL:                   url + server.regionURL,
 		RegionalCredVerificationURL: server.regionalCredVerificationURL,
-		IMDSv2SessionTokenURL:       url + server.imdsv2SessionTokenUrl,
+		IMDSv2SessionTokenURL:       url + server.imdsv2SessionTokenURL,
 	}
 }
 

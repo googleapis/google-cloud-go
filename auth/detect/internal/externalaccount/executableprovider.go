@@ -113,7 +113,7 @@ type executableResponse struct {
 	Success        *bool  `json:"success,omitempty"`
 	TokenType      string `json:"token_type,omitempty"`
 	ExpirationTime int64  `json:"expiration_time,omitempty"`
-	IdToken        string `json:"id_token,omitempty"`
+	IDToken        string `json:"id_token,omitempty"`
 	SamlResponse   string `json:"saml_response,omitempty"`
 	Code           string `json:"code,omitempty"`
 	Message        string `json:"message,omitempty"`
@@ -152,10 +152,10 @@ func (cs *executableSubjectProvider) parseSubjectTokenFromSource(response []byte
 
 	switch result.TokenType {
 	case "urn:ietf:params:oauth:token-type:jwt", "urn:ietf:params:oauth:token-type:id_token":
-		if result.IdToken == "" {
+		if result.IDToken == "" {
 			return "", missingFieldError(source, "id_token")
 		}
-		return result.IdToken, nil
+		return result.IDToken, nil
 	case "urn:ietf:params:oauth:token-type:saml2":
 		if result.SamlResponse == "" {
 			return "", missingFieldError(source, "saml_response")

@@ -53,15 +53,15 @@ const (
 	// The name of the header containing the session token for metadata endpoint calls
 	awsIMDSv2SessionTokenHeader = "X-aws-ec2-metadata-token"
 
-	awsIMDSv2SessionTtlHeader = "X-aws-ec2-metadata-token-ttl-seconds"
+	awsIMDSv2SessionTTLHeader = "X-aws-ec2-metadata-token-ttl-seconds"
 
-	awsIMDSv2SessionTtl = "300"
+	awsIMDSv2SessionTTL = "300"
 
 	// The AWS authorization header name for the auto-generated date.
 	awsDateHeader = "x-amz-date"
 
 	// Supported AWS configuration environment variables.
-	awsAccessKeyIdEnvVar     = "AWS_ACCESS_KEY_ID"
+	awsAccessKeyIDEnvVar     = "AWS_ACCESS_KEY_ID"
 	awsDefaultRegionEnvVar   = "AWS_DEFAULT_REGION"
 	awsRegionEnvVar          = "AWS_REGION"
 	awsSecretAccessKeyEnvVar = "AWS_SECRET_ACCESS_KEY"
@@ -176,7 +176,7 @@ func (cs *awsSubjectProvider) getAWSSessionToken(ctx context.Context) (string, e
 	if err != nil {
 		return "", err
 	}
-	req.Header.Add(awsIMDSv2SessionTtlHeader, awsIMDSv2SessionTtl)
+	req.Header.Add(awsIMDSv2SessionTTLHeader, awsIMDSv2SessionTTL)
 
 	resp, err := cs.Client.Do(req)
 	if err != nil {
@@ -242,7 +242,7 @@ func (cs *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]
 func (cs *awsSubjectProvider) getSecurityCredentials(ctx context.Context, headers map[string]string) (result awsSecurityCredentials, err error) {
 	if canRetrieveSecurityCredentialFromEnvironment() {
 		return awsSecurityCredentials{
-			AccessKeyID:     getenv(awsAccessKeyIdEnvVar),
+			AccessKeyID:     getenv(awsAccessKeyIDEnvVar),
 			SecretAccessKey: getenv(awsSecretAccessKeyEnvVar),
 			SecurityToken:   getenv(awsSessionTokenEnvVar),
 		}, nil
@@ -523,7 +523,7 @@ func canRetrieveRegionFromEnvironment() bool {
 
 // Check if both AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are available.
 func canRetrieveSecurityCredentialFromEnvironment() bool {
-	return getenv(awsAccessKeyIdEnvVar) != "" && getenv(awsSecretAccessKeyEnvVar) != ""
+	return getenv(awsAccessKeyIDEnvVar) != "" && getenv(awsSecretAccessKeyEnvVar) != ""
 }
 
 func shouldUseMetadataServer() bool {

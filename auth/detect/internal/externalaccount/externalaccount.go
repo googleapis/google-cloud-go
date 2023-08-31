@@ -84,6 +84,8 @@ type Options struct {
 	Client *http.Client
 }
 
+// NewTokenProvider returns a [cloud.google.com/go/auth.TokenProvider]
+// configured with the provided options.
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if opts.WorkforcePoolUserProject != "" {
 		if valid := validWorkforceAudiencePattern.MatchString(opts.Audience); !valid {

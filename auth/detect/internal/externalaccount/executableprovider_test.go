@@ -112,12 +112,12 @@ func TestCreateExecutableCredential(t *testing.T) {
 					t.Errorf("got %v, want %v", got, want)
 				}
 			} else if err != nil {
-				ecJson := "{???}"
+				ecJSON := "{???}"
 				if ecBytes, err2 := json.Marshal(tt.executableConfig); err2 != nil {
-					ecJson = string(ecBytes)
+					ecJSON = string(ecBytes)
 				}
 
-				t.Fatalf("CreateExecutableCredential with %v returned error: %v", ecJson, err)
+				t.Fatalf("CreateExecutableCredential with %v returned error: %v", ecJSON, err)
 			} else {
 				p := ecs.(*executableSubjectProvider)
 				if p.Command != "blarg" {
@@ -503,7 +503,7 @@ func TestRetrieveExecutableSubjectTokenSuccesses(t *testing.T) {
 					Version:        1,
 					ExpirationTime: defaultTime.Unix() + 3600,
 					TokenType:      "urn:ietf:params:oauth:token-type:jwt",
-					IdToken:        "tokentokentoken",
+					IDToken:        "tokentokentoken",
 				},
 			},
 		},
@@ -517,7 +517,7 @@ func TestRetrieveExecutableSubjectTokenSuccesses(t *testing.T) {
 					Version:        1,
 					ExpirationTime: defaultTime.Unix() + 3600,
 					TokenType:      "urn:ietf:params:oauth:token-type:id_token",
-					IdToken:        "tokentokentoken",
+					IDToken:        "tokentokentoken",
 				},
 			},
 		},
@@ -544,7 +544,7 @@ func TestRetrieveExecutableSubjectTokenSuccesses(t *testing.T) {
 					Success:   Bool(true),
 					Version:   1,
 					TokenType: "urn:ietf:params:oauth:token-type:jwt",
-					IdToken:   "tokentokentoken",
+					IDToken:   "tokentokentoken",
 				},
 			},
 		},
@@ -852,7 +852,7 @@ func TestRetrieveOutputFileSubjectTokenInvalidCache(t *testing.T) {
 					Version:        1,
 					ExpirationTime: defaultTime.Unix() + 3600,
 					TokenType:      "urn:ietf:params:oauth:token-type:jwt",
-					IdToken:        "tokentokentoken",
+					IDToken:        "tokentokentoken",
 				},
 			}
 
@@ -898,7 +898,7 @@ func TestRetrieveOutputFileSubjectTokenJwt(t *testing.T) {
 				Version:        1,
 				ExpirationTime: defaultTime.Unix() + 3600,
 				TokenType:      "urn:ietf:params:oauth:token-type:jwt",
-				IdToken:        "tokentokentoken",
+				IDToken:        "tokentokentoken",
 			},
 		},
 
@@ -909,7 +909,7 @@ func TestRetrieveOutputFileSubjectTokenJwt(t *testing.T) {
 				Version:        1,
 				ExpirationTime: defaultTime.Unix() + 3600,
 				TokenType:      "urn:ietf:params:oauth:token-type:id_token",
-				IdToken:        "tokentokentoken",
+				IDToken:        "tokentokentoken",
 			},
 		},
 
