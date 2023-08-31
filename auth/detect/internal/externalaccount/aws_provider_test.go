@@ -391,13 +391,13 @@ type testAwsServer struct {
 	WriteIMDSv2SessionToken  func(http.ResponseWriter, *http.Request)
 }
 
-func createAwsTestServer(url, regionURL, regionalCredVerificationURL, imdsv2SessionTokenUrl string, rolename, region string, credentials map[string]string, imdsv2SessionToken string, validateHeaders validateHeaders) *testAwsServer {
+func createAwsTestServer(url, regionURL, regionalCredVerificationURL, imdsv2SessionTokenURL string, rolename, region string, credentials map[string]string, imdsv2SessionToken string, validateHeaders validateHeaders) *testAwsServer {
 	server := &testAwsServer{
 		url:                         url,
 		securityCredentialURL:       fmt.Sprintf("%s/%s", url, rolename),
 		regionURL:                   regionURL,
 		regionalCredVerificationURL: regionalCredVerificationURL,
-		imdsv2SessionTokenURL:       imdsv2SessionTokenUrl,
+		imdsv2SessionTokenURL:       imdsv2SessionTokenURL,
 		Credentials:                 credentials,
 		WriteRolename: func(w http.ResponseWriter, r *http.Request) {
 			validateHeaders(r)
