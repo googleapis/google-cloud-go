@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.21.0...documentai/v1.22.0) (2023-07-26)
+
+
+### Features
+
+* **documentai:** Exposed Import PV external_processor_version_source to v1beta3 public ([#8323](https://github.com/googleapis/google-cloud-go/issues/8323)) ([08b151a](https://github.com/googleapis/google-cloud-go/commit/08b151a3fd9b614b6696e99d065ecda339ed00ff))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.20.0...documentai/v1.21.0) (2023-07-18)
+
+
+### Features
+
+* **documentai:** Removed id field from Document message ([4a5651c](https://github.com/googleapis/google-cloud-go/commit/4a5651caa472882fe4c7f6be400f782f60f6f258))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.19.0...documentai/v1.20.0) (2023-06-20)
 
 

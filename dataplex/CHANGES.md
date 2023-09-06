@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.9.0...dataplex/v1.9.1) (2023-08-08)
+
+
+### Bug Fixes
+
+* **dataplex:** Remove unused annotation in results_table ([#8382](https://github.com/googleapis/google-cloud-go/issues/8382)) ([1390cbd](https://github.com/googleapis/google-cloud-go/commit/1390cbd0deaab849c24e4b8f11589d18d81177c6))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.8.1...dataplex/v1.9.0) (2023-07-26)
+
+
+### Features
+
+* **dataplex:** New service DataTaxonomyService and related messages ([#8320](https://github.com/googleapis/google-cloud-go/issues/8320)) ([cdee2d9](https://github.com/googleapis/google-cloud-go/commit/cdee2d918015c9b0a53aa8283085214d9a11c77c))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.8.0...dataplex/v1.8.1) (2023-06-20)
 
 

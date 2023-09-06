@@ -3107,6 +3107,11 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdatePersistentResource": {
+              "methods": [
+                "UpdatePersistentResource"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -3180,6 +3185,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdatePersistentResource": {
+              "methods": [
+                "UpdatePersistentResource"
               ]
             },
             "WaitOperation": {
@@ -3415,6 +3425,11 @@
                 "CancelOperation"
               ]
             },
+            "CountTokens": {
+              "methods": [
+                "CountTokens"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -3458,6 +3473,11 @@
             "RawPredict": {
               "methods": [
                 "RawPredict"
+              ]
+            },
+            "ServerStreamingPredict": {
+              "methods": [
+                "ServerStreamingPredict"
               ]
             },
             "SetIamPolicy": {
@@ -3485,6 +3505,11 @@
                 "CancelOperation"
               ]
             },
+            "CountTokens": {
+              "methods": [
+                "CountTokens"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -3528,6 +3553,11 @@
             "RawPredict": {
               "methods": [
                 "RawPredict"
+              ]
+            },
+            "ServerStreamingPredict": {
+              "methods": [
+                "ServerStreamingPredict"
               ]
             },
             "SetIamPolicy": {

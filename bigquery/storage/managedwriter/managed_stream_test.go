@@ -57,7 +57,7 @@ func (tarc *testAppendRowsClient) CloseSend() error {
 }
 
 // openTestArc handles wiring in a test AppendRowsClient into a managedstream by providing the open function.
-func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.AppendRowsRequest) error, recvF func() (*storagepb.AppendRowsResponse, error)) func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.AppendRowsRequest) error, recvF func() (*storagepb.AppendRowsResponse, error)) func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	sF := func(req *storagepb.AppendRowsRequest) error {
 		testARC.requests = append(testARC.requests, req)
 		return nil
@@ -78,8 +78,12 @@ func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.Append
 	testARC.closeF = func() error {
 		return nil
 	}
-	return func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 		testARC.openCount = testARC.openCount + 1
+		// Simulate grpc finalizer goroutine
+		go func() {
+			<-ctx.Done()
+		}()
 		return testARC, nil
 	}
 }
@@ -373,14 +377,14 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 		openF := openTestArc(&testAppendRowsClient{}, nil, nil)
 		pool := &connectionPool{
 			ctx: ctx,
-			open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				if len(tc.openErrors) == 0 {
 					panic("out of open errors")
 				}
 				curErr := tc.openErrors[0]
 				tc.openErrors = tc.openErrors[1:]
 				if curErr == nil {
-					return openF(opts...)
+					return openF(ctx, opts...)
 				}
 				return nil, curErr
 			},
@@ -417,6 +421,17 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 		// Issue two closes, to ensure we're not deadlocking there either.
 		ms.Close()
 		ms.Close()
+
+		// Issue two more appends, ensure we're not deadlocked as the writer is closed.
+		gotErr = ms.appendWithRetry(pw)
+		if !errors.Is(gotErr, io.EOF) {
+			t.Errorf("expected io.EOF, got %v", gotErr)
+		}
+		gotErr = ms.appendWithRetry(pw)
+		if !errors.Is(gotErr, io.EOF) {
+			t.Errorf("expected io.EOF, got %v", gotErr)
+		}
+
 	}
 
 }
@@ -460,6 +475,70 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 		defer cancel()
 		ms.AppendRows(expireCtx, fakeData)
 		if i%50 == 0 {
+			if current := runtime.NumGoroutine(); current > threshold {
+				t.Errorf("potential goroutine leak, append %d: current %d, threshold %d", i, current, threshold)
+			}
+		}
+	}
+}
+
+func TestManagedStream_LeakingGoroutinesReconnect(t *testing.T) {
+	ctx := context.Background()
+
+	reqCount := 0
+	testArc := &testAppendRowsClient{}
+	pool := &connectionPool{
+		ctx: ctx,
+		open: openTestArc(testArc,
+			func(req *storagepb.AppendRowsRequest) error {
+				reqCount++
+				if reqCount%2 == 1 {
+					return io.EOF
+				}
+				return nil
+			}, nil),
+		baseFlowController: newFlowController(1000, 0),
+	}
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
+	ms := &ManagedStream{
+		id:             "foo",
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		retry:          newStatelessRetryer(),
+	}
+	ms.retry.maxAttempts = 4
+	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
+
+	fakeData := [][]byte{
+		[]byte("foo"),
+	}
+
+	threshold := runtime.NumGoroutine() + 5
+
+	// Send a bunch of appends that will trigger reconnects and monitor that
+	// goroutine growth stays within bounded threshold.
+	for i := 0; i < 100; i++ {
+		writeCtx := context.Background()
+		r, err := ms.AppendRows(writeCtx, fakeData)
+		if err != nil {
+			t.Fatalf("failed to append row: %v", err)
+		}
+		_, err = r.GetResult(context.Background())
+		if err != nil {
+			t.Fatalf("failed to get result: %v", err)
+		}
+		if r.totalAttempts != 2 {
+			t.Fatalf("should trigger a retry, but found: %d attempts", r.totalAttempts)
+		}
+		if testArc.openCount != i+2 {
+			t.Errorf("should trigger a reconnect, but found openCount %d", testArc.openCount)
+		}
+		if i%10 == 0 {
 			if current := runtime.NumGoroutine(); current > threshold {
 				t.Errorf("potential goroutine leak, append %d: current %d, threshold %d", i, current, threshold)
 			}

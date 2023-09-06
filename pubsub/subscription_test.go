@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"testing"
 	"time"
 
@@ -154,7 +155,7 @@ func TestListTopicSubscriptions(t *testing.T) {
 
 const defaultRetentionDuration = 168 * time.Hour
 
-func TestUpdateSubscription(t *testing.T) {
+func TestSubscriptionConfig(t *testing.T) {
 	ctx := context.Background()
 	client, srv := newFake(t)
 	defer client.Close()
@@ -191,13 +192,14 @@ func TestUpdateSubscription(t *testing.T) {
 				ServiceAccountEmail: "foo@example.com",
 				Audience:            "client-12345",
 			},
+			Wrapper: &PubsubWrapper{},
 		},
 		EnableExactlyOnceDelivery: false,
 		State:                     SubscriptionStateActive,
 	}
 	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
-	if !testutil.Equal(cfg, want, opt) {
-		t.Fatalf("\ngot  %+v\nwant %+v", cfg, want)
+	if diff := testutil.Diff(cfg, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 
 	got, err := sub.Update(ctx, SubscriptionConfigToUpdate{
@@ -206,10 +208,13 @@ func TestUpdateSubscription(t *testing.T) {
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    72 * time.Hour,
 		PushConfig: &PushConfig{
-			Endpoint: "https://example.com/push",
+			Endpoint: "https://example2.com/push",
 			AuthenticationMethod: &OIDCToken{
-				ServiceAccountEmail: "foo@example.com",
-				Audience:            "client-12345",
+				ServiceAccountEmail: "bar@example.com",
+				Audience:            "client-98765",
+			},
+			Wrapper: &NoWrapper{
+				WriteMetadata: true,
 			},
 		},
 		EnableExactlyOnceDelivery: true,
@@ -225,17 +230,20 @@ func TestUpdateSubscription(t *testing.T) {
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    72 * time.Hour,
 		PushConfig: PushConfig{
-			Endpoint: "https://example.com/push",
+			Endpoint: "https://example2.com/push",
 			AuthenticationMethod: &OIDCToken{
-				ServiceAccountEmail: "foo@example.com",
-				Audience:            "client-12345",
+				ServiceAccountEmail: "bar@example.com",
+				Audience:            "client-98765",
+			},
+			Wrapper: &NoWrapper{
+				WriteMetadata: true,
 			},
 		},
 		EnableExactlyOnceDelivery: true,
 		State:                     SubscriptionStateActive,
 	}
-	if !testutil.Equal(got, want, opt) {
-		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	if diff := testutil.Diff(got, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 
 	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
@@ -247,8 +255,8 @@ func TestUpdateSubscription(t *testing.T) {
 	}
 	want.RetentionDuration = 2 * time.Hour
 	want.Labels = nil
-	if !testutil.Equal(got, want, opt) {
-		t.Fatalf("\ngot %+v\nwant %+v", got, want)
+	if diff := testutil.Diff(got, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 
 	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{})
@@ -264,8 +272,8 @@ func TestUpdateSubscription(t *testing.T) {
 		t.Fatal(err)
 	}
 	want.ExpirationPolicy = time.Duration(0)
-	if !testutil.Equal(got, want, opt) {
-		t.Fatalf("\ngot %+v\nwant %+v", got, want)
+	if diff := testutil.Diff(got, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 }
 
@@ -682,12 +690,11 @@ func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 
 	s.ReceiveSettings = ReceiveSettings{
 		NumGoroutines: 1,
-		// This needs to be greater than total deadline otherwise the message will be redelivered.
-		MinExtensionPeriod: 2 * time.Minute,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 20 * time.Second
+	exactlyOnceDeliveryRetryDeadline = 10 * time.Second
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		log.Printf("received message: %v\n", msg)
 		ar := msg.AckWithResult()
 		s, err := ar.Get(ctx)
 		if s != AcknowledgeStatusOther {
@@ -774,11 +781,8 @@ func TestExactlyOnceDelivery_ReceiptModackError(t *testing.T) {
 	if _, err := r.Get(ctx); err != nil {
 		t.Fatalf("failed to publish message: %v", err)
 	}
-	s.ReceiveSettings.MaxExtensionPeriod = 1 * time.Minute
-
 	ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
 	defer cancel()
-	// Override the default timeout here so this test doesn't take 10 minutes.
 	s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		t.Fatal("expected message to not have been delivered when exactly once enabled")
 	})

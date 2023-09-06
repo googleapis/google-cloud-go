@@ -31,6 +31,10 @@ var (
 	format    = flag.String("format", "plain", "output format, one of [plain|github], defaults to 'plain'")
 	ghVarName = flag.String("gh-var", "submodules", "github format's variable name to set output for, defaults to 'submodules'.")
 	base      = flag.String("base", "origin/main", "the base ref to compare to, defaults to 'origin/main'")
+	// See https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
+	filter         = flag.String("diff-filter", "", "the git diff filter to apply [A|C|D|M|R|T|U|X|B] - lowercase to exclude")
+	pathFilter     = flag.String("path-filter", "", "filter commits by changes to target path(s)")
+	contentPattern = flag.String("content-regex", "", "regular expression to execute against contents of diff")
 )
 
 func main() {
@@ -128,7 +132,22 @@ func modDirs(dir string) (submodulesDirs []string, err error) {
 }
 
 func gitFilesChanges(dir string) ([]string, error) {
-	c := exec.Command("git", "diff", "--name-only", *base)
+	args := []string{"diff", "--name-only"}
+	if *filter != "" {
+		args = append(args, "--diff-filter", *filter)
+	}
+	if *contentPattern != "" {
+		args = append(args, "-G", *contentPattern)
+	}
+	args = append(args, *base)
+
+	if *pathFilter != "" {
+		args = append(args, "--", *pathFilter)
+	}
+
+	c := exec.Command("git", args...)
+	logg.Printf(c.String())
+
 	c.Dir = dir
 	b, err := c.Output()
 	if err != nil {

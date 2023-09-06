@@ -1,5 +1,20 @@
 # Changelog
 
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v1.0.0...storageinsights/v1.0.1) (2023-08-14)
+
+
+### Documentation
+
+* **storageinsights:** Add link to documentation for ReportConfig proto fields ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v0.2.2...storageinsights/v1.0.0) (2023-07-24)
+
+
+### Features
+
+* **storageinsights:** Promote to GA ([#8290](https://github.com/googleapis/google-cloud-go/issues/8290)) ([0dac2aa](https://github.com/googleapis/google-cloud-go/commit/0dac2aa421a157e8fef3ad5a81d48830d602d81d))
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v0.2.1...storageinsights/v0.2.2) (2023-06-20)
 
 

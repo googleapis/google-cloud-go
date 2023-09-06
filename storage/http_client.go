@@ -32,6 +32,7 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -44,8 +45,6 @@ import (
 
 // httpStorageClient is the HTTP-JSON API implementation of the transport-agnostic
 // storageClient interface.
-//
-// This is an experimental API and not intended for public use.
 type httpStorageClient struct {
 	creds    *google.Credentials
 	hc       *http.Client
@@ -58,8 +57,6 @@ type httpStorageClient struct {
 
 // newHTTPStorageClient initializes a new storageClient that uses the HTTP-JSON
 // Storage API.
-//
-// This is an experimental API and not intended for public use.
 func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
 	s := initSettings(opts...)
 	o := s.clientOption
@@ -812,6 +809,15 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 
 	if err := setRangeReaderHeaders(req.Header, params); err != nil {
 		return nil, err
+	}
+
+	// Set custom headers passed in via the context. This is only required for XML;
+	// for gRPC & JSON this is handled in the GAPIC and Apiary layers respectively.
+	ctxHeaders := callctx.HeadersFromContext(ctx)
+	for k, vals := range ctxHeaders {
+		for _, v := range vals {
+			req.Header.Add(k, v)
+		}
 	}
 
 	reopen := readerReopen(ctx, req.Header, params, s,

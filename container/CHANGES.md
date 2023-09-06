@@ -1,5 +1,19 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.24.0...container/v1.25.0) (2023-08-14)
+
+
+### Features
+
+* **container:** Add APIs for GKE OOTB metrics packages ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.23.0...container/v1.24.0) (2023-07-18)
+
+
+### Features
+
+* **container:** Add Multi-networking API ([#8270](https://github.com/googleapis/google-cloud-go/issues/8270)) ([4a5651c](https://github.com/googleapis/google-cloud-go/commit/4a5651caa472882fe4c7f6be400f782f60f6f258))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.22.1...container/v1.23.0) (2023-07-10)
 
 

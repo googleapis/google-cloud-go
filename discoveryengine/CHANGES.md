@@ -1,5 +1,21 @@
 # Changelog
 
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.0.0...discoveryengine/v1.1.0) (2023-07-31)
+
+
+### Features
+
+* **discoveryengine:** Support conversational / multi-turn search ([95178ca](https://github.com/googleapis/google-cloud-go/commit/95178ca078eaff56fc6eab52e11e28386c822aa0))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v0.5.0...discoveryengine/v1.0.0) (2023-07-24)
+
+
+### Features
+
+* **discoveryengine:** Promote to GA ([08ec41a](https://github.com/googleapis/google-cloud-go/commit/08ec41aba981874a7b86a9a941b07f9eb2fc6ce1))
+* **discoveryengine:** Promote to GA ([#8302](https://github.com/googleapis/google-cloud-go/issues/8302)) ([6e0227d](https://github.com/googleapis/google-cloud-go/commit/6e0227de753a66332030d76a906356696c1b37b6))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v0.4.1...discoveryengine/v0.5.0) (2023-06-20)
 
 

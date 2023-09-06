@@ -163,6 +163,120 @@
         }
       }
     },
+    "DataTaxonomyService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataTaxonomyClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataAttribute": {
+              "methods": [
+                "CreateDataAttribute"
+              ]
+            },
+            "CreateDataAttributeBinding": {
+              "methods": [
+                "CreateDataAttributeBinding"
+              ]
+            },
+            "CreateDataTaxonomy": {
+              "methods": [
+                "CreateDataTaxonomy"
+              ]
+            },
+            "DeleteDataAttribute": {
+              "methods": [
+                "DeleteDataAttribute"
+              ]
+            },
+            "DeleteDataAttributeBinding": {
+              "methods": [
+                "DeleteDataAttributeBinding"
+              ]
+            },
+            "DeleteDataTaxonomy": {
+              "methods": [
+                "DeleteDataTaxonomy"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataAttribute": {
+              "methods": [
+                "GetDataAttribute"
+              ]
+            },
+            "GetDataAttributeBinding": {
+              "methods": [
+                "GetDataAttributeBinding"
+              ]
+            },
+            "GetDataTaxonomy": {
+              "methods": [
+                "GetDataTaxonomy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDataAttributeBindings": {
+              "methods": [
+                "ListDataAttributeBindings"
+              ]
+            },
+            "ListDataAttributes": {
+              "methods": [
+                "ListDataAttributes"
+              ]
+            },
+            "ListDataTaxonomies": {
+              "methods": [
+                "ListDataTaxonomies"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataAttribute": {
+              "methods": [
+                "UpdateDataAttribute"
+              ]
+            },
+            "UpdateDataAttributeBinding": {
+              "methods": [
+                "UpdateDataAttributeBinding"
+              ]
+            },
+            "UpdateDataTaxonomy": {
+              "methods": [
+                "UpdateDataTaxonomy"
+              ]
+            }
+          }
+        }
+      }
+    },
     "DataplexService": {
       "clients": {
         "grpc": {

@@ -28,8 +28,10 @@ modules:
   - cloudbuild
   - clouddms
   - cloudtasks
+  - commerce
   - compute
   - confidentialcomputing
+  - config
   - contactcenterinsights
   - container
   - containeranalysis
@@ -78,6 +80,7 @@ modules:
   - metastore
   - migrationcenter
   - monitoring
+  - netapp
   - networkconnectivity
   - networkmanagement
   - networksecurity
@@ -88,6 +91,7 @@ modules:
   - osconfig
   - oslogin
   - phishingprotection
+  - policysimulator
   - policytroubleshooter
   - privatecatalog
   - profiler
@@ -299,6 +303,9 @@ service-configs:
   - input-directory: google/cloud/alloydb/v1beta
     service-config: alloydb_v1beta.yaml
     import-path: cloud.google.com/go/alloydb/apiv1beta
+  - input-directory: google/cloud/alloydb/connectors/v1alpha
+    service-config: connectors_v1alpha.yaml
+    import-path: cloud.google.com/go/alloydb/connectors/apiv1alpha
   - input-directory: google/cloud/apigateway/v1
     service-config: apigateway_v1.yaml
     import-path: cloud.google.com/go/apigateway/apiv1
@@ -353,6 +360,12 @@ service-configs:
   - input-directory: google/cloud/bigquery/analyticshub/v1
     service-config: analyticshub_v1.yaml
     import-path: cloud.google.com/go/bigquery/analyticshub/apiv1
+  - input-directory: google/cloud/bigquery/biglake/v1
+    service-config: biglake_v1.yaml
+    import-path: cloud.google.com/go/bigquery/biglake/apiv1
+  - input-directory: google/cloud/bigquery/biglake/v1alpha1
+    service-config: biglake_v1alpha1.yaml
+    import-path: cloud.google.com/go/bigquery/biglake/apiv1alpha1
   - input-directory: google/cloud/bigquery/connection/v1
     service-config: bigqueryconnection_v1.yaml
     import-path: cloud.google.com/go/bigquery/connection/apiv1
@@ -413,9 +426,15 @@ service-configs:
   - input-directory: google/cloud/clouddms/v1
     service-config: datamigration_v1.yaml
     import-path: cloud.google.com/go/clouddms/apiv1
+  - input-directory: google/cloud/commerce/consumer/procurement/v1
+    service-config: cloudcommerceconsumerprocurement_v1.yaml
+    import-path: cloud.google.com/go/commerce/consumer/procurement/apiv1
   - input-directory: google/cloud/compute/v1
     service-config: compute_v1.yaml
     import-path: cloud.google.com/go/compute/apiv1
+  - input-directory: google/cloud/config/v1
+    service-config: config_v1.yaml
+    import-path: cloud.google.com/go/config/apiv1
   - input-directory: google/cloud/contactcenterinsights/v1
     service-config: contactcenterinsights_v1.yaml
     import-path: cloud.google.com/go/contactcenterinsights/apiv1
@@ -546,6 +565,9 @@ service-configs:
   - input-directory: google/cloud/language/v1beta2
     service-config: language_v1beta2.yaml
     import-path: cloud.google.com/go/language/apiv1beta2
+  - input-directory: google/cloud/language/v2
+    service-config: language_v2.yaml
+    import-path: cloud.google.com/go/language/apiv2
   - input-directory: google/cloud/lifesciences/v2beta
     service-config: lifesciences_v2beta.yaml
     import-path: cloud.google.com/go/lifesciences/apiv2beta
@@ -573,6 +595,9 @@ service-configs:
   - input-directory: google/cloud/migrationcenter/v1
     service-config: migrationcenter_v1.yaml
     import-path: cloud.google.com/go/migrationcenter/apiv1
+  - input-directory: google/cloud/netapp/v1
+    service-config: netapp_v1.yaml
+    import-path: cloud.google.com/go/netapp/apiv1
   - input-directory: google/cloud/networkconnectivity/v1
     service-config: networkconnectivity_v1.yaml
     import-path: cloud.google.com/go/networkconnectivity/apiv1
@@ -591,6 +616,9 @@ service-configs:
   - input-directory: google/cloud/notebooks/v1beta1
     service-config: notebooks_v1beta1.yaml
     import-path: cloud.google.com/go/notebooks/apiv1beta1
+  - input-directory: google/cloud/notebooks/v2
+    service-config: notebooks_v2.yaml
+    import-path: cloud.google.com/go/notebooks/apiv2
   - input-directory: google/cloud/optimization/v1
     service-config: cloudoptimization_v1.yaml
     import-path: cloud.google.com/go/optimization/apiv1
@@ -630,6 +658,12 @@ service-configs:
   - input-directory: google/cloud/phishingprotection/v1beta1
     service-config: phishingprotection_v1beta1.yaml
     import-path: cloud.google.com/go/phishingprotection/apiv1beta1
+  - input-directory: google/cloud/policysimulator/v1
+    service-config: policysimulator_v1.yaml
+    import-path: cloud.google.com/go/policysimulator/apiv1
+  - input-directory: google/cloud/policytroubleshooter/iam/v3
+    service-config: policytroubleshooter_v3.yaml
+    import-path: cloud.google.com/go/policytroubleshooter/iam/apiv3
   - input-directory: google/cloud/policytroubleshooter/v1
     service-config: policytroubleshooter_v1.yaml
     import-path: cloud.google.com/go/policytroubleshooter/apiv1

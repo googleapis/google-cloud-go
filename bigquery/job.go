@@ -56,7 +56,7 @@ func (c *Client) JobFromIDLocation(ctx context.Context, id, location string) (j 
 	return c.JobFromProject(ctx, c.projectID, id, location)
 }
 
-// JobFromProject creates a Job which refers to an existing BigQuery job.  The job
+// JobFromProject creates a Job which refers to an existing BigQuery job. The job
 // need not have been created by this package, nor does it need to reside within the same
 // project or location as the instantiated client.
 func (c *Client) JobFromProject(ctx context.Context, projectID, jobID, location string) (j *Job, err error) {
@@ -170,17 +170,22 @@ type JobIDConfig struct {
 
 	// Location is the location for the job.
 	Location string
+
+	// ProjectID is the Google Cloud project associated with the job.
+	ProjectID string
 }
 
 // createJobRef creates a JobReference.
 func (j *JobIDConfig) createJobRef(c *Client) *bq.JobReference {
-	// We don't check whether projectID is empty; the server will return an
-	// error when it encounters the resulting JobReference.
+	projectID := j.ProjectID
+	if projectID == "" { // Use Client.ProjectID as a default.
+		projectID = c.projectID
+	}
 	loc := j.Location
 	if loc == "" { // Use Client.Location as a default.
 		loc = c.Location
 	}
-	jr := &bq.JobReference{ProjectId: c.projectID, Location: loc}
+	jr := &bq.JobReference{ProjectId: projectID, Location: loc}
 	if j.JobID == "" {
 		jr.JobId = randomIDFn()
 	} else if j.AddJobIDSuffix {

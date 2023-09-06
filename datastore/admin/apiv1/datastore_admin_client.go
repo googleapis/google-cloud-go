@@ -39,7 +39,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -192,8 +191,8 @@ type internalDatastoreAdminClient interface {
 //
 // The Datastore Admin API provides several admin services for Cloud Datastore.
 //
-// ConceptsProject, namespace, kind, and entity as defined in the Google Cloud Datastore
-// API.
+// Concepts: Project, namespace, kind, and entity as defined in the Google Cloud
+// Datastore API.
 //
 // Operation: An Operation represents work being performed in the background.
 //
@@ -201,41 +200,48 @@ type internalDatastoreAdminClient interface {
 // specified as a combination of kinds and namespaces (either or both of which
 // may be all).
 //
-// ServicesExport/ImportThe Export/Import service provides the ability to copy all or a subset of
-// entities to/from Google Cloud Storage.
+// Export/Import Service:
 //
-// Exported data may be imported into Cloud Datastore for any Google Cloud
-// Platform project. It is not restricted to the export source project. It is
-// possible to export from one project and then import into another.
+//	The Export/Import service provides the ability to copy all or a subset of
+//	entities to/from Google Cloud Storage.
 //
-// Exported data can also be loaded into Google BigQuery for analysis.
+//	Exported data may be imported into Cloud Datastore for any Google Cloud
+//	Platform project. It is not restricted to the export source project. It is
+//	possible to export from one project and then import into another.
 //
-// Exports and imports are performed asynchronously. An Operation resource is
-// created for each export/import. The state (including any errors encountered)
-// of the export/import may be queried via the Operation resource.
+//	Exported data can also be loaded into Google BigQuery for analysis.
 //
-// IndexThe index service manages Cloud Datastore composite indexes.
+//	Exports and imports are performed asynchronously. An Operation resource is
+//	created for each export/import. The state (including any errors encountered)
+//	of the export/import may be queried via the Operation resource.
 //
-// Index creation and deletion are performed asynchronously.
-// An Operation resource is created for each such asynchronous operation.
-// The state of the operation (including any errors encountered)
-// may be queried via the Operation resource.
+// Index Service:
 //
-// OperationThe Operations collection provides a record of actions performed for the
-// specified project (including any operations in progress). Operations are not
-// created directly but through calls on other collections or resources.
+//	The index service manages Cloud Datastore composite indexes.
 //
-// An operation that is not yet done may be cancelled. The request to cancel is
-// asynchronous and the operation may continue to run for some time after the
-// request to cancel is made.
+//	Index creation and deletion are performed asynchronously.
+//	An Operation resource is created for each such asynchronous operation.
+//	The state of the operation (including any errors encountered)
+//	may be queried via the Operation resource.
 //
-// An operation that is done may be deleted so that it is no longer listed as
-// part of the Operation collection.
+// Operation Service:
 //
-// ListOperations returns all pending operations, but not completed operations.
+//	The Operations collection provides a record of actions performed for the
+//	specified project (including any operations in progress). Operations are not
+//	created directly but through calls on other collections or resources.
 //
-// Operations are created by service DatastoreAdmin,
-// but are accessed via service google.longrunning.Operations.
+//	An operation that is not yet done may be cancelled. The request to cancel
+//	is asynchronous and the operation may continue to run for some time after the
+//	request to cancel is made.
+//
+//	An operation that is done may be deleted so that it is no longer listed as
+//	part of the Operation collection.
+//
+//	ListOperations returns all pending operations, but not completed
+//	operations.
+//
+//	Operations are created by service DatastoreAdmin, but are accessed via
+//	service google.longrunning.Operations.
 type DatastoreAdminClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDatastoreAdminClient
@@ -307,9 +313,9 @@ func (c *DatastoreAdminClient) ImportEntitiesOperation(name string) *ImportEntit
 
 // CreateIndex creates the specified index.
 // A newly created index’s initial state is CREATING. On completion of the
-// returned google.longrunning.Operation, the state will be READY.
-// If the index already exists, the call will return an ALREADY_EXISTS
-// status.
+// returned google.longrunning.Operation, the
+// state will be READY. If the index already exists, the call will return an
+// ALREADY_EXISTS status.
 //
 // During index creation, the process could result in an error, in which
 // case the index will move to the ERROR state. The process can be recovered
@@ -333,7 +339,8 @@ func (c *DatastoreAdminClient) CreateIndexOperation(name string) *CreateIndexOpe
 // An index can only be deleted if it is in a READY or ERROR state. On
 // successful execution of the request, the index will be in a DELETING
 // state. And on completion of the
-// returned google.longrunning.Operation, the index will be removed.
+// returned google.longrunning.Operation, the
+// index will be removed.
 //
 // During index deletion, the process could result in an error, in which
 // case the index will move to the ERROR state. The process can be recovered
@@ -402,7 +409,7 @@ type datastoreAdminGRPCClient struct {
 	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewDatastoreAdminClient creates a new datastore admin client based on gRPC.
@@ -412,8 +419,8 @@ type datastoreAdminGRPCClient struct {
 //
 // The Datastore Admin API provides several admin services for Cloud Datastore.
 //
-// ConceptsProject, namespace, kind, and entity as defined in the Google Cloud Datastore
-// API.
+// Concepts: Project, namespace, kind, and entity as defined in the Google Cloud
+// Datastore API.
 //
 // Operation: An Operation represents work being performed in the background.
 //
@@ -421,41 +428,48 @@ type datastoreAdminGRPCClient struct {
 // specified as a combination of kinds and namespaces (either or both of which
 // may be all).
 //
-// ServicesExport/ImportThe Export/Import service provides the ability to copy all or a subset of
-// entities to/from Google Cloud Storage.
+// Export/Import Service:
 //
-// Exported data may be imported into Cloud Datastore for any Google Cloud
-// Platform project. It is not restricted to the export source project. It is
-// possible to export from one project and then import into another.
+//	The Export/Import service provides the ability to copy all or a subset of
+//	entities to/from Google Cloud Storage.
 //
-// Exported data can also be loaded into Google BigQuery for analysis.
+//	Exported data may be imported into Cloud Datastore for any Google Cloud
+//	Platform project. It is not restricted to the export source project. It is
+//	possible to export from one project and then import into another.
 //
-// Exports and imports are performed asynchronously. An Operation resource is
-// created for each export/import. The state (including any errors encountered)
-// of the export/import may be queried via the Operation resource.
+//	Exported data can also be loaded into Google BigQuery for analysis.
 //
-// IndexThe index service manages Cloud Datastore composite indexes.
+//	Exports and imports are performed asynchronously. An Operation resource is
+//	created for each export/import. The state (including any errors encountered)
+//	of the export/import may be queried via the Operation resource.
 //
-// Index creation and deletion are performed asynchronously.
-// An Operation resource is created for each such asynchronous operation.
-// The state of the operation (including any errors encountered)
-// may be queried via the Operation resource.
+// Index Service:
 //
-// OperationThe Operations collection provides a record of actions performed for the
-// specified project (including any operations in progress). Operations are not
-// created directly but through calls on other collections or resources.
+//	The index service manages Cloud Datastore composite indexes.
 //
-// An operation that is not yet done may be cancelled. The request to cancel is
-// asynchronous and the operation may continue to run for some time after the
-// request to cancel is made.
+//	Index creation and deletion are performed asynchronously.
+//	An Operation resource is created for each such asynchronous operation.
+//	The state of the operation (including any errors encountered)
+//	may be queried via the Operation resource.
 //
-// An operation that is done may be deleted so that it is no longer listed as
-// part of the Operation collection.
+// Operation Service:
 //
-// ListOperations returns all pending operations, but not completed operations.
+//	The Operations collection provides a record of actions performed for the
+//	specified project (including any operations in progress). Operations are not
+//	created directly but through calls on other collections or resources.
 //
-// Operations are created by service DatastoreAdmin,
-// but are accessed via service google.longrunning.Operations.
+//	An operation that is not yet done may be cancelled. The request to cancel
+//	is asynchronous and the operation may continue to run for some time after the
+//	request to cancel is made.
+//
+//	An operation that is done may be deleted so that it is no longer listed as
+//	part of the Operation collection.
+//
+//	ListOperations returns all pending operations, but not completed
+//	operations.
+//
+//	Operations are created by service DatastoreAdmin, but are accessed via
+//	service google.longrunning.Operations.
 func NewDatastoreAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatastoreAdminClient, error) {
 	clientOpts := defaultDatastoreAdminGRPCClientOptions()
 	if newDatastoreAdminClientHook != nil {
@@ -510,7 +524,7 @@ func (c *datastoreAdminGRPCClient) Connection() *grpc.ClientConn {
 func (c *datastoreAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -532,8 +546,8 @@ type datastoreAdminRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing DatastoreAdminClient
 	CallOptions **DatastoreAdminCallOptions
@@ -545,8 +559,8 @@ type datastoreAdminRESTClient struct {
 //
 // The Datastore Admin API provides several admin services for Cloud Datastore.
 //
-// ConceptsProject, namespace, kind, and entity as defined in the Google Cloud Datastore
-// API.
+// Concepts: Project, namespace, kind, and entity as defined in the Google Cloud
+// Datastore API.
 //
 // Operation: An Operation represents work being performed in the background.
 //
@@ -554,41 +568,48 @@ type datastoreAdminRESTClient struct {
 // specified as a combination of kinds and namespaces (either or both of which
 // may be all).
 //
-// ServicesExport/ImportThe Export/Import service provides the ability to copy all or a subset of
-// entities to/from Google Cloud Storage.
+// Export/Import Service:
 //
-// Exported data may be imported into Cloud Datastore for any Google Cloud
-// Platform project. It is not restricted to the export source project. It is
-// possible to export from one project and then import into another.
+//	The Export/Import service provides the ability to copy all or a subset of
+//	entities to/from Google Cloud Storage.
 //
-// Exported data can also be loaded into Google BigQuery for analysis.
+//	Exported data may be imported into Cloud Datastore for any Google Cloud
+//	Platform project. It is not restricted to the export source project. It is
+//	possible to export from one project and then import into another.
 //
-// Exports and imports are performed asynchronously. An Operation resource is
-// created for each export/import. The state (including any errors encountered)
-// of the export/import may be queried via the Operation resource.
+//	Exported data can also be loaded into Google BigQuery for analysis.
 //
-// IndexThe index service manages Cloud Datastore composite indexes.
+//	Exports and imports are performed asynchronously. An Operation resource is
+//	created for each export/import. The state (including any errors encountered)
+//	of the export/import may be queried via the Operation resource.
 //
-// Index creation and deletion are performed asynchronously.
-// An Operation resource is created for each such asynchronous operation.
-// The state of the operation (including any errors encountered)
-// may be queried via the Operation resource.
+// Index Service:
 //
-// OperationThe Operations collection provides a record of actions performed for the
-// specified project (including any operations in progress). Operations are not
-// created directly but through calls on other collections or resources.
+//	The index service manages Cloud Datastore composite indexes.
 //
-// An operation that is not yet done may be cancelled. The request to cancel is
-// asynchronous and the operation may continue to run for some time after the
-// request to cancel is made.
+//	Index creation and deletion are performed asynchronously.
+//	An Operation resource is created for each such asynchronous operation.
+//	The state of the operation (including any errors encountered)
+//	may be queried via the Operation resource.
 //
-// An operation that is done may be deleted so that it is no longer listed as
-// part of the Operation collection.
+// Operation Service:
 //
-// ListOperations returns all pending operations, but not completed operations.
+//	The Operations collection provides a record of actions performed for the
+//	specified project (including any operations in progress). Operations are not
+//	created directly but through calls on other collections or resources.
 //
-// Operations are created by service DatastoreAdmin,
-// but are accessed via service google.longrunning.Operations.
+//	An operation that is not yet done may be cancelled. The request to cancel
+//	is asynchronous and the operation may continue to run for some time after the
+//	request to cancel is made.
+//
+//	An operation that is done may be deleted so that it is no longer listed as
+//	part of the Operation collection.
+//
+//	ListOperations returns all pending operations, but not completed
+//	operations.
+//
+//	Operations are created by service DatastoreAdmin, but are accessed via
+//	service google.longrunning.Operations.
 func NewDatastoreAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*DatastoreAdminClient, error) {
 	clientOpts := append(defaultDatastoreAdminRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -632,7 +653,7 @@ func defaultDatastoreAdminRESTClientOptions() []option.ClientOption {
 func (c *datastoreAdminRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -650,9 +671,10 @@ func (c *datastoreAdminRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *datastoreAdminGRPCClient) ExportEntities(ctx context.Context, req *adminpb.ExportEntitiesRequest, opts ...gax.CallOption) (*ExportEntitiesOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ExportEntities[0:len((*c.CallOptions).ExportEntities):len((*c.CallOptions).ExportEntities)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -669,9 +691,10 @@ func (c *datastoreAdminGRPCClient) ExportEntities(ctx context.Context, req *admi
 }
 
 func (c *datastoreAdminGRPCClient) ImportEntities(ctx context.Context, req *adminpb.ImportEntitiesRequest, opts ...gax.CallOption) (*ImportEntitiesOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ImportEntities[0:len((*c.CallOptions).ImportEntities):len((*c.CallOptions).ImportEntities)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -688,9 +711,10 @@ func (c *datastoreAdminGRPCClient) ImportEntities(ctx context.Context, req *admi
 }
 
 func (c *datastoreAdminGRPCClient) CreateIndex(ctx context.Context, req *adminpb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateIndex[0:len((*c.CallOptions).CreateIndex):len((*c.CallOptions).CreateIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -707,9 +731,10 @@ func (c *datastoreAdminGRPCClient) CreateIndex(ctx context.Context, req *adminpb
 }
 
 func (c *datastoreAdminGRPCClient) DeleteIndex(ctx context.Context, req *adminpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteIndex[0:len((*c.CallOptions).DeleteIndex):len((*c.CallOptions).DeleteIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -726,9 +751,10 @@ func (c *datastoreAdminGRPCClient) DeleteIndex(ctx context.Context, req *adminpb
 }
 
 func (c *datastoreAdminGRPCClient) GetIndex(ctx context.Context, req *adminpb.GetIndexRequest, opts ...gax.CallOption) (*adminpb.Index, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIndex[0:len((*c.CallOptions).GetIndex):len((*c.CallOptions).GetIndex)], opts...)
 	var resp *adminpb.Index
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -743,9 +769,10 @@ func (c *datastoreAdminGRPCClient) GetIndex(ctx context.Context, req *adminpb.Ge
 }
 
 func (c *datastoreAdminGRPCClient) ListIndexes(ctx context.Context, req *adminpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListIndexes[0:len((*c.CallOptions).ListIndexes):len((*c.CallOptions).ListIndexes)], opts...)
 	it := &IndexIterator{}
 	req = proto.Clone(req).(*adminpb.ListIndexesRequest)
@@ -788,9 +815,10 @@ func (c *datastoreAdminGRPCClient) ListIndexes(ctx context.Context, req *adminpb
 }
 
 func (c *datastoreAdminGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -801,9 +829,10 @@ func (c *datastoreAdminGRPCClient) CancelOperation(ctx context.Context, req *lon
 }
 
 func (c *datastoreAdminGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -814,9 +843,10 @@ func (c *datastoreAdminGRPCClient) DeleteOperation(ctx context.Context, req *lon
 }
 
 func (c *datastoreAdminGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -831,9 +861,10 @@ func (c *datastoreAdminGRPCClient) GetOperation(ctx context.Context, req *longru
 }
 
 func (c *datastoreAdminGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -902,9 +933,11 @@ func (c *datastoreAdminRESTClient) ExportEntities(ctx context.Context, req *admi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -974,9 +1007,11 @@ func (c *datastoreAdminRESTClient) ImportEntities(ctx context.Context, req *admi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1024,9 +1059,9 @@ func (c *datastoreAdminRESTClient) ImportEntities(ctx context.Context, req *admi
 
 // CreateIndex creates the specified index.
 // A newly created index’s initial state is CREATING. On completion of the
-// returned google.longrunning.Operation, the state will be READY.
-// If the index already exists, the call will return an ALREADY_EXISTS
-// status.
+// returned google.longrunning.Operation, the
+// state will be READY. If the index already exists, the call will return an
+// ALREADY_EXISTS status.
 //
 // During index creation, the process could result in an error, in which
 // case the index will move to the ERROR state. The process can be recovered
@@ -1056,9 +1091,11 @@ func (c *datastoreAdminRESTClient) CreateIndex(ctx context.Context, req *adminpb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1108,7 +1145,8 @@ func (c *datastoreAdminRESTClient) CreateIndex(ctx context.Context, req *adminpb
 // An index can only be deleted if it is in a READY or ERROR state. On
 // successful execution of the request, the index will be in a DELETING
 // state. And on completion of the
-// returned google.longrunning.Operation, the index will be removed.
+// returned google.longrunning.Operation, the
+// index will be removed.
 //
 // During index deletion, the process could result in an error, in which
 // case the index will move to the ERROR state. The process can be recovered
@@ -1127,9 +1165,11 @@ func (c *datastoreAdminRESTClient) DeleteIndex(ctx context.Context, req *adminpb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1189,9 +1229,11 @@ func (c *datastoreAdminRESTClient) GetIndex(ctx context.Context, req *adminpb.Ge
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIndex[0:len((*c.CallOptions).GetIndex):len((*c.CallOptions).GetIndex)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &adminpb.Index{}
@@ -1271,7 +1313,8 @@ func (c *datastoreAdminRESTClient) ListIndexes(ctx context.Context, req *adminpb
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1340,9 +1383,11 @@ func (c *datastoreAdminRESTClient) CancelOperation(ctx context.Context, req *lon
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1380,9 +1425,11 @@ func (c *datastoreAdminRESTClient) DeleteOperation(ctx context.Context, req *lon
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1420,9 +1467,11 @@ func (c *datastoreAdminRESTClient) GetOperation(ctx context.Context, req *longru
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1500,7 +1549,8 @@ func (c *datastoreAdminRESTClient) ListOperations(ctx context.Context, req *long
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path

@@ -1,5 +1,26 @@
 # Changes
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.0...kms/v1.15.1) (2023-08-08)
+
+
+### Documentation
+
+* **kms:** Minor formatting ([#8371](https://github.com/googleapis/google-cloud-go/issues/8371)) ([b4349cc](https://github.com/googleapis/google-cloud-go/commit/b4349cc507870ff8629bbc07de578b63bb889626))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.14.0...kms/v1.15.0) (2023-07-24)
+
+
+### Features
+
+* **kms:** Add interoperable symmetric encryption system ([432864c](https://github.com/googleapis/google-cloud-go/commit/432864c7fc0bb551a5017b423bbd5f76c3357dc3))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.13.0...kms/v1.14.0) (2023-07-18)
+
+
+### Features
+
+* **kms/inventory:** Add resource_types to SearchAllResources, to allow filtering by resource type ([#8261](https://github.com/googleapis/google-cloud-go/issues/8261)) ([9d55bab](https://github.com/googleapis/google-cloud-go/commit/9d55bab76839af4ef4301544b856b042352a489e))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.12.1...kms/v1.13.0) (2023-07-10)
 
 
