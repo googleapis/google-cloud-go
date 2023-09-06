@@ -1218,6 +1218,12 @@ type AggregationQuery struct {
 	aggregateQueries []*pb.StructuredAggregationQuery_Aggregation
 	// query contains a reference pointer to the underlying structured query.
 	query *Query
+	tx    *Transaction
+}
+
+func (a *AggregationQuery) Transaction(tx *Transaction) *AggregationQuery {
+	a.tx = tx
+	return a
 }
 
 // WithCount specifies that the aggregation query provide a count of results
@@ -1253,6 +1259,13 @@ func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 			},
 		},
 	}
+
+	if a.tx != nil {
+		req.ConsistencySelector = &pb.RunAggregationQueryRequest_Transaction{
+			Transaction: a.tx.id,
+		}
+	}
+
 	ctx = withResourceHeader(ctx, a.query.c.path())
 	stream, err := client.RunAggregationQuery(ctx, req)
 	if err != nil {
