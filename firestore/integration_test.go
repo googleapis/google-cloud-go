@@ -1741,39 +1741,20 @@ func TestIntegration_FieldTransforms_Set(t *testing.T) {
 	}
 }
 
-type imap map[string]interface{}
-
 func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
-	shouldBeFoundID := collectionIDs.New()
-
-	// Create documents for partiontioned query result
-	ctx := context.Background()
 	h := testHelper{t}
+	collID := collectionIDs.New()
+	ctx := context.Background()
 	client := integrationClient(t)
-	cr1 := client.Collection(shouldBeFoundID)
-	dr1 := cr1.Doc("should-be-found-1")
-	h.mustCreate(dr1, map[string]string{"some-key": "should-be-found"})
-	defer h.mustDelete(dr1)
 
-	dr1.Collection(shouldBeFoundID)
-	dr2 := cr1.Doc("should-be-found-2")
-	h.mustCreate(dr2, map[string]string{"some-key": "should-be-found"})
-	defer h.mustDelete(dr2)
-
-	partitionedQueries, err := client.CollectionGroup(shouldBeFoundID).GetPartitionedQueries(ctx, 10)
-	if err != nil {
-		t.Fatal(err)
-	}
+	partitionedQueries, err := client.CollectionGroup(collID).GetPartitionedQueries(ctx, 10)
+	h.failIfNotNil(err)
 
 	qProtoBytes, err := partitionedQueries[0].Serialize()
-	if err != nil {
-		t.Fatal(err)
-	}
+	h.failIfNotNil(err)
 
-	q, err := client.CollectionGroup(shouldBeFoundID).Deserialize(qProtoBytes)
-	if err != nil {
-		t.Fatal(err)
-	}
+	q, err := client.CollectionGroup(collID).Deserialize(qProtoBytes)
+	h.failIfNotNil(err)
 
 	qSnapIt := q.Snapshots(ctx)
 	defer qSnapIt.Stop()
@@ -1785,10 +1766,10 @@ func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
 	}
 
 	// Add new document to query results
-	dr3 := cr1.Doc("should-be-found-3")
-	h.mustCreate(dr3, map[string]string{"some-key": "should-be-found"})
-	wds := h.mustGet(dr3)
-	defer h.mustDelete(dr3)
+	createdDocRefs := h.mustCreateMulti(collID, []testDocument{
+		{data: map[string]interface{}{"some-key": "should-be-found"}},
+	})
+	wds := h.mustGet(createdDocRefs[0])
 
 	// Check if new snapshot is available
 	qSnap, err := qSnapIt.Next()
@@ -1801,7 +1782,7 @@ func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
 		t.Fatalf("Expected one change, found none")
 	}
 
-	wantChange := DocumentChange{Kind: DocumentAdded, Doc: wds, OldIndex: -1, NewIndex: 2}
+	wantChange := DocumentChange{Kind: DocumentAdded, Doc: wds, OldIndex: -1, NewIndex: 0}
 	gotChange := qSnap.Changes[0]
 	copts := append([]cmp.Option{cmpopts.IgnoreFields(DocumentSnapshot{}, "ReadTime")}, cmpOpts...)
 	if diff := testutil.Diff(gotChange, wantChange, copts...); diff != "" {
@@ -1893,6 +1874,8 @@ func TestIntegration_WatchQuery(t *testing.T) {
 		deleteDocuments([]*DocumentRef{doc1, doc2, doc3})
 	})
 }
+
+type imap map[string]interface{}
 
 func TestIntegration_WatchQueryCancel(t *testing.T) {
 	ctx := context.Background()
@@ -2021,6 +2004,39 @@ func checkTimeBetween(t *testing.T, got, low, high time.Time) {
 
 type testHelper struct {
 	t *testing.T
+}
+
+func (h testHelper) failIfNotNil(err error) {
+	if err != nil {
+		h.t.Fatal(err)
+	}
+}
+
+type testDocument struct {
+	id   string
+	data map[string]interface{}
+}
+
+func (h testHelper) mustCreateMulti(collectionPath string, docsData []testDocument) []*DocumentRef {
+	client := integrationClient(h.t)
+	collRef := client.Collection(collectionPath)
+	docsCreated := []*DocumentRef{}
+	for _, data := range docsData {
+		var docRef *DocumentRef
+		if len(data.id) == 0 {
+			docRef = collRef.NewDoc()
+		} else {
+			docRef = collRef.Doc(data.id)
+		}
+		h.mustCreate(docRef, data.data)
+		docsCreated = append(docsCreated, docRef)
+	}
+
+	h.t.Cleanup(func() {
+		deleteDocuments(docsCreated)
+	})
+
+	return docsCreated
 }
 
 func (h testHelper) mustCreate(doc *DocumentRef, data interface{}) *WriteResult {
