@@ -58,6 +58,7 @@ func ExampleNewTokenProvider() {
 	// You can now pass tok to a token consumer however you wish, such as exposing
 	// a REST API and sending it over HTTP.
 
-	// You can instead use the token held in dts to make
-	// Google Cloud Storage calls, as
+	// You can instead use the token held in tp to make
+	// Google Cloud Storage calls, as follows:
+	// storageClient, err := storage.NewClient(ctx, option.WithTokenProvider(tp))
 }

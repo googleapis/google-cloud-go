@@ -41,7 +41,7 @@ func TestDownscopedToken(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 	creds, err := detect.DefaultCredentials(&detect.Options{
 		CredentialsFile: os.Getenv(envServiceAccountFile),
-		Scopes:   []string{rootTokenScope},
+		Scopes:          []string{rootTokenScope},
 	})
 	if err != nil {
 		t.Fatalf("DefaultCredentials() = %v", err)
