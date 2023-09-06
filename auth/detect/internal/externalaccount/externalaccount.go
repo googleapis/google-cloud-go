@@ -70,7 +70,7 @@ type Options struct {
 	ClientSecret string
 	// ClientID is only required in conjunction with ClientSecret, as described above.
 	ClientID string
-	//  internaldetect.CredentialSource contains the necessary information to retrieve the token itself, as well
+	// CredentialSource contains the necessary information to retrieve the token itself, as well
 	// as some environmental information.
 	CredentialSource internaldetect.CredentialSource
 	// QuotaProjectID is injected by gCloud. If the value is non-empty, the Auth libraries
@@ -78,10 +78,10 @@ type Options struct {
 	QuotaProjectID string
 	// Scopes contains the desired scopes for the returned access token.
 	Scopes []string
-	// The optional workforce pool user project number when the credential
-	// corresponds to a workforce pool and not a workload identity pool.
-	// The underlying principal must still have serviceusage.services.use IAM
-	// permission to use the project for billing/quota.
+	// WorkforcePoolUserProject should be set when it is a workforce pool and
+	// not a workload identity pool. The underlying principal must still have
+	// serviceusage.services.use IAM permission to use the project for
+	// billing/quota. Optional.
 	WorkforcePoolUserProject string
 	// Client for token request.
 	Client *http.Client
