@@ -2080,10 +2080,10 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 		t.Errorf("client.Project() got %q, want %q", goodClient.Project(), testutil.ProjID())
 	}
 
-	// badTS := testutil.ErroringTokenSource{}
-	// if badClient, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(badTS)); err == nil {
-	// 	t.Errorf("expected error from bad token source, NewClient succeeded with project: %s", badClient.projectID)
-	// }
+	badTS := testutil.ErroringTokenSource{}
+	if badClient, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(badTS)); err == nil {
+		t.Errorf("expected error from bad token source, NewClient succeeded with project: %s", badClient.projectID)
+	}
 }
 
 // createTopicWithRetry creates a topic, wrapped with testutil.Retry and returns the created topic or an error.
