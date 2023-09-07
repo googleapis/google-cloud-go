@@ -581,13 +581,17 @@ func (s *inMemSpannerServer) beginTransaction(session *spannerpb.Session, option
 	return res
 }
 
-func (s *inMemSpannerServer) getTransactionByID(id []byte) (*spannerpb.Transaction, error) {
+func (s *inMemSpannerServer) getTransactionByID(session *spannerpb.Session, id []byte) (*spannerpb.Transaction, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	tx, ok := s.transactions[string(id)]
 	if !ok {
 		return nil, gstatus.Error(codes.NotFound, "Transaction not found")
 	}
+	if !strings.HasPrefix(string(id), session.Name) {
+		return nil, gstatus.Error(codes.InvalidArgument, "Transaction was started in a different session.")
+	}
+
 	aborted, ok := s.abortedTransactions[string(id)]
 	if ok && aborted {
 		return nil, newAbortedErrorWithMinimalRetryDelay()
@@ -813,7 +817,7 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 	var id []byte
 	s.updateSessionLastUseTime(session.Name)
 	if id = s.getTransactionID(session, req.Transaction); id != nil {
-		_, err = s.getTransactionByID(id)
+		_, err = s.getTransactionByID(session, id)
 		if err != nil {
 			return nil, err
 		}
@@ -860,7 +864,7 @@ func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlReques
 	s.updateSessionLastUseTime(session.Name)
 	var id []byte
 	if id = s.getTransactionID(session, req.Transaction); id != nil {
-		_, err = s.getTransactionByID(id)
+		_, err = s.getTransactionByID(session, id)
 		if err != nil {
 			return err
 		}
@@ -932,7 +936,7 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 	s.updateSessionLastUseTime(session.Name)
 	var id []byte
 	if id = s.getTransactionID(session, req.Transaction); id != nil {
-		_, err = s.getTransactionByID(id)
+		_, err = s.getTransactionByID(session, id)
 		if err != nil {
 			return nil, err
 		}
@@ -1031,7 +1035,7 @@ func (s *inMemSpannerServer) Commit(ctx context.Context, req *spannerpb.CommitRe
 	if req.GetSingleUseTransaction() != nil {
 		tx = s.beginTransaction(session, req.GetSingleUseTransaction())
 	} else if req.GetTransactionId() != nil {
-		tx, err = s.getTransactionByID(req.GetTransactionId())
+		tx, err = s.getTransactionByID(session, req.GetTransactionId())
 		if err != nil {
 			return nil, err
 		}
@@ -1064,7 +1068,7 @@ func (s *inMemSpannerServer) Rollback(ctx context.Context, req *spannerpb.Rollba
 		return nil, err
 	}
 	s.updateSessionLastUseTime(session.Name)
-	tx, err := s.getTransactionByID(req.TransactionId)
+	tx, err := s.getTransactionByID(session, req.TransactionId)
 	if err != nil {
 		return nil, err
 	}
@@ -1091,7 +1095,7 @@ func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.
 	var tx *spannerpb.Transaction
 	s.updateSessionLastUseTime(session.Name)
 	if id = s.getTransactionID(session, req.Transaction); id != nil {
-		tx, err = s.getTransactionByID(id)
+		tx, err = s.getTransactionByID(session, id)
 		if err != nil {
 			return nil, err
 		}

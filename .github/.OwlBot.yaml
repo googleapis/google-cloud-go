@@ -36,6 +36,8 @@ deep-remove-regex:
   - /beyondcorp/clientconnectorservices/apiv1/
   - /beyondcorp/clientgateways/apiv1/
   - /bigquery/analyticshub/apiv1/
+  - /bigquery/biglake/apiv1/
+  - /bigquery/biglake/apiv1alpha1/
   - /bigquery/connection/apiv1/
   - /bigquery/connection/apiv1beta1/
   - /bigquery/dataexchange/apiv1beta1/
@@ -65,6 +67,7 @@ deep-remove-regex:
   - /compute/apiv1
   - /confidentialcomputing/apiv1
   - /confidentialcomputing/apiv1alpha1
+  - /config/apiv1/
   - /contactcenterinsights/apiv1/
   - /container/apiv1/
   - /containeranalysis/apiv1beta1/
@@ -149,6 +152,8 @@ deep-remove-regex:
   - /internal/generated/snippets/beyondcorp/clientconnectorservices/apiv1/
   - /internal/generated/snippets/beyondcorp/clientgateways/apiv1/
   - /internal/generated/snippets/bigquery/analyticshub/apiv1/
+  - /internal/generated/snippets/bigquery/biglake/apiv1/
+  - /internal/generated/snippets/bigquery/biglake/apiv1alpha1/
   - /internal/generated/snippets/bigquery/connection/apiv1/
   - /internal/generated/snippets/bigquery/connection/apiv1beta1/
   - /internal/generated/snippets/bigquery/dataexchange/apiv1beta1/
@@ -233,6 +238,7 @@ deep-remove-regex:
   - /internal/generated/snippets/kms/inventory/apiv1/
   - /internal/generated/snippets/language/apiv1/
   - /internal/generated/snippets/language/apiv1beta2/
+  - /internal/generated/snippets/language/apiv2/
   - /internal/generated/snippets/lifesciences/apiv2beta/
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/longrunning/autogen/
@@ -258,6 +264,7 @@ deep-remove-regex:
   - /internal/generated/snippets/networksecurity/apiv1beta1/
   - /internal/generated/snippets/notebooks/apiv1/
   - /internal/generated/snippets/notebooks/apiv1beta1/
+  - /internal/generated/snippets/notebooks/apiv2/
   - /internal/generated/snippets/optimization/apiv1/
   - /internal/generated/snippets/orchestration/airflow/service/apiv1/
   - /internal/generated/snippets/orgpolicy/apiv2/
@@ -271,6 +278,7 @@ deep-remove-regex:
   - /internal/generated/snippets/phishingprotection/apiv1beta1/
   - /internal/generated/snippets/policysimulator/apiv1/
   - /internal/generated/snippets/policytroubleshooter/apiv1/
+  - /internal/generated/snippets/policytroubleshooter/iam/apiv3/
   - /internal/generated/snippets/privatecatalog/apiv1beta1/
   - /internal/generated/snippets/pubsub/apiv1/
   - /internal/generated/snippets/pubsublite/apiv1/
@@ -347,6 +355,7 @@ deep-remove-regex:
   - /kms/inventory/apiv1/
   - /language/apiv1/
   - /language/apiv1beta2/
+  - /language/apiv2/
   - /lifesciences/apiv2beta/
   - /logging/apiv2/
   - /longrunning/autogen/
@@ -372,6 +381,7 @@ deep-remove-regex:
   - /networksecurity/apiv1beta1/
   - /notebooks/apiv1/
   - /notebooks/apiv1beta1/
+  - /notebooks/apiv2/
   - /optimization/apiv1/
   - /orchestration/airflow/service/apiv1/
   - /orgpolicy/apiv1/
@@ -387,6 +397,7 @@ deep-remove-regex:
   - /phishingprotection/apiv1beta1/
   - /policysimulator/apiv1/
   - /policytroubleshooter/apiv1/
+  - /policytroubleshooter/iam/apiv3/
   - /privatecatalog/apiv1beta1/
   - /pubsub/apiv1/
   - /pubsublite/apiv1/
@@ -567,6 +578,10 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/bigquery/analyticshub/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/bigquery/biglake/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/bigquery/biglake/v1alpha1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/bigquery/connection/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/bigquery/connection/v1beta1/cloud.google.com/go
@@ -624,6 +639,8 @@ deep-copy-regex:
   - source: /google/cloud/confidentialcomputing/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/confidentialcomputing/v1alpha1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/config/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go
     dest: /
@@ -737,6 +754,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/language/v1beta2/cloud.google.com/go
     dest: /
+  - source: /google/cloud/language/v2/cloud.google.com/go
+    dest: /
   - source: /google/cloud/lifesciences/v2beta/cloud.google.com/go
     dest: /
   - source: /google/logging/v2/cloud.google.com/go
@@ -787,6 +806,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/notebooks/v1beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/notebooks/v2/cloud.google.com/go
+    dest: /
   - source: /google/cloud/optimization/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/orchestration/airflow/service/v1/cloud.google.com/go
@@ -814,6 +835,8 @@ deep-copy-regex:
   - source: /google/cloud/phishingprotection/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/policysimulator/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/policytroubleshooter/iam/v3/cloud.google.com/go
     dest: /
   - source: /google/cloud/policytroubleshooter/v1/cloud.google.com/go
     dest: /

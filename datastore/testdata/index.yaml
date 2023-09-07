@@ -39,3 +39,17 @@ indexes:
   - name: T
   - name: J
   - name: U
+
+- kind: SQChild
+  ancestor: yes
+  properties:
+  - name: T
+  - name: I
+  - name: V
+
+- kind: SQChild
+  ancestor: yes
+  properties:
+  - name: T
+  - name: W
+  

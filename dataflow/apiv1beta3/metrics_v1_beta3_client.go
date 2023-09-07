@@ -34,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -174,7 +173,7 @@ type metricsV1Beta3GRPCClient struct {
 	metricsV1Beta3Client dataflowpb.MetricsV1Beta3Client
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewMetricsV1Beta3Client creates a new metrics v1 beta3 client based on gRPC.
@@ -224,7 +223,7 @@ func (c *metricsV1Beta3GRPCClient) Connection() *grpc.ClientConn {
 func (c *metricsV1Beta3GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -241,8 +240,8 @@ type metricsV1Beta3RESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing MetricsV1Beta3Client
 	CallOptions **MetricsV1Beta3CallOptions
@@ -285,7 +284,7 @@ func defaultMetricsV1Beta3RESTClientOptions() []option.ClientOption {
 func (c *metricsV1Beta3RESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -303,9 +302,10 @@ func (c *metricsV1Beta3RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *metricsV1Beta3GRPCClient) GetJobMetrics(ctx context.Context, req *dataflowpb.GetJobMetricsRequest, opts ...gax.CallOption) (*dataflowpb.JobMetrics, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetJobMetrics[0:len((*c.CallOptions).GetJobMetrics):len((*c.CallOptions).GetJobMetrics)], opts...)
 	var resp *dataflowpb.JobMetrics
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -320,9 +320,10 @@ func (c *metricsV1Beta3GRPCClient) GetJobMetrics(ctx context.Context, req *dataf
 }
 
 func (c *metricsV1Beta3GRPCClient) GetJobExecutionDetails(ctx context.Context, req *dataflowpb.GetJobExecutionDetailsRequest, opts ...gax.CallOption) *StageSummaryIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetJobExecutionDetails[0:len((*c.CallOptions).GetJobExecutionDetails):len((*c.CallOptions).GetJobExecutionDetails)], opts...)
 	it := &StageSummaryIterator{}
 	req = proto.Clone(req).(*dataflowpb.GetJobExecutionDetailsRequest)
@@ -365,9 +366,10 @@ func (c *metricsV1Beta3GRPCClient) GetJobExecutionDetails(ctx context.Context, r
 }
 
 func (c *metricsV1Beta3GRPCClient) GetStageExecutionDetails(ctx context.Context, req *dataflowpb.GetStageExecutionDetailsRequest, opts ...gax.CallOption) *WorkerDetailsIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()), "stage_id", url.QueryEscape(req.GetStageId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()), "stage_id", url.QueryEscape(req.GetStageId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetStageExecutionDetails[0:len((*c.CallOptions).GetStageExecutionDetails):len((*c.CallOptions).GetStageExecutionDetails)], opts...)
 	it := &WorkerDetailsIterator{}
 	req = proto.Clone(req).(*dataflowpb.GetStageExecutionDetailsRequest)
@@ -436,9 +438,11 @@ func (c *metricsV1Beta3RESTClient) GetJobMetrics(ctx context.Context, req *dataf
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetJobMetrics[0:len((*c.CallOptions).GetJobMetrics):len((*c.CallOptions).GetJobMetrics)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataflowpb.JobMetrics{}
@@ -515,7 +519,8 @@ func (c *metricsV1Beta3RESTClient) GetJobExecutionDetails(ctx context.Context, r
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -620,7 +625,8 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
