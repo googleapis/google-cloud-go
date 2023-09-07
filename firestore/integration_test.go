@@ -1027,6 +1027,7 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 		{q.EndBefore(1), wants[:1], true},
 		{q.LimitToLast(2), wants[1:], true},
 		{q.EndBefore(2).LimitToLast(2), wants[:2], true},
+		{q.StartAt(1).EndBefore(2).LimitToLast(3), wants[1:2], true},
 	} {
 		if test.orderBy {
 			test.q = test.q.OrderBy("q", Asc)
