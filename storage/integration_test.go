@@ -241,9 +241,9 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	gc, err := newGRPCClient(ctx, opts...)
+	gc, err := NewGRPCClient(ctx, opts...)
 	if err != nil {
-		t.Fatalf("newHybridClient: %v", err)
+		t.Fatalf("NewGRPCClient: %v", err)
 	}
 
 	return
@@ -3108,9 +3108,9 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 				// Retry to account for propagation delay to objects in metadata update
 				// (we updated the metadata to add the otherUserEmail as owner on the bucket)
 				o := bucket.Object(objectName)
-				ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
+				ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*15)
 				defer cancel()
-				// Only retry when we expect success to avoid retrying for 10 seconds
+				// Only retry when we expect success to avoid retrying
 				// when we know it will fail
 				if test.expectSuccess {
 					o = o.Retryer(WithErrorFunc(retryOnTransient400and403))

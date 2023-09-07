@@ -637,7 +637,7 @@ func (q Query) compareFunc() func(d1, d2 *DocumentSnapshot) (int, error) {
 	return func(d1, d2 *DocumentSnapshot) (int, error) {
 		for _, ord := range orders {
 			var cmp int
-			if len(ord.fieldPath) == 1 && ord.fieldPath[0] == DocumentID {
+			if ord.isDocumentID() {
 				cmp = compareReferences(d1.Ref.Path, d2.Ref.Path)
 			} else {
 				v1, err := valueAtPath(ord.fieldPath, d1.proto.Fields)

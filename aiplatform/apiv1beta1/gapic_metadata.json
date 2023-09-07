@@ -3107,6 +3107,11 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdatePersistentResource": {
+              "methods": [
+                "UpdatePersistentResource"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -3180,6 +3185,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdatePersistentResource": {
+              "methods": [
+                "UpdatePersistentResource"
               ]
             },
             "WaitOperation": {
@@ -3415,6 +3425,11 @@
                 "CancelOperation"
               ]
             },
+            "CountTokens": {
+              "methods": [
+                "CountTokens"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -3488,6 +3503,11 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CountTokens": {
+              "methods": [
+                "CountTokens"
               ]
             },
             "DeleteOperation": {

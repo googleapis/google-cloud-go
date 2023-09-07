@@ -111,7 +111,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 4.00,
 				})
 			}),
 		},
@@ -231,7 +231,7 @@ func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 4.00,
 				},
 					http.StatusConflict,
 					499,

@@ -31,6 +31,7 @@ modules:
   - commerce
   - compute
   - confidentialcomputing
+  - config
   - contactcenterinsights
   - container
   - containeranalysis
@@ -359,6 +360,12 @@ service-configs:
   - input-directory: google/cloud/bigquery/analyticshub/v1
     service-config: analyticshub_v1.yaml
     import-path: cloud.google.com/go/bigquery/analyticshub/apiv1
+  - input-directory: google/cloud/bigquery/biglake/v1
+    service-config: biglake_v1.yaml
+    import-path: cloud.google.com/go/bigquery/biglake/apiv1
+  - input-directory: google/cloud/bigquery/biglake/v1alpha1
+    service-config: biglake_v1alpha1.yaml
+    import-path: cloud.google.com/go/bigquery/biglake/apiv1alpha1
   - input-directory: google/cloud/bigquery/connection/v1
     service-config: bigqueryconnection_v1.yaml
     import-path: cloud.google.com/go/bigquery/connection/apiv1
@@ -425,6 +432,9 @@ service-configs:
   - input-directory: google/cloud/compute/v1
     service-config: compute_v1.yaml
     import-path: cloud.google.com/go/compute/apiv1
+  - input-directory: google/cloud/config/v1
+    service-config: config_v1.yaml
+    import-path: cloud.google.com/go/config/apiv1
   - input-directory: google/cloud/contactcenterinsights/v1
     service-config: contactcenterinsights_v1.yaml
     import-path: cloud.google.com/go/contactcenterinsights/apiv1
@@ -555,6 +565,9 @@ service-configs:
   - input-directory: google/cloud/language/v1beta2
     service-config: language_v1beta2.yaml
     import-path: cloud.google.com/go/language/apiv1beta2
+  - input-directory: google/cloud/language/v2
+    service-config: language_v2.yaml
+    import-path: cloud.google.com/go/language/apiv2
   - input-directory: google/cloud/lifesciences/v2beta
     service-config: lifesciences_v2beta.yaml
     import-path: cloud.google.com/go/lifesciences/apiv2beta
@@ -603,6 +616,9 @@ service-configs:
   - input-directory: google/cloud/notebooks/v1beta1
     service-config: notebooks_v1beta1.yaml
     import-path: cloud.google.com/go/notebooks/apiv1beta1
+  - input-directory: google/cloud/notebooks/v2
+    service-config: notebooks_v2.yaml
+    import-path: cloud.google.com/go/notebooks/apiv2
   - input-directory: google/cloud/optimization/v1
     service-config: cloudoptimization_v1.yaml
     import-path: cloud.google.com/go/optimization/apiv1
@@ -645,6 +661,9 @@ service-configs:
   - input-directory: google/cloud/policysimulator/v1
     service-config: policysimulator_v1.yaml
     import-path: cloud.google.com/go/policysimulator/apiv1
+  - input-directory: google/cloud/policytroubleshooter/iam/v3
+    service-config: policytroubleshooter_v3.yaml
+    import-path: cloud.google.com/go/policytroubleshooter/iam/apiv3
   - input-directory: google/cloud/policytroubleshooter/v1
     service-config: policytroubleshooter_v1.yaml
     import-path: cloud.google.com/go/policytroubleshooter/apiv1

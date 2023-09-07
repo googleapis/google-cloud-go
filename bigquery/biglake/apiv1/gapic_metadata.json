@@ -1,0 +1,173 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.bigquery.biglake.v1",
+  "libraryPackage": "cloud.google.com/go/bigquery/biglake/apiv1",
+  "services": {
+    "MetastoreService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MetastoreClient",
+          "rpcs": {
+            "CreateCatalog": {
+              "methods": [
+                "CreateCatalog"
+              ]
+            },
+            "CreateDatabase": {
+              "methods": [
+                "CreateDatabase"
+              ]
+            },
+            "CreateTable": {
+              "methods": [
+                "CreateTable"
+              ]
+            },
+            "DeleteCatalog": {
+              "methods": [
+                "DeleteCatalog"
+              ]
+            },
+            "DeleteDatabase": {
+              "methods": [
+                "DeleteDatabase"
+              ]
+            },
+            "DeleteTable": {
+              "methods": [
+                "DeleteTable"
+              ]
+            },
+            "GetCatalog": {
+              "methods": [
+                "GetCatalog"
+              ]
+            },
+            "GetDatabase": {
+              "methods": [
+                "GetDatabase"
+              ]
+            },
+            "GetTable": {
+              "methods": [
+                "GetTable"
+              ]
+            },
+            "ListCatalogs": {
+              "methods": [
+                "ListCatalogs"
+              ]
+            },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
+              ]
+            },
+            "ListTables": {
+              "methods": [
+                "ListTables"
+              ]
+            },
+            "RenameTable": {
+              "methods": [
+                "RenameTable"
+              ]
+            },
+            "UpdateDatabase": {
+              "methods": [
+                "UpdateDatabase"
+              ]
+            },
+            "UpdateTable": {
+              "methods": [
+                "UpdateTable"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "MetastoreClient",
+          "rpcs": {
+            "CreateCatalog": {
+              "methods": [
+                "CreateCatalog"
+              ]
+            },
+            "CreateDatabase": {
+              "methods": [
+                "CreateDatabase"
+              ]
+            },
+            "CreateTable": {
+              "methods": [
+                "CreateTable"
+              ]
+            },
+            "DeleteCatalog": {
+              "methods": [
+                "DeleteCatalog"
+              ]
+            },
+            "DeleteDatabase": {
+              "methods": [
+                "DeleteDatabase"
+              ]
+            },
+            "DeleteTable": {
+              "methods": [
+                "DeleteTable"
+              ]
+            },
+            "GetCatalog": {
+              "methods": [
+                "GetCatalog"
+              ]
+            },
+            "GetDatabase": {
+              "methods": [
+                "GetDatabase"
+              ]
+            },
+            "GetTable": {
+              "methods": [
+                "GetTable"
+              ]
+            },
+            "ListCatalogs": {
+              "methods": [
+                "ListCatalogs"
+              ]
+            },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
+              ]
+            },
+            "ListTables": {
+              "methods": [
+                "ListTables"
+              ]
+            },
+            "RenameTable": {
+              "methods": [
+                "RenameTable"
+              ]
+            },
+            "UpdateDatabase": {
+              "methods": [
+                "UpdateDatabase"
+              ]
+            },
+            "UpdateTable": {
+              "methods": [
+                "UpdateTable"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

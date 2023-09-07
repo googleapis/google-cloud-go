@@ -1745,6 +1745,55 @@ func TestIntegration_FieldTransforms_Set(t *testing.T) {
 
 type imap map[string]interface{}
 
+func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
+	h := testHelper{t}
+	collID := collectionIDs.New()
+	ctx := context.Background()
+	client := integrationClient(t)
+
+	partitionedQueries, err := client.CollectionGroup(collID).GetPartitionedQueries(ctx, 10)
+	h.failIfNotNil(err)
+
+	qProtoBytes, err := partitionedQueries[0].Serialize()
+	h.failIfNotNil(err)
+
+	q, err := client.CollectionGroup(collID).Deserialize(qProtoBytes)
+	h.failIfNotNil(err)
+
+	qSnapIt := q.Snapshots(ctx)
+	defer qSnapIt.Stop()
+
+	// Check if at least one snapshot exists
+	_, err = qSnapIt.Next()
+	if err == iterator.Done {
+		t.Fatalf("Expected snapshot, found none")
+	}
+
+	// Add new document to query results
+	createdDocRefs := h.mustCreateMulti(collID, []testDocument{
+		{data: map[string]interface{}{"some-key": "should-be-found"}},
+	})
+	wds := h.mustGet(createdDocRefs[0])
+
+	// Check if new snapshot is available
+	qSnap, err := qSnapIt.Next()
+	if err == iterator.Done {
+		t.Fatalf("Expected snapshot, found none")
+	}
+
+	// Check the changes in snapshot
+	if len(qSnap.Changes) != 1 {
+		t.Fatalf("Expected one change, found none")
+	}
+
+	wantChange := DocumentChange{Kind: DocumentAdded, Doc: wds, OldIndex: -1, NewIndex: 0}
+	gotChange := qSnap.Changes[0]
+	copts := append([]cmp.Option{cmpopts.IgnoreFields(DocumentSnapshot{}, "ReadTime")}, cmpOpts...)
+	if diff := testutil.Diff(gotChange, wantChange, copts...); diff != "" {
+		t.Errorf("got: %v, want: %v, diff: %v", gotChange, wantChange, diff)
+	}
+}
+
 func TestIntegration_WatchQuery(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
@@ -1957,6 +2006,39 @@ func checkTimeBetween(t *testing.T, got, low, high time.Time) {
 
 type testHelper struct {
 	t *testing.T
+}
+
+func (h testHelper) failIfNotNil(err error) {
+	if err != nil {
+		h.t.Fatal(err)
+	}
+}
+
+type testDocument struct {
+	id   string
+	data map[string]interface{}
+}
+
+func (h testHelper) mustCreateMulti(collectionPath string, docsData []testDocument) []*DocumentRef {
+	client := integrationClient(h.t)
+	collRef := client.Collection(collectionPath)
+	docsCreated := []*DocumentRef{}
+	for _, data := range docsData {
+		var docRef *DocumentRef
+		if len(data.id) == 0 {
+			docRef = collRef.NewDoc()
+		} else {
+			docRef = collRef.Doc(data.id)
+		}
+		h.mustCreate(docRef, data.data)
+		docsCreated = append(docsCreated, docRef)
+	}
+
+	h.t.Cleanup(func() {
+		deleteDocuments(docsCreated)
+	})
+
+	return docsCreated
 }
 
 func (h testHelper) mustCreate(doc *DocumentRef, data interface{}) *WriteResult {
