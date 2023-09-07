@@ -104,7 +104,8 @@ func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 	if s.Code() == codes.Internal && strings.Contains(s.Message(), "string field contains invalid UTF-8") {
 		return 0, false
 	}
-	return r.defaultRetryer.Retry(err)
+	t, f := r.defaultRetryer.Retry(err)
+	return t, f
 }
 
 var (

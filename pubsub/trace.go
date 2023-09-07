@@ -307,15 +307,36 @@ func (c messageCarrier) Keys() []string {
 }
 
 const (
-	// span names
+	// publish span names
 	publisherSpanName          = "send"
 	publishFlowControlSpanName = "publisher flow control"
-	publishBatcherSpanName     = "publish batcher"
+	publishBatcherSpanName     = "publish scheduler"
 	publishRPCSpanName         = "publish"
+
+	// subscribe span names
+	subscriberSpanName            = "receive"
+	subscriberFlowControlSpanName = "subscriber flow control"
+	processSpanName               = "process"
+	subscribeSchedulerSpanName    = "subscribe scheduler"
+	receiptModAckSpanName         = "send initial ModifyAckDeadline"
+	modAckSpanName                = "send ModifyAckDeadline"
+	ackSpanName                   = "send Acknowledge"
+	nackSpanName                  = "send Negative Acknowledge"
 
 	// custom pubsub specific attributes
 	numBatchedMessagesAttribute = "messaging.pubsub.num_messages_in_batch"
 	orderingAttribute           = "messaging.pubsub.ordering_key"
+
+	// custom pubsub specific attributes
+	numBatchedMessagesAttribute    = "messaging.pubsub.num_messages_in_batch"
+	subscriptionAttribute          = "messaging.pubsub.subscription"
+	orderingAttribute              = "messaging.pubsub.ordering_key"
+	deliveryAttemptAttribute       = "messaging.pubsub.delivery_attempt"
+	eosAttribute                   = "messaging.pubsub.exactly_once_delivery"
+	ackIDAttribute                 = "messaging.pubsub.ack_id"
+	ackAttribute                   = "messaging.pubsub.is_acked"
+	modackDeadlineSecondsAttribute = "messaging.pubsub.modack_deadline_seconds"
+	initialModackAttribute         = "messaging.pubsub.is_initial_modack"
 )
 
 func startPublishSpan(ctx context.Context, m *Message, topicName string) (context.Context, trace.Span) {
@@ -369,6 +390,30 @@ func injectPropagation(ctx context.Context, msg *Message) {
 // spanRecordError records the error, sets the status to error, and ends the span.
 // This is recommended by https://opentelemetry.io/docs/instrumentation/go/manual/#record-errors
 // since RecordError doesn't set the status of a span.
+func getSubSpanAttributes(sub string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
+	msgSize := proto.Size(&pb.PubsubMessage{
+		Data:        msg.Data,
+		Attributes:  msg.Attributes,
+		OrderingKey: msg.OrderingKey,
+	})
+	ss := []trace.SpanStartOption{
+		trace.WithAttributes(
+			semconv.MessagingSystemKey.String("pubsub"),
+			semconv.MessagingDestinationKindTopic,
+			semconv.MessagingMessageIDKey.String(msg.ID),
+			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+			attribute.String(subscriptionAttribute, sub),
+			attribute.String(orderingAttribute, msg.OrderingKey),
+		),
+		trace.WithAttributes(opts...),
+		trace.WithSpanKind(trace.SpanKindConsumer),
+	}
+	if msg.DeliveryAttempt != nil {
+		ss = append(ss, trace.WithAttributes(attribute.Int(deliveryAttemptAttribute, *msg.DeliveryAttempt)))
+	}
+	return ss
+}
+
 func spanRecordError(span trace.Span, err error) {
 	span.RecordError(err)
 	span.SetStatus(otelcodes.Error, err.Error())

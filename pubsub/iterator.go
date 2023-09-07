@@ -29,6 +29,8 @@ import (
 	"cloud.google.com/go/pubsub/internal/distribution"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -96,6 +98,9 @@ type messageIterator struct {
 	eoMu                      sync.RWMutex
 	enableExactlyOnceDelivery bool
 	sendNewAckDeadline        bool
+
+	otelMu         sync.RWMutex
+	activeContexts map[string]context.Context
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -141,6 +146,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		pendingAcks:        map[string]*AckResult{},
 		pendingNacks:       map[string]*AckResult{},
 		pendingModAcks:     map[string]*AckResult{},
+		activeContexts:     map[string]context.Context{},
 	}
 	it.wg.Add(1)
 	go it.sender()
@@ -245,9 +251,15 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	if err != nil {
 		return nil, it.fail(err)
 	}
+
 	recordStat(it.ctx, PullCount, int64(len(rmsgs)))
+
+	it.eoMu.RLock()
+	enableExactlyOnceDelivery := it.enableExactlyOnceDelivery
+	it.eoMu.RUnlock()
+
 	now := time.Now()
-	msgs, err := convertMessages(rmsgs, now, it.done)
+	msgs, err := convertMessages(rmsgs, now, it.done, it.subName, enableExactlyOnceDelivery)
 	if err != nil {
 		return nil, it.fail(err)
 	}
@@ -268,6 +280,13 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	pendingMessages := make(map[string]*ipubsub.Message)
 	for _, m := range msgs {
 		ackID := msgAckID(m)
+		ctx := context.Background()
+		if m.Attributes != nil {
+			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(m))
+		}
+		it.otelMu.Lock()
+		it.activeContexts[ackID] = ctx
+		it.otelMu.Unlock()
 		addRecv(m.ID, ackID, now)
 		it.keepAliveDeadlines[ackID] = maxExt
 		// Don't change the mod-ack if the message is going to be nacked. This is
@@ -293,14 +312,14 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		// When exactly once delivery is not enabled, modacks are fire and forget.
 		if !exactlyOnceDelivery {
 			go func() {
-				it.sendModAck(ackIDs, deadline, false)
+				it.sendModAck(ackIDs, deadline, false, true)
 			}()
 			return msgs, nil
 		}
 
 		// If exactly once is enabled, we should wait until modack responses are successes
 		// before attempting to process messages.
-		it.sendModAck(ackIDs, deadline, false)
+		it.sendModAck(ackIDs, deadline, false, true)
 		for ackID, ar := range ackIDs {
 			ctx := context.Background()
 			_, err := ar.Get(ctx)
@@ -439,10 +458,10 @@ func (it *messageIterator) sender() {
 		}
 		if sendNacks {
 			// Nack indicated by modifying the deadline to zero.
-			it.sendModAck(nacks, 0, false)
+			it.sendModAck(nacks, 0, false, false)
 		}
 		if sendModAcks {
-			it.sendModAck(modAcks, dl, true)
+			it.sendModAck(modAcks, dl, true, false)
 		}
 		if sendPing {
 			it.pingStream()
@@ -463,6 +482,7 @@ func (it *messageIterator) handleKeepAlives() {
 			// statements with range clause", note 3, and stated explicitly at
 			// https://groups.google.com/forum/#!msg/golang-nuts/UciASUb03Js/pzSq5iVFAQAJ.
 			delete(it.keepAliveDeadlines, id)
+			delete(it.activeContexts, id)
 		} else {
 			// Use a success AckResult since we don't propagate ModAcks back to the user.
 			it.pendingModAcks[id] = newSuccessAckResult()
@@ -475,8 +495,13 @@ func (it *messageIterator) handleKeepAlives() {
 // enabled, we'll retry these messages for a short duration in a goroutine.
 func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	ackIDs := make([]string, 0, len(m))
-	for k := range m {
-		ackIDs = append(ackIDs, k)
+	for ackID := range m {
+		ackIDs = append(ackIDs, ackID)
+		it.otelMu.RLock()
+		ctx := it.activeContexts[ackID]
+		it.otelMu.RUnlock()
+		_, ackSpan := tracer().Start(ctx, ackSpanName)
+		defer ackSpan.End()
 	}
 	it.eoMu.RLock()
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery
@@ -519,11 +544,28 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 // percentile in order to capture the highest amount of time necessary without
 // considering 1% outliers. If the ModAck RPC fails and exactly once delivery is
 // enabled, we retry it in a separate goroutine for a short duration.
-func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration, logOnInvalid bool) {
+func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration, logOnInvalid, isReceipt bool) {
 	deadlineSec := int32(deadline / time.Second)
 	ackIDs := make([]string, 0, len(m))
-	for k := range m {
-		ackIDs = append(ackIDs, k)
+	for ackID := range m {
+		ackIDs = append(ackIDs, ackID)
+		it.otelMu.RLock()
+		ctx := it.activeContexts[ackID]
+		it.otelMu.RUnlock()
+		var spanName string
+		isNack := deadline == 0
+		if isNack {
+			spanName = nackSpanName
+		} else {
+			spanName = modAckSpanName
+		}
+		_, span := tracer().Start(ctx, spanName)
+		if !isNack {
+			span.SetAttributes(attribute.Int(modackDeadlineSecondsAttribute, int(deadlineSec)),
+				attribute.Bool(initialModackAttribute, isReceipt))
+			span.SetAttributes(attribute.Int(numBatchedMessagesAttribute, len(m)))
+		}
+		defer span.End()
 	}
 	it.eoMu.RLock()
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery
