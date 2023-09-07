@@ -19,6 +19,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/detect/internal/externalaccount"
 	"cloud.google.com/go/auth/detect/internal/gdch"
 	"cloud.google.com/go/auth/detect/internal/impersonate"
 	"cloud.google.com/go/auth/internal/internaldetect"
@@ -49,6 +50,16 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 			return nil, err
 		}
 		tp, err = handleUserCredential(f, opts)
+		if err != nil {
+			return nil, err
+		}
+		quotaProjectID = f.QuotaProjectID
+	case internaldetect.ExternalAccountKey:
+		f, err := internaldetect.ParseExternalAccount(b)
+		if err != nil {
+			return nil, err
+		}
+		tp, err = handleExternalAccount(f, opts)
 		if err != nil {
 			return nil, err
 		}
@@ -109,6 +120,25 @@ func handleUserCredential(f *internaldetect.UserCredentialsFile, opts *Options) 
 		EarlyTokenExpiry: opts.EarlyTokenRefresh,
 	}
 	return auth.New3LOTokenProvider(f.RefreshToken, opts3LO)
+}
+
+func handleExternalAccount(f *internaldetect.ExternalAccountFile, opts *Options) (auth.TokenProvider, error) {
+	externalOpts := &externalaccount.Options{
+		Audience:                       f.Audience,
+		SubjectTokenType:               f.SubjectTokenType,
+		TokenURL:                       f.TokenURL,
+		TokenInfoURL:                   f.TokenInfoURL,
+		ServiceAccountImpersonationURL: f.ServiceAccountImpersonationURL,
+		ServiceAccountImpersonationLifetimeSeconds: f.ServiceAccountImpersonation.TokenLifetimeSeconds,
+		ClientSecret:             f.ClientSecret,
+		ClientID:                 f.ClientID,
+		CredentialSource:         f.CredentialSource,
+		QuotaProjectID:           f.QuotaProjectID,
+		Scopes:                   opts.scopes(),
+		WorkforcePoolUserProject: f.WorkforcePoolUserProject,
+		Client:                   opts.client(),
+	}
+	return externalaccount.NewTokenProvider(externalOpts)
 }
 
 func handleImpersonatedServiceAccount(f *internaldetect.ImpersonatedServiceAccountFile, opts *Options) (auth.TokenProvider, error) {

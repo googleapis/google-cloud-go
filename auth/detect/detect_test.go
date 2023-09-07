@@ -359,6 +359,90 @@ func TestDefaultCredentials_ClientCredentials(t *testing.T) {
 	}
 }
 
+// Better coverage of all external account features tested in the sub-package.
+func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
+	b, err := os.ReadFile("../internal/testdata/exaccount_url.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	f, err := internaldetect.ParseExternalAccount(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+		if r.URL.Path == "/token" {
+			resp := &struct {
+				Token string `json:"id_token"`
+			}{
+				Token: "a_fake_token_base",
+			}
+			if err := json.NewEncoder(w).Encode(&resp); err != nil {
+				t.Error(err)
+			}
+		} else if r.URL.Path == "/sts" {
+			r.ParseForm()
+			if got, want := r.Form.Get("subject_token"), "a_fake_token_base"; got != want {
+				t.Errorf("got %q, want %q", got, want)
+			}
+
+			resp := &struct {
+				AccessToken string `json:"access_token"`
+				ExpiresIn   int    `json:"expires_in"`
+			}{
+				AccessToken: "a_fake_token_sts",
+				ExpiresIn:   60,
+			}
+			if err := json.NewEncoder(w).Encode(&resp); err != nil {
+				t.Error(err)
+			}
+		} else if r.URL.Path == "/impersonate" {
+			if want := "a_fake_token_sts"; !strings.Contains(r.Header.Get("Authorization"), want) {
+				t.Errorf("missing sts token: got %q, want %q", r.Header.Get("Authorization"), want)
+			}
+
+			resp := &struct {
+				AccessToken string `json:"accessToken"`
+				ExpireTime  string `json:"expireTime"`
+			}{
+				AccessToken: "a_fake_token",
+				ExpireTime:  "2006-01-02T15:04:05Z",
+			}
+			if err := json.NewEncoder(w).Encode(&resp); err != nil {
+				t.Error(err)
+			}
+		} else {
+			t.Errorf("unexpected call to %q", r.URL.Path)
+		}
+	}))
+	f.ServiceAccountImpersonationURL = ts.URL + "/impersonate"
+	f.CredentialSource.URL = ts.URL + "/token"
+	f.TokenURL = ts.URL + "/sts"
+	b, err = json.Marshal(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	creds, err := DefaultCredentials(&Options{
+		CredentialsJSON:  b,
+		Scopes:           []string{"https://www.googleapis.com/auth/cloud-platform"},
+		UseSelfSignedJWT: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tok, err := creds.Token(context.Background())
+	if err != nil {
+		t.Fatalf("creds.Token() = %v", err)
+	}
+	if want := "a_fake_token"; tok.Value != want {
+		t.Fatalf("got %q, want %q", tok.Value, want)
+	}
+	if want := internal.TokenTypeBearer; tok.Type != want {
+		t.Fatalf("got %q, want %q", tok.Type, want)
+	}
+}
+
 func TestDefaultCredentials_Fails(t *testing.T) {
 	t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "nothingToSeeHere")
 	t.Setenv("HOME", "nothingToSeeHere")
