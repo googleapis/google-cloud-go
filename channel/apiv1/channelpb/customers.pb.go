@@ -21,14 +21,13 @@
 package channelpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	postaladdress "google.golang.org/genproto/googleapis/type/postaladdress"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -50,9 +49,9 @@ type Customer struct {
 	// Required. Name of the organization that the customer entity represents.
 	OrgDisplayName string `protobuf:"bytes,2,opt,name=org_display_name,json=orgDisplayName,proto3" json:"org_display_name,omitempty"`
 	// Required. The organization address for the customer. To enforce US laws and
-	// embargoes, we require a region and zip code. You must provide valid
-	// addresses for every customer. To set the customer's language, use the
-	// Customer-level language code.
+	// embargoes, we require a region, postal code, and address lines. You must
+	// provide valid addresses for every customer. To set the customer's
+	// language, use the Customer-level language code.
 	OrgPostalAddress *postaladdress.PostalAddress `protobuf:"bytes,3,opt,name=org_postal_address,json=orgPostalAddress,proto3" json:"org_postal_address,omitempty"`
 	// Primary contact info.
 	PrimaryContactInfo *ContactInfo `protobuf:"bytes,4,opt,name=primary_contact_info,json=primaryContactInfo,proto3" json:"primary_contact_info,omitempty"`

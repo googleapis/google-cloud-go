@@ -21,15 +21,14 @@
 package channelpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	decimal "google.golang.org/genproto/googleapis/type/decimal"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -355,14 +354,28 @@ type isRepricingConfig_Granularity interface {
 }
 
 type RepricingConfig_EntitlementGranularity_ struct {
-	// Applies the repricing configuration at the entitlement level. This is
-	// the only supported value for CustomerRepricingConfig.
+	// Applies the repricing configuration at the entitlement level.
+	//
+	// Note: If a
+	// [ChannelPartnerRepricingConfig][google.cloud.channel.v1.ChannelPartnerRepricingConfig]
+	// using
+	// [RepricingConfig.EntitlementGranularity][google.cloud.channel.v1.RepricingConfig.EntitlementGranularity]
+	// becomes effective, then no existing or future
+	// [RepricingConfig.ChannelPartnerGranularity][google.cloud.channel.v1.RepricingConfig.ChannelPartnerGranularity]
+	// will apply to the
+	// [RepricingConfig.EntitlementGranularity.entitlement][google.cloud.channel.v1.RepricingConfig.EntitlementGranularity.entitlement].
+	// This is the recommended value for both
+	// [CustomerRepricingConfig][google.cloud.channel.v1.CustomerRepricingConfig]
+	// and
+	// [ChannelPartnerRepricingConfig][google.cloud.channel.v1.ChannelPartnerRepricingConfig].
 	EntitlementGranularity *RepricingConfig_EntitlementGranularity `protobuf:"bytes,4,opt,name=entitlement_granularity,json=entitlementGranularity,proto3,oneof"`
 }
 
 type RepricingConfig_ChannelPartnerGranularity_ struct {
 	// Applies the repricing configuration at the channel partner level.
-	// This is the only supported value for ChannelPartnerRepricingConfig.
+	// Only
+	// [ChannelPartnerRepricingConfig][google.cloud.channel.v1.ChannelPartnerRepricingConfig]
+	// supports this value.
 	ChannelPartnerGranularity *RepricingConfig_ChannelPartnerGranularity `protobuf:"bytes,5,opt,name=channel_partner_granularity,json=channelPartnerGranularity,proto3,oneof"`
 }
 
