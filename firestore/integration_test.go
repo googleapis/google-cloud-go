@@ -1741,6 +1741,8 @@ func TestIntegration_FieldTransforms_Set(t *testing.T) {
 	}
 }
 
+type imap map[string]interface{}
+
 func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
 	h := testHelper{t}
 	collID := collectionIDs.New()
@@ -1874,8 +1876,6 @@ func TestIntegration_WatchQuery(t *testing.T) {
 		deleteDocuments([]*DocumentRef{doc1, doc2, doc3})
 	})
 }
-
-type imap map[string]interface{}
 
 func TestIntegration_WatchQueryCancel(t *testing.T) {
 	ctx := context.Background()
