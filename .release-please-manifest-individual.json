@@ -10,5 +10,5 @@
   "pubsub": "1.33.0",
   "pubsublite": "1.8.1",
   "spanner": "1.49.0",
-  "storage": "1.32.0"
+  "storage": "1.33.0"
 }
