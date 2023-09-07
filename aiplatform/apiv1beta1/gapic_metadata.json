@@ -3107,6 +3107,11 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdatePersistentResource": {
+              "methods": [
+                "UpdatePersistentResource"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -3180,6 +3185,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdatePersistentResource": {
+              "methods": [
+                "UpdatePersistentResource"
               ]
             },
             "WaitOperation": {

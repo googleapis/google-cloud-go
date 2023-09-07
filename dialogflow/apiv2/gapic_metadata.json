@@ -829,6 +829,11 @@
                 "ListOperations"
               ]
             },
+            "SearchKnowledge": {
+              "methods": [
+                "SearchKnowledge"
+              ]
+            },
             "SuggestConversationSummary": {
               "methods": [
                 "SuggestConversationSummary"
@@ -892,6 +897,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SearchKnowledge": {
+              "methods": [
+                "SearchKnowledge"
               ]
             },
             "SuggestConversationSummary": {

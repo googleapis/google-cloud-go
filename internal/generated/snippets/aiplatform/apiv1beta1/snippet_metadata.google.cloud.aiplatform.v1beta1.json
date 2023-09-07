@@ -13639,6 +13639,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_PersistentResourceService_UpdatePersistentResource_sync",
+      "title": "aiplatform UpdatePersistentResource Sample",
+      "description": "UpdatePersistentResource updates a PersistentResource.",
+      "file": "PersistentResourceClient/UpdatePersistentResource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePersistentResource",
+        "fullName": "google.cloud.aiplatform.v1beta1.PersistentResourceClient.UpdatePersistentResource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdatePersistentResourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdatePersistentResourceOperation",
+        "client": {
+          "shortName": "PersistentResourceClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PersistentResourceClient"
+        },
+        "method": {
+          "shortName": "UpdatePersistentResource",
+          "fullName": "google.cloud.aiplatform.v1beta1.PersistentResourceService.UpdatePersistentResource",
+          "service": {
+            "shortName": "PersistentResourceService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PersistentResourceService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_PersistentResourceService_WaitOperation_sync",
       "title": "aiplatform WaitOperation Sample",
       "description": "WaitOperation is a utility method from google.longrunning.Operations.",
