@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -42,6 +43,18 @@ import (
 // resourcePrefixHeader is the name of the metadata header used to indicate
 // the resource being operated on.
 const resourcePrefixHeader = "google-cloud-resource-prefix"
+
+// requestParamsHeader is routing header required to access named databases
+const reqParamsHeader = "x-goog-request-params"
+
+// reqParamsHeaderVal constructs header from dbPath
+// dbPath is of the form projects/{project_id}/databases/{database_id}
+func reqParamsHeaderVal(dbPath string) string {
+	splitPath := strings.Split(dbPath, "/")
+	projectID := splitPath[1]
+	databaseID := splitPath[3]
+	return fmt.Sprintf("project_id=%s&database_id=%s", url.QueryEscape(projectID), url.QueryEscape(databaseID))
+}
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
 // project ID. It is given in place of the projectID argument. NewClient will
@@ -161,7 +174,7 @@ func withRequestParamsHeader(ctx context.Context, requestParams string) context.
 		md = metadata.New(nil)
 	}
 	md = md.Copy()
-	md[vkit.ReqParamsHeader] = []string{requestParams}
+	md[reqParamsHeader] = []string{requestParams}
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
@@ -267,7 +280,7 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 	}
 
 	batchGetDocsCtx := withResourceHeader(ctx, req.Database)
-	batchGetDocsCtx = withRequestParamsHeader(batchGetDocsCtx, vkit.ReqParamsHeaderVal(c.path()))
+	batchGetDocsCtx = withRequestParamsHeader(batchGetDocsCtx, reqParamsHeaderVal(c.path()))
 	streamClient, err := c.c.BatchGetDocuments(batchGetDocsCtx, req)
 	if err != nil {
 		return nil, err
