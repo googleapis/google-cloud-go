@@ -193,6 +193,96 @@ func TestSchemaToProtoConversion(t *testing.T) {
 			},
 		},
 		{
+			description: "nested-uppercase",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "recordID", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_REQUIRED},
+					{
+						Name: "recordDetails",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_REPEATED,
+						Fields: []*storagepb.TableFieldSchema{
+							{Name: "key", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_REQUIRED},
+							{Name: "value", Type: storagepb.TableFieldSchema_BYTES, Mode: storagepb.TableFieldSchema_NULLABLE},
+						},
+					},
+				},
+			},
+			wantProto2: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:   proto.String("recordID"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:     proto.String("recordDetails"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__recordDetails"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+				},
+			},
+			wantProto2Normalized: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:   proto.String("recordID"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:     proto.String("recordDetails"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("root__recordDetails"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("root__recordDetails"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("key"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+							{
+								Name:   proto.String("value"),
+								Number: proto.Int32(2),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_BYTES.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+				},
+			},
+			wantProto3: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:   proto.String("recordID"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("recordDetails"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__recordDetails"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+				},
+			},
+		},
+		{
 			// We expect to re-use the submessage twice, as the schema contains two identical structs.
 			description: "nested w/duplicate submessage",
 			bq: &storagepb.TableSchema{
@@ -510,7 +600,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 		if tc.wantProto3 != nil {
 			gotDP := protodesc.ToDescriptorProto(mDesc)
 			if diff := cmp.Diff(gotDP, tc.wantProto3, protocmp.Transform()); diff != "" {
-				t.Errorf("%s proto2: -got, +want:\n%s", tc.description, diff)
+				t.Errorf("%s proto3: -got, +want:\n%s", tc.description, diff)
 			}
 		}
 		// Check the normalized case.
