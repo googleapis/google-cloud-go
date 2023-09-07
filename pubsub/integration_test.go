@@ -129,7 +129,7 @@ func TestIntegration_Admin(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Errorf("CreateTopic error: %v", err)
 	}
@@ -143,7 +143,7 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
 		t.Errorf("CreateSub error: %v", err)
 	}
 	exists, err = sub.Exists(ctx)
@@ -267,7 +267,7 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 		t.Parallel()
 		testutil.Retry(t, 3, 10*time.Second, func(r *testutil.R) {
 			ctx := context.Background()
-			topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+			topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 			if err != nil {
 				r.Errorf("CreateTopic error: %v", err)
 			}
@@ -281,7 +281,7 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 				r.Errorf("topic %v should exist, but it doesn't", topic)
 			}
 
-			sub, err := createSubWithRetry(t, ctx, client, subIDs.New(), SubscriptionConfig{
+			sub, err := createSubWithRetry(ctx, t, client, subIDs.New(), SubscriptionConfig{
 				Topic:                     topic,
 				EnableExactlyOnceDelivery: exactlyOnceDelivery,
 			})
@@ -430,7 +430,7 @@ func TestIntegration_LargePublishSize(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -495,7 +495,7 @@ func TestIntegration_CancelReceive(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Errorf("failed to create topic: %v", err)
 	}
@@ -503,7 +503,7 @@ func TestIntegration_CancelReceive(t *testing.T) {
 	defer topic.Stop()
 
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
 		t.Fatalf("failed to create subscription: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -549,7 +549,7 @@ func TestIntegration_CreateSubscription_NeverExpire(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -561,7 +561,7 @@ func TestIntegration_CreateSubscription_NeverExpire(t *testing.T) {
 		ExpirationPolicy: time.Duration(0),
 	}
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), cfg); err != nil {
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), cfg); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -611,7 +611,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 
 	serviceAccountEmail := findServiceAccountEmail(ctx, t)
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -630,7 +630,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 			},
 		},
 	}
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), sCfg); err != nil {
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), sCfg); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -749,7 +749,7 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -757,7 +757,7 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 	defer topic.Stop()
 
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -824,7 +824,7 @@ func TestIntegration_UpdateTopicLabels(t *testing.T) {
 		return testutil.Equal(got.Labels, wantLabels)
 	}
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -863,7 +863,7 @@ func TestIntegration_PublicTopic(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	sub, err := createSubWithRetry(t, ctx, client, subIDs.New(), SubscriptionConfig{
+	sub, err := createSubWithRetry(ctx, t, client, subIDs.New(), SubscriptionConfig{
 		Topic: client.TopicInProject("taxirides-realtime", "pubsub-public-data"),
 	})
 	if err != nil {
@@ -879,7 +879,7 @@ func TestIntegration_Errors(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -923,7 +923,7 @@ func TestIntegration_Errors(t *testing.T) {
 	}
 
 	// Updating out-of-range retention duration.
-	sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), SubscriptionConfig{Topic: topic})
+	sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), SubscriptionConfig{Topic: topic})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -940,7 +940,7 @@ func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -1004,7 +1004,7 @@ func TestIntegration_MessageStoragePolicy_ProjectLevel(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
 	}
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -1078,7 +1078,7 @@ func TestIntegration_CreateTopic_KMS(t *testing.T) {
 	tc := TopicConfig{
 		KMSKeyName: key.GetName(),
 	}
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), &tc)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), &tc)
 	if err != nil {
 		t.Fatalf("CreateTopicWithConfig error: %v", err)
 	}
@@ -1107,7 +1107,7 @@ func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
 			AllowedPersistenceRegions: []string{"us-east1"},
 		},
 	}
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), &tc)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), &tc)
 	if err != nil {
 		t.Fatalf("CreateTopicWithConfig error: %v", err)
 	}
@@ -1129,7 +1129,7 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1143,7 +1143,7 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 		t.Fatalf("topic %v should exist, but it doesn't", topic)
 	}
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), SubscriptionConfig{
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), SubscriptionConfig{
 		Topic:                 topic,
 		EnableMessageOrdering: true,
 	}); err != nil {
@@ -1209,7 +1209,7 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1223,7 +1223,7 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 		t.Fatalf("topic %v should exist, but it doesn't", topic)
 	}
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), SubscriptionConfig{
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), SubscriptionConfig{
 		Topic:                 topic,
 		EnableMessageOrdering: true,
 	}); err != nil {
@@ -1316,7 +1316,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1372,7 +1372,7 @@ func TestIntegration_OrderedKeys_SubscriptionOrdering(t *testing.T) {
 	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1393,7 +1393,7 @@ func TestIntegration_OrderedKeys_SubscriptionOrdering(t *testing.T) {
 		Topic:                 topic,
 		EnableMessageOrdering: enableMessageOrdering,
 	}
-	sub, err := createSubWithRetry(t, ctx, client, subIDs.New(), subCfg)
+	sub, err := createSubWithRetry(ctx, t, client, subIDs.New(), subCfg)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1440,14 +1440,14 @@ func TestIntegration_CreateSubscription_DeadLetterPolicy(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
 	defer topic.Delete(ctx)
 	defer topic.Stop()
 
-	deadLetterTopic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	deadLetterTopic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -1463,7 +1463,7 @@ func TestIntegration_CreateSubscription_DeadLetterPolicy(t *testing.T) {
 		},
 	}
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), cfg); err != nil {
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), cfg); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -1513,7 +1513,7 @@ func TestIntegration_DeadLetterPolicy_DeliveryAttempt(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -1524,7 +1524,7 @@ func TestIntegration_DeadLetterPolicy_DeliveryAttempt(t *testing.T) {
 		Topic: topic,
 	}
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), cfg); err != nil {
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), cfg); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -1555,14 +1555,14 @@ func TestIntegration_DeadLetterPolicy_ClearDeadLetter(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
 	defer topic.Delete(ctx)
 	defer topic.Stop()
 
-	deadLetterTopic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	deadLetterTopic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -1576,7 +1576,7 @@ func TestIntegration_DeadLetterPolicy_ClearDeadLetter(t *testing.T) {
 		},
 	}
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), cfg); err != nil {
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), cfg); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -1614,7 +1614,7 @@ func TestIntegration_Filter_CreateSubscription(t *testing.T) {
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -1625,7 +1625,7 @@ func TestIntegration_Filter_CreateSubscription(t *testing.T) {
 		Filter: "attributes.event_type = \"1\"",
 	}
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), cfg); err != nil {
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), cfg); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -1675,7 +1675,7 @@ func TestIntegration_RetryPolicy(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -1690,7 +1690,7 @@ func TestIntegration_RetryPolicy(t *testing.T) {
 		},
 	}
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), cfg); err != nil {
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), cfg); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -1739,7 +1739,7 @@ func TestIntegration_DetachSubscription(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(t, ctx, client, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatalf("CreateTopic error: %v", err)
 	}
@@ -1750,7 +1750,7 @@ func TestIntegration_DetachSubscription(t *testing.T) {
 		Topic: topic,
 	}
 	var sub *Subscription
-	if sub, err = createSubWithRetry(t, ctx, client, subIDs.New(), cfg); err != nil {
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), cfg); err != nil {
 		t.Fatalf("CreateSub error: %v", err)
 	}
 	defer sub.Delete(ctx)
@@ -1961,7 +1961,7 @@ func TestIntegration_TopicRetention(t *testing.T) {
 		tc := TopicConfig{
 			RetentionDuration: 50 * time.Minute,
 		}
-		topic, err := createTopicWithRetry(t, ctx, c, topicIDs.New(), &tc)
+		topic, err := createTopicWithRetry(ctx, t, c, topicIDs.New(), &tc)
 		if err != nil {
 			r.Errorf("failed to create topic: %v", err)
 		}
@@ -1980,7 +1980,7 @@ func TestIntegration_TopicRetention(t *testing.T) {
 		}
 
 		// Create a subscription on the topic and read TopicMessageRetentionDuration.
-		s, err := createSubWithRetry(t, ctx, c, subIDs.New(), SubscriptionConfig{
+		s, err := createSubWithRetry(ctx, t, c, subIDs.New(), SubscriptionConfig{
 			Topic: topic,
 		})
 		if err != nil {
@@ -2040,7 +2040,7 @@ func TestIntegration_TopicUpdateSchema(t *testing.T) {
 	}
 	defer sc.DeleteSchema(ctx, schemaID)
 
-	topic, err := createTopicWithRetry(t, ctx, c, topicIDs.New(), nil)
+	topic, err := createTopicWithRetry(ctx, t, c, topicIDs.New(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -2087,7 +2087,7 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 }
 
 // createTopicWithRetry creates a topic, wrapped with testutil.Retry and returns the created topic or an error.
-func createTopicWithRetry(t *testing.T, ctx context.Context, c *Client, topicID string, cfg *TopicConfig) (*Topic, error) {
+func createTopicWithRetry(ctx context.Context, t *testing.T, c *Client, topicID string, cfg *TopicConfig) (*Topic, error) {
 	var topic *Topic
 	var err error
 	testutil.Retry(t, 5, 1*time.Second, func(r *testutil.R) {
@@ -2107,7 +2107,7 @@ func createTopicWithRetry(t *testing.T, ctx context.Context, c *Client, topicID 
 }
 
 // createSubWithRetry creates a subscription, wrapped with testutil.Retry and returns the created subscription or an error.
-func createSubWithRetry(t *testing.T, ctx context.Context, c *Client, subID string, cfg SubscriptionConfig) (*Subscription, error) {
+func createSubWithRetry(ctx context.Context, t *testing.T, c *Client, subID string, cfg SubscriptionConfig) (*Subscription, error) {
 	var sub *Subscription
 	var err error
 	testutil.Retry(t, 5, 1*time.Second, func(r *testutil.R) {
