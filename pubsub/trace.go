@@ -324,10 +324,6 @@ const (
 	nackSpanName                  = "send Negative Acknowledge"
 
 	// custom pubsub specific attributes
-	numBatchedMessagesAttribute = "messaging.pubsub.num_messages_in_batch"
-	orderingAttribute           = "messaging.pubsub.ordering_key"
-
-	// custom pubsub specific attributes
 	numBatchedMessagesAttribute    = "messaging.pubsub.num_messages_in_batch"
 	subscriptionAttribute          = "messaging.pubsub.subscription"
 	orderingAttribute              = "messaging.pubsub.ordering_key"

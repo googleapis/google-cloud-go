@@ -101,7 +101,7 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	ctx := context.Background()
 	opts := getSubSpanAttributes(subName, msg, semconv.MessagingOperationReceive)
 	if msg.Attributes != nil {
-		ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
+		ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(msg))
 	}
 	ctx, span := tracer().Start(ctx, fmt.Sprintf("%s %s", subName, subscriberSpanName), opts...)
 	span.SetAttributes(
@@ -116,7 +116,7 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	if msg.Attributes == nil {
 		msg.Attributes = map[string]string{}
 	}
-	otel.GetTextMapPropagator().Inject(ctx, NewPubsubMessageCarrier(msg))
+	otel.GetTextMapPropagator().Inject(ctx, newMessageCarrier(msg))
 
 	ackh.receiveTime = receiveTime
 	ackh.doneFunc = doneFunc

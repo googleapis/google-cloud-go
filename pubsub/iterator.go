@@ -282,7 +282,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		ackID := msgAckID(m)
 		ctx := context.Background()
 		if m.Attributes != nil {
-			ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(m))
+			ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(m))
 		}
 		it.otelMu.Lock()
 		it.activeContexts[ackID] = ctx
