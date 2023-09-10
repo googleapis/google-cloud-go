@@ -183,7 +183,7 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 
 	switch t.Kind() {
 	case reflect.Slice:
-		if flatten && prevSlice {
+		if flatten && prevSlice && t.Elem().Kind() != reflect.Uint8 {
 			return fmt.Errorf("datastore: flattening nested structs leads to a slice of slices: field %q", fieldName)
 		}
 		return validateChildType(t.Elem(), fieldName, flatten, true, prevTypes)
