@@ -21,7 +21,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 	"sync"
@@ -1272,8 +1271,8 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 		go func() {
 			_, err := r.Get(ctx)
 			if err != nil {
-				// Can't fail inside goroutine, so just log the error
-				log.Printf("publish error for message(%s): %v", msg, err)
+				// Can't fail inside goroutine, so just log the error.
+				t.Logf("publish error for message(%s): %v", msg, err)
 			}
 		}()
 		wg.Add(1)
