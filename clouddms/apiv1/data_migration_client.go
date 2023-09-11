@@ -35,6 +35,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -54,6 +55,7 @@ type DataMigrationCallOptions struct {
 	VerifyMigrationJob                   []gax.CallOption
 	RestartMigrationJob                  []gax.CallOption
 	GenerateSshScript                    []gax.CallOption
+	GenerateTcpProxyScript               []gax.CallOption
 	ListConnectionProfiles               []gax.CallOption
 	GetConnectionProfile                 []gax.CallOption
 	CreateConnectionProfile              []gax.CallOption
@@ -68,6 +70,10 @@ type DataMigrationCallOptions struct {
 	CreateConversionWorkspace            []gax.CallOption
 	UpdateConversionWorkspace            []gax.CallOption
 	DeleteConversionWorkspace            []gax.CallOption
+	CreateMappingRule                    []gax.CallOption
+	DeleteMappingRule                    []gax.CallOption
+	ListMappingRules                     []gax.CallOption
+	GetMappingRule                       []gax.CallOption
 	SeedConversionWorkspace              []gax.CallOption
 	ImportMappingRules                   []gax.CallOption
 	ConvertConversionWorkspace           []gax.CallOption
@@ -139,6 +145,18 @@ func defaultDataMigrationCallOptions() *DataMigrationCallOptions {
 		GenerateSshScript: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GenerateTcpProxyScript: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListConnectionProfiles: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -180,6 +198,54 @@ func defaultDataMigrationCallOptions() *DataMigrationCallOptions {
 		},
 		DeleteConversionWorkspace: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateMappingRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteMappingRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListMappingRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetMappingRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		SeedConversionWorkspace: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -249,6 +315,7 @@ type internalDataMigrationClient interface {
 	RestartMigrationJob(context.Context, *clouddmspb.RestartMigrationJobRequest, ...gax.CallOption) (*RestartMigrationJobOperation, error)
 	RestartMigrationJobOperation(name string) *RestartMigrationJobOperation
 	GenerateSshScript(context.Context, *clouddmspb.GenerateSshScriptRequest, ...gax.CallOption) (*clouddmspb.SshScript, error)
+	GenerateTcpProxyScript(context.Context, *clouddmspb.GenerateTcpProxyScriptRequest, ...gax.CallOption) (*clouddmspb.TcpProxyScript, error)
 	ListConnectionProfiles(context.Context, *clouddmspb.ListConnectionProfilesRequest, ...gax.CallOption) *ConnectionProfileIterator
 	GetConnectionProfile(context.Context, *clouddmspb.GetConnectionProfileRequest, ...gax.CallOption) (*clouddmspb.ConnectionProfile, error)
 	CreateConnectionProfile(context.Context, *clouddmspb.CreateConnectionProfileRequest, ...gax.CallOption) (*CreateConnectionProfileOperation, error)
@@ -271,6 +338,10 @@ type internalDataMigrationClient interface {
 	UpdateConversionWorkspaceOperation(name string) *UpdateConversionWorkspaceOperation
 	DeleteConversionWorkspace(context.Context, *clouddmspb.DeleteConversionWorkspaceRequest, ...gax.CallOption) (*DeleteConversionWorkspaceOperation, error)
 	DeleteConversionWorkspaceOperation(name string) *DeleteConversionWorkspaceOperation
+	CreateMappingRule(context.Context, *clouddmspb.CreateMappingRuleRequest, ...gax.CallOption) (*clouddmspb.MappingRule, error)
+	DeleteMappingRule(context.Context, *clouddmspb.DeleteMappingRuleRequest, ...gax.CallOption) error
+	ListMappingRules(context.Context, *clouddmspb.ListMappingRulesRequest, ...gax.CallOption) *MappingRuleIterator
+	GetMappingRule(context.Context, *clouddmspb.GetMappingRuleRequest, ...gax.CallOption) (*clouddmspb.MappingRule, error)
 	SeedConversionWorkspace(context.Context, *clouddmspb.SeedConversionWorkspaceRequest, ...gax.CallOption) (*SeedConversionWorkspaceOperation, error)
 	SeedConversionWorkspaceOperation(name string) *SeedConversionWorkspaceOperation
 	ImportMappingRules(context.Context, *clouddmspb.ImportMappingRulesRequest, ...gax.CallOption) (*ImportMappingRulesOperation, error)
@@ -458,6 +529,12 @@ func (c *DataMigrationClient) GenerateSshScript(ctx context.Context, req *cloudd
 	return c.internalClient.GenerateSshScript(ctx, req, opts...)
 }
 
+// GenerateTcpProxyScript generate a TCP Proxy configuration script to configure a cloud-hosted VM
+// running a TCP Proxy.
+func (c *DataMigrationClient) GenerateTcpProxyScript(ctx context.Context, req *clouddmspb.GenerateTcpProxyScriptRequest, opts ...gax.CallOption) (*clouddmspb.TcpProxyScript, error) {
+	return c.internalClient.GenerateTcpProxyScript(ctx, req, opts...)
+}
+
 // ListConnectionProfiles retrieves a list of all connection profiles in a given project and
 // location.
 func (c *DataMigrationClient) ListConnectionProfiles(ctx context.Context, req *clouddmspb.ListConnectionProfilesRequest, opts ...gax.CallOption) *ConnectionProfileIterator {
@@ -577,6 +654,26 @@ func (c *DataMigrationClient) DeleteConversionWorkspace(ctx context.Context, req
 // The name must be that of a previously created DeleteConversionWorkspaceOperation, possibly from a different process.
 func (c *DataMigrationClient) DeleteConversionWorkspaceOperation(name string) *DeleteConversionWorkspaceOperation {
 	return c.internalClient.DeleteConversionWorkspaceOperation(name)
+}
+
+// CreateMappingRule creates a new mapping rule for a given conversion workspace.
+func (c *DataMigrationClient) CreateMappingRule(ctx context.Context, req *clouddmspb.CreateMappingRuleRequest, opts ...gax.CallOption) (*clouddmspb.MappingRule, error) {
+	return c.internalClient.CreateMappingRule(ctx, req, opts...)
+}
+
+// DeleteMappingRule deletes a single mapping rule.
+func (c *DataMigrationClient) DeleteMappingRule(ctx context.Context, req *clouddmspb.DeleteMappingRuleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteMappingRule(ctx, req, opts...)
+}
+
+// ListMappingRules lists the mapping rules for a specific conversion workspace.
+func (c *DataMigrationClient) ListMappingRules(ctx context.Context, req *clouddmspb.ListMappingRulesRequest, opts ...gax.CallOption) *MappingRuleIterator {
+	return c.internalClient.ListMappingRules(ctx, req, opts...)
+}
+
+// GetMappingRule gets the details of a mapping rule.
+func (c *DataMigrationClient) GetMappingRule(ctx context.Context, req *clouddmspb.GetMappingRuleRequest, opts ...gax.CallOption) (*clouddmspb.MappingRule, error) {
+	return c.internalClient.GetMappingRule(ctx, req, opts...)
 }
 
 // SeedConversionWorkspace imports a snapshot of the source database into the
@@ -1094,6 +1191,24 @@ func (c *dataMigrationGRPCClient) GenerateSshScript(ctx context.Context, req *cl
 	return resp, nil
 }
 
+func (c *dataMigrationGRPCClient) GenerateTcpProxyScript(ctx context.Context, req *clouddmspb.GenerateTcpProxyScriptRequest, opts ...gax.CallOption) (*clouddmspb.TcpProxyScript, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "migration_job", url.QueryEscape(req.GetMigrationJob()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateTcpProxyScript[0:len((*c.CallOptions).GenerateTcpProxyScript):len((*c.CallOptions).GenerateTcpProxyScript)], opts...)
+	var resp *clouddmspb.TcpProxyScript
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.GenerateTcpProxyScript(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *dataMigrationGRPCClient) ListConnectionProfiles(ctx context.Context, req *clouddmspb.ListConnectionProfilesRequest, opts ...gax.CallOption) *ConnectionProfileIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1444,6 +1559,102 @@ func (c *dataMigrationGRPCClient) DeleteConversionWorkspace(ctx context.Context,
 	return &DeleteConversionWorkspaceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *dataMigrationGRPCClient) CreateMappingRule(ctx context.Context, req *clouddmspb.CreateMappingRuleRequest, opts ...gax.CallOption) (*clouddmspb.MappingRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateMappingRule[0:len((*c.CallOptions).CreateMappingRule):len((*c.CallOptions).CreateMappingRule)], opts...)
+	var resp *clouddmspb.MappingRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.CreateMappingRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataMigrationGRPCClient) DeleteMappingRule(ctx context.Context, req *clouddmspb.DeleteMappingRuleRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteMappingRule[0:len((*c.CallOptions).DeleteMappingRule):len((*c.CallOptions).DeleteMappingRule)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.dataMigrationClient.DeleteMappingRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *dataMigrationGRPCClient) ListMappingRules(ctx context.Context, req *clouddmspb.ListMappingRulesRequest, opts ...gax.CallOption) *MappingRuleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListMappingRules[0:len((*c.CallOptions).ListMappingRules):len((*c.CallOptions).ListMappingRules)], opts...)
+	it := &MappingRuleIterator{}
+	req = proto.Clone(req).(*clouddmspb.ListMappingRulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.MappingRule, string, error) {
+		resp := &clouddmspb.ListMappingRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.dataMigrationClient.ListMappingRules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetMappingRules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *dataMigrationGRPCClient) GetMappingRule(ctx context.Context, req *clouddmspb.GetMappingRuleRequest, opts ...gax.CallOption) (*clouddmspb.MappingRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetMappingRule[0:len((*c.CallOptions).GetMappingRule):len((*c.CallOptions).GetMappingRule)], opts...)
+	var resp *clouddmspb.MappingRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.GetMappingRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *dataMigrationGRPCClient) SeedConversionWorkspace(ctx context.Context, req *clouddmspb.SeedConversionWorkspaceRequest, opts ...gax.CallOption) (*SeedConversionWorkspaceOperation, error) {
@@ -3630,6 +3841,53 @@ func (it *LocationIterator) bufLen() int {
 }
 
 func (it *LocationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// MappingRuleIterator manages a stream of *clouddmspb.MappingRule.
+type MappingRuleIterator struct {
+	items    []*clouddmspb.MappingRule
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.MappingRule, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *MappingRuleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *MappingRuleIterator) Next() (*clouddmspb.MappingRule, error) {
+	var item *clouddmspb.MappingRule
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *MappingRuleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *MappingRuleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
