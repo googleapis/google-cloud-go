@@ -66,7 +66,6 @@ func discardBenchmarkResults(ctx context.Context) {
 		for {
 			select {
 			case <-ctx.Done():
-				close(results)
 				return
 			case _, ok := <-results:
 				if !ok {
