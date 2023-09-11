@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"mime"
 	"net/http"
 	"net/url"
@@ -67,8 +66,8 @@ type Options3LO struct {
 	AuthHandlerOpts *AuthorizationHandlerOptions
 }
 
-// PKCEConfig holds parameters to support PKCE.
-type PKCEConfig struct {
+// PKCEOptions holds parameters to support PKCE.
+type PKCEOptions struct {
 	// Challenge is the un-padded, base64-url-encoded string of the encrypted code verifier.
 	Challenge string // The un-padded, base64-url-encoded string of the encrypted code verifier.
 	// ChallengeMethod is the encryption method (ex. S256).
@@ -120,13 +119,13 @@ func (c *Options3LO) authCodeURL(state string, values url.Values) string {
 		v.Set("state", state)
 	}
 	if c.AuthHandlerOpts != nil {
-		if c.AuthHandlerOpts.PKCEConfig != nil &&
-			c.AuthHandlerOpts.PKCEConfig.Challenge != "" {
-			v.Set(codeChallengeKey, c.AuthHandlerOpts.PKCEConfig.Challenge)
+		if c.AuthHandlerOpts.PKCEOpts != nil &&
+			c.AuthHandlerOpts.PKCEOpts.Challenge != "" {
+			v.Set(codeChallengeKey, c.AuthHandlerOpts.PKCEOpts.Challenge)
 		}
-		if c.AuthHandlerOpts.PKCEConfig != nil &&
-			c.AuthHandlerOpts.PKCEConfig.ChallengeMethod != "" {
-			v.Set(codeChallengeMethodKey, c.AuthHandlerOpts.PKCEConfig.ChallengeMethod)
+		if c.AuthHandlerOpts.PKCEOpts != nil &&
+			c.AuthHandlerOpts.PKCEOpts.ChallengeMethod != "" {
+			v.Set(codeChallengeMethodKey, c.AuthHandlerOpts.PKCEOpts.ChallengeMethod)
 		}
 	}
 	for k := range values {
@@ -163,8 +162,8 @@ type AuthorizationHandlerOptions struct {
 	// State is used verify that the "state" is identical in the request and
 	// response before exchanging the auth code for OAuth2 token.
 	State string
-	// PKCEConfig allows setting configurations for PKCE. Optional.
-	PKCEConfig *PKCEConfig
+	// PKCEOpts allows setting configurations for PKCE. Optional.
+	PKCEOpts *PKCEOptions
 }
 
 func new3LOTokenProviderWithAuthHandler(opts *Options3LO) TokenProvider {
@@ -185,9 +184,9 @@ func (c *Options3LO) exchange(ctx context.Context, code string) (*Token, string,
 		v.Set("redirect_uri", c.RedirectURL)
 	}
 	if c.AuthHandlerOpts != nil &&
-		c.AuthHandlerOpts.PKCEConfig != nil &&
-		c.AuthHandlerOpts.PKCEConfig.Verifier != "" {
-		v.Set(codeVerifierKey, c.AuthHandlerOpts.PKCEConfig.Verifier)
+		c.AuthHandlerOpts.PKCEOpts != nil &&
+		c.AuthHandlerOpts.PKCEOpts.Verifier != "" {
+		v.Set(codeVerifierKey, c.AuthHandlerOpts.PKCEOpts.Verifier)
 	}
 	for k := range c.URLParams {
 		v.Set(k, c.URLParams.Get(k))
@@ -271,7 +270,7 @@ func fetchToken(ctx context.Context, c *Options3LO, v url.Values) (*Token, strin
 	if err != nil {
 		return nil, refreshToken, err
 	}
-	body, err := io.ReadAll(io.LimitReader(r.Body, 1<<20))
+	body, err := internal.ReadAll(r.Body)
 	r.Body.Close()
 	if err != nil {
 		return nil, refreshToken, fmt.Errorf("auth: cannot fetch token: %w", err)
