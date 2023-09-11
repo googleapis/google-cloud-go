@@ -105,7 +105,7 @@ func (tp *Options) Token(ctx context.Context) (*auth.Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("detect: unable to read body: %w", err)
 	}
-	if c := resp.StatusCode; c < 200 || c > 299 {
+	if c := resp.StatusCode; c < http.StatusOK || c >= http.StatusMultipleChoices {
 		return nil, fmt.Errorf("detect: status code %d: %s", c, body)
 	}
 

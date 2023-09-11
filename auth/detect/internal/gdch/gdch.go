@@ -138,7 +138,7 @@ func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("detect: cannot fetch token: %w", err)
 	}
-	if c := resp.StatusCode; c < 200 || c > 299 {
+	if c := resp.StatusCode; c < http.StatusOK || c > http.StatusMultipleChoices {
 		return nil, &auth.Error{
 			Response: resp,
 			Body:     body,
