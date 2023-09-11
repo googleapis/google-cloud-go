@@ -51,9 +51,6 @@
         "assuredworkloads": {
             "component": "assuredworkloads"
         },
-        "auth": {
-            "component": "auth"
-        },
         "automl": {
             "component": "automl"
         },
