@@ -50,6 +50,7 @@ type CallOptions struct {
 	GetSshPublicKey    []gax.CallOption
 	ImportSshPublicKey []gax.CallOption
 	UpdateSshPublicKey []gax.CallOption
+	SignSshPublicKey   []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -145,6 +146,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		SignSshPublicKey: []gax.CallOption{},
 	}
 }
 
@@ -223,6 +225,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		SignSshPublicKey: []gax.CallOption{},
 	}
 }
 
@@ -238,6 +241,7 @@ type internalClient interface {
 	GetSshPublicKey(context.Context, *osloginpb.GetSshPublicKeyRequest, ...gax.CallOption) (*commonpb.SshPublicKey, error)
 	ImportSshPublicKey(context.Context, *osloginpb.ImportSshPublicKeyRequest, ...gax.CallOption) (*osloginpb.ImportSshPublicKeyResponse, error)
 	UpdateSshPublicKey(context.Context, *osloginpb.UpdateSshPublicKeyRequest, ...gax.CallOption) (*commonpb.SshPublicKey, error)
+	SignSshPublicKey(context.Context, *osloginpb.SignSshPublicKeyRequest, ...gax.CallOption) (*osloginpb.SignSshPublicKeyResponse, error)
 }
 
 // Client is a client for interacting with Cloud OS Login API.
@@ -315,6 +319,11 @@ func (c *Client) ImportSshPublicKey(ctx context.Context, req *osloginpb.ImportSs
 // supports patch semantics.
 func (c *Client) UpdateSshPublicKey(ctx context.Context, req *osloginpb.UpdateSshPublicKeyRequest, opts ...gax.CallOption) (*commonpb.SshPublicKey, error) {
 	return c.internalClient.UpdateSshPublicKey(ctx, req, opts...)
+}
+
+// SignSshPublicKey signs an SSH public key for a user to authenticate to an instance.
+func (c *Client) SignSshPublicKey(ctx context.Context, req *osloginpb.SignSshPublicKeyRequest, opts ...gax.CallOption) (*osloginpb.SignSshPublicKeyResponse, error) {
+	return c.internalClient.SignSshPublicKey(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Cloud OS Login API over gRPC transport.
@@ -573,6 +582,24 @@ func (c *gRPCClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateSshPublicKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) SignSshPublicKey(ctx context.Context, req *osloginpb.SignSshPublicKeyRequest, opts ...gax.CallOption) (*osloginpb.SignSshPublicKeyResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SignSshPublicKey[0:len((*c.CallOptions).SignSshPublicKey):len((*c.CallOptions).SignSshPublicKey)], opts...)
+	var resp *osloginpb.SignSshPublicKeyResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SignSshPublicKey(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -979,6 +1006,72 @@ func (c *restClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SignSshPublicKey signs an SSH public key for a user to authenticate to an instance.
+func (c *restClient) SignSshPublicKey(ctx context.Context, req *osloginpb.SignSshPublicKeyRequest, opts ...gax.CallOption) (*osloginpb.SignSshPublicKeyResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:signSshPublicKey", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SignSshPublicKey[0:len((*c.CallOptions).SignSshPublicKey):len((*c.CallOptions).SignSshPublicKey)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &osloginpb.SignSshPublicKeyResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}

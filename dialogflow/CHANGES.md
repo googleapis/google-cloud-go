@@ -1,5 +1,12 @@
 # Changes
 
+## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.41.0...dialogflow/v1.42.0) (2023-08-17)
+
+
+### Features
+
+* **dialogflow:** Added baseline model version used to generate the summary ([b3dbdde](https://github.com/googleapis/google-cloud-go/commit/b3dbdde48ddfa215c3c3bb110e0051fd8158f451))
+
 ## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.40.1...dialogflow/v1.41.0) (2023-08-14)
 
 
