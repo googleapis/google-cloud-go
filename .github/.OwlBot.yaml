@@ -330,7 +330,7 @@ deep-remove-regex:
   - /internal/generated/snippets/trace/apiv2/
   - /internal/generated/snippets/translate/apiv3/
   - /internal/generated/snippets/video/livestream/apiv1/
-  # - /internal/generated/snippets/video/stitcher/apiv1/
+  - /internal/generated/snippets/video/stitcher/apiv1/
   - /internal/generated/snippets/video/transcoder/apiv1/
   - /internal/generated/snippets/videointelligence/apiv1/
   - /internal/generated/snippets/videointelligence/apiv1beta2/
@@ -449,7 +449,7 @@ deep-remove-regex:
   - /trace/apiv2/
   - /translate/apiv3/
   - /video/livestream/apiv1/
-  # - /video/stitcher/apiv1/
+  - /video/stitcher/apiv1/
   - /video/transcoder/apiv1/
   - /videointelligence/apiv1/
   - /videointelligence/apiv1beta2/
@@ -946,8 +946,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/video/livestream/v1/cloud.google.com/go
     dest: /
-  # - source: /google/cloud/video/stitcher/v1/cloud.google.com/go
-  #   dest: /
+  - source: /google/cloud/video/stitcher/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/video/transcoder/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/videointelligence/v1/cloud.google.com/go
