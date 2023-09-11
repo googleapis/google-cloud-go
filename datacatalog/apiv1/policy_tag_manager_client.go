@@ -274,12 +274,12 @@ func (c *PolicyTagManagerClient) CreatePolicyTag(ctx context.Context, req *datac
 
 // DeletePolicyTag deletes a policy tag together with the following:
 //
-//   All of its descendant policy tags, if any
+//	All of its descendant policy tags, if any
 //
-//   Policies associated with the policy tag and its descendants
+//	Policies associated with the policy tag and its descendants
 //
-//   References from BigQuery table schema of the policy tag and its
-//   descendants
+//	References from BigQuery table schema of the policy tag and its
+//	descendants
 func (c *PolicyTagManagerClient) DeletePolicyTag(ctx context.Context, req *datacatalogpb.DeletePolicyTagRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeletePolicyTag(ctx, req, opts...)
 }
@@ -1251,12 +1251,12 @@ func (c *policyTagManagerRESTClient) CreatePolicyTag(ctx context.Context, req *d
 
 // DeletePolicyTag deletes a policy tag together with the following:
 //
-//   All of its descendant policy tags, if any
+//	All of its descendant policy tags, if any
 //
-//   Policies associated with the policy tag and its descendants
+//	Policies associated with the policy tag and its descendants
 //
-//   References from BigQuery table schema of the policy tag and its
-//   descendants
+//	References from BigQuery table schema of the policy tag and its
+//	descendants
 func (c *policyTagManagerRESTClient) DeletePolicyTag(ctx context.Context, req *datacatalogpb.DeletePolicyTagRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
