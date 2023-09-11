@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.4.0...batch/v1.4.1) (2023-09-11)
+
+
+### Documentation
+
+* **batch:** Revert HTML formats in comments ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+* **batch:** Update description on size_gb in disk field ([15be57b](https://github.com/googleapis/google-cloud-go/commit/15be57b9264a793494cedc3966034fa20f56d7c5))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.3.1...batch/v1.4.0) (2023-08-08)
 
 
