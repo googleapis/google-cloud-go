@@ -701,6 +701,7 @@ func TestIntegration_Filters(t *testing.T) {
 }
 
 func TestIntegration_AggregationQueries(t *testing.T) {
+	t.Skip("Skipping until https://github.com/googleapis/google-cloud-go/issues/8466 is resolved")
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
