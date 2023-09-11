@@ -46,13 +46,13 @@ import (
 )
 
 func TestMain(m *testing.M) {
+	databaseIDs := []string{DefaultDatabaseID}
 	databasesStr, ok := os.LookupEnv(envDatabases)
-	if !ok {
-		databasesStr = DefaultDatabaseID
+	if ok {
+		databaseIDs = append(databaseIDs, strings.Split(databasesStr, ",")...)
 	}
-	databaseIDs := strings.Split(databasesStr, ",")
-	testParams = make(map[string]interface{})
 
+	testParams = make(map[string]interface{})
 	for _, databaseID := range databaseIDs {
 		testParams["databaseID"] = databaseID
 		initIntegrationTest()
