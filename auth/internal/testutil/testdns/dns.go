@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package testgcs is a light DNS client used for testings to avoid pulling in
+// Package testdns is a light DNS client used for testings to avoid pulling in
 // dependencies.
 package testdns
 
@@ -27,10 +27,13 @@ import (
 	"cloud.google.com/go/auth/internal/testutil"
 )
 
+// Client is a lightweight DNS client for testing.
 type Client struct {
 	client *http.Client
 }
 
+// NewClient creates a [Client] using the provided
+// [cloud.google.com/go/auth.TokenProvider] for authentication.
 func NewClient(tp auth.TokenProvider) *Client {
 	client := internal.CloneDefaultClient()
 	testutil.AddAuthorizationMiddleware(client, tp)
@@ -39,6 +42,7 @@ func NewClient(tp auth.TokenProvider) *Client {
 	}
 }
 
+// GetProject calls the GET project endpoint.
 func (c *Client) GetProject(ctx context.Context, projectID string) error {
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://dns.googleapis.com/dns/v1/projects/%s", projectID), nil)
 	if err != nil {

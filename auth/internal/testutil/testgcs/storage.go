@@ -29,10 +29,13 @@ import (
 	"cloud.google.com/go/auth/internal/testutil"
 )
 
+// Client is a lightweight GCS client for testing.
 type Client struct {
 	client *http.Client
 }
 
+// NewClient creates a [Client] using the provided
+// [cloud.google.com/go/auth.TokenProvider] for authentication.
 func NewClient(tp auth.TokenProvider) *Client {
 	client := internal.CloneDefaultClient()
 	testutil.AddAuthorizationMiddleware(client, tp)
@@ -41,6 +44,7 @@ func NewClient(tp auth.TokenProvider) *Client {
 	}
 }
 
+// CreateBucket creates the specified bucket.
 func (c *Client) CreateBucket(ctx context.Context, projectID, bucket string) error {
 	var bucketRequest struct {
 		Name string `json:"name,omitempty"`
@@ -71,6 +75,7 @@ func (c *Client) CreateBucket(ctx context.Context, projectID, bucket string) err
 	return nil
 }
 
+// DeleteBucket deletes the specified bucket.
 func (c *Client) DeleteBucket(ctx context.Context, bucket string) error {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("https://storage.googleapis.com/storage/v1/b/%s", bucket), nil)
 	if err != nil {
@@ -91,6 +96,8 @@ func (c *Client) DeleteBucket(ctx context.Context, bucket string) error {
 	return nil
 }
 
+// DownloadObject returns an [http.Response] who's body can be consumed to
+// read the contents of an object.
 func (c *Client) DownloadObject(ctx context.Context, bucket, object string) (*http.Response, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://storage.googleapis.com/storage/v1/b/%s/o/%s", bucket, object), nil)
 	if err != nil {
