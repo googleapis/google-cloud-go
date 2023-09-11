@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,6 @@ package monitoringpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -48,8 +47,9 @@ type CreateAlertPolicyRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) in
-	// which to create the alerting policy. The format is:
+	// Required. The
+	// [project](https://cloud.google.com/monitoring/api/v3#project_name) in which
+	// to create the alerting policy. The format is:
 	//
 	//     projects/[PROJECT_ID_OR_NUMBER]
 	//
@@ -61,9 +61,9 @@ type CreateAlertPolicyRequest struct {
 	// the form `/alertPolicies/[ALERT_POLICY_ID]`, identifying the policy in the
 	// container.
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. The requested alerting policy. You should omit the `name` field in this
-	// policy. The name will be returned in the new policy, including
-	// a new `[ALERT_POLICY_ID]` value.
+	// Required. The requested alerting policy. You should omit the `name` field
+	// in this policy. The name will be returned in the new policy, including a
+	// new `[ALERT_POLICY_ID]` value.
 	AlertPolicy *AlertPolicy `protobuf:"bytes,2,opt,name=alert_policy,json=alertPolicy,proto3" json:"alert_policy,omitempty"`
 }
 
@@ -170,8 +170,9 @@ type ListAlertPoliciesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name)
-	// whose alert policies are to be listed. The format is:
+	// Required. The
+	// [project](https://cloud.google.com/monitoring/api/v3#project_name) whose
+	// alert policies are to be listed. The format is:
 	//
 	//     projects/[PROJECT_ID_OR_NUMBER]
 	//
@@ -795,13 +796,25 @@ type AlertPolicyServiceClient interface {
 	// Gets a single alerting policy.
 	GetAlertPolicy(ctx context.Context, in *GetAlertPolicyRequest, opts ...grpc.CallOption) (*AlertPolicy, error)
 	// Creates a new alerting policy.
+	//
+	// Design your application to single-thread API calls that modify the state of
+	// alerting policies in a single project. This includes calls to
+	// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 	CreateAlertPolicy(ctx context.Context, in *CreateAlertPolicyRequest, opts ...grpc.CallOption) (*AlertPolicy, error)
 	// Deletes an alerting policy.
+	//
+	// Design your application to single-thread API calls that modify the state of
+	// alerting policies in a single project. This includes calls to
+	// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 	DeleteAlertPolicy(ctx context.Context, in *DeleteAlertPolicyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Updates an alerting policy. You can either replace the entire policy with
 	// a new one or replace only certain fields in the current alerting policy by
 	// specifying the fields to be updated via `updateMask`. Returns the
 	// updated alerting policy.
+	//
+	// Design your application to single-thread API calls that modify the state of
+	// alerting policies in a single project. This includes calls to
+	// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 	UpdateAlertPolicy(ctx context.Context, in *UpdateAlertPolicyRequest, opts ...grpc.CallOption) (*AlertPolicy, error)
 }
 
@@ -865,13 +878,25 @@ type AlertPolicyServiceServer interface {
 	// Gets a single alerting policy.
 	GetAlertPolicy(context.Context, *GetAlertPolicyRequest) (*AlertPolicy, error)
 	// Creates a new alerting policy.
+	//
+	// Design your application to single-thread API calls that modify the state of
+	// alerting policies in a single project. This includes calls to
+	// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 	CreateAlertPolicy(context.Context, *CreateAlertPolicyRequest) (*AlertPolicy, error)
 	// Deletes an alerting policy.
+	//
+	// Design your application to single-thread API calls that modify the state of
+	// alerting policies in a single project. This includes calls to
+	// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 	DeleteAlertPolicy(context.Context, *DeleteAlertPolicyRequest) (*emptypb.Empty, error)
 	// Updates an alerting policy. You can either replace the entire policy with
 	// a new one or replace only certain fields in the current alerting policy by
 	// specifying the fields to be updated via `updateMask`. Returns the
 	// updated alerting policy.
+	//
+	// Design your application to single-thread API calls that modify the state of
+	// alerting policies in a single project. This includes calls to
+	// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 	UpdateAlertPolicy(context.Context, *UpdateAlertPolicyRequest) (*AlertPolicy, error)
 }
 
