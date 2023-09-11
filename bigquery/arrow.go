@@ -25,6 +25,7 @@ import (
 	"github.com/apache/arrow/go/v13/arrow"
 	"github.com/apache/arrow/go/v13/arrow/array"
 	"github.com/apache/arrow/go/v13/arrow/ipc"
+	"google.golang.org/api/iterator"
 )
 
 // ArrowRecordBatch represents an Arrow RecordBatch with the source PartitionID
@@ -55,6 +56,38 @@ type ArrowIterator interface {
 	Next() (*ArrowRecordBatch, error)
 	Schema() Schema
 	SerializedArrowSchema() []byte
+}
+
+// NewArrowIteratorReader allows to consume an ArrowIterator as an io.Reader.
+// Experimental: this interface is experimental and may be modified or removed in future versions,
+// regardless of any other documented package stability guarantees.
+func NewArrowIteratorReader(it ArrowIterator) io.Reader {
+	return &arrowIteratorReader{
+		it: it,
+	}
+}
+
+type arrowIteratorReader struct {
+	buf *bytes.Buffer
+	it  ArrowIterator
+}
+
+// Read makes ArrowIteratorReader implement io.Reader
+func (r *arrowIteratorReader) Read(p []byte) (int, error) {
+	if r.buf == nil { // init with schema
+		buf := bytes.NewBuffer(r.it.SerializedArrowSchema())
+		r.buf = buf
+	}
+	n, err := r.buf.Read(p)
+	if err == io.EOF {
+		batch, err := r.it.Next()
+		if err == iterator.Done {
+			return -1, io.EOF
+		}
+		r.buf.Write(batch.Data)
+		return r.Read(p)
+	}
+	return n, err
 }
 
 type arrowDecoder struct {
