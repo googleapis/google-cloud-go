@@ -1290,6 +1290,23 @@ func TestLoadNull(t *testing.T) {
 	}
 }
 
+func TestLoadNilInterface(t *testing.T) {
+	type WithAny struct {
+		AnyField any
+	}
+
+	withAny1 := &WithAny{}
+	err := loadEntityProto(withAny1, &pb.Entity{
+		Key: keyToProto(testKey0),
+		Properties: map[string]*pb.Value{
+			"AnyField": {ValueType: &pb.Value_NullValue{}},
+		},
+	})
+	if err != nil {
+		t.Fatalf("got: %v, want: nil", err)
+	}
+}
+
 type KeyLoaderEnt struct {
 	A int
 	K *Key
