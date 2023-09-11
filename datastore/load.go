@@ -303,7 +303,7 @@ func setVal(v reflect.Value, p Property) (s string) {
 		}
 
 		if pValue == nil {
-			v.SetZero()
+			v.Set(reflect.Zero(v.Type()))
 		} else {
 			rpValue := reflect.ValueOf(pValue)
 			if !rpValue.Type().AssignableTo(v.Type()) {
