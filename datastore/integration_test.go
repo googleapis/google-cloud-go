@@ -701,7 +701,6 @@ func TestIntegration_Filters(t *testing.T) {
 }
 
 func TestIntegration_AggregationQueries(t *testing.T) {
-	t.Skip("Skipping until https://github.com/googleapis/google-cloud-go/issues/8466 is resolved")
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
@@ -875,7 +874,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+		testutil.Retry(t, 10, 5*time.Second, func(r *testutil.R) {
 			gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
 			gotFailure := gotErr != nil
 
