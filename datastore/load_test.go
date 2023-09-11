@@ -1292,7 +1292,7 @@ func TestLoadNull(t *testing.T) {
 
 func TestLoadNilInterface(t *testing.T) {
 	type WithAny struct {
-		AnyField any
+		AnyField interface{}
 	}
 
 	withAny1 := &WithAny{}
