@@ -1,5 +1,12 @@
 # Changes
 
+## [2.1.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.0.2...dataproc/v2.1.0) (2023-09-11)
+
+
+### Features
+
+* **dataproc:** Support min_num_instances for primary worker and InstanceFlexibilityPolicy for secondary worker ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
 ## [2.0.2](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.0.1...dataproc/v2.0.2) (2023-08-08)
 
 

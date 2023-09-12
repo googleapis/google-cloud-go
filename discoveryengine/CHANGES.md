@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.1.0...discoveryengine/v1.2.0) (2023-09-11)
+
+
+### Features
+
+* **discoveryengine:** Support conversational / multi-turn search ([15be57b](https://github.com/googleapis/google-cloud-go/commit/15be57b9264a793494cedc3966034fa20f56d7c5))
+* **discoveryengine:** Supported bring your own embedding feature ([fbfaf21](https://github.com/googleapis/google-cloud-go/commit/fbfaf21c15ae8a07ab39c6036cf0cee700b5627c))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.0.0...discoveryengine/v1.1.0) (2023-07-31)
 
 
