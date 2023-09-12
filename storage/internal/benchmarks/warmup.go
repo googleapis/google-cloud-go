@@ -67,8 +67,15 @@ func discardBenchmarkResults(ctx context.Context) {
 			select {
 			case <-ctx.Done():
 				return
-			case _, ok := <-results:
+			case r, ok := <-results:
 				if !ok {
+					return
+				}
+				if deadline, _ := ctx.Deadline(); time.Now().After(deadline) {
+					// If the deadline has passed but this case was selected, we
+					// should leave the results channel in the same state as we
+					// found it
+					results <- r
 					return
 				}
 			}
