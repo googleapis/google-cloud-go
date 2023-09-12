@@ -108,6 +108,80 @@
           }
         }
       }
+    },
+    "PolicyBasedRoutingService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PolicyBasedRoutingClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreatePolicyBasedRoute": {
+              "methods": [
+                "CreatePolicyBasedRoute"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePolicyBasedRoute": {
+              "methods": [
+                "DeletePolicyBasedRoute"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPolicyBasedRoute": {
+              "methods": [
+                "GetPolicyBasedRoute"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPolicyBasedRoutes": {
+              "methods": [
+                "ListPolicyBasedRoutes"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }
