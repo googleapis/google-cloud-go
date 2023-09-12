@@ -1390,7 +1390,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					iter.eoMu.RLock()
 					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
-					ctx := context.Background()
 					if msg.Attributes != nil {
 						ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(msg))
 						// remove googclient before handing off to client.
