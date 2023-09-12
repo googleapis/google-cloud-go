@@ -679,6 +679,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/config/apiv1": {
+    "api_shortname": "config",
+    "distribution_name": "cloud.google.com/go/config/apiv1",
+    "description": "Infrastructure Manager API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/config/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/contactcenterinsights/apiv1": {
     "api_shortname": "contactcenterinsights",
     "distribution_name": "cloud.google.com/go/contactcenterinsights/apiv1",

@@ -103,6 +103,7 @@ type benchmarkOptions struct {
 
 	enableTracing   bool
 	traceSampleRate float64
+	warmup          time.Duration
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -201,6 +202,8 @@ func parseFlags() {
 	flag.IntVar(&opts.workload, "workload", 1, "which workload to run")
 	flag.IntVar(&opts.numObjectsPerDirectory, "directory_num_objects", 1000, "total number of objects in directory")
 
+	flag.DurationVar(&opts.warmup, "warmup", 0, "time to warmup benchmarks; w1r3 benchmarks will be run for this duration without recording any results")
+
 	flag.BoolVar(&serverMode, "server", false, "if true, script runs in cloudprober server mode")
 
 	flag.Parse()
@@ -290,6 +293,10 @@ func main() {
 
 	if err := populateDependencyVersions(); err != nil {
 		log.Fatalf("populateDependencyVersions: %v", err)
+	}
+
+	if err := warmupW1R3(ctx, opts); err != nil {
+		log.Fatal(err)
 	}
 
 	if opts.enableTracing {

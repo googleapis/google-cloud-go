@@ -1285,14 +1285,23 @@ type AllocationPolicy_Disk struct {
 	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
 	// Disk size in GB.
 	//
-	// For persistent disk, this field is ignored if `data_source` is `image` or
-	// `snapshot`.
-	// For local SSD, size_gb should be a multiple of 375GB,
-	// otherwise, the final size will be the next greater multiple of 375 GB.
-	// For boot disk, Batch will calculate the boot disk size based on source
+	// **Non-Boot Disk**:
+	// If the `type` specifies a persistent disk, this field
+	// is ignored if `data_source` is set as `image` or `snapshot`.
+	// If the `type` specifies a local SSD, this field should be a multiple of
+	// 375 GB, otherwise, the final size will be the next greater multiple of
+	// 375 GB.
+	//
+	// **Boot Disk**:
+	// Batch will calculate the boot disk size based on source
 	// image and task requirements if you do not speicify the size.
-	// If both this field and the boot_disk_mib field in task spec's
-	// compute_resource are defined, Batch will only honor this field.
+	// If both this field and the `boot_disk_mib` field in task spec's
+	// `compute_resource` are defined, Batch will only honor this field.
+	// Also, this field should be no smaller than the source disk's
+	// size when the `data_source` is set as `snapshot` or `image`.
+	// For example, if you set an image as the `data_source` field and the
+	// image's default disk size 30 GB, you can only use this field to make the
+	// disk larger or equal to 30 GB.
 	SizeGb int64 `protobuf:"varint,2,opt,name=size_gb,json=sizeGb,proto3" json:"size_gb,omitempty"`
 	// Local SSDs are available through both "SCSI" and "NVMe" interfaces.
 	// If not indicated, "NVMe" will be the default one for local ssds.
@@ -1379,17 +1388,14 @@ type isAllocationPolicy_Disk_DataSource interface {
 }
 
 type AllocationPolicy_Disk_Image struct {
-	// Name of an image used as the data source.
+	// URL for a VM image to use as the data source for this disk.
 	// For example, the following are all valid URLs:
 	//
 	// * Specify the image by its family name:
-	// <pre><code>projects/<var
-	// class="apiparam">project</var>/global/images/family/<var
-	// class="apiparam">image_family</var></code></pre>
+	// projects/{project}/global/images/family/{image_family}
 	// * Specify the image version:
-	// <pre>projects/<var
-	// class="apiparam">project</var>/global/images/<var
-	// class="apiparam">image_version</var></code></pre>
+	// projects/{project}/global/images/{image_version}
+	//
 	// You can also use Batch customized image in short names.
 	// The following image values are supported for a boot disk:
 	//
@@ -1614,6 +1620,9 @@ type AllocationPolicy_InstancePolicy struct {
 	BootDisk *AllocationPolicy_Disk `protobuf:"bytes,8,opt,name=boot_disk,json=bootDisk,proto3" json:"boot_disk,omitempty"`
 	// Non-boot disks to be attached for each VM created by this InstancePolicy.
 	// New disks will be deleted when the VM is deleted.
+	// A non-boot disk is a disk that can be of a device with a
+	// file system or a raw storage drive that is not ready for data
+	// storage and accessing.
 	Disks []*AllocationPolicy_AttachedDisk `protobuf:"bytes,6,rep,name=disks,proto3" json:"disks,omitempty"`
 }
 
@@ -1691,7 +1700,10 @@ func (x *AllocationPolicy_InstancePolicy) GetDisks() []*AllocationPolicy_Attache
 	return nil
 }
 
-// Either an InstancePolicy or an instance template.
+// InstancePolicyOrTemplate lets you define the type of resources to use for
+// this job either with an InstancePolicy or an instance template.
+// If undefined, Batch picks the type of VM to use and doesn't include
+// optional VM resources such as GPUs and extra disks.
 type AllocationPolicy_InstancePolicyOrTemplate struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1806,29 +1818,19 @@ type AllocationPolicy_NetworkInterface struct {
 	// You can specify the network as a full or partial URL.
 	//
 	// For example, the following are all valid URLs:
-	// <pre><code>https://www.googleapis.com/compute/v1/projects/<var
-	// class="apiparam">project</var>/global/networks/<var
-	// class="apiparam">network</var></code></pre>
-	// <pre><code>projects/<var
-	// class="apiparam">project</var>/global/networks/<var
-	// class="apiparam">network</var></code></pre>
-	// <pre><code>global/networks/<var
-	// class="apiparam">network</var></code></pre>
+	//
+	// * https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}
+	// * projects/{project}/global/networks/{network}
+	// * global/networks/{network}
 	Network string `protobuf:"bytes,1,opt,name=network,proto3" json:"network,omitempty"`
 	// The URL of an existing subnetwork resource in the network.
 	// You can specify the subnetwork as a full or partial URL.
 	//
 	// For example, the following are all valid URLs:
-	// <pre><code>https://www.googleapis.com/compute/v1/projects/<var
-	// class="apiparam">project</var>/regions/<var
-	// class="apiparam">region</var>/subnetworks/<var
-	// class="apiparam">subnetwork</var></code></pre>
-	// <pre><code>projects/<var class="apiparam">project</var>/regions/<var
-	// class="apiparam">region</var>/subnetworks/<var
-	// class="apiparam">subnetwork</var></code></pre>
-	// <pre><code>regions/<var
-	// class="apiparam">region</var>/subnetworks/<var
-	// class="apiparam">subnetwork</var></code></pre>
+	//
+	// * https://www.googleapis.com/compute/v1/projects/{project}/regions/{region}/subnetworks/{subnetwork}
+	// * projects/{project}/regions/{region}/subnetworks/{subnetwork}
+	// * regions/{region}/subnetworks/{subnetwork}
 	Subnetwork string `protobuf:"bytes,2,opt,name=subnetwork,proto3" json:"subnetwork,omitempty"`
 	// Default is false (with an external IP address). Required if
 	// no external public IP address is attached to the VM. If no external

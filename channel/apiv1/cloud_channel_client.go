@@ -91,6 +91,7 @@ type CloudChannelCallOptions struct {
 	ListOffers                          []gax.CallOption
 	ListPurchasableSkus                 []gax.CallOption
 	ListPurchasableOffers               []gax.CallOption
+	QueryEligibleBillingAccounts        []gax.CallOption
 	RegisterSubscriber                  []gax.CallOption
 	UnregisterSubscriber                []gax.CallOption
 	ListSubscribers                     []gax.CallOption
@@ -533,6 +534,18 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListPurchasableOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		QueryEligibleBillingAccounts: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -997,6 +1010,17 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		QueryEligibleBillingAccounts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		RegisterSubscriber: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1108,6 +1132,7 @@ type internalCloudChannelClient interface {
 	ListOffers(context.Context, *channelpb.ListOffersRequest, ...gax.CallOption) *OfferIterator
 	ListPurchasableSkus(context.Context, *channelpb.ListPurchasableSkusRequest, ...gax.CallOption) *PurchasableSkuIterator
 	ListPurchasableOffers(context.Context, *channelpb.ListPurchasableOffersRequest, ...gax.CallOption) *PurchasableOfferIterator
+	QueryEligibleBillingAccounts(context.Context, *channelpb.QueryEligibleBillingAccountsRequest, ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error)
 	RegisterSubscriber(context.Context, *channelpb.RegisterSubscriberRequest, ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error)
 	UnregisterSubscriber(context.Context, *channelpb.UnregisterSubscriberRequest, ...gax.CallOption) (*channelpb.UnregisterSubscriberResponse, error)
 	ListSubscribers(context.Context, *channelpb.ListSubscribersRequest, ...gax.CallOption) *StringIterator
@@ -1246,8 +1271,13 @@ func (c *CloudChannelClient) CheckCloudIdentityAccountsExist(ctx context.Context
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The reseller account making the request is different
-//	from the reseller account in the API request.
+//	PERMISSION_DENIED:
+//
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
+//
+//	  You are not authorized to create a customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT:
 //
@@ -1304,8 +1334,13 @@ func (c *CloudChannelClient) DeleteCustomer(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The reseller account making the request is different
-//	from the reseller account in the API request.
+//	PERMISSION_DENIED:
+//
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
+//
+//	  You are not authorized to import the customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	NOT_FOUND: Cloud Identity doesn’t exist or was deleted.
 //
@@ -1326,7 +1361,12 @@ func (c *CloudChannelClient) ImportCustomer(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  You are not authorized to provision cloud identity id. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
@@ -1419,6 +1459,9 @@ func (c *CloudChannelClient) ListTransferableSkus(ctx context.Context, req *chan
 //	  The reseller account making the request is different
 //	  from the reseller account in the query.
 //
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
@@ -1449,7 +1492,12 @@ func (c *CloudChannelClient) GetEntitlement(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT:
 //
@@ -1781,7 +1829,12 @@ func (c *CloudChannelClient) ActivateEntitlementOperation(name string) *Activate
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
@@ -2057,13 +2110,13 @@ func (c *CloudChannelClient) ListCustomerRepricingConfigs(ctx context.Context, r
 //	Changes to the config may be immediate, but may take up to 24 hours.
 //
 //	There is a limit of ten configs for any
-//	RepricingConfig.EntitlementGranularity.entitlement
-//	or
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
 //	RepricingConfig.effective_invoice_month.
 //
 //	The contained
 //	CustomerRepricingConfig.repricing_config
-//	vaule must be different from the value used in the current config for a
+//	value must be different from the value used in the current config for a
 //	RepricingConfig.EntitlementGranularity.entitlement.
 //
 // Possible Error Codes:
@@ -2228,11 +2281,13 @@ func (c *CloudChannelClient) ListChannelPartnerRepricingConfigs(ctx context.Cont
 //	Changes to the config may be immediate, but may take up to 24 hours.
 //
 //	There is a limit of ten configs for any ChannelPartner or
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
 //	RepricingConfig.effective_invoice_month.
 //
 //	The contained
 //	ChannelPartnerRepricingConfig.repricing_config
-//	vaule must be different from the value used in the current config for a
+//	value must be different from the value used in the current config for a
 //	ChannelPartner.
 //
 // Possible Error Codes:
@@ -2436,11 +2491,33 @@ func (c *CloudChannelClient) ListPurchasableSkus(ctx context.Context, req *chann
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListPurchasableOffers(ctx context.Context, req *channelpb.ListPurchasableOffersRequest, opts ...gax.CallOption) *PurchasableOfferIterator {
 	return c.internalClient.ListPurchasableOffers(ctx, req, opts...)
+}
+
+// QueryEligibleBillingAccounts lists the billing accounts that are eligible to purchase particular SKUs
+// for a given customer.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+// Return value:
+// Based on the provided list of SKUs, returns a list of SKU groups that must
+// be purchased using the same billing account and the billing accounts
+// eligible to purchase each SKU group.
+func (c *CloudChannelClient) QueryEligibleBillingAccounts(ctx context.Context, req *channelpb.QueryEligibleBillingAccountsRequest, opts ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error) {
+	return c.internalClient.QueryEligibleBillingAccounts(ctx, req, opts...)
 }
 
 // RegisterSubscriber registers a service account with subscriber privileges on the Cloud Pub/Sub
@@ -3977,6 +4054,24 @@ func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req 
 	return it
 }
 
+func (c *cloudChannelGRPCClient) QueryEligibleBillingAccounts(ctx context.Context, req *channelpb.QueryEligibleBillingAccountsRequest, opts ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).QueryEligibleBillingAccounts[0:len((*c.CallOptions).QueryEligibleBillingAccounts):len((*c.CallOptions).QueryEligibleBillingAccounts)], opts...)
+	var resp *channelpb.QueryEligibleBillingAccountsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.QueryEligibleBillingAccounts(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *channelpb.RegisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
 
@@ -4465,8 +4560,13 @@ func (c *cloudChannelRESTClient) CheckCloudIdentityAccountsExist(ctx context.Con
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The reseller account making the request is different
-//	from the reseller account in the API request.
+//	PERMISSION_DENIED:
+//
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
+//
+//	  You are not authorized to create a customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT:
 //
@@ -4691,8 +4791,13 @@ func (c *cloudChannelRESTClient) DeleteCustomer(ctx context.Context, req *channe
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The reseller account making the request is different
-//	from the reseller account in the API request.
+//	PERMISSION_DENIED:
+//
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
+//
+//	  You are not authorized to import the customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	NOT_FOUND: Cloud Identity doesn’t exist or was deleted.
 //
@@ -4774,7 +4879,12 @@ func (c *cloudChannelRESTClient) ImportCustomer(ctx context.Context, req *channe
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  You are not authorized to provision cloud identity id. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
@@ -5094,6 +5204,9 @@ func (c *cloudChannelRESTClient) ListTransferableSkus(ctx context.Context, req *
 //	  The reseller account making the request is different
 //	  from the reseller account in the query.
 //
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
@@ -5263,7 +5376,12 @@ func (c *cloudChannelRESTClient) GetEntitlement(ctx context.Context, req *channe
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT:
 //
@@ -6067,7 +6185,12 @@ func (c *cloudChannelRESTClient) ActivateEntitlement(ctx context.Context, req *c
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
@@ -6871,13 +6994,13 @@ func (c *cloudChannelRESTClient) ListCustomerRepricingConfigs(ctx context.Contex
 //	Changes to the config may be immediate, but may take up to 24 hours.
 //
 //	There is a limit of ten configs for any
-//	RepricingConfig.EntitlementGranularity.entitlement
-//	or
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
 //	RepricingConfig.effective_invoice_month.
 //
 //	The contained
 //	CustomerRepricingConfig.repricing_config
-//	vaule must be different from the value used in the current config for a
+//	value must be different from the value used in the current config for a
 //	RepricingConfig.EntitlementGranularity.entitlement.
 //
 // Possible Error Codes:
@@ -7345,11 +7468,13 @@ func (c *cloudChannelRESTClient) ListChannelPartnerRepricingConfigs(ctx context.
 //	Changes to the config may be immediate, but may take up to 24 hours.
 //
 //	There is a limit of ten configs for any ChannelPartner or
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
 //	RepricingConfig.effective_invoice_month.
 //
 //	The contained
 //	ChannelPartnerRepricingConfig.repricing_config
-//	vaule must be different from the value used in the current config for a
+//	value must be different from the value used in the current config for a
 //	ChannelPartner.
 //
 // Possible Error Codes:
@@ -8296,7 +8421,12 @@ func (c *cloudChannelRESTClient) ListPurchasableSkus(ctx context.Context, req *c
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The customer doesn’t belong to the reseller
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *cloudChannelRESTClient) ListPurchasableOffers(ctx context.Context, req *channelpb.ListPurchasableOffersRequest, opts ...gax.CallOption) *PurchasableOfferIterator {
@@ -8321,9 +8451,15 @@ func (c *cloudChannelRESTClient) ListPurchasableOffers(ctx context.Context, req 
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetChangeOfferPurchase().GetBillingAccount() != "" {
+			params.Add("changeOfferPurchase.billingAccount", fmt.Sprintf("%v", req.GetChangeOfferPurchase().GetBillingAccount()))
+		}
 		params.Add("changeOfferPurchase.entitlement", fmt.Sprintf("%v", req.GetChangeOfferPurchase().GetEntitlement()))
 		if req.GetChangeOfferPurchase().GetNewSku() != "" {
 			params.Add("changeOfferPurchase.newSku", fmt.Sprintf("%v", req.GetChangeOfferPurchase().GetNewSku()))
+		}
+		if req.GetCreateEntitlementPurchase().GetBillingAccount() != "" {
+			params.Add("createEntitlementPurchase.billingAccount", fmt.Sprintf("%v", req.GetCreateEntitlementPurchase().GetBillingAccount()))
 		}
 		params.Add("createEntitlementPurchase.sku", fmt.Sprintf("%v", req.GetCreateEntitlementPurchase().GetSku()))
 		if req.GetLanguageCode() != "" {
@@ -8393,6 +8529,83 @@ func (c *cloudChannelRESTClient) ListPurchasableOffers(ctx context.Context, req 
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// QueryEligibleBillingAccounts lists the billing accounts that are eligible to purchase particular SKUs
+// for a given customer.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+// Return value:
+// Based on the provided list of SKUs, returns a list of SKU groups that must
+// be purchased using the same billing account and the billing accounts
+// eligible to purchase each SKU group.
+func (c *cloudChannelRESTClient) QueryEligibleBillingAccounts(ctx context.Context, req *channelpb.QueryEligibleBillingAccountsRequest, opts ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:queryEligibleBillingAccounts", req.GetCustomer())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetSkus(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("skus", fmt.Sprintf("%v", item))
+		}
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).QueryEligibleBillingAccounts[0:len((*c.CallOptions).QueryEligibleBillingAccounts):len((*c.CallOptions).QueryEligibleBillingAccounts)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.QueryEligibleBillingAccountsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // RegisterSubscriber registers a service account with subscriber privileges on the Cloud Pub/Sub
