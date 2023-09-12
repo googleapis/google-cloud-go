@@ -1,0 +1,9 @@
+package golden
+
+import (
+	"net"
+
+	foo "example.com/new/foopb"
+)
+
+func Bar1(foo foo.Baz, addr net.Addr) {}

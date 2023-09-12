@@ -1,0 +1,53 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.bigquery.migration.v2",
+  "libraryPackage": "cloud.google.com/go/bigquery/migration/apiv2",
+  "services": {
+    "MigrationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateMigrationWorkflow": {
+              "methods": [
+                "CreateMigrationWorkflow"
+              ]
+            },
+            "DeleteMigrationWorkflow": {
+              "methods": [
+                "DeleteMigrationWorkflow"
+              ]
+            },
+            "GetMigrationSubtask": {
+              "methods": [
+                "GetMigrationSubtask"
+              ]
+            },
+            "GetMigrationWorkflow": {
+              "methods": [
+                "GetMigrationWorkflow"
+              ]
+            },
+            "ListMigrationSubtasks": {
+              "methods": [
+                "ListMigrationSubtasks"
+              ]
+            },
+            "ListMigrationWorkflows": {
+              "methods": [
+                "ListMigrationWorkflows"
+              ]
+            },
+            "StartMigrationWorkflow": {
+              "methods": [
+                "StartMigrationWorkflow"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

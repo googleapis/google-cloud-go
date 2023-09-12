@@ -15,13 +15,16 @@
 package datastore
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Simple struct {
@@ -484,6 +487,68 @@ func TestLoadToInterface(t *testing.T) {
 			dst:  &withUntypedInterface{Field: 1e9},
 			want: &withUntypedInterface{Field: "Newly set"},
 		},
+		{
+			name: "struct with civil.Date",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Date": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605474000}}},
+				},
+			},
+			dst: &struct{ Date civil.Date }{
+				Date: civil.Date{},
+			},
+			want: &struct{ Date civil.Date }{
+				Date: civil.Date{
+					Year:  2020,
+					Month: 11,
+					Day:   15,
+				},
+			},
+		},
+		{
+			name: "struct with civil.DateTime",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"DateTime": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
+				},
+			},
+			dst: &struct{ DateTime civil.DateTime }{
+				DateTime: civil.DateTime{},
+			},
+			want: &struct{ DateTime civil.DateTime }{
+				DateTime: civil.DateTime{
+					Date: civil.Date{
+						Year:  2020,
+						Month: 11,
+						Day:   16,
+					},
+					Time: civil.Time{
+						Hour:   5,
+						Minute: 30,
+					},
+				},
+			},
+		},
+		{
+			name: "struct with civil.Time",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Time": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
+				},
+			},
+			dst: &struct{ Time civil.Time }{
+				Time: civil.Time{},
+			},
+			want: &struct{ Time civil.Time }{
+				Time: civil.Time{
+					Hour:   5,
+					Minute: 30,
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -502,6 +567,38 @@ func TestLoadToInterface(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// Expect Local times to be represented in UTC
+func TestTimezone(t *testing.T) {
+	src := &pb.Entity{
+		Key: keyToProto(testKey0),
+		Properties: map[string]*pb.Value{
+			"Time": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
+		},
+	}
+
+	dst := &struct{ Time time.Time }{
+		Time: time.Time{},
+	}
+	want := &struct{ Time time.Time }{
+		Time: time.Unix(1605504600, 0).In(time.UTC),
+	}
+
+	err := loadEntityProto(dst, src)
+	if err != nil {
+		t.Fatalf("loadEntityProto: %v", err)
+	}
+
+	if diff := testutil.Diff(dst, want); diff != "" {
+		t.Fatalf("Mismatch: got - want +\n%s", diff)
+	}
+	// Also, the Zones need to be compared as comparing times will not detect this difference.
+	dstZone, _ := dst.Time.Zone()
+	wantZone, _ := want.Time.Zone()
+	if diff := testutil.Diff(dstZone, wantZone); diff != "" {
+		t.Fatalf("Mismatch: got - want +\n%s", diff)
 	}
 }
 
@@ -1130,9 +1227,81 @@ func TestLoadNull(t *testing.T) {
 	}
 }
 
-// 	var got2 struct{ S []Pet }
-// 	if err := LoadStruct(&got2, []Property{{Name: "S", Value: nil}}); err != nil {
-// 		t.Fatal(err)
-// 	}
+type KeyLoaderEnt struct {
+	A int
+	K *Key
+}
 
-// }
+func (e *KeyLoaderEnt) Load(p []Property) error {
+	e.A = 2
+	return nil
+}
+
+func (e *KeyLoaderEnt) LoadKey(k *Key) error {
+	e.K = k
+	return nil
+}
+
+func (e *KeyLoaderEnt) Save() ([]Property, error) {
+	return []Property{{Name: "A", Value: int64(3)}}, nil
+}
+
+func TestKeyLoaderEndToEnd(t *testing.T) {
+	keys := []*Key{
+		NameKey("testKind", "first", nil),
+		NameKey("testKind", "second", nil),
+	}
+
+	entity1 := &pb.Entity{
+		Key: keyToProto(keys[0]),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+			"B": {ValueType: &pb.Value_StringValue{StringValue: "one"}},
+		},
+	}
+	entity2 := &pb.Entity{
+		Key: keyToProto(keys[1]),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+			"B": {ValueType: &pb.Value_StringValue{StringValue: "two"}},
+		},
+	}
+
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(&pb.LookupRequest{
+		ProjectId:  "projectID",
+		DatabaseId: "",
+		Keys: []*pb.Key{
+			keyToProto(keys[0]),
+			keyToProto(keys[1]),
+		},
+	},
+		&pb.LookupResponse{
+			Found: []*pb.EntityResult{
+				{
+					Entity:  entity1,
+					Version: 1,
+				},
+				{
+					Entity:  entity2,
+					Version: 1,
+				},
+			},
+		})
+
+	ctx := context.Background()
+
+	dst := make([]*KeyLoaderEnt, len(keys))
+	err := client.GetMulti(ctx, keys, dst)
+	if err != nil {
+		t.Fatalf("client.Get: %v", err)
+	}
+
+	for i := range dst {
+		if !testutil.Equal(dst[i].K, keys[i]) {
+			t.Fatalf("unexpected entity %d to have key %+v, got %+v", i, keys[i], dst[i].K)
+		}
+	}
+}

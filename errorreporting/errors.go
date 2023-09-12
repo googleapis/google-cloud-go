@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package errorreporting is a Google Stackdriver Error Reporting library.
+// Package errorreporting is a Google Cloud Error Reporting library.
 //
 // Any provided stacktraces must match the format produced by https://golang.org/pkg/runtime/#Stack
 // or as per https://cloud.google.com/error-reporting/reference/rest/v1beta1/projects.events/report#ReportedErrorEvent
@@ -33,12 +33,12 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/errorreporting/apiv1beta1"
-	"cloud.google.com/go/internal/version"
+	pb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
+	"cloud.google.com/go/errorreporting/internal"
 	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
-	pb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
 
 // Config is additional configuration for Client.
@@ -88,7 +88,7 @@ var newClient = func(ctx context.Context, opts ...option.ClientOption) (client, 
 	if err != nil {
 		return nil, err
 	}
-	client.SetGoogleClientInfo("gccl", version.Repo)
+	client.SetGoogleClientInfo("gccl", internal.Version)
 	return client, nil
 }
 
@@ -101,7 +101,7 @@ func NewClient(ctx context.Context, projectID string, cfg Config, opts ...option
 	}
 	c, err := newClient(ctx, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("creating client: %v", err)
+		return nil, fmt.Errorf("creating client: %w", err)
 	}
 
 	client := &Client{

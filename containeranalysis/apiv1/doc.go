@@ -17,12 +17,12 @@
 // Package containeranalysis is an auto-generated package for the
 // Container Analysis API.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // An implementation of the Grafeas API, which stores, and enables querying
 // and retrieval of critical metadata about all of your software artifacts.
 //
-// Use of Context
+// # Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
@@ -98,4 +98,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20190708"
+var versionClient = "20220222"

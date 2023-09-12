@@ -7,9 +7,9 @@ import (
 	fmt "fmt"
 	math "math"
 
+	v1 "cloud.google.com/go/firestore/apiv1/firestorepb"
 	proto "github.com/golang/protobuf/proto"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
-	v1 "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

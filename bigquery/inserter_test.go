@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"testing"
 
@@ -113,22 +114,27 @@ func TestHandleInsertErrors(t *testing.T) {
 		{InsertId: "b"},
 	}
 	for _, test := range []struct {
-		in   []*bq.TableDataInsertAllResponseInsertErrors
-		want error
+		description string
+		in          []*bq.TableDataInsertAllResponseInsertErrors
+		want        error
 	}{
 		{
-			in:   nil,
-			want: nil,
+			description: "nil error",
+			in:          nil,
+			want:        nil,
 		},
 		{
-			in:   []*bq.TableDataInsertAllResponseInsertErrors{{Index: 1}},
-			want: PutMultiError{RowInsertionError{InsertID: "b", RowIndex: 1}},
+			description: "single error last row",
+			in:          []*bq.TableDataInsertAllResponseInsertErrors{{Index: 1}},
+			want:        PutMultiError{RowInsertionError{InsertID: "b", RowIndex: 1}},
 		},
 		{
-			in:   []*bq.TableDataInsertAllResponseInsertErrors{{Index: 1}},
-			want: PutMultiError{RowInsertionError{InsertID: "b", RowIndex: 1}},
+			description: "single error first row",
+			in:          []*bq.TableDataInsertAllResponseInsertErrors{{Index: 0}},
+			want:        PutMultiError{RowInsertionError{InsertID: "a", RowIndex: 0}},
 		},
 		{
+			description: "errors with extended message",
 			in: []*bq.TableDataInsertAllResponseInsertErrors{
 				{Errors: []*bq.ErrorProto{{Message: "m0"}}, Index: 0},
 				{Errors: []*bq.ErrorProto{{Message: "m1"}}, Index: 1},
@@ -138,11 +144,28 @@ func TestHandleInsertErrors(t *testing.T) {
 				RowInsertionError{InsertID: "b", RowIndex: 1, Errors: []error{&Error{Message: "m1"}}},
 			},
 		},
+		{
+			description: "invalid index",
+			in: []*bq.TableDataInsertAllResponseInsertErrors{
+				{Errors: []*bq.ErrorProto{{Message: "m0"}}, Index: 2},
+			},
+			want: fmt.Errorf("internal error: unexpected row index: 2"),
+		},
 	} {
 		got := handleInsertErrors(test.in, rows)
-		if !testutil.Equal(got, test.want) {
-			t.Errorf("%#v:\ngot\n%#v\nwant\n%#v", test.in, got, test.want)
+		if _, ok := got.(PutMultiError); ok {
+			// compare structure of the PutMultiError
+			if !testutil.Equal(got, test.want) {
+				t.Errorf("(case: %s)\nin %#v\ngot\n%#v\nwant\n%#v", test.description, test.in, got, test.want)
+			}
+			continue
 		}
+
+		if got != nil && test.want != nil && got.Error() != test.want.Error() {
+			// check matching error messages
+			t.Errorf("(case: %s)\nin %#v:\ngot\n%#v\nwant\n%#v", test.description, test.in, got, test.want)
+		}
+
 	}
 }
 

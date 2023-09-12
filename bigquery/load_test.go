@@ -102,7 +102,7 @@ func TestLoad(t *testing.T) {
 				CreateDisposition:           CreateNever,
 				WriteDisposition:            WriteTruncate,
 				Labels:                      map[string]string{"a": "b"},
-				TimePartitioning:            &TimePartitioning{Expiration: 1234 * time.Millisecond},
+				TimePartitioning:            &TimePartitioning{Type: MonthPartitioningType, Expiration: 1234 * time.Millisecond},
 				Clustering:                  &Clustering{Fields: []string{"cfield1"}},
 				DestinationEncryptionConfig: &EncryptionConfig{KMSKeyName: "keyName"},
 				SchemaUpdateOptions:         []string{"ALLOW_FIELD_ADDITION"},
@@ -114,7 +114,7 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"
 				j.Configuration.Load.WriteDisposition = "WRITE_TRUNCATE"
 				j.Configuration.Load.TimePartitioning = &bq.TimePartitioning{
-					Type:         "DAY",
+					Type:         "MONTH",
 					ExpirationMs: 1234,
 				}
 				j.Configuration.Load.Clustering = &bq.Clustering{
@@ -139,12 +139,16 @@ func TestLoad(t *testing.T) {
 				g.IgnoreUnknownValues = true
 				return g
 			}(),
+			config: LoadConfig{
+				JobTimeout: 4 * time.Second,
+			},
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				j.Configuration.Load.MaxBadRecords = 1
 				j.Configuration.Load.AllowJaggedRows = true
 				j.Configuration.Load.AllowQuotedNewlines = true
 				j.Configuration.Load.IgnoreUnknownValues = true
+				j.Configuration.JobTimeoutMs = 4000
 				return j
 			}(),
 		},
@@ -280,6 +284,7 @@ func TestLoad(t *testing.T) {
 			}(),
 			config: LoadConfig{
 				TimePartitioning: &TimePartitioning{
+					Type:  HourPartitioningType,
 					Field: "somefield",
 				},
 			},
@@ -288,7 +293,7 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.SourceUris = nil
 				j.Configuration.Load.TimePartitioning = &bq.TimePartitioning{
 					Field: "somefield",
-					Type:  "DAY",
+					Type:  "HOUR",
 				}
 				return j
 			}(),
@@ -315,9 +320,113 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.RangePartitioning = &bq.RangePartitioning{
 					Field: "somefield",
 					Range: &bq.RangePartitioningRange{
-						Start:    1,
-						End:      2,
-						Interval: 3,
+						Start:           1,
+						End:             2,
+						Interval:        3,
+						ForceSendFields: []string{"Start", "End", "Interval"},
+					},
+				}
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = DatastoreBackup
+				return g
+			}(),
+			config: LoadConfig{
+				ProjectionFields: []string{"foo", "bar", "baz"},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "DATASTORE_BACKUP"
+				j.Configuration.Load.ProjectionFields = []string{"foo", "bar", "baz"}
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = Parquet
+				return g
+			}(),
+			config: LoadConfig{
+				HivePartitioningOptions: &HivePartitioningOptions{
+					Mode:                   CustomHivePartitioningMode,
+					SourceURIPrefix:        "source_uri",
+					RequirePartitionFilter: true,
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "PARQUET"
+				j.Configuration.Load.HivePartitioningOptions = &bq.HivePartitioningOptions{
+					Mode:                   "CUSTOM",
+					RequirePartitionFilter: true,
+					SourceUriPrefix:        "source_uri",
+				}
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = Parquet
+				return g
+			}(),
+			config: LoadConfig{
+				DecimalTargetTypes: []DecimalTargetType{BigNumericTargetType, NumericTargetType, StringTargetType},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "PARQUET"
+				j.Configuration.Load.DecimalTargetTypes = []string{"BIGNUMERIC", "NUMERIC", "STRING"}
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = Parquet
+				return g
+			}(),
+			config: LoadConfig{
+				ReferenceFileSchemaURI: "schema.parquet",
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "PARQUET"
+				j.Configuration.Load.ReferenceFileSchemaUri = "schema.parquet"
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				return g
+			}(),
+			config: LoadConfig{
+				CreateSession: true,
+				ConnectionProperties: []*ConnectionProperty{
+					{
+						Key:   "session_id",
+						Value: "session_id_1234567890",
+					},
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.CreateSession = true
+				j.Configuration.Load.ConnectionProperties = []*bq.ConnectionProperty{
+					{
+						Key:   "session_id",
+						Value: "session_id_1234567890",
 					},
 				}
 				return j

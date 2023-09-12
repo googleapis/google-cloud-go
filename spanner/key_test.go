@@ -17,13 +17,33 @@ limitations under the License.
 package spanner
 
 import (
+	"errors"
+	"math/big"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/civil"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
+
+type customKeyToString string
+
+func (k customKeyToString) EncodeSpanner() (interface{}, error) {
+	return string(k), nil
+}
+
+type customKeyToInt int
+
+func (k customKeyToInt) EncodeSpanner() (interface{}, error) {
+	return int(k), nil
+}
+
+type customKeyToError struct{}
+
+func (k customKeyToError) EncodeSpanner() (interface{}, error) {
+	return nil, errors.New("always error")
+}
 
 // Test Key.String() and Key.proto().
 func TestKey(t *testing.T) {
@@ -114,6 +134,11 @@ func TestKey(t *testing.T) {
 			wantStr:   `("2016-11-15")`,
 		},
 		{
+			k:         Key{*big.NewRat(1, 1)},
+			wantProto: listValueProto(stringProto("1.000000000")),
+			wantStr:   `(1.000000000)`,
+		},
+		{
 			k:         Key{[]byte("value")},
 			wantProto: listValueProto(bytesProto([]byte("value"))),
 			wantStr:   `("value")`,
@@ -184,12 +209,37 @@ func TestKey(t *testing.T) {
 			wantProto: listValueProto(stringProto("1"), nullProto(), stringProto("value"), floatProto(1.5), boolProto(true)),
 			wantStr:   `(1,<null>,"value",1.5,true)`,
 		},
+		{
+			k:         Key{NullNumeric{*big.NewRat(2, 3), true}},
+			wantProto: listValueProto(stringProto("0.666666667")),
+			wantStr:   "(0.666666667)",
+		},
+		{
+			k:         Key{NullNumeric{big.Rat{}, false}},
+			wantProto: listValueProto(nullProto()),
+			wantStr:   "(<null>)",
+		},
+		{
+			k:         Key{customKeyToString("value")},
+			wantProto: listValueProto(stringProto("value")),
+			wantStr:   `("value")`,
+		},
+		{
+			k:         Key{customKeyToInt(1)},
+			wantProto: listValueProto(intProto(1)),
+			wantStr:   `(1)`,
+		},
+		{
+			k:         Key{customKeyToError{}},
+			wantProto: nil,
+			wantStr:   `(error)`,
+		},
 	} {
 		if got := test.k.String(); got != test.wantStr {
 			t.Errorf("%v.String() = %v, want %v", test.k, got, test.wantStr)
 		}
 		gotProto, err := test.k.proto()
-		if err != nil {
+		if test.wantProto != nil && err != nil {
 			t.Errorf("%v.proto() returns error %v; want nil error", test.k, err)
 		}
 		if !testEqual(gotProto, test.wantProto) {
@@ -237,6 +287,14 @@ func TestKeyRange(t *testing.T) {
 			},
 			wantStr: "[(1),(10)]",
 		},
+		{
+			kr: KeyRange{Key{customKeyToString("A")}, Key{customKeyToString("D")}, OpenOpen},
+			wantProto: &sppb.KeyRange{
+				StartKeyType: &sppb.KeyRange_StartOpen{StartOpen: listValueProto(stringProto("A"))},
+				EndKeyType:   &sppb.KeyRange_EndOpen{EndOpen: listValueProto(stringProto("D"))},
+			},
+			wantStr: `(("A"),("D"))`,
+		},
 	} {
 		if got := test.kr.String(); got != test.wantStr {
 			t.Errorf("%v.String() = %v, want %v", test.kr, got, test.wantStr)
@@ -256,6 +314,52 @@ func TestPrefixRange(t *testing.T) {
 	want := KeyRange{Start: Key{1}, End: Key{1}, Kind: ClosedClosed}
 	if !testEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
+	}
+}
+
+func TestKeySetFromKeys(t *testing.T) {
+	for i, test := range []struct {
+		ks        KeySet
+		wantProto *sppb.KeySet
+	}{
+		{
+			KeySetFromKeys(),
+			&sppb.KeySet{},
+		},
+		{
+			KeySetFromKeys(Key{1}),
+			&sppb.KeySet{
+				Keys: []*proto3.ListValue{
+					listValueProto(intProto(1)),
+				},
+			},
+		},
+		{
+			KeySetFromKeys(Key{1}, Key{2}),
+			&sppb.KeySet{
+				Keys: []*proto3.ListValue{
+					listValueProto(intProto(1)),
+					listValueProto(intProto(2)),
+				},
+			},
+		},
+		{
+			KeySetFromKeys(Key{1, "one"}, Key{2, "two"}),
+			&sppb.KeySet{
+				Keys: []*proto3.ListValue{
+					listValueProto(intProto(1), stringProto("one")),
+					listValueProto(intProto(2), stringProto("two")),
+				},
+			},
+		},
+	} {
+		gotProto, err := test.ks.keySetProto()
+		if err != nil {
+			t.Errorf("#%d: %v.proto() returns error %v; want nil error", i, test.ks, err)
+		}
+		if !testEqual(gotProto, test.wantProto) {
+			t.Errorf("#%d: %v.proto() = \n%v\nwant:\n%v", i, test.ks, gotProto.String(), test.wantProto.String())
+		}
 	}
 }
 
@@ -359,6 +463,18 @@ func TestKeySets(t *testing.T) {
 				KeyRange{Key{4}, Key{5}, OpenClosed},
 				Key{6}),
 			&sppb.KeySet{All: true},
+		},
+		{
+			KeySets(
+				Key{customKeyToInt(1), customKeyToInt(2)},
+				Key{customKeyToInt(3), customKeyToInt(4)},
+			),
+			&sppb.KeySet{
+				Keys: []*proto3.ListValue{
+					listValueProto(int1, int2),
+					listValueProto(int3, int4),
+				},
+			},
 		},
 	} {
 		gotProto, err := test.ks.keySetProto()

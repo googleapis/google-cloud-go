@@ -23,9 +23,10 @@ import (
 	"testing"
 	"time"
 
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/status"
 )
 
@@ -73,7 +74,10 @@ func TestPartitionedUpdate_Aborted(t *testing.T) {
 
 	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
 		SimulatedExecutionTime{
-			Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+			Errors: []error{
+				status.Error(codes.Aborted, "Transaction aborted"),
+				status.Error(codes.Internal, "Received unexpected EOS on DATA frame from server"),
+			},
 		})
 	stmt := NewStatement(UpdateBarSetFoo)
 	rowCount, err := client.PartitionedUpdate(ctx, stmt)
@@ -86,12 +90,13 @@ func TestPartitionedUpdate_Aborted(t *testing.T) {
 	}
 
 	gotReqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
-		&sppb.DeleteSessionRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -110,7 +115,7 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	logger := log.New(os.Stderr, "", log.LstdFlags)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: DefaultSessionPoolConfig,
-		logger:            logger,
+		Logger:            logger,
 	})
 	defer teardown()
 
@@ -135,4 +140,42 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	if status.Code(err) != wantCode {
 		t.Fatalf("got error %v, want code %s", err, wantCode)
 	}
+}
+
+func TestPartitionedUpdate_QueryOptions(t *testing.T) {
+	for _, tt := range queryOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.env.Options != nil {
+				unset := setQueryOptionsEnvVars(tt.env.Options)
+				defer unset()
+			}
+
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client, Compression: gzip.Name})
+			defer teardown()
+
+			var err error
+			if tt.query.Options == nil {
+				_, err = client.PartitionedUpdate(ctx, NewStatement(UpdateBarSetFoo))
+			} else {
+				_, err = client.PartitionedUpdateWithOptions(ctx, NewStatement(UpdateBarSetFoo), tt.query)
+			}
+			if err != nil {
+				t.Fatalf("expect no errors, but got %v", err)
+			}
+			checkReqsForQueryOptions(t, server.TestSpanner, tt.want)
+		})
+	}
+}
+
+func TestPartitionedUpdate_Tagging(t *testing.T) {
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	_, err := client.PartitionedUpdateWithOptions(ctx, NewStatement(UpdateBarSetFoo), QueryOptions{RequestTag: "pdml-tag"})
+	if err != nil {
+		t.Fatalf("expect no errors, but got %v", err)
+	}
+	checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{RequestTag: "pdml-tag"})
 }

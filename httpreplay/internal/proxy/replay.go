@@ -19,13 +19,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"reflect"
 	"sync"
 
-	"github.com/google/martian/martianlog"
+	"github.com/google/martian/v3/martianlog"
 )
 
 // ForReplaying returns a Proxy configured to replay.
@@ -63,7 +63,7 @@ func ForReplaying(filename string, port int) (*Proxy, error) {
 }
 
 func readLog(filename string) (*Log, error) {
-	bytes, err := ioutil.ReadFile(filename)
+	bytes, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

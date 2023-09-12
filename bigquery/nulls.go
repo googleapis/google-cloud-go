@@ -18,11 +18,22 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 	"time"
 
 	"cloud.google.com/go/civil"
+)
+
+var (
+	jsonNull      = []byte("null")
+	posInf        = []byte(`"+Inf"`)
+	inf           = []byte(`"Inf"`)
+	minusInf      = []byte(`"-Inf"`)
+	infinity      = []byte(`"Infinity"`)
+	minusInfinity = []byte(`"-Infinity"`)
+	nan           = []byte(`"NaN"`)
 )
 
 // NullInt64 represents a BigQuery INT64 that may be NULL.
@@ -48,6 +59,14 @@ type NullGeography struct {
 }
 
 func (n NullGeography) String() string { return nullstr(n.Valid, n.GeographyVal) }
+
+// NullJSON represents a BigQuery JSON string that may be NULL.
+type NullJSON struct {
+	JSONVal string
+	Valid   bool // Valid is true if JSONVal is not NULL.
+}
+
+func (n NullJSON) String() string { return nullstr(n.Valid, n.JSONVal) }
 
 // NullFloat64 represents a BigQuery FLOAT64 that may be NULL.
 type NullFloat64 struct {
@@ -111,7 +130,21 @@ func (n NullDateTime) String() string {
 func (n NullInt64) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Int64) }
 
 // MarshalJSON converts the NullFloat64 to JSON.
-func (n NullFloat64) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Float64) }
+func (n NullFloat64) MarshalJSON() (b []byte, err error) {
+	if n.Valid {
+		switch {
+		case math.IsInf(n.Float64, 1):
+			return infinity, nil
+		case math.IsInf(n.Float64, -1):
+			return minusInfinity, nil
+		case math.IsNaN(n.Float64):
+			return nan, nil
+		default:
+			return json.Marshal(n.Float64)
+		}
+	}
+	return jsonNull, nil
+}
 
 // MarshalJSON converts the NullBool to JSON.
 func (n NullBool) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Bool) }
@@ -121,6 +154,9 @@ func (n NullString) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.S
 
 // MarshalJSON converts the NullGeography to JSON.
 func (n NullGeography) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.GeographyVal) }
+
+// MarshalJSON converts the NullJSON to JSON.
+func (n NullJSON) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.JSONVal) }
 
 // MarshalJSON converts the NullTimestamp to JSON.
 func (n NullTimestamp) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Timestamp) }
@@ -151,8 +187,6 @@ func nullstr(valid bool, v interface{}) string {
 	return fmt.Sprint(v)
 }
 
-var jsonNull = []byte("null")
-
 func nulljson(valid bool, v interface{}) ([]byte, error) {
 	if !valid {
 		return jsonNull, nil
@@ -181,8 +215,19 @@ func (n *NullFloat64) UnmarshalJSON(b []byte) error {
 	n.Float64 = 0
 	if bytes.Equal(b, jsonNull) {
 		return nil
+	} else if bytes.Equal(b, posInf) || bytes.Equal(b, inf) || bytes.Equal(b, infinity) {
+		n.Float64 = math.Inf(1)
+		n.Valid = true
+		return nil
+	} else if bytes.Equal(b, minusInf) || bytes.Equal(b, minusInfinity) {
+		n.Float64 = math.Inf(-1)
+		n.Valid = true
+		return nil
+	} else if bytes.Equal(b, nan) {
+		n.Float64 = math.NaN()
+		n.Valid = true
+		return nil
 	}
-
 	if err := json.Unmarshal(b, &n.Float64); err != nil {
 		return err
 	}
@@ -228,6 +273,20 @@ func (n *NullGeography) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 	if err := json.Unmarshal(b, &n.GeographyVal); err != nil {
+		return err
+	}
+	n.Valid = true
+	return nil
+}
+
+// UnmarshalJSON converts JSON into a NullJSON.
+func (n *NullJSON) UnmarshalJSON(b []byte) error {
+	n.Valid = false
+	n.JSONVal = ""
+	if bytes.Equal(b, jsonNull) {
+		return nil
+	}
+	if err := json.Unmarshal(b, &n.JSONVal); err != nil {
 		return err
 	}
 	n.Valid = true
@@ -316,6 +375,7 @@ var (
 	typeOfNullBool      = reflect.TypeOf(NullBool{})
 	typeOfNullString    = reflect.TypeOf(NullString{})
 	typeOfNullGeography = reflect.TypeOf(NullGeography{})
+	typeOfNullJSON      = reflect.TypeOf(NullJSON{})
 	typeOfNullTimestamp = reflect.TypeOf(NullTimestamp{})
 	typeOfNullDate      = reflect.TypeOf(NullDate{})
 	typeOfNullTime      = reflect.TypeOf(NullTime{})
@@ -334,6 +394,8 @@ func nullableFieldType(t reflect.Type) FieldType {
 		return StringFieldType
 	case typeOfNullGeography:
 		return GeographyFieldType
+	case typeOfNullJSON:
+		return JSONFieldType
 	case typeOfNullTimestamp:
 		return TimestampFieldType
 	case typeOfNullDate:

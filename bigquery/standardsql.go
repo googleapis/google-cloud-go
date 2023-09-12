@@ -63,6 +63,23 @@ func (ssdt *StandardSQLDataType) toBQ() (*bq.StandardSqlDataType, error) {
 	return bqdt, nil
 }
 
+func (ssdt StandardSQLDataType) toBQParamType() *bq.QueryParameterType {
+	if ssdt.ArrayElementType != nil {
+		return &bq.QueryParameterType{Type: "ARRAY", ArrayType: ssdt.ArrayElementType.toBQParamType()}
+	}
+	if ssdt.StructType != nil {
+		var fts []*bq.QueryParameterTypeStructTypes
+		for _, field := range ssdt.StructType.Fields {
+			fts = append(fts, &bq.QueryParameterTypeStructTypes{
+				Name: field.Name,
+				Type: field.Type.toBQParamType(),
+			})
+		}
+		return &bq.QueryParameterType{Type: "STRUCT", StructTypes: fts}
+	}
+	return &bq.QueryParameterType{Type: ssdt.TypeKind}
+}
+
 func bqToStandardSQLDataType(bqdt *bq.StandardSqlDataType) (*StandardSQLDataType, error) {
 	if bqdt == nil {
 		return nil, nil
@@ -169,9 +186,46 @@ func standardSQLStructFieldsToBQ(fields []*StandardSQLField) ([]*bq.StandardSqlF
 	for _, v := range fields {
 		bqf, err := v.toBQ()
 		if err != nil {
-			return nil, fmt.Errorf("error converting struct fields: %v", err)
+			return nil, fmt.Errorf("error converting struct fields: %w", err)
 		}
 		bqFields = append(bqFields, bqf)
 	}
 	return bqFields, nil
+}
+
+// StandardSQLTableType models a table-like resource, which has a set of columns.
+type StandardSQLTableType struct {
+
+	// The columns of the table.
+	Columns []*StandardSQLField
+}
+
+func (sstt *StandardSQLTableType) toBQ() (*bq.StandardSqlTableType, error) {
+	if sstt == nil {
+		return nil, nil
+	}
+	out := &bq.StandardSqlTableType{}
+	for k, v := range sstt.Columns {
+		bq, err := v.toBQ()
+		if err != nil {
+			return nil, fmt.Errorf("error converting column %d: %v", k, err)
+		}
+		out.Columns = append(out.Columns, bq)
+	}
+	return out, nil
+}
+
+func bqToStandardSQLTableType(in *bq.StandardSqlTableType) (*StandardSQLTableType, error) {
+	if in == nil {
+		return nil, nil
+	}
+	out := &StandardSQLTableType{}
+	for k, v := range in.Columns {
+		f, err := bqToStandardSQLField(v)
+		if err != nil {
+			return nil, fmt.Errorf("error converting column %d: %v", k, err)
+		}
+		out.Columns = append(out.Columns, f)
+	}
+	return out, nil
 }

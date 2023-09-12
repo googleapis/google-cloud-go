@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
@@ -134,6 +135,30 @@ func TestCopy(t *testing.T) {
 			want: func() *bq.Job {
 				j := defaultCopyJob()
 				j.JobReference.Location = "asia-northeast1"
+				return j
+			}(),
+		},
+		{
+			dst: &Table{
+				ProjectID: "d-project-id",
+				DatasetID: "d-dataset-id",
+				TableID:   "d-table-id",
+			},
+			srcs: []*Table{
+				{
+					ProjectID: "s-project-id",
+					DatasetID: "s-dataset-id",
+					TableID:   "s-table-id",
+				},
+			},
+			config: CopyConfig{
+				OperationType: SnapshotOperation,
+				JobTimeout:    6 * time.Second,
+			},
+			want: func() *bq.Job {
+				j := defaultCopyJob()
+				j.Configuration.Copy.OperationType = "SNAPSHOT"
+				j.Configuration.JobTimeoutMs = 6000
 				return j
 			}(),
 		},

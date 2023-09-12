@@ -177,12 +177,13 @@ func (u *Inserter) putMulti(ctx context.Context, src []ValueSaver) error {
 	if req == nil {
 		return nil
 	}
-	call := u.t.c.bqs.Tabledata.InsertAll(u.t.ProjectID, u.t.DatasetID, u.t.TableID, req)
-	call = call.Context(ctx)
+	call := u.t.c.bqs.Tabledata.InsertAll(u.t.ProjectID, u.t.DatasetID, u.t.TableID, req).Context(ctx)
 	setClientHeader(call.Header())
 	var res *bq.TableDataInsertAllResponse
 	err = runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.tabledata.insertAll")
 		res, err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	})
 	if err != nil {
@@ -206,6 +207,7 @@ func (u *Inserter) newInsertRequest(savers []ValueSaver) (*bq.TableDataInsertAll
 			return nil, err
 		}
 		if insertID == NoDedupeID {
+			// User wants to opt-out of sending deduplication ID.
 			insertID = ""
 		} else if insertID == "" {
 			insertID = randomIDFn()
@@ -228,7 +230,7 @@ func handleInsertErrors(ierrs []*bq.TableDataInsertAllResponseInsertErrors, rows
 	}
 	var errs PutMultiError
 	for _, e := range ierrs {
-		if int(e.Index) > len(rows) {
+		if int(e.Index) >= len(rows) {
 			return fmt.Errorf("internal error: unexpected row index: %v", e.Index)
 		}
 		rie := RowInsertionError{

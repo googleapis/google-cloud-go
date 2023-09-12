@@ -193,6 +193,24 @@ func TestDateAfter(t *testing.T) {
 	}
 }
 
+func TestDateIsZero(t *testing.T) {
+	for _, test := range []struct {
+		date Date
+		want bool
+	}{
+		{Date{2000, 2, 29}, false},
+		{Date{10000, 12, 31}, false},
+		{Date{-1, 0, 0}, false},
+		{Date{0, 0, 0}, true},
+		{Date{}, true},
+	} {
+		got := test.date.IsZero()
+		if got != test.want {
+			t.Errorf("%#v: got %t, want %t", test.date, got, test.want)
+		}
+	}
+}
+
 func TestTimeToString(t *testing.T) {
 	for _, test := range []struct {
 		str       string
@@ -256,6 +274,58 @@ func TestTimeIsValid(t *testing.T) {
 		got := test.time.IsValid()
 		if got != test.want {
 			t.Errorf("%#v: got %t, want %t", test.time, got, test.want)
+		}
+	}
+}
+
+func TestTimeIsZero(t *testing.T) {
+	for _, test := range []struct {
+		time Time
+		want bool
+	}{
+		{Time{0, 0, 0, 0}, true},
+		{Time{}, true},
+		{Time{0, 0, 0, 1}, false},
+		{Time{-1, 0, 0, 0}, false},
+		{Time{0, -1, 0, 0}, false},
+	} {
+		got := test.time.IsZero()
+		if got != test.want {
+			t.Errorf("%#v: got %t, want %t", test.time, got, test.want)
+		}
+	}
+}
+
+func TestTimeBefore(t *testing.T) {
+	for _, test := range []struct {
+		t1, t2 Time
+		want   bool
+	}{
+		{Time{12, 0, 0, 0}, Time{14, 0, 0, 0}, true},
+		{Time{12, 20, 0, 0}, Time{12, 30, 0, 0}, true},
+		{Time{12, 20, 10, 0}, Time{12, 20, 20, 0}, true},
+		{Time{12, 20, 10, 5}, Time{12, 20, 10, 10}, true},
+		{Time{12, 20, 10, 5}, Time{12, 20, 10, 5}, false},
+	} {
+		if got := test.t1.Before(test.t2); got != test.want {
+			t.Errorf("%v.Before(%v): got %t, want %t", test.t1, test.t2, got, test.want)
+		}
+	}
+}
+
+func TestTimeAfter(t *testing.T) {
+	for _, test := range []struct {
+		t1, t2 Time
+		want   bool
+	}{
+		{Time{12, 0, 0, 0}, Time{14, 0, 0, 0}, false},
+		{Time{12, 20, 0, 0}, Time{12, 30, 0, 0}, false},
+		{Time{12, 20, 10, 0}, Time{12, 20, 20, 0}, false},
+		{Time{12, 20, 10, 5}, Time{12, 20, 10, 10}, false},
+		{Time{12, 20, 10, 5}, Time{12, 20, 10, 5}, false},
+	} {
+		if got := test.t1.After(test.t2); got != test.want {
+			t.Errorf("%v.After(%v): got %t, want %t", test.t1, test.t2, got, test.want)
 		}
 	}
 }
@@ -379,6 +449,28 @@ func TestDateTimeAfter(t *testing.T) {
 	} {
 		if got := test.dt1.After(test.dt2); got != test.want {
 			t.Errorf("%v.After(%v): got %t, want %t", test.dt1, test.dt2, got, test.want)
+		}
+	}
+}
+
+func TestDateTimeIsZero(t *testing.T) {
+	for _, test := range []struct {
+		dt   DateTime
+		want bool
+	}{
+		{DateTime{Date{2016, 3, 20}, Time{0, 0, 0, 0}}, false},
+		{DateTime{Date{}, Time{5, 44, 20, 0}}, false},
+		{DateTime{Date{2016, 3, 20}, Time{}}, false},
+		{DateTime{Date{0, 0, 0}, Time{5, 16, 47, 2}}, false},
+		{DateTime{Date{2021, 9, 5}, Time{9, 30, 51, 6}}, false},
+		{DateTime{Date{}, Time{}}, true},
+		{DateTime{Date{0, 0, 0}, Time{0, 0, 0, 0}}, true},
+		{DateTime{Date{}, Time{0, 0, 0, 0}}, true},
+		{DateTime{Date{0, 0, 0}, Time{}}, true},
+	} {
+		got := test.dt.IsZero()
+		if got != test.want {
+			t.Errorf("%#v: got %t, want %t", test.dt, got, test.want)
 		}
 	}
 }

@@ -1,0 +1,25 @@
+{
+    "extends": [
+        "config:base",
+        "schedule:weekly",
+        ":disableDependencyDashboard"
+    ],
+    "semanticCommits": false,
+    "postUpdateOptions": [
+        "gomodTidy"
+    ],
+    "commitMessagePrefix": "chore(all): ",
+    "commitMessageAction": "update",
+    "groupName": "deps",
+    "ignoreDeps": [
+        "google.golang.org/genproto"
+    ],
+    "ignorePaths": [
+        "**/snippets/**"
+    ],
+    "force": {
+        "constraints": {
+            "go": "1.20"
+        }
+    }
+}

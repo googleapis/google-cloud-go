@@ -19,14 +19,14 @@ import (
 	"fmt"
 
 	vkit "cloud.google.com/go/logging/apiv2"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"google.golang.org/api/iterator"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 
 // Metric describes a logs-based metric. The value of the metric is the
 // number of log entries that match a logs filter.
 //
-// Metrics are a feature of Stackdriver Monitoring.
+// Metrics are a feature of Cloud Monitoring.
 // See https://cloud.google.com/monitoring/api/v3/metrics for more about them.
 type Metric struct {
 	// ID is a client-assigned metric identifier. Example:

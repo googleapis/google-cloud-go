@@ -21,10 +21,12 @@ import (
 	"testing"
 	"time"
 
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -314,4 +316,68 @@ func TestUpdateProcess(t *testing.T) {
 			t.Errorf("%+v: got %+v, want %+v", test.in, got, test.want)
 		}
 	}
+}
+
+func TestDocRef_WithReadOptions(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+	const docPath = dbPath + "/documents/C/a"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+
+	srv.addRPC(&pb.ListDocumentsRequest{
+		Parent:       dbPath + "/documents",
+		CollectionId: "myCollection",
+		Mask:         &pb.DocumentMask{},
+		ShowMissing:  true,
+	}, []interface{}{
+		&pb.ListDocumentsResponse{
+			Documents: []*pb.Document{
+				{
+					Name:       dbPath + "/documents/C/a",
+					CreateTime: &timestamppb.Timestamp{Seconds: 10},
+					UpdateTime: &timestamppb.Timestamp{Seconds: 20},
+					Fields:     map[string]*pb.Value{"a": intval(1)},
+				},
+			},
+		},
+	})
+	srv.addRPC(&pb.BatchGetDocumentsRequest{
+		Database:  dbPath,
+		Documents: []string{docPath},
+		ConsistencySelector: &pb.BatchGetDocumentsRequest_ReadTime{
+			ReadTime: &timestamppb.Timestamp{Seconds: tm.Unix()},
+		},
+	}, []interface{}{
+		&pb.BatchGetDocumentsResponse{
+			ReadTime: &timestamppb.Timestamp{Seconds: tm.Unix()},
+			Result: &pb.BatchGetDocumentsResponse_Found{
+				Found: &pb.Document{
+					Name:       dbPath + "/documents/C/a",
+					CreateTime: &timestamppb.Timestamp{Seconds: 10},
+					UpdateTime: &timestamppb.Timestamp{Seconds: 20},
+					Fields:     map[string]*pb.Value{"a": intval(1)},
+				},
+			},
+		},
+	})
+
+	it := c.Collection("myCollection").DocumentRefs(ctx)
+
+	for {
+		dr, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = dr.WithReadOptions(ReadTime(tm)).Get(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
 }

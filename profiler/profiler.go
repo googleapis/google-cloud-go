@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package profiler is a client for the Stackdriver Profiler service.
-//
-// This package is still experimental and subject to change.
+// Package profiler is a client for the Cloud Profiler service.
 //
 // Usage example:
 //
-//   import "cloud.google.com/go/profiler"
-//   ...
-//   if err := profiler.Start(profiler.Config{Service: "my-service"}); err != nil {
-//       // TODO: Handle error.
-//   }
+//	import "cloud.google.com/go/profiler"
+//	...
+//	if err := profiler.Start(profiler.Config{Service: "my-service"}); err != nil {
+//	    // TODO: Handle error.
+//	}
 //
 // Calling Start will start a goroutine to collect profiles and upload to
 // the profiler server, at the rhythm specified by the server.
@@ -41,16 +39,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"regexp"
 	"runtime"
 	"runtime/pprof"
+	"strings"
 	"sync"
 	"time"
 
 	gcemd "cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/profiler/internal"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/pprof/profile"
@@ -69,6 +70,7 @@ var (
 	config       Config
 	startOnce    allowUntilSuccess
 	mutexEnabled bool
+	logger       *log.Logger
 	// The functions below are stubbed to be overrideable for testing.
 	getProjectID     = gcemd.ProjectID
 	getInstanceName  = gcemd.InstanceName
@@ -77,9 +79,9 @@ var (
 	stopCPUProfile   = pprof.StopCPUProfile
 	writeHeapProfile = pprof.WriteHeapProfile
 	sleep            = gax.Sleep
-	dialGRPC         = gtransport.Dial
+	dialGRPC         = gtransport.DialPool
 	onGCE            = gcemd.OnGCE
-	serviceRegexp    = regexp.MustCompile(`^[a-z]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
+	serviceRegexp    = regexp.MustCompile(`^[a-z0-9]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
 
 	// For testing only.
 	// When the profiling loop has exited without error and this channel is
@@ -129,6 +131,10 @@ type Config struct {
 	// defaults to false.
 	DebugLogging bool
 
+	// DebugLoggingOutput is where the logger will write debug logs to, if enabled.
+	// It defaults to os.Stderr.
+	DebugLoggingOutput io.Writer
+
 	// MutexProfiling enables mutex profiling. It defaults to false.
 	// Note that mutex profiling is not supported by Go versions older
 	// than Go 1.8.
@@ -150,6 +156,11 @@ type Config struct {
 
 	// When true, collecting the goroutine profiles is disabled.
 	NoGoroutineProfiling bool
+
+	// When true, the agent sends all telemetries via OpenCensus exporter, which
+	// can be viewed in Cloud Trace and Cloud Monitoring.
+	// Default is false.
+	EnableOCTelemetry bool
 
 	// ProjectID is the Cloud Console project ID to use instead of the one set by
 	// GOOGLE_CLOUD_PROJECT environment variable or read from the VM metadata
@@ -219,6 +230,10 @@ func Start(cfg Config, options ...option.ClientOption) error {
 }
 
 func start(cfg Config, options ...option.ClientOption) error {
+	if cfg.DebugLoggingOutput == nil {
+		cfg.DebugLoggingOutput = os.Stderr
+	}
+	logger = log.New(cfg.DebugLoggingOutput, "Cloud Profiler: ", log.LstdFlags)
 	if err := initializeConfig(cfg); err != nil {
 		debugLog("failed to initialize config: %v", err)
 		return err
@@ -234,17 +249,20 @@ func start(cfg Config, options ...option.ClientOption) error {
 	opts := []option.ClientOption{
 		option.WithEndpoint(config.APIAddr),
 		option.WithScopes(scope),
-		option.WithUserAgent(fmt.Sprintf("gcloud-go-profiler/%s", version.Repo)),
+		option.WithUserAgent(fmt.Sprintf("gcloud-go-profiler/%s", internal.Version)),
+	}
+	if !config.EnableOCTelemetry {
+		opts = append(opts, option.WithTelemetryDisabled())
 	}
 	opts = append(opts, options...)
 
-	conn, err := dialGRPC(ctx, opts...)
+	connPool, err := dialGRPC(ctx, opts...)
 	if err != nil {
 		debugLog("failed to dial GRPC: %v", err)
 		return err
 	}
 
-	a, err := initializeAgent(pb.NewProfilerServiceClient(conn))
+	a, err := initializeAgent(pb.NewProfilerServiceClient(connPool))
 	if err != nil {
 		debugLog("failed to start the profiling agent: %v", err)
 		return err
@@ -255,7 +273,7 @@ func start(cfg Config, options ...option.ClientOption) error {
 
 func debugLog(format string, e ...interface{}) {
 	if config.DebugLogging {
-		log.Printf(format, e...)
+		logger.Printf(format, e...)
 	}
 }
 
@@ -291,13 +309,13 @@ func abortedBackoffDuration(md grpcmd.MD) (time.Duration, error) {
 
 type retryer struct {
 	backoff gax.Backoff
-	md      grpcmd.MD
+	md      *grpcmd.MD
 }
 
 func (r *retryer) Retry(err error) (time.Duration, bool) {
 	st, _ := status.FromError(err)
 	if st != nil && st.Code() == codes.Aborted {
-		dur, err := abortedBackoffDuration(r.md)
+		dur, err := abortedBackoffDuration(*r.md)
 		if err == nil {
 			return dur, true
 		}
@@ -309,7 +327,8 @@ func (r *retryer) Retry(err error) (time.Duration, bool) {
 // createProfile talks to the profiler server to create profile. In
 // case of error, the goroutine will sleep and retry. Sleep duration may
 // be specified by the server. Otherwise it will be an exponentially
-// increasing value, bounded by maxBackoff.
+// increasing value, bounded by maxBackoff. Special handling for
+// certificate errors is described below.
 func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	req := pb.CreateProfileRequest{
 		Parent:      "projects/" + a.deployment.ProjectId,
@@ -318,7 +337,7 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	}
 
 	var p *pb.Profile
-	md := grpcmd.New(map[string]string{})
+	md := grpcmd.New(nil)
 
 	gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		debugLog("creating a new profile via profiler service")
@@ -326,6 +345,11 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		if err != nil {
 			debugLog("failed to create profile, will retry: %v", err)
+			if strings.Contains(err.Error(), "x509: certificate signed by unknown authority") {
+				// gax.Invoke does not retry missing certificate error. Force a retry by returning
+				// a different error. See https://github.com/googleapis/google-cloud-go/issues/3158.
+				err = errors.New("retry the certificate error")
+			}
 		}
 		return err
 	}, gax.WithRetry(func() gax.Retryer {
@@ -335,7 +359,7 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 				Max:        maxBackoff,
 				Multiplier: backoffMultiplier,
 			},
-			md: md,
+			md: &md,
 		}
 	}))
 
@@ -346,6 +370,19 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 	var prof bytes.Buffer
 	pt := p.GetProfileType()
+
+	ptEnabled := false
+	for _, enabled := range a.profileTypes {
+		if enabled == pt {
+			ptEnabled = true
+			break
+		}
+	}
+
+	if !ptEnabled {
+		debugLog("skipping collection of disabled profile type: %v", pt)
+		return
+	}
 
 	switch pt {
 	case pb.ProfileType_CPU:
@@ -395,15 +432,6 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 		return
 	}
 
-	// Starting Go 1.9 the profiles are symbolized by runtime/pprof.
-	// TODO(jianqiaoli): Remove the symbolization code when we decide to
-	// stop supporting Go 1.8.
-	if !shouldAssumeSymbolized && pt != pb.ProfileType_CONTENTION {
-		if err := parseAndSymbolize(&prof); err != nil {
-			debugLog("failed to symbolize profile: %v", err)
-		}
-	}
-
 	p.ProfileBytes = prof.Bytes()
 	p.Labels = a.profileLabels
 	req := pb.UpdateProfileRequest{Profile: p}
@@ -437,9 +465,6 @@ func deltaMutexProfile(ctx context.Context, duration time.Duration, prof *bytes.
 		return err
 	}
 
-	// The mutex profile is not symbolized by runtime.pprof until
-	// golang.org/issue/21474 is fixed in go1.10.
-	symbolize(p)
 	return p.Write(prof)
 }
 
@@ -459,7 +484,7 @@ func mutexProfile() (*profile.Profile, error) {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func withXGoogHeader(ctx context.Context, keyval ...string) context.Context {
-	kv := append([]string{"gl-go", version.Go(), "gccl", version.Repo}, keyval...)
+	kv := append([]string{"gl-go", version.Go(), "gccl", internal.Version}, keyval...)
 	kv = append(kv, "gax", gax.Version, "grpc", grpc.Version)
 
 	md, _ := grpcmd.FromOutgoingContext(ctx)
@@ -560,20 +585,20 @@ func initializeConfig(cfg Config) error {
 		var err error
 		if config.ProjectID == "" {
 			if config.ProjectID, err = getProjectID(); err != nil {
-				return fmt.Errorf("failed to get the project ID from Compute Engine metadata: %v", err)
+				return fmt.Errorf("failed to get the project ID from Compute Engine metadata: %w", err)
 			}
 		}
 
 		if config.Zone == "" {
 			if config.Zone, err = getZone(); err != nil {
-				return fmt.Errorf("failed to get zone from Compute Engine metadata: %v", err)
+				return fmt.Errorf("failed to get zone from Compute Engine metadata: %w", err)
 			}
 		}
 
 		if config.Instance == "" {
 			if config.Instance, err = getInstanceName(); err != nil {
 				if _, ok := err.(gcemd.NotDefinedError); !ok {
-					return fmt.Errorf("failed to get instance name from Compute Engine metadata: %v", err)
+					return fmt.Errorf("failed to get instance name from Compute Engine metadata: %w", err)
 				}
 				debugLog("failed to get instance name from Compute Engine metadata, will use empty name: %v", err)
 			}
@@ -594,7 +619,7 @@ func initializeConfig(cfg Config) error {
 // server for instructions, and collects and uploads profiles as
 // requested.
 func pollProfilerService(ctx context.Context, a *agent) {
-	debugLog("Stackdriver Profiler Go Agent version: %s", version.Repo)
+	debugLog("Cloud Profiler Go Agent version: %s", internal.Version)
 	debugLog("profiler has started")
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p := a.createProfile(ctx)

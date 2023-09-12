@@ -28,9 +28,9 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 )
 
@@ -46,6 +46,7 @@ const (
 	batchDuration           = 50 * time.Millisecond
 	serverDelay             = 200 * time.Millisecond
 	maxOutstandingPublishes = 1600 // max_outstanding_messages in run.py
+	useOrdered              = true
 )
 
 func BenchmarkPublishThroughput(b *testing.B) {
@@ -53,7 +54,8 @@ func BenchmarkPublishThroughput(b *testing.B) {
 	client := perfClient(serverDelay, 1, b)
 
 	lts := &PubServer{ID: "xxx"}
-	lts.init(client, "t", messageSize, batchSize, batchDuration)
+	lts.init(client, "t", messageSize, batchSize, batchDuration, useOrdered)
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		runOnce(lts)

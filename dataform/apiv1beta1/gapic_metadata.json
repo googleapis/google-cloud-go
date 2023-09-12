@@ -1,0 +1,403 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.dataform.v1beta1",
+  "libraryPackage": "cloud.google.com/go/dataform/apiv1beta1",
+  "services": {
+    "Dataform": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelWorkflowInvocation": {
+              "methods": [
+                "CancelWorkflowInvocation"
+              ]
+            },
+            "CommitWorkspaceChanges": {
+              "methods": [
+                "CommitWorkspaceChanges"
+              ]
+            },
+            "CreateCompilationResult": {
+              "methods": [
+                "CreateCompilationResult"
+              ]
+            },
+            "CreateRepository": {
+              "methods": [
+                "CreateRepository"
+              ]
+            },
+            "CreateWorkflowInvocation": {
+              "methods": [
+                "CreateWorkflowInvocation"
+              ]
+            },
+            "CreateWorkspace": {
+              "methods": [
+                "CreateWorkspace"
+              ]
+            },
+            "DeleteRepository": {
+              "methods": [
+                "DeleteRepository"
+              ]
+            },
+            "DeleteWorkflowInvocation": {
+              "methods": [
+                "DeleteWorkflowInvocation"
+              ]
+            },
+            "DeleteWorkspace": {
+              "methods": [
+                "DeleteWorkspace"
+              ]
+            },
+            "FetchFileDiff": {
+              "methods": [
+                "FetchFileDiff"
+              ]
+            },
+            "FetchFileGitStatuses": {
+              "methods": [
+                "FetchFileGitStatuses"
+              ]
+            },
+            "FetchGitAheadBehind": {
+              "methods": [
+                "FetchGitAheadBehind"
+              ]
+            },
+            "FetchRemoteBranches": {
+              "methods": [
+                "FetchRemoteBranches"
+              ]
+            },
+            "GetCompilationResult": {
+              "methods": [
+                "GetCompilationResult"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetRepository": {
+              "methods": [
+                "GetRepository"
+              ]
+            },
+            "GetWorkflowInvocation": {
+              "methods": [
+                "GetWorkflowInvocation"
+              ]
+            },
+            "GetWorkspace": {
+              "methods": [
+                "GetWorkspace"
+              ]
+            },
+            "InstallNpmPackages": {
+              "methods": [
+                "InstallNpmPackages"
+              ]
+            },
+            "ListCompilationResults": {
+              "methods": [
+                "ListCompilationResults"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListRepositories": {
+              "methods": [
+                "ListRepositories"
+              ]
+            },
+            "ListWorkflowInvocations": {
+              "methods": [
+                "ListWorkflowInvocations"
+              ]
+            },
+            "ListWorkspaces": {
+              "methods": [
+                "ListWorkspaces"
+              ]
+            },
+            "MakeDirectory": {
+              "methods": [
+                "MakeDirectory"
+              ]
+            },
+            "MoveDirectory": {
+              "methods": [
+                "MoveDirectory"
+              ]
+            },
+            "MoveFile": {
+              "methods": [
+                "MoveFile"
+              ]
+            },
+            "PullGitCommits": {
+              "methods": [
+                "PullGitCommits"
+              ]
+            },
+            "PushGitCommits": {
+              "methods": [
+                "PushGitCommits"
+              ]
+            },
+            "QueryCompilationResultActions": {
+              "methods": [
+                "QueryCompilationResultActions"
+              ]
+            },
+            "QueryDirectoryContents": {
+              "methods": [
+                "QueryDirectoryContents"
+              ]
+            },
+            "QueryWorkflowInvocationActions": {
+              "methods": [
+                "QueryWorkflowInvocationActions"
+              ]
+            },
+            "ReadFile": {
+              "methods": [
+                "ReadFile"
+              ]
+            },
+            "RemoveDirectory": {
+              "methods": [
+                "RemoveDirectory"
+              ]
+            },
+            "RemoveFile": {
+              "methods": [
+                "RemoveFile"
+              ]
+            },
+            "ResetWorkspaceChanges": {
+              "methods": [
+                "ResetWorkspaceChanges"
+              ]
+            },
+            "UpdateRepository": {
+              "methods": [
+                "UpdateRepository"
+              ]
+            },
+            "WriteFile": {
+              "methods": [
+                "WriteFile"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelWorkflowInvocation": {
+              "methods": [
+                "CancelWorkflowInvocation"
+              ]
+            },
+            "CommitWorkspaceChanges": {
+              "methods": [
+                "CommitWorkspaceChanges"
+              ]
+            },
+            "CreateCompilationResult": {
+              "methods": [
+                "CreateCompilationResult"
+              ]
+            },
+            "CreateRepository": {
+              "methods": [
+                "CreateRepository"
+              ]
+            },
+            "CreateWorkflowInvocation": {
+              "methods": [
+                "CreateWorkflowInvocation"
+              ]
+            },
+            "CreateWorkspace": {
+              "methods": [
+                "CreateWorkspace"
+              ]
+            },
+            "DeleteRepository": {
+              "methods": [
+                "DeleteRepository"
+              ]
+            },
+            "DeleteWorkflowInvocation": {
+              "methods": [
+                "DeleteWorkflowInvocation"
+              ]
+            },
+            "DeleteWorkspace": {
+              "methods": [
+                "DeleteWorkspace"
+              ]
+            },
+            "FetchFileDiff": {
+              "methods": [
+                "FetchFileDiff"
+              ]
+            },
+            "FetchFileGitStatuses": {
+              "methods": [
+                "FetchFileGitStatuses"
+              ]
+            },
+            "FetchGitAheadBehind": {
+              "methods": [
+                "FetchGitAheadBehind"
+              ]
+            },
+            "FetchRemoteBranches": {
+              "methods": [
+                "FetchRemoteBranches"
+              ]
+            },
+            "GetCompilationResult": {
+              "methods": [
+                "GetCompilationResult"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetRepository": {
+              "methods": [
+                "GetRepository"
+              ]
+            },
+            "GetWorkflowInvocation": {
+              "methods": [
+                "GetWorkflowInvocation"
+              ]
+            },
+            "GetWorkspace": {
+              "methods": [
+                "GetWorkspace"
+              ]
+            },
+            "InstallNpmPackages": {
+              "methods": [
+                "InstallNpmPackages"
+              ]
+            },
+            "ListCompilationResults": {
+              "methods": [
+                "ListCompilationResults"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListRepositories": {
+              "methods": [
+                "ListRepositories"
+              ]
+            },
+            "ListWorkflowInvocations": {
+              "methods": [
+                "ListWorkflowInvocations"
+              ]
+            },
+            "ListWorkspaces": {
+              "methods": [
+                "ListWorkspaces"
+              ]
+            },
+            "MakeDirectory": {
+              "methods": [
+                "MakeDirectory"
+              ]
+            },
+            "MoveDirectory": {
+              "methods": [
+                "MoveDirectory"
+              ]
+            },
+            "MoveFile": {
+              "methods": [
+                "MoveFile"
+              ]
+            },
+            "PullGitCommits": {
+              "methods": [
+                "PullGitCommits"
+              ]
+            },
+            "PushGitCommits": {
+              "methods": [
+                "PushGitCommits"
+              ]
+            },
+            "QueryCompilationResultActions": {
+              "methods": [
+                "QueryCompilationResultActions"
+              ]
+            },
+            "QueryDirectoryContents": {
+              "methods": [
+                "QueryDirectoryContents"
+              ]
+            },
+            "QueryWorkflowInvocationActions": {
+              "methods": [
+                "QueryWorkflowInvocationActions"
+              ]
+            },
+            "ReadFile": {
+              "methods": [
+                "ReadFile"
+              ]
+            },
+            "RemoveDirectory": {
+              "methods": [
+                "RemoveDirectory"
+              ]
+            },
+            "RemoveFile": {
+              "methods": [
+                "RemoveFile"
+              ]
+            },
+            "ResetWorkspaceChanges": {
+              "methods": [
+                "ResetWorkspaceChanges"
+              ]
+            },
+            "UpdateRepository": {
+              "methods": [
+                "UpdateRepository"
+              ]
+            },
+            "WriteFile": {
+              "methods": [
+                "WriteFile"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

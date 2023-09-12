@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -80,27 +80,43 @@ func TestRoutineTypeConversions(t *testing.T) {
 				DefinitionBody:   "body",
 				Description:      "desc",
 				Etag:             "etag",
+				DeterminismLevel: "DETERMINISTIC",
 				RoutineType:      "type",
 				Language:         "lang",
+				ReturnType:       &bq.StandardSqlDataType{TypeKind: "INT64"},
+				ReturnTableType: &bq.StandardSqlTableType{
+					Columns: []*bq.StandardSqlField{
+						{Name: "field", Type: &bq.StandardSqlDataType{TypeKind: "FLOAT64"}},
+					},
+				},
 			},
 			&RoutineMetadata{
 				CreationTime:     aTime,
 				LastModifiedTime: aTime,
 				Description:      "desc",
+				DeterminismLevel: Deterministic,
 				Body:             "body",
 				ETag:             "etag",
 				Type:             "type",
 				Language:         "lang",
+				ReturnType:       &StandardSQLDataType{TypeKind: "INT64"},
+				ReturnTableType: &StandardSQLTableType{
+					Columns: []*StandardSQLField{
+						{Name: "field", Type: &StandardSQLDataType{TypeKind: "FLOAT64"}},
+					},
+				},
 			}},
 		{"body_and_libs", "FromRoutineMetadataToUpdate",
 			&RoutineMetadataToUpdate{
 				Body:              "body",
 				ImportedLibraries: []string{"foo", "bar"},
+				ReturnType:        &StandardSQLDataType{TypeKind: "FOO"},
 			},
 			&bq.Routine{
 				DefinitionBody:    "body",
 				ImportedLibraries: []string{"foo", "bar"},
-				ForceSendFields:   []string{"DefinitionBody", "ImportedLibraries"},
+				ReturnType:        &bq.StandardSqlDataType{TypeKind: "FOO"},
+				ForceSendFields:   []string{"DefinitionBody", "ImportedLibraries", "ReturnType"},
 			}},
 		{"null_fields", "FromRoutineMetadataToUpdate",
 			&RoutineMetadataToUpdate{
@@ -149,5 +165,65 @@ func TestRoutineTypeConversions(t *testing.T) {
 			t.Parallel()
 			testRoutineConversion(t, test.conversion, test.in, test.want)
 		})
+	}
+}
+
+func TestRoutineIdentifiers(t *testing.T) {
+	testRoutine := &Routine{
+		ProjectID: "p",
+		DatasetID: "d",
+		RoutineID: "r",
+		c:         nil,
+	}
+	for _, tc := range []struct {
+		description string
+		in          *Routine
+		format      IdentifierFormat
+		want        string
+		wantErr     bool
+	}{
+		{
+			description: "empty format string",
+			in:          testRoutine,
+			format:      "",
+			wantErr:     true,
+		},
+		{
+			description: "legacy",
+			in:          testRoutine,
+			wantErr:     true,
+		},
+		{
+			description: "standard unquoted",
+			in:          testRoutine,
+			format:      StandardSQLID,
+			want:        "p.d.r",
+		},
+		{
+			description: "standard w/dash",
+			in:          &Routine{ProjectID: "p-p", DatasetID: "d", RoutineID: "r"},
+			format:      StandardSQLID,
+			want:        "`p-p`.d.r",
+		},
+		{
+			description: "api resource",
+			in:          testRoutine,
+			format:      StorageAPIResourceID,
+			wantErr:     true,
+		},
+	} {
+		got, err := tc.in.Identifier(tc.format)
+		if tc.wantErr && err == nil {
+			t.Errorf("case %q: wanted err, was success", tc.description)
+		}
+		if !tc.wantErr {
+			if err != nil {
+				t.Errorf("case %q: wanted success, got err: %v", tc.description, err)
+			} else {
+				if got != tc.want {
+					t.Errorf("case %q:  got %s, want %s", tc.description, got, tc.want)
+				}
+			}
+		}
 	}
 }

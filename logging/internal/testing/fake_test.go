@@ -23,9 +23,9 @@ import (
 	"testing"
 	"time"
 
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"github.com/golang/protobuf/proto"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
 	grpc "google.golang.org/grpc"
 )
 

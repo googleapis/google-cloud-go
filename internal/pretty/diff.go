@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build linux
+// +build linux
+
 package pretty
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"syscall"
@@ -64,7 +66,7 @@ func Diff(want, got interface{}) (string, bool, error) {
 }
 
 func writeToTemp(v interface{}) (string, error) {
-	f, err := ioutil.TempFile("", "prettyDiff")
+	f, err := os.CreateTemp("", "prettyDiff")
 	if err != nil {
 		return "", err
 	}

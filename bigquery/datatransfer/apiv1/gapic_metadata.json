@@ -1,0 +1,193 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.bigquery.datatransfer.v1",
+  "libraryPackage": "cloud.google.com/go/bigquery/datatransfer/apiv1",
+  "services": {
+    "DataTransferService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CheckValidCreds": {
+              "methods": [
+                "CheckValidCreds"
+              ]
+            },
+            "CreateTransferConfig": {
+              "methods": [
+                "CreateTransferConfig"
+              ]
+            },
+            "DeleteTransferConfig": {
+              "methods": [
+                "DeleteTransferConfig"
+              ]
+            },
+            "DeleteTransferRun": {
+              "methods": [
+                "DeleteTransferRun"
+              ]
+            },
+            "EnrollDataSources": {
+              "methods": [
+                "EnrollDataSources"
+              ]
+            },
+            "GetDataSource": {
+              "methods": [
+                "GetDataSource"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetTransferConfig": {
+              "methods": [
+                "GetTransferConfig"
+              ]
+            },
+            "GetTransferRun": {
+              "methods": [
+                "GetTransferRun"
+              ]
+            },
+            "ListDataSources": {
+              "methods": [
+                "ListDataSources"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListTransferConfigs": {
+              "methods": [
+                "ListTransferConfigs"
+              ]
+            },
+            "ListTransferLogs": {
+              "methods": [
+                "ListTransferLogs"
+              ]
+            },
+            "ListTransferRuns": {
+              "methods": [
+                "ListTransferRuns"
+              ]
+            },
+            "ScheduleTransferRuns": {
+              "methods": [
+                "ScheduleTransferRuns"
+              ]
+            },
+            "StartManualTransferRuns": {
+              "methods": [
+                "StartManualTransferRuns"
+              ]
+            },
+            "UpdateTransferConfig": {
+              "methods": [
+                "UpdateTransferConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CheckValidCreds": {
+              "methods": [
+                "CheckValidCreds"
+              ]
+            },
+            "CreateTransferConfig": {
+              "methods": [
+                "CreateTransferConfig"
+              ]
+            },
+            "DeleteTransferConfig": {
+              "methods": [
+                "DeleteTransferConfig"
+              ]
+            },
+            "DeleteTransferRun": {
+              "methods": [
+                "DeleteTransferRun"
+              ]
+            },
+            "EnrollDataSources": {
+              "methods": [
+                "EnrollDataSources"
+              ]
+            },
+            "GetDataSource": {
+              "methods": [
+                "GetDataSource"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetTransferConfig": {
+              "methods": [
+                "GetTransferConfig"
+              ]
+            },
+            "GetTransferRun": {
+              "methods": [
+                "GetTransferRun"
+              ]
+            },
+            "ListDataSources": {
+              "methods": [
+                "ListDataSources"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListTransferConfigs": {
+              "methods": [
+                "ListTransferConfigs"
+              ]
+            },
+            "ListTransferLogs": {
+              "methods": [
+                "ListTransferLogs"
+              ]
+            },
+            "ListTransferRuns": {
+              "methods": [
+                "ListTransferRuns"
+              ]
+            },
+            "ScheduleTransferRuns": {
+              "methods": [
+                "ScheduleTransferRuns"
+              ]
+            },
+            "StartManualTransferRuns": {
+              "methods": [
+                "StartManualTransferRuns"
+              ]
+            },
+            "UpdateTransferConfig": {
+              "methods": [
+                "UpdateTransferConfig"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

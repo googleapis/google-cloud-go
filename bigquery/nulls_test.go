@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"encoding/json"
+	"math"
 	"reflect"
 	"testing"
 
@@ -38,6 +39,7 @@ func TestNullsJSON(t *testing.T) {
 		{&NullBool{Valid: true, Bool: true}, `true`},
 		{&NullString{Valid: true, StringVal: "foo"}, `"foo"`},
 		{&NullGeography{Valid: true, GeographyVal: "ST_GEOPOINT(47.649154, -122.350220)"}, `"ST_GEOPOINT(47.649154, -122.350220)"`},
+		{&NullJSON{Valid: true, JSONVal: "{\"foo\": \"bar\"}"}, `"{\"foo\": \"bar\"}"`},
 		{&NullTimestamp{Valid: true, Timestamp: testTimestamp}, `"2016-11-05T07:50:22.000000008Z"`},
 		{&NullDate{Valid: true, Date: testDate}, `"2016-11-05"`},
 		{&NullTime{Valid: true, Time: nullsTestTime}, `"07:50:22.000001"`},
@@ -48,10 +50,15 @@ func TestNullsJSON(t *testing.T) {
 		{&NullBool{}, `null`},
 		{&NullString{}, `null`},
 		{&NullGeography{}, `null`},
+		{&NullJSON{}, `null`},
 		{&NullTimestamp{}, `null`},
 		{&NullDate{}, `null`},
 		{&NullTime{}, `null`},
 		{&NullDateTime{}, `null`},
+
+		{&NullFloat64{Valid: true, Float64: math.Inf(1)}, `"Infinity"`},
+		{&NullFloat64{Valid: true, Float64: math.Inf(-1)}, `"-Infinity"`},
+		{&NullFloat64{Valid: true, Float64: math.NaN()}, `"NaN"`},
 	} {
 		bytes, err := json.Marshal(test.in)
 		if err != nil {
@@ -71,5 +78,85 @@ func TestNullsJSON(t *testing.T) {
 		if !testutil.Equal(value, test.in) {
 			t.Errorf("%#v: got %#v, want %#v", test.in, value, test.in)
 		}
+	}
+}
+
+func TestNullFloat64JSON(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		in           string
+		unmarshalled NullFloat64
+		marshalled   string
+	}{
+		{
+			name:         "float value",
+			in:           "3.14",
+			unmarshalled: NullFloat64{Valid: true, Float64: 3.14},
+			marshalled:   "3.14",
+		},
+		{
+			name:         "null",
+			in:           "null",
+			unmarshalled: NullFloat64{},
+			marshalled:   "null",
+		},
+		{
+			name:         "long infinity",
+			in:           `"Infinity"`,
+			unmarshalled: NullFloat64{Valid: true, Float64: math.Inf(1)},
+			marshalled:   `"Infinity"`,
+		},
+		{
+			name:         "short infinity",
+			in:           `"Inf"`,
+			unmarshalled: NullFloat64{Valid: true, Float64: math.Inf(1)},
+			marshalled:   `"Infinity"`,
+		},
+		{
+			name:         "positive short infinity",
+			in:           `"+Inf"`,
+			unmarshalled: NullFloat64{Valid: true, Float64: math.Inf(1)},
+			marshalled:   `"Infinity"`,
+		},
+		{
+			name:         "minus infinity",
+			in:           `"-Infinity"`,
+			unmarshalled: NullFloat64{Valid: true, Float64: math.Inf(-1)},
+			marshalled:   `"-Infinity"`,
+		},
+		{
+			name:         "minus short infinity",
+			in:           `"-Inf"`,
+			unmarshalled: NullFloat64{Valid: true, Float64: math.Inf(-1)},
+			marshalled:   `"-Infinity"`,
+		},
+		{
+			name:         "NaN",
+			in:           `"NaN"`,
+			unmarshalled: NullFloat64{Valid: true, Float64: math.NaN()},
+			marshalled:   `"NaN"`,
+		},
+	} {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			var f NullFloat64
+			err := json.Unmarshal([]byte(tc.in), &f)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got, want := f, tc.unmarshalled; !testutil.Equal(got, want) {
+				t.Errorf("%#v: got %#v, want %#v", tc.in, got, want)
+			}
+
+			b, err := json.Marshal(f)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got, want := string(b), tc.marshalled; got != want {
+				t.Errorf("%#v: got %s, want %s", tc.in, got, want)
+			}
+		})
 	}
 }

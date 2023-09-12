@@ -1,0 +1,83 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.lifesciences.v2beta",
+  "libraryPackage": "cloud.google.com/go/lifesciences/apiv2beta",
+  "services": {
+    "WorkflowsServiceV2Beta": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "WorkflowsServiceV2BetaClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RunPipeline": {
+              "methods": [
+                "RunPipeline"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "WorkflowsServiceV2BetaClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RunPipeline": {
+              "methods": [
+                "RunPipeline"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

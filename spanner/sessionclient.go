@@ -20,15 +20,47 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"reflect"
+	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"cloud.google.com/go/spanner/internal"
+	"github.com/googleapis/gax-go/v2"
+	"go.opencensus.io/tag"
+	"google.golang.org/api/option"
+	gtransport "google.golang.org/api/transport/grpc"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
+
+var cidGen = newClientIDGenerator()
+
+type clientIDGenerator struct {
+	mu  sync.Mutex
+	ids map[string]int
+}
+
+func newClientIDGenerator() *clientIDGenerator {
+	return &clientIDGenerator{ids: make(map[string]int)}
+}
+
+func (cg *clientIDGenerator) nextID(database string) string {
+	cg.mu.Lock()
+	defer cg.mu.Unlock()
+	var id int
+	if val, ok := cg.ids[database]; ok {
+		id = val + 1
+	} else {
+		id = 1
+	}
+	cg.ids[database] = id
+	return fmt.Sprintf("client-%d", id)
+}
 
 // sessionConsumer is passed to the batchCreateSessions method and will receive
 // the sessions that are created as they become available. A sessionConsumer
@@ -53,27 +85,36 @@ type sessionConsumer interface {
 // will ensure that the sessions that are created are evenly distributed over
 // all available channels.
 type sessionClient struct {
-	mu     sync.Mutex
-	rr     int
-	closed bool
+	mu                   sync.Mutex
+	closed               bool
+	disableRouteToLeader bool
 
-	gapicClients  []*vkit.Client
+	connPool      gtransport.ConnPool
 	database      string
+	id            string
+	userAgent     string
 	sessionLabels map[string]string
+	databaseRole  string
 	md            metadata.MD
 	batchTimeout  time.Duration
 	logger        *log.Logger
+	callOptions   *vkit.CallOptions
 }
 
 // newSessionClient creates a session client to use for a database.
-func newSessionClient(gapicClients []*vkit.Client, database string, sessionLabels map[string]string, md metadata.MD, logger *log.Logger) *sessionClient {
+func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, disableRouteToLeader bool, md metadata.MD, batchTimeout time.Duration, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
 	return &sessionClient{
-		gapicClients:  gapicClients,
-		database:      database,
-		sessionLabels: sessionLabels,
-		md:            md,
-		batchTimeout:  time.Minute,
-		logger:        logger,
+		connPool:             connPool,
+		database:             database,
+		userAgent:            userAgent,
+		id:                   cidGen.nextID(database),
+		sessionLabels:        sessionLabels,
+		databaseRole:         databaseRole,
+		disableRouteToLeader: disableRouteToLeader,
+		md:                   md,
+		batchTimeout:         batchTimeout,
+		logger:               logger,
+		callOptions:          callOptions,
 	}
 }
 
@@ -81,38 +122,50 @@ func (sc *sessionClient) close() error {
 	sc.mu.Lock()
 	defer sc.mu.Unlock()
 	sc.closed = true
-	var errs []error
-	for _, gpc := range sc.gapicClients {
-		if err := gpc.Close(); err != nil {
-			errs = append(errs, err)
-		}
-	}
-	switch len(errs) {
-	case 0:
-		return nil
-	case 1:
-		return errs[0]
-	default:
-		return fmt.Errorf("closing gapic clients returned multiple errors: %v", errs)
-	}
+	return sc.connPool.Close()
 }
 
 // createSession creates one session for the database of the sessionClient. The
 // session is created using one synchronous RPC.
 func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
-	ctx = contextWithOutgoingMetadata(ctx, sc.md)
 	sc.mu.Lock()
 	if sc.closed {
+		sc.mu.Unlock()
 		return nil, spannerErrorf(codes.FailedPrecondition, "SessionClient is closed")
 	}
-	client := sc.rrNextGapicClientLocked()
 	sc.mu.Unlock()
-	sid, err := client.CreateSession(ctx, &sppb.CreateSessionRequest{
-		Database: sc.database,
-		Session:  &sppb.Session{Labels: sc.sessionLabels},
-	})
+	client, err := sc.nextClient()
 	if err != nil {
-		return nil, toSpannerError(err)
+		return nil, err
+	}
+
+	var md metadata.MD
+	sid, err := client.CreateSession(contextWithOutgoingMetadata(ctx, sc.md, sc.disableRouteToLeader), &sppb.CreateSessionRequest{
+		Database: sc.database,
+		Session:  &sppb.Session{Labels: sc.sessionLabels, CreatorRole: sc.databaseRole},
+	}, gax.WithGRPCOptions(grpc.Header(&md)))
+
+	if getGFELatencyMetricsFlag() && md != nil {
+		_, instance, database, err := parseDatabaseName(sc.database)
+		if err != nil {
+			return nil, ToSpannerError(err)
+		}
+		ctxGFE, err := tag.New(ctx,
+			tag.Upsert(tagKeyClientID, sc.id),
+			tag.Upsert(tagKeyDatabase, database),
+			tag.Upsert(tagKeyInstance, instance),
+			tag.Upsert(tagKeyLibVersion, internal.Version),
+		)
+		if err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
+		}
+		err = captureGFELatencyStats(ctxGFE, md, "createSession")
+		if err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
+		}
+	}
+	if err != nil {
+		return nil, ToSpannerError(err)
 	}
 	return &session{valid: true, client: client, id: sid.Name, createTime: time.Now(), md: sc.md, logger: sc.logger}, nil
 }
@@ -127,15 +180,23 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 // include the number of sessions that could not be created as a result of the
 // error. The sum of returned sessions and errored sessions will be equal to
 // the number of requested sessions.
-func (sc *sessionClient) batchCreateSessions(createSessionCount int32, consumer sessionConsumer) error {
-	// The sessions that we create should be evenly distributed over all the
-	// channels (gapic clients) that are used by the client. Each gapic client
-	// will do a request for a fraction of the total.
-	sessionCountPerChannel := createSessionCount / int32(len(sc.gapicClients))
-	// The remainder of the calculation will be added to the number of sessions
-	// that will be created for the first channel, to ensure that we create the
-	// exact number of requested sessions.
-	remainder := createSessionCount % int32(len(sc.gapicClients))
+// If distributeOverChannels is true, the sessions will be equally distributed
+// over all the channels that are in use by the client.
+func (sc *sessionClient) batchCreateSessions(createSessionCount int32, distributeOverChannels bool, consumer sessionConsumer) error {
+	var sessionCountPerChannel int32
+	var remainder int32
+	if distributeOverChannels {
+		// The sessions that we create should be evenly distributed over all the
+		// channels (gapic clients) that are used by the client. Each gapic client
+		// will do a request for a fraction of the total.
+		sessionCountPerChannel = createSessionCount / int32(sc.connPool.Num())
+		// The remainder of the calculation will be added to the number of sessions
+		// that will be created for the first channel, to ensure that we create the
+		// exact number of requested sessions.
+		remainder = createSessionCount % int32(sc.connPool.Num())
+	} else {
+		sessionCountPerChannel = createSessionCount
+	}
 	sc.mu.Lock()
 	defer sc.mu.Unlock()
 	if sc.closed {
@@ -146,8 +207,12 @@ func (sc *sessionClient) batchCreateSessions(createSessionCount int32, consumer 
 	// is used by the session. A session should therefore always use the same
 	// channel, and the sessions should be as evenly distributed as possible
 	// over the channels.
-	for i := 0; i < len(sc.gapicClients); i++ {
-		client := sc.rrNextGapicClientLocked()
+	var numBeingCreated int32
+	for i := 0; i < sc.connPool.Num() && numBeingCreated < createSessionCount; i++ {
+		client, err := sc.nextClient()
+		if err != nil {
+			return err
+		}
 		// Determine the number of sessions that should be created for this
 		// channel. The createCount for the first channel will be increased
 		// with the remainder of the division of the total number of sessions
@@ -163,6 +228,7 @@ func (sc *sessionClient) batchCreateSessions(createSessionCount int32, consumer 
 		}
 		if createCountForChannel > 0 {
 			go sc.executeBatchCreateSessions(client, createCountForChannel, sc.sessionLabels, sc.md, consumer)
+			numBeingCreated += createCountForChannel
 		}
 	}
 	return nil
@@ -173,8 +239,6 @@ func (sc *sessionClient) batchCreateSessions(createSessionCount int32, consumer 
 func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createCount int32, labels map[string]string, md metadata.MD, consumer sessionConsumer) {
 	ctx, cancel := context.WithTimeout(context.Background(), sc.batchTimeout)
 	defer cancel()
-	ctx = contextWithOutgoingMetadata(ctx, sc.md)
-
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchCreateSessions")
 	defer func() { trace.EndSpan(ctx, nil) }()
 	trace.TracePrintf(ctx, nil, "Creating a batch of %d sessions", createCount)
@@ -191,17 +255,39 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 		}
 		if ctx.Err() != nil {
 			trace.TracePrintf(ctx, nil, "Context error while creating a batch of %d sessions: %v", createCount, ctx.Err())
-			consumer.sessionCreationFailed(toSpannerError(ctx.Err()), remainingCreateCount)
+			consumer.sessionCreationFailed(ToSpannerError(ctx.Err()), remainingCreateCount)
 			break
 		}
-		response, err := client.BatchCreateSessions(ctx, &sppb.BatchCreateSessionsRequest{
+		var mdForGFELatency metadata.MD
+		response, err := client.BatchCreateSessions(contextWithOutgoingMetadata(ctx, sc.md, sc.disableRouteToLeader), &sppb.BatchCreateSessionsRequest{
 			SessionCount:    remainingCreateCount,
 			Database:        sc.database,
-			SessionTemplate: &sppb.Session{Labels: labels},
-		})
+			SessionTemplate: &sppb.Session{Labels: labels, CreatorRole: sc.databaseRole},
+		}, gax.WithGRPCOptions(grpc.Header(&mdForGFELatency)))
+
+		if getGFELatencyMetricsFlag() && mdForGFELatency != nil {
+			_, instance, database, err := parseDatabaseName(sc.database)
+			if err != nil {
+				trace.TracePrintf(ctx, nil, "Error getting instance and database name: %v", err)
+			}
+			// Errors should not prevent initializing the session pool.
+			ctxGFE, err := tag.New(ctx,
+				tag.Upsert(tagKeyClientID, sc.id),
+				tag.Upsert(tagKeyDatabase, database),
+				tag.Upsert(tagKeyInstance, instance),
+				tag.Upsert(tagKeyLibVersion, internal.Version),
+			)
+			if err != nil {
+				trace.TracePrintf(ctx, nil, "Error in adding tags in BatchCreateSessions for GFE Latency: %v", err)
+			}
+			err = captureGFELatencyStats(ctxGFE, mdForGFELatency, "executeBatchCreateSessions")
+			if err != nil {
+				trace.TracePrintf(ctx, nil, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", err)
+			}
+		}
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error creating a batch of %d sessions: %v", remainingCreateCount, err)
-			consumer.sessionCreationFailed(toSpannerError(err), remainingCreateCount)
+			consumer.sessionCreationFailed(ToSpannerError(err), remainingCreateCount)
 			break
 		}
 		actuallyCreated := int32(len(response.Session))
@@ -220,17 +306,59 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 	}
 }
 
-func (sc *sessionClient) sessionWithID(id string) *session {
+func (sc *sessionClient) sessionWithID(id string) (*session, error) {
 	sc.mu.Lock()
 	defer sc.mu.Unlock()
-	return &session{valid: true, client: sc.rrNextGapicClientLocked(), id: id, createTime: time.Now(), md: sc.md, logger: sc.logger}
+	client, err := sc.nextClient()
+	if err != nil {
+		return nil, err
+	}
+	return &session{valid: true, client: client, id: id, createTime: time.Now(), md: sc.md, logger: sc.logger}, nil
 }
 
-// rrNextGapicClientLocked returns the next gRPC client to use for session creation. The
+// nextClient returns the next gRPC client to use for session creation. The
 // client is set on the session, and used by all subsequent gRPC calls on the
 // session. Using the same channel for all gRPC calls for a session ensures the
 // optimal usage of server side caches.
-func (sc *sessionClient) rrNextGapicClientLocked() *vkit.Client {
-	sc.rr = (sc.rr + 1) % len(sc.gapicClients)
-	return sc.gapicClients[sc.rr]
+func (sc *sessionClient) nextClient() (*vkit.Client, error) {
+	// This call should never return an error as we are passing in an existing
+	// connection, so we can safely ignore it.
+	client, err := vkit.NewClient(context.Background(), option.WithGRPCConn(sc.connPool.Conn()))
+	if err != nil {
+		return nil, err
+	}
+	clientInfo := []string{"gccl", internal.Version}
+	if sc.userAgent != "" {
+		agentWithVersion := strings.SplitN(sc.userAgent, "/", 2)
+		if len(agentWithVersion) == 2 {
+			clientInfo = append(clientInfo, agentWithVersion[0], agentWithVersion[1])
+		}
+	}
+	client.SetGoogleClientInfo(clientInfo...)
+	if sc.callOptions != nil {
+		client.CallOptions = mergeCallOptions(client.CallOptions, sc.callOptions)
+	}
+	return client, nil
+}
+
+// mergeCallOptions merges two CallOptions into one and the first argument has
+// a lower order of precedence than the second one.
+func mergeCallOptions(a *vkit.CallOptions, b *vkit.CallOptions) *vkit.CallOptions {
+	res := &vkit.CallOptions{}
+	resVal := reflect.ValueOf(res).Elem()
+	aVal := reflect.ValueOf(a).Elem()
+	bVal := reflect.ValueOf(b).Elem()
+
+	t := aVal.Type()
+
+	for i := 0; i < aVal.NumField(); i++ {
+		fieldName := t.Field(i).Name
+
+		aFieldVal := aVal.Field(i).Interface().([]gax.CallOption)
+		bFieldVal := bVal.Field(i).Interface().([]gax.CallOption)
+
+		merged := append(aFieldVal, bFieldVal...)
+		resVal.FieldByName(fieldName).Set(reflect.ValueOf(merged))
+	}
+	return res
 }

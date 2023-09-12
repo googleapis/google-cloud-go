@@ -43,12 +43,13 @@ type Resource struct {
 	Name string `json:"name"`
 	// Type is the type of event.
 	Type string `json:"type"`
-	// Path is the path to the resource type (deprecated).
-	// This is the case for some deprecated GCS
-	// notifications, which populate the resource field as a string containing the topic
+	// RawPath is the path to the resource type (deprecated).
+	// It is used by the GCS notifications shown in
+	// https://cloud.google.com/storage/docs/pubsub-notifications,
+	// which populate the resource field as a string containing the topic
 	// rather than as the expected dictionary.
-	// See the Attributes section of https://cloud.google.com/storage/docs/pubsub-notifications
-	// for more details.
+	// It is also used when triggering Cloud Functions by [Firebase Realtime Database
+	// Triggers](https://cloud.google.com/functions/docs/calling/realtime-data).
 	RawPath string `json:"-"`
 }
 
@@ -75,6 +76,24 @@ func (r *Resource) UnmarshalJSON(data []byte) error {
 	r.Name = res.Name
 	r.Type = res.Type
 	return nil
+}
+
+// MarshalJSON specializes the Resource marshalling to handle the case where the
+// value is a string instead of a map. See the comment above on RawPath for why this
+// needs to be handled.
+func (r *Resource) MarshalJSON() ([]byte, error) {
+	// If RawPath is set, use that as the whole value.
+	if r.RawPath != "" {
+		return []byte(fmt.Sprintf("%q", r.RawPath)), nil
+	}
+
+	// Otherwise, accept whatever the result of the normal marshal would be.
+	res := *r
+	b, err := json.Marshal(res)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
 }
 
 type contextKey string
@@ -110,7 +129,7 @@ func FromContext(ctx context.Context) (*Metadata, error) {
 	}
 	meta := &Metadata{}
 	if err := json.Unmarshal(b, meta); err != nil {
-		return nil, fmt.Errorf("json.Unmarshal: %v", err)
+		return nil, fmt.Errorf("json.Unmarshal: %w", err)
 	}
 	return meta, nil
 }

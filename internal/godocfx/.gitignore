@@ -1,0 +1,4 @@
+obj/
+site/
+godocfx
+testdata/out/

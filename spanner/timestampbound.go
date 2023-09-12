@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"time"
 
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	pbd "github.com/golang/protobuf/ptypes/duration"
 	pbt "github.com/golang/protobuf/ptypes/timestamp"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 // timestampBoundType specifies the timestamp bound mode.
@@ -50,7 +50,7 @@ const (
 // can be specified when creating transactions, see the documentation of
 // spanner.Client for an example.
 //
-// Strong reads
+// # Strong reads
 //
 // Strong reads are guaranteed to see the effects of all transactions that have
 // committed before the start of the read. Furthermore, all rows yielded by a
@@ -64,7 +64,7 @@ const (
 //
 // Use StrongRead to create a bound of this type.
 //
-// Exact staleness
+// # Exact staleness
 //
 // An exact staleness timestamp bound executes reads at a user-specified
 // timestamp. Reads at a timestamp are guaranteed to see a consistent prefix of
@@ -85,7 +85,7 @@ const (
 //
 // Use ReadTimestamp and ExactStaleness to create a bound of this type.
 //
-// Bounded staleness
+// # Bounded staleness
 //
 // Bounded staleness modes allow Cloud Spanner to pick the read timestamp,
 // subject to a user-provided staleness bound. Cloud Spanner chooses the newest
@@ -113,16 +113,16 @@ const (
 //
 // Use MinReadTimestamp and MaxStaleness to create a bound of this type.
 //
-// Old read timestamps and garbage collection
+// # Old read timestamps and garbage collection
 //
 // Cloud Spanner continuously garbage collects deleted and overwritten data in
 // the background to reclaim storage space. This process is known as "version
-// GC". By default, version GC reclaims versions after they are four hours
-// old. Because of this, Cloud Spanner cannot perform reads at read timestamps
-// more than four hours in the past. This restriction also applies to
-// in-progress reads and/or SQL queries whose timestamps become too old while
-// executing. Reads and SQL queries with too-old read timestamps fail with the
-// error ErrorCode.FAILED_PRECONDITION.
+// GC". By default, version GC reclaims versions after they are one hour old.
+// Because of this, Cloud Spanner cannot perform reads at read timestamps more
+// than one hour in the past. This restriction also applies to in-progress reads
+// and/or SQL queries whose timestamps become too old while executing. Reads and
+// SQL queries with too-old read timestamps fail with the error
+// ErrorCode.FAILED_PRECONDITION.
 type TimestampBound struct {
 	mode timestampBoundType
 	d    time.Duration

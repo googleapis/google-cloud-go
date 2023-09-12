@@ -39,9 +39,11 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/pprof/profile"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
 	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	grpcmd "google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -74,7 +76,7 @@ func createTestAgent(psc pb.ProfilerServiceClient) *agent {
 		client:        psc,
 		deployment:    createTestDeployment(),
 		profileLabels: map[string]string{instanceLabel: testInstance},
-		profileTypes:  []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS},
+		profileTypes:  []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_HEAP_ALLOC, pb.ProfileType_THREADS},
 	}
 }
 
@@ -138,11 +140,12 @@ func TestProfileAndUpload(t *testing.T) {
 	errFunc := func(io.Writer) error { return errors.New("") }
 	testDuration := time.Second * 5
 	tests := []struct {
-		profileType          pb.ProfileType
-		duration             *time.Duration
-		startCPUProfileFunc  func(io.Writer) error
-		writeHeapProfileFunc func(io.Writer) error
-		wantBytes            []byte
+		profileType           pb.ProfileType
+		duration              *time.Duration
+		startCPUProfileFunc   func(io.Writer) error
+		writeHeapProfileFunc  func(io.Writer) error
+		deltaMutexProfileFunc func(io.Writer) error
+		wantBytes             []byte
 	}{
 		{
 			profileType: pb.ProfileType_CPU,
@@ -215,6 +218,10 @@ func TestProfileAndUpload(t *testing.T) {
 				w.Write(heapCollected1.Bytes())
 				return nil
 			},
+		},
+		{
+			profileType:           pb.ProfileType_CONTENTION,
+			deltaMutexProfileFunc: errFunc,
 		},
 	}
 
@@ -298,7 +305,7 @@ func TestRetry(t *testing.T) {
 				Max:        maxBackoff,
 				Multiplier: backoffMultiplier,
 			},
-			md: md,
+			md: &md,
 		}
 
 		pause, shouldRetry := r.Retry(status.Error(codes.Aborted, ""))
@@ -318,15 +325,14 @@ func TestRetry(t *testing.T) {
 		}
 	}
 
-	md := grpcmd.New(map[string]string{})
-
+	md := grpcmd.New(nil)
 	r := &retryer{
 		backoff: gax.Backoff{
 			Initial:    initialBackoff,
 			Max:        maxBackoff,
 			Multiplier: backoffMultiplier,
 		},
-		md: md,
+		md: &md,
 	}
 	for i := 0; i < 100; i++ {
 		pause, shouldRetry := r.Retry(errors.New(""))
@@ -498,9 +504,19 @@ func TestInitializeConfig(t *testing.T) {
 		envProjectID    bool
 	}{
 		{
-			"accepts service name",
-			Config{Service: testService},
-			Config{Service: testService, ProjectID: testGCEProjectID, Zone: testZone, Instance: testInstance},
+			"accepts service name starting with letter",
+			Config{Service: "test-service-1"},
+			Config{Service: "test-service-1", ProjectID: testGCEProjectID, Zone: testZone, Instance: testInstance},
+			"",
+			false,
+			false,
+			true,
+			false,
+		},
+		{
+			"accepts service name starting number",
+			Config{Service: "12service"},
+			Config{Service: "12service", ProjectID: testGCEProjectID, Zone: testZone, Instance: testInstance},
 			"",
 			false,
 			false,
@@ -531,7 +547,7 @@ func TestInitializeConfig(t *testing.T) {
 			"requires valid service name",
 			Config{Service: "Service"},
 			Config{Service: "Service"},
-			"service name \"Service\" does not match regular expression ^[a-z]([-a-z0-9_.]{0,253}[a-z0-9])?$",
+			"service name \"Service\" does not match regular expression ^[a-z0-9]([-a-z0-9_.]{0,253}[a-z0-9])?$",
 			false,
 			false,
 			true,
@@ -782,20 +798,19 @@ func (fs *fakeProfilerServer) CreateOfflineProfile(_ context.Context, _ *pb.Crea
 }
 
 func profileeLoop(quit chan bool) {
+	data := make([]byte, 10*1024*1024)
+	rand.Read(data)
 	for {
 		select {
 		case <-quit:
 			return
 		default:
-			profileeWork()
+			profileeWork(data)
 		}
 	}
 }
 
-func profileeWork() {
-	data := make([]byte, 10*1024*1024)
-	rand.Read(data)
-
+func profileeWork(data []byte) {
 	var b bytes.Buffer
 	gz := gzip.NewWriter(&b)
 	if _, err := gz.Write(data); err != nil {
@@ -946,20 +961,30 @@ func TestAgentWithServer(t *testing.T) {
 	pb.RegisterProfilerServiceServer(srv.Gsrv, fakeServer)
 	srv.Start()
 
-	dialGRPC = gtransport.DialInsecure
-	if err := Start(Config{
-		Service:     testService,
-		ProjectID:   testProjectID,
-		APIAddr:     srv.Addr,
-		Instance:    testInstance,
-		Zone:        testZone,
-		numProfiles: 2,
-	}); err != nil {
-		t.Fatalf("Start(): %v", err)
+	dialGRPC = func(ctx context.Context, opts ...option.ClientOption) (gtransport.ConnPool, error) {
+		conn, err := gtransport.DialInsecure(ctx, opts...)
+		if err != nil {
+			return nil, err
+		}
+		return testConnPool{conn}, nil
 	}
 
 	quitProfilee := make(chan bool)
 	go profileeLoop(quitProfilee)
+
+	var logs bytes.Buffer
+	if err := Start(Config{
+		Service:            testService,
+		ProjectID:          testProjectID,
+		APIAddr:            srv.Addr,
+		Instance:           testInstance,
+		Zone:               testZone,
+		numProfiles:        2,
+		DebugLogging:       true,
+		DebugLoggingOutput: &logs,
+	}); err != nil {
+		t.Fatalf("Start(): %v", err)
+	}
 
 	select {
 	case <-profilingDone:
@@ -975,4 +1000,14 @@ func TestAgentWithServer(t *testing.T) {
 			t.Errorf("validateProfile(%s) got error: %v", pType, err)
 		}
 	}
+
+	if logs.Len() == 0 {
+		t.Error("expected some debug logging output, but got none")
+	}
 }
+
+// testConnPool is a gtransport.ConnPool used for testing.
+type testConnPool struct{ *grpc.ClientConn }
+
+func (p testConnPool) Num() int               { return 1 }
+func (p testConnPool) Conn() *grpc.ClientConn { return p.ClientConn }

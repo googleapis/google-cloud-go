@@ -24,19 +24,19 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/google/martian"
-	"github.com/google/martian/fifo"
-	"github.com/google/martian/httpspec"
-	"github.com/google/martian/martianlog"
-	"github.com/google/martian/mitm"
+	"github.com/google/martian/v3"
+	"github.com/google/martian/v3/fifo"
+	"github.com/google/martian/v3/httpspec"
+	"github.com/google/martian/v3/martianlog"
+	"github.com/google/martian/v3/mitm"
 )
 
 // A Proxy is an HTTP proxy that supports recording or replaying requests.
@@ -131,7 +131,7 @@ func newProxy(filename string) (*Proxy, error) {
 }
 
 func (p *Proxy) start(port int) error {
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	l, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	if err != nil {
 		return err
 	}
@@ -216,7 +216,7 @@ func (p *Proxy) writeLog() error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(p.filename, bytes, 0600) // only accessible by owner
+	return os.WriteFile(p.filename, bytes, 0600) // only accessible by owner
 }
 
 // skipLoggingByHost disables logging for traffic to a particular host.

@@ -1,0 +1,48 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.osconfig.agentendpoint.v1beta",
+  "libraryPackage": "cloud.google.com/go/osconfig/agentendpoint/apiv1beta",
+  "services": {
+    "AgentEndpointService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "LookupEffectiveGuestPolicy": {
+              "methods": [
+                "LookupEffectiveGuestPolicy"
+              ]
+            },
+            "ReceiveTaskNotification": {
+              "methods": [
+                "ReceiveTaskNotification"
+              ]
+            },
+            "RegisterAgent": {
+              "methods": [
+                "RegisterAgent"
+              ]
+            },
+            "ReportTaskComplete": {
+              "methods": [
+                "ReportTaskComplete"
+              ]
+            },
+            "ReportTaskProgress": {
+              "methods": [
+                "ReportTaskProgress"
+              ]
+            },
+            "StartNextTask": {
+              "methods": [
+                "StartNextTask"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

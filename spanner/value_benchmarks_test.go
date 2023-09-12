@@ -20,8 +20,8 @@ import (
 	"testing"
 
 	"cloud.google.com/go/civil"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 func BenchmarkEncodeIntArray(b *testing.B) {

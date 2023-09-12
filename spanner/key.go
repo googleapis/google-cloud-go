@@ -19,13 +19,14 @@ package spanner
 import (
 	"bytes"
 	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/golang/protobuf/proto"
 
 	"cloud.google.com/go/civil"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 )
 
@@ -90,8 +91,14 @@ func keyPartValue(part interface{}) (pb *proto3.Value, err error) {
 		pb, _, err = encodeValue(int64(v))
 	case float32:
 		pb, _, err = encodeValue(float64(v))
-	case int64, float64, NullInt64, NullFloat64, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate:
+	case int64, float64, NullInt64, NullFloat64, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate, big.Rat, NullNumeric:
 		pb, _, err = encodeValue(v)
+	case Encoder:
+		part, err = v.EncodeSpanner()
+		if err != nil {
+			return nil, err
+		}
+		pb, err = keyPartValue(part)
 	default:
 		return nil, errInvdKeyPartType(v)
 	}
@@ -131,38 +138,52 @@ func (key Key) String() string {
 		if i != 0 {
 			fmt.Fprint(b, ",")
 		}
-		switch v := part.(type) {
-		case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, float32, float64, bool:
-			// Use %v to print numeric types and bool.
-			fmt.Fprintf(b, "%v", v)
-		case string:
-			fmt.Fprintf(b, "%q", v)
-		case []byte:
-			if v != nil {
-				fmt.Fprintf(b, "%q", v)
-			} else {
-				fmt.Fprint(b, nullString)
-			}
-		case NullInt64, NullFloat64, NullBool:
-			// The above types implement fmt.Stringer.
-			fmt.Fprintf(b, "%s", v)
-		case NullString, NullDate, NullTime:
-			// Quote the returned string if it is not null.
-			if v.(NullableValue).IsNull() {
-				fmt.Fprintf(b, "%s", nullString)
-			} else {
-				fmt.Fprintf(b, "%q", v)
-			}
-		case civil.Date:
-			fmt.Fprintf(b, "%q", v)
-		case time.Time:
-			fmt.Fprintf(b, "%q", v.Format(time.RFC3339Nano))
-		default:
-			fmt.Fprintf(b, "%v", v)
-		}
+		key.elemString(b, part)
 	}
 	fmt.Fprint(b, ")")
 	return b.String()
+}
+
+func (key Key) elemString(b *bytes.Buffer, part interface{}) {
+	switch v := part.(type) {
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, float32, float64, bool:
+		// Use %v to print numeric types and bool.
+		fmt.Fprintf(b, "%v", v)
+	case string:
+		fmt.Fprintf(b, "%q", v)
+	case []byte:
+		if v != nil {
+			fmt.Fprintf(b, "%q", v)
+		} else {
+			fmt.Fprint(b, nullString)
+		}
+	case NullInt64, NullFloat64, NullBool, NullNumeric:
+		// The above types implement fmt.Stringer.
+		fmt.Fprintf(b, "%s", v)
+	case NullString, NullDate, NullTime:
+		// Quote the returned string if it is not null.
+		if v.(NullableValue).IsNull() {
+			fmt.Fprintf(b, "%s", nullString)
+		} else {
+			fmt.Fprintf(b, "%q", v)
+		}
+	case civil.Date:
+		fmt.Fprintf(b, "%q", v)
+	case time.Time:
+		fmt.Fprintf(b, "%q", v.Format(time.RFC3339Nano))
+	case big.Rat:
+		fmt.Fprintf(b, "%v", NumericString(&v))
+	case Encoder:
+		var err error
+		part, err = v.EncodeSpanner()
+		if err != nil {
+			fmt.Fprintf(b, "error")
+		} else {
+			key.elemString(b, part)
+		}
+	default:
+		fmt.Fprintf(b, "%v", v)
+	}
 }
 
 // AsPrefix returns a KeyRange for all keys where k is the prefix.
@@ -220,7 +241,7 @@ const (
 // the following range returns all events for user "Bob" that occurred in the
 // year 2015:
 //
-// 	spanner.KeyRange{
+//	spanner.KeyRange{
 //		Start: spanner.Key{"Bob", "2015-01-01"},
 //		End:   spanner.Key{"Bob", "2015-12-31"},
 //		Kind:  ClosedClosed,
@@ -392,6 +413,15 @@ func KeySets(keySets ...KeySet) KeySet {
 	return u
 }
 
+// KeySetFromKeys returns a KeySet containing the given slice of keys.
+func KeySetFromKeys(keys ...Key) KeySet {
+	u := make(union, len(keys))
+	for i, k := range keys {
+		u[i] = k
+	}
+	return u
+}
+
 type union []KeySet
 
 func (u union) keySetProto() (*sppb.KeySet, error) {
@@ -410,20 +440,7 @@ func (u union) keySetProto() (*sppb.KeySet, error) {
 	return upb, nil
 }
 
-func DistinctKeys(keys ...Key) KeySet {
-	return distinct(keys)
-}
-
-type distinct []Key
-
-func (d distinct) keySetProto() (*sppb.KeySet, error) {
-	upb := &sppb.KeySet{Keys: make([]*proto3.ListValue, len(d))}
-	for j, k := range d {
-		pb, err := k.proto()
-		if err != nil {
-			return nil, err
-		}
-		upb.Keys[j] = pb
-	}
-	return upb, nil
+// Proto converts a spanner.Key into a proto3.ListValue.
+func (key Key) Proto() (*proto3.ListValue, error) {
+	return key.proto()
 }

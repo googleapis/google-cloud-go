@@ -1,0 +1,113 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.networkconnectivity.v1",
+  "libraryPackage": "cloud.google.com/go/networkconnectivity/apiv1",
+  "services": {
+    "HubService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "HubClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateHub": {
+              "methods": [
+                "CreateHub"
+              ]
+            },
+            "CreateSpoke": {
+              "methods": [
+                "CreateSpoke"
+              ]
+            },
+            "DeleteHub": {
+              "methods": [
+                "DeleteHub"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSpoke": {
+              "methods": [
+                "DeleteSpoke"
+              ]
+            },
+            "GetHub": {
+              "methods": [
+                "GetHub"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSpoke": {
+              "methods": [
+                "GetSpoke"
+              ]
+            },
+            "ListHubs": {
+              "methods": [
+                "ListHubs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSpokes": {
+              "methods": [
+                "ListSpokes"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateHub": {
+              "methods": [
+                "UpdateHub"
+              ]
+            },
+            "UpdateSpoke": {
+              "methods": [
+                "UpdateSpoke"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

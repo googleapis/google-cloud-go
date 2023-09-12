@@ -17,6 +17,7 @@ package testutil
 import (
 	"bytes"
 	"context"
+	"encoding/binary"
 	"fmt"
 	"math/rand"
 	"sort"
@@ -24,13 +25,35 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/spanner/apiv1/spannerpb"
+	"github.com/golang/protobuf/ptypes"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/genproto/googleapis/rpc/status"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
+)
+
+var (
+	// KvMeta is the Metadata for mocked KV table.
+	KvMeta = spannerpb.ResultSetMetadata{
+		RowType: &spannerpb.StructType{
+			Fields: []*spannerpb.StructType_Field{
+				{
+					Name: "Key",
+					Type: &spannerpb.Type{Code: spannerpb.TypeCode_STRING},
+				},
+				{
+					Name: "Value",
+					Type: &spannerpb.Type{Code: spannerpb.TypeCode_STRING},
+				},
+			},
+		},
+	}
 )
 
 // StatementResultType indicates the type of result returned by a SQL
@@ -63,15 +86,17 @@ const (
 	MethodExecuteSql          string = "EXECUTE_SQL"
 	MethodExecuteStreamingSql string = "EXECUTE_STREAMING_SQL"
 	MethodExecuteBatchDml     string = "EXECUTE_BATCH_DML"
+	MethodStreamingRead       string = "EXECUTE_STREAMING_READ"
 )
 
 // StatementResult represents a mocked result on the test server. The result is
 // either of: a ResultSet, an update count or an error.
 type StatementResult struct {
-	Type        StatementResultType
-	Err         error
-	ResultSet   *spannerpb.ResultSet
-	UpdateCount int64
+	Type         StatementResultType
+	Err          error
+	ResultSet    *spannerpb.ResultSet
+	UpdateCount  int64
+	ResumeTokens [][]byte
 }
 
 // PartialResultSetExecutionTime represents execution times and errors that
@@ -83,10 +108,10 @@ type PartialResultSetExecutionTime struct {
 	Err           error
 }
 
-// Converts a ResultSet to a PartialResultSet. This method is used to convert
-// a mocked result to a PartialResultSet when one of the streaming methods are
-// called.
-func (s *StatementResult) toPartialResultSets(resumeToken []byte) (result []*spannerpb.PartialResultSet, err error) {
+// ToPartialResultSets converts a ResultSet to a PartialResultSet. This method
+// is used to convert a mocked result to a PartialResultSet when one of the
+// streaming methods are called.
+func (s *StatementResult) ToPartialResultSets(resumeToken []byte) (result []*spannerpb.PartialResultSet, err error) {
 	var startIndex uint64
 	if len(resumeToken) > 0 {
 		if startIndex, err = DecodeResumeToken(resumeToken); err != nil {
@@ -95,27 +120,40 @@ func (s *StatementResult) toPartialResultSets(resumeToken []byte) (result []*spa
 	}
 
 	totalRows := uint64(len(s.ResultSet.Rows))
-	for {
-		rowCount := min(totalRows-startIndex, uint64(MaxRowsPerPartialResultSet))
-		rows := s.ResultSet.Rows[startIndex : startIndex+rowCount]
-		values := make([]*structpb.Value,
-			len(rows)*len(s.ResultSet.Metadata.RowType.Fields))
-		var idx int
-		for _, row := range rows {
-			for colIdx := range s.ResultSet.Metadata.RowType.Fields {
-				values[idx] = row.Values[colIdx]
-				idx++
+	if totalRows > 0 {
+		for {
+			rowCount := min(totalRows-startIndex, uint64(MaxRowsPerPartialResultSet))
+			rows := s.ResultSet.Rows[startIndex : startIndex+rowCount]
+			values := make([]*structpb.Value,
+				len(rows)*len(s.ResultSet.Metadata.RowType.Fields))
+			var idx int
+			for _, row := range rows {
+				for colIdx := range s.ResultSet.Metadata.RowType.Fields {
+					values[idx] = row.Values[colIdx]
+					idx++
+				}
+			}
+			var rt []byte
+			if len(s.ResumeTokens) == 0 {
+				rt = EncodeResumeToken(startIndex + rowCount)
+			} else {
+				rt = s.ResumeTokens[startIndex]
+			}
+			result = append(result, &spannerpb.PartialResultSet{
+				Metadata:    s.ResultSet.Metadata,
+				Values:      values,
+				ResumeToken: rt,
+			})
+
+			startIndex += rowCount
+			if startIndex == totalRows {
+				break
 			}
 		}
+	} else {
 		result = append(result, &spannerpb.PartialResultSet{
-			Metadata:    s.ResultSet.Metadata,
-			Values:      values,
-			ResumeToken: EncodeResumeToken(startIndex + rowCount),
+			Metadata: s.ResultSet.Metadata,
 		})
-		startIndex += rowCount
-		if startIndex == totalRows {
-			break
-		}
 	}
 	return result, nil
 }
@@ -136,8 +174,15 @@ func (s *StatementResult) updateCountToPartialResultSet(exact bool) *spannerpb.P
 // Converts an update count to a ResultSet, as DML statements also return the
 // update count as the statistics of a ResultSet.
 func (s *StatementResult) convertUpdateCountToResultSet(exact bool) *spannerpb.ResultSet {
+	rs := &spannerpb.ResultSet{
+		Stats: &spannerpb.ResultSetStats{
+			RowCount: &spannerpb.ResultSetStats_RowCountLowerBound{
+				RowCountLowerBound: s.UpdateCount,
+			},
+		},
+	}
 	if exact {
-		return &spannerpb.ResultSet{
+		rs = &spannerpb.ResultSet{
 			Stats: &spannerpb.ResultSetStats{
 				RowCount: &spannerpb.ResultSetStats_RowCountExact{
 					RowCountExact: s.UpdateCount,
@@ -145,13 +190,38 @@ func (s *StatementResult) convertUpdateCountToResultSet(exact bool) *spannerpb.R
 			},
 		}
 	}
-	return &spannerpb.ResultSet{
-		Stats: &spannerpb.ResultSetStats{
-			RowCount: &spannerpb.ResultSetStats_RowCountLowerBound{
-				RowCountLowerBound: s.UpdateCount,
-			},
-		},
+	if s.ResultSet != nil && s.ResultSet.Metadata != nil && s.ResultSet.Metadata.Transaction != nil {
+		rs.Metadata = &spannerpb.ResultSetMetadata{
+			Transaction: s.ResultSet.Metadata.Transaction,
+		}
 	}
+	return rs
+}
+
+func (s StatementResult) getResultSetWithTransactionSet(selector *spannerpb.TransactionSelector, tx []byte) *StatementResult {
+	res := &StatementResult{
+		Type:         s.Type,
+		Err:          s.Err,
+		UpdateCount:  s.UpdateCount,
+		ResumeTokens: s.ResumeTokens,
+	}
+	if s.ResultSet != nil {
+		res.ResultSet = &spannerpb.ResultSet{
+			Metadata: s.ResultSet.Metadata,
+			Rows:     s.ResultSet.Rows,
+			Stats:    s.ResultSet.Stats,
+		}
+	}
+	if _, ok := selector.GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
+		if res.ResultSet == nil {
+			res.ResultSet = &spannerpb.ResultSet{}
+		}
+		if res.ResultSet.Metadata == nil {
+			res.ResultSet.Metadata = &spannerpb.ResultSetMetadata{}
+		}
+		res.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: tx}
+	}
+	return res
 }
 
 // SimulatedExecutionTime represents the time the execution of a method
@@ -187,6 +257,11 @@ type InMemSpannerServer interface {
 	// a key to the mocked result. The result will be used for all methods that
 	// expect a SQL statement, including (batch) DML methods.
 	PutStatementResult(sql string, result *StatementResult) error
+
+	// Puts a mocked result on the server for a specific partition token. The
+	// result will only be used for query requests that specify a partition
+	// token.
+	PutPartitionResult(partitionToken []byte, result *StatementResult) error
 
 	// Adds a PartialResultSetExecutionTime to the server that should be returned
 	// for the specified SQL string.
@@ -246,6 +321,7 @@ type inMemSpannerServer struct {
 	partitionedDmlTransactions map[string]bool
 	// The mocked results for this server.
 	statementResults map[string]*StatementResult
+	partitionResults map[string]*StatementResult
 	// The simulated execution times per method.
 	executionTimes map[string]*SimulatedExecutionTime
 	// The simulated errors for partial result sets
@@ -269,6 +345,7 @@ func NewInMemSpannerServer() InMemSpannerServer {
 	res := &inMemSpannerServer{}
 	res.initDefaults()
 	res.statementResults = make(map[string]*StatementResult)
+	res.partitionResults = make(map[string]*StatementResult)
 	res.executionTimes = make(map[string]*SimulatedExecutionTime)
 	res.partialResultSetErrors = make(map[string][]*PartialResultSetExecutionTime)
 	res.receivedRequests = make(chan interface{}, 1000000)
@@ -314,6 +391,15 @@ func (s *inMemSpannerServer) RemoveStatementResult(sql string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.statementResults, sql)
+}
+
+// Registers a mocked result for a partition token on the server.
+func (s *inMemSpannerServer) PutPartitionResult(partitionToken []byte, result *StatementResult) error {
+	tokenString := string(partitionToken)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.partitionResults[tokenString] = result
+	return nil
 }
 
 func (s *inMemSpannerServer) AbortTransaction(id []byte) {
@@ -431,9 +517,18 @@ func (s *inMemSpannerServer) findSession(name string) (*spannerpb.Session, error
 	defer s.mu.Unlock()
 	session := s.sessions[name]
 	if session == nil {
-		return nil, gstatus.Error(codes.NotFound, fmt.Sprintf("Session %s not found", name))
+		return nil, newSessionNotFoundError(name)
 	}
 	return session, nil
+}
+
+// sessionResourceType is the type name of Spanner sessions.
+const sessionResourceType = "type.googleapis.com/google.spanner.v1.Session"
+
+func newSessionNotFoundError(name string) error {
+	s := gstatus.Newf(codes.NotFound, "Session not found: Session with id %s not found", name)
+	s, _ = s.WithDetails(&errdetails.ResourceInfo{ResourceType: sessionResourceType, ResourceName: name})
+	return s.Err()
 }
 
 func (s *inMemSpannerServer) updateSessionLastUseTime(session string) {
@@ -495,9 +590,18 @@ func (s *inMemSpannerServer) getTransactionByID(id []byte) (*spannerpb.Transacti
 	}
 	aborted, ok := s.abortedTransactions[string(id)]
 	if ok && aborted {
-		return nil, gstatus.Error(codes.Aborted, "Transaction has been aborted")
+		return nil, newAbortedErrorWithMinimalRetryDelay()
 	}
 	return tx, nil
+}
+
+func newAbortedErrorWithMinimalRetryDelay() error {
+	st := gstatus.New(codes.Aborted, "Transaction has been aborted")
+	retry := &errdetails.RetryInfo{
+		RetryDelay: ptypes.DurationProto(time.Nanosecond),
+	}
+	st, _ = st.WithDetails(retry)
+	return st.Err()
 }
 
 func (s *inMemSpannerServer) removeTransaction(tx *spannerpb.Transaction) {
@@ -505,6 +609,17 @@ func (s *inMemSpannerServer) removeTransaction(tx *spannerpb.Transaction) {
 	defer s.mu.Unlock()
 	delete(s.transactions, string(tx.Id))
 	delete(s.partitionedDmlTransactions, string(tx.Id))
+}
+
+func (s *inMemSpannerServer) getPartitionResult(partitionToken []byte) (*StatementResult, error) {
+	tokenString := string(partitionToken)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	result, ok := s.partitionResults[tokenString]
+	if !ok {
+		return nil, gstatus.Error(codes.Internal, fmt.Sprintf("No result found for partition token %v", tokenString))
+	}
+	return result, nil
 }
 
 func (s *inMemSpannerServer) getStatementResult(sql string) (*StatementResult, error) {
@@ -570,7 +685,11 @@ func (s *inMemSpannerServer) CreateSession(ctx context.Context, req *spannerpb.C
 	}
 	sessionName := s.generateSessionNameLocked(req.Database)
 	ts := getCurrentTimestamp()
-	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts}
+	var creatorRole string
+	if req.Session != nil {
+		creatorRole = req.Session.CreatorRole
+	}
+	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole}
 	s.totalSessionsCreated++
 	s.sessions[sessionName] = session
 	return session, nil
@@ -602,9 +721,17 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 	for i := int32(0); i < sessionsToCreate; i++ {
 		sessionName := s.generateSessionNameLocked(req.Database)
 		ts := getCurrentTimestamp()
-		sessions[i] = &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts}
+		var creatorRole string
+		if req.SessionTemplate != nil {
+			creatorRole = req.SessionTemplate.CreatorRole
+		}
+		sessions[i] = &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole}
 		s.totalSessionsCreated++
 		s.sessions[sessionName] = sessions[i]
+	}
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
 	}
 	return &spannerpb.BatchCreateSessionsResponse{Session: sessions}, nil
 }
@@ -613,9 +740,6 @@ func (s *inMemSpannerServer) GetSession(ctx context.Context, req *spannerpb.GetS
 	if err := s.simulateExecutionTime(MethodGetSession, req); err != nil {
 		return nil, err
 	}
-	s.mu.Lock()
-	s.pings = append(s.pings, req.Name)
-	s.mu.Unlock()
 	if req.Name == "" {
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing session name")
 	}
@@ -674,6 +798,11 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 	if err := s.simulateExecutionTime(MethodExecuteSql, req); err != nil {
 		return nil, err
 	}
+	if req.Sql == "SELECT 1" {
+		s.mu.Lock()
+		s.pings = append(s.pings, req.Session)
+		s.mu.Unlock()
+	}
 	if req.Session == "" {
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing session name")
 	}
@@ -689,11 +818,17 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 			return nil, err
 		}
 	}
-	statementResult, err := s.getStatementResult(req.Sql)
+	var statementResult *StatementResult
+	if req.PartitionToken != nil {
+		statementResult, err = s.getPartitionResult(req.PartitionToken)
+	} else {
+		statementResult, err = s.getStatementResult(req.Sql)
+	}
 	if err != nil {
 		return nil, err
 	}
 	s.mu.Lock()
+	statementResult = statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
 	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
 	s.mu.Unlock()
 	switch statementResult.Type {
@@ -711,6 +846,10 @@ func (s *inMemSpannerServer) ExecuteStreamingSql(req *spannerpb.ExecuteSqlReques
 	if err := s.simulateExecutionTime(MethodExecuteStreamingSql, req); err != nil {
 		return err
 	}
+	return s.executeStreamingSQL(req, stream)
+}
+
+func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {
 	if req.Session == "" {
 		return gstatus.Error(codes.InvalidArgument, "Missing session name")
 	}
@@ -726,18 +865,24 @@ func (s *inMemSpannerServer) ExecuteStreamingSql(req *spannerpb.ExecuteSqlReques
 			return err
 		}
 	}
-	statementResult, err := s.getStatementResult(req.Sql)
+	var statementResult *StatementResult
+	if req.PartitionToken != nil {
+		statementResult, err = s.getPartitionResult(req.PartitionToken)
+	} else {
+		statementResult, err = s.getStatementResult(req.Sql)
+	}
 	if err != nil {
 		return err
 	}
 	s.mu.Lock()
+	statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
 	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
 	s.mu.Unlock()
 	switch statementResult.Type {
 	case StatementResultError:
 		return statementResult.Err
 	case StatementResultResultSet:
-		parts, err := statementResult.toPartialResultSets(req.ResumeToken)
+		parts, err := statementResult.ToPartialResultSets(req.ResumeToken)
 		if err != nil {
 			return err
 		}
@@ -797,19 +942,24 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 	s.mu.Unlock()
 	resp := &spannerpb.ExecuteBatchDmlResponse{}
 	resp.ResultSets = make([]*spannerpb.ResultSet, len(req.Statements))
+	resp.Status = &status.Status{Code: int32(codes.OK)}
 	for idx, batchStatement := range req.Statements {
 		statementResult, err := s.getStatementResult(batchStatement.Sql)
 		if err != nil {
 			return nil, err
 		}
+		s.mu.Lock()
+		statementResult = statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
+		s.mu.Unlock()
 		switch statementResult.Type {
 		case StatementResultError:
-			resp.Status = &status.Status{Code: int32(codes.Unknown)}
+			resp.Status = &status.Status{Code: int32(gstatus.Code(statementResult.Err)), Message: statementResult.Err.Error()}
+			resp.ResultSets = resp.ResultSets[:idx]
+			return resp, nil
 		case StatementResultResultSet:
 			return nil, gstatus.Error(codes.InvalidArgument, fmt.Sprintf("Not an update statement: %v", batchStatement.Sql))
 		case StatementResultUpdateCount:
 			resp.ResultSets[idx] = statementResult.convertUpdateCountToResultSet(!isPartitionedDml)
-			resp.Status = &status.Status{Code: int32(codes.OK)}
 		}
 	}
 	return resp, nil
@@ -823,18 +973,30 @@ func (s *inMemSpannerServer) Read(ctx context.Context, req *spannerpb.ReadReques
 	}
 	s.receivedRequests <- req
 	s.mu.Unlock()
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
+	}
 	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
 }
 
 func (s *inMemSpannerServer) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Spanner_StreamingReadServer) error {
-	s.mu.Lock()
-	if s.stopped {
-		s.mu.Unlock()
-		return gstatus.Error(codes.Unavailable, "server has been stopped")
+	if err := s.simulateExecutionTime(MethodStreamingRead, req); err != nil {
+		return err
 	}
-	s.receivedRequests <- req
-	s.mu.Unlock()
-	return gstatus.Error(codes.Unimplemented, "Method not yet implemented")
+	sqlReq := &spannerpb.ExecuteSqlRequest{
+		Session:        req.Session,
+		Transaction:    req.Transaction,
+		PartitionToken: req.PartitionToken,
+		ResumeToken:    req.ResumeToken,
+		// KeySet is currently ignored.
+		Sql: fmt.Sprintf(
+			"SELECT %s FROM %s",
+			strings.Join(req.Columns, ", "),
+			req.Table,
+		),
+	}
+	return s.executeStreamingSQL(sqlReq, stream)
 }
 
 func (s *inMemSpannerServer) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest) (*spannerpb.Transaction, error) {
@@ -877,7 +1039,13 @@ func (s *inMemSpannerServer) Commit(ctx context.Context, req *spannerpb.CommitRe
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing transaction in commit request")
 	}
 	s.removeTransaction(tx)
-	return &spannerpb.CommitResponse{CommitTimestamp: getCurrentTimestamp()}, nil
+	resp := &spannerpb.CommitResponse{CommitTimestamp: getCurrentTimestamp()}
+	if req.ReturnCommitStats {
+		resp.CommitStats = &spannerpb.CommitResponse_CommitStats{
+			MutationCount: int64(1),
+		}
+	}
+	return resp, nil
 }
 
 func (s *inMemSpannerServer) Rollback(ctx context.Context, req *spannerpb.RollbackRequest) (*emptypb.Empty, error) {
@@ -912,16 +1080,63 @@ func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.
 	}
 	s.receivedRequests <- req
 	s.mu.Unlock()
-	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
+	if req.Session == "" {
+		return nil, gstatus.Error(codes.InvalidArgument, "Missing session name")
+	}
+	session, err := s.findSession(req.Session)
+	if err != nil {
+		return nil, err
+	}
+	var id []byte
+	var tx *spannerpb.Transaction
+	s.updateSessionLastUseTime(session.Name)
+	if id = s.getTransactionID(session, req.Transaction); id != nil {
+		tx, err = s.getTransactionByID(id)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var partitions []*spannerpb.Partition
+	for i := int64(0); i < req.PartitionOptions.MaxPartitions; i++ {
+		token := make([]byte, 10)
+		_, err := rand.Read(token)
+		if err != nil {
+			return nil, gstatus.Error(codes.Internal, "failed to generate random partition token")
+		}
+		partitions = append(partitions, &spannerpb.Partition{PartitionToken: token})
+	}
+	return &spannerpb.PartitionResponse{
+		Partitions:  partitions,
+		Transaction: tx,
+	}, nil
 }
 
 func (s *inMemSpannerServer) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest) (*spannerpb.PartitionResponse, error) {
-	s.mu.Lock()
-	if s.stopped {
-		s.mu.Unlock()
-		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
+	return s.PartitionQuery(ctx, &spannerpb.PartitionQueryRequest{
+		Session:          req.Session,
+		Transaction:      req.Transaction,
+		PartitionOptions: req.PartitionOptions,
+		// KeySet is currently ignored.
+		Sql: fmt.Sprintf(
+			"SELECT %s FROM %s",
+			strings.Join(req.Columns, ", "),
+			req.Table,
+		),
+	})
+}
+
+// EncodeResumeToken return mock resume token encoding for an uint64 integer.
+func EncodeResumeToken(t uint64) []byte {
+	rt := make([]byte, 16)
+	binary.PutUvarint(rt, t)
+	return rt
+}
+
+// DecodeResumeToken decodes a mock resume token into an uint64 integer.
+func DecodeResumeToken(t []byte) (uint64, error) {
+	s, n := binary.Uvarint(t)
+	if n <= 0 {
+		return 0, fmt.Errorf("invalid resume token: %v", t)
 	}
-	s.receivedRequests <- req
-	s.mu.Unlock()
-	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
+	return s, nil
 }

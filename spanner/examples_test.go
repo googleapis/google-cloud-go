@@ -24,8 +24,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/api/iterator"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func ExampleNewClient() {
@@ -96,9 +98,9 @@ func ExampleClient_ReadWriteTransaction() {
 		}
 		balance -= 10
 		m := spanner.Update("Accounts", []string{"user", "balance"}, []interface{}{"alice", balance})
-		return txn.BufferWrite([]*spanner.Mutation{m})
 		// The buffered mutation will be committed. If the commit fails with an
 		// IsAborted error, this function will be called again.
+		return txn.BufferWrite([]*spanner.Mutation{m})
 	})
 	if err != nil {
 		// TODO: Handle error.
@@ -397,6 +399,30 @@ func ExampleRow_ToStruct() {
 
 	var acct Account
 	if err := row.ToStruct(&acct); err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(acct)
+}
+
+func ExampleRow_ToStructLenient() {
+	ctx := context.Background()
+	client, err := spanner.NewClient(ctx, myDB)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	row, err := client.Single().ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"accountID", "name", "balance"})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	type Account struct {
+		Name     string
+		Balance  int64
+		NickName string
+	}
+
+	var acct Account
+	if err := row.ToStructLenient(&acct); err != nil {
 		// TODO: Handle error.
 	}
 	fmt.Println(acct)
@@ -709,4 +735,59 @@ func ExampleKeySets() {
 
 	_ = ks //TODO: Go use the KeySet in another query.
 
+}
+
+func ExampleNewReadWriteStmtBasedTransaction() {
+	ctx := context.Background()
+	client, err := spanner.NewClient(ctx, myDB)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
+
+	f := func(tx *spanner.ReadWriteStmtBasedTransaction) error {
+		var balance int64
+		row, err := tx.ReadRow(ctx, "Accounts", spanner.Key{"alice"}, []string{"balance"})
+		if err != nil {
+			return err
+		}
+		if err := row.Column(0, &balance); err != nil {
+			return err
+		}
+
+		if balance <= 10 {
+			return errors.New("insufficient funds in account")
+		}
+		balance -= 10
+		m := spanner.Update("Accounts", []string{"user", "balance"}, []interface{}{"alice", balance})
+		return tx.BufferWrite([]*spanner.Mutation{m})
+	}
+
+	for {
+		tx, err := spanner.NewReadWriteStmtBasedTransaction(ctx, client)
+		if err != nil {
+			// TODO: Handle error.
+			break
+		}
+		err = f(tx)
+		if err != nil && status.Code(err) != codes.Aborted {
+			tx.Rollback(ctx)
+			// TODO: Handle error.
+			break
+		} else if err == nil {
+			_, err = tx.Commit(ctx)
+			if err == nil {
+				break
+			} else if status.Code(err) != codes.Aborted {
+				// TODO: Handle error.
+				break
+			}
+		}
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := spanner.ExtractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
+	}
 }

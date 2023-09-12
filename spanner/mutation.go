@@ -19,8 +19,8 @@ package spanner
 import (
 	"reflect"
 
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 )
 
@@ -69,7 +69,7 @@ const (
 // To apply a series of mutations as part of an atomic read-modify-write
 // operation, use ReadWriteTransaction.
 //
-// Updating a row
+// # Updating a row
 //
 // Changing the values of columns in an existing row is very similar to
 // inserting a new row:
@@ -79,7 +79,7 @@ const (
 //		[]interface{}{UserID, profile})
 //	_, err := client.Apply(ctx, []*spanner.Mutation{m})
 //
-// Deleting a row
+// # Deleting a row
 //
 // To delete a row, use spanner.Delete:
 //
@@ -93,7 +93,7 @@ const (
 // if cascading deletes are specified in those tables' schemas. Delete does
 // nothing if the named row does not exist (does not yield an error).
 //
-// Deleting a field
+// # Deleting a field
 //
 // To delete/clear a field within a row, use spanner.Update with the value nil:
 //
@@ -105,20 +105,22 @@ const (
 // The valid Go types and their corresponding Cloud Spanner types that can be
 // used in the Insert/Update/InsertOrUpdate functions are:
 //
-//     string, NullString - STRING
-//     []string, []NullString - STRING ARRAY
-//     []byte - BYTES
-//     [][]byte - BYTES ARRAY
-//     int, int64, NullInt64 - INT64
-//     []int, []int64, []NullInt64 - INT64 ARRAY
-//     bool, NullBool - BOOL
-//     []bool, []NullBool - BOOL ARRAY
-//     float64, NullFloat64 - FLOAT64
-//     []float64, []NullFloat64 - FLOAT64 ARRAY
-//     time.Time, NullTime - TIMESTAMP
-//     []time.Time, []NullTime - TIMESTAMP ARRAY
-//     Date, NullDate - DATE
-//     []Date, []NullDate - DATE ARRAY
+//	string, *string, NullString - STRING
+//	[]string, []*string, []NullString - STRING ARRAY
+//	[]byte - BYTES
+//	[][]byte - BYTES ARRAY
+//	int, int64, *int64, NullInt64 - INT64
+//	[]int, []int64, []*int64, []NullInt64 - INT64 ARRAY
+//	bool, *bool, NullBool - BOOL
+//	[]bool, []*bool, []NullBool - BOOL ARRAY
+//	float64, *float64, NullFloat64 - FLOAT64
+//	[]float64, []*float64, []NullFloat64 - FLOAT64 ARRAY
+//	time.Time, *time.Time, NullTime - TIMESTAMP
+//	[]time.Time, []*time.Time, []NullTime - TIMESTAMP ARRAY
+//	Date, *Date, NullDate - DATE
+//	[]Date, []*Date, []NullDate - DATE ARRAY
+//	big.Rat, *big.Rat, NullNumeric - NUMERIC
+//	[]big.Rat, []*big.Rat, []NullNumeric - NUMERIC ARRAY
 //
 // To compare two Mutations for testing purposes, use reflect.DeepEqual.
 type Mutation struct {
@@ -179,7 +181,7 @@ func structToMutationParams(in interface{}) ([]string, []interface{}, error) {
 	}
 	fields, err := fieldCache.Fields(t)
 	if err != nil {
-		return nil, nil, toSpannerError(err)
+		return nil, nil, ToSpannerError(err)
 	}
 	var cols []string
 	var vals []interface{}
@@ -214,8 +216,8 @@ func InsertMap(table string, in map[string]interface{}) *Mutation {
 // codes.AlreadyExists.
 //
 // The in argument must be a struct or a pointer to a struct. Its exported
-// fields specify the column names and values. Use a field tag like "spanner:name"
-// to provide an alternative column name, or use "spanner:-" to ignore the field.
+// fields specify the column names and values. Use a field tag like `spanner:"name"`
+// to provide an alternative column name, or use `spanner:"-"` to ignore the field.
 func InsertStruct(table string, in interface{}) (*Mutation, error) {
 	cols, vals, err := structToMutationParams(in)
 	if err != nil {
@@ -283,7 +285,7 @@ func InsertOrUpdateMap(table string, in map[string]interface{}) *Mutation {
 //
 // The in argument must be a struct or a pointer to a struct. Its exported
 // fields specify the column names and values. Use a field tag like
-// "spanner:name" to provide an alternative column name, or use "spanner:-" to
+// `spanner:"name"` to provide an alternative column name, or use `spanner:"-"` to
 // ignore the field.
 //
 // For a similar example, See UpdateStruct.
@@ -324,8 +326,8 @@ func ReplaceMap(table string, in map[string]interface{}) *Mutation {
 // written become NULL.  The row is specified by a Go struct.
 //
 // The in argument must be a struct or a pointer to a struct. Its exported
-// fields specify the column names and values. Use a field tag like "spanner:name"
-// to provide an alternative column name, or use "spanner:-" to ignore the field.
+// fields specify the column names and values. Use a field tag like `spanner:"name"`
+// to provide an alternative column name, or use `spanner:"-"` to ignore the field.
 //
 // For a similar example, See UpdateStruct.
 func ReplaceStruct(table string, in interface{}) (*Mutation, error) {

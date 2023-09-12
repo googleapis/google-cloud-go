@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,31 +20,60 @@ import (
 	"context"
 
 	dlp "cloud.google.com/go/dlp/apiv2"
+	dlppb "cloud.google.com/go/dlp/apiv2/dlppb"
 	"google.golang.org/api/iterator"
-	dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_InspectContent() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.InspectContentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#InspectContentRequest.
 	}
 	resp, err := c.InspectContent(ctx, req)
 	if err != nil {
@@ -55,16 +84,21 @@ func ExampleClient_InspectContent() {
 }
 
 func ExampleClient_RedactImage() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.RedactImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#RedactImageRequest.
 	}
 	resp, err := c.RedactImage(ctx, req)
 	if err != nil {
@@ -75,16 +109,21 @@ func ExampleClient_RedactImage() {
 }
 
 func ExampleClient_DeidentifyContent() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeidentifyContentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#DeidentifyContentRequest.
 	}
 	resp, err := c.DeidentifyContent(ctx, req)
 	if err != nil {
@@ -95,16 +134,21 @@ func ExampleClient_DeidentifyContent() {
 }
 
 func ExampleClient_ReidentifyContent() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ReidentifyContentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ReidentifyContentRequest.
 	}
 	resp, err := c.ReidentifyContent(ctx, req)
 	if err != nil {
@@ -115,16 +159,21 @@ func ExampleClient_ReidentifyContent() {
 }
 
 func ExampleClient_ListInfoTypes() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListInfoTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ListInfoTypesRequest.
 	}
 	resp, err := c.ListInfoTypes(ctx, req)
 	if err != nil {
@@ -135,16 +184,21 @@ func ExampleClient_ListInfoTypes() {
 }
 
 func ExampleClient_CreateInspectTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CreateInspectTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#CreateInspectTemplateRequest.
 	}
 	resp, err := c.CreateInspectTemplate(ctx, req)
 	if err != nil {
@@ -155,16 +209,21 @@ func ExampleClient_CreateInspectTemplate() {
 }
 
 func ExampleClient_UpdateInspectTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.UpdateInspectTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#UpdateInspectTemplateRequest.
 	}
 	resp, err := c.UpdateInspectTemplate(ctx, req)
 	if err != nil {
@@ -175,16 +234,21 @@ func ExampleClient_UpdateInspectTemplate() {
 }
 
 func ExampleClient_GetInspectTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.GetInspectTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#GetInspectTemplateRequest.
 	}
 	resp, err := c.GetInspectTemplate(ctx, req)
 	if err != nil {
@@ -195,17 +259,21 @@ func ExampleClient_GetInspectTemplate() {
 }
 
 func ExampleClient_ListInspectTemplates() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListInspectTemplatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ListInspectTemplatesRequest.
 	}
 	it := c.ListInspectTemplates(ctx, req)
 	for {
@@ -223,13 +291,20 @@ func ExampleClient_ListInspectTemplates() {
 
 func ExampleClient_DeleteInspectTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteInspectTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#DeleteInspectTemplateRequest.
 	}
 	err = c.DeleteInspectTemplate(ctx, req)
 	if err != nil {
@@ -238,16 +313,21 @@ func ExampleClient_DeleteInspectTemplate() {
 }
 
 func ExampleClient_CreateDeidentifyTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CreateDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#CreateDeidentifyTemplateRequest.
 	}
 	resp, err := c.CreateDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -258,16 +338,21 @@ func ExampleClient_CreateDeidentifyTemplate() {
 }
 
 func ExampleClient_UpdateDeidentifyTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.UpdateDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#UpdateDeidentifyTemplateRequest.
 	}
 	resp, err := c.UpdateDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -278,16 +363,21 @@ func ExampleClient_UpdateDeidentifyTemplate() {
 }
 
 func ExampleClient_GetDeidentifyTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.GetDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#GetDeidentifyTemplateRequest.
 	}
 	resp, err := c.GetDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -298,17 +388,21 @@ func ExampleClient_GetDeidentifyTemplate() {
 }
 
 func ExampleClient_ListDeidentifyTemplates() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListDeidentifyTemplatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ListDeidentifyTemplatesRequest.
 	}
 	it := c.ListDeidentifyTemplates(ctx, req)
 	for {
@@ -326,13 +420,20 @@ func ExampleClient_ListDeidentifyTemplates() {
 
 func ExampleClient_DeleteDeidentifyTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#DeleteDeidentifyTemplateRequest.
 	}
 	err = c.DeleteDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -341,16 +442,21 @@ func ExampleClient_DeleteDeidentifyTemplate() {
 }
 
 func ExampleClient_CreateJobTrigger() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CreateJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#CreateJobTriggerRequest.
 	}
 	resp, err := c.CreateJobTrigger(ctx, req)
 	if err != nil {
@@ -361,16 +467,21 @@ func ExampleClient_CreateJobTrigger() {
 }
 
 func ExampleClient_UpdateJobTrigger() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.UpdateJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#UpdateJobTriggerRequest.
 	}
 	resp, err := c.UpdateJobTrigger(ctx, req)
 	if err != nil {
@@ -380,17 +491,47 @@ func ExampleClient_UpdateJobTrigger() {
 	_ = resp
 }
 
-func ExampleClient_GetJobTrigger() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
+func ExampleClient_HybridInspectJobTrigger() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &dlppb.HybridInspectJobTriggerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#HybridInspectJobTriggerRequest.
+	}
+	resp, err := c.HybridInspectJobTrigger(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetJobTrigger() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &dlppb.GetJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#GetJobTriggerRequest.
 	}
 	resp, err := c.GetJobTrigger(ctx, req)
 	if err != nil {
@@ -401,17 +542,21 @@ func ExampleClient_GetJobTrigger() {
 }
 
 func ExampleClient_ListJobTriggers() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListJobTriggersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ListJobTriggersRequest.
 	}
 	it := c.ListJobTriggers(ctx, req)
 	for {
@@ -429,13 +574,20 @@ func ExampleClient_ListJobTriggers() {
 
 func ExampleClient_DeleteJobTrigger() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#DeleteJobTriggerRequest.
 	}
 	err = c.DeleteJobTrigger(ctx, req)
 	if err != nil {
@@ -444,16 +596,21 @@ func ExampleClient_DeleteJobTrigger() {
 }
 
 func ExampleClient_ActivateJobTrigger() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ActivateJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ActivateJobTriggerRequest.
 	}
 	resp, err := c.ActivateJobTrigger(ctx, req)
 	if err != nil {
@@ -464,16 +621,21 @@ func ExampleClient_ActivateJobTrigger() {
 }
 
 func ExampleClient_CreateDlpJob() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CreateDlpJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#CreateDlpJobRequest.
 	}
 	resp, err := c.CreateDlpJob(ctx, req)
 	if err != nil {
@@ -484,17 +646,21 @@ func ExampleClient_CreateDlpJob() {
 }
 
 func ExampleClient_ListDlpJobs() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListDlpJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ListDlpJobsRequest.
 	}
 	it := c.ListDlpJobs(ctx, req)
 	for {
@@ -511,16 +677,21 @@ func ExampleClient_ListDlpJobs() {
 }
 
 func ExampleClient_GetDlpJob() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.GetDlpJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#GetDlpJobRequest.
 	}
 	resp, err := c.GetDlpJob(ctx, req)
 	if err != nil {
@@ -532,13 +703,20 @@ func ExampleClient_GetDlpJob() {
 
 func ExampleClient_DeleteDlpJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteDlpJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#DeleteDlpJobRequest.
 	}
 	err = c.DeleteDlpJob(ctx, req)
 	if err != nil {
@@ -548,13 +726,20 @@ func ExampleClient_DeleteDlpJob() {
 
 func ExampleClient_CancelDlpJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CancelDlpJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#CancelDlpJobRequest.
 	}
 	err = c.CancelDlpJob(ctx, req)
 	if err != nil {
@@ -563,16 +748,21 @@ func ExampleClient_CancelDlpJob() {
 }
 
 func ExampleClient_CreateStoredInfoType() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CreateStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#CreateStoredInfoTypeRequest.
 	}
 	resp, err := c.CreateStoredInfoType(ctx, req)
 	if err != nil {
@@ -583,16 +773,21 @@ func ExampleClient_CreateStoredInfoType() {
 }
 
 func ExampleClient_UpdateStoredInfoType() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.UpdateStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#UpdateStoredInfoTypeRequest.
 	}
 	resp, err := c.UpdateStoredInfoType(ctx, req)
 	if err != nil {
@@ -603,16 +798,21 @@ func ExampleClient_UpdateStoredInfoType() {
 }
 
 func ExampleClient_GetStoredInfoType() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.GetStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#GetStoredInfoTypeRequest.
 	}
 	resp, err := c.GetStoredInfoType(ctx, req)
 	if err != nil {
@@ -623,17 +823,21 @@ func ExampleClient_GetStoredInfoType() {
 }
 
 func ExampleClient_ListStoredInfoTypes() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListStoredInfoTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ListStoredInfoTypesRequest.
 	}
 	it := c.ListStoredInfoTypes(ctx, req)
 	for {
@@ -651,15 +855,70 @@ func ExampleClient_ListStoredInfoTypes() {
 
 func ExampleClient_DeleteStoredInfoType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#DeleteStoredInfoTypeRequest.
 	}
 	err = c.DeleteStoredInfoType(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_HybridInspectDlpJob() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.HybridInspectDlpJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#HybridInspectDlpJobRequest.
+	}
+	resp, err := c.HybridInspectDlpJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_FinishDlpJob() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.FinishDlpJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#FinishDlpJobRequest.
+	}
+	err = c.FinishDlpJob(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
@@ -31,6 +32,22 @@ func defaultExtractJob() *bq.Job {
 					ProjectId: "client-project-id",
 					DatasetId: "dataset-id",
 					TableId:   "table-id",
+				},
+				DestinationUris: []string{"uri"},
+			},
+		},
+	}
+}
+
+func defaultExtractModelJob() *bq.Job {
+	return &bq.Job{
+		JobReference: &bq.JobReference{JobId: "RANDOM", ProjectId: "client-project-id"},
+		Configuration: &bq.JobConfiguration{
+			Extract: &bq.JobConfigurationExtract{
+				SourceModel: &bq.ModelReference{
+					ProjectId: "client-project-id",
+					DatasetId: "dataset-id",
+					ModelId:   "model-id",
 				},
 				DestinationUris: []string{"uri"},
 			},
@@ -67,10 +84,12 @@ func TestExtract(t *testing.T) {
 			config: ExtractConfig{
 				DisableHeader: true,
 				Labels:        map[string]string{"a": "b"},
+				JobTimeout:    8 * time.Second,
 			},
 			want: func() *bq.Job {
 				j := defaultExtractJob()
 				j.Configuration.Labels = map[string]string{"a": "b"}
+				j.Configuration.JobTimeoutMs = 8000
 				f := false
 				j.Configuration.Extract.PrintHeader = &f
 				return j
@@ -128,6 +147,57 @@ func TestExtract(t *testing.T) {
 		}
 		diff := testutil.Diff(jc, &ext.ExtractConfig,
 			cmp.AllowUnexported(Table{}, Client{}))
+		if diff != "" {
+			t.Errorf("#%d: (got=-, want=+:\n%s", i, diff)
+		}
+	}
+}
+
+func TestExtractModel(t *testing.T) {
+	defer fixRandomID("RANDOM")()
+	c := &Client{
+		projectID: "client-project-id",
+	}
+
+	testCases := []struct {
+		dst      *GCSReference
+		srcModel *Model
+		config   ExtractConfig
+		want     *bq.Job
+	}{
+		{
+			dst:      defaultGCS(),
+			srcModel: c.Dataset("dataset-id").Model("model-id"),
+			want:     defaultExtractModelJob(),
+		},
+		{
+			dst: &GCSReference{
+				URIs:              []string{"uri"},
+				DestinationFormat: TFSavedModel,
+			},
+			srcModel: c.Dataset("dataset-id").Model("model-id"),
+			want: func() *bq.Job {
+				j := defaultExtractModelJob()
+				j.Configuration.Extract.DestinationFormat = string(TFSavedModel)
+				return j
+			}(),
+		},
+	}
+
+	for i, tc := range testCases {
+		ext := tc.srcModel.ExtractorTo(tc.dst)
+		tc.config.SrcModel = ext.SrcModel
+		tc.config.Dst = ext.Dst
+		ext.ExtractConfig = tc.config
+		got := ext.newJob()
+		checkJob(t, i, got, tc.want)
+
+		jc, err := bqToJobConfig(got.Configuration, c)
+		if err != nil {
+			t.Fatalf("#%d: %v", i, err)
+		}
+		diff := testutil.Diff(jc, &ext.ExtractConfig,
+			cmp.AllowUnexported(Model{}, Client{}))
 		if diff != "" {
 			t.Errorf("#%d: (got=-, want=+:\n%s", i, diff)
 		}

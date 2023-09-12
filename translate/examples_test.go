@@ -22,7 +22,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-func Example_NewClient() {
+func ExampleNewClient() {
 	ctx := context.Background()
 	client, err := translate.NewClient(ctx)
 	if err != nil {
@@ -36,7 +36,7 @@ func Example_NewClient() {
 	}
 }
 
-func Example_Translate() {
+func ExampleClient_Translate() {
 	ctx := context.Background()
 	client, err := translate.NewClient(ctx)
 	if err != nil {
@@ -54,7 +54,7 @@ func Example_Translate() {
 	fmt.Println(translations[0].Text)
 }
 
-func Example_DetectLanguage() {
+func ExampleClient_DetectLanguage() {
 	ctx := context.Background()
 	client, err := translate.NewClient(ctx)
 	if err != nil {
@@ -67,7 +67,7 @@ func Example_DetectLanguage() {
 	fmt.Println(ds)
 }
 
-func Example_SupportedLanguages() {
+func ExampleClient_SupportedLanguages() {
 	ctx := context.Background()
 	client, err := translate.NewClient(ctx)
 	if err != nil {

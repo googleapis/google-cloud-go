@@ -4,18 +4,18 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 package storage_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -33,20 +33,14 @@ import (
 )
 
 func TestIndefiniteRetries(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1641")
-
-	if testing.Short() {
-		t.Skip("A long running test for retries")
-	}
-
 	uploadRoute := "/upload"
 
 	var resumableUploadIDs atomic.Value
 	resumableUploadIDs.Store(make(map[string]time.Time))
 
-	lookupUploadID := func(resumableUploadID string) (time.Time, bool) {
-		t, ok := resumableUploadIDs.Load().(map[string]time.Time)[resumableUploadID]
-		return t, ok
+	lookupUploadID := func(resumableUploadID string) bool {
+		_, ok := resumableUploadIDs.Load().(map[string]time.Time)[resumableUploadID]
+		return ok
 	}
 
 	memoizeUploadID := func(resumableUploadID string) {
@@ -62,7 +56,7 @@ func TestIndefiniteRetries(t *testing.T) {
 			w.Write([]byte(`{"kind":"storage#bucket","id":"bucket","name":"bucket"}`))
 			return
 
-		case strings.HasPrefix(path, "/b/") && strings.HasSuffix(path, "/o"):
+		case (strings.HasPrefix(path, "/b/") || strings.HasPrefix(path, "/upload/storage/v1/b/")) && strings.HasSuffix(path, "/o"):
 			if resumableUploadID == "" {
 				uploadID := time.Now().Format(time.RFC3339Nano)
 				w.Header().Set("X-GUploader-UploadID", uploadID)
@@ -71,15 +65,13 @@ func TestIndefiniteRetries(t *testing.T) {
 			} else {
 				w.Write([]byte(`{"kind":"storage#object","bucket":"bucket","name":"bucket"}`))
 			}
-
 			return
 
 		case path == uploadRoute:
-			start, _, _, completedUpload, spamThem := parseContentRange(r.Header)
+			start, completedUpload, spamThem := parseContentRange(r.Header)
 
 			if resumableUploadID != "" {
-				_, ok := lookupUploadID(resumableUploadID)
-				if !ok {
+				if !lookupUploadID(resumableUploadID) {
 					if start == "0" {
 						// First time that we are encountering this upload
 						// and it is at byte 0, so memoize the uploadID.
@@ -96,22 +88,19 @@ func TestIndefiniteRetries(t *testing.T) {
 					}
 				}
 			}
-
 			if spamThem {
 				// Reproduce https://github.com/googleapis/google-cloud-go/issues/1507
 				// by sending then a retryable error on the last byte.
 				w.WriteHeader(http.StatusTooManyRequests)
 				return
 			}
-
 			if completedUpload {
 				// Completed the upload.
 				return
 			}
 
 			// Consume the body since we can accept this body.
-			_, _ = ioutil.ReadAll(r.Body)
-
+			ioutil.ReadAll(r.Body)
 			w.Header().Set("X-Http-Status-Code-Override", "308")
 			return
 
@@ -143,13 +132,17 @@ func TestIndefiniteRetries(t *testing.T) {
 	w := obj.NewWriter(ctx)
 
 	maxFileSize := 1 << 20
-	chunkSize := maxFileSize / 4
+	w.ChunkSize = maxFileSize / 4
 
-	w.ChunkSize = chunkSize
+	// Use a shorter retry deadline to speed up the test.
+	w.ChunkRetryDeadline = time.Second
 
 	for i := 0; i < maxFileSize; {
 		nowStr := time.Now().Format(time.RFC3339Nano)
-		n, _ := fmt.Fprintf(w, "%s%s", nowStr, strings.Repeat("a", w.ChunkSize))
+		n, err := fmt.Fprintf(w, "%s", nowStr)
+		if err != nil {
+			t.Fatalf("Failed to write to object: %v", err)
+		}
 		i += n
 	}
 
@@ -159,16 +152,15 @@ func TestIndefiniteRetries(t *testing.T) {
 		closeDone <- w.Close()
 	}()
 
-	// Given that the ExponentialBackoff is 30 seconds from a start of 100ms,
-	// let's wait for a maximum of 5 minutes to account for (2**n) increments
-	// between [100ms, 30s].
-	maxWait := 5 * time.Minute
+	// Given the exponential backoff math and the ChunkRetryDeadline math, use a
+	// max value of 10s. Experimentally this test usually passes in < 5s.
+	maxWait := 10 * time.Second
 	select {
 	case <-time.After(maxWait):
 		t.Fatalf("Test took longer than %s to return", maxWait)
 	case err := <-closeDone:
-		ge, ok := err.(*googleapi.Error)
-		if !ok {
+		var ge *googleapi.Error
+		if !errors.As(err, &ge) {
 			t.Fatalf("Got error (%v) of type %T, expected *googleapi.Error", err, err)
 		}
 		if ge.Code != http.StatusTooManyRequests {
@@ -188,25 +180,22 @@ func (ts *tokenSupplier) Token() (*oauth2.Token, error) {
 	}, nil
 }
 
-func parseContentRange(hdr http.Header) (start, end, max string, completed, spamThem bool) {
+func parseContentRange(hdr http.Header) (start string, completed, spamThem bool) {
 	cRange := strings.TrimPrefix(hdr.Get("Content-Range"), "bytes ")
 	rangeSplits := strings.Split(cRange, "/")
 	prelude := rangeSplits[0]
-	max = rangeSplits[1]
+
+	if rangeSplits[1] != "*" { // They've uploaded the last byte.
+		// Reproduce https://github.com/googleapis/google-cloud-go/issues/1507
+		// by sending then a retryable error on the last byte.
+		spamThem = true
+	}
 	if len(prelude) == 0 || prelude == "*" {
 		// Completed the upload.
 		completed = true
 		return
 	}
-
 	startEndSplit := strings.Split(prelude, "-")
-	start, end = startEndSplit[0], startEndSplit[1]
-
-	if max != "*" { // They've uploaded the last byte.
-		// Reproduce https://github.com/googleapis/google-cloud-go/issues/1507
-		// by sending then a retryable error on the last byte.
-		spamThem = true
-	}
-
+	start = startEndSplit[0]
 	return
 }

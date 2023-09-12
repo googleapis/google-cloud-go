@@ -19,11 +19,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -31,6 +32,11 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
+)
+
+const (
+	compressedFile   = "httpreplay_compressed.txt"
+	uncompressedFile = "httpreplay_uncompressed.txt"
 )
 
 func TestIntegration_RecordAndReplay(t *testing.T) {
@@ -45,6 +51,11 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 		t.Skip("Need project ID. See CONTRIBUTING.md for details.")
 	}
 	ctx := context.Background()
+	cleanup, err := setup(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
 
 	// Record.
 	initial := time.Now()
@@ -56,6 +67,9 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	rec.RemoveRequestHeaders("X-Goog-Api-Client")
+	rec.RemoveRequestHeaders("X-Goog-Gcs-Idempotency-Token")
+
 	hc, err := rec.Client(ctx, option.WithTokenSource(
 		testutil.TokenSource(ctx, storage.ScopeFullControl)))
 	if err != nil {
@@ -72,6 +86,8 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	rep.IgnoreHeader("X-Goog-Api-Client")
+	rep.IgnoreHeader("X-Goog-Gcs-Idempotency-Token")
 	defer rep.Close()
 	hc, err = rep.Client(ctx)
 	if err != nil {
@@ -95,10 +111,55 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	}
 }
 
+func setup(ctx context.Context) (cleanup func(), err error) {
+	ts := testutil.TokenSource(ctx, storage.ScopeFullControl)
+	client, err := storage.NewClient(ctx, option.WithTokenSource(ts))
+	if err != nil {
+		return nil, err
+	}
+	bucket := testutil.ProjID()
+
+	// upload compressed object
+	f1, err := os.Open(filepath.Join("internal", "testdata", "compressed.txt"))
+	if err != nil {
+		return nil, err
+	}
+	defer f1.Close()
+	w := client.Bucket(bucket).Object(compressedFile).NewWriter(ctx)
+	w.ContentEncoding = "gzip"
+	w.ContentType = "text/plain"
+	if _, err = io.Copy(w, f1); err != nil {
+		return nil, err
+	}
+	if err := w.Close(); err != nil {
+		return nil, err
+	}
+	// upload uncompressed object
+	f2, err := os.Open(filepath.Join("internal", "testdata", "uncompressed.txt"))
+	if err != nil {
+		return nil, err
+	}
+	defer f2.Close()
+	w = client.Bucket(testutil.ProjID()).Object(uncompressedFile).NewWriter(ctx)
+	if _, err = io.Copy(w, f2); err != nil {
+		return nil, err
+	}
+	if err := w.Close(); err != nil {
+		return nil, err
+	}
+	return func() {
+		client.Bucket(bucket).Object(compressedFile).Delete(ctx)
+		client.Bucket(bucket).Object(uncompressedFile).Delete(ctx)
+		client.Close()
+	}, nil
+}
+
 // TODO(jba): test errors
 
 func run(t *testing.T, hc *http.Client) (*storage.BucketAttrs, []byte) {
-	ctx := context.Background()
+	ctx, cc := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cc()
+
 	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		t.Fatal(err)
@@ -124,7 +185,7 @@ func run(t *testing.T, hc *http.Client) (*storage.BucketAttrs, []byte) {
 		t.Fatal(err)
 	}
 	defer r.Close()
-	contents, err := ioutil.ReadAll(r)
+	contents, err := io.ReadAll(r)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,24 +194,18 @@ func run(t *testing.T, hc *http.Client) (*storage.BucketAttrs, []byte) {
 }
 
 func testReadCRC(t *testing.T, hc *http.Client, mode string) {
-	const (
-		// This is an uncompressed file.
-		// See https://cloud.google.com/storage/docs/public-datasets/landsat
-		uncompressedBucket = "gcp-public-data-landsat"
-		uncompressedObject = "LC08/PRE/044/034/LC80440342016259LGN00/LC80440342016259LGN00_MTL.txt"
+	ctx, cc := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cc()
 
-		gzippedBucket = "storage-library-test-bucket"
-		gzippedObject = "gzipped-text.txt"
-	)
-	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		t.Fatalf("%s: %v", mode, err)
 	}
 	defer client.Close()
 
-	uncompressedObj := client.Bucket(uncompressedBucket).Object(uncompressedObject)
-	gzippedObj := client.Bucket(gzippedBucket).Object(gzippedObject)
+	bucket := testutil.ProjID()
+	uncompressedObj := client.Bucket(bucket).Object(uncompressedFile)
+	gzippedObj := client.Bucket(bucket).Object(compressedFile)
 
 	for _, test := range []struct {
 		desc           string
@@ -167,7 +222,7 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			offset:         0,
 			length:         -1,
 			readCompressed: false,
-			wantLen:        7903,
+			wantLen:        179,
 		},
 		{
 			desc:           "uncompressed, entire file, don't decompress",
@@ -175,15 +230,15 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			offset:         0,
 			length:         -1,
 			readCompressed: true,
-			wantLen:        7903,
+			wantLen:        179,
 		},
 		{
 			desc:           "uncompressed, suffix",
 			obj:            uncompressedObj,
-			offset:         3,
+			offset:         9,
 			length:         -1,
 			readCompressed: false,
-			wantLen:        7900,
+			wantLen:        170,
 		},
 		{
 			desc:           "uncompressed, prefix",
@@ -204,7 +259,7 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			offset:         0,
 			length:         -1,
 			readCompressed: false,
-			wantLen:        11,
+			wantLen:        179,
 		},
 		{
 			// When we read a gzipped file uncompressed, it's like reading a regular file:
@@ -214,7 +269,7 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			offset:         0,
 			length:         -1,
 			readCompressed: true,
-			wantLen:        31,
+			wantLen:        128,
 		},
 		{
 			desc:           "compressed, partial, read compressed",
@@ -248,7 +303,7 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			t.Errorf("%s: %s: %v", mode, test.desc, err)
 			continue
 		}
-		data, err := ioutil.ReadAll(r)
+		data, err := io.ReadAll(r)
 		_ = r.Close()
 		if err != nil {
 			t.Errorf("%s: %s: %v", mode, test.desc, err)
@@ -262,7 +317,7 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 
 func TestRemoveAndClear(t *testing.T) {
 	// Disable logging for this test, since it generates a lot.
-	log.SetOutput(ioutil.Discard)
+	log.SetOutput(io.Discard)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		fmt.Fprintln(w, "LGTM")
 	}))
@@ -365,7 +420,7 @@ func TestRemoveAndClear(t *testing.T) {
 }
 
 func tempFilename(t *testing.T, pattern string) string {
-	f, err := ioutil.TempFile("", pattern)
+	f, err := os.CreateTemp("", pattern)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -20,6 +20,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -281,7 +282,7 @@ func TestQuery(t *testing.T) {
 				Q:                "query string",
 				DefaultProjectID: "def-project-id",
 				DefaultDatasetID: "def-dataset-id",
-				TimePartitioning: &TimePartitioning{},
+				TimePartitioning: &TimePartitioning{Type: DayPartitioningType},
 			},
 			want: func() *bq.Job {
 				j := defaultQueryJob()
@@ -313,10 +314,32 @@ func TestQuery(t *testing.T) {
 				j.Configuration.Query.RangePartitioning = &bq.RangePartitioning{
 					Field: "foo",
 					Range: &bq.RangePartitioningRange{
-						Start:    1,
-						End:      2,
-						Interval: 3,
+						Start:           1,
+						End:             2,
+						Interval:        3,
+						ForceSendFields: []string{"Start", "End", "Interval"},
 					},
+				}
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: &QueryConfig{
+				Q:                "query string",
+				DefaultProjectID: "def-project-id",
+				DefaultDatasetID: "def-dataset-id",
+				ConnectionProperties: []*ConnectionProperty{
+					{Key: "key-a", Value: "value-a"},
+					{Key: "key-b", Value: "value-b"},
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.ForceSendFields = nil
+				j.Configuration.Query.ConnectionProperties = []*bq.ConnectionProperty{
+					{Key: "key-a", Value: "value-a"},
+					{Key: "key-b", Value: "value-b"},
 				}
 				return j
 			}(),
@@ -378,9 +401,102 @@ func TestQuery(t *testing.T) {
 		diff := testutil.Diff(jc.(*QueryConfig), &wantConfig,
 			cmp.Comparer(tableEqual),
 			cmp.Comparer(externalDataEqual),
+			cmp.AllowUnexported(QueryConfig{}),
 		)
 		if diff != "" {
 			t.Errorf("#%d: (got=-, want=+:\n%s", i, diff)
+		}
+	}
+}
+
+func TestProbeFastPath(t *testing.T) {
+	c := &Client{
+		projectID: "client-project-id",
+	}
+	pfalse := false
+	testCases := []struct {
+		inCfg    QueryConfig
+		inJobCfg JobIDConfig
+		wantReq  *bq.QueryRequest
+		wantErr  bool
+	}{
+		{
+			inCfg: QueryConfig{
+				Q: "foo",
+			},
+			wantReq: &bq.QueryRequest{
+				Query:        "foo",
+				UseLegacySql: &pfalse,
+			},
+		},
+		{
+			// All things you can set and still get a successful QueryRequest
+			inCfg: QueryConfig{
+				Q:                 "foo",
+				DefaultProjectID:  "defproject",
+				DefaultDatasetID:  "defdataset",
+				DisableQueryCache: true,
+				Priority:          InteractivePriority,
+				MaxBytesBilled:    123,
+				Parameters: []QueryParameter{
+					{Name: "user", Value: "bob"},
+				},
+				Labels: map[string]string{
+					"key": "val",
+				},
+			},
+			wantReq: &bq.QueryRequest{
+				Query:          "foo",
+				DefaultDataset: &bq.DatasetReference{ProjectId: "defproject", DatasetId: "defdataset"},
+				Labels: map[string]string{
+					"key": "val",
+				},
+				MaximumBytesBilled: 123,
+				UseLegacySql:       &pfalse,
+				QueryParameters: []*bq.QueryParameter{
+					{
+						Name:           "user",
+						ParameterType:  &bq.QueryParameterType{Type: "STRING"},
+						ParameterValue: &bq.QueryParameterValue{Value: "bob"},
+					},
+				},
+				UseQueryCache: &pfalse,
+			},
+		},
+		{
+			// fail, sets destination via API
+			inCfg: QueryConfig{
+				Q:   "foo",
+				Dst: &Table{},
+			},
+			wantErr: true,
+		},
+		{
+			// fail, sets specifies destination partitioning
+			inCfg: QueryConfig{
+				Q:                 "foo",
+				TimePartitioning:  &TimePartitioning{},
+				RangePartitioning: &RangePartitioning{},
+			},
+			wantErr: true,
+		},
+		{
+			// fail, sets specifies schema update options
+			inCfg: QueryConfig{
+				Q:                   "foo",
+				SchemaUpdateOptions: []string{"bar"},
+			},
+			wantErr: true,
+		},
+	}
+	for i, tc := range testCases {
+		in := &Query{tc.inJobCfg, tc.inCfg, c}
+		gotReq, err := in.probeFastPath()
+		if tc.wantErr && err == nil {
+			t.Errorf("case %d wanted error, got nil", i)
+		}
+		if diff := testutil.Diff(gotReq, tc.wantReq, cmpopts.IgnoreFields(bq.QueryRequest{}, "RequestId")); diff != "" {
+			t.Errorf("QueryRequest case %d: -got +want:\n%s", i, diff)
 		}
 	}
 }
@@ -400,6 +516,7 @@ func TestConfiguringQuery(t *testing.T) {
 	}
 	query.DestinationEncryptionConfig = &EncryptionConfig{KMSKeyName: "keyName"}
 	query.SchemaUpdateOptions = []string{"ALLOW_FIELD_ADDITION"}
+	query.JobTimeout = time.Duration(5) * time.Second
 
 	// Note: Other configuration fields are tested in other tests above.
 	// A lot of that can be consolidated once Client.Copy is gone.
@@ -419,6 +536,7 @@ func TestConfiguringQuery(t *testing.T) {
 				DestinationEncryptionConfiguration: &bq.EncryptionConfiguration{KmsKeyName: "keyName"},
 				SchemaUpdateOptions:                []string{"ALLOW_FIELD_ADDITION"},
 			},
+			JobTimeoutMs: 5000,
 		},
 		JobReference: &bq.JobReference{
 			JobId:     "ajob",

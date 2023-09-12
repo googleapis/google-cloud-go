@@ -1,0 +1,263 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.networksecurity.v1beta1",
+  "libraryPackage": "cloud.google.com/go/networksecurity/apiv1beta1",
+  "services": {
+    "NetworkSecurity": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAuthorizationPolicy": {
+              "methods": [
+                "CreateAuthorizationPolicy"
+              ]
+            },
+            "CreateClientTlsPolicy": {
+              "methods": [
+                "CreateClientTlsPolicy"
+              ]
+            },
+            "CreateServerTlsPolicy": {
+              "methods": [
+                "CreateServerTlsPolicy"
+              ]
+            },
+            "DeleteAuthorizationPolicy": {
+              "methods": [
+                "DeleteAuthorizationPolicy"
+              ]
+            },
+            "DeleteClientTlsPolicy": {
+              "methods": [
+                "DeleteClientTlsPolicy"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteServerTlsPolicy": {
+              "methods": [
+                "DeleteServerTlsPolicy"
+              ]
+            },
+            "GetAuthorizationPolicy": {
+              "methods": [
+                "GetAuthorizationPolicy"
+              ]
+            },
+            "GetClientTlsPolicy": {
+              "methods": [
+                "GetClientTlsPolicy"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetServerTlsPolicy": {
+              "methods": [
+                "GetServerTlsPolicy"
+              ]
+            },
+            "ListAuthorizationPolicies": {
+              "methods": [
+                "ListAuthorizationPolicies"
+              ]
+            },
+            "ListClientTlsPolicies": {
+              "methods": [
+                "ListClientTlsPolicies"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServerTlsPolicies": {
+              "methods": [
+                "ListServerTlsPolicies"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAuthorizationPolicy": {
+              "methods": [
+                "UpdateAuthorizationPolicy"
+              ]
+            },
+            "UpdateClientTlsPolicy": {
+              "methods": [
+                "UpdateClientTlsPolicy"
+              ]
+            },
+            "UpdateServerTlsPolicy": {
+              "methods": [
+                "UpdateServerTlsPolicy"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAuthorizationPolicy": {
+              "methods": [
+                "CreateAuthorizationPolicy"
+              ]
+            },
+            "CreateClientTlsPolicy": {
+              "methods": [
+                "CreateClientTlsPolicy"
+              ]
+            },
+            "CreateServerTlsPolicy": {
+              "methods": [
+                "CreateServerTlsPolicy"
+              ]
+            },
+            "DeleteAuthorizationPolicy": {
+              "methods": [
+                "DeleteAuthorizationPolicy"
+              ]
+            },
+            "DeleteClientTlsPolicy": {
+              "methods": [
+                "DeleteClientTlsPolicy"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteServerTlsPolicy": {
+              "methods": [
+                "DeleteServerTlsPolicy"
+              ]
+            },
+            "GetAuthorizationPolicy": {
+              "methods": [
+                "GetAuthorizationPolicy"
+              ]
+            },
+            "GetClientTlsPolicy": {
+              "methods": [
+                "GetClientTlsPolicy"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetServerTlsPolicy": {
+              "methods": [
+                "GetServerTlsPolicy"
+              ]
+            },
+            "ListAuthorizationPolicies": {
+              "methods": [
+                "ListAuthorizationPolicies"
+              ]
+            },
+            "ListClientTlsPolicies": {
+              "methods": [
+                "ListClientTlsPolicies"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServerTlsPolicies": {
+              "methods": [
+                "ListServerTlsPolicies"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAuthorizationPolicy": {
+              "methods": [
+                "UpdateAuthorizationPolicy"
+              ]
+            },
+            "UpdateClientTlsPolicy": {
+              "methods": [
+                "UpdateClientTlsPolicy"
+              ]
+            },
+            "UpdateServerTlsPolicy": {
+              "methods": [
+                "UpdateServerTlsPolicy"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

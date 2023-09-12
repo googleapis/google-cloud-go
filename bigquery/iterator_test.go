@@ -21,6 +21,8 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
+	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/iterator"
 )
 
@@ -35,12 +37,121 @@ type pageFetcherStub struct {
 	err            error
 }
 
-func (pf *pageFetcherStub) fetchPage(ctx context.Context, _ *Table, _ Schema, _ uint64, _ int64, pageToken string) (*fetchPageResult, error) {
+func (pf *pageFetcherStub) fetchPage(ctx context.Context, _ *rowSource, _ Schema, _ uint64, _ int64, pageToken string) (*fetchPageResult, error) {
 	call, ok := pf.fetchResponses[pageToken]
 	if !ok {
 		pf.err = fmt.Errorf("Unexpected page token: %q", pageToken)
 	}
 	return call.result, call.err
+}
+
+func TestRowIteratorCacheBehavior(t *testing.T) {
+
+	testSchema := &bq.TableSchema{
+		Fields: []*bq.TableFieldSchema{
+			{Type: "INTEGER", Name: "field1"},
+			{Type: "STRING", Name: "field2"},
+		},
+	}
+	testRows := []*bq.TableRow{
+		{F: []*bq.TableCell{
+			{V: "1"},
+			{V: "foo"},
+		},
+		},
+	}
+	convertedSchema := bqToSchema(testSchema)
+
+	convertedRows, _ := convertRows(testRows, convertedSchema)
+
+	testCases := []struct {
+		inSource     *rowSource
+		inSchema     Schema
+		inStartIndex uint64
+		inPageSize   int64
+		inPageToken  string
+		wantErr      error
+		wantResult   *fetchPageResult
+	}{
+		{
+			inSource: &rowSource{},
+			wantErr:  errNoCacheData,
+		},
+		{
+			// primary success case: schema in cache
+			inSource: &rowSource{
+				cachedSchema: testSchema,
+				cachedRows:   testRows,
+			},
+			wantResult: &fetchPageResult{
+				totalRows: uint64(len(convertedRows)),
+				schema:    convertedSchema,
+				rows:      convertedRows,
+			},
+		},
+		{
+			// secondary success case: schema provided
+			inSource: &rowSource{
+				cachedRows:      testRows,
+				cachedNextToken: "foo",
+			},
+			inSchema: convertedSchema,
+			wantResult: &fetchPageResult{
+				totalRows: uint64(len(convertedRows)),
+				schema:    convertedSchema,
+				rows:      convertedRows,
+				pageToken: "foo",
+			},
+		},
+		{
+			// misaligned page size.
+			inSource: &rowSource{
+				cachedSchema: testSchema,
+				cachedRows:   testRows,
+			},
+			inPageSize: 99,
+			wantErr:    errNoCacheData,
+		},
+		{
+			// nonzero start.
+			inSource: &rowSource{
+				cachedSchema: testSchema,
+				cachedRows:   testRows,
+			},
+			inStartIndex: 1,
+			wantErr:      errNoCacheData,
+		},
+		{
+			// data without schema
+			inSource: &rowSource{
+				cachedSchema: testSchema,
+				cachedRows:   testRows,
+			},
+			inStartIndex: 1,
+			wantErr:      errNoCacheData,
+		},
+		{
+			// data without schema
+			inSource: &rowSource{
+				cachedSchema: testSchema,
+				cachedRows:   testRows,
+			},
+			inStartIndex: 1,
+			wantErr:      errNoCacheData,
+		},
+	}
+	for _, tc := range testCases {
+		gotResp, gotErr := fetchCachedPage(context.Background(), tc.inSource, tc.inSchema, tc.inStartIndex, tc.inPageSize, tc.inPageToken)
+		if gotErr != tc.wantErr {
+			t.Errorf("err mismatch.  got %v, want %v", gotErr, tc.wantErr)
+		} else {
+			if diff := testutil.Diff(gotResp, tc.wantResult,
+				cmp.AllowUnexported(fetchPageResult{}, rowSource{}, Job{}, Client{}, Table{})); diff != "" {
+				t.Errorf("response diff (got=-, want=+):\n%s", diff)
+			}
+		}
+	}
+
 }
 
 func TestIterator(t *testing.T) {
@@ -357,6 +468,45 @@ func TestIteratorNextTypes(t *testing.T) {
 	} {
 		if err := it.Next(v); err == nil {
 			t.Errorf("%v: want error, got nil", v)
+		}
+	}
+}
+
+func TestIteratorSourceJob(t *testing.T) {
+	testcases := []struct {
+		description string
+		src         *rowSource
+		wantJob     *Job
+	}{
+		{
+			description: "nil source",
+			src:         nil,
+			wantJob:     nil,
+		},
+		{
+			description: "empty source",
+			src:         &rowSource{},
+			wantJob:     nil,
+		},
+		{
+			description: "table source",
+			src:         &rowSource{t: &Table{ProjectID: "p", DatasetID: "d", TableID: "t"}},
+			wantJob:     nil,
+		},
+		{
+			description: "job source",
+			src:         &rowSource{j: &Job{projectID: "p", location: "l", jobID: "j"}},
+			wantJob:     &Job{projectID: "p", location: "l", jobID: "j"},
+		},
+	}
+
+	for _, tc := range testcases {
+		// Don't pass a page func, we're not reading from the iterator.
+		it := newRowIterator(context.Background(), tc.src, nil)
+		got := it.SourceJob()
+		// AllowUnexported because of the embedded client reference, which we're ignoring.
+		if !cmp.Equal(got, tc.wantJob, cmp.AllowUnexported(Job{})) {
+			t.Errorf("%s: mismatch on SourceJob, got %v want %v", tc.description, got, tc.wantJob)
 		}
 	}
 }

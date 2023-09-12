@@ -26,7 +26,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	grafeaspb "google.golang.org/genproto/googleapis/grafeas/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -89,7 +89,7 @@ func defaultCallOptions() *CallOptions {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {
 	// The connection to the service.
-	conn *grpc.ClientConn
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	client grafeaspb.GrafeasClient
@@ -118,15 +118,15 @@ type Client struct {
 // there would be one note for the vulnerability and an occurrence for each
 // image with the vulnerability referring to that note.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	conn, err := transport.DialGRPC(ctx, opts...)
+	connPool, err := gtransport.DialPool(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultCallOptions(),
 
-		client: grafeaspb.NewGrafeasClient(conn),
+		client: grafeaspb.NewGrafeasClient(connPool),
 	}
 	c.setGoogleClientInfo()
 	return c, nil
@@ -134,13 +134,13 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns the client's connection to the API service.
 func (c *Client) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

@@ -39,13 +39,23 @@ func TestExternalDataConfig(t *testing.T) {
 				FieldDelimiter:      "f",
 				Quote:               "q",
 				SkipLeadingRows:     3,
+				NullMarker:          "marker",
 			},
+			ConnectionID: "connection",
 		},
 		{
 			SourceFormat: GoogleSheets,
 			Options: &GoogleSheetsOptions{
 				SkipLeadingRows: 4,
 				Range:           "sheet1!A1:Z10",
+			},
+		},
+		{
+			SourceFormat: Avro,
+			HivePartitioningOptions: &HivePartitioningOptions{
+				Mode:                   AutoHivePartitioningMode,
+				SourceURIPrefix:        "gs://somebucket/a/b/c",
+				RequirePartitionFilter: true,
 			},
 		},
 		{
@@ -70,6 +80,23 @@ func TestExternalDataConfig(t *testing.T) {
 						},
 					},
 				},
+			},
+		},
+		{
+			SourceFormat: Parquet,
+			Options: &ParquetOptions{
+				EnumAsString:        true,
+				EnableListInference: true,
+			},
+		},
+		{
+			SourceFormat:       Parquet,
+			DecimalTargetTypes: []DecimalTargetType{BigNumericTargetType, NumericTargetType, StringTargetType},
+		},
+		{
+			SourceFormat: Avro,
+			Options: &AvroOptions{
+				UseAvroLogicalTypes: true,
 			},
 		},
 	} {
