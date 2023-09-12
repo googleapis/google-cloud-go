@@ -3,6 +3,21 @@
 
 
 
+## [1.55.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.54.0...bigquery/v1.55.0) (2023-09-11)
+
+
+### Features
+
+* **bigquery/datapolicies:** Support using custom UDF in the data policy ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+* **bigquery:** Set PreferredMinStreamCount when creating read session ([#8476](https://github.com/googleapis/google-cloud-go/issues/8476)) ([22e095a](https://github.com/googleapis/google-cloud-go/commit/22e095adea77a2bc3900f5d5c57715d4a9ed4fcb)), refs [#8432](https://github.com/googleapis/google-cloud-go/issues/8432)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Address possible deadlocks ([#8507](https://github.com/googleapis/google-cloud-go/issues/8507)) ([48b08bf](https://github.com/googleapis/google-cloud-go/commit/48b08bf47494052a2652a3ab519de76fddc74c8a))
+* **bigquery:** Field descriptor proto name should not be lowercase ([#8495](https://github.com/googleapis/google-cloud-go/issues/8495)) ([4287e4b](https://github.com/googleapis/google-cloud-go/commit/4287e4bed40e69203ddb55bd754e3adbf269ba9e))
+* **bigquery:** Value for datasetID on foreign keys ([#8447](https://github.com/googleapis/google-cloud-go/issues/8447)) ([fa6e827](https://github.com/googleapis/google-cloud-go/commit/fa6e827a5997fb7abe97375ea6abb7d2fc71047d)), refs [#8442](https://github.com/googleapis/google-cloud-go/issues/8442)
+
 ## [1.54.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.53.0...bigquery/v1.54.0) (2023-08-17)
 
 
