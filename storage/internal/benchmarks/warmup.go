@@ -32,14 +32,12 @@ func warmupW1R3(ctx context.Context, opts *benchmarkOptions) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	discardBenchmarkResults(ctx)
-
 	warmupGroup, ctx := errgroup.WithContext(ctx)
 	warmupGroup.SetLimit(runtime.NumCPU())
 
 	for deadline := time.Now().Add(opts.warmup); time.Now().Before(deadline); {
 		warmupGroup.Go(func() error {
-			benchmark := &w1r3{opts: opts, bucketName: opts.bucket}
+			benchmark := &w1r3{opts: opts, bucketName: opts.bucket, isWarmup: true}
 
 			if err := benchmark.setup(ctx); err != nil {
 				return fmt.Errorf("warmup setup failed: %v", err)
@@ -55,30 +53,4 @@ func warmupW1R3(ctx context.Context, opts *benchmarkOptions) error {
 	}
 
 	return warmupGroup.Wait()
-}
-
-// discardBenchmarkResults consumes benchmark results until the provided context
-// is cancelled
-func discardBenchmarkResults(ctx context.Context) {
-	results = make(chan benchmarkResult)
-
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case r, ok := <-results:
-				if !ok {
-					return
-				}
-				if deadline, _ := ctx.Deadline(); time.Now().After(deadline) {
-					// If the deadline has passed but this case was selected, we
-					// should leave the results channel in the same state as we
-					// found it
-					results <- r
-					return
-				}
-			}
-		}
-	}()
 }
