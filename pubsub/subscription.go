@@ -1372,6 +1372,19 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				if err == io.EOF {
 					return nil
 				}
+				if err != nil {
+					return err
+				}
+				// If context is done and messages have been pulled,
+				// nack them.
+				select {
+				case <-ctx.Done():
+					for _, m := range msgs {
+						m.Nack()
+					}
+					return nil
+				default:
+				}
 
 				for i, msg := range msgs {
 					iter.eoMu.RLock()
