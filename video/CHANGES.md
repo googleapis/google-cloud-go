@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.18.0...video/v1.19.0) (2023-07-24)
 
 
