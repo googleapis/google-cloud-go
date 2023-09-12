@@ -882,6 +882,602 @@
           "type": "FULL"
         }
       ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_CancelOperation_sync",
+      "title": "networkconnectivity CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyBasedRoutingClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_CreatePolicyBasedRoute_sync",
+      "title": "networkconnectivity CreatePolicyBasedRoute Sample",
+      "description": "CreatePolicyBasedRoute creates a new PolicyBasedRoute in a given project and location.",
+      "file": "PolicyBasedRoutingClient/CreatePolicyBasedRoute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePolicyBasedRoute",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.CreatePolicyBasedRoute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.CreatePolicyBasedRouteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePolicyBasedRouteOperation",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "CreatePolicyBasedRoute",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.CreatePolicyBasedRoute",
+          "service": {
+            "shortName": "PolicyBasedRoutingService",
+            "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_DeleteOperation_sync",
+      "title": "networkconnectivity DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyBasedRoutingClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_DeletePolicyBasedRoute_sync",
+      "title": "networkconnectivity DeletePolicyBasedRoute Sample",
+      "description": "DeletePolicyBasedRoute deletes a single PolicyBasedRoute.",
+      "file": "PolicyBasedRoutingClient/DeletePolicyBasedRoute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePolicyBasedRoute",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.DeletePolicyBasedRoute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.DeletePolicyBasedRouteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePolicyBasedRouteOperation",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "DeletePolicyBasedRoute",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.DeletePolicyBasedRoute",
+          "service": {
+            "shortName": "PolicyBasedRoutingService",
+            "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_GetIamPolicy_sync",
+      "title": "networkconnectivity GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "PolicyBasedRoutingClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_GetLocation_sync",
+      "title": "networkconnectivity GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "PolicyBasedRoutingClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_GetOperation_sync",
+      "title": "networkconnectivity GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyBasedRoutingClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_GetPolicyBasedRoute_sync",
+      "title": "networkconnectivity GetPolicyBasedRoute Sample",
+      "description": "GetPolicyBasedRoute gets details of a single PolicyBasedRoute.",
+      "file": "PolicyBasedRoutingClient/GetPolicyBasedRoute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPolicyBasedRoute",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.GetPolicyBasedRoute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.GetPolicyBasedRouteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*networkconnectivitypb.PolicyBasedRoute",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "GetPolicyBasedRoute",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.GetPolicyBasedRoute",
+          "service": {
+            "shortName": "PolicyBasedRoutingService",
+            "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_ListLocations_sync",
+      "title": "networkconnectivity ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "PolicyBasedRoutingClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_ListOperations_sync",
+      "title": "networkconnectivity ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "PolicyBasedRoutingClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_ListPolicyBasedRoutes_sync",
+      "title": "networkconnectivity ListPolicyBasedRoutes Sample",
+      "description": "ListPolicyBasedRoutes lists PolicyBasedRoutes in a given project and location.",
+      "file": "PolicyBasedRoutingClient/ListPolicyBasedRoutes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPolicyBasedRoutes",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.ListPolicyBasedRoutes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkconnectivitypb.ListPolicyBasedRoutesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PolicyBasedRouteIterator",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "ListPolicyBasedRoutes",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService.ListPolicyBasedRoutes",
+          "service": {
+            "shortName": "PolicyBasedRoutingService",
+            "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_SetIamPolicy_sync",
+      "title": "networkconnectivity SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "PolicyBasedRoutingClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkconnectivity_v1_generated_PolicyBasedRoutingService_TestIamPermissions_sync",
+      "title": "networkconnectivity TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "PolicyBasedRoutingClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "PolicyBasedRoutingClient",
+          "fullName": "google.cloud.networkconnectivity.v1.PolicyBasedRoutingClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
     }
   ]
 }
