@@ -459,6 +459,7 @@ func (e multiError) Error() string {
 
 	for _, err := range e {
 		sb.WriteString(err.Error())
+		sb.WriteRune('\n')
 	}
 
 	return sb.String()
@@ -503,20 +504,20 @@ func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) erro
 				// If setup failed once, it will probably continue failing.
 				// Returning the error here will cancel the context to stop the
 				// benchmarking.
-				return fmt.Errorf("run setup failed: %v\n", err)
+				return fmt.Errorf("run setup failed: %v", err)
 			}
 			if err := benchmark.run(ctx); err != nil {
 				// If a run fails, we continue, as it could be a temporary issue.
 				// We log the error and make sure the program exits with an error
 				// to indicate that we did see an error, even though we continue.
-				multiErr = append(multiErr, fmt.Errorf("run failed: %v\n", err))
+				multiErr = append(multiErr, fmt.Errorf("run failed: %v", err))
 			}
 			if err := benchmark.cleanup(); err != nil {
 				// If cleanup fails, we continue, as a single fail is not critical.
 				// We log the error and make sure the program exits with an error
 				// to indicate that we did see an error, even though we continue.
 				// Cleanup may be expected to fail if there is an issue with the run.
-				multiErr = append(multiErr, fmt.Errorf("run cleanup failed: %v\n", err))
+				multiErr = append(multiErr, fmt.Errorf("run cleanup failed: %v", err))
 			}
 			return nil
 		})
@@ -529,8 +530,6 @@ func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) erro
 	close(results)
 	recordResultGroup.Wait()
 
-	log.Println(multiErr)
-
 	if len(multiErr) > 0 {
 		return multiErr
 	}
@@ -542,11 +541,6 @@ func runInServerMode(ctx context.Context, opts *benchmarkOptions) {
 	results = make(chan benchmarkResult, 4)
 
 	serverutils.Serve(func(request *epb.ProbeRequest, reply *epb.ProbeReply) {
-
-		// options := request.GetOptions()
-
-		// reply.ErrorMessage(options)
-
 		var benchmark benchmark
 		benchmark = &w1r3{opts: opts, bucketName: opts.bucket}
 
