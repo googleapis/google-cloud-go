@@ -1,6 +1,6 @@
 {
   "auth": "0.0.0",
-  "bigquery": "1.54.0",
+  "bigquery": "1.55.0",
   "bigtable": "1.19.0",
   "datastore": "1.14.0",
   "errorreporting": "0.3.0",
