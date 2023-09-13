@@ -251,7 +251,7 @@ func TestGetGRPCTransportConfigAndEndpoint(t *testing.T) {
 	}
 }
 
-func TestGetHTTPTransportConfigAndEndpoint(t *testing.T) {
+func TestGetHTTPTransportConfig(t *testing.T) {
 	testCases := []struct {
 		Desc         string
 		Opts         *Options
