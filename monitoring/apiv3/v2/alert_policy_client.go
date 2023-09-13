@@ -170,11 +170,19 @@ func (c *AlertPolicyClient) GetAlertPolicy(ctx context.Context, req *monitoringp
 }
 
 // CreateAlertPolicy creates a new alerting policy.
+//
+// Design your application to single-thread API calls that modify the state of
+// alerting policies in a single project. This includes calls to
+// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 func (c *AlertPolicyClient) CreateAlertPolicy(ctx context.Context, req *monitoringpb.CreateAlertPolicyRequest, opts ...gax.CallOption) (*monitoringpb.AlertPolicy, error) {
 	return c.internalClient.CreateAlertPolicy(ctx, req, opts...)
 }
 
 // DeleteAlertPolicy deletes an alerting policy.
+//
+// Design your application to single-thread API calls that modify the state of
+// alerting policies in a single project. This includes calls to
+// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 func (c *AlertPolicyClient) DeleteAlertPolicy(ctx context.Context, req *monitoringpb.DeleteAlertPolicyRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteAlertPolicy(ctx, req, opts...)
 }
@@ -183,6 +191,10 @@ func (c *AlertPolicyClient) DeleteAlertPolicy(ctx context.Context, req *monitori
 // a new one or replace only certain fields in the current alerting policy by
 // specifying the fields to be updated via updateMask. Returns the
 // updated alerting policy.
+//
+// Design your application to single-thread API calls that modify the state of
+// alerting policies in a single project. This includes calls to
+// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 func (c *AlertPolicyClient) UpdateAlertPolicy(ctx context.Context, req *monitoringpb.UpdateAlertPolicyRequest, opts ...gax.CallOption) (*monitoringpb.AlertPolicy, error) {
 	return c.internalClient.UpdateAlertPolicy(ctx, req, opts...)
 }
