@@ -19,7 +19,6 @@ import (
 	"reflect"
 	"testing"
 
-	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"github.com/google/go-cmp/cmp"
@@ -356,6 +355,175 @@ func TestSchemaToProtoConversion(t *testing.T) {
 						Number:   proto.Int32(3),
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
 						TypeName: proto.String(".root__rec1"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+		},
+		{
+			description: "nested with reused submessage in different levels",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{
+						Name: "bartest1",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_REQUIRED,
+						Fields: []*storagepb.TableFieldSchema{
+							{
+								Name: "barid",
+								Type: storagepb.TableFieldSchema_STRING,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+							},
+						},
+					},
+					{
+						Name: "fullprofile",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_REQUIRED,
+						Fields: []*storagepb.TableFieldSchema{
+							{
+								Name: "biztest1",
+								Type: storagepb.TableFieldSchema_STRUCT,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+								Fields: []*storagepb.TableFieldSchema{
+									{
+										Name: "bizid",
+										Type: storagepb.TableFieldSchema_STRING,
+										Mode: storagepb.TableFieldSchema_REQUIRED,
+									},
+								},
+							},
+							{
+								Name: "bartest2",
+								Type: storagepb.TableFieldSchema_STRUCT,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+								Fields: []*storagepb.TableFieldSchema{
+									{
+										Name: "barid",
+										Type: storagepb.TableFieldSchema_STRING,
+										Mode: storagepb.TableFieldSchema_REQUIRED,
+									},
+								},
+							},
+							{
+								Name: "bartest3",
+								Type: storagepb.TableFieldSchema_STRUCT,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+								Fields: []*storagepb.TableFieldSchema{
+									{
+										Name: "barid",
+										Type: storagepb.TableFieldSchema_STRING,
+										Mode: storagepb.TableFieldSchema_REQUIRED,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantProto2: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("bartest1"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__bartest1"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:     proto.String("fullprofile"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__fullprofile"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+				},
+			},
+			wantProto2Normalized: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("bartest1"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("root__bartest1"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:     proto.String("fullprofile"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("root__fullprofile"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("root__bartest1"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("barid"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("root__fullprofile__biztest1"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("bizid"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("root__fullprofile"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("biztest1"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("root__fullprofile__biztest1"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+							{
+								Name:     proto.String("bartest2"),
+								Number:   proto.Int32(2),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("root__bartest1"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+							{
+								Name:     proto.String("bartest3"),
+								Number:   proto.Int32(3),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("root__bartest1"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+						},
+					},
+				},
+			},
+			wantProto3: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("bartest1"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__bartest1"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("fullprofile"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__fullprofile"),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 					},
 				},
@@ -1403,74 +1571,5 @@ func TestNormalizeDescriptor(t *testing.T) {
 		if diff := cmp.Diff(gotDP, tc.want, protocmp.Transform()); diff != "" {
 			t.Errorf("%s: -got, +want:\n%s", tc.description, diff)
 		}
-	}
-}
-
-// TODO: should we try to convert this test as part of the table driven tests ?
-// is ok to reference bigquery.InferSchema here ?
-func TestInferSchemaAdapt(t *testing.T) {
-	type Bar struct {
-		BarID string `json:"barid" bigquery:"barid"`
-	}
-
-	type Biz struct {
-		BizID string `json:"bizid" bigquery:"bizid"`
-	}
-
-	type Profile struct {
-		BizTest1 *Biz `json:"biztest1,omitempty" bigquery:"biztest1"`
-		BarTest2 *Bar `json:"bartest2,omitempty" bigquery:"bartest2"`
-		BarTest3 *Bar `json:"bartest3,omitempty" bigquery:"bartest3"`
-	}
-
-	type Foo struct {
-		BarTest1    *Bar     `json:"bartest1,omitempty" bigquery:"bartest1"`
-		FullProfile *Profile `json:"fullprofile,omitempty" bigquery:"fullprofile"`
-	}
-
-	s, err := bigquery.InferSchema(Foo{})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	convertedSchema, err := BQSchemaToStorageTableSchema(s)
-	if err != nil {
-		t.Fatalf("adapt.BQSchemaToStorageTableSchema: %v", err)
-	}
-
-	descriptor, err := StorageSchemaToProto2Descriptor(convertedSchema, "root")
-	if err != nil {
-		t.Fatalf("adapt.StorageSchemaToDescriptor: %v", err)
-	}
-
-	md, ok := descriptor.(protoreflect.MessageDescriptor)
-	if !ok {
-		t.Fatal("adapted descriptor is not a message descriptor")
-	}
-
-	message := dynamicpb.NewMessage(md)
-
-	f := Foo{
-		BarTest1: &Bar{BarID: "barTest1Value"},
-		FullProfile: &Profile{
-			BarTest2: &Bar{BarID: "barTest2Value"},
-			BarTest3: &Bar{BarID: "barTest3Value"},
-			BizTest1: &Biz{BizID: "bizIDValue"},
-		},
-	}
-
-	bb, err := json.Marshal(f)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = protojson.Unmarshal(bb, message)
-	if err != nil {
-		t.Fatalf("failed to Unmarshal json message for: %v", err)
-	}
-
-	_, err = proto.Marshal(message)
-	if err != nil {
-		t.Fatalf("failed to marshal proto bytes for row : %v", err)
 	}
 }
