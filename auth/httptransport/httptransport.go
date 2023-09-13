@@ -79,6 +79,8 @@ func (o *Options) validate() error {
 	return nil
 }
 
+// client returns the client a user set for the detect options or nil if one was
+// not set.
 func (o *Options) client() *http.Client {
 	if o.DetectOpts != nil && o.DetectOpts.Client != nil {
 		return o.DetectOpts.Client

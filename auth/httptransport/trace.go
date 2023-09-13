@@ -31,6 +31,7 @@ const (
 	cloudTraceHeader  = `X-Cloud-Trace-Context`
 )
 
+// asserts the httpFormat fulfills this foreign interface
 var _ propagation.HTTPFormat = (*httpFormat)(nil)
 
 // httpFormat implements propagation.httpFormat to propagate
