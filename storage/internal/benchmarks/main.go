@@ -50,7 +50,7 @@ import (
 )
 
 const (
-	codeVersion = "0.9.1" // to keep track of which version of the code a benchmark ran on
+	codeVersion = "0.10.0" // to keep track of which version of the code a benchmark ran on
 	useDefault  = -1
 	tracerName  = "storage-benchmark"
 )
