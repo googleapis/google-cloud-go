@@ -16,7 +16,6 @@ package httptransport
 
 import (
 	"context"
-	"crypto/tls"
 	"net"
 	"net/http"
 	"time"
@@ -24,7 +23,6 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/detect"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/transport/cert"
 	"go.opencensus.io/plugin/ochttp"
 	"golang.org/x/net/http2"
 )
@@ -86,15 +84,16 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 // Otherwise, use a default transport, taking most defaults from
 // http.DefaultTransport.
 // If TLSCertificate is available, set TLSClientConfig as well.
-func defaultBaseTransport(clientCertSource cert.Source, dialTLSContext func(context.Context, string, string) (net.Conn, error)) http.RoundTripper {
+func defaultBaseTransport(dialTLSContext func(context.Context, string, string) (net.Conn, error)) http.RoundTripper {
 	trans := http.DefaultTransport.(*http.Transport).Clone()
 	trans.MaxIdleConnsPerHost = 100
 
-	if clientCertSource != nil {
-		trans.TLSClientConfig = &tls.Config{
-			GetClientCertificate: clientCertSource,
-		}
-	}
+	// TODO(codyoss): readd in a future PR
+	// if clientCertSource != nil {
+	// 	trans.TLSClientConfig = &tls.Config{
+	// 		GetClientCertificate: clientCertSource,
+	// 	}
+	// }
 	if dialTLSContext != nil {
 		// If DialTLSContext is set, TLSClientConfig wil be ignored
 		trans.DialTLSContext = dialTLSContext

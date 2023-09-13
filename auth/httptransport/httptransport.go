@@ -88,7 +88,7 @@ func (o *Options) client() *http.Client {
 
 func (o *Options) resolveDetectOptions() *detect.Options {
 	io := o.InternalOptions
-	//soft-clone these so we are not updating a ref the user holds and may reuse
+	// soft-clone these so we are not updating a ref the user holds and may reuse
 	do := transport.CloneDetectOptions(o.DetectOpts)
 
 	// If scoped JWTs are enabled user provided an aud, allow self-signed JWT.
@@ -151,20 +151,22 @@ func NewClient(opts *Options) (*http.Client, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	tOpts := &transport.Options{
-		Endpoint:           opts.Endpoint,
-		ClientCertProvider: opts.ClientCertProvider,
-		Client:             opts.client(),
-	}
-	if io := opts.InternalOptions; io != nil {
-		tOpts.DefaultEndpoint = io.DefaultEndpoint
-		tOpts.DefaultMTLSEndpoint = io.DefaultMTLSEndpoint
-	}
-	clientCertProvider, dialTLSContext, err := transport.GetHTTPTransportConfig(tOpts)
-	if err != nil {
-		return nil, err
-	}
-	trans, err := newTransport(defaultBaseTransport(clientCertProvider, dialTLSContext), opts)
+	// TODO(codyoss): re-add in a future PR
+
+	// tOpts := &transport.Options{
+	// 	Endpoint:           opts.Endpoint,
+	// 	ClientCertProvider: opts.ClientCertProvider,
+	// 	Client:             opts.client(),
+	// }
+	// if io := opts.InternalOptions; io != nil {
+	// 	tOpts.DefaultEndpoint = io.DefaultEndpoint
+	// 	tOpts.DefaultMTLSEndpoint = io.DefaultMTLSEndpoint
+	// }
+	// clientCertProvider, dialTLSContext, err := transport.GetHTTPTransportConfig(tOpts)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	trans, err := newTransport(defaultBaseTransport(nil), opts)
 	if err != nil {
 		return nil, err
 	}
