@@ -183,6 +183,7 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 
 	switch t.Kind() {
 	case reflect.Slice:
+		// Uint8 is an alias for byte. A slice of bytes is acceptable. A slice of others types is not.
 		if flatten && prevSlice && t.Elem().Kind() != reflect.Uint8 {
 			return fmt.Errorf("datastore: flattening nested structs leads to a slice of slices: field %q", fieldName)
 		}
