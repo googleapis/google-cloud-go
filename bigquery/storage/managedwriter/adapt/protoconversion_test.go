@@ -19,6 +19,7 @@ import (
 	"reflect"
 	"testing"
 
+	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"github.com/google/go-cmp/cmp"
@@ -1402,5 +1403,74 @@ func TestNormalizeDescriptor(t *testing.T) {
 		if diff := cmp.Diff(gotDP, tc.want, protocmp.Transform()); diff != "" {
 			t.Errorf("%s: -got, +want:\n%s", tc.description, diff)
 		}
+	}
+}
+
+// TODO: should we try to convert this test as part of the table driven tests ?
+// is ok to reference bigquery.InferSchema here ?
+func TestInferSchemaAdapt(t *testing.T) {
+	type Bar struct {
+		BarID string `json:"barid" bigquery:"barid"`
+	}
+
+	type Biz struct {
+		BizID string `json:"bizid" bigquery:"bizid"`
+	}
+
+	type Profile struct {
+		BizTest1 *Biz `json:"biztest1,omitempty" bigquery:"biztest1"`
+		BarTest2 *Bar `json:"bartest2,omitempty" bigquery:"bartest2"`
+		BarTest3 *Bar `json:"bartest3,omitempty" bigquery:"bartest3"`
+	}
+
+	type Foo struct {
+		BarTest1    *Bar     `json:"bartest1,omitempty" bigquery:"bartest1"`
+		FullProfile *Profile `json:"fullprofile,omitempty" bigquery:"fullprofile"`
+	}
+
+	s, err := bigquery.InferSchema(Foo{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	convertedSchema, err := BQSchemaToStorageTableSchema(s)
+	if err != nil {
+		t.Fatalf("adapt.BQSchemaToStorageTableSchema: %v", err)
+	}
+
+	descriptor, err := StorageSchemaToProto2Descriptor(convertedSchema, "root")
+	if err != nil {
+		t.Fatalf("adapt.StorageSchemaToDescriptor: %v", err)
+	}
+
+	md, ok := descriptor.(protoreflect.MessageDescriptor)
+	if !ok {
+		t.Fatal("adapted descriptor is not a message descriptor")
+	}
+
+	message := dynamicpb.NewMessage(md)
+
+	f := Foo{
+		BarTest1: &Bar{BarID: "barTest1Value"},
+		FullProfile: &Profile{
+			BarTest2: &Bar{BarID: "barTest2Value"},
+			BarTest3: &Bar{BarID: "barTest3Value"},
+			BizTest1: &Biz{BizID: "bizIDValue"},
+		},
+	}
+
+	bb, err := json.Marshal(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = protojson.Unmarshal(bb, message)
+	if err != nil {
+		t.Fatalf("failed to Unmarshal json message for: %v", err)
+	}
+
+	_, err = proto.Marshal(message)
+	if err != nil {
+		t.Fatalf("failed to marshal proto bytes for row : %v", err)
 	}
 }

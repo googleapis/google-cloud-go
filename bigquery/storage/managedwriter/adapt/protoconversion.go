@@ -185,8 +185,8 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 			if foundDesc != nil {
 				// check to see if we already have this in current dependency list
 				haveDep := false
-				for _, curDep := range deps {
-					if foundDesc.ParentFile().FullName() == curDep.FullName() {
+				for _, dep := range deps {
+					if messageDependsOnFile(foundDesc, dep) {
 						haveDep = true
 						break
 					}
@@ -277,6 +277,27 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 		return nil, err
 	}
 	return found.(protoreflect.MessageDescriptor), nil
+}
+
+// messageDependsOnFile checks if the given message descriptor already belongs to the file descriptor.
+// To check for that, first we check if the message descriptor parent file is the same as the file descriptor.
+// If not, check if the message descriptor belongs is contained as a child of the file descriptor.
+func messageDependsOnFile(msg protoreflect.MessageDescriptor, file protoreflect.FileDescriptor) bool {
+	parentFile := msg.ParentFile()
+	parentFileName := parentFile.FullName()
+	if parentFileName != "" {
+		if parentFileName == file.FullName() {
+			return true
+		}
+	}
+	fileMessages := file.Messages()
+	for i := 0; i < fileMessages.Len(); i++ {
+		childMsg := fileMessages.Get(i)
+		if msg.FullName() == childMsg.FullName() {
+			return true
+		}
+	}
+	return false
 }
 
 // tableFieldSchemaToFieldDescriptorProto builds individual field descriptors for a proto message.
