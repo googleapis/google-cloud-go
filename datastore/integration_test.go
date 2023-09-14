@@ -915,7 +915,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		testutil.Retry(t, 10, 5*time.Second, func(r *testutil.R) {
+		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
 			gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
 			gotFailure := gotErr != nil
 
