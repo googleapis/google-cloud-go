@@ -1263,17 +1263,10 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 		key := parts[0]
 		msg := parts[1]
 		publishData = append(publishData, testutil2.OrderedKeyMsg{Key: key, Data: msg})
-		r := topic.Publish(ctx, &Message{
+		topic.Publish(ctx, &Message{
 			Data:        []byte(msg),
 			OrderingKey: key,
 		})
-		go func() {
-			_, err := r.Get(ctx)
-			if err != nil {
-				// Can't fail inside goroutine, so just log the error.
-				t.Logf("publish error for message(%s): %v", msg, err)
-			}
-		}()
 		wg.Add(1)
 	}
 	if err := scanner.Err(); err != nil {
