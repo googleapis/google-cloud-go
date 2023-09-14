@@ -1273,6 +1273,8 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	receiveDone := make(chan struct{})
+	ctx, cancel := context.WithCancel(ctx)
 	go func() {
 		if err := sub.Receive(ctx, func(ctx context.Context, msg *Message) {
 			mu.Lock()
@@ -1291,6 +1293,7 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 				t.Error(err)
 			}
 		}
+		close(receiveDone)
 	}()
 
 	done := make(chan struct{})
@@ -1301,6 +1304,7 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 
 	select {
 	case <-done:
+		cancel()
 	case <-time.After(5 * time.Minute):
 		t.Fatal("timed out after 5m waiting for all messages to be received")
 	}
@@ -1310,6 +1314,13 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 	if err := testutil2.VerifyKeyOrdering(publishData, receiveData); err != nil {
 		t.Fatalf("VerifyKeyOrdering error: %v", err)
 	}
+
+	select {
+	case <-receiveDone:
+	case <-time.After(5 * time.Minute):
+		t.Fatal("timed out after 5m waiting for receive to exit")
+	}
+
 }
 
 func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
