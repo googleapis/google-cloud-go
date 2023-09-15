@@ -23,6 +23,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestTokenSource_serviceAccount(t *testing.T) {
@@ -65,11 +67,27 @@ func TestTokenSource_serviceAccount(t *testing.T) {
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
 					if strings.Contains(req.URL.Path, "generateAccessToken") {
-						resp := generateAccessTokenResp{
+						defer req.Body.Close()
+						b, err := io.ReadAll(req.Body)
+						if err != nil {
+							t.Error(err)
+						}
+						var r generateAccessTokenRequest
+						if err := json.Unmarshal(b, &r); err != nil {
+							t.Error(err)
+						}
+						if !cmp.Equal(r.Scope, tt.scopes) {
+							t.Errorf("got %v, want %v", r.Scope, tt.scopes)
+						}
+						if !strings.Contains(req.URL.Path, tt.targetPrincipal) {
+							t.Errorf("got %q, want %q", req.URL.Path, tt.targetPrincipal)
+						}
+
+						resp := generateAccessTokenResponse{
 							AccessToken: saTok,
 							ExpireTime:  time.Now().Format(time.RFC3339),
 						}
-						b, err := json.Marshal(&resp)
+						b, err = json.Marshal(&resp)
 						if err != nil {
 							t.Fatalf("unable to marshal response: %v", err)
 						}

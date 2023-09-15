@@ -55,10 +55,23 @@ func TestIDTokenSource(t *testing.T) {
 			idTok := "id-token"
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
+					defer req.Body.Close()
+					b, err := io.ReadAll(req.Body)
+					if err != nil {
+						t.Error(err)
+					}
+					var r generateIDTokenRequest
+					if err := json.Unmarshal(b, &r); err != nil {
+						t.Error(err)
+					}
+					if r.Audience != tt.aud {
+						t.Errorf("got %q, want %q", r.Audience, tt.aud)
+					}
+
 					resp := generateIDTokenResponse{
 						Token: idTok,
 					}
-					b, err := json.Marshal(&resp)
+					b, err = json.Marshal(&resp)
 					if err != nil {
 						t.Fatalf("unable to marshal response: %v", err)
 					}

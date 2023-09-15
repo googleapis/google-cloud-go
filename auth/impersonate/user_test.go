@@ -69,12 +69,35 @@ func TestTokenSource_user(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
+					defer req.Body.Close()
 					if strings.Contains(req.URL.Path, "signJwt") {
+						b, err := io.ReadAll(req.Body)
+						if err != nil {
+							t.Error(err)
+						}
+						var r signJWTRequest
+						if err := json.Unmarshal(b, &r); err != nil {
+							t.Error(err)
+						}
+						jwtPayload := map[string]interface{}{}
+						if err := json.Unmarshal([]byte(r.Payload), &jwtPayload); err != nil {
+							t.Error(err)
+						}
+						if got, want := jwtPayload["iss"].(string), tt.targetPrincipal; got != want {
+							t.Errorf("got %q, want %q", got, want)
+						}
+						if got, want := jwtPayload["sub"].(string), tt.subject; got != want {
+							t.Errorf("got %q, want %q", got, want)
+						}
+						if got, want := jwtPayload["scope"].(string), strings.Join(tt.scopes, ","); got != want {
+							t.Errorf("got %q, want %q", got, want)
+						}
+
 						resp := signJWTResponse{
 							KeyID:     "123",
 							SignedJWT: jwt.HeaderType,
 						}
-						b, err := json.Marshal(&resp)
+						b, err = json.Marshal(&resp)
 						if err != nil {
 							t.Fatalf("unable to marshal response: %v", err)
 						}

@@ -145,13 +145,13 @@ func formatIAMServiceAccountName(name string) string {
 	return fmt.Sprintf("projects/-/serviceAccounts/%s", name)
 }
 
-type generateAccessTokenReq struct {
+type generateAccessTokenRequest struct {
 	Delegates []string `json:"delegates,omitempty"`
 	Lifetime  string   `json:"lifetime,omitempty"`
 	Scope     []string `json:"scope,omitempty"`
 }
 
-type generateAccessTokenResp struct {
+type generateAccessTokenResponse struct {
 	AccessToken string `json:"accessToken"`
 	ExpireTime  string `json:"expireTime"`
 }
@@ -167,7 +167,7 @@ type impersonatedTokenProvider struct {
 
 // Token returns an impersonated Token.
 func (i impersonatedTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	reqBody := generateAccessTokenReq{
+	reqBody := generateAccessTokenRequest{
 		Delegates: i.delegates,
 		Lifetime:  i.lifetime,
 		Scope:     i.scopes,
@@ -196,7 +196,7 @@ func (i impersonatedTokenProvider) Token(ctx context.Context) (*auth.Token, erro
 		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
 	}
 
-	var accessTokenResp generateAccessTokenResp
+	var accessTokenResp generateAccessTokenResponse
 	if err := json.Unmarshal(body, &accessTokenResp); err != nil {
 		return nil, fmt.Errorf("impersonate: unable to parse response: %w", err)
 	}
