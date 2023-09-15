@@ -147,7 +147,6 @@ func (u userTokenProvider) signJWT() (string, error) {
 }
 
 func (u userTokenProvider) exchangeToken(ctx context.Context, signedJWT string) (*auth.Token, error) {
-	now := time.Now()
 	v := url.Values{}
 	v.Set("grant_type", "assertion")
 	v.Set("assertion_type", "http://oauth.net/grant_type/jwt/1.0/bearer")
@@ -176,6 +175,6 @@ func (u userTokenProvider) exchangeToken(ctx context.Context, signedJWT string) 
 	return &auth.Token{
 		Value:  tokenResp.AccessToken,
 		Type:   tokenResp.TokenType,
-		Expiry: now.Add(time.Second * time.Duration(tokenResp.ExpiresIn)),
+		Expiry: time.Now().Add(time.Second * time.Duration(tokenResp.ExpiresIn)),
 	}, nil
 }
