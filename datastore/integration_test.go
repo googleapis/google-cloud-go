@@ -348,7 +348,7 @@ func TestIntegration_PutGetUntypedNil(t *testing.T) {
 	defer client.Close()
 
 	type X struct {
-		I any `json:"i"`
+		I interface{} `json:"i"`
 	}
 
 	putX := &X{
