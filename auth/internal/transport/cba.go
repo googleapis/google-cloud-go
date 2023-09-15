@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -189,15 +190,16 @@ func getClientCertificateSource(opts *Options) (cert.Provider, error) {
 		return nil, nil
 	} else if opts.ClientCertProvider != nil {
 		return opts.ClientCertProvider, nil
-	} else {
-		return cert.DefaultSource()
 	}
+	return cert.DefaultSource()
+
 }
 
 func isClientCertificateEnabled() bool {
-	useClientCert := os.Getenv(googleAPIUseCertSource)
 	// TODO(andyrzhao): Update default to return "true" after DCA feature is fully released.
-	return strings.ToLower(useClientCert) == "true"
+	// error as false is a good default
+	b, _ := strconv.ParseBool(os.Getenv(googleAPIUseCertSource))
+	return b
 }
 
 type transportConfig struct {
@@ -267,12 +269,13 @@ func mergeEndpoints(baseURL, newHost string) (string, error) {
 
 func fixScheme(baseURL string) string {
 	if !strings.Contains(baseURL, "://") {
-		return "https://" + baseURL
+		baseURL = "https://" + baseURL
 	}
 	return baseURL
 }
 
 // GetS2AAddress returns the S2A address to be reached via plaintext connection.
+// Returns empty string if not set or invalid.
 func GetS2AAddress() string {
 	c, err := getMetadataMTLSAutoConfig().Config()
 	if err != nil {
@@ -389,7 +392,7 @@ func shouldUseS2A(clientCertSource cert.Provider, opts *Options) bool {
 		return false
 	}
 	// If EXPERIMENTAL_GOOGLE_API_USE_S2A is not set to true, skip S2A.
-	if strings.ToLower(os.Getenv(googleAPIUseS2AEnv)) != "true" {
+	if b, err := strconv.ParseBool(os.Getenv(googleAPIUseS2AEnv)); err == nil && b {
 		return false
 	}
 	// If DefaultMTLSEndpoint is not set and no endpoint override, skip S2A.
