@@ -36,22 +36,23 @@ type IDTokenOptions struct {
 	// TargetPrincipal is the email address of the service account to
 	// impersonate. Required.
 	TargetPrincipal string
-	// IncludeEmail includes the service account's email in the token. The
-	// resulting token will include both an `email` and `email_verified`
+	// IncludeEmail includes the target service account's email in the token.
+	// The resulting token will include both an `email` and `email_verified`
 	// claim. Optional.
 	IncludeEmail bool
-	// Delegates are the service account email addresses in a delegation chain.
-	// Each service account must be granted roles/iam.serviceAccountTokenCreator
-	// on the next service account in the chain. Optional.
+	// Delegates are the ordered service account email addresses in a delegation
+	// chain. Each service account must be granted
+	// roles/iam.serviceAccountTokenCreator on the next service account in the
+	// chain. Optional.
 	Delegates []string
 
 	// TokenProvider is the provider of the credentials used to fetch the ID
-	// token. If not provided, and a Client is also not provided, credentials
-	// will try to be detected from the environment. Optional.
+	// token. If not provided, and a Client is also not provided, base
+	// credentials will try to be detected from the environment. Optional.
 	TokenProvider auth.TokenProvider
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. If provided the client should provide it's own
-	// credentials at call time. Optional.
+	// base credentials at call time. Optional.
 	Client *http.Client
 }
 

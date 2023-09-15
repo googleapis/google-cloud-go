@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package impersonate is used to impersonate Google Credentials.
+// Package impersonate is used to impersonate Google Credentials. If you need
+// to impersonate some credentials to use with a client library see
+// [NewCredentialTokenProvider]. If instead you would like to create an Open
+// Connect ID token using impersonation see [NewIDTokenProvider].
 //
 // # Required IAM roles
 //
