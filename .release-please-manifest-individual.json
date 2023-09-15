@@ -1,6 +1,6 @@
 {
   "auth": "0.0.0",
-  "bigquery": "1.54.0",
+  "bigquery": "1.55.0",
   "bigtable": "1.19.0",
   "datastore": "1.14.0",
   "errorreporting": "0.3.0",
@@ -10,5 +10,5 @@
   "pubsub": "1.33.0",
   "pubsublite": "1.8.1",
   "spanner": "1.49.0",
-  "storage": "1.32.0"
+  "storage": "1.33.0"
 }

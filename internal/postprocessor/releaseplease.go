@@ -27,6 +27,7 @@ import (
 
 var individuallyReleasedModules map[string]bool = map[string]bool{
 	".":              true,
+	"auth":           true,
 	"bigquery":       true,
 	"bigtable":       true,
 	"datastore":      true,

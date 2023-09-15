@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.17.0...datacatalog/v1.17.1) (2023-09-11)
+
+
+### Documentation
+
+* **datacatalog:** Fix typo ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.16.0...datacatalog/v1.17.0) (2023-08-08)
 
 
