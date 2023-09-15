@@ -674,11 +674,14 @@ func TestPutNestedArray(t *testing.T) {
 	}
 
 	for _, tc := range testcases {
-		_, gotErr := client.Put(ctx, tc.key, tc.src)
+		gotKey, gotErr := client.Put(ctx, tc.key, tc.src)
 		gotFailure := gotErr != nil
 		if gotFailure != tc.wantFailure ||
 			(gotErr != nil && !strings.Contains(gotErr.Error(), tc.wantErrMsg)) {
 			t.Errorf("%q: Mismatch in error got: %v, want: %q", tc.desc, gotErr, tc.wantErrMsg)
+		}
+		if gotErr == nil && !gotKey.Equal(tc.key) {
+			t.Errorf("%q: Mismatch in key got: %v, want: %q", tc.desc, gotKey, tc.key)
 		}
 	}
 }
