@@ -365,53 +365,53 @@ func TestSchemaToProtoConversion(t *testing.T) {
 			bq: &storagepb.TableSchema{
 				Fields: []*storagepb.TableFieldSchema{
 					{
-						Name: "bartest1",
+						Name: "reused_inner_struct",
 						Type: storagepb.TableFieldSchema_STRUCT,
 						Mode: storagepb.TableFieldSchema_REQUIRED,
 						Fields: []*storagepb.TableFieldSchema{
 							{
-								Name: "barid",
+								Name: "leaf",
 								Type: storagepb.TableFieldSchema_STRING,
 								Mode: storagepb.TableFieldSchema_REQUIRED,
 							},
 						},
 					},
 					{
-						Name: "fullprofile",
+						Name: "outer_struct",
 						Type: storagepb.TableFieldSchema_STRUCT,
 						Mode: storagepb.TableFieldSchema_REQUIRED,
 						Fields: []*storagepb.TableFieldSchema{
 							{
-								Name: "biztest1",
+								Name: "another_inner_struct",
 								Type: storagepb.TableFieldSchema_STRUCT,
 								Mode: storagepb.TableFieldSchema_REQUIRED,
 								Fields: []*storagepb.TableFieldSchema{
 									{
-										Name: "bizid",
+										Name: "another_leaf",
 										Type: storagepb.TableFieldSchema_STRING,
 										Mode: storagepb.TableFieldSchema_REQUIRED,
 									},
 								},
 							},
 							{
-								Name: "bartest2",
+								Name: "reused_inner_struct_one",
 								Type: storagepb.TableFieldSchema_STRUCT,
 								Mode: storagepb.TableFieldSchema_REQUIRED,
 								Fields: []*storagepb.TableFieldSchema{
 									{
-										Name: "barid",
+										Name: "leaf",
 										Type: storagepb.TableFieldSchema_STRING,
 										Mode: storagepb.TableFieldSchema_REQUIRED,
 									},
 								},
 							},
 							{
-								Name: "bartest3",
+								Name: "reused_inner_struct_two",
 								Type: storagepb.TableFieldSchema_STRUCT,
 								Mode: storagepb.TableFieldSchema_REQUIRED,
 								Fields: []*storagepb.TableFieldSchema{
 									{
-										Name: "barid",
+										Name: "leaf",
 										Type: storagepb.TableFieldSchema_STRING,
 										Mode: storagepb.TableFieldSchema_REQUIRED,
 									},
@@ -425,17 +425,17 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				Name: proto.String("root"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
-						Name:     proto.String("bartest1"),
+						Name:     proto.String("reused_inner_struct"),
 						Number:   proto.Int32(1),
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-						TypeName: proto.String(".root__bartest1"),
+						TypeName: proto.String(".root__reused_inner_struct"),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
 					},
 					{
-						Name:     proto.String("fullprofile"),
+						Name:     proto.String("outer_struct"),
 						Number:   proto.Int32(2),
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-						TypeName: proto.String(".root__fullprofile"),
+						TypeName: proto.String(".root__outer_struct"),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
 					},
 				},
@@ -444,26 +444,26 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				Name: proto.String("root"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
-						Name:     proto.String("bartest1"),
+						Name:     proto.String("reused_inner_struct"),
 						Number:   proto.Int32(1),
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-						TypeName: proto.String("root__bartest1"),
+						TypeName: proto.String("root__reused_inner_struct"),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
 					},
 					{
-						Name:     proto.String("fullprofile"),
+						Name:     proto.String("outer_struct"),
 						Number:   proto.Int32(2),
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-						TypeName: proto.String("root__fullprofile"),
+						TypeName: proto.String("root__outer_struct"),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
 					},
 				},
 				NestedType: []*descriptorpb.DescriptorProto{
 					{
-						Name: proto.String("root__bartest1"),
+						Name: proto.String("root__reused_inner_struct"),
 						Field: []*descriptorpb.FieldDescriptorProto{
 							{
-								Name:   proto.String("barid"),
+								Name:   proto.String("leaf"),
 								Number: proto.Int32(1),
 								Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
 								Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
@@ -471,10 +471,10 @@ func TestSchemaToProtoConversion(t *testing.T) {
 						},
 					},
 					{
-						Name: proto.String("root__fullprofile__biztest1"),
+						Name: proto.String("root__outer_struct__another_inner_struct"),
 						Field: []*descriptorpb.FieldDescriptorProto{
 							{
-								Name:   proto.String("bizid"),
+								Name:   proto.String("another_leaf"),
 								Number: proto.Int32(1),
 								Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
 								Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
@@ -482,27 +482,27 @@ func TestSchemaToProtoConversion(t *testing.T) {
 						},
 					},
 					{
-						Name: proto.String("root__fullprofile"),
+						Name: proto.String("root__outer_struct"),
 						Field: []*descriptorpb.FieldDescriptorProto{
 							{
-								Name:     proto.String("biztest1"),
+								Name:     proto.String("another_inner_struct"),
 								Number:   proto.Int32(1),
 								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-								TypeName: proto.String("root__fullprofile__biztest1"),
+								TypeName: proto.String("root__outer_struct__another_inner_struct"),
 								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
 							},
 							{
-								Name:     proto.String("bartest2"),
+								Name:     proto.String("reused_inner_struct_one"),
 								Number:   proto.Int32(2),
 								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-								TypeName: proto.String("root__bartest1"),
+								TypeName: proto.String("root__reused_inner_struct"),
 								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
 							},
 							{
-								Name:     proto.String("bartest3"),
+								Name:     proto.String("reused_inner_struct_two"),
 								Number:   proto.Int32(3),
 								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-								TypeName: proto.String("root__bartest1"),
+								TypeName: proto.String("root__reused_inner_struct"),
 								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
 							},
 						},
@@ -513,17 +513,17 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				Name: proto.String("root"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
-						Name:     proto.String("bartest1"),
+						Name:     proto.String("reused_inner_struct"),
 						Number:   proto.Int32(1),
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-						TypeName: proto.String(".root__bartest1"),
+						TypeName: proto.String(".root__reused_inner_struct"),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 					},
 					{
-						Name:     proto.String("fullprofile"),
+						Name:     proto.String("outer_struct"),
 						Number:   proto.Int32(2),
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-						TypeName: proto.String(".root__fullprofile"),
+						TypeName: proto.String(".root__outer_struct"),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 					},
 				},
