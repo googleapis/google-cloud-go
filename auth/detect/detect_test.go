@@ -126,6 +126,9 @@ func TestDefaultCredentials_GdchServiceAccountKey(t *testing.T) {
 	if want := "fake_project"; cred.ProjectID() != want {
 		t.Fatalf("got %q, want %q", cred.ProjectID(), want)
 	}
+	if want := "googleapis.com"; cred.UniverseDomain() != want {
+		t.Fatalf("got %q, want %q", cred.UniverseDomain(), want)
+	}
 	tok, err := cred.Token(context.Background())
 	if err != nil {
 		t.Fatal(err)
@@ -173,6 +176,9 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if want := "googleapis.com"; creds.UniverseDomain() != want {
+		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
 		t.Fatalf("creds.Token() = %v", err)
@@ -208,6 +214,9 @@ func TestDefaultCredentials_UserCredentialsKey(t *testing.T) {
 	}
 	if want := "fake_project2"; creds.QuotaProjectID() != want {
 		t.Fatalf("got %q, want %q", creds.ProjectID(), want)
+	}
+	if want := "googleapis.com"; creds.UniverseDomain() != want {
+		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
@@ -256,6 +265,9 @@ func TestDefaultCredentials_ServiceAccountKey(t *testing.T) {
 	if want := "fake_project"; creds.ProjectID() != want {
 		t.Fatalf("got %q, want %q", creds.ProjectID(), want)
 	}
+	if want := "googleapis.com"; creds.UniverseDomain() != want {
+		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
 		t.Fatalf("creds.Token() = %v", err)
@@ -288,6 +300,81 @@ func TestDefaultCredentials_ServiceAccountKeySelfSigned(t *testing.T) {
 	}
 	if want := "fake_project"; creds.ProjectID() != want {
 		t.Fatalf("got %q, want %q", creds.ProjectID(), want)
+	}
+	if want := "googleapis.com"; creds.UniverseDomain() != want {
+		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	}
+	tok, err := creds.Token(context.Background())
+	if err != nil {
+		t.Fatalf("creds.Token() = %v", err)
+	}
+	if tok.Value != wantTok {
+		t.Fatalf("got %q, want %q", tok.Value, wantTok)
+	}
+	if want := internal.TokenTypeBearer; tok.Type != want {
+		t.Fatalf("got %q, want %q", tok.Type, want)
+	}
+}
+
+func TestDefaultCredentials_ServiceAccountKeySelfSignedUniverseDomain(t *testing.T) {
+	b, err := os.ReadFile("../internal/testdata/sa_universe_domain.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	oldNow := now
+	now = func() time.Time { return time.Date(2000, 2, 1, 12, 30, 0, 0, time.UTC) }
+	defer func() { now = oldNow }()
+	wantTok := "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjUxNzEyYWVkYTMxNWMxNDBkZTZiYTA2NzQxZjNmZDBlNzlkMDcwYzYifQ.eyJpc3MiOiJnY2xvdWQtYWNjZXNzQGNsb3Vkc2RrLXRlc3QtcHJvamVjdC5nb29nbGUtdHBjLXRlc3RpbmctZW52aXJvbm1lbnQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJzY29wZSI6Imh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL2F1dGgvY2xvdWQtcGxhdGZvcm0iLCJleHAiOjk0OTQxMTgwMCwiaWF0Ijo5NDk0MDgyMDAsImF1ZCI6IiIsInN1YiI6ImdjbG91ZC1hY2Nlc3NAY2xvdWRzZGstdGVzdC1wcm9qZWN0Lmdvb2dsZS10cGMtdGVzdGluZy1lbnZpcm9ubWVudC5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSJ9.CKxT-5jNSi_KGKn719VOb6PW00gjjMLRa3u9dDdMLVKdk-6U5ZcntvEuElp-Vn_mRagliSZbFzqkrZlb8L298_ieW1WBCYheVL-df6kzt5vKIKoL_53N1pDOG793CMaRZbJYI-Ltj_VYyqsevtnoySeHAx2xCV2nleUu6B4HHPQhZDKObpmiV-5c4eCOi6jMppZFR60eDQ9YcLhSZPsTwwD-LNDInFxAlHHL-JDHvhwuBFUXAQKCDRppjNS_tbiyexodXVbVZp12Qcrj-3FYN3Xz_pb8tO2fxSzDRnRnfGtzJ_mBe9MrXMbgT8CTVKTGZQozZKMkKIEEqxV6jqCjrw"
+	creds, err := DefaultCredentials(&Options{
+		CredentialsJSON:  b,
+		Scopes:           []string{"https://www.googleapis.com/auth/cloud-platform"},
+		UseSelfSignedJWT: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "google-tpc-testing-environment:cloudsdk-test-project"; creds.ProjectID() != want {
+		t.Fatalf("got %q, want %q", creds.ProjectID(), want)
+	}
+	if want := "apis-tpclp.goog"; creds.UniverseDomain() != want {
+		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	}
+	tok, err := creds.Token(context.Background())
+	if err != nil {
+		t.Fatalf("creds.Token() = %v", err)
+	}
+	if tok.Value != wantTok {
+		t.Fatalf("got %q, want %q", tok.Value, wantTok)
+	}
+	if want := internal.TokenTypeBearer; tok.Type != want {
+		t.Fatalf("got %q, want %q", tok.Type, want)
+	}
+}
+
+func TestDefaultCredentials_ServiceAccountKeySelfSignedUniverseDomainOverride(t *testing.T) {
+	universeDomainOverride := "example.com"
+	b, err := os.ReadFile("../internal/testdata/sa_universe_domain.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	oldNow := now
+	now = func() time.Time { return time.Date(2000, 2, 1, 12, 30, 0, 0, time.UTC) }
+	defer func() { now = oldNow }()
+	wantTok := "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjUxNzEyYWVkYTMxNWMxNDBkZTZiYTA2NzQxZjNmZDBlNzlkMDcwYzYifQ.eyJpc3MiOiJnY2xvdWQtYWNjZXNzQGNsb3Vkc2RrLXRlc3QtcHJvamVjdC5nb29nbGUtdHBjLXRlc3RpbmctZW52aXJvbm1lbnQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJzY29wZSI6Imh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL2F1dGgvY2xvdWQtcGxhdGZvcm0iLCJleHAiOjk0OTQxMTgwMCwiaWF0Ijo5NDk0MDgyMDAsImF1ZCI6IiIsInN1YiI6ImdjbG91ZC1hY2Nlc3NAY2xvdWRzZGstdGVzdC1wcm9qZWN0Lmdvb2dsZS10cGMtdGVzdGluZy1lbnZpcm9ubWVudC5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSJ9.CKxT-5jNSi_KGKn719VOb6PW00gjjMLRa3u9dDdMLVKdk-6U5ZcntvEuElp-Vn_mRagliSZbFzqkrZlb8L298_ieW1WBCYheVL-df6kzt5vKIKoL_53N1pDOG793CMaRZbJYI-Ltj_VYyqsevtnoySeHAx2xCV2nleUu6B4HHPQhZDKObpmiV-5c4eCOi6jMppZFR60eDQ9YcLhSZPsTwwD-LNDInFxAlHHL-JDHvhwuBFUXAQKCDRppjNS_tbiyexodXVbVZp12Qcrj-3FYN3Xz_pb8tO2fxSzDRnRnfGtzJ_mBe9MrXMbgT8CTVKTGZQozZKMkKIEEqxV6jqCjrw"
+	creds, err := DefaultCredentials(&Options{
+		CredentialsJSON:  b,
+		Scopes:           []string{"https://www.googleapis.com/auth/cloud-platform"},
+		UseSelfSignedJWT: true,
+		UniverseDomain:   universeDomainOverride,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "google-tpc-testing-environment:cloudsdk-test-project"; creds.ProjectID() != want {
+		t.Fatalf("got %q, want %q", creds.ProjectID(), want)
+	}
+	if creds.UniverseDomain() != universeDomainOverride {
+		t.Fatalf("got %q, want %q", creds.UniverseDomain(), universeDomainOverride)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
@@ -346,6 +433,9 @@ func TestDefaultCredentials_ClientCredentials(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+	if want := "googleapis.com"; creds.UniverseDomain() != want {
+		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
@@ -430,6 +520,9 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+	if want := "googleapis.com"; creds.UniverseDomain() != want {
+		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {

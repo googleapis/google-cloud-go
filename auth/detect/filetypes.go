@@ -22,6 +22,7 @@ import (
 	"cloud.google.com/go/auth/detect/internal/externalaccount"
 	"cloud.google.com/go/auth/detect/internal/gdch"
 	"cloud.google.com/go/auth/detect/internal/impersonate"
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
@@ -86,9 +87,10 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 	default:
 		return nil, fmt.Errorf("detect: unsupported filetype %q", fileType)
 	}
+	universeDomain := internal.GetUniverseDomain(b, opts.UniverseDomain)
 	return newCredentials(auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
 		ExpireEarly: opts.EarlyTokenRefresh,
-	}), b, projectID, quotaProjectID), nil
+	}), b, projectID, quotaProjectID, universeDomain), nil
 }
 
 func handleServiceAccount(f *internaldetect.ServiceAccountFile, opts *Options) (auth.TokenProvider, error) {

@@ -50,15 +50,17 @@ type Credentials struct {
 	json           []byte
 	projectID      string
 	quotaProjectID string
+	universeDomain string
 
 	auth.TokenProvider
 }
 
-func newCredentials(tokenProvider auth.TokenProvider, json []byte, projectID string, quotaProjectID string) *Credentials {
+func newCredentials(tokenProvider auth.TokenProvider, json []byte, projectID string, quotaProjectID string, universeDomain string) *Credentials {
 	return &Credentials{
 		json:           json,
 		projectID:      internal.GetProjectID(json, projectID),
 		quotaProjectID: internal.GetQuotaProject(json, quotaProjectID),
+		universeDomain: internal.GetUniverseDomain(json, universeDomain),
 		TokenProvider:  tokenProvider,
 	}
 }
@@ -79,6 +81,12 @@ func (c *Credentials) ProjectID() string {
 // file or environment.
 func (c *Credentials) QuotaProjectID() string {
 	return c.quotaProjectID
+}
+
+// UniverseDomain returns the default service domain for a given Cloud universe.
+// The default value is "googleapis.com".
+func (c *Credentials) UniverseDomain() string {
+	return c.universeDomain
 }
 
 // OnGCE reports whether this process is running in Google Cloud.
@@ -122,7 +130,7 @@ func DefaultCredentials(opts *Options) (*Credentials, error) {
 
 	if OnGCE() {
 		id, _ := metadata.ProjectID()
-		return newCredentials(computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...), nil, id, ""), nil
+		return newCredentials(computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...), nil, id, "", ""), nil
 	}
 
 	return nil, fmt.Errorf("detect: could not find default credentials. See %v for more information", adcSetupURL)
@@ -146,9 +154,8 @@ type Options struct {
 	// for 3LO flows. It is required, and only used, for client credential
 	// flows.
 	AuthHandlerOptions *auth.AuthorizationHandlerOptions
-	// TokenURL allows to set the token endpoint for user credential flows. If
-	// unset the default value is: https://oauth2.googleapis.com/token.
-	// Optional.
+	// TokenURL is the token endpoint for user credential flows. If unset the
+	// default value is: https://oauth2.googleapis.com/token. Optional.
 	TokenURL string
 	// STSAudience is the audience sent to when retrieving an STS token.
 	// Currently this only used for GDCH auth flow, for which it is required.
@@ -163,6 +170,9 @@ type Options struct {
 	// self-signed JWT with the private key found in the file, skipping any
 	// network requests that would normally be made. Optional.
 	UseSelfSignedJWT bool
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". Optional.
+	UniverseDomain string
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Optional.
 	Client *http.Client
@@ -204,7 +214,7 @@ func readCredentialsFileJSON(b []byte, opts *Options) (*Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		return newCredentials(tp, b, "", ""), nil
+		return newCredentials(tp, b, "", "", ""), nil
 	}
 	return fileCredentials(b, opts)
 }

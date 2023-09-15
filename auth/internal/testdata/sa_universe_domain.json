@@ -1,0 +1,13 @@
+{
+    "type": "service_account",
+    "project_id": "google-tpc-testing-environment:cloudsdk-test-project",
+    "universe_domain": "apis-tpclp.goog",
+    "private_key_id": "51712aeda315c140de6ba06741f3fd0e79d070c6",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCcciGDFXXxF3dV\nDtAstFWJehSU9qrSZnz6GtC9GRR9YYD/yaeD9p79A4opqPlohxeP6rT3ZjcaPDa6\nwCtY3XbC+Iw1HFM4zpHUznSNHgpqsv+DCVMEe6D/2pBTge1mDEXR5dADLGznBxPv\n7L97sLPJe8jhT/2aQaqlGrFXyArSgknGzOpw7QRRBkfOHgMIGfalOcloFLLNYsy1\n8gxOoCixltmAr9GaD2O1QifWjJXVStT75sikWUh9+Ff8Gvfw5iVXqclH5M4NxqpE\nbdPUmyC+pSXmCIZa5X+s+lxbtP0x5Z9aYI8ZE7RKq/rB5MNoHzp6YDEF2BNKAjN7\nEDA+kwh1AgMBAAECggEAEy935qBqH0/WZYr0gpb26m4bOg1p83V4HB/Pu3Do71tW\nu4eaUHedFcAqYGOFeokenZqV6MUTOtdpistoRXSbTNu4Lgc0OYIzphpPdsLZWi5r\nYUFyedlDbDz8eBE18M7OfSgms0zuagKXMlQhQ2TvF2VjxCXQHuuwpqC4YOB6W0hH\n8peUx5VMZhI7kZ+TJOmzgfP/K0rHN2PzwOfFqvFlOWulRnTWb8i7AMFB/oKA9eLE\nSDsmdvWMxsaX/o43Tesyzv0To0pgriRiBjOayNkVYXJYGE72wVi7twhb1xzFHYgw\nVta/F8z0Nze17d6VJfwzRVOfvE6SjSu+5D7fXrwc/QKBgQDONJREbdMHG/D6LdZS\nuXMtDh3YKFz4deS+GX/rQM6GPdWD8fG1ipTUKjL2KHIxpMSSBdS2m79F72DUf6d8\nwiQQyQC7u4jTDFEjylUPy0a4GgQIALeVGKexDF8DVx4ypb29eJ/eq47q/U0H6mHL\nEOhGg6mmrz6IFFrzGf0f+qLZQwKBgQDCOXZ+muiuhPtCWtYsU3dYbb+Q0lZWirzt\n/55KYEBpslFp4Fh4msPkcm3N9O12z5r+CDZ83S+ZPd2Ie3T7k5ZzaJmdw/k89L9z\nOCRD2MpaGfOZFMZZcGFido8Wp15fcvuEAthLT1pLWexWhbKW2nfsnu4vXoVzAn0L\ncLi919i/5wKBgBJ+mMXCa+j5UpW9wrlMtM3XtEmM5TnLqSZ7twNsnplftmTNMHat\n5UdaOZPmcMePFapbJ4bxVSh6nd6xTF5eM0nmHVC5Mz5qnmRtY0+1VbRxcOce2Vhg\nC7pPd74e9DBquSfjR8N686iT63LITNkfvRWF/ZNbqGogGUAwlollu3FtAoGBAIA7\n/FZe5N3FAzeuTdX6TcPewipWFZcSBueEa/hjUGP4zfP/oaoPVOMSAhmHavmU3Jp4\nxbDvQKwGwquIB5bKvPz5xOL7LyXl2jmyiY8aJZATrlgV9Ve78TBXYuXsH00Z16Iz\nVqdyfwVdG8OMhns/Rwq9bDluSOHEdNcG15LQXlVlAoGAWBiykljcW+IF0TUr6aeY\nxY+84tgQE1QJuten4D8fRFOj8DcjQwuQeFF7FM/TM3SYhmjAB0MKtRzDy6UTp7k9\nQXEE0OR1Zvku/IK7b8RIH6KAnY4w3NXNL/mJc+2UeSHs6izZWTkBZLTJ6o7tMxzL\nREwxwOy7fU0Tc8mlQVUpzKY=\n-----END PRIVATE KEY-----\n",
+    "client_email": "gcloud-access@cloudsdk-test-project.google-tpc-testing-environment.iam.gserviceaccount.com",
+    "client_id": "106626410906442484421",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gcloud-access%40cloudsdk-test-project.google-tpc-testing-environment.iam.gserviceaccount.com"
+}

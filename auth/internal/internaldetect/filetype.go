@@ -33,14 +33,14 @@ type ClientCredentialsFile struct {
 
 // ServiceAccountFile representation.
 type ServiceAccountFile struct {
-	Type         string `json:"type"`
-	ProjectID    string `json:"project_id"`
-	PrivateKeyID string `json:"private_key_id"`
-	PrivateKey   string `json:"private_key"`
-	ClientEmail  string `json:"client_email"`
-	ClientID     string `json:"client_id"`
-	AuthURL      string `json:"auth_uri"`
-	TokenURL     string `json:"token_uri"`
+	Type           string `json:"type"`
+	ProjectID      string `json:"project_id"`
+	PrivateKeyID   string `json:"private_key_id"`
+	PrivateKey     string `json:"private_key"`
+	ClientEmail    string `json:"client_email"`
+	ClientID       string `json:"client_id"`
+	AuthURL        string `json:"auth_uri"`
+	TokenURL       string `json:"token_uri"`
 }
 
 // UserCredentialsFile representation.

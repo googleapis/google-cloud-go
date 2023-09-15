@@ -31,9 +31,10 @@ const (
 	// TokenTypeBearer is the auth header prefix for bearer tokens.
 	TokenTypeBearer = "Bearer"
 
-	quotaProjectEnvVar = "GOOGLE_CLOUD_QUOTA_PROJECT"
-	projectEnvVar      = "GOOGLE_CLOUD_PROJECT"
-	maxBodySize        = 1 << 20
+	quotaProjectEnvVar          = "GOOGLE_CLOUD_QUOTA_PROJECT"
+	projectEnvVar               = "GOOGLE_CLOUD_PROJECT"
+	maxBodySize                 = 1 << 20
+	universeDomainGoogleDefault = "googleapis.com"
 )
 
 // CloneDefaultClient returns a [http.Client] with some good defaults.
@@ -66,6 +67,27 @@ func ParseKey(key []byte) (*rsa.PrivateKey, error) {
 		return nil, errors.New("private key is invalid")
 	}
 	return parsed, nil
+}
+
+// GetUniverseDomain retrieves the universe domain with precedence being:
+// override, creds json file, default value ("googleapis.com").
+func GetUniverseDomain(b []byte, override string) string {
+	if override != "" {
+		return override
+	}
+	if b == nil {
+		return universeDomainGoogleDefault
+	}
+	var v struct {
+		UniverseDomain string `json:"universe_domain"`
+	}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return universeDomainGoogleDefault
+	}
+	if v.UniverseDomain == "" {
+		return universeDomainGoogleDefault
+	}
+	return v.UniverseDomain
 }
 
 // GetQuotaProject retrieves quota project with precedence being: override,
