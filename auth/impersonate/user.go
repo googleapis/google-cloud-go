@@ -41,12 +41,13 @@ func user(opts *CredentialOptions, client *http.Client, lifetime time.Duration, 
 	}
 	u.scopes = make([]string, len(opts.Scopes))
 	copy(u.scopes, opts.Scopes)
+	var tpo *auth.CachedTokenProviderOptions
 	if isStaticToken {
-		return auth.NewCachedTokenProvider(u, &auth.CachedTokenProviderOptions{
+		tpo = &auth.CachedTokenProviderOptions{
 			DisableAutoRefresh: true,
-		}), nil
+		}
 	}
-	return auth.NewCachedTokenProvider(u, nil), nil
+	return auth.NewCachedTokenProvider(u, tpo), nil
 }
 
 type claimSet struct {
@@ -109,7 +110,7 @@ func (u userTokenProvider) signJWT() (string, error) {
 	}
 	payloadBytes, err := json.Marshal(claims)
 	if err != nil {
-		return "", fmt.Errorf("impersonate: unable to marshal claims: %v", err)
+		return "", fmt.Errorf("impersonate: unable to marshal claims: %w", err)
 	}
 	signJWTReq := signJWTRequest{
 		Payload:   string(payloadBytes),
@@ -118,21 +119,21 @@ func (u userTokenProvider) signJWT() (string, error) {
 
 	bodyBytes, err := json.Marshal(signJWTReq)
 	if err != nil {
-		return "", fmt.Errorf("impersonate: unable to marshal request: %v", err)
+		return "", fmt.Errorf("impersonate: unable to marshal request: %w", err)
 	}
 	reqURL := fmt.Sprintf("%s/v1/%s:signJwt", iamCredentialsEndpoint, formatIAMServiceAccountName(u.targetPrincipal))
 	req, err := http.NewRequest("POST", reqURL, bytes.NewReader(bodyBytes))
 	if err != nil {
-		return "", fmt.Errorf("impersonate: unable to create request: %v", err)
+		return "", fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	rawResp, err := u.client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("impersonate: unable to sign JWT: %v", err)
+		return "", fmt.Errorf("impersonate: unable to sign JWT: %w", err)
 	}
 	body, err := internal.ReadAll(rawResp.Body)
 	if err != nil {
-		return "", fmt.Errorf("impersonate: unable to read body: %v", err)
+		return "", fmt.Errorf("impersonate: unable to read body: %w", err)
 	}
 	if c := rawResp.StatusCode; c < 200 || c > 299 {
 		return "", fmt.Errorf("impersonate: status code %d: %s", c, body)
@@ -140,7 +141,7 @@ func (u userTokenProvider) signJWT() (string, error) {
 
 	var signJWTResp signJWTResponse
 	if err := json.Unmarshal(body, &signJWTResp); err != nil {
-		return "", fmt.Errorf("impersonate: unable to parse response: %v", err)
+		return "", fmt.Errorf("impersonate: unable to parse response: %w", err)
 	}
 	return signJWTResp.SignedJWT, nil
 }
@@ -157,11 +158,11 @@ func (u userTokenProvider) exchangeToken(ctx context.Context, signedJWT string) 
 	}
 	rawResp, err := u.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to exchange token: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to exchange token: %w", err)
 	}
 	body, err := internal.ReadAll(rawResp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to read body: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to read body: %w", err)
 	}
 	if c := rawResp.StatusCode; c < 200 || c > 299 {
 		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
@@ -169,7 +170,7 @@ func (u userTokenProvider) exchangeToken(ctx context.Context, signedJWT string) 
 
 	var tokenResp exchangeTokenResponse
 	if err := json.Unmarshal(body, &tokenResp); err != nil {
-		return nil, fmt.Errorf("impersonate: unable to parse response: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to parse response: %w", err)
 	}
 
 	return &auth.Token{

@@ -33,6 +33,8 @@ func ExampleNewCredentialTokenProvider_serviceAccount() {
 		log.Fatal(err)
 	}
 
+	// TODO(codyoss): link to option once it exists.
+
 	// Use this TokenProvider with a client library
 	_ = tp
 }

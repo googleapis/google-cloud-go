@@ -129,7 +129,6 @@ type impersonatedIDTokenProvider struct {
 }
 
 func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	now := time.Now()
 	genIDTokenReq := generateIDTokenRequest{
 		Audience:     i.audience,
 		IncludeEmail: i.includeEmail,
@@ -137,24 +136,23 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 	}
 	bodyBytes, err := json.Marshal(genIDTokenReq)
 	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to marshal request: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to marshal request: %w", err)
 	}
 
-	// TODO FIX ME
 	url := fmt.Sprintf("%s/v1/%s:generateIdToken", iamCredentialsEndpoint, formatIAMServiceAccountName(i.targetPrincipal))
 	req, err := http.NewRequest("POST", url, bytes.NewReader(bodyBytes))
 	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to create request: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := i.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to generate ID token: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to generate ID token: %w", err)
 	}
 	defer resp.Body.Close()
 	body, err := internal.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to read body: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to read body: %w", err)
 	}
 	if c := resp.StatusCode; c < 200 || c > 299 {
 		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
@@ -162,11 +160,11 @@ func (i impersonatedIDTokenProvider) Token(ctx context.Context) (*auth.Token, er
 
 	var generateIDTokenResp generateIDTokenResponse
 	if err := json.Unmarshal(body, &generateIDTokenResp); err != nil {
-		return nil, fmt.Errorf("impersonate: unable to parse response: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to parse response: %w", err)
 	}
 	return &auth.Token{
 		Value: generateIDTokenResp.Token,
 		// Generated ID tokens are good for one hour.
-		Expiry: now.Add(1 * time.Hour),
+		Expiry: time.Now().Add(1 * time.Hour),
 	}, nil
 }

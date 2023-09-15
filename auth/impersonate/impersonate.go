@@ -54,7 +54,7 @@ func NewCredentialTokenProvider(opts *CredentialOptions) (auth.TokenProvider, er
 	var isStaticToken bool
 	// Default to the longest acceptable value of one hour as the token will
 	// be refreshed automatically if not set.
-	lifetime := 3600 * time.Second
+	lifetime := 1 * time.Hour
 	if opts.Lifetime != 0 {
 		lifetime = opts.Lifetime
 		// Don't auto-refresh token if a lifetime is configured.
@@ -99,10 +99,13 @@ func NewCredentialTokenProvider(opts *CredentialOptions) (auth.TokenProvider, er
 	its.scopes = make([]string, len(opts.Scopes))
 	copy(its.scopes, opts.Scopes)
 
+	var tpo *auth.CachedTokenProviderOptions
 	if isStaticToken {
-		return auth.NewCachedTokenProvider(its, nil), nil
+		tpo = &auth.CachedTokenProviderOptions{
+			DisableAutoRefresh: true,
+		}
 	}
-	return auth.NewCachedTokenProvider(its, nil), nil
+	return auth.NewCachedTokenProvider(its, tpo), nil
 }
 
 // CredentialOptions for generating an impersonated credential token.
@@ -171,23 +174,23 @@ func (i impersonatedTokenProvider) Token(ctx context.Context) (*auth.Token, erro
 	}
 	b, err := json.Marshal(reqBody)
 	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to marshal request: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to marshal request: %w", err)
 	}
 	url := fmt.Sprintf("%s/v1/%s:generateAccessToken", iamCredentialsEndpoint, formatIAMServiceAccountName(i.targetPrincipal))
 	req, err := http.NewRequest("POST", url, bytes.NewReader(b))
 	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to create request: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := i.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to generate access token: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to generate access token: %w", err)
 	}
 	defer resp.Body.Close()
 	body, err := internal.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to read body: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to read body: %w", err)
 	}
 	if c := resp.StatusCode; c < 200 || c > 299 {
 		return nil, fmt.Errorf("impersonate: status code %d: %s", c, body)
@@ -195,11 +198,11 @@ func (i impersonatedTokenProvider) Token(ctx context.Context) (*auth.Token, erro
 
 	var accessTokenResp generateAccessTokenResp
 	if err := json.Unmarshal(body, &accessTokenResp); err != nil {
-		return nil, fmt.Errorf("impersonate: unable to parse response: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to parse response: %w", err)
 	}
 	expiry, err := time.Parse(time.RFC3339, accessTokenResp.ExpireTime)
 	if err != nil {
-		return nil, fmt.Errorf("impersonate: unable to parse expiry: %v", err)
+		return nil, fmt.Errorf("impersonate: unable to parse expiry: %w", err)
 	}
 	return &auth.Token{
 		Value:  accessTokenResp.AccessToken,
