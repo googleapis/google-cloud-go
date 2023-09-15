@@ -1303,7 +1303,11 @@ func TestLoadNilInterface(t *testing.T) {
 		},
 	})
 	if err != nil {
-		t.Fatalf("got: %v, want: nil", err)
+		t.Fatalf("loadEntityProto got: %v, want: nil", err)
+	}
+
+	if withAny1.AnyField != nil {
+		t.Fatalf("got: %v, want: nil", withAny1.AnyField)
 	}
 }
 

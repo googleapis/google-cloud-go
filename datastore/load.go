@@ -302,6 +302,8 @@ func setVal(v reflect.Value, p Property) (s string) {
 			return fmt.Sprintf("%v is unsettable", v.Type())
 		}
 
+		// When retrieved property value is untyped nil, its type cannot be determined
+		// So, set v to zero value of its datatype
 		if pValue == nil {
 			v.Set(reflect.Zero(v.Type()))
 		} else {

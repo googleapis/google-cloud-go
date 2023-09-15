@@ -342,6 +342,34 @@ func TestIntegration_ListValues(t *testing.T) {
 	}
 }
 
+func TestIntegration_PutGetUntypedNil(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	type X struct {
+		I any `json:"i"`
+	}
+
+	putX := &X{
+		I: nil,
+	}
+	key, err := client.Put(ctx, IncompleteKey("X", nil), putX)
+	if err != nil {
+		t.Fatalf("client.Put got: %v, want: nil", err)
+	}
+
+	getX := &X{}
+	err = client.Get(ctx, key, getX)
+	if err != nil {
+		t.Fatalf("client.Get got: %v, want: nil", err)
+	}
+
+	if !reflect.DeepEqual(getX, putX) {
+		t.Fatalf("got: %v, want: %v", getX, putX)
+	}
+}
+
 func TestIntegration_GetMulti(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
