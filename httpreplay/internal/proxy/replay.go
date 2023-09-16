@@ -19,9 +19,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"reflect"
 	"sync"
 
@@ -63,7 +63,7 @@ func ForReplaying(filename string, port int) (*Proxy, error) {
 }
 
 func readLog(filename string) (*Log, error) {
-	bytes, err := ioutil.ReadFile(filename)
+	bytes, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

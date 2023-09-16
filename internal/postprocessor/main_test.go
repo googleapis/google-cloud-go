@@ -15,13 +15,14 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
-	"cloud.google.com/go/internal/gapicgen/git"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -41,7 +42,7 @@ func TestMain(m *testing.M) {
 
 		log.Printf("working out %s\n", tmpDir)
 		googleapisDir = filepath.Join(tmpDir, "googleapis")
-		if err := git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir); err != nil {
+		if err := DeepClone("https://github.com/googleapis/googleapis", googleapisDir); err != nil {
 			log.Fatalf("%v", err)
 		}
 	}
@@ -94,9 +95,11 @@ func TestProcessCommit(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		c := &config{
-			googleapisDir: googleapisDir,
+		p := &postProcessor{
+			googleapisDir:  googleapisDir,
+			googleCloudDir: "../..",
 		}
+		p.loadConfig()
 		t.Run(tt.name, func(t *testing.T) {
 			body, err := os.ReadFile(tt.bodyFilename)
 			if err != nil {
@@ -106,7 +109,7 @@ func TestProcessCommit(t *testing.T) {
 			if err != nil {
 				t.Fatalf("os.ReadFile() = %v", err)
 			}
-			gotTitle, gotBody, err := c.processCommit(tt.title, string(body))
+			gotTitle, gotBody, err := p.processCommit(tt.title, string(body))
 			if err != nil {
 				t.Errorf("processCommit() = %v", err)
 				return
@@ -118,5 +121,72 @@ func TestProcessCommit(t *testing.T) {
 				t.Errorf("processCommit() mismatch (-want +got):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestUpdateSnippetsMetadata(t *testing.T) {
+	p := &postProcessor{
+		config: &config{
+			ClientRelPaths: []string{
+				"/video/stitcher/apiv1",
+			},
+		},
+		modules: []string{
+			"video",
+		},
+		googleCloudDir: "testdata",
+	}
+	err := p.UpdateSnippetsMetadata()
+	if err != nil {
+		t.Errorf("UpdateSnippetsMetadata() = %v", err)
+	}
+
+	// Assert result and restore testdata
+	f := filepath.FromSlash("testdata/internal/generated/snippets/video/stitcher/apiv1/snippet_metadata.google.cloud.video.stitcher.v1.json")
+	read, err := os.ReadFile(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(read), "3.45.6") {
+		s := strings.Replace(string(read), "3.45.6", "$VERSION", 1)
+		err = os.WriteFile(f, []byte(s), 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+	} else {
+		t.Fatalf("UpdateSnippetsMetadata() did not update metadata as expected, check %s", f)
+	}
+
+}
+
+func TestUpdateConfigFile(t *testing.T) {
+	var b bytes.Buffer
+	if err := updateConfigFile(&b, []string{"accessapproval", "newmod"}); err != nil {
+		t.Fatal(err)
+	}
+	want, err := os.ReadFile("testdata/release-please-config-yoshi-submodules.want")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(want, b.Bytes()); diff != "" {
+		t.Errorf("updateConfigFile() mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestUpdateManifestFile(t *testing.T) {
+	existing, err := os.ReadFile("testdata/.release-please-manifest-submodules.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var b bytes.Buffer
+	if err := updateManifestFile(&b, existing, []string{"accessapproval", "newmod"}); err != nil {
+		t.Fatal(err)
+	}
+	want, err := os.ReadFile("testdata/.release-please-manifest-submodules.want")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(want, b.Bytes()); diff != "" {
+		t.Errorf("updateConfigFile() mismatch (-want +got):\n%s", diff)
 	}
 }

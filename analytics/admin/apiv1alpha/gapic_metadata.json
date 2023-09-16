@@ -90,9 +90,19 @@
                 "CreateAccessBinding"
               ]
             },
+            "CreateAdSenseLink": {
+              "methods": [
+                "CreateAdSenseLink"
+              ]
+            },
             "CreateAudience": {
               "methods": [
                 "CreateAudience"
+              ]
+            },
+            "CreateChannelGroup": {
+              "methods": [
+                "CreateChannelGroup"
               ]
             },
             "CreateConnectedSiteTag": {
@@ -130,6 +140,11 @@
                 "CreateDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "CreateEventCreateRule": {
+              "methods": [
+                "CreateEventCreateRule"
+              ]
+            },
             "CreateExpandedDataSet": {
               "methods": [
                 "CreateExpandedDataSet"
@@ -155,6 +170,11 @@
                 "CreateProperty"
               ]
             },
+            "CreateSKAdNetworkConversionValueSchema": {
+              "methods": [
+                "CreateSKAdNetworkConversionValueSchema"
+              ]
+            },
             "CreateSearchAds360Link": {
               "methods": [
                 "CreateSearchAds360Link"
@@ -173,6 +193,16 @@
             "DeleteAccount": {
               "methods": [
                 "DeleteAccount"
+              ]
+            },
+            "DeleteAdSenseLink": {
+              "methods": [
+                "DeleteAdSenseLink"
+              ]
+            },
+            "DeleteChannelGroup": {
+              "methods": [
+                "DeleteChannelGroup"
               ]
             },
             "DeleteConnectedSiteTag": {
@@ -200,6 +230,11 @@
                 "DeleteDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "DeleteEventCreateRule": {
+              "methods": [
+                "DeleteEventCreateRule"
+              ]
+            },
             "DeleteExpandedDataSet": {
               "methods": [
                 "DeleteExpandedDataSet"
@@ -225,6 +260,11 @@
                 "DeleteProperty"
               ]
             },
+            "DeleteSKAdNetworkConversionValueSchema": {
+              "methods": [
+                "DeleteSKAdNetworkConversionValueSchema"
+              ]
+            },
             "DeleteSearchAds360Link": {
               "methods": [
                 "DeleteSearchAds360Link"
@@ -240,6 +280,11 @@
                 "FetchAutomatedGa4ConfigurationOptOut"
               ]
             },
+            "FetchConnectedGa4Property": {
+              "methods": [
+                "FetchConnectedGa4Property"
+              ]
+            },
             "GetAccessBinding": {
               "methods": [
                 "GetAccessBinding"
@@ -248,6 +293,11 @@
             "GetAccount": {
               "methods": [
                 "GetAccount"
+              ]
+            },
+            "GetAdSenseLink": {
+              "methods": [
+                "GetAdSenseLink"
               ]
             },
             "GetAttributionSettings": {
@@ -263,6 +313,11 @@
             "GetBigQueryLink": {
               "methods": [
                 "GetBigQueryLink"
+              ]
+            },
+            "GetChannelGroup": {
+              "methods": [
+                "GetChannelGroup"
               ]
             },
             "GetConversionEvent": {
@@ -310,6 +365,11 @@
                 "GetEnhancedMeasurementSettings"
               ]
             },
+            "GetEventCreateRule": {
+              "methods": [
+                "GetEventCreateRule"
+              ]
+            },
             "GetExpandedDataSet": {
               "methods": [
                 "GetExpandedDataSet"
@@ -333,6 +393,11 @@
             "GetProperty": {
               "methods": [
                 "GetProperty"
+              ]
+            },
+            "GetSKAdNetworkConversionValueSchema": {
+              "methods": [
+                "GetSKAdNetworkConversionValueSchema"
               ]
             },
             "GetSearchAds360Link": {
@@ -360,6 +425,11 @@
                 "ListAccounts"
               ]
             },
+            "ListAdSenseLinks": {
+              "methods": [
+                "ListAdSenseLinks"
+              ]
+            },
             "ListAudiences": {
               "methods": [
                 "ListAudiences"
@@ -368,6 +438,11 @@
             "ListBigQueryLinks": {
               "methods": [
                 "ListBigQueryLinks"
+              ]
+            },
+            "ListChannelGroups": {
+              "methods": [
+                "ListChannelGroups"
               ]
             },
             "ListConnectedSiteTags": {
@@ -405,6 +480,11 @@
                 "ListDisplayVideo360AdvertiserLinks"
               ]
             },
+            "ListEventCreateRules": {
+              "methods": [
+                "ListEventCreateRules"
+              ]
+            },
             "ListExpandedDataSets": {
               "methods": [
                 "ListExpandedDataSets"
@@ -428,6 +508,11 @@
             "ListProperties": {
               "methods": [
                 "ListProperties"
+              ]
+            },
+            "ListSKAdNetworkConversionValueSchemas": {
+              "methods": [
+                "ListSKAdNetworkConversionValueSchemas"
               ]
             },
             "ListSearchAds360Links": {
@@ -480,6 +565,16 @@
                 "UpdateAudience"
               ]
             },
+            "UpdateChannelGroup": {
+              "methods": [
+                "UpdateChannelGroup"
+              ]
+            },
+            "UpdateConversionEvent": {
+              "methods": [
+                "UpdateConversionEvent"
+              ]
+            },
             "UpdateCustomDimension": {
               "methods": [
                 "UpdateCustomDimension"
@@ -510,6 +605,11 @@
                 "UpdateEnhancedMeasurementSettings"
               ]
             },
+            "UpdateEventCreateRule": {
+              "methods": [
+                "UpdateEventCreateRule"
+              ]
+            },
             "UpdateExpandedDataSet": {
               "methods": [
                 "UpdateExpandedDataSet"
@@ -533,6 +633,11 @@
             "UpdateProperty": {
               "methods": [
                 "UpdateProperty"
+              ]
+            },
+            "UpdateSKAdNetworkConversionValueSchema": {
+              "methods": [
+                "UpdateSKAdNetworkConversionValueSchema"
               ]
             },
             "UpdateSearchAds360Link": {
@@ -630,9 +735,19 @@
                 "CreateAccessBinding"
               ]
             },
+            "CreateAdSenseLink": {
+              "methods": [
+                "CreateAdSenseLink"
+              ]
+            },
             "CreateAudience": {
               "methods": [
                 "CreateAudience"
+              ]
+            },
+            "CreateChannelGroup": {
+              "methods": [
+                "CreateChannelGroup"
               ]
             },
             "CreateConnectedSiteTag": {
@@ -670,6 +785,11 @@
                 "CreateDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "CreateEventCreateRule": {
+              "methods": [
+                "CreateEventCreateRule"
+              ]
+            },
             "CreateExpandedDataSet": {
               "methods": [
                 "CreateExpandedDataSet"
@@ -695,6 +815,11 @@
                 "CreateProperty"
               ]
             },
+            "CreateSKAdNetworkConversionValueSchema": {
+              "methods": [
+                "CreateSKAdNetworkConversionValueSchema"
+              ]
+            },
             "CreateSearchAds360Link": {
               "methods": [
                 "CreateSearchAds360Link"
@@ -713,6 +838,16 @@
             "DeleteAccount": {
               "methods": [
                 "DeleteAccount"
+              ]
+            },
+            "DeleteAdSenseLink": {
+              "methods": [
+                "DeleteAdSenseLink"
+              ]
+            },
+            "DeleteChannelGroup": {
+              "methods": [
+                "DeleteChannelGroup"
               ]
             },
             "DeleteConnectedSiteTag": {
@@ -740,6 +875,11 @@
                 "DeleteDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "DeleteEventCreateRule": {
+              "methods": [
+                "DeleteEventCreateRule"
+              ]
+            },
             "DeleteExpandedDataSet": {
               "methods": [
                 "DeleteExpandedDataSet"
@@ -765,6 +905,11 @@
                 "DeleteProperty"
               ]
             },
+            "DeleteSKAdNetworkConversionValueSchema": {
+              "methods": [
+                "DeleteSKAdNetworkConversionValueSchema"
+              ]
+            },
             "DeleteSearchAds360Link": {
               "methods": [
                 "DeleteSearchAds360Link"
@@ -780,6 +925,11 @@
                 "FetchAutomatedGa4ConfigurationOptOut"
               ]
             },
+            "FetchConnectedGa4Property": {
+              "methods": [
+                "FetchConnectedGa4Property"
+              ]
+            },
             "GetAccessBinding": {
               "methods": [
                 "GetAccessBinding"
@@ -788,6 +938,11 @@
             "GetAccount": {
               "methods": [
                 "GetAccount"
+              ]
+            },
+            "GetAdSenseLink": {
+              "methods": [
+                "GetAdSenseLink"
               ]
             },
             "GetAttributionSettings": {
@@ -803,6 +958,11 @@
             "GetBigQueryLink": {
               "methods": [
                 "GetBigQueryLink"
+              ]
+            },
+            "GetChannelGroup": {
+              "methods": [
+                "GetChannelGroup"
               ]
             },
             "GetConversionEvent": {
@@ -850,6 +1010,11 @@
                 "GetEnhancedMeasurementSettings"
               ]
             },
+            "GetEventCreateRule": {
+              "methods": [
+                "GetEventCreateRule"
+              ]
+            },
             "GetExpandedDataSet": {
               "methods": [
                 "GetExpandedDataSet"
@@ -873,6 +1038,11 @@
             "GetProperty": {
               "methods": [
                 "GetProperty"
+              ]
+            },
+            "GetSKAdNetworkConversionValueSchema": {
+              "methods": [
+                "GetSKAdNetworkConversionValueSchema"
               ]
             },
             "GetSearchAds360Link": {
@@ -900,6 +1070,11 @@
                 "ListAccounts"
               ]
             },
+            "ListAdSenseLinks": {
+              "methods": [
+                "ListAdSenseLinks"
+              ]
+            },
             "ListAudiences": {
               "methods": [
                 "ListAudiences"
@@ -908,6 +1083,11 @@
             "ListBigQueryLinks": {
               "methods": [
                 "ListBigQueryLinks"
+              ]
+            },
+            "ListChannelGroups": {
+              "methods": [
+                "ListChannelGroups"
               ]
             },
             "ListConnectedSiteTags": {
@@ -945,6 +1125,11 @@
                 "ListDisplayVideo360AdvertiserLinks"
               ]
             },
+            "ListEventCreateRules": {
+              "methods": [
+                "ListEventCreateRules"
+              ]
+            },
             "ListExpandedDataSets": {
               "methods": [
                 "ListExpandedDataSets"
@@ -968,6 +1153,11 @@
             "ListProperties": {
               "methods": [
                 "ListProperties"
+              ]
+            },
+            "ListSKAdNetworkConversionValueSchemas": {
+              "methods": [
+                "ListSKAdNetworkConversionValueSchemas"
               ]
             },
             "ListSearchAds360Links": {
@@ -1020,6 +1210,16 @@
                 "UpdateAudience"
               ]
             },
+            "UpdateChannelGroup": {
+              "methods": [
+                "UpdateChannelGroup"
+              ]
+            },
+            "UpdateConversionEvent": {
+              "methods": [
+                "UpdateConversionEvent"
+              ]
+            },
             "UpdateCustomDimension": {
               "methods": [
                 "UpdateCustomDimension"
@@ -1050,6 +1250,11 @@
                 "UpdateEnhancedMeasurementSettings"
               ]
             },
+            "UpdateEventCreateRule": {
+              "methods": [
+                "UpdateEventCreateRule"
+              ]
+            },
             "UpdateExpandedDataSet": {
               "methods": [
                 "UpdateExpandedDataSet"
@@ -1073,6 +1278,11 @@
             "UpdateProperty": {
               "methods": [
                 "UpdateProperty"
+              ]
+            },
+            "UpdateSKAdNetworkConversionValueSchema": {
+              "methods": [
+                "UpdateSKAdNetworkConversionValueSchema"
               ]
             },
             "UpdateSearchAds360Link": {

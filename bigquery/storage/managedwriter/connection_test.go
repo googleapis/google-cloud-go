@@ -61,7 +61,7 @@ func TestConnection_OpenWithRetry(t *testing.T) {
 	for _, tc := range testCases {
 		pool := &connectionPool{
 			ctx: context.Background(),
-			open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				if len(tc.errors) == 0 {
 					panic("out of errors")
 				}
@@ -162,17 +162,17 @@ func TestConnectionPool_OpenCallOptionPropagation(t *testing.T) {
 	pool := &connectionPool{
 		ctx:    ctx,
 		cancel: cancel,
-		open: createOpenF(ctx, func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
+		open: createOpenF(func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
 			if len(opts) == 0 {
 				t.Fatalf("no options were propagated")
 			}
 			return nil, fmt.Errorf("no real client")
-		}),
+		}, ""),
 		callOptions: []gax.CallOption{
 			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
 		},
 	}
-	conn := newConnection(pool, "")
+	conn := newConnection(pool, "", nil)
 	pool.openWithRetry(conn)
 }
 
@@ -387,49 +387,5 @@ func TestConnection_Receiver(t *testing.T) {
 			t.Errorf("%s: got final error %v, wanted final error %v", tc.description, gotFinalErr, tc.wantFinalErr)
 		}
 		cancel()
-	}
-}
-
-func TestSimpleRouter(t *testing.T) {
-
-	ctx := context.Background()
-
-	pool := &connectionPool{
-		ctx: ctx,
-		open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-			return &testAppendRowsClient{}, nil
-		},
-	}
-
-	router := newSimpleRouter("")
-	if err := pool.activateRouter(router); err != nil {
-		t.Errorf("activateRouter: %v", err)
-	}
-
-	ms := &ManagedStream{
-		ctx:   ctx,
-		retry: newStatelessRetryer(),
-	}
-
-	pw := newPendingWrite(ctx, ms, &storagepb.AppendRowsRequest{}, nil, "", "")
-
-	// picking before attaching should yield error
-	if _, err := pool.router.pickConnection(pw); err == nil {
-		t.Errorf("pickConnection: expected error, got success")
-	}
-	writer := &ManagedStream{
-		id: "writer",
-	}
-	if err := pool.addWriter(writer); err != nil {
-		t.Errorf("addWriter: %v", err)
-	}
-	if _, err := pool.router.pickConnection(pw); err != nil {
-		t.Errorf("pickConnection error: %v", err)
-	}
-	if err := pool.removeWriter(writer); err != nil {
-		t.Errorf("disconnectWriter: %v", err)
-	}
-	if _, err := pool.router.pickConnection(pw); err == nil {
-		t.Errorf("pickConnection: expected error, got success")
 	}
 }

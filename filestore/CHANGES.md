@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.7.0...filestore/v1.7.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **filestore:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.6.1...filestore/v1.7.0) (2023-05-30)
+
+
+### Features
+
+* **filestore:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.6.0...filestore/v1.6.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **filestore:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.5.0...filestore/v1.6.0) (2023-03-22)
 
 

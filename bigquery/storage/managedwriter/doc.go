@@ -208,5 +208,59 @@ With write retries enabled, failed writes will be automatically attempted a fini
 In support of the retry changes, the AppendResult returned as part of an append call now includes
 TotalAttempts(), which returns the number of times that specific append was enqueued to the service.
 Values larger than 1 are indicative of a specific append being enqueued multiple times.
+
+# Usage of Contexts
+
+The underlying rpc mechanism used to transmit requests and responses between this client and
+the service uses a gRPC bidirectional streaming protocol, and the context provided when invoking
+NewClient to instantiate the client is used to maintain those background connections.
+
+This package also exposes context when instantiating a new writer (NewManagedStream), as well as
+allowing a per-request context when invoking the AppendRows function to send a set of rows.  If the
+context becomes invalid on the writer all subsequent AppendRows requests will be blocked.
+
+Finally, there is a per-request context supplied as part of the AppendRows call on the ManagedStream
+writer itself, useful for bounding individual requests.
+
+# Connection Sharing (Multiplexing)
+
+Note: This feature is EXPERIMENTAL and subject to change.
+
+The BigQuery Write API enforces a limit on the number of concurrent open connections, documented
+here: https://cloud.google.com/bigquery/quotas#write-api-limits
+
+Users can now choose to enable connection sharing (multiplexing) when using ManagedStream writers
+that use default streams.  The intent of this feature is to simplify connection management for users
+who wish to write to many tables, at a cardinality beyond the open connection quota.  Please note that
+explicit streams (Committed, Buffered, and Pending) cannot leverage the connection sharing feature.
+
+Multiplexing features are controlled by the package-specific custom ClientOption options exposed within
+this package.  Additionally, some of the connection-related WriterOptions that can be specified when
+constructing ManagedStream writers are ignored for writers that leverage the shared multiplex connections.
+
+At a high level, multiplexing uses some heuristics based on the flow control of the shared connections
+to infer whether the pool should add additional connections up to a user-specific limit per region,
+and attempts to balance traffic from writers to those connections.
+
+To enable multiplexing for writes to default streams, simply instantiate the client with the desired options:
+
+	ctx := context.Background()
+	client, err := managedwriter.NewClient(ctx, projectID,
+		WithMultiplexing,
+		WithMultiplexPoolLimit(3),
+	)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+Special Consideration:  The gRPC architecture is capable of its own sharing of underlying HTTP/2 connections.
+For users who are sending significant traffic on multiple writers (independent of whether they're leveraging
+multiplexing or not) may also wish to consider further tuning of this behavior.  The managedwriter library
+sets a reasonable default, but this can be tuned further by leveraging the WithGRPCConnectionPool ClientOption,
+documented here:
+https://pkg.go.dev/google.golang.org/api/option#WithGRPCConnectionPool
+
+A reasonable upper bound for the connection pool size is the number of concurrent writers for explicit stream
+plus the configured size of the multiplex pool.
 */
 package managedwriter

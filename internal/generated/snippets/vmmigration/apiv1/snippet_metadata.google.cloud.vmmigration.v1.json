@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/vmmigration/apiv1",
-    "version": "1.5.0",
+    "version": "1.7.1",
     "language": "GO",
     "apis": [
       {
@@ -178,10 +178,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -473,7 +473,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_CreateTargetProject_sync",
       "title": "vmmigration CreateTargetProject Sample",
-      "description": "CreateTargetProject creates a new TargetProject in a given project.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is global.",
+      "description": "CreateTargetProject creates a new TargetProject in a given project.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is `global`.",
       "file": "Client/CreateTargetProject/main.go",
       "language": "GO",
       "clientMethod": {
@@ -729,10 +729,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -740,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -794,7 +794,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_DeleteTargetProject_sync",
       "title": "vmmigration DeleteTargetProject Sample",
-      "description": "DeleteTargetProject deletes a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is global.",
+      "description": "DeleteTargetProject deletes a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is `global`.",
       "file": "Client/DeleteTargetProject/main.go",
       "language": "GO",
       "clientMethod": {
@@ -886,7 +886,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_FetchInventory_sync",
       "title": "vmmigration FetchInventory Sample",
-      "description": "FetchInventory list remote source’s inventory of VMs.\nThe remote source is the onprem vCenter (remote in the sense it’s not in\nCompute Engine). The inventory describes the list of existing VMs in that\nsource. Note that this operation lists the VMs on the remote source, as\nopposed to listing the MigratingVms resources in the vmmigration service.",
+      "description": "FetchInventory list remote source's inventory of VMs.\nThe remote source is the onprem vCenter (remote in the sense it's not in\nCompute Engine). The inventory describes the list of existing VMs in that\nsource. Note that this operation lists the VMs on the remote source, as\nopposed to listing the MigratingVms resources in the vmmigration service.",
       "file": "Client/FetchInventory/main.go",
       "language": "GO",
       "clientMethod": {
@@ -906,7 +906,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.FetchInventoryResponse",
+        "resultType": "*vmmigrationpb.FetchInventoryResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -998,7 +998,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.CloneJob",
+        "resultType": "*vmmigrationpb.CloneJob",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1044,7 +1044,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.CutoverJob",
+        "resultType": "*vmmigrationpb.CutoverJob",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1090,7 +1090,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.DatacenterConnector",
+        "resultType": "*vmmigrationpb.DatacenterConnector",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1136,7 +1136,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.Group",
+        "resultType": "*vmmigrationpb.Group",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1182,17 +1182,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1200,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1228,7 +1228,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.MigratingVm",
+        "resultType": "*vmmigrationpb.MigratingVm",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1274,17 +1274,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1292,7 +1292,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1320,7 +1320,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.ReplicationCycle",
+        "resultType": "*vmmigrationpb.ReplicationCycle",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1366,7 +1366,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.Source",
+        "resultType": "*vmmigrationpb.Source",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1392,7 +1392,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_GetTargetProject_sync",
       "title": "vmmigration GetTargetProject Sample",
-      "description": "GetTargetProject gets details of a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is global.",
+      "description": "GetTargetProject gets details of a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is `global`.",
       "file": "Client/GetTargetProject/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1412,7 +1412,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.TargetProject",
+        "resultType": "*vmmigrationpb.TargetProject",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1458,7 +1458,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.UtilizationReport",
+        "resultType": "*vmmigrationpb.UtilizationReport",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1695,10 +1695,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1706,7 +1706,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1787,10 +1787,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1798,7 +1798,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1898,7 +1898,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_ListTargetProjects_sync",
       "title": "vmmigration ListTargetProjects Sample",
-      "description": "ListTargetProjects lists TargetProjects in a given project.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is global.",
+      "description": "ListTargetProjects lists TargetProjects in a given project.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is `global`.",
       "file": "Client/ListTargetProjects/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2312,7 +2312,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_UpdateTargetProject_sync",
       "title": "vmmigration UpdateTargetProject Sample",
-      "description": "UpdateTargetProject updates the parameters of a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is global.",
+      "description": "UpdateTargetProject updates the parameters of a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is `global`.",
       "file": "Client/UpdateTargetProject/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2397,418 +2397,6 @@
         {
           "start": 18,
           "end": 58,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "vmmigration_v1_generated_IAMPolicy_CancelOperation_sync",
-      "title": "vmmigration CancelOperation Sample",
-      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/CancelOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.vmmigration.v1.IamPolicyClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.vmmigration.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.cloud.vmmigration.v1.IAMPolicy.CancelOperation",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.vmmigration.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 52,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "vmmigration_v1_generated_IAMPolicy_DeleteOperation_sync",
-      "title": "vmmigration DeleteOperation Sample",
-      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/DeleteOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.vmmigration.v1.IamPolicyClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.vmmigration.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.cloud.vmmigration.v1.IAMPolicy.DeleteOperation",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.vmmigration.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 52,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "vmmigration_v1_generated_IAMPolicy_GetIamPolicy_sync",
-      "title": "vmmigration GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
-      "file": "IamPolicyClient/GetIamPolicy/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.vmmigration.v1.IamPolicyClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "iampb.Policy",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.vmmigration.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.vmmigration.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.vmmigration.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "vmmigration_v1_generated_IAMPolicy_GetLocation_sync",
-      "title": "vmmigration GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "IamPolicyClient/GetLocation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetLocation",
-        "fullName": "google.cloud.vmmigration.v1.IamPolicyClient.GetLocation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "locationpb.Location",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.vmmigration.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.vmmigration.v1.IAMPolicy.GetLocation",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.vmmigration.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "vmmigration_v1_generated_IAMPolicy_GetOperation_sync",
-      "title": "vmmigration GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/GetOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.vmmigration.v1.IamPolicyClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "longrunningpb.Operation",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.vmmigration.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.cloud.vmmigration.v1.IAMPolicy.GetOperation",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.vmmigration.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "vmmigration_v1_generated_IAMPolicy_ListLocations_sync",
-      "title": "vmmigration ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "IamPolicyClient/ListLocations/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListLocations",
-        "fullName": "google.cloud.vmmigration.v1.IamPolicyClient.ListLocations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "LocationIterator",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.vmmigration.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.vmmigration.v1.IAMPolicy.ListLocations",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.vmmigration.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 61,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "vmmigration_v1_generated_IAMPolicy_ListOperations_sync",
-      "title": "vmmigration ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/ListOperations/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOperations",
-        "fullName": "google.cloud.vmmigration.v1.IamPolicyClient.ListOperations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OperationIterator",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.vmmigration.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.cloud.vmmigration.v1.IAMPolicy.ListOperations",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.vmmigration.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 61,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "vmmigration_v1_generated_IAMPolicy_SetIamPolicy_sync",
-      "title": "vmmigration SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.",
-      "file": "IamPolicyClient/SetIamPolicy/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "SetIamPolicy",
-        "fullName": "google.cloud.vmmigration.v1.IamPolicyClient.SetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "iampb.Policy",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.vmmigration.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.vmmigration.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.vmmigration.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "vmmigration_v1_generated_IAMPolicy_TestIamPermissions_sync",
-      "title": "vmmigration TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay “fail open” without warning.",
-      "file": "IamPolicyClient/TestIamPermissions/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "TestIamPermissions",
-        "fullName": "google.cloud.vmmigration.v1.IamPolicyClient.TestIamPermissions",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.vmmigration.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.vmmigration.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.vmmigration.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
           "type": "FULL"
         }
       ]

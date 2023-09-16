@@ -200,6 +200,10 @@ type ReadOptions struct {
 	// The request tag to use for this request.
 	RequestTag string
 
+	// If this is for a partitioned read and DataBoostEnabled field is set to true, the request will be executed
+	// via Spanner independent compute resources. Setting this option for regular read operations has no effect.
+	DataBoostEnabled bool
+
 	// ReadOptions option used to set the DirectedReadOptions for all ReadRequests which indicate
 	// which replicas or regions should be used for running read operations.
 	DirectedReadOptions *sppb.DirectedReadOptions
@@ -213,6 +217,7 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 		Limit:               ro.Limit,
 		Priority:            ro.Priority,
 		RequestTag:          ro.RequestTag,
+		DataBoostEnabled:    ro.DataBoostEnabled,
 		DirectedReadOptions: ro.DirectedReadOptions,
 	}
 	if opts.Index != "" {
@@ -226,6 +231,9 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	}
 	if opts.RequestTag != "" {
 		merged.RequestTag = opts.RequestTag
+	}
+	if opts.DataBoostEnabled {
+		merged.DataBoostEnabled = opts.DataBoostEnabled
 	}
 	if opts.DirectedReadOptions != nil {
 		merged.DirectedReadOptions = opts.DirectedReadOptions
@@ -260,6 +268,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	limit := t.ro.Limit
 	prio := t.ro.Priority
 	requestTag := t.ro.RequestTag
+	dataBoostEnabled := t.ro.DataBoostEnabled
 	requestLevelDro := (*sppb.DirectedReadOptions)(nil)
 	if opts != nil {
 		index = opts.Index
@@ -268,6 +277,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		}
 		prio = opts.Priority
 		requestTag = opts.RequestTag
+		if opts.DataBoostEnabled {
+			dataBoostEnabled = opts.DataBoostEnabled
+		}
 		requestLevelDro = opts.DirectedReadOptions
 	}
 	setDro, err := t.validateDirectedReadOptions(requestLevelDro)
@@ -303,6 +315,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					ResumeToken:         resumeToken,
 					Limit:               int64(limit),
 					RequestOptions:      createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					DataBoostEnabled:    dataBoostEnabled,
 					DirectedReadOptions: directedReadOptions,
 				})
 			if err != nil {
@@ -415,6 +428,10 @@ type QueryOptions struct {
 	// The request tag to use for this request.
 	RequestTag string
 
+	// If this is for a partitioned query and DataBoostEnabled field is set to true, the request will be executed
+	// via Spanner independent compute resources. Setting this option for regular query operations has no effect.
+	DataBoostEnabled bool
+
 	// QueryOptions option used to set the DirectedReadOptions for all ExecuteSqlRequests which indicate
 	// which replicas or regions should be used for executing queries.
 	DirectedReadOptions *sppb.DirectedReadOptions
@@ -428,6 +445,7 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 		Options:             &sppb.ExecuteSqlRequest_QueryOptions{},
 		RequestTag:          qo.RequestTag,
 		Priority:            qo.Priority,
+		DataBoostEnabled:    qo.DataBoostEnabled,
 		DirectedReadOptions: qo.DirectedReadOptions,
 	}
 	if opts.Mode != nil {
@@ -438,6 +456,9 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	}
 	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
 		merged.Priority = opts.Priority
+	}
+	if opts.DataBoostEnabled {
+		merged.DataBoostEnabled = opts.DataBoostEnabled
 	}
 	if opts.DirectedReadOptions != nil {
 		merged.DirectedReadOptions = opts.DirectedReadOptions
@@ -602,6 +623,7 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		ParamTypes:          paramTypes,
 		QueryOptions:        options.Options,
 		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		DataBoostEnabled:    options.DataBoostEnabled,
 		DirectedReadOptions: directedReadOptions,
 	}
 	return req, sh, nil
@@ -1370,9 +1392,14 @@ func (t *ReadWriteTransaction) setTransactionID(tx transactionID) {
 func (t *ReadWriteTransaction) release(err error) {
 	t.mu.Lock()
 	sh := t.sh
+	state := t.state
 	t.mu.Unlock()
 	if sh != nil && isSessionNotFoundError(err) {
 		sh.destroy()
+	}
+	// if transaction is released during initialization then do explicit begin transaction
+	if state == txInit {
+		t.setTransactionID(nil)
 	}
 }
 
@@ -1445,15 +1472,13 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 	}()
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
-		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
+		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts)
+		if isSessionNotFoundError(err) {
+			sh.destroy()
 			sh, err = t.sp.take(ctx)
 			if err != nil {
 				return err
 			}
-		}
-		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts)
-		if isSessionNotFoundError(err) {
-			sh.destroy()
 			continue
 		} else {
 			err = ToSpannerError(err)
@@ -1464,7 +1489,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 		t.mu.Lock()
 		t.tx = tx
 		t.sh = sh
-		// State transite to txActive.
+		// Transition state to txActive.
 		t.state = txActive
 		t.mu.Unlock()
 	}

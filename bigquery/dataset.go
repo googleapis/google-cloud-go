@@ -58,6 +58,13 @@ type DatasetMetadata struct {
 	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	DefaultCollation string
 
+	// For externally defined datasets, contains information about the configuration.
+	ExternalDatasetReference *ExternalDatasetReference
+
+	// MaxTimeTravel represents the number of hours for the max time travel for all tables
+	// in the dataset.  Durations are rounded towards zero for the nearest hourly value.
+	MaxTimeTravel time.Duration
+
 	// Storage billing model to be used for all tables in the dataset.
 	// Can be set to PHYSICAL. Default is LOGICAL.
 	// Once you create a dataset with storage billing model set to physical bytes, you can't change it back to using logical bytes again.
@@ -130,6 +137,13 @@ type DatasetMetadataToUpdate struct {
 	// Defines the default collation specification of future tables
 	// created in the dataset.
 	DefaultCollation optional.String
+
+	// For externally defined datasets, contains information about the configuration.
+	ExternalDatasetReference *ExternalDatasetReference
+
+	// MaxTimeTravel represents the number of hours for the max time travel for all tables
+	// in the dataset.  Durations are rounded towards zero for the nearest hourly value.
+	MaxTimeTravel optional.Duration
 
 	// Storage billing model to be used for all tables in the dataset.
 	// Can be set to PHYSICAL. Default is LOGICAL.
@@ -208,6 +222,7 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
 	ds.DefaultPartitionExpirationMs = int64(dm.DefaultPartitionExpiration / time.Millisecond)
 	ds.DefaultCollation = dm.DefaultCollation
+	ds.MaxTimeTravelHours = int64(dm.MaxTimeTravel / time.Hour)
 	ds.StorageBillingModel = string(dm.StorageBillingModel)
 	ds.Labels = dm.Labels
 	var err error
@@ -229,6 +244,9 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	}
 	if dm.DefaultEncryptionConfig != nil {
 		ds.DefaultEncryptionConfiguration = dm.DefaultEncryptionConfig.toBQ()
+	}
+	if dm.ExternalDatasetReference != nil {
+		ds.ExternalDatasetReference = dm.ExternalDatasetReference.toBQ()
 	}
 	return ds, nil
 }
@@ -295,6 +313,8 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		DefaultTableExpiration:     time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
 		DefaultPartitionExpiration: time.Duration(d.DefaultPartitionExpirationMs) * time.Millisecond,
 		DefaultCollation:           d.DefaultCollation,
+		ExternalDatasetReference:   bqToExternalDatasetReference(d.ExternalDatasetReference),
+		MaxTimeTravel:              time.Duration(d.MaxTimeTravelHours) * time.Hour,
 		StorageBillingModel:        d.StorageBillingModel,
 		DefaultEncryptionConfig:    bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
 		Description:                d.Description,
@@ -384,6 +404,19 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 	if dm.DefaultCollation != nil {
 		ds.DefaultCollation = optional.ToString(dm.DefaultCollation)
 		forceSend("DefaultCollation")
+	}
+	if dm.ExternalDatasetReference != nil {
+		ds.ExternalDatasetReference = dm.ExternalDatasetReference.toBQ()
+		forceSend("ExternalDatasetReference")
+	}
+	if dm.MaxTimeTravel != nil {
+		dur := optional.ToDuration(dm.MaxTimeTravel)
+		if dur == 0 {
+			// Send a null to delete the field.
+			ds.NullFields = append(ds.NullFields, "MaxTimeTravelHours")
+		} else {
+			ds.MaxTimeTravelHours = int64(dur / time.Hour)
+		}
 	}
 	if dm.StorageBillingModel != nil {
 		ds.StorageBillingModel = optional.ToString(dm.StorageBillingModel)
@@ -915,5 +948,35 @@ func bqToDatasetAccessEntry(entry *bq.DatasetAccessEntry, c *Client) *DatasetAcc
 	return &DatasetAccessEntry{
 		Dataset:     c.DatasetInProject(entry.Dataset.ProjectId, entry.Dataset.DatasetId),
 		TargetTypes: entry.TargetTypes,
+	}
+}
+
+// ExternalDatasetReference provides information about external dataset metadata.
+type ExternalDatasetReference struct {
+	//The connection id that is used to access the external_source.
+	// Format: projects/{project_id}/locations/{location_id}/connections/{connection_id}
+	Connection string
+
+	// External source that backs this dataset.
+	ExternalSource string
+}
+
+func bqToExternalDatasetReference(bq *bq.ExternalDatasetReference) *ExternalDatasetReference {
+	if bq == nil {
+		return nil
+	}
+	return &ExternalDatasetReference{
+		Connection:     bq.Connection,
+		ExternalSource: bq.ExternalSource,
+	}
+}
+
+func (edr *ExternalDatasetReference) toBQ() *bq.ExternalDatasetReference {
+	if edr == nil {
+		return nil
+	}
+	return &bq.ExternalDatasetReference{
+		Connection:     edr.Connection,
+		ExternalSource: edr.ExternalSource,
 	}
 }

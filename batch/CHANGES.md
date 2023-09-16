@@ -1,5 +1,70 @@
 # Changelog
 
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.4.0...batch/v1.4.1) (2023-09-11)
+
+
+### Documentation
+
+* **batch:** Revert HTML formats in comments ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+* **batch:** Update description on size_gb in disk field ([15be57b](https://github.com/googleapis/google-cloud-go/commit/15be57b9264a793494cedc3966034fa20f56d7c5))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.3.1...batch/v1.4.0) (2023-08-08)
+
+
+### Features
+
+* **batch:** Add comment to the unsupported order_by field of ListTasksRequest ([e3f8c89](https://github.com/googleapis/google-cloud-go/commit/e3f8c89429a207c05fee36d5d93efe76f9e29efe))
+* **batch:** Clarify Batch API proto doc about pubsub notifications ([#8394](https://github.com/googleapis/google-cloud-go/issues/8394)) ([1639d62](https://github.com/googleapis/google-cloud-go/commit/1639d62202bc4b233ae83479cc1a539e083b67fe))
+
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.3.0...batch/v1.3.1) (2023-07-10)
+
+
+### Documentation
+
+* **batch:** Add image shortcut example for Batch HPC CentOS Image ([14b95d3](https://github.com/googleapis/google-cloud-go/commit/14b95d33753d0b391d0b49533e92b551e5dc3072))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.2.0...batch/v1.3.0) (2023-06-20)
+
+
+### Features
+
+* **batch:** Add support for scheduling_policy ([3382ef8](https://github.com/googleapis/google-cloud-go/commit/3382ef81b6bcefe1c7bfc14aa5ff9bbf25850966))
+
+
+### Bug Fixes
+
+* **batch:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.1.0...batch/v1.2.0) (2023-05-30)
+
+
+### Features
+
+* **batch:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.0.1...batch/v1.1.0) (2023-05-16)
+
+
+### Features
+
+* **batch:** Add support for placement policies ([#7943](https://github.com/googleapis/google-cloud-go/issues/7943)) ([7c2f642](https://github.com/googleapis/google-cloud-go/commit/7c2f642ac308fcdfcb41985aae425785afa27823))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.0.0...batch/v1.0.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **batch:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.7.0...batch/v1.0.0) (2023-04-04)
+
+
+### Features
+
+* **batch:** Promote to GA ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+* **batch:** Promote to GA ([#7645](https://github.com/googleapis/google-cloud-go/issues/7645)) ([307e5ad](https://github.com/googleapis/google-cloud-go/commit/307e5adfe93b9f0b66f2f4312f127bb74c102011))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.6.0...batch/v0.7.0) (2023-02-14)
 
 

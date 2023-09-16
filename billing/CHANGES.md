@@ -1,5 +1,57 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.16.0...billing/v1.17.0) (2023-09-11)
+
+
+### Features
+
+* **billing/budgets:** Supported project-level-budgets in Public Budget API V1 ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+* **billing/budgets:** Supported project-level-budgets in Public Budget API V1Beta ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
+
+### Bug Fixes
+
+* **billing:** Fixed resource_reference for name in GetProjectBillingInfo ([ac10224](https://github.com/googleapis/google-cloud-go/commit/ac102249403e6c1604bff7c537343645c950ae13))
+
+
+### Documentation
+
+* **billing:** Update comments ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.15.0...billing/v1.16.0) (2023-06-20)
+
+
+### Features
+
+* **billing:** Added resource_reference for name in GetProjectBillingInfoRequest message ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+
+
+### Bug Fixes
+
+* **billing:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.14.0...billing/v1.15.0) (2023-06-07)
+
+
+### Features
+
+* **billing/budgets:** Add resource_ancestors field to support filtering by folders & organizations ([79eac77](https://github.com/googleapis/google-cloud-go/commit/79eac771ecf99172157cc4499ba95536778354e6))
+* **billing/budgets:** Add resource_ancestors field to support filtering by folders & organizations ([79eac77](https://github.com/googleapis/google-cloud-go/commit/79eac771ecf99172157cc4499ba95536778354e6))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.13.1...billing/v1.14.0) (2023-05-30)
+
+
+### Features
+
+* **billing:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.13.0...billing/v1.13.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **billing:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.12.0...billing/v1.13.0) (2023-03-15)
 
 

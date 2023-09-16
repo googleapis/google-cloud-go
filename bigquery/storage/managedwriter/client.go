@@ -28,6 +28,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/metadata"
 )
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -44,6 +45,11 @@ type Client struct {
 	rawClient *storage.BigQueryWriteClient
 	projectID string
 
+	// retained context.  primarily used for connection management and the underlying
+	// client.
+	ctx    context.Context
+	cancel context.CancelFunc
+
 	// cfg retains general settings (custom ClientOptions).
 	cfg *writerClientConfig
 
@@ -54,6 +60,9 @@ type Client struct {
 }
 
 // NewClient instantiates a new client.
+//
+// The context provided here is retained and used for background connection management
+// between the client and the BigQuery Storage service.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (c *Client, err error) {
 	// Set a reasonable default for the gRPC connection pool size.
 	numConns := runtime.GOMAXPROCS(0)
@@ -65,8 +74,11 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}
 	o = append(o, opts...)
 
-	rawClient, err := storage.NewBigQueryWriteClient(ctx, o...)
+	cCtx, cancel := context.WithCancel(ctx)
+
+	rawClient, err := storage.NewBigQueryWriteClient(cCtx, o...)
 	if err != nil {
+		cancel()
 		return nil, err
 	}
 	rawClient.SetGoogleClientInfo("gccl", internal.Version)
@@ -74,12 +86,15 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	// Handle project autodetection.
 	projectID, err = detect.ProjectID(ctx, projectID, "", opts...)
 	if err != nil {
+		cancel()
 		return nil, err
 	}
 
 	return &Client{
 		rawClient: rawClient,
 		projectID: projectID,
+		ctx:       cCtx,
+		cancel:    cancel,
 		cfg:       newWriterClientConfig(opts...),
 		pools:     make(map[string]*connectionPool),
 	}, nil
@@ -88,15 +103,25 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // Close releases resources held by the client.
 func (c *Client) Close() error {
 
-	// TODO:  Consider if we should actively close pools on client close.
-	// The underlying client closing will cause future calls to the underlying client
-	// to fail terminally, but long-lived calls like an open AppendRows stream may remain
-	// viable for some time.
-	//
-	// If we do want to actively close pools, we need to maintain a list of the singleton pools
-	// as well as the regional pools.
-	c.rawClient.Close()
-	return nil
+	// Shutdown the per-region pools.
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	var firstErr error
+	for _, pool := range c.pools {
+		if err := pool.Close(); err != nil && firstErr == nil {
+			firstErr = err
+		}
+	}
+
+	// Close the underlying client stub.
+	if err := c.rawClient.Close(); err != nil && firstErr == nil {
+		firstErr = err
+	}
+	// Cancel the retained client context.
+	if c.cancel != nil {
+		c.cancel()
+	}
+	return firstErr
 }
 
 // NewManagedStream establishes a new managed stream for appending data into a table.
@@ -107,8 +132,11 @@ func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*M
 }
 
 // createOpenF builds the opener function we need to access the AppendRows bidi stream.
-func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-	return func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+func createOpenF(streamFunc streamClientFunc, routingHeader string) func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		if routingHeader != "" {
+			ctx = metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", routingHeader)
+		}
 		arc, err := streamFunc(ctx, opts...)
 		if err != nil {
 			return nil, err
@@ -155,21 +183,16 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 			writer.streamSettings.streamID = streamName
 		}
 	}
-	// Resolve behavior for connectionPool interactions.  In the multiplex case we use shared pools, in the
-	// default case we setup a connectionPool per writer, and that pool gets a single connection instance.
-	mode := ""
-	if c.cfg != nil && c.cfg.useMultiplex {
-		mode = "MULTIPLEX"
-	}
-	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc, newSimpleRouter(mode))
+	// we maintain a pool per region, and attach all exclusive and multiplex writers to that pool.
+	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc)
 	if err != nil {
 		return nil, err
 	}
-	// Add the pool to the router, and set it's context based on the owning pool.
+	// Add the writer to the pool.
 	if err := pool.addWriter(writer); err != nil {
 		return nil, err
 	}
-	writer.ctx, writer.cancel = context.WithCancel(pool.ctx)
+	writer.ctx, writer.cancel = context.WithCancel(ctx)
 
 	// Attach any tag keys to the context on the writer, so instrumentation works as expected.
 	writer.ctx = setupWriterStatContext(writer)
@@ -202,61 +225,55 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 	return nil
 }
 
-// resolvePool either returns an existing connectionPool (in the case of multiplex), or returns a new pool.
-func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
+// resolvePool either returns an existing connectionPool, or returns a new pool if this is the first writer in a given region.
+func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc) (*connectionPool, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if c.cfg.useMultiplex && canMultiplex(settings.streamID) {
-		resp, err := c.getWriteStream(ctx, settings.streamID, false)
-		if err != nil {
-			return nil, err
-		}
-		loc := resp.GetLocation()
-		if pool, ok := c.pools[loc]; ok {
-			return pool, nil
-		}
-		// No existing pool available, create one for the location and add to shared pools.
-		pool, err := c.createPool(ctx, nil, streamFunc, router, true)
-		if err != nil {
-			return nil, err
-		}
-		c.pools[loc] = pool
+	resp, err := c.getWriteStream(ctx, settings.streamID, false)
+	if err != nil {
+		return nil, err
+	}
+	loc := resp.GetLocation()
+	if pool, ok := c.pools[loc]; ok {
 		return pool, nil
 	}
-	return c.createPool(ctx, settings, streamFunc, router, false)
+
+	// No existing pool available, create one for the location and add to shared pools.
+	pool, err := c.createPool(loc, streamFunc)
+	if err != nil {
+		return nil, err
+	}
+	c.pools[loc] = pool
+	return pool, nil
 }
 
 // createPool builds a connectionPool.
-func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter, allowMultipleWriters bool) (*connectionPool, error) {
-	cCtx, cancel := context.WithCancel(ctx)
+func (c *Client) createPool(location string, streamFunc streamClientFunc) (*connectionPool, error) {
+	cCtx, cancel := context.WithCancel(c.ctx)
 
 	if c.cfg == nil {
 		cancel()
 		return nil, fmt.Errorf("missing client config")
 	}
-	fcRequests := c.cfg.defaultInflightRequests
-	fcBytes := c.cfg.defaultInflightBytes
-	arOpts := c.cfg.defaultAppendRowsCallOptions
-	if settings != nil {
-		if settings.MaxInflightRequests > 0 {
-			fcRequests = settings.MaxInflightRequests
-		}
-		if settings.MaxInflightBytes > 0 {
-			fcBytes = settings.MaxInflightBytes
-		}
-		for _, o := range settings.appendCallOptions {
-			arOpts = append(arOpts, o)
-		}
-	}
+
+	var routingHeader string
+	/*
+	 * TODO: set once backend respects the new routing header
+	 * if location != "" && c.projectID != "" {
+	 *  	routingHeader = fmt.Sprintf("write_location=projects/%s/locations/%s", c.projectID, location)
+	 * }
+	 */
 
 	pool := &connectionPool{
-		ctx:                  cCtx,
-		allowMultipleWriters: allowMultipleWriters,
-		cancel:               cancel,
-		open:                 createOpenF(ctx, streamFunc),
-		callOptions:          arOpts,
-		baseFlowController:   newFlowController(fcRequests, fcBytes),
+		id:                 newUUID(poolIDPrefix),
+		location:           location,
+		ctx:                cCtx,
+		cancel:             cancel,
+		open:               createOpenF(streamFunc, routingHeader),
+		callOptions:        c.cfg.defaultAppendRowsCallOptions,
+		baseFlowController: newFlowController(c.cfg.defaultInflightRequests, c.cfg.defaultInflightBytes),
 	}
+	router := newSharedRouter(c.cfg.useMultiplex, c.cfg.maxMultiplexPoolSize)
 	if err := pool.activateRouter(router); err != nil {
 		return nil, err
 	}

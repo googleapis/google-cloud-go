@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/iam/apiv1",
-    "version": "0.13.0",
+    "version": "1.1.2",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "IamPolicyClient",
           "fullName": "google.iam.v1.IamPolicyClient"
@@ -60,7 +60,7 @@
     {
       "regionTag": "iam-meta-api_v1_generated_IAMPolicy_SetIamPolicy_sync",
       "title": "iam-meta-api SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.",
       "file": "IamPolicyClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "IamPolicyClient",
           "fullName": "google.iam.v1.IamPolicyClient"
@@ -106,7 +106,7 @@
     {
       "regionTag": "iam-meta-api_v1_generated_IAMPolicy_TestIamPermissions_sync",
       "title": "iam-meta-api TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
       "file": "IamPolicyClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "IamPolicyClient",
           "fullName": "google.iam.v1.IamPolicyClient"

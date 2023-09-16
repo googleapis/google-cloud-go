@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/recommender/apiv1beta1",
-    "version": "1.9.0",
+    "version": "1.11.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Insight",
+        "resultType": "*recommenderpb.Insight",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1beta1.Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.InsightTypeConfig",
+        "resultType": "*recommenderpb.InsightTypeConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1beta1.Client"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Recommendation",
+        "resultType": "*recommenderpb.Recommendation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1beta1.Client"
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.RecommenderConfig",
+        "resultType": "*recommenderpb.RecommenderConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1beta1.Client"
@@ -191,6 +191,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recommender_v1beta1_generated_Recommender_ListInsightTypes_sync",
+      "title": "recommender ListInsightTypes Sample",
+      "description": "ListInsightTypes lists available InsightTypes.\nNo IAM permissions are required.",
+      "file": "Client/ListInsightTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInsightTypes",
+        "fullName": "google.cloud.recommender.v1beta1.Client.ListInsightTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recommenderpb.ListInsightTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InsightTypeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recommender.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListInsightTypes",
+          "fullName": "google.cloud.recommender.v1beta1.Recommender.ListInsightTypes",
+          "service": {
+            "shortName": "Recommender",
+            "fullName": "google.cloud.recommender.v1beta1.Recommender"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -288,6 +334,52 @@
       ]
     },
     {
+      "regionTag": "recommender_v1beta1_generated_Recommender_ListRecommenders_sync",
+      "title": "recommender ListRecommenders Sample",
+      "description": "ListRecommenders lists all available Recommenders.\nNo IAM permissions are required.",
+      "file": "Client/ListRecommenders/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRecommenders",
+        "fullName": "google.cloud.recommender.v1beta1.Client.ListRecommenders",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recommenderpb.ListRecommendersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RecommenderTypeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recommender.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListRecommenders",
+          "fullName": "google.cloud.recommender.v1beta1.Recommender.ListRecommenders",
+          "service": {
+            "shortName": "Recommender",
+            "fullName": "google.cloud.recommender.v1beta1.Recommender"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "recommender_v1beta1_generated_Recommender_MarkInsightAccepted_sync",
       "title": "recommender MarkInsightAccepted Sample",
       "description": "MarkInsightAccepted marks the Insight State as Accepted. Users can use this method to\nindicate to the Recommender API that they have applied some action based\non the insight. This stops the insight content from being updated.\n\nMarkInsightAccepted can be applied to insights in ACTIVE state. Requires\nthe recommender.*.update IAM permission for the specified insight.",
@@ -310,7 +402,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Insight",
+        "resultType": "*recommenderpb.Insight",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1beta1.Client"
@@ -356,7 +448,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Recommendation",
+        "resultType": "*recommenderpb.Recommendation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1beta1.Client"
@@ -402,7 +494,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Recommendation",
+        "resultType": "*recommenderpb.Recommendation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1beta1.Client"
@@ -448,7 +540,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Recommendation",
+        "resultType": "*recommenderpb.Recommendation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1beta1.Client"
@@ -494,7 +586,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.InsightTypeConfig",
+        "resultType": "*recommenderpb.InsightTypeConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1beta1.Client"
@@ -540,7 +632,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.RecommenderConfig",
+        "resultType": "*recommenderpb.RecommenderConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1beta1.Client"

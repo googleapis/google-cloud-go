@@ -31,6 +31,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
@@ -50,6 +51,8 @@ const (
 	// routeToLeaderHeader is the name of the metadata header if RW/PDML
 	// requests need  to route to leader.
 	routeToLeaderHeader = "x-goog-spanner-route-to-leader"
+
+	requestsCompressionHeader = "x-response-encoding"
 
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
@@ -163,6 +166,21 @@ type ClientConfig struct {
 	// will be directed to the standard logger.
 	Logger *log.Logger
 
+	//
+	// Sets the compression to use for all gRPC calls. The compressor must be a valid name.
+	// This will enable compression both from the client to the
+	// server and from the server to the client.
+	//
+	// Supported values are:
+	//  gzip: Enable gzip compression
+	//  identity: Disable compression
+	//
+	//  Default: identity
+	Compression string
+
+	// BatchTimeout specifies the timeout for a batch of sessions managed sessionClient.
+	BatchTimeout time.Duration
+
 	// ClientConfig options used to set the DirectedReadOptions for all ReadRequests
 	// and ExecuteSqlRequests for the Client which indicate which replicas or regions
 	// should be used for non-transactional reads or queries.
@@ -184,7 +202,7 @@ func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRou
 // form projects/PROJECT_ID/instances/INSTANCE_ID/databases/DATABASE_ID. It uses
 // a default configuration.
 func NewClient(ctx context.Context, database string, opts ...option.ClientOption) (*Client, error) {
-	return NewClientWithConfig(ctx, database, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, DisableRouteToLeader: true}, opts...)
+	return NewClientWithConfig(ctx, database, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, DisableRouteToLeader: false}, opts...)
 }
 
 // NewClientWithConfig creates a client to a database. A valid database name has
@@ -215,7 +233,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.NumChannels = numChannels
 	}
 	// gRPC options.
-	allOpts := allClientOpts(config.NumChannels, opts...)
+	allOpts := allClientOpts(config.NumChannels, config.Compression, opts...)
 	pool, err := gtransport.DialPool(ctx, allOpts...)
 	if err != nil {
 		return nil, err
@@ -243,6 +261,14 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.incStep == 0 {
 		config.incStep = DefaultSessionPoolConfig.incStep
 	}
+	if config.BatchTimeout == 0 {
+		config.BatchTimeout = time.Minute
+	}
+
+	md := metadata.Pairs(resourcePrefixHeader, database)
+	if config.Compression == gzip.Name {
+		md.Append(requestsCompressionHeader, gzip.Name)
+	}
 
 	err = validateDirectedReadOptions(config.DirectedReadOptions)
 	if err != nil {
@@ -250,7 +276,8 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	// Create a session client.
-	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, metadata.Pairs(resourcePrefixHeader, database), config.Logger, config.CallOptions)
+	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
+
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
 	sp, err := newSessionPool(sc, config.SessionPoolConfig)
@@ -276,12 +303,17 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 // Combines the default options from the generated client, the default options
 // of the hand-written client and the user options to one list of options.
 // Precedence: userOpts > clientDefaultOpts > generatedDefaultOpts
-func allClientOpts(numChannels int, userOpts ...option.ClientOption) []option.ClientOption {
+func allClientOpts(numChannels int, compression string, userOpts ...option.ClientOption) []option.ClientOption {
 	generatedDefaultOpts := vkit.DefaultClientOptions()
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
 		internaloption.EnableDirectPath(true),
+		internaloption.AllowNonDefaultServiceAccount(true),
+	}
+	if compression == "gzip" {
+		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.UseCompressor(gzip.Name))))
 	}
 	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)
 	return append(allDefaultOpts, userOpts...)
@@ -549,21 +581,27 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			}
 		}
 		if t.shouldExplicitBegin(attempt) {
+			// Make sure we set the current session handle before calling BeginTransaction.
+			// Note that the t.begin(ctx) call could change the session that is being used by the transaction, as the
+			// BeginTransaction RPC invocation will be retried on a new session if it returns SessionNotFound.
+			t.txReadOnly.sh = sh
 			if err = t.begin(ctx); err != nil {
-				return spannerErrorf(codes.Internal, "error while BeginTransaction during retrying a ReadWrite transaction: %v", err)
+				trace.TracePrintf(ctx, nil, "Error while BeginTransaction during retrying a ReadWrite transaction: %v", ToSpannerError(err))
+				return ToSpannerError(err)
 			}
 		} else {
 			t = &ReadWriteTransaction{
 				txReadyOrClosed: make(chan struct{}),
 			}
+			t.txReadOnly.sh = sh
 		}
 		attempt++
-		t.txReadOnly.sh = sh
 		t.txReadOnly.sp = c.idleSessions
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
 		t.txReadOnly.ro = c.ro
 		t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
+		t.wb = []*Mutation{}
 		t.txOpts = c.txo.merge(options)
 		t.ct = c.ct
 

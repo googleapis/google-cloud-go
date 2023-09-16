@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/spanner/admin/database/apiv1",
-    "version": "1.44.0",
+    "version": "1.49.0",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "DatabaseAdmin",
-            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -59,7 +59,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_CopyBackup_sync",
       "title": "spanner CopyBackup Sample",
-      "description": "CopyBackup starts copying a Cloud Spanner Backup.\nThe returned backup [long-running operation][google.longrunning.Operation]\nwill have a name of the format\nprojects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>\nand can be used to track copying of the backup. The operation is associated\nwith the destination backup.\nThe metadata field type is\nCopyBackupMetadata.\nThe response field type is\nBackup, if successful. Cancelling the returned operation will stop the\ncopying and delete the backup.\nConcurrent CopyBackup requests can run on the same source backup.",
+      "description": "CopyBackup starts copying a Cloud Spanner Backup.\nThe returned backup [long-running operation][google.longrunning.Operation]\nwill have a name of the format\n`projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>`\nand can be used to track copying of the backup. The operation is associated\nwith the destination backup.\nThe [metadata][google.longrunning.Operation.metadata] field type is\n[CopyBackupMetadata][google.spanner.admin.database.v1.CopyBackupMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Backup][google.spanner.admin.database.v1.Backup], if successful. Cancelling the returned operation will stop the\ncopying and delete the backup.\nConcurrent CopyBackup requests can run on the same source backup.",
       "file": "DatabaseAdminClient/CopyBackup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -105,7 +105,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_CreateBackup_sync",
       "title": "spanner CreateBackup Sample",
-      "description": "CreateBackup starts creating a new Cloud Spanner Backup.\nThe returned backup [long-running operation][google.longrunning.Operation]\nwill have a name of the format\nprojects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>\nand can be used to track creation of the backup. The\nmetadata field type is\nCreateBackupMetadata. The\nresponse field type is\nBackup, if successful. Cancelling the returned operation will stop the\ncreation and delete the backup.\nThere can be only one pending backup creation per database. Backup creation\nof different databases can run concurrently.",
+      "description": "CreateBackup starts creating a new Cloud Spanner Backup.\nThe returned backup [long-running operation][google.longrunning.Operation]\nwill have a name of the format\n`projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>`\nand can be used to track creation of the backup. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateBackupMetadata][google.spanner.admin.database.v1.CreateBackupMetadata]. The\n[response][google.longrunning.Operation.response] field type is\n[Backup][google.spanner.admin.database.v1.Backup], if successful. Cancelling the returned operation will stop the\ncreation and delete the backup.\nThere can be only one pending backup creation per database. Backup creation\nof different databases can run concurrently.",
       "file": "DatabaseAdminClient/CreateBackup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -151,7 +151,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_CreateDatabase_sync",
       "title": "spanner CreateDatabase Sample",
-      "description": "CreateDatabase creates a new Cloud Spanner database and starts to prepare it for serving.\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format <database_name>/operations/<operation_id> and\ncan be used to track preparation of the database. The\nmetadata field type is\nCreateDatabaseMetadata. The\nresponse field type is\nDatabase, if successful.",
+      "description": "CreateDatabase creates a new Cloud Spanner database and starts to prepare it for serving.\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format `<database_name>/operations/<operation_id>` and\ncan be used to track preparation of the database. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateDatabaseMetadata][google.spanner.admin.database.v1.CreateDatabaseMetadata]. The\n[response][google.longrunning.Operation.response] field type is\n[Database][google.spanner.admin.database.v1.Database], if successful.",
       "file": "DatabaseAdminClient/CreateDatabase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -197,7 +197,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_DeleteBackup_sync",
       "title": "spanner DeleteBackup Sample",
-      "description": "DeleteBackup deletes a pending or completed Backup.",
+      "description": "DeleteBackup deletes a pending or completed [Backup][google.spanner.admin.database.v1.Backup].",
       "file": "DatabaseAdminClient/DeleteBackup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -268,10 +268,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "DatabaseAdmin",
-            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -279,7 +279,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -287,7 +287,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_DropDatabase_sync",
       "title": "spanner DropDatabase Sample",
-      "description": "DropDatabase drops (aka deletes) a Cloud Spanner database.\nCompleted backups for the database will be retained according to their\nexpire_time.\nNote: Cloud Spanner might continue to accept requests for a few seconds\nafter the database has been deleted.",
+      "description": "DropDatabase drops (aka deletes) a Cloud Spanner database.\nCompleted backups for the database will be retained according to their\n`expire_time`.\nNote: Cloud Spanner might continue to accept requests for a few seconds\nafter the database has been deleted.",
       "file": "DatabaseAdminClient/DropDatabase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -324,7 +324,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -332,7 +332,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_GetBackup_sync",
       "title": "spanner GetBackup Sample",
-      "description": "GetBackup gets metadata on a pending or completed Backup.",
+      "description": "GetBackup gets metadata on a pending or completed [Backup][google.spanner.admin.database.v1.Backup].",
       "file": "DatabaseAdminClient/GetBackup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -352,7 +352,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "databasepb.Backup",
+        "resultType": "*databasepb.Backup",
         "client": {
           "shortName": "DatabaseAdminClient",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
@@ -370,7 +370,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -398,7 +398,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "databasepb.Database",
+        "resultType": "*databasepb.Database",
         "client": {
           "shortName": "DatabaseAdminClient",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
@@ -416,7 +416,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -424,7 +424,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_GetDatabaseDdl_sync",
       "title": "spanner GetDatabaseDdl Sample",
-      "description": "GetDatabaseDdl returns the schema of a Cloud Spanner database as a list of formatted\nDDL statements. This method does not show pending schema updates, those may\nbe queried using the Operations API.",
+      "description": "GetDatabaseDdl returns the schema of a Cloud Spanner database as a list of formatted\nDDL statements. This method does not show pending schema updates, those may\nbe queried using the [Operations][google.longrunning.Operations] API.",
       "file": "DatabaseAdminClient/GetDatabaseDdl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -444,7 +444,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "databasepb.GetDatabaseDdlResponse",
+        "resultType": "*databasepb.GetDatabaseDdlResponse",
         "client": {
           "shortName": "DatabaseAdminClient",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
@@ -462,7 +462,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -470,7 +470,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_GetIamPolicy_sync",
       "title": "spanner GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a database or backup resource.\nReturns an empty policy if a database or backup exists but does not have a\npolicy set.\n\nAuthorization requires spanner.databases.getIamPolicy permission on\nresource.\nFor backups, authorization requires spanner.backups.getIamPolicy\npermission on resource.",
+      "description": "GetIamPolicy gets the access control policy for a database or backup resource.\nReturns an empty policy if a database or backup exists but does not have a\npolicy set.\n\nAuthorization requires `spanner.databases.getIamPolicy` permission on\n[resource][google.iam.v1.GetIamPolicyRequest.resource].\nFor backups, authorization requires `spanner.backups.getIamPolicy`\npermission on [resource][google.iam.v1.GetIamPolicyRequest.resource].",
       "file": "DatabaseAdminClient/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -490,7 +490,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "DatabaseAdminClient",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
@@ -508,7 +508,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -536,17 +536,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "DatabaseAdminClient",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "DatabaseAdmin",
-            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -554,7 +554,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -562,7 +562,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_ListBackupOperations_sync",
       "title": "spanner ListBackupOperations Sample",
-      "description": "ListBackupOperations lists the backup [long-running operations][google.longrunning.Operation] in\nthe given instance. A backup operation has a name of the form\nprojects/<project>/instances/<instance>/backups/<backup>/operations/<operation>.\nThe long-running operation\nmetadata field type\nmetadata.type_url describes the type of the metadata. Operations returned\ninclude those that have completed/failed/canceled within the last 7 days,\nand pending operations. Operations returned are ordered by\noperation.metadata.value.progress.start_time in descending order starting\nfrom the most recently started operation.",
+      "description": "ListBackupOperations lists the backup [long-running operations][google.longrunning.Operation] in\nthe given instance. A backup operation has a name of the form\n`projects/<project>/instances/<instance>/backups/<backup>/operations/<operation>`.\nThe long-running operation\n[metadata][google.longrunning.Operation.metadata] field type\n`metadata.type_url` describes the type of the metadata. Operations returned\ninclude those that have completed/failed/canceled within the last 7 days,\nand pending operations. Operations returned are ordered by\n`operation.metadata.value.progress.start_time` in descending order starting\nfrom the most recently started operation.",
       "file": "DatabaseAdminClient/ListBackupOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -600,7 +600,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -608,7 +608,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_ListBackups_sync",
       "title": "spanner ListBackups Sample",
-      "description": "ListBackups lists completed and pending backups.\nBackups returned are ordered by create_time in descending order,\nstarting from the most recent create_time.",
+      "description": "ListBackups lists completed and pending backups.\nBackups returned are ordered by `create_time` in descending order,\nstarting from the most recent `create_time`.",
       "file": "DatabaseAdminClient/ListBackups/main.go",
       "language": "GO",
       "clientMethod": {
@@ -646,7 +646,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -654,7 +654,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_ListDatabaseOperations_sync",
       "title": "spanner ListDatabaseOperations Sample",
-      "description": "ListDatabaseOperations lists database [longrunning-operations][google.longrunning.Operation].\nA database operation has a name of the form\nprojects/<project>/instances/<instance>/databases/<database>/operations/<operation>.\nThe long-running operation\nmetadata field type\nmetadata.type_url describes the type of the metadata. Operations returned\ninclude those that have completed/failed/canceled within the last 7 days,\nand pending operations.",
+      "description": "ListDatabaseOperations lists database [longrunning-operations][google.longrunning.Operation].\nA database operation has a name of the form\n`projects/<project>/instances/<instance>/databases/<database>/operations/<operation>`.\nThe long-running operation\n[metadata][google.longrunning.Operation.metadata] field type\n`metadata.type_url` describes the type of the metadata. Operations returned\ninclude those that have completed/failed/canceled within the last 7 days,\nand pending operations.",
       "file": "DatabaseAdminClient/ListDatabaseOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -692,7 +692,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -738,7 +738,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -784,7 +784,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -819,10 +819,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "DatabaseAdmin",
-            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -830,7 +830,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -838,7 +838,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_RestoreDatabase_sync",
       "title": "spanner RestoreDatabase Sample",
-      "description": "RestoreDatabase create a new database by restoring from a completed backup. The new\ndatabase must be in the same project and in an instance with the same\ninstance configuration as the instance containing\nthe backup. The returned database [long-running\noperation][google.longrunning.Operation] has a name of the format\nprojects/<project>/instances/<instance>/databases/<database>/operations/<operation_id>,\nand can be used to track the progress of the operation, and to cancel it.\nThe metadata field type is\nRestoreDatabaseMetadata.\nThe response type\nis Database, if\nsuccessful. Cancelling the returned operation will stop the restore and\ndelete the database.\nThere can be only one database being restored into an instance at a time.\nOnce the restore operation completes, a new restore operation can be\ninitiated, without waiting for the optimize operation associated with the\nfirst restore to complete.",
+      "description": "RestoreDatabase create a new database by restoring from a completed backup. The new\ndatabase must be in the same project and in an instance with the same\ninstance configuration as the instance containing\nthe backup. The returned database [long-running\noperation][google.longrunning.Operation] has a name of the format\n`projects/<project>/instances/<instance>/databases/<database>/operations/<operation_id>`,\nand can be used to track the progress of the operation, and to cancel it.\nThe [metadata][google.longrunning.Operation.metadata] field type is\n[RestoreDatabaseMetadata][google.spanner.admin.database.v1.RestoreDatabaseMetadata].\nThe [response][google.longrunning.Operation.response] type\nis [Database][google.spanner.admin.database.v1.Database], if\nsuccessful. Cancelling the returned operation will stop the restore and\ndelete the database.\nThere can be only one database being restored into an instance at a time.\nOnce the restore operation completes, a new restore operation can be\ninitiated, without waiting for the optimize operation associated with the\nfirst restore to complete.",
       "file": "DatabaseAdminClient/RestoreDatabase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -876,7 +876,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -884,7 +884,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_SetIamPolicy_sync",
       "title": "spanner SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on a database or backup resource.\nReplaces any existing policy.\n\nAuthorization requires spanner.databases.setIamPolicy\npermission on resource.\nFor backups, authorization requires spanner.backups.setIamPolicy\npermission on resource.",
+      "description": "SetIamPolicy sets the access control policy on a database or backup resource.\nReplaces any existing policy.\n\nAuthorization requires `spanner.databases.setIamPolicy`\npermission on [resource][google.iam.v1.SetIamPolicyRequest.resource].\nFor backups, authorization requires `spanner.backups.setIamPolicy`\npermission on [resource][google.iam.v1.SetIamPolicyRequest.resource].",
       "file": "DatabaseAdminClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -904,7 +904,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "DatabaseAdminClient",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
@@ -922,7 +922,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -930,7 +930,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_TestIamPermissions_sync",
       "title": "spanner TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that the caller has on the specified database or backup\nresource.\n\nAttempting this RPC on a non-existent Cloud Spanner database will\nresult in a NOT_FOUND error if the user has\nspanner.databases.list permission on the containing Cloud\nSpanner instance. Otherwise returns an empty set of permissions.\nCalling this method on a backup that does not exist will\nresult in a NOT_FOUND error if the user has\nspanner.backups.list permission on the containing instance.",
+      "description": "TestIamPermissions returns permissions that the caller has on the specified database or backup\nresource.\n\nAttempting this RPC on a non-existent Cloud Spanner database will\nresult in a NOT_FOUND error if the user has\n`spanner.databases.list` permission on the containing Cloud\nSpanner instance. Otherwise returns an empty set of permissions.\nCalling this method on a backup that does not exist will\nresult in a NOT_FOUND error if the user has\n`spanner.backups.list` permission on the containing instance.",
       "file": "DatabaseAdminClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -950,7 +950,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "DatabaseAdminClient",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
@@ -968,7 +968,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -976,7 +976,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_UpdateBackup_sync",
       "title": "spanner UpdateBackup Sample",
-      "description": "UpdateBackup updates a pending or completed Backup.",
+      "description": "UpdateBackup updates a pending or completed [Backup][google.spanner.admin.database.v1.Backup].",
       "file": "DatabaseAdminClient/UpdateBackup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -996,7 +996,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "databasepb.Backup",
+        "resultType": "*databasepb.Backup",
         "client": {
           "shortName": "DatabaseAdminClient",
           "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
@@ -1014,7 +1014,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_DatabaseAdmin_UpdateDatabase_sync",
+      "title": "spanner UpdateDatabase Sample",
+      "description": "UpdateDatabase updates a Cloud Spanner database. The returned\n[long-running operation][google.longrunning.Operation] can be used to track\nthe progress of updating the database. If the named database does not\nexist, returns `NOT_FOUND`.\n\nWhile the operation is pending: \n\n* The database's\n[reconciling][google.spanner.admin.database.v1.Database.reconciling]\nfield is set to true.\n* Cancelling the operation is best-effort. If the cancellation succeeds,\nthe operation metadata's\n[cancel_time][google.spanner.admin.database.v1.UpdateDatabaseMetadata.cancel_time]\nis set, the updates are reverted, and the operation terminates with a\n`CANCELLED` status.\n* New UpdateDatabase requests will return a `FAILED_PRECONDITION` error\nuntil the pending operation is done (returns successfully or with\nerror).\n* Reading the database via the API continues to give the pre-request\nvalues.\n\nUpon completion of the returned operation: \n\n* The new values are in effect and readable via the API.\n* The database's\n[reconciling][google.spanner.admin.database.v1.Database.reconciling]\nfield becomes false.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format\n`projects/<project>/instances/<instance>/databases/<database>/operations/<operation_id>`\nand can be used to track the database modification. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[UpdateDatabaseMetadata][google.spanner.admin.database.v1.UpdateDatabaseMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Database][google.spanner.admin.database.v1.Database], if successful.",
+      "file": "DatabaseAdminClient/UpdateDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDatabase",
+        "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient.UpdateDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "databasepb.UpdateDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDatabaseOperation",
+        "client": {
+          "shortName": "DatabaseAdminClient",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateDatabase",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.UpdateDatabase",
+          "service": {
+            "shortName": "DatabaseAdmin",
+            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1022,7 +1068,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_UpdateDatabaseDdl_sync",
       "title": "spanner UpdateDatabaseDdl Sample",
-      "description": "UpdateDatabaseDdl updates the schema of a Cloud Spanner database by\ncreating/altering/dropping tables, columns, indexes, etc. The returned\n[long-running operation][google.longrunning.Operation] will have a name of\nthe format <database_name>/operations/<operation_id> and can be used to\ntrack execution of the schema change(s). The\nmetadata field type is\nUpdateDatabaseDdlMetadata.  The operation has no response.",
+      "description": "UpdateDatabaseDdl updates the schema of a Cloud Spanner database by\ncreating/altering/dropping tables, columns, indexes, etc. The returned\n[long-running operation][google.longrunning.Operation] will have a name of\nthe format `<database_name>/operations/<operation_id>` and can be used to\ntrack execution of the schema change(s). The\n[metadata][google.longrunning.Operation.metadata] field type is\n[UpdateDatabaseDdlMetadata][google.spanner.admin.database.v1.UpdateDatabaseDdlMetadata].  The operation has no response.",
       "file": "DatabaseAdminClient/UpdateDatabaseDdl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1060,7 +1106,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 56,
           "type": "FULL"
         }
       ]

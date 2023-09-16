@@ -61,12 +61,13 @@ func newStorageRowIteratorFromTable(ctx context.Context, table *Table, ordered b
 		return nil, err
 	}
 	it.arrowIterator.schema = md.Schema
+	it.Schema = md.Schema
 	return it, nil
 }
 
 func newStorageRowIteratorFromJob(ctx context.Context, j *Job) (*RowIterator, error) {
 	// Needed to fetch destination table
-	job, err := j.c.JobFromID(ctx, j.jobID)
+	job, err := j.c.JobFromProject(ctx, j.projectID, j.jobID, j.location)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +164,9 @@ func nextFuncForStorageIterator(it *RowIterator) func() error {
 		if err != nil {
 			return err
 		}
-
+		if it.Schema == nil {
+			it.Schema = it.arrowIterator.schema
+		}
 		rows, err := arrowIt.decoder.decodeArrowRecords(record)
 		if err != nil {
 			return err

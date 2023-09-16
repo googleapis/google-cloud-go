@@ -1,0 +1,161 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.support.v2",
+  "libraryPackage": "cloud.google.com/go/support/apiv2",
+  "services": {
+    "CaseAttachmentService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CaseAttachmentClient",
+          "rpcs": {
+            "ListAttachments": {
+              "methods": [
+                "ListAttachments"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CaseAttachmentClient",
+          "rpcs": {
+            "ListAttachments": {
+              "methods": [
+                "ListAttachments"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "CaseService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CaseClient",
+          "rpcs": {
+            "CloseCase": {
+              "methods": [
+                "CloseCase"
+              ]
+            },
+            "CreateCase": {
+              "methods": [
+                "CreateCase"
+              ]
+            },
+            "EscalateCase": {
+              "methods": [
+                "EscalateCase"
+              ]
+            },
+            "GetCase": {
+              "methods": [
+                "GetCase"
+              ]
+            },
+            "ListCases": {
+              "methods": [
+                "ListCases"
+              ]
+            },
+            "SearchCaseClassifications": {
+              "methods": [
+                "SearchCaseClassifications"
+              ]
+            },
+            "SearchCases": {
+              "methods": [
+                "SearchCases"
+              ]
+            },
+            "UpdateCase": {
+              "methods": [
+                "UpdateCase"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CaseClient",
+          "rpcs": {
+            "CloseCase": {
+              "methods": [
+                "CloseCase"
+              ]
+            },
+            "CreateCase": {
+              "methods": [
+                "CreateCase"
+              ]
+            },
+            "EscalateCase": {
+              "methods": [
+                "EscalateCase"
+              ]
+            },
+            "GetCase": {
+              "methods": [
+                "GetCase"
+              ]
+            },
+            "ListCases": {
+              "methods": [
+                "ListCases"
+              ]
+            },
+            "SearchCaseClassifications": {
+              "methods": [
+                "SearchCaseClassifications"
+              ]
+            },
+            "SearchCases": {
+              "methods": [
+                "SearchCases"
+              ]
+            },
+            "UpdateCase": {
+              "methods": [
+                "UpdateCase"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "CommentService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CommentClient",
+          "rpcs": {
+            "CreateComment": {
+              "methods": [
+                "CreateComment"
+              ]
+            },
+            "ListComments": {
+              "methods": [
+                "ListComments"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CommentClient",
+          "rpcs": {
+            "CreateComment": {
+              "methods": [
+                "CreateComment"
+              ]
+            },
+            "ListComments": {
+              "methods": [
+                "ListComments"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

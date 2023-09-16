@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/video/livestream/apiv1",
-    "version": "1.12.0",
+    "version": "1.19.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,97 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_CancelOperation_sync",
+      "title": "livestream CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.video.livestream.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_CreateAsset_sync",
+      "title": "livestream CreateAsset Sample",
+      "description": "CreateAsset creates a Asset with the provided unique ID in the specified\nregion.",
+      "file": "Client/CreateAsset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAsset",
+        "fullName": "google.cloud.video.livestream.v1.Client.CreateAsset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.CreateAssetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAssetOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateAsset",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.CreateAsset",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "livestream_v1_generated_LivestreamService_CreateChannel_sync",
       "title": "livestream CreateChannel Sample",
@@ -80,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "livestreampb.Event",
+        "resultType": "*livestreampb.Event",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.video.livestream.v1.Client"
@@ -145,6 +236,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_DeleteAsset_sync",
+      "title": "livestream DeleteAsset Sample",
+      "description": "DeleteAsset deletes the specified asset if it is not used.",
+      "file": "Client/DeleteAsset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAsset",
+        "fullName": "google.cloud.video.livestream.v1.Client.DeleteAsset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.DeleteAssetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAssetOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteAsset",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.DeleteAsset",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -287,6 +424,97 @@
       ]
     },
     {
+      "regionTag": "livestream_v1_generated_LivestreamService_DeleteOperation_sync",
+      "title": "livestream DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.video.livestream.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_GetAsset_sync",
+      "title": "livestream GetAsset Sample",
+      "description": "GetAsset returns the specified asset.",
+      "file": "Client/GetAsset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAsset",
+        "fullName": "google.cloud.video.livestream.v1.Client.GetAsset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.GetAssetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*livestreampb.Asset",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAsset",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.GetAsset",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "livestream_v1_generated_LivestreamService_GetChannel_sync",
       "title": "livestream GetChannel Sample",
       "description": "GetChannel returns the specified channel.",
@@ -309,7 +537,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "livestreampb.Channel",
+        "resultType": "*livestreampb.Channel",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.video.livestream.v1.Client"
@@ -355,7 +583,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "livestreampb.Event",
+        "resultType": "*livestreampb.Event",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.video.livestream.v1.Client"
@@ -401,7 +629,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "livestreampb.Input",
+        "resultType": "*livestreampb.Input",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.video.livestream.v1.Client"
@@ -420,6 +648,190 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_GetLocation_sync",
+      "title": "livestream GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.video.livestream.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_GetOperation_sync",
+      "title": "livestream GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.video.livestream.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_GetPool_sync",
+      "title": "livestream GetPool Sample",
+      "description": "GetPool returns the specified pool.",
+      "file": "Client/GetPool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPool",
+        "fullName": "google.cloud.video.livestream.v1.Client.GetPool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.GetPoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*livestreampb.Pool",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPool",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.GetPool",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_ListAssets_sync",
+      "title": "livestream ListAssets Sample",
+      "description": "ListAssets returns a list of all assets in the specified region.",
+      "file": "Client/ListAssets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAssets",
+        "fullName": "google.cloud.video.livestream.v1.Client.ListAssets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.ListAssetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AssetIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "ListAssets",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.ListAssets",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -550,6 +962,98 @@
           "service": {
             "shortName": "LivestreamService",
             "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_ListLocations_sync",
+      "title": "livestream ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.video.livestream.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_ListOperations_sync",
+      "title": "livestream ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.video.livestream.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -731,6 +1235,52 @@
         "method": {
           "shortName": "UpdateInput",
           "fullName": "google.cloud.video.livestream.v1.LivestreamService.UpdateInput",
+          "service": {
+            "shortName": "LivestreamService",
+            "fullName": "google.cloud.video.livestream.v1.LivestreamService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "livestream_v1_generated_LivestreamService_UpdatePool_sync",
+      "title": "livestream UpdatePool Sample",
+      "description": "UpdatePool updates the specified pool.",
+      "file": "Client/UpdatePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePool",
+        "fullName": "google.cloud.video.livestream.v1.Client.UpdatePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "livestreampb.UpdatePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdatePoolOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.video.livestream.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdatePool",
+          "fullName": "google.cloud.video.livestream.v1.LivestreamService.UpdatePool",
           "service": {
             "shortName": "LivestreamService",
             "fullName": "google.cloud.video.livestream.v1.LivestreamService"

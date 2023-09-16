@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/webrisk/apiv1beta1",
-    "version": "1.8.0",
+    "version": "1.9.1",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "webriskpb.ComputeThreatListDiffResponse",
+        "resultType": "*webriskpb.ComputeThreatListDiffResponse",
         "client": {
           "shortName": "WebRiskServiceV1Beta1Client",
           "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "webriskpb.SearchHashesResponse",
+        "resultType": "*webriskpb.SearchHashesResponse",
         "client": {
           "shortName": "WebRiskServiceV1Beta1Client",
           "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1Client"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "webriskpb.SearchUrisResponse",
+        "resultType": "*webriskpb.SearchUrisResponse",
         "client": {
           "shortName": "WebRiskServiceV1Beta1Client",
           "fullName": "google.cloud.webrisk.v1beta1.WebRiskServiceV1Beta1Client"

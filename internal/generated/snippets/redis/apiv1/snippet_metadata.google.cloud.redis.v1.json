@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/redis/apiv1",
-    "version": "1.11.0",
+    "version": "1.13.1",
     "language": "GO",
     "apis": [
       {
@@ -12,9 +12,54 @@
   },
   "snippets": [
     {
+      "regionTag": "redis_v1_generated_CloudRedis_CancelOperation_sync",
+      "title": "redis CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudRedisClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.redis.v1.CloudRedisClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudRedisClient",
+          "fullName": "google.cloud.redis.v1.CloudRedisClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "redis_v1_generated_CloudRedis_CreateInstance_sync",
       "title": "redis CreateInstance Sample",
-      "description": "CreateInstance creates a Redis instance based on the specified tier and memory size.\n\nBy default, the instance is accessible from the project’s\ndefault network (at https: //cloud.google.com/vpc/docs/vpc).\n\nThe creation is executed asynchronously and callers may check the returned\noperation to track its progress. Once the operation is completed the Redis\ninstance will be fully functional. Completed longrunning.Operation will\ncontain the new instance object in the response field.\n\nThe returned operation is automatically deleted after a few hours, so there\nis no need to call DeleteOperation.",
+      "description": "CreateInstance creates a Redis instance based on the specified tier and memory size.\n\nBy default, the instance is accessible from the project's\n[default network](https: //cloud.google.com/vpc/docs/vpc).\n\nThe creation is executed asynchronously and callers may check the returned\noperation to track its progress. Once the operation is completed the Redis\ninstance will be fully functional. Completed longrunning.Operation will\ncontain the new instance object in the response field.\n\nThe returned operation is automatically deleted after a few hours, so there\nis no need to call DeleteOperation.",
       "file": "CloudRedisClient/CreateInstance/main.go",
       "language": "GO",
       "clientMethod": {
@@ -99,6 +144,51 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "redis_v1_generated_CloudRedis_DeleteOperation_sync",
+      "title": "redis DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudRedisClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.redis.v1.CloudRedisClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudRedisClient",
+          "fullName": "google.cloud.redis.v1.CloudRedisClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -218,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "redispb.Instance",
+        "resultType": "*redispb.Instance",
         "client": {
           "shortName": "CloudRedisClient",
           "fullName": "google.cloud.redis.v1.CloudRedisClient"
@@ -264,7 +354,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "redispb.InstanceAuthString",
+        "resultType": "*redispb.InstanceAuthString",
         "client": {
           "shortName": "CloudRedisClient",
           "fullName": "google.cloud.redis.v1.CloudRedisClient"
@@ -275,6 +365,98 @@
           "service": {
             "shortName": "CloudRedis",
             "fullName": "google.cloud.redis.v1.CloudRedis"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "redis_v1_generated_CloudRedis_GetLocation_sync",
+      "title": "redis GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "CloudRedisClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.redis.v1.CloudRedisClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "CloudRedisClient",
+          "fullName": "google.cloud.redis.v1.CloudRedisClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "redis_v1_generated_CloudRedis_GetOperation_sync",
+      "title": "redis GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudRedisClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.redis.v1.CloudRedisClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CloudRedisClient",
+          "fullName": "google.cloud.redis.v1.CloudRedisClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -336,7 +518,7 @@
     {
       "regionTag": "redis_v1_generated_CloudRedis_ListInstances_sync",
       "title": "redis ListInstances Sample",
-      "description": "ListInstances lists all Redis instances owned by a project in either the specified\nlocation (region) or all locations.\n\nThe location should have the following format: \n\n\tprojects/{project_id}/locations/{location_id}\n\nIf location_id is specified as - (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
+      "description": "ListInstances lists all Redis instances owned by a project in either the specified\nlocation (region) or all locations.\n\nThe location should have the following format: \n\n* `projects/{project_id}/locations/{location_id}`\n\nIf `location_id` is specified as `-` (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
       "file": "CloudRedisClient/ListInstances/main.go",
       "language": "GO",
       "clientMethod": {
@@ -367,6 +549,98 @@
           "service": {
             "shortName": "CloudRedis",
             "fullName": "google.cloud.redis.v1.CloudRedis"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "redis_v1_generated_CloudRedis_ListLocations_sync",
+      "title": "redis ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CloudRedisClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.redis.v1.CloudRedisClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "CloudRedisClient",
+          "fullName": "google.cloud.redis.v1.CloudRedisClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "redis_v1_generated_CloudRedis_ListOperations_sync",
+      "title": "redis ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CloudRedisClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.redis.v1.CloudRedisClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CloudRedisClient",
+          "fullName": "google.cloud.redis.v1.CloudRedisClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },

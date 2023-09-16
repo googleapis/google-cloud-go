@@ -1,6 +1,46 @@
 # Changes
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.4.2...optimization/v1.5.0) (2023-09-11)
+
+
+### Features
+
+* **optimization:** Added support for walking mode and cost_per_kilometer_below_soft_max ([ac10224](https://github.com/googleapis/google-cloud-go/commit/ac102249403e6c1604bff7c537343645c950ae13))
+
+
+### Documentation
+
+* **optimization:** Minor formatting fix ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
+## [1.4.2](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.4.1...optimization/v1.4.2) (2023-08-17)
+
+
+### Documentation
+
+* **optimization:** Minor formatting ([#8417](https://github.com/googleapis/google-cloud-go/issues/8417)) ([b3dbdde](https://github.com/googleapis/google-cloud-go/commit/b3dbdde48ddfa215c3c3bb110e0051fd8158f451))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.4.0...optimization/v1.4.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **optimization:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.3.2...optimization/v1.4.0) (2023-05-30)
+
+
+### Features
+
+* **optimization:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.3.1...optimization/v1.3.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **optimization:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.3.0...optimization/v1.3.1) (2023-02-14)
 
 

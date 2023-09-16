@@ -36,7 +36,7 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -2016,7 +2016,7 @@ func TestEmulatorWithCredentialsFile(t *testing.T) {
 
 // Create a client using a combination of custom endpoint and
 // STORAGE_EMULATOR_HOST env variable and verify that raw.BasePath (used
-// for writes) and readHost and scheme (used for reads) are all set correctly.
+// for writes) and xmlHost and scheme (used for reads) are all set correctly.
 func TestWithEndpoint(t *testing.T) {
 	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
 	testCases := []struct {
@@ -2024,7 +2024,7 @@ func TestWithEndpoint(t *testing.T) {
 		CustomEndpoint      string
 		StorageEmulatorHost string
 		WantRawBasePath     string
-		WantReadHost        string
+		WantXMLHost         string
 		WantScheme          string
 	}{
 		{
@@ -2032,7 +2032,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "",
 			WantRawBasePath:     "https://storage.googleapis.com/storage/v1/",
-			WantReadHost:        "storage.googleapis.com",
+			WantXMLHost:         "storage.googleapis.com",
 			WantScheme:          "https",
 		},
 		{
@@ -2040,7 +2040,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "",
 			WantRawBasePath:     "https://fake.gcs.com:8080/storage/v1",
-			WantReadHost:        "fake.gcs.com:8080",
+			WantXMLHost:         "fake.gcs.com:8080",
 			WantScheme:          "https",
 		},
 		{
@@ -2048,7 +2048,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "http://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "",
 			WantRawBasePath:     "http://fake.gcs.com:8080/storage/v1",
-			WantReadHost:        "fake.gcs.com:8080",
+			WantXMLHost:         "fake.gcs.com:8080",
 			WantScheme:          "http",
 		},
 		{
@@ -2056,7 +2056,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "http://emu.com",
 			WantRawBasePath:     "http://emu.com/storage/v1/",
-			WantReadHost:        "emu.com",
+			WantXMLHost:         "emu.com",
 			WantScheme:          "http",
 		},
 		{
@@ -2064,7 +2064,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "emu.com",
 			WantRawBasePath:     "http://emu.com/storage/v1/",
-			WantReadHost:        "emu.com",
+			WantXMLHost:         "emu.com",
 			WantScheme:          "http",
 		},
 		{
@@ -2072,7 +2072,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "localhost:9000",
 			WantRawBasePath:     "http://localhost:9000/storage/v1/",
-			WantReadHost:        "localhost:9000",
+			WantXMLHost:         "localhost:9000",
 			WantScheme:          "http",
 		},
 		{
@@ -2080,7 +2080,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "http://emu.com",
 			WantRawBasePath:     "https://fake.gcs.com:8080/storage/v1",
-			WantReadHost:        "fake.gcs.com:8080",
+			WantXMLHost:         "fake.gcs.com:8080",
 			WantScheme:          "https",
 		},
 		{
@@ -2088,7 +2088,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "http://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "https://emu.com",
 			WantRawBasePath:     "http://fake.gcs.com:8080/storage/v1",
-			WantReadHost:        "fake.gcs.com:8080",
+			WantXMLHost:         "fake.gcs.com:8080",
 			WantScheme:          "http",
 		},
 		{
@@ -2096,7 +2096,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "http://localhost:8080/storage/v1",
 			StorageEmulatorHost: "https://localhost:9000",
 			WantRawBasePath:     "http://localhost:8080/storage/v1",
-			WantReadHost:        "localhost:8080",
+			WantXMLHost:         "localhost:8080",
 			WantScheme:          "http",
 		},
 		{
@@ -2104,7 +2104,7 @@ func TestWithEndpoint(t *testing.T) {
 			CustomEndpoint:      "http://localhost:8080/storage/v1",
 			StorageEmulatorHost: "localhost:9000",
 			WantRawBasePath:     "http://localhost:8080/storage/v1",
-			WantReadHost:        "localhost:8080",
+			WantXMLHost:         "localhost:8080",
 			WantScheme:          "http",
 		},
 	}
@@ -2119,8 +2119,8 @@ func TestWithEndpoint(t *testing.T) {
 		if c.raw.BasePath != tc.WantRawBasePath {
 			t.Errorf("%s: raw.BasePath not set correctly\n\tgot %v, want %v", tc.desc, c.raw.BasePath, tc.WantRawBasePath)
 		}
-		if c.readHost != tc.WantReadHost {
-			t.Errorf("%s: readHost not set correctly\n\tgot %v, want %v", tc.desc, c.readHost, tc.WantReadHost)
+		if c.xmlHost != tc.WantXMLHost {
+			t.Errorf("%s: xmlHost not set correctly\n\tgot %v, want %v", tc.desc, c.xmlHost, tc.WantXMLHost)
 		}
 		if c.scheme != tc.WantScheme {
 			t.Errorf("%s: scheme not set correctly\n\tgot %v, want %v", tc.desc, c.scheme, tc.WantScheme)
@@ -2132,7 +2132,7 @@ func TestWithEndpoint(t *testing.T) {
 // Create a client using a combination of custom endpoint and STORAGE_EMULATOR_HOST
 // env variable and verify that the client hits the correct endpoint for several
 // different operations performe in sequence.
-// Verifies also that raw.BasePath, readHost and scheme are not changed
+// Verifies also that raw.BasePath, xmlHost and scheme are not changed
 // after running the operations.
 func TestOperationsWithEndpoint(t *testing.T) {
 	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
@@ -2214,7 +2214,7 @@ func TestOperationsWithEndpoint(t *testing.T) {
 					return
 				}
 				originalRawBasePath := c.raw.BasePath
-				originalReadHost := c.readHost
+				originalXMLHost := c.xmlHost
 				originalScheme := c.scheme
 
 				operations := []struct {
@@ -2298,9 +2298,9 @@ func TestOperationsWithEndpoint(t *testing.T) {
 					t.Errorf("raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v",
 						c.raw.BasePath, originalRawBasePath)
 				}
-				if c.readHost != originalReadHost {
-					t.Errorf("readHost changed\n\tgot:\t\t%v\n\toriginal:\t%v",
-						c.readHost, originalReadHost)
+				if c.xmlHost != originalXMLHost {
+					t.Errorf("xmlHost changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+						c.xmlHost, originalXMLHost)
 				}
 				if c.scheme != originalScheme {
 					t.Errorf("scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v",
@@ -2337,6 +2337,7 @@ func TestSignedURLOptionsClone(t *testing.T) {
 		Style:           VirtualHostedStyle(),
 		Insecure:        true,
 		Scheme:          SigningSchemeV2,
+		Hostname:        "localhost:8000",
 	}
 
 	// Check that all fields are set to a non-zero value, so we can check that
@@ -2360,7 +2361,7 @@ func TestSignedURLOptionsClone(t *testing.T) {
 		return reflect.ValueOf(a) == reflect.ValueOf(b)
 	}
 
-	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp)); diff != "" {
+	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp), cmp.AllowUnexported(SignedURLOptions{})); diff != "" {
 		t.Errorf("clone does not match (original: -, cloned: +):\n%s", diff)
 	}
 }

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -39,7 +39,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -48,9 +47,11 @@ var newTagBindingsClientHook clientHook
 
 // TagBindingsCallOptions contains the retry settings for each method of TagBindingsClient.
 type TagBindingsCallOptions struct {
-	ListTagBindings  []gax.CallOption
-	CreateTagBinding []gax.CallOption
-	DeleteTagBinding []gax.CallOption
+	ListTagBindings   []gax.CallOption
+	CreateTagBinding  []gax.CallOption
+	DeleteTagBinding  []gax.CallOption
+	ListEffectiveTags []gax.CallOption
+	GetOperation      []gax.CallOption
 }
 
 func defaultTagBindingsGRPCClientOptions() []option.ClientOption {
@@ -68,6 +69,7 @@ func defaultTagBindingsGRPCClientOptions() []option.ClientOption {
 func defaultTagBindingsCallOptions() *TagBindingsCallOptions {
 	return &TagBindingsCallOptions{
 		ListTagBindings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -78,14 +80,21 @@ func defaultTagBindingsCallOptions() *TagBindingsCallOptions {
 				})
 			}),
 		},
-		CreateTagBinding: []gax.CallOption{},
-		DeleteTagBinding: []gax.CallOption{},
+		CreateTagBinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTagBinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListEffectiveTags: []gax.CallOption{},
+		GetOperation:      []gax.CallOption{},
 	}
 }
 
 func defaultTagBindingsRESTCallOptions() *TagBindingsCallOptions {
 	return &TagBindingsCallOptions{
 		ListTagBindings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -95,8 +104,14 @@ func defaultTagBindingsRESTCallOptions() *TagBindingsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateTagBinding: []gax.CallOption{},
-		DeleteTagBinding: []gax.CallOption{},
+		CreateTagBinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTagBinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListEffectiveTags: []gax.CallOption{},
+		GetOperation:      []gax.CallOption{},
 	}
 }
 
@@ -110,13 +125,15 @@ type internalTagBindingsClient interface {
 	CreateTagBindingOperation(name string) *CreateTagBindingOperation
 	DeleteTagBinding(context.Context, *resourcemanagerpb.DeleteTagBindingRequest, ...gax.CallOption) (*DeleteTagBindingOperation, error)
 	DeleteTagBindingOperation(name string) *DeleteTagBindingOperation
+	ListEffectiveTags(context.Context, *resourcemanagerpb.ListEffectiveTagsRequest, ...gax.CallOption) *EffectiveTagIterator
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // TagBindingsClient is a client for interacting with Cloud Resource Manager API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Allow users to create and manage TagBindings between TagValues and
-// different cloud resources throughout the GCP resource hierarchy.
+// different Google Cloud resources throughout the GCP resource hierarchy.
 type TagBindingsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalTagBindingsClient
@@ -153,8 +170,8 @@ func (c *TagBindingsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListTagBindings lists the TagBindings for the given cloud resource, as specified with
-// parent.
+// ListTagBindings lists the TagBindings for the given Google Cloud resource, as specified
+// with parent.
 //
 // NOTE: The parent field is expected to be a full resource name:
 // https://cloud.google.com/apis/design/resource_names#full_resource_name (at https://cloud.google.com/apis/design/resource_names#full_resource_name)
@@ -162,8 +179,7 @@ func (c *TagBindingsClient) ListTagBindings(ctx context.Context, req *resourcema
 	return c.internalClient.ListTagBindings(ctx, req, opts...)
 }
 
-// CreateTagBinding creates a TagBinding between a TagValue and a cloud resource
-// (currently project, folder, or organization).
+// CreateTagBinding creates a TagBinding between a TagValue and a Google Cloud resource.
 func (c *TagBindingsClient) CreateTagBinding(ctx context.Context, req *resourcemanagerpb.CreateTagBindingRequest, opts ...gax.CallOption) (*CreateTagBindingOperation, error) {
 	return c.internalClient.CreateTagBinding(ctx, req, opts...)
 }
@@ -185,15 +201,23 @@ func (c *TagBindingsClient) DeleteTagBindingOperation(name string) *DeleteTagBin
 	return c.internalClient.DeleteTagBindingOperation(name)
 }
 
+// ListEffectiveTags return a list of effective tags for the given Google Cloud resource, as
+// specified in parent.
+func (c *TagBindingsClient) ListEffectiveTags(ctx context.Context, req *resourcemanagerpb.ListEffectiveTagsRequest, opts ...gax.CallOption) *EffectiveTagIterator {
+	return c.internalClient.ListEffectiveTags(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *TagBindingsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // tagBindingsGRPCClient is a client for interacting with Cloud Resource Manager API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type tagBindingsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing TagBindingsClient
 	CallOptions **TagBindingsCallOptions
@@ -206,15 +230,17 @@ type tagBindingsGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewTagBindingsClient creates a new tag bindings client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Allow users to create and manage TagBindings between TagValues and
-// different cloud resources throughout the GCP resource hierarchy.
+// different Google Cloud resources throughout the GCP resource hierarchy.
 func NewTagBindingsClient(ctx context.Context, opts ...option.ClientOption) (*TagBindingsClient, error) {
 	clientOpts := defaultTagBindingsGRPCClientOptions()
 	if newTagBindingsClientHook != nil {
@@ -225,11 +251,6 @@ func NewTagBindingsClient(ctx context.Context, opts ...option.ClientOption) (*Ta
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -238,9 +259,9 @@ func NewTagBindingsClient(ctx context.Context, opts ...option.ClientOption) (*Ta
 
 	c := &tagBindingsGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		tagBindingsClient: resourcemanagerpb.NewTagBindingsClient(connPool),
 		CallOptions:       &client.CallOptions,
+		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -272,9 +293,9 @@ func (c *tagBindingsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *tagBindingsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -296,8 +317,8 @@ type tagBindingsRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing TagBindingsClient
 	CallOptions **TagBindingsCallOptions
@@ -306,7 +327,7 @@ type tagBindingsRESTClient struct {
 // NewTagBindingsRESTClient creates a new tag bindings rest client.
 //
 // Allow users to create and manage TagBindings between TagValues and
-// different cloud resources throughout the GCP resource hierarchy.
+// different Google Cloud resources throughout the GCP resource hierarchy.
 func NewTagBindingsRESTClient(ctx context.Context, opts ...option.ClientOption) (*TagBindingsClient, error) {
 	clientOpts := append(defaultTagBindingsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -348,9 +369,9 @@ func defaultTagBindingsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *tagBindingsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -368,7 +389,7 @@ func (c *tagBindingsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *tagBindingsGRPCClient) ListTagBindings(ctx context.Context, req *resourcemanagerpb.ListTagBindingsRequest, opts ...gax.CallOption) *TagBindingIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ListTagBindings[0:len((*c.CallOptions).ListTagBindings):len((*c.CallOptions).ListTagBindings)], opts...)
 	it := &TagBindingIterator{}
 	req = proto.Clone(req).(*resourcemanagerpb.ListTagBindingsRequest)
@@ -411,12 +432,7 @@ func (c *tagBindingsGRPCClient) ListTagBindings(ctx context.Context, req *resour
 }
 
 func (c *tagBindingsGRPCClient) CreateTagBinding(ctx context.Context, req *resourcemanagerpb.CreateTagBindingRequest, opts ...gax.CallOption) (*CreateTagBindingOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).CreateTagBinding[0:len((*c.CallOptions).CreateTagBinding):len((*c.CallOptions).CreateTagBinding)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -433,14 +449,10 @@ func (c *tagBindingsGRPCClient) CreateTagBinding(ctx context.Context, req *resou
 }
 
 func (c *tagBindingsGRPCClient) DeleteTagBinding(ctx context.Context, req *resourcemanagerpb.DeleteTagBindingRequest, opts ...gax.CallOption) (*DeleteTagBindingOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteTagBinding[0:len((*c.CallOptions).DeleteTagBinding):len((*c.CallOptions).DeleteTagBinding)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -456,8 +468,69 @@ func (c *tagBindingsGRPCClient) DeleteTagBinding(ctx context.Context, req *resou
 	}, nil
 }
 
-// ListTagBindings lists the TagBindings for the given cloud resource, as specified with
-// parent.
+func (c *tagBindingsGRPCClient) ListEffectiveTags(ctx context.Context, req *resourcemanagerpb.ListEffectiveTagsRequest, opts ...gax.CallOption) *EffectiveTagIterator {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).ListEffectiveTags[0:len((*c.CallOptions).ListEffectiveTags):len((*c.CallOptions).ListEffectiveTags)], opts...)
+	it := &EffectiveTagIterator{}
+	req = proto.Clone(req).(*resourcemanagerpb.ListEffectiveTagsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.EffectiveTag, string, error) {
+		resp := &resourcemanagerpb.ListEffectiveTagsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.tagBindingsClient.ListEffectiveTags(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEffectiveTags(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *tagBindingsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ListTagBindings lists the TagBindings for the given Google Cloud resource, as specified
+// with parent.
 //
 // NOTE: The parent field is expected to be a full resource name:
 // https://cloud.google.com/apis/design/resource_names#full_resource_name (at https://cloud.google.com/apis/design/resource_names#full_resource_name)
@@ -494,7 +567,8 @@ func (c *tagBindingsRESTClient) ListTagBindings(ctx context.Context, req *resour
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -515,13 +589,13 @@ func (c *tagBindingsRESTClient) ListTagBindings(ctx context.Context, req *resour
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -549,8 +623,7 @@ func (c *tagBindingsRESTClient) ListTagBindings(ctx context.Context, req *resour
 	return it
 }
 
-// CreateTagBinding creates a TagBinding between a TagValue and a cloud resource
-// (currently project, folder, or organization).
+// CreateTagBinding creates a TagBinding between a TagValue and a Google Cloud resource.
 func (c *tagBindingsRESTClient) CreateTagBinding(ctx context.Context, req *resourcemanagerpb.CreateTagBindingRequest, opts ...gax.CallOption) (*CreateTagBindingOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTagBinding()
@@ -574,7 +647,8 @@ func (c *tagBindingsRESTClient) CreateTagBinding(ctx context.Context, req *resou
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -598,13 +672,13 @@ func (c *tagBindingsRESTClient) CreateTagBinding(ctx context.Context, req *resou
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -634,9 +708,11 @@ func (c *tagBindingsRESTClient) DeleteTagBinding(ctx context.Context, req *resou
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -660,13 +736,13 @@ func (c *tagBindingsRESTClient) DeleteTagBinding(ctx context.Context, req *resou
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -680,6 +756,157 @@ func (c *tagBindingsRESTClient) DeleteTagBinding(ctx context.Context, req *resou
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// ListEffectiveTags return a list of effective tags for the given Google Cloud resource, as
+// specified in parent.
+func (c *tagBindingsRESTClient) ListEffectiveTags(ctx context.Context, req *resourcemanagerpb.ListEffectiveTagsRequest, opts ...gax.CallOption) *EffectiveTagIterator {
+	it := &EffectiveTagIterator{}
+	req = proto.Clone(req).(*resourcemanagerpb.ListEffectiveTagsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.EffectiveTag, string, error) {
+		resp := &resourcemanagerpb.ListEffectiveTagsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v3/effectiveTags")
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		params.Add("parent", fmt.Sprintf("%v", req.GetParent()))
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEffectiveTags(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *tagBindingsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CreateTagBindingOperation manages a long-running operation from CreateTagBinding.
@@ -833,6 +1060,53 @@ func (op *DeleteTagBindingOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteTagBindingOperation) Name() string {
 	return op.lro.Name()
+}
+
+// EffectiveTagIterator manages a stream of *resourcemanagerpb.EffectiveTag.
+type EffectiveTagIterator struct {
+	items    []*resourcemanagerpb.EffectiveTag
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.EffectiveTag, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *EffectiveTagIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EffectiveTagIterator) Next() (*resourcemanagerpb.EffectiveTag, error) {
+	var item *resourcemanagerpb.EffectiveTag
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EffectiveTagIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EffectiveTagIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // TagBindingIterator manages a stream of *resourcemanagerpb.TagBinding.

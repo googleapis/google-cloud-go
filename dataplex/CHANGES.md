@@ -1,6 +1,48 @@
 # Changes
 
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.9.0...dataplex/v1.9.1) (2023-08-08)
+
+
+### Bug Fixes
+
+* **dataplex:** Remove unused annotation in results_table ([#8382](https://github.com/googleapis/google-cloud-go/issues/8382)) ([1390cbd](https://github.com/googleapis/google-cloud-go/commit/1390cbd0deaab849c24e4b8f11589d18d81177c6))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.8.1...dataplex/v1.9.0) (2023-07-26)
+
+
+### Features
+
+* **dataplex:** New service DataTaxonomyService and related messages ([#8320](https://github.com/googleapis/google-cloud-go/issues/8320)) ([cdee2d9](https://github.com/googleapis/google-cloud-go/commit/cdee2d918015c9b0a53aa8283085214d9a11c77c))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.8.0...dataplex/v1.8.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **dataplex:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.7.1...dataplex/v1.8.0) (2023-05-30)
+
+
+### Features
+
+* **dataplex:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.7.0...dataplex/v1.7.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **dataplex:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.6.0...dataplex/v1.7.0) (2023-05-03)
+
+
+### Features
+
+* **dataplex:** Added new Dataplex APIs and new features for existing APIs (e.g. DataScans) ([d5d1fe9](https://github.com/googleapis/google-cloud-go/commit/d5d1fe96c9cf3cc3bb0e05fb75297a68bbbd8e41))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.5.2...dataplex/v1.6.0) (2023-03-15)
 
 

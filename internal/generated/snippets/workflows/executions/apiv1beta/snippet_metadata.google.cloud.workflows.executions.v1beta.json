@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/workflows/executions/apiv1beta",
-    "version": "1.10.0",
+    "version": "1.12.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "executionspb.Execution",
+        "resultType": "*executionspb.Execution",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workflows.executions.v1beta.Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "executionspb.Execution",
+        "resultType": "*executionspb.Execution",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workflows.executions.v1beta.Client"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "executionspb.Execution",
+        "resultType": "*executionspb.Execution",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workflows.executions.v1beta.Client"

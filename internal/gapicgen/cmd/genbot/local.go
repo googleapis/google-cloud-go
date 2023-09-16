@@ -19,46 +19,39 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
+	"github.com/go-git/go-git/v5"
 	"golang.org/x/sync/errgroup"
-	"gopkg.in/src-d/go-git.v4"
 )
 
 type localConfig struct {
-	googleapisDir   string
-	gocloudDir      string
-	genprotoDir     string
-	protoDir        string
-	gapicToGenerate string
-	onlyGapics      bool
-	regenOnly       bool
-	forceAll        bool
-	genModule       bool
-	genAlias        bool
+	googleapisDir string
+	genprotoDir   string
+	protoDir      string
+	regenOnly     bool
+	forceAll      bool
+	genAlias      bool
 }
 
 func genLocal(ctx context.Context, c localConfig) error {
 	log.Println("creating temp dir")
-	tmpDir, err := ioutil.TempDir("", "update-genproto")
+	tmpDir, err := os.MkdirTemp("", "update-genproto")
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("temp dir created at %s\n", tmpDir)
 	tmpGoogleapisDir := filepath.Join(tmpDir, "googleapis")
 	tmpGenprotoDir := filepath.Join(tmpDir, "genproto")
-	tmpGocloudDir := filepath.Join(tmpDir, "gocloud")
 	tmpProtoDir := filepath.Join(tmpDir, "proto")
 
 	// Clone repositories if needed.
 	grp, _ := errgroup.WithContext(ctx)
 	gitShallowClone(grp, "https://github.com/googleapis/googleapis.git", c.googleapisDir, tmpGoogleapisDir)
 	gitShallowClone(grp, "https://github.com/googleapis/go-genproto", c.genprotoDir, tmpGenprotoDir)
-	gitShallowClone(grp, "https://github.com/googleapis/google-cloud-go", c.gocloudDir, tmpGocloudDir)
 	gitShallowClone(grp, "https://github.com/protocolbuffers/protobuf", c.protoDir, tmpProtoDir)
 	if err := grp.Wait(); err != nil {
 		log.Println(err)
@@ -66,21 +59,16 @@ func genLocal(ctx context.Context, c localConfig) error {
 
 	// Regen.
 	conf := &generator.Config{
-		GoogleapisDir:     defaultDir(tmpGoogleapisDir, c.googleapisDir),
-		GenprotoDir:       defaultDir(tmpGenprotoDir, c.genprotoDir),
-		GapicDir:          defaultDir(tmpGocloudDir, c.gocloudDir),
-		ProtoDir:          defaultDir(tmpProtoDir, c.protoDir),
-		GapicToGenerate:   c.gapicToGenerate,
-		OnlyGenerateGapic: c.onlyGapics,
-		LocalMode:         true,
-		RegenOnly:         c.regenOnly,
-		ForceAll:          c.forceAll,
-		GenModule:         c.genModule,
-		GenAlias:          c.genAlias,
+		GoogleapisDir: defaultDir(tmpGoogleapisDir, c.googleapisDir),
+		GenprotoDir:   defaultDir(tmpGenprotoDir, c.genprotoDir),
+		ProtoDir:      defaultDir(tmpProtoDir, c.protoDir),
+		LocalMode:     true,
+		RegenOnly:     c.regenOnly,
+		ForceAll:      c.forceAll,
+		GenAlias:      c.genAlias,
 	}
 	if _, err := generator.Generate(ctx, conf); err != nil {
-		log.Printf("Generator ran (and failed) in %s\n", tmpDir)
-		log.Fatal(err)
+		return err
 	}
 	return nil
 }

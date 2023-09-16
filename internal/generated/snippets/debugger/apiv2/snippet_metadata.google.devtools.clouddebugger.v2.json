@@ -1,0 +1,382 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/debugger/apiv2",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.devtools.clouddebugger.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "clouddebugger_v2_generated_Controller2_ListActiveBreakpoints_sync",
+      "title": "clouddebugger ListActiveBreakpoints Sample",
+      "description": "ListActiveBreakpoints returns the list of all active breakpoints for the debuggee.\n\nThe breakpoint specification (`location`, `condition`, and `expressions`\nfields) is semantically immutable, although the field values may\nchange. For example, an agent may update the location line number\nto reflect the actual line where the breakpoint was set, but this\ndoesn't change the breakpoint semantics.\n\nThis means that an agent does not need to check if a breakpoint has changed\nwhen it encounters the same breakpoint on a successive call.\nMoreover, an agent should remember the breakpoints that are completed\nuntil the controller removes them from the active list to avoid\nsetting those breakpoints again.",
+      "file": "Controller2Client/ListActiveBreakpoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListActiveBreakpoints",
+        "fullName": "google.devtools.clouddebugger.v2.Controller2Client.ListActiveBreakpoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddebuggerpb.ListActiveBreakpointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clouddebuggerpb.ListActiveBreakpointsResponse",
+        "client": {
+          "shortName": "Controller2Client",
+          "fullName": "google.devtools.clouddebugger.v2.Controller2Client"
+        },
+        "method": {
+          "shortName": "ListActiveBreakpoints",
+          "fullName": "google.devtools.clouddebugger.v2.Controller2.ListActiveBreakpoints",
+          "service": {
+            "shortName": "Controller2",
+            "fullName": "google.devtools.clouddebugger.v2.Controller2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddebugger_v2_generated_Controller2_RegisterDebuggee_sync",
+      "title": "clouddebugger RegisterDebuggee Sample",
+      "description": "RegisterDebuggee registers the debuggee with the controller service.\n\nAll agents attached to the same application must call this method with\nexactly the same request content to get back the same stable `debuggee_id`.\nAgents should call this method again whenever `google.rpc.Code.NOT_FOUND`\nis returned from any controller method.\n\nThis protocol allows the controller service to disable debuggees, recover\nfrom data loss, or change the `debuggee_id` format. Agents must handle\n`debuggee_id` value changing upon re-registration.",
+      "file": "Controller2Client/RegisterDebuggee/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RegisterDebuggee",
+        "fullName": "google.devtools.clouddebugger.v2.Controller2Client.RegisterDebuggee",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddebuggerpb.RegisterDebuggeeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clouddebuggerpb.RegisterDebuggeeResponse",
+        "client": {
+          "shortName": "Controller2Client",
+          "fullName": "google.devtools.clouddebugger.v2.Controller2Client"
+        },
+        "method": {
+          "shortName": "RegisterDebuggee",
+          "fullName": "google.devtools.clouddebugger.v2.Controller2.RegisterDebuggee",
+          "service": {
+            "shortName": "Controller2",
+            "fullName": "google.devtools.clouddebugger.v2.Controller2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddebugger_v2_generated_Controller2_UpdateActiveBreakpoint_sync",
+      "title": "clouddebugger UpdateActiveBreakpoint Sample",
+      "description": "UpdateActiveBreakpoint updates the breakpoint state or mutable fields.\nThe entire Breakpoint message must be sent back to the controller service.\n\nUpdates to active breakpoint fields are only allowed if the new value\ndoes not change the breakpoint specification. Updates to the `location`,\n`condition` and `expressions` fields should not alter the breakpoint\nsemantics. These may only make changes such as canonicalizing a value\nor snapping the location to the correct line of code.",
+      "file": "Controller2Client/UpdateActiveBreakpoint/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateActiveBreakpoint",
+        "fullName": "google.devtools.clouddebugger.v2.Controller2Client.UpdateActiveBreakpoint",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddebuggerpb.UpdateActiveBreakpointRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clouddebuggerpb.UpdateActiveBreakpointResponse",
+        "client": {
+          "shortName": "Controller2Client",
+          "fullName": "google.devtools.clouddebugger.v2.Controller2Client"
+        },
+        "method": {
+          "shortName": "UpdateActiveBreakpoint",
+          "fullName": "google.devtools.clouddebugger.v2.Controller2.UpdateActiveBreakpoint",
+          "service": {
+            "shortName": "Controller2",
+            "fullName": "google.devtools.clouddebugger.v2.Controller2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddebugger_v2_generated_Debugger2_DeleteBreakpoint_sync",
+      "title": "clouddebugger DeleteBreakpoint Sample",
+      "description": "DeleteBreakpoint deletes the breakpoint from the debuggee.",
+      "file": "Debugger2Client/DeleteBreakpoint/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBreakpoint",
+        "fullName": "google.devtools.clouddebugger.v2.Debugger2Client.DeleteBreakpoint",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddebuggerpb.DeleteBreakpointRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Debugger2Client",
+          "fullName": "google.devtools.clouddebugger.v2.Debugger2Client"
+        },
+        "method": {
+          "shortName": "DeleteBreakpoint",
+          "fullName": "google.devtools.clouddebugger.v2.Debugger2.DeleteBreakpoint",
+          "service": {
+            "shortName": "Debugger2",
+            "fullName": "google.devtools.clouddebugger.v2.Debugger2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddebugger_v2_generated_Debugger2_GetBreakpoint_sync",
+      "title": "clouddebugger GetBreakpoint Sample",
+      "description": "GetBreakpoint gets breakpoint information.",
+      "file": "Debugger2Client/GetBreakpoint/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBreakpoint",
+        "fullName": "google.devtools.clouddebugger.v2.Debugger2Client.GetBreakpoint",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddebuggerpb.GetBreakpointRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clouddebuggerpb.GetBreakpointResponse",
+        "client": {
+          "shortName": "Debugger2Client",
+          "fullName": "google.devtools.clouddebugger.v2.Debugger2Client"
+        },
+        "method": {
+          "shortName": "GetBreakpoint",
+          "fullName": "google.devtools.clouddebugger.v2.Debugger2.GetBreakpoint",
+          "service": {
+            "shortName": "Debugger2",
+            "fullName": "google.devtools.clouddebugger.v2.Debugger2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddebugger_v2_generated_Debugger2_ListBreakpoints_sync",
+      "title": "clouddebugger ListBreakpoints Sample",
+      "description": "ListBreakpoints lists all breakpoints for the debuggee.",
+      "file": "Debugger2Client/ListBreakpoints/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBreakpoints",
+        "fullName": "google.devtools.clouddebugger.v2.Debugger2Client.ListBreakpoints",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddebuggerpb.ListBreakpointsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clouddebuggerpb.ListBreakpointsResponse",
+        "client": {
+          "shortName": "Debugger2Client",
+          "fullName": "google.devtools.clouddebugger.v2.Debugger2Client"
+        },
+        "method": {
+          "shortName": "ListBreakpoints",
+          "fullName": "google.devtools.clouddebugger.v2.Debugger2.ListBreakpoints",
+          "service": {
+            "shortName": "Debugger2",
+            "fullName": "google.devtools.clouddebugger.v2.Debugger2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddebugger_v2_generated_Debugger2_ListDebuggees_sync",
+      "title": "clouddebugger ListDebuggees Sample",
+      "description": "ListDebuggees lists all the debuggees that the user has access to.",
+      "file": "Debugger2Client/ListDebuggees/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDebuggees",
+        "fullName": "google.devtools.clouddebugger.v2.Debugger2Client.ListDebuggees",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddebuggerpb.ListDebuggeesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clouddebuggerpb.ListDebuggeesResponse",
+        "client": {
+          "shortName": "Debugger2Client",
+          "fullName": "google.devtools.clouddebugger.v2.Debugger2Client"
+        },
+        "method": {
+          "shortName": "ListDebuggees",
+          "fullName": "google.devtools.clouddebugger.v2.Debugger2.ListDebuggees",
+          "service": {
+            "shortName": "Debugger2",
+            "fullName": "google.devtools.clouddebugger.v2.Debugger2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddebugger_v2_generated_Debugger2_SetBreakpoint_sync",
+      "title": "clouddebugger SetBreakpoint Sample",
+      "description": "SetBreakpoint sets the breakpoint to the debuggee.",
+      "file": "Debugger2Client/SetBreakpoint/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetBreakpoint",
+        "fullName": "google.devtools.clouddebugger.v2.Debugger2Client.SetBreakpoint",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "clouddebuggerpb.SetBreakpointRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*clouddebuggerpb.SetBreakpointResponse",
+        "client": {
+          "shortName": "Debugger2Client",
+          "fullName": "google.devtools.clouddebugger.v2.Debugger2Client"
+        },
+        "method": {
+          "shortName": "SetBreakpoint",
+          "fullName": "google.devtools.clouddebugger.v2.Debugger2.SetBreakpoint",
+          "service": {
+            "shortName": "Debugger2",
+            "fullName": "google.devtools.clouddebugger.v2.Debugger2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

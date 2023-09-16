@@ -26,15 +26,19 @@ import (
 	"reflect"
 	"runtime"
 	"sort"
+	"sync"
 	"testing"
 	"time"
 
+	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
+	"cloud.google.com/go/firestore/apiv1/admin/adminpb"
 	firestorev1 "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc/codes"
@@ -55,8 +59,11 @@ const (
 
 var (
 	iClient       *Client
+	iAdminClient  *apiv1.FirestoreAdminClient
 	iColl         *CollectionRef
 	collectionIDs = uid.NewSpace("go-integration-test", nil)
+	wantDBPath    string
+	indexNames    []string
 )
 
 func initIntegrationTest() {
@@ -76,7 +83,8 @@ func initIntegrationTest() {
 	if ts == nil {
 		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
 	}
-	wantDBPath := "projects/" + testProjectID + "/databases/(default)"
+	projectPath := "projects/" + testProjectID
+	wantDBPath = projectPath + "/databases/(default)"
 
 	ti := &testutil.HeadersEnforcer{
 		Checkers: []*testutil.HeaderChecker{
@@ -103,18 +111,173 @@ func initIntegrationTest() {
 	}
 	iClient = c
 	iColl = c.Collection(collectionIDs.New())
+
+	adminC, err := apiv1.NewFirestoreAdminClient(ctx, option.WithTokenSource(ts))
+	if err != nil {
+		log.Fatalf("NewFirestoreAdminClient: %v", err)
+	}
+	iAdminClient = adminC
+
+	createIndexes(ctx, wantDBPath)
+
 	refDoc := iColl.NewDoc()
 	integrationTestMap["ref"] = refDoc
 	wantIntegrationTestMap["ref"] = refDoc
 	integrationTestStruct.Ref = refDoc
 }
 
-func cleanupIntegrationTest() {
-	if iClient == nil {
+// createIndexes creates composite indexes on provided Firestore database
+// Indexes are required to run queries with composite filters on multiple fields.
+// Without indexes, FailedPrecondition rpc error is seen with
+// desc 'The query requires multiple indexes'.
+func createIndexes(ctx context.Context, dbPath string) {
+	var createIndexWg sync.WaitGroup
+
+	indexFields := [][]string{{"updatedAt", "weight", "height"}, {"weight", "height"}}
+	indexNames = make([]string, len(indexFields))
+	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
+
+	createIndexWg.Add(len(indexFields))
+	for i, fields := range indexFields {
+		var adminPbIndexFields []*adminpb.Index_IndexField
+		for _, field := range fields {
+			adminPbIndexFields = append(adminPbIndexFields, &adminpb.Index_IndexField{
+				FieldPath: field,
+				ValueMode: &adminpb.Index_IndexField_Order_{
+					Order: adminpb.Index_IndexField_ASCENDING,
+				},
+			})
+		}
+		req := &adminpb.CreateIndexRequest{
+			Parent: indexParent,
+			Index: &adminpb.Index{
+				QueryScope: adminpb.Index_COLLECTION,
+				Fields:     adminPbIndexFields,
+			},
+		}
+		go func(req *adminpb.CreateIndexRequest, i int) {
+			op, createErr := iAdminClient.CreateIndex(ctx, req)
+			if createErr != nil {
+				log.Fatalf("CreateIndex: %v", createErr)
+			}
+
+			createdIndex, waitErr := op.Wait(ctx)
+			if waitErr != nil {
+				log.Fatalf("Wait: %v", waitErr)
+			}
+			indexNames[i] = createdIndex.Name
+			createIndexWg.Done()
+		}(req, i)
+	}
+	createIndexWg.Wait()
+}
+
+// deleteIndexes deletes composite indexes created in createIndexes function
+func deleteIndexes(ctx context.Context) {
+	for _, indexName := range indexNames {
+		err := iAdminClient.DeleteIndex(ctx, &adminpb.DeleteIndexRequest{
+			Name: indexName,
+		})
+		if err != nil {
+			log.Printf("Failed to delete index \"%s\": %+v\n", indexName, err)
+		}
+	}
+}
+
+// deleteCollection recursively deletes the documents in the specified collection
+func deleteCollection(ctx context.Context, coll *CollectionRef) error {
+	bulkwriter := iClient.BulkWriter(ctx)
+
+	// Get  documents
+	iter := coll.Documents(ctx)
+
+	// Iterate through the documents, adding
+	// a delete operation for each one to the BulkWriter.
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Printf("Failed to get next document: %+v\n", err)
+			return err
+		}
+
+		err = deleteDocument(ctx, doc.Ref, bulkwriter)
+		if err != nil {
+			log.Printf("Failed to delete document: %+v\n", err)
+			return err
+		}
+	}
+
+	bulkwriter.End()
+	bulkwriter.Flush()
+
+	return nil
+}
+
+func deleteDocuments(docRefs []*DocumentRef) {
+	if testing.Short() {
 		return
 	}
-	// TODO(jba): delete everything in integrationColl.
-	iClient.Close()
+	ctx := context.Background()
+	bulkwriter := iClient.BulkWriter(ctx)
+	for _, docRef := range docRefs {
+		if err := deleteDocument(ctx, docRef, bulkwriter); err != nil {
+			log.Printf("Failed to delete document: %s with error %+v", docRef.ID, err)
+		}
+	}
+	bulkwriter.End()
+	bulkwriter.Flush()
+}
+
+func deleteDocumentSnapshots(docSnaps []*DocumentSnapshot) {
+	var docRefs []*DocumentRef
+	for _, docSnap := range docSnaps {
+		docRefs = append(docRefs, docSnap.Ref)
+	}
+	deleteDocuments(docRefs)
+}
+
+func deleteDocument(ctx context.Context, docRef *DocumentRef, bulkwriter *BulkWriter) error {
+	// Delete subcollections before deleting document
+	subCollIter := docRef.Collections(ctx)
+	for {
+		subColl, err := subCollIter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Printf("Error getting next subcollection of %s: %+v", docRef.ID, err)
+			return err
+		}
+		err = deleteCollection(ctx, subColl)
+		if err != nil {
+			log.Printf("Error deleting subcollection %v: %+v\n", subColl.ID, err)
+			return err
+		}
+	}
+
+	// Delete document
+	_, err := bulkwriter.Delete(docRef)
+	if err != nil {
+		log.Printf("Failed to delete document: %+v, err: %+v\n", docRef, err)
+		return err
+	}
+	return nil
+}
+
+func cleanupIntegrationTest() {
+	if iClient != nil {
+		ctx := context.Background()
+		deleteIndexes(ctx)
+		deleteCollection(ctx, iColl)
+		iClient.Close()
+	}
+
+	if iAdminClient != nil {
+		iAdminClient.Close()
+	}
 }
 
 // integrationClient should be called by integration tests to get a valid client. It will never
@@ -221,8 +384,12 @@ func TestIntegration_Create(t *testing.T) {
 	_, err := doc.Create(ctx, integrationTestMap)
 	codeEq(t, "Create on a present doc", codes.AlreadyExists, err)
 	// OK to create an empty document.
-	_, err = integrationColl(t).NewDoc().Create(ctx, map[string]interface{}{})
+	emptyDoc := integrationColl(t).NewDoc()
+	_, err = emptyDoc.Create(ctx, map[string]interface{}{})
 	codeEq(t, "Create empty doc", codes.OK, err)
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc, emptyDoc})
+	})
 }
 
 func TestIntegration_Get(t *testing.T) {
@@ -239,10 +406,10 @@ func TestIntegration_Get(t *testing.T) {
 		t.Errorf("got\n%v\nwant\n%v", pretty.Value(got), pretty.Value(want))
 	}
 
-	doc = integrationColl(t).NewDoc()
+	emptyDoc := integrationColl(t).NewDoc()
 	empty := map[string]interface{}{}
-	h.mustCreate(doc, empty)
-	ds = h.mustGet(doc)
+	h.mustCreate(emptyDoc, empty)
+	ds = h.mustGet(emptyDoc)
 	if ds.CreateTime != ds.UpdateTime {
 		t.Errorf("create time %s != update time %s", ds.CreateTime, ds.UpdateTime)
 	}
@@ -258,6 +425,10 @@ func TestIntegration_Get(t *testing.T) {
 	if ds.ReadTime.IsZero() {
 		t.Error("got zero read time")
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc, emptyDoc})
+	})
 }
 
 func TestIntegration_GetAll(t *testing.T) {
@@ -302,16 +473,22 @@ func TestIntegration_GetAll(t *testing.T) {
 			t.Errorf("%d: got zero read time", i)
 		}
 	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 }
 
 func TestIntegration_Add(t *testing.T) {
 	start := time.Now()
-	_, wr, err := integrationColl(t).Add(context.Background(), integrationTestMap)
+	docRef, wr, err := integrationColl(t).Add(context.Background(), integrationTestMap)
 	if err != nil {
 		t.Fatal(err)
 	}
 	end := time.Now()
 	checkTimeBetween(t, wr.UpdateTime, start, end)
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{docRef})
+	})
 }
 
 func TestIntegration_Set(t *testing.T) {
@@ -404,6 +581,10 @@ func TestIntegration_Set(t *testing.T) {
 	if got := ds.Data(); !testEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc, doc2})
+	})
 }
 
 func TestIntegration_Delete(t *testing.T) {
@@ -476,23 +657,17 @@ func TestIntegration_Update(t *testing.T) {
 	if !testEqual(got, want) {
 		t.Errorf("got\n%#v\nwant\n%#v", got, want)
 	}
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func TestIntegration_Collections(t *testing.T) {
 	ctx := context.Background()
-	c := integrationClient(t)
 	h := testHelper{t}
-	got, err := c.Collections(ctx).GetAll()
-	if err != nil {
-		t.Fatal(err)
-	}
-	// There should be at least one collection.
-	if len(got) == 0 {
-		t.Error("got 0 top-level collections, want at least one")
-	}
 
 	doc := integrationColl(t).NewDoc()
-	got, err = doc.Collections(ctx).GetAll()
+	got, err := doc.Collections(ctx).GetAll()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -513,6 +688,9 @@ func TestIntegration_Collections(t *testing.T) {
 	if !testEqual(got, want) {
 		t.Errorf("got\n%#v\nwant\n%#v", got, want)
 	}
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func TestIntegration_ServerTimestamp(t *testing.T) {
@@ -551,6 +729,9 @@ func TestIntegration_ServerTimestamp(t *testing.T) {
 	if g, w := got.E, got.C; !testEqual(g, w) {
 		t.Errorf(`E = %s, want equal to C (%s)`, g, w)
 	}
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func TestIntegration_MergeServerTimestamp(t *testing.T) {
@@ -575,6 +756,9 @@ func TestIntegration_MergeServerTimestamp(t *testing.T) {
 	if !t1.Before(t2) {
 		t.Errorf("got t1=%s, t2=%s; want t1 before t2", t1, t2)
 	}
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
@@ -611,6 +795,9 @@ func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
 	if !t1.Before(t2) {
 		t.Errorf("got t1=%s, t2=%s; want t1 before t2", t1, t2)
 	}
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func TestIntegration_WriteBatch(t *testing.T) {
@@ -644,6 +831,162 @@ func TestIntegration_WriteBatch(t *testing.T) {
 	}
 	// TODO(jba): test two updates to the same document when it is supported.
 	// TODO(jba): test verify when it is supported.
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc1, doc2})
+	})
+}
+
+func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+	h := testHelper{t}
+	nowTime := time.Now()
+	todayTime := nowTime.Unix()
+	yesterdayTime := nowTime.AddDate(0, 0, -1).Unix()
+	docs := []map[string]interface{}{
+		// To support running this test in parallel with the others, use a field name
+		// that we don't use anywhere else.
+		{"height": 1, "weight": 99, "updatedAt": yesterdayTime},
+		{"height": 2, "weight": 98, "updatedAt": yesterdayTime},
+		{"height": 3, "weight": 97, "updatedAt": yesterdayTime},
+		{"height": 4, "weight": 96, "updatedAt": todayTime},
+		{"height": 5, "weight": 95, "updatedAt": todayTime},
+		{"height": 6, "weight": 94, "updatedAt": todayTime},
+		{"height": 7, "weight": 93, "updatedAt": todayTime},
+		{"height": 8, "weight": 93, "updatedAt": todayTime},
+	}
+	var wants []map[string]interface{}
+	var createdDocRefs []*DocumentRef
+	for _, doc := range docs {
+		newDoc := coll.NewDoc()
+		createdDocRefs = append(createdDocRefs, newDoc)
+		wants = append(wants, map[string]interface{}{
+			"height":    int64(doc["height"].(int)),
+			"weight":    int64(doc["weight"].(int)),
+			"updatedAt": doc["updatedAt"].(int64),
+		})
+		h.mustCreate(newDoc, doc)
+	}
+
+	q := coll.Select("height", "weight", "updatedAt")
+	for i, test := range []struct {
+		desc    string
+		q       Query
+		want    []map[string]interface{}
+		orderBy bool // Some query types do not allow ordering.
+	}{
+		{
+			desc: "height == 5",
+			q: q.WhereEntity(PropertyFilter{
+				Path:     "height",
+				Operator: "==",
+				Value:    5,
+			}),
+			want:    wants[4:5],
+			orderBy: false,
+		},
+		{
+			desc: "height > 1",
+			q: q.WhereEntity(PropertyFilter{
+				Path:     "height",
+				Operator: ">",
+				Value:    1,
+			}),
+			want:    wants[1:],
+			orderBy: true,
+		},
+
+		{desc: "((weight > 97 AND updatedAt == yesterdayTime) OR (weight < 94)) AND height == 8",
+			q: q.WhereEntity(
+				AndFilter{
+					Filters: []EntityFilter{
+						OrFilter{
+							Filters: []EntityFilter{
+								AndFilter{
+									[]EntityFilter{
+										PropertyFilter{Path: "height", Operator: "<", Value: 3},
+										PropertyFilter{Path: "updatedAt", Operator: "==", Value: yesterdayTime},
+									},
+								},
+								PropertyFilter{Path: "height", Operator: ">", Value: 6},
+							},
+						},
+						PropertyFilter{Path: "weight", Operator: "==", Value: 93},
+					},
+				},
+			),
+			want:    wants[6:],
+			orderBy: true,
+		},
+		{
+			desc: "height > 5 OR height < 8",
+			q: q.WhereEntity(
+				AndFilter{
+					Filters: []EntityFilter{
+						PropertyFilter{
+							Path:     "height",
+							Operator: ">",
+							Value:    5,
+						},
+						PropertyFilter{
+							Path:     "height",
+							Operator: "<",
+							Value:    8,
+						},
+					},
+				},
+			),
+			want:    wants[5:7],
+			orderBy: true,
+		},
+		{
+			desc: "height <= 2 OR height > 7",
+			q: q.WhereEntity(
+				OrFilter{
+					Filters: []EntityFilter{
+						PropertyFilter{
+							Path:     "height",
+							Operator: "<=",
+							Value:    2,
+						},
+						PropertyFilter{
+							Path:     "height",
+							Operator: ">",
+							Value:    7,
+						},
+					},
+				},
+			),
+			want: []map[string]interface{}{
+				{"height": int64(1), "weight": int64(99), "updatedAt": int64(yesterdayTime)},
+				{"height": int64(2), "weight": int64(98), "updatedAt": int64(yesterdayTime)},
+				{"height": int64(8), "weight": int64(93), "updatedAt": int64(todayTime)},
+			},
+			orderBy: true,
+		},
+	} {
+		if test.orderBy {
+			test.q = test.q.OrderBy("height", Asc)
+		}
+		gotDocs, err := test.q.Documents(ctx).GetAll()
+		if err != nil {
+			t.Errorf("#%d: %+v: %v", i, test.q, err)
+			continue
+		}
+		if len(gotDocs) != len(test.want) {
+			t.Errorf("#%d: (%q) %+v: got %d wants, want %d", i, test.desc, test.q, len(gotDocs), len(test.want))
+			continue
+		}
+		for j, g := range gotDocs {
+			if got, want := g.Data(), test.want[j]; !testEqual(got, want) {
+				t.Errorf("#%d: %+v, #%d: got\n%+v\nwant\n%+v", i, test.q, j, got, want)
+			}
+		}
+	}
+	t.Cleanup(func() {
+		deleteDocuments(createdDocRefs)
+	})
 }
 
 func TestIntegration_QueryDocuments(t *testing.T) {
@@ -651,8 +994,11 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	var wants []map[string]interface{}
+	var createdDocRefs []*DocumentRef
 	for i := 0; i < 3; i++ {
 		doc := coll.NewDoc()
+		createdDocRefs = append(createdDocRefs, doc)
+
 		// To support running this test in parallel with the others, use a field name
 		// that we don't use anywhere else.
 		h.mustCreate(doc, map[string]interface{}{"q": i, "x": 1})
@@ -680,6 +1026,8 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 		{q.EndAt(1), wants[:2], true},
 		{q.EndBefore(1), wants[:1], true},
 		{q.LimitToLast(2), wants[1:], true},
+		{q.EndBefore(2).LimitToLast(2), wants[:2], true},
+		{q.StartAt(1).EndBefore(2).LimitToLast(3), wants[1:2], true},
 	} {
 		if test.orderBy {
 			test.q = test.q.OrderBy("q", Asc)
@@ -729,6 +1077,10 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 	if got, want := len(seen), len(wants); got != want {
 		t.Errorf("got %d docs with 'q', want %d", len(seen), len(wants))
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments(createdDocRefs)
+	})
 }
 
 func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
@@ -746,9 +1098,10 @@ func TestIntegration_QueryUnary(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
-	h.mustCreate(coll.NewDoc(), map[string]interface{}{"x": 2, "q": "a"})
-	h.mustCreate(coll.NewDoc(), map[string]interface{}{"x": 2, "q": nil})
-	h.mustCreate(coll.NewDoc(), map[string]interface{}{"x": 2, "q": math.NaN()})
+	docRefs := []*DocumentRef{coll.NewDoc(), coll.NewDoc(), coll.NewDoc()}
+	h.mustCreate(docRefs[0], map[string]interface{}{"x": 2, "q": "a"})
+	h.mustCreate(docRefs[1], map[string]interface{}{"x": 2, "q": nil})
+	h.mustCreate(docRefs[2], map[string]interface{}{"x": 2, "q": math.NaN()})
 	wantNull := map[string]interface{}{"q": nil}
 	wantNaN := map[string]interface{}{"q": math.NaN()}
 
@@ -772,6 +1125,9 @@ func TestIntegration_QueryUnary(t *testing.T) {
 			t.Errorf("%v: got %v, want %v", test.q, g, w)
 		}
 	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 }
 
 // Test the special DocumentID field in queries.
@@ -796,8 +1152,10 @@ func TestIntegration_QueryName(t *testing.T) {
 
 	coll := integrationColl(t)
 	var wantIDs []string
+	var docRefs []*DocumentRef
 	for i := 0; i < 3; i++ {
 		doc := coll.NewDoc()
+		docRefs = append(docRefs, doc)
 		h.mustCreate(doc, map[string]interface{}{"nm": 1})
 		wantIDs = append(wantIDs, doc.ID)
 	}
@@ -812,6 +1170,10 @@ func TestIntegration_QueryName(t *testing.T) {
 	// Test cursors with __name__.
 	checkIDs(q.StartAt(wantIDs[1]), wantIDs[1:])
 	checkIDs(q.EndAt(wantIDs[1]), wantIDs[:2])
+
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 }
 
 func TestIntegration_QueryNested(t *testing.T) {
@@ -834,6 +1196,9 @@ func TestIntegration_QueryNested(t *testing.T) {
 	if gotData := got[0].Data(); !testEqual(gotData, wantData) {
 		t.Errorf("got\n%+v\nwant\n%+v", gotData, wantData)
 	}
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc1, doc2})
+	})
 }
 
 func TestIntegration_RunTransaction(t *testing.T) {
@@ -905,6 +1270,10 @@ func TestIntegration_RunTransaction(t *testing.T) {
 	if got != want {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{patDoc})
+	})
 }
 
 func TestIntegration_TransactionGetAll(t *testing.T) {
@@ -941,6 +1310,10 @@ func TestIntegration_TransactionGetAll(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{leeDoc, samDoc})
+	})
 }
 
 func TestIntegration_WatchDocument(t *testing.T) {
@@ -988,6 +1361,10 @@ func TestIntegration_WatchDocument(t *testing.T) {
 	if got := snap.Data(); !testutil.Equal(got, want) {
 		t.Fatalf("got %v, want %v", got, want)
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func TestIntegration_ArrayUnion_Create(t *testing.T) {
@@ -1014,6 +1391,10 @@ func TestIntegration_ArrayUnion_Create(t *testing.T) {
 			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 		}
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func TestIntegration_ArrayUnion_Update(t *testing.T) {
@@ -1046,6 +1427,9 @@ func TestIntegration_ArrayUnion_Update(t *testing.T) {
 			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 		}
 	}
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func TestIntegration_ArrayUnion_Set(t *testing.T) {
@@ -1073,6 +1457,10 @@ func TestIntegration_ArrayUnion_Set(t *testing.T) {
 			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 		}
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func TestIntegration_ArrayRemove_Create(t *testing.T) {
@@ -1098,6 +1486,10 @@ func TestIntegration_ArrayRemove_Create(t *testing.T) {
 	if !testEqual(gotMap[path], want) {
 		t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func TestIntegration_ArrayRemove_Update(t *testing.T) {
@@ -1130,6 +1522,10 @@ func TestIntegration_ArrayRemove_Update(t *testing.T) {
 			t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 		}
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func TestIntegration_ArrayRemove_Set(t *testing.T) {
@@ -1155,6 +1551,10 @@ func TestIntegration_ArrayRemove_Set(t *testing.T) {
 	if !testEqual(gotMap[path], want) {
 		t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
 }
 
 func makeFieldTransform(transform string, value interface{}) interface{} {
@@ -1193,6 +1593,10 @@ func TestIntegration_FieldTransforms_Create(t *testing.T) {
 			if gotMap[path] != want {
 				t.Fatalf("want %d, got %d", want, gotMap[path])
 			}
+
+			t.Cleanup(func() {
+				deleteDocuments([]*DocumentRef{doc})
+			})
 		})
 	}
 }
@@ -1296,6 +1700,10 @@ func TestIntegration_FieldTransforms_Update(t *testing.T) {
 						// switch statement.
 						t.Fatalf("unsupported type %T", want)
 					}
+
+					t.Cleanup(func() {
+						deleteDocuments([]*DocumentRef{doc})
+					})
 				})
 			})
 		}
@@ -1327,11 +1735,64 @@ func TestIntegration_FieldTransforms_Set(t *testing.T) {
 			if gotMap[path] != want {
 				t.Fatalf("want %d, got %d", want, gotMap[path])
 			}
+
+			t.Cleanup(func() {
+				deleteDocuments([]*DocumentRef{doc})
+			})
 		})
 	}
 }
 
 type imap map[string]interface{}
+
+func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
+	h := testHelper{t}
+	collID := collectionIDs.New()
+	ctx := context.Background()
+	client := integrationClient(t)
+
+	partitionedQueries, err := client.CollectionGroup(collID).GetPartitionedQueries(ctx, 10)
+	h.failIfNotNil(err)
+
+	qProtoBytes, err := partitionedQueries[0].Serialize()
+	h.failIfNotNil(err)
+
+	q, err := client.CollectionGroup(collID).Deserialize(qProtoBytes)
+	h.failIfNotNil(err)
+
+	qSnapIt := q.Snapshots(ctx)
+	defer qSnapIt.Stop()
+
+	// Check if at least one snapshot exists
+	_, err = qSnapIt.Next()
+	if err == iterator.Done {
+		t.Fatalf("Expected snapshot, found none")
+	}
+
+	// Add new document to query results
+	createdDocRefs := h.mustCreateMulti(collID, []testDocument{
+		{data: map[string]interface{}{"some-key": "should-be-found"}},
+	})
+	wds := h.mustGet(createdDocRefs[0])
+
+	// Check if new snapshot is available
+	qSnap, err := qSnapIt.Next()
+	if err == iterator.Done {
+		t.Fatalf("Expected snapshot, found none")
+	}
+
+	// Check the changes in snapshot
+	if len(qSnap.Changes) != 1 {
+		t.Fatalf("Expected one change, found none")
+	}
+
+	wantChange := DocumentChange{Kind: DocumentAdded, Doc: wds, OldIndex: -1, NewIndex: 0}
+	gotChange := qSnap.Changes[0]
+	copts := append([]cmp.Option{cmpopts.IgnoreFields(DocumentSnapshot{}, "ReadTime")}, cmpOpts...)
+	if diff := testutil.Diff(gotChange, wantChange, copts...); diff != "" {
+		t.Errorf("got: %v, want: %v, diff: %v", gotChange, wantChange, diff)
+	}
+}
 
 func TestIntegration_WatchQuery(t *testing.T) {
 	ctx := context.Background()
@@ -1412,6 +1873,10 @@ func TestIntegration_WatchQuery(t *testing.T) {
 	// Delete a doc.
 	h.mustDelete(doc4)
 	check("after del", []*DocumentSnapshot{wds3}, []DocumentChange{{Kind: DocumentRemoved, Doc: wds4, OldIndex: 0, NewIndex: -1}})
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc1, doc2, doc3})
+	})
 }
 
 func TestIntegration_WatchQueryCancel(t *testing.T) {
@@ -1463,6 +1928,10 @@ func TestIntegration_MissingDocs(t *testing.T) {
 	if !testutil.Equal(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{dr2})
+	})
 }
 
 func TestIntegration_CollectionGroupQueries(t *testing.T) {
@@ -1537,6 +2006,39 @@ func checkTimeBetween(t *testing.T, got, low, high time.Time) {
 
 type testHelper struct {
 	t *testing.T
+}
+
+func (h testHelper) failIfNotNil(err error) {
+	if err != nil {
+		h.t.Fatal(err)
+	}
+}
+
+type testDocument struct {
+	id   string
+	data map[string]interface{}
+}
+
+func (h testHelper) mustCreateMulti(collectionPath string, docsData []testDocument) []*DocumentRef {
+	client := integrationClient(h.t)
+	collRef := client.Collection(collectionPath)
+	docsCreated := []*DocumentRef{}
+	for _, data := range docsData {
+		var docRef *DocumentRef
+		if len(data.id) == 0 {
+			docRef = collRef.NewDoc()
+		} else {
+			docRef = collRef.Doc(data.id)
+		}
+		h.mustCreate(docRef, data.data)
+		docsCreated = append(docsCreated, docRef)
+	}
+
+	h.t.Cleanup(func() {
+		deleteDocuments(docsCreated)
+	})
+
+	return docsCreated
 }
 
 func (h testHelper) mustCreate(doc *DocumentRef, data interface{}) *WriteResult {
@@ -1646,6 +2148,10 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 		}
 	}
 
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
+
 }
 
 func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
@@ -1715,6 +2221,10 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 		if len(allDocs) != len(protoReturnedDocs) {
 			t.Fatalf("Expected document count to be the same on both query runs: %v", err)
 		}
+
+		t.Cleanup(func() {
+			deleteDocumentSnapshots(allDocs)
+		})
 	}
 
 	if got, want := totalCount, documentCount; got != want {
@@ -1722,8 +2232,28 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	}
 }
 
+// TestIntegration_BulkWriter_Set tests setting values and serverTimeStamp in single write.
+func TestIntegration_BulkWriter_Set(t *testing.T) {
+	doc := iColl.NewDoc()
+	c := integrationClient(t)
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+
+	f := copyMap(integrationTestMap)
+	f["serverTimeStamp"] = ServerTimestamp
+	_, err := bw.Set(doc, f)
+	if err != nil {
+		t.Errorf("bulkwriter: error performing a set write: %v\n", err)
+	}
+
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
+}
+
 func TestIntegration_BulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
+	docRefs := []*DocumentRef{doc}
 	c := integrationClient(t)
 	ctx := context.Background()
 	bw := c.BulkWriter(ctx)
@@ -1752,6 +2282,7 @@ func TestIntegration_BulkWriter(t *testing.T) {
 	// Test a slew of writes sent at the BulkWriter
 	for i := 0; i < numNewWrites; i++ {
 		d := iColl.NewDoc()
+		docRefs = append(docRefs, d)
 		jb, err := bw.Create(d, f)
 
 		if err != nil {
@@ -1773,6 +2304,9 @@ func TestIntegration_BulkWriter(t *testing.T) {
 			t.Error("bulkwriter: write attempt returned nil results")
 		}
 	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 }
 
 func TestIntegration_CountAggregationQuery(t *testing.T) {
@@ -1825,6 +2359,10 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 	if cv.GetIntegerValue() != 2 {
 		t.Errorf("COUNT aggregation query mismatch;\ngot: %d, want: %d", cv.GetIntegerValue(), 2)
 	}
+
+	t.Cleanup(func() {
+		deleteDocuments(docs)
+	})
 }
 
 func TestIntegration_ClientReadTime(t *testing.T) {
@@ -1832,6 +2370,9 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		iColl.NewDoc(),
 		iColl.NewDoc(),
 	}
+	t.Cleanup(func() {
+		deleteDocuments(docs)
+	})
 
 	c := integrationClient(t)
 	ctx := context.Background()

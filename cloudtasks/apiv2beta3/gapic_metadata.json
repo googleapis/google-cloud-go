@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "BufferTask": {
+              "methods": [
+                "BufferTask"
+              ]
+            },
             "CreateQueue": {
               "methods": [
                 "CreateQueue"
@@ -35,6 +40,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetQueue": {
               "methods": [
                 "GetQueue"
@@ -43,6 +53,11 @@
             "GetTask": {
               "methods": [
                 "GetTask"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListQueues": {
@@ -95,6 +110,11 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "BufferTask": {
+              "methods": [
+                "BufferTask"
+              ]
+            },
             "CreateQueue": {
               "methods": [
                 "CreateQueue"
@@ -120,6 +140,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetQueue": {
               "methods": [
                 "GetQueue"
@@ -128,6 +153,11 @@
             "GetTask": {
               "methods": [
                 "GetTask"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListQueues": {

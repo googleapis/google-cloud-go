@@ -33,7 +33,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -67,16 +66,36 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateMicrosoftAdDomain: []gax.CallOption{},
-		ResetAdminPassword:      []gax.CallOption{},
-		ListDomains:             []gax.CallOption{},
-		GetDomain:               []gax.CallOption{},
-		UpdateDomain:            []gax.CallOption{},
-		DeleteDomain:            []gax.CallOption{},
-		AttachTrust:             []gax.CallOption{},
-		ReconfigureTrust:        []gax.CallOption{},
-		DetachTrust:             []gax.CallOption{},
-		ValidateTrust:           []gax.CallOption{},
+		CreateMicrosoftAdDomain: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResetAdminPassword: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListDomains: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetDomain: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDomain: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteDomain: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AttachTrust: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ReconfigureTrust: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DetachTrust: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ValidateTrust: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -282,9 +301,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -297,7 +313,7 @@ type gRPCClient struct {
 	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new managed identities service client based on gRPC.
@@ -352,11 +368,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -364,10 +375,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           managedidentitiespb.NewManagedIdentitiesServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      managedidentitiespb.NewManagedIdentitiesServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -399,9 +409,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -411,14 +421,10 @@ func (c *gRPCClient) Close() error {
 }
 
 func (c *gRPCClient) CreateMicrosoftAdDomain(ctx context.Context, req *managedidentitiespb.CreateMicrosoftAdDomainRequest, opts ...gax.CallOption) (*CreateMicrosoftAdDomainOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateMicrosoftAdDomain[0:len((*c.CallOptions).CreateMicrosoftAdDomain):len((*c.CallOptions).CreateMicrosoftAdDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -435,14 +441,10 @@ func (c *gRPCClient) CreateMicrosoftAdDomain(ctx context.Context, req *managedid
 }
 
 func (c *gRPCClient) ResetAdminPassword(ctx context.Context, req *managedidentitiespb.ResetAdminPasswordRequest, opts ...gax.CallOption) (*managedidentitiespb.ResetAdminPasswordResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ResetAdminPassword[0:len((*c.CallOptions).ResetAdminPassword):len((*c.CallOptions).ResetAdminPassword)], opts...)
 	var resp *managedidentitiespb.ResetAdminPasswordResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -457,9 +459,10 @@ func (c *gRPCClient) ResetAdminPassword(ctx context.Context, req *managedidentit
 }
 
 func (c *gRPCClient) ListDomains(ctx context.Context, req *managedidentitiespb.ListDomainsRequest, opts ...gax.CallOption) *DomainIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDomains[0:len((*c.CallOptions).ListDomains):len((*c.CallOptions).ListDomains)], opts...)
 	it := &DomainIterator{}
 	req = proto.Clone(req).(*managedidentitiespb.ListDomainsRequest)
@@ -502,14 +505,10 @@ func (c *gRPCClient) ListDomains(ctx context.Context, req *managedidentitiespb.L
 }
 
 func (c *gRPCClient) GetDomain(ctx context.Context, req *managedidentitiespb.GetDomainRequest, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDomain[0:len((*c.CallOptions).GetDomain):len((*c.CallOptions).GetDomain)], opts...)
 	var resp *managedidentitiespb.Domain
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -524,14 +523,10 @@ func (c *gRPCClient) GetDomain(ctx context.Context, req *managedidentitiespb.Get
 }
 
 func (c *gRPCClient) UpdateDomain(ctx context.Context, req *managedidentitiespb.UpdateDomainRequest, opts ...gax.CallOption) (*UpdateDomainOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "domain.name", url.QueryEscape(req.GetDomain().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "domain.name", url.QueryEscape(req.GetDomain().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDomain[0:len((*c.CallOptions).UpdateDomain):len((*c.CallOptions).UpdateDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -548,14 +543,10 @@ func (c *gRPCClient) UpdateDomain(ctx context.Context, req *managedidentitiespb.
 }
 
 func (c *gRPCClient) DeleteDomain(ctx context.Context, req *managedidentitiespb.DeleteDomainRequest, opts ...gax.CallOption) (*DeleteDomainOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDomain[0:len((*c.CallOptions).DeleteDomain):len((*c.CallOptions).DeleteDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -572,14 +563,10 @@ func (c *gRPCClient) DeleteDomain(ctx context.Context, req *managedidentitiespb.
 }
 
 func (c *gRPCClient) AttachTrust(ctx context.Context, req *managedidentitiespb.AttachTrustRequest, opts ...gax.CallOption) (*AttachTrustOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AttachTrust[0:len((*c.CallOptions).AttachTrust):len((*c.CallOptions).AttachTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -596,14 +583,10 @@ func (c *gRPCClient) AttachTrust(ctx context.Context, req *managedidentitiespb.A
 }
 
 func (c *gRPCClient) ReconfigureTrust(ctx context.Context, req *managedidentitiespb.ReconfigureTrustRequest, opts ...gax.CallOption) (*ReconfigureTrustOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ReconfigureTrust[0:len((*c.CallOptions).ReconfigureTrust):len((*c.CallOptions).ReconfigureTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -620,14 +603,10 @@ func (c *gRPCClient) ReconfigureTrust(ctx context.Context, req *managedidentitie
 }
 
 func (c *gRPCClient) DetachTrust(ctx context.Context, req *managedidentitiespb.DetachTrustRequest, opts ...gax.CallOption) (*DetachTrustOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DetachTrust[0:len((*c.CallOptions).DetachTrust):len((*c.CallOptions).DetachTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -644,14 +623,10 @@ func (c *gRPCClient) DetachTrust(ctx context.Context, req *managedidentitiespb.D
 }
 
 func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb.ValidateTrustRequest, opts ...gax.CallOption) (*ValidateTrustOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ValidateTrust[0:len((*c.CallOptions).ValidateTrust):len((*c.CallOptions).ValidateTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

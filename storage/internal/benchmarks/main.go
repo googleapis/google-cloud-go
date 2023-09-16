@@ -23,12 +23,18 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
-	"cloud.google.com/go/storage"
+	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
+	octrace "go.opencensus.io/trace"
+	"go.opentelemetry.io/contrib/detectors/gcp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/bridge/opencensus"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"golang.org/x/sync/errgroup"
 
 	// Install google-c2p resolver, which is required for direct path.
@@ -37,7 +43,11 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const codeVersion = "0.6.1" // to keep track of which version of the code a benchmark ran on
+const (
+	codeVersion = "0.10.1" // to keep track of which version of the code a benchmark ran on
+	useDefault  = -1
+	tracerName  = "storage-benchmark"
+)
 
 var (
 	projectID, outputFile string
@@ -63,9 +73,8 @@ type benchmarkOptions struct {
 	minReadOffset int64
 	maxReadOffset int64
 
-	allowCustomClient bool
-	readBufferSize    int
-	writeBufferSize   int
+	readBufferSize  int
+	writeBufferSize int
 
 	minChunkSize int64
 	maxChunkSize int64
@@ -73,8 +82,21 @@ type benchmarkOptions struct {
 	forceGC      bool
 	connPoolSize int
 
-	timeout         time.Duration
-	appendToResults string
+	timeout      time.Duration
+	timeoutPerOp time.Duration
+
+	continueOnFail bool
+
+	numClients             int
+	workload               int
+	numObjectsPerDirectory int
+
+	useGCSFuseConfig bool
+	endpoint         string
+
+	enableTracing   bool
+	traceSampleRate float64
+	warmup          time.Duration
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -89,9 +111,15 @@ func (b *benchmarkOptions) validate() error {
 		return fmt.Errorf("read offset specified but no range size specified")
 	}
 
-	if b.maxReadOffset > b.minObjectSize-b.rangeSize {
+	minObjSize := b.objectSize
+	if minObjSize == 0 {
+		minObjSize = b.minObjectSize
+	}
+
+	if b.maxReadOffset > minObjSize-b.rangeSize {
 		return fmt.Errorf("read offset (%d) is too large for the selected range size (%d) - object might run out of bytes before reading complete rangeSize", b.maxReadOffset, b.rangeSize)
 	}
+
 	return nil
 }
 
@@ -134,33 +162,63 @@ func parseFlags() {
 	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
 	flag.StringVar((*string)(&opts.api), "api", string(mixedAPIs), "api used to upload/download objects; JSON or XML values will use JSON to uplaod and XML to download")
 
-	flag.Int64Var(&opts.objectSize, "object_size", 1024*kib, "object size in bytes")
-	flag.Int64Var(&opts.minObjectSize, "min_object_size", 512*kib, "minimum object size in bytes")
-	flag.Int64Var(&opts.maxObjectSize, "max_object_size", 2097152*kib, "maximum object size in bytes")
+	objectRange := flag.String("object_size", fmt.Sprint(1024*kib), "object size in bytes")
 
 	flag.Int64Var(&opts.rangeSize, "range_read_size", 0, "size of the range to read in bytes")
 	flag.Int64Var(&opts.minReadOffset, "minimum_read_offset", 0, "minimum read offset in bytes")
 	flag.Int64Var(&opts.maxReadOffset, "maximum_read_offset", 0, "maximum read offset in bytes")
 
-	flag.BoolVar(&opts.allowCustomClient, "allow_custom_HTTP_client", false, "allow custom client configuration")
-	flag.IntVar(&opts.readBufferSize, "read_buffer_size", 4000, "read buffer size in bytes")
-	flag.IntVar(&opts.writeBufferSize, "write_buffer_size", 4000, "write buffer size in bytes")
+	flag.BoolVar(&opts.useGCSFuseConfig, "gcs_fuse", false, "use GCSFuse configs on HTTP client creation")
+	flag.StringVar(&opts.endpoint, "endpoint", "", "endpoint to set on Storage Client")
 
-	flag.Int64Var(&opts.minChunkSize, "min_chunksize", 16*1024*1024, "min chunksize in bytes")
-	flag.Int64Var(&opts.maxChunkSize, "max_chunksize", 16*1024*1024, "max chunksize in bytes")
+	flag.BoolVar(&opts.enableTracing, "tracing", false, "enable trace exporter to Cloud Trace")
+	flag.Float64Var(&opts.traceSampleRate, "sample_rate", 1.0, "sample rate for traces")
+
+	flag.IntVar(&opts.readBufferSize, "read_buffer_size", useDefault, "read buffer size in bytes")
+	flag.IntVar(&opts.writeBufferSize, "write_buffer_size", useDefault, "write buffer size in bytes")
+
+	flag.Int64Var(&opts.minChunkSize, "min_chunksize", useDefault, "min chunksize in bytes")
+	flag.Int64Var(&opts.maxChunkSize, "max_chunksize", useDefault, "max chunksize in bytes")
 
 	flag.IntVar(&opts.connPoolSize, "connection_pool_size", 4, "GRPC connection pool size")
 
 	flag.BoolVar(&opts.forceGC, "force_garbage_collection", false, "force garbage collection at the beginning of each upload")
 
 	flag.DurationVar(&opts.timeout, "timeout", time.Hour, "timeout")
+	flag.DurationVar(&opts.timeoutPerOp, "timeout_per_op", time.Minute*5, "timeout per upload/download")
 	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
-	flag.StringVar(&opts.appendToResults, "append_labels", "", "labels added to cloud monitoring output")
+
+	flag.BoolVar(&opts.continueOnFail, "continue_on_fail", false, "continue even if a run fails")
+
+	flag.IntVar(&opts.numClients, "clients", 1, "number of storage clients to be used; if Mixed APIs, then twice the clients are created")
+
+	flag.IntVar(&opts.workload, "workload", 1, "which workload to run")
+	flag.IntVar(&opts.numObjectsPerDirectory, "directory_num_objects", 1000, "total number of objects in directory")
+
+	flag.DurationVar(&opts.warmup, "warmup", 0, "time to warmup benchmarks; w1r3 benchmarks will be run for this duration without recording any results")
 
 	flag.Parse()
 
 	if len(projectID) < 1 {
 		log.Fatalln("Must set a project ID. Use flag -project to specify it.")
+	}
+
+	min, max, isRange := strings.Cut(*objectRange, "..")
+	var err error
+	if isRange {
+		opts.minObjectSize, err = strconv.ParseInt(min, 10, 64)
+		if err != nil {
+			log.Fatalln("Could not parse object size")
+		}
+		opts.maxObjectSize, err = strconv.ParseInt(max, 10, 64)
+		if err != nil {
+			log.Fatalln("Could not parse object size")
+		}
+	} else {
+		opts.objectSize, err = strconv.ParseInt(min, 10, 64)
+		if err != nil {
+			log.Fatalln("Could not parse object size")
+		}
 	}
 }
 
@@ -168,12 +226,16 @@ func main() {
 	log.SetOutput(os.Stderr)
 	parseFlags()
 	rand.Seed(time.Now().UnixNano())
-	closePools := initializeClientPools(opts)
-	defer closePools()
 
 	start := time.Now()
 	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
 	defer cancel()
+
+	// Print a message once deadline is exceeded
+	go func() {
+		<-ctx.Done()
+		log.Printf("total configured timeout exceeded")
+	}()
 
 	// Create bucket if necessary
 	if len(opts.bucket) < 1 {
@@ -204,6 +266,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	closePools := initializeClientPools(ctx, opts)
+	defer closePools()
+
 	w := os.Stdout
 
 	if outputFile != "" {
@@ -221,27 +286,65 @@ func main() {
 		log.Fatalf("populateDependencyVersions: %v", err)
 	}
 
+	if err := warmupW1R3(ctx, opts); err != nil {
+		log.Fatal(err)
+	}
 	recordResultGroup, _ := errgroup.WithContext(ctx)
 	startRecordingResults(w, recordResultGroup, opts.outType)
 
-	benchGroup, _ := errgroup.WithContext(ctx)
-	benchGroup.SetLimit(opts.numWorkers)
+	simultaneousGoroutines := opts.numWorkers
+
+	// Directories parallelize on the object level, so only run one benchmark at a time
+	if opts.workload == 6 {
+		simultaneousGoroutines = 1
+	}
+
+	benchGroup, ctx := errgroup.WithContext(ctx)
+	benchGroup.SetLimit(simultaneousGoroutines)
+
+	exitWithErrorCode := false
+
+	if opts.enableTracing {
+		cleanup := enableTracing(ctx, opts.traceSampleRate)
+		defer cleanup()
+	}
 
 	// Run benchmarks
 	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
 		benchGroup.Go(func() error {
-			benchmark := w1r3{opts: opts, bucketName: opts.bucket}
-			if err := benchmark.setup(); err != nil {
-				log.Fatalf("run setup failed: %v", err)
+			var benchmark benchmark
+			benchmark = &w1r3{opts: opts, bucketName: opts.bucket}
+
+			if opts.workload == 6 {
+				benchmark = &directoryBenchmark{opts: opts, bucketName: opts.bucket, numWorkers: opts.numWorkers}
+			}
+
+			if err := benchmark.setup(ctx); err != nil {
+				// If setup failed once, it will probably continue failing.
+				// Returning the error here will cancel the context to stop the
+				// benchmarking.
+				return fmt.Errorf("run setup failed: %v", err)
 			}
 			if err := benchmark.run(ctx); err != nil {
-				log.Fatalf("run failed: %v", err)
+				// If a run fails, we continue, as it could be a temporary issue.
+				// We log the error and make sure the program exits with an error
+				// to indicate that we did see an error, even though we continue.
+				log.Printf("run failed: %v", err)
+				exitWithErrorCode = true
+			}
+			if err := benchmark.cleanup(); err != nil {
+				// If cleanup fails, we continue, as a single fail is not critical.
+				// We log the error and make sure the program exits with an error
+				// to indicate that we did see an error, even though we continue.
+				// Cleanup may be expected to fail if there is an issue with the run.
+				log.Printf("run cleanup failed: %v", err)
+				exitWithErrorCode = true
 			}
 			return nil
 		})
 	}
 
-	benchGroup.Wait()
+	err := benchGroup.Wait()
 	close(results)
 	recordResultGroup.Wait()
 
@@ -249,6 +352,20 @@ func main() {
 		// if sending output to a file, we can use stdout for informational logs
 		fmt.Printf("\nTotal time running: %s\n", time.Since(start).Round(time.Second))
 	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if exitWithErrorCode {
+		os.Exit(1)
+	}
+}
+
+type benchmark interface {
+	setup(context.Context) error
+	run(context.Context) error
+	cleanup() error
 }
 
 type randomizedParams struct {
@@ -258,249 +375,6 @@ type randomizedParams struct {
 	md5Enabled    bool
 	api           benchmarkAPI
 	rangeOffset   int64
-}
-
-type benchmarkResult struct {
-	objectSize    int64
-	readOffset    int64
-	params        randomizedParams
-	isRead        bool
-	readIteration int
-	start         time.Time
-	elapsedTime   time.Duration
-	err           error
-	timedOut      bool
-	startMem      runtime.MemStats
-	endMem        runtime.MemStats
-}
-
-func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
-	api := opts.api
-	if api == mixedAPIs {
-		if randomBool() {
-			api = xmlAPI
-		} else {
-			api = grpcAPI
-		}
-	}
-
-	if br.isRead {
-		if api == jsonAPI {
-			api = xmlAPI
-		}
-
-		br.params = randomizedParams{
-			appBufferSize: opts.readBufferSize,
-			chunkSize:     -1,    // not used for reads
-			crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
-			md5Enabled:    false, // we only need one integrity validation
-			api:           api,
-			rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
-		}
-
-		if !opts.allowCustomClient {
-			br.params.appBufferSize = 4000 // default for HTTP
-
-			if api == grpcAPI {
-				br.params.appBufferSize = 32000 // default for GRPC
-			}
-		}
-
-		return
-	}
-
-	if api == xmlAPI {
-		api = jsonAPI
-	}
-
-	_, doMD5, doCRC32C := randomOf3()
-	br.params = randomizedParams{
-		appBufferSize: opts.writeBufferSize,
-		chunkSize:     randomInt64(opts.minChunkSize, opts.maxChunkSize),
-		crc32cEnabled: doCRC32C,
-		md5Enabled:    doMD5,
-		api:           api,
-	}
-
-	if !opts.allowCustomClient {
-		// get a writer on an object to check the default chunksize
-		// object does not need to exist
-		if c, err := storage.NewClient(context.Background()); err != nil {
-			log.Printf("storage.NewClient: %v", err)
-		} else {
-			w := c.Bucket("").Object("").NewWriter(context.Background())
-			br.params.chunkSize = int64(w.ChunkSize)
-		}
-
-		br.params.appBufferSize = 4000 // default for HTTP
-		if api == grpcAPI {
-			br.params.appBufferSize = 32000 // default for GRPC
-		}
-	}
-}
-
-func (br *benchmarkResult) copyParams(from *benchmarkResult) {
-	br.params = randomizedParams{
-		appBufferSize: from.params.appBufferSize,
-		chunkSize:     from.params.chunkSize,
-		crc32cEnabled: from.params.crc32cEnabled,
-		md5Enabled:    from.params.md5Enabled,
-		api:           from.params.api,
-		rangeOffset:   from.params.rangeOffset,
-	}
-}
-
-// converts result to cloud monitoring format
-func (br *benchmarkResult) cloudMonitoring() []byte {
-	var sb strings.Builder
-	op := "WRITE"
-	if br.isRead {
-		op = fmt.Sprintf("READ[%d]", br.readIteration)
-	}
-	status := "OK"
-	if br.err != nil {
-		status = "FAIL"
-
-		if br.timedOut {
-			status = "TIMEOUT"
-		}
-	}
-
-	throughput := float64(br.objectSize) / float64(br.elapsedTime.Seconds())
-
-	// Cloud monitoring only allows letters, numbers and underscores
-	sanitizeKey := func(key string) string {
-		key = strings.Replace(key, ".", "", -1)
-		return strings.Replace(key, "/", "_", -1)
-	}
-
-	sanitizeValue := func(key string) string {
-		return strings.Replace(key, "\"", "", -1)
-	}
-
-	// For values of type string
-	makeStringQuoted := func(parameter string, value any) string {
-		return fmt.Sprintf("%s=\"%v\"", parameter, value)
-	}
-	// For values of type int, bool
-	makeStringUnquoted := func(parameter string, value any) string {
-		return fmt.Sprintf("%s=%v", parameter, value)
-	}
-
-	sb.Grow(380)
-	sb.WriteString("throughput{")
-	sb.WriteString(makeStringQuoted("library", "go"))
-	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("api", br.params.api))
-	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("op", op))
-	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("object_size", br.objectSize))
-	sb.WriteString(",")
-
-	if op != "WRITE" && opts.rangeSize > 0 {
-		sb.WriteString(makeStringUnquoted("transfer_size", opts.rangeSize))
-		sb.WriteString(",")
-		sb.WriteString(makeStringUnquoted("transfer_offset", br.params.rangeOffset))
-		sb.WriteString(",")
-	}
-
-	if op == "WRITE" {
-		sb.WriteString(makeStringUnquoted("chunksize", br.params.chunkSize))
-		sb.WriteString(",")
-	}
-
-	sb.WriteString(makeStringUnquoted("workers", opts.numWorkers))
-	sb.WriteString(",")
-
-	sb.WriteString(makeStringUnquoted("crc32c_enabled", br.params.crc32cEnabled))
-	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("md5_enabled", br.params.md5Enabled))
-	sb.WriteString(",")
-
-	sb.WriteString(makeStringQuoted("bucket_name", opts.bucket))
-	sb.WriteString(",")
-
-	sb.WriteString(makeStringQuoted("status", status))
-	sb.WriteString(",")
-	if br.err != nil {
-		sb.WriteString(makeStringQuoted("failure_msg", sanitizeValue(br.err.Error())))
-		sb.WriteString(",")
-	}
-
-	sb.WriteString(makeStringUnquoted("app_buffer_size", br.params.appBufferSize))
-	sb.WriteString(",")
-
-	sb.WriteString(makeStringQuoted("code_version", codeVersion))
-	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("go_version", goVersion))
-	for dep, ver := range dependencyVersions {
-		sb.WriteString(",")
-		sb.WriteString(makeStringQuoted(sanitizeKey(dep), ver))
-	}
-
-	if opts.appendToResults != "" {
-		sb.WriteString(",")
-		sb.WriteString(opts.appendToResults)
-	}
-
-	sb.WriteString("} ")
-	sb.WriteString(strconv.FormatFloat(throughput, 'f', 2, 64))
-
-	return []byte(sb.String())
-}
-
-// converts result to csv writing format (ie. a slice of strings)
-func (br *benchmarkResult) csv() []string {
-	op := "WRITE"
-	if br.isRead {
-		op = fmt.Sprintf("READ[%d]", br.readIteration)
-	}
-	status := "OK"
-	if br.err != nil {
-		status = "FAIL"
-	}
-
-	record := make(map[string]string)
-
-	record["Op"] = op
-	record["ObjectSize"] = strconv.FormatInt(br.objectSize, 10)
-	record["AppBufferSize"] = strconv.Itoa(br.params.appBufferSize)
-	record["LibBufferSize"] = strconv.Itoa(int(br.params.chunkSize))
-	record["Crc32cEnabled"] = strconv.FormatBool(br.params.crc32cEnabled)
-	record["MD5Enabled"] = strconv.FormatBool(br.params.md5Enabled)
-	record["ApiName"] = string(br.params.api)
-	record["ElapsedTimeUs"] = strconv.FormatInt(br.elapsedTime.Microseconds(), 10)
-	record["CpuTimeUs"] = "-1" // TODO: record cpu time
-	record["Status"] = status
-	record["HeapSys"] = strconv.FormatUint(br.startMem.HeapSys, 10)
-	record["HeapAlloc"] = strconv.FormatUint(br.startMem.HeapAlloc, 10)
-	record["StackInUse"] = strconv.FormatUint(br.startMem.StackInuse, 10)
-	// commented out to avoid large numbers messing up BigQuery imports
-	record["HeapAllocDiff"] = "-1" //strconv.FormatUint(br.endMem.HeapAlloc-br.startMem.HeapAlloc, 10),
-	record["MallocsDiff"] = strconv.FormatUint(br.endMem.Mallocs-br.startMem.Mallocs, 10)
-	record["StartTime"] = strconv.FormatInt(br.start.Unix(), 10)
-	record["EndTime"] = strconv.FormatInt(br.start.Add(br.elapsedTime).Unix(), 10)
-	record["NumWorkers"] = strconv.Itoa(opts.numWorkers)
-	record["CodeVersion"] = codeVersion
-	record["BucketName"] = opts.bucket
-
-	var result []string
-
-	for _, h := range csvHeader {
-		result = append(result, record[h])
-	}
-
-	return result
-}
-
-var csvHeader = []string{
-	"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
-	"Crc32cEnabled", "MD5Enabled", "ApiName",
-	"ElapsedTimeUs", "CpuTimeUs", "Status",
-	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
-	"StartTime", "EndTime", "NumWorkers",
-	"CodeVersion", "BucketName",
 }
 
 type benchmarkAPI string
@@ -523,8 +397,9 @@ func (api benchmarkAPI) validate() error {
 }
 
 func writeHeader(w io.Writer) {
+	header := selectHeader()
 	cw := csv.NewWriter(w)
-	if err := cw.Write(csvHeader); err != nil {
+	if err := cw.Write(*header); err != nil {
 		log.Fatalf("error writing csv header: %v", err)
 	}
 	cw.Flush()
@@ -546,6 +421,50 @@ func writeResultAsCloudMonitoring(w io.Writer, result *benchmarkResult) {
 	_, err = w.Write([]byte{'\n'})
 	if err != nil {
 		log.Fatalf("cloud monitoring w.Write: %v", err)
+	}
+}
+
+// enableTracing turns on Open Telemetry tracing with export to Cloud Trace.
+func enableTracing(ctx context.Context, sampleRate float64) func() {
+	exporter, err := texporter.New(texporter.WithProjectID(projectID))
+	if err != nil {
+		log.Fatalf("texporter.New: %v", err)
+	}
+
+	// Identify your application using resource detection
+	res, err := resource.New(ctx,
+		// Use the GCP resource detector to detect information about the GCP platform
+		resource.WithDetectors(gcp.NewDetector()),
+		// Keep the default detectors
+		resource.WithTelemetrySDK(),
+		// Add your own custom attributes to identify your application
+		resource.WithAttributes(
+			semconv.ServiceName(tracerName),
+		),
+	)
+	if err != nil {
+		log.Fatalf("resource.New: %v", err)
+	}
+
+	// Create trace provider with the exporter.
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithResource(res),
+		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(sampleRate)),
+	)
+
+	otel.SetTracerProvider(tp)
+
+	// Use opencensus bridge to pick up OC traces from the storage library.
+	// TODO: remove this when migration to OpenTelemetry is complete.
+	tracer := otel.GetTracerProvider().Tracer(tracerName)
+	octrace.DefaultTracer = opencensus.NewTracer(tracer)
+
+	return func() {
+		tp.ForceFlush(ctx)
+		if err := tp.Shutdown(context.Background()); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 

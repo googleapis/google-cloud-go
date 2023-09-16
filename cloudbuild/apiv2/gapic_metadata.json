@@ -40,6 +40,11 @@
                 "DeleteRepository"
               ]
             },
+            "FetchGitRefs": {
+              "methods": [
+                "FetchGitRefs"
+              ]
+            },
             "FetchLinkableRepositories": {
               "methods": [
                 "FetchLinkableRepositories"
@@ -133,6 +138,11 @@
             "DeleteRepository": {
               "methods": [
                 "DeleteRepository"
+              ]
+            },
+            "FetchGitRefs": {
+              "methods": [
+                "FetchGitRefs"
               ]
             },
             "FetchLinkableRepositories": {
