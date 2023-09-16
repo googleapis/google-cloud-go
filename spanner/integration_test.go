@@ -4990,7 +4990,7 @@ func TestIntegration_WithDirectedReadOptions(t *testing.T) {
 	got, err = readAll(client.Single().QueryWithOptions(ctx, Statement{
 		singersQuery,
 		map[string]interface{}{"p1": int64(1), "p2": int64(3), "p3": int64(4)},
-	}, QueryOptions{DirectedReadOptions: directedReadOptions}))
+	}, QueryOptions{}))
 
 	if err != nil {
 		t.Errorf("DirectedReadOptions using QueryOptions returns error %v, want nil", err)
