@@ -21,7 +21,7 @@ import (
 )
 
 func TestSecureConnectSource_ConfigMissing(t *testing.T) {
-	source, err := NewSecureConnectSource("missing.json")
+	source, err := NewSecureConnectProvider("missing.json")
 	if got, want := err, errSourceUnavailable; !errors.Is(err, errSourceUnavailable) {
 		t.Fatalf("got %v, want %v", got, want)
 	}
@@ -31,7 +31,7 @@ func TestSecureConnectSource_ConfigMissing(t *testing.T) {
 }
 
 func TestSecureConnectSource_GetClientCertificateSuccess(t *testing.T) {
-	source, err := NewSecureConnectSource("testdata/context_aware_metadata.json")
+	source, err := NewSecureConnectProvider("testdata/context_aware_metadata.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func TestSecureConnectSource_GetClientCertificateSuccess(t *testing.T) {
 }
 
 func TestSecureConnectSource_GetClientCertificateFailure(t *testing.T) {
-	source, err := NewSecureConnectSource("testdata/context_aware_metadata_invalid_pem.json")
+	source, err := NewSecureConnectProvider("testdata/context_aware_metadata_invalid_pem.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -76,7 +76,7 @@ func TestSecureConnectSource_ValidateMetadataFailure(t *testing.T) {
 }
 
 func TestSecureConnectSource_IsCertificateExpiredTrue(t *testing.T) {
-	source, err := NewSecureConnectSource("testdata/context_aware_metadata.json")
+	source, err := NewSecureConnectProvider("testdata/context_aware_metadata.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -90,7 +90,7 @@ func TestSecureConnectSource_IsCertificateExpiredTrue(t *testing.T) {
 }
 
 func TestSecureConnectSource_IsCertificateExpiredFalse(t *testing.T) {
-	source, err := NewSecureConnectSource("testdata/context_aware_metadata_nonexpiring_pem.json")
+	source, err := NewSecureConnectProvider("testdata/context_aware_metadata_nonexpiring_pem.json")
 	if err != nil {
 		t.Fatal(err)
 	}

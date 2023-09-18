@@ -25,7 +25,7 @@ type ecpSource struct {
 	key *client.Key
 }
 
-// NewEnterpriseCertificateProxySource creates a certificate source
+// NewEnterpriseCertificateProxyProvider creates a certificate source
 // using the Enterprise Certificate Proxy client, which delegates
 // certifcate related operations to an OS-specific "signer binary"
 // that communicates with the native keystore (ex. keychain on MacOS).
@@ -34,7 +34,7 @@ type ecpSource struct {
 // such as the certificate issuer and the location of the signer binary.
 // If configFilePath is empty, the client will attempt to load the config from
 // a well-known gcloud location.
-func NewEnterpriseCertificateProxySource(configFilePath string) (Provider, error) {
+func NewEnterpriseCertificateProxyProvider(configFilePath string) (Provider, error) {
 	key, err := client.Cred(configFilePath)
 	if err != nil {
 		if errors.Is(err, client.ErrCredUnavailable) {

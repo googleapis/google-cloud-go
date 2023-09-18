@@ -21,14 +21,16 @@ import (
 )
 
 // defaultCertData holds all the variables pertaining to
-// the default certficate source created by DefaultSource.
+// the default certificate provider created by [DefaultProvider].
 //
-// A singleton model is used to allow the source to be reused
-// by the transport layer.
+// A singleton model is used to allow the provider to be reused
+// by the transport layer. As mentioned in [DefaultProvider] (provider nil, nil)
+// may be returned to indicate a default provider could not be found, which
+// will skip extra tls config in the transport layer .
 type defaultCertData struct {
-	once   sync.Once
-	source Provider
-	err    error
+	once     sync.Once
+	provider Provider
+	err      error
 }
 
 var (
@@ -41,20 +43,20 @@ type Provider func(*tls.CertificateRequestInfo) (*tls.Certificate, error)
 // errSourceUnavailable is a sentinel error to indicate certificate source is unavailable.
 var errSourceUnavailable = errors.New("certificate source is unavailable")
 
-// DefaultSource returns a certificate source using the preferred EnterpriseCertificateProxySource.
+// DefaultProvider returns a certificate source using the preferred EnterpriseCertificateProxySource.
 // If EnterpriseCertificateProxySource is not available, fall back to the legacy SecureConnectSource.
 //
 // If neither source is available (due to missing configurations), a nil Source and a nil Error are
 // returned to indicate that a default certificate source is unavailable.
-func DefaultSource() (Provider, error) {
+func DefaultProvider() (Provider, error) {
 	defaultCert.once.Do(func() {
-		defaultCert.source, defaultCert.err = NewEnterpriseCertificateProxySource("")
+		defaultCert.provider, defaultCert.err = NewEnterpriseCertificateProxyProvider("")
 		if errors.Is(defaultCert.err, errSourceUnavailable) {
-			defaultCert.source, defaultCert.err = NewSecureConnectSource("")
+			defaultCert.provider, defaultCert.err = NewSecureConnectProvider("")
 			if errors.Is(defaultCert.err, errSourceUnavailable) {
-				defaultCert.source, defaultCert.err = nil, nil
+				defaultCert.provider, defaultCert.err = nil, nil
 			}
 		}
 	})
-	return defaultCert.source, defaultCert.err
+	return defaultCert.provider, defaultCert.err
 }

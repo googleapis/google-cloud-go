@@ -27,7 +27,6 @@ const (
 	testMTLSEndpoint     = "test.mtls.endpoint"
 	testRegularEndpoint  = "test.endpoint"
 	testOverrideEndpoint = "test.override.endpoint"
-	testS2AAddr          = "testS2AAddress:port"
 )
 
 var (
@@ -368,77 +367,6 @@ func TestGetHTTPTransportConfig(t *testing.T) {
 			time.Sleep(2 * time.Millisecond)
 		})
 	}
-}
-
-func TestGetS2AAddress(t *testing.T) {
-	testCases := []struct {
-		name   string
-		respFn func() (string, error)
-		want   string
-	}{
-		{
-			name:   "test valid config",
-			respFn: validConfigResp,
-			want:   testS2AAddr,
-		},
-		{
-			name:   "test error when getting config",
-			respFn: errorConfigResp,
-			want:   "",
-		},
-		{
-			name:   "test invalid config",
-			respFn: invalidConfigResp,
-			want:   "",
-		},
-		{
-			name:   "test invalid JSON response",
-			respFn: invalidJSONResp,
-			want:   "",
-		},
-	}
-
-	oldHTTPGet := httpGetMetadataMTLSConfig
-	oldExpiry := configExpiry
-	configExpiry = time.Millisecond
-	defer func() {
-		httpGetMetadataMTLSConfig = oldHTTPGet
-		configExpiry = oldExpiry
-	}()
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			httpGetMetadataMTLSConfig = tc.respFn
-			if want, got := tc.want, GetS2AAddress(); got != want {
-				t.Errorf("%s: want address [%s], got address [%s]", tc.name, want, got)
-			}
-			// Let the MTLS config expire at the end of each test case.
-			time.Sleep(2 * time.Millisecond)
-		})
-	}
-}
-
-func TestMTLSConfigExpiry(t *testing.T) {
-	oldHTTPGet := httpGetMetadataMTLSConfig
-	oldExpiry := configExpiry
-	configExpiry = 1 * time.Second
-	defer func() {
-		httpGetMetadataMTLSConfig = oldHTTPGet
-		configExpiry = oldExpiry
-	}()
-	httpGetMetadataMTLSConfig = validConfigResp
-	if got, want := GetS2AAddress(), testS2AAddr; got != want {
-		t.Errorf("expected address: [%s], got [%s]", want, got)
-	}
-	httpGetMetadataMTLSConfig = invalidConfigResp
-	if got, want := GetS2AAddress(), testS2AAddr; got != want {
-		t.Errorf("cached config should still be valid, expected address: [%s], got [%s]", want, got)
-	}
-	time.Sleep(1 * time.Second)
-	if got, want := GetS2AAddress(), ""; got != want {
-		t.Errorf("config should be refreshed, expected address: [%s], got [%s]", want, got)
-	}
-	// Let the MTLS config expire before running other tests.
-	time.Sleep(1 * time.Second)
 }
 
 func setupTest(t *testing.T) func() {

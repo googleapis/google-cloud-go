@@ -20,7 +20,7 @@ import (
 )
 
 func TestEnterpriseCertificateProxySource_ConfigMissing(t *testing.T) {
-	source, err := NewEnterpriseCertificateProxySource("missing.json")
+	source, err := NewEnterpriseCertificateProxyProvider("missing.json")
 	if got, want := err, errSourceUnavailable; !errors.Is(err, errSourceUnavailable) {
 		t.Fatalf("got %v, want %v err", got, want)
 	}
@@ -31,7 +31,7 @@ func TestEnterpriseCertificateProxySource_ConfigMissing(t *testing.T) {
 
 // This test launches a mock signer binary "test_signer.go" that uses a valid pem file.
 func TestEnterpriseCertificateProxySource_GetClientCertificateSuccess(t *testing.T) {
-	source, err := NewEnterpriseCertificateProxySource("testdata/certificate_config.json")
+	source, err := NewEnterpriseCertificateProxyProvider("testdata/certificate_config.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,7 +49,7 @@ func TestEnterpriseCertificateProxySource_GetClientCertificateSuccess(t *testing
 
 // This test launches a mock signer binary "test_signer.go" that uses an invalid pem file.
 func TestEnterpriseCertificateProxySource_InitializationFailure(t *testing.T) {
-	_, err := NewEnterpriseCertificateProxySource("testdata/certificate_config_invalid_pem.json")
+	_, err := NewEnterpriseCertificateProxyProvider("testdata/certificate_config_invalid_pem.json")
 	if err == nil {
 		t.Fatal("got nil, want non-nil err")
 	}

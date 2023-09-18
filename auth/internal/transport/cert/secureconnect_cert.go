@@ -45,12 +45,12 @@ type secureConnectMetadata struct {
 	Cmd []string `json:"cert_provider_command"`
 }
 
-// NewSecureConnectSource creates a certificate source using
+// NewSecureConnectProvider creates a certificate source using
 // the Secure Connect Helper and its associated metadata file.
 //
 // The configFilePath points to the location of the context aware metadata file.
 // If configFilePath is empty, use the default context aware metadata location.
-func NewSecureConnectSource(configFilePath string) (Provider, error) {
+func NewSecureConnectProvider(configFilePath string) (Provider, error) {
 	if configFilePath == "" {
 		user, err := user.Current()
 		if err != nil {
