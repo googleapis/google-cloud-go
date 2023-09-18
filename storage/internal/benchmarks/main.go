@@ -239,7 +239,9 @@ func main() {
 	parseFlags()
 
 	go func() {
-		http.ListenAndServe(":8080", nil)
+		if err := http.ListenAndServe("localhost:8080", nil); err != nil {
+			log.Fatalf("error starting http server: %v", err)
+		}
 	}()
 
 	start := time.Now()
