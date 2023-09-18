@@ -32,6 +32,45 @@ var testClient = &Client{
 	readSettings: &readSettings{},
 }
 
+func TestNewClientWithDatabase(t *testing.T) {
+	for _, tc := range []struct {
+		desc       string
+		databaseID string
+		projectID  string
+		wantErr    bool
+	}{
+		{
+			desc:       "Empty databaseID",
+			databaseID: "",
+			projectID:  "p1",
+			wantErr:    true,
+		},
+		{
+			desc:       "Error from NewClient bubbled to NewClientWithDatabase",
+			databaseID: "db1",
+			projectID:  "",
+			wantErr:    true,
+		},
+		{
+			desc:       "Valid databaseID",
+			databaseID: "db1",
+			projectID:  "p1",
+			wantErr:    false,
+		},
+	} {
+		client, err := NewClientWithDatabase(context.Background(), tc.projectID, tc.databaseID)
+
+		if err != nil && !tc.wantErr {
+			t.Errorf("NewClientWithDatabase: %s got %v want nil", tc.desc, err)
+		} else if err == nil && tc.wantErr {
+			t.Errorf("NewClientWithDatabase: %s got %v wanted error", tc.desc, err)
+		} else if err == nil && tc.databaseID != client.databaseID {
+			t.Errorf("NewClientWithDatabase: %s got %v want %v", tc.desc, client.databaseID, tc.databaseID)
+		}
+
+	}
+}
+
 func TestClientCollectionAndDoc(t *testing.T) {
 	coll1 := testClient.Collection("X")
 	db := "projects/projectID/databases/(default)"
