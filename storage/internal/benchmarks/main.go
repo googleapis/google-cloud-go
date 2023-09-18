@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -47,6 +47,9 @@ import (
 
 	// Install RLS load balancer policy, which is needed for gRPC RLS.
 	_ "google.golang.org/grpc/balancer/rls"
+
+	// Register the pprof endpoints under the web server root at /debug/pprof
+	_ "net/http/pprof"
 )
 
 const (
@@ -234,7 +237,10 @@ func parseFlags() {
 func main() {
 	log.SetOutput(os.Stderr)
 	parseFlags()
-	rand.Seed(time.Now().UnixNano())
+
+	go func() {
+		http.ListenAndServe(":8080", nil)
+	}()
 
 	start := time.Now()
 	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
