@@ -13,8 +13,7 @@ import (
 )
 
 const (
-	configEndpointSuffix = "googleAutoMtlsConfiguration"
-	
+	configEndpointSuffix = "instance/platform-security/auto-mtls-configuration"
 )
 
 var (
