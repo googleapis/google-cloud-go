@@ -16,12 +16,22 @@ package pubsub
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"sync"
 
+	"cloud.google.com/go/pubsub/internal"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	otelcodes "go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/propagation"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"go.opentelemetry.io/otel/trace"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 // The following keys are used to tag requests with a specific topic/subscription ID.
@@ -255,4 +265,153 @@ func withSubscriptionKey(ctx context.Context, subName string) context.Context {
 
 func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 	stats.Record(ctx, m.M(n))
+}
+
+const defaultTracerName = "cloud.google.com/go/pubsub"
+
+func tracer() trace.Tracer {
+	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))
+}
+
+var _ propagation.TextMapCarrier = (*messageCarrier)(nil)
+
+// messageCarrier injects and extracts traces from a pubsub.Message.
+type messageCarrier struct {
+	msg *Message
+}
+
+// newMessageCarrier creates a new PubsubMessageCarrier.
+func newMessageCarrier(msg *Message) messageCarrier {
+	return messageCarrier{msg: msg}
+}
+
+// Get retrieves a single value for a given key.
+func (c messageCarrier) Get(key string) string {
+	return c.msg.Attributes["googclient_"+key]
+}
+
+// Set sets an attribute.
+func (c messageCarrier) Set(key, val string) {
+	c.msg.Attributes["googclient_"+key] = val
+}
+
+// Keys returns a slice of all keys in the carrier.
+func (c messageCarrier) Keys() []string {
+	i := 0
+	out := make([]string, len(c.msg.Attributes))
+	for k := range c.msg.Attributes {
+		out[i] = k
+		i++
+	}
+	return out
+}
+
+const (
+	// publish span names
+	publisherSpanName          = "send"
+	publishFlowControlSpanName = "publisher flow control"
+	publishBatcherSpanName     = "publish scheduler"
+	publishRPCSpanName         = "publish"
+
+	// subscribe span names
+	subscriberSpanName            = "receive"
+	subscriberFlowControlSpanName = "subscriber flow control"
+	processSpanName               = "process"
+	subscribeSchedulerSpanName    = "subscribe scheduler"
+	receiptModAckSpanName         = "send initial ModifyAckDeadline"
+	modAckSpanName                = "send ModifyAckDeadline"
+	ackSpanName                   = "send Acknowledge"
+	nackSpanName                  = "send Negative Acknowledge"
+
+	// custom pubsub specific attributes
+	numBatchedMessagesAttribute    = "messaging.pubsub.num_messages_in_batch"
+	subscriptionAttribute          = "messaging.pubsub.subscription"
+	orderingAttribute              = "messaging.pubsub.ordering_key"
+	deliveryAttemptAttribute       = "messaging.pubsub.delivery_attempt"
+	eosAttribute                   = "messaging.pubsub.exactly_once_delivery"
+	ackIDAttribute                 = "messaging.pubsub.ack_id"
+	ackAttribute                   = "messaging.pubsub.is_acked"
+	modackDeadlineSecondsAttribute = "messaging.pubsub.modack_deadline_seconds"
+	initialModackAttribute         = "messaging.pubsub.is_initial_modack"
+)
+
+func startPublishSpan(ctx context.Context, m *Message, topicName string) (context.Context, trace.Span) {
+	opts := getPublishSpanAttributes(topicName, m)
+	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicName, publisherSpanName), opts...)
+}
+
+func startPublishFlowControlSpan(ctx context.Context) (context.Context, trace.Span) {
+	return tracer().Start(ctx, publishFlowControlSpanName)
+}
+
+func startBatcherSpan(ctx context.Context) (context.Context, trace.Span) {
+	return tracer().Start(ctx, publishBatcherSpanName)
+}
+
+func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
+	// TODO(hongalex): benchmark this to make sure no significant performance degradation
+	// when calculating proto.Size in receive paths.
+	// TODO(hongalex): find way to incorporate pubsub client library version in attribute.
+	msgSize := proto.Size(&pb.PubsubMessage{
+		Data:        msg.Data,
+		Attributes:  msg.Attributes,
+		OrderingKey: msg.OrderingKey,
+	})
+	ss := []trace.SpanStartOption{
+		trace.WithAttributes(
+			semconv.MessagingSystemKey.String("pubsub"),
+			semconv.MessagingDestinationKey.String(topic),
+			semconv.MessagingDestinationKindTopic,
+			semconv.MessagingMessageIDKey.String(msg.ID),
+			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+			attribute.String(orderingAttribute, msg.OrderingKey),
+		),
+		trace.WithAttributes(opts...),
+		trace.WithSpanKind(trace.SpanKindProducer),
+	}
+	return ss
+}
+
+// injectPropagation injects context data into the Pub/Sub message's Attributes field.
+func injectPropagation(ctx context.Context, msg *Message) {
+	// only inject propagation if a valid span context was detected.
+	if trace.SpanFromContext(ctx).SpanContext().IsValid() {
+		if msg.Attributes == nil {
+			msg.Attributes = make(map[string]string)
+		}
+		otel.GetTextMapPropagator().Inject(ctx, newMessageCarrier(msg))
+	}
+}
+
+// spanRecordError records the error, sets the status to error, and ends the span.
+// This is recommended by https://opentelemetry.io/docs/instrumentation/go/manual/#record-errors
+// since RecordError doesn't set the status of a span.
+func getSubSpanAttributes(sub string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
+	msgSize := proto.Size(&pb.PubsubMessage{
+		Data:        msg.Data,
+		Attributes:  msg.Attributes,
+		OrderingKey: msg.OrderingKey,
+	})
+	ss := []trace.SpanStartOption{
+		trace.WithAttributes(
+			semconv.MessagingSystemKey.String("pubsub"),
+			semconv.MessagingDestinationKindTopic,
+			semconv.MessagingMessageIDKey.String(msg.ID),
+			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+			attribute.String(subscriptionAttribute, sub),
+			attribute.String(orderingAttribute, msg.OrderingKey),
+		),
+		trace.WithAttributes(opts...),
+		trace.WithSpanKind(trace.SpanKindConsumer),
+	}
+	if msg.DeliveryAttempt != nil {
+		ss = append(ss, trace.WithAttributes(attribute.Int(deliveryAttemptAttribute, *msg.DeliveryAttempt)))
+	}
+	return ss
+}
+
+func spanRecordError(span trace.Span, err error) {
+	span.RecordError(err)
+	span.SetStatus(otelcodes.Error, err.Error())
+	span.End()
 }

@@ -29,6 +29,8 @@ import (
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -62,9 +64,14 @@ func (c *Client) Subscription(id string) *Subscription {
 
 // SubscriptionInProject creates a reference to a subscription in a given project.
 func (c *Client) SubscriptionInProject(id, projectID string) *Subscription {
+	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id))
+}
+
+func newSubscription(c *Client, name string) *Subscription {
 	return &Subscription{
-		c:    c,
-		name: fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id),
+		c:               c,
+		name:            name,
+		ReceiveSettings: DefaultReceiveSettings,
 	}
 }
 
@@ -114,7 +121,7 @@ func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Subscription{c: subs.c, name: subName}, nil
+	return newSubscription(subs.c, subName), nil
 }
 
 // NextConfig returns the next subscription config. If there are no more subscriptions,
@@ -1360,6 +1367,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					return nil
 				default:
 				}
+
 				msgs, err := iter.receive(maxToPull)
 				if err == io.EOF {
 					return nil
@@ -1377,10 +1385,20 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					return nil
 				default:
 				}
+
 				for i, msg := range msgs {
 					msg := msg
-					// TODO(jba): call acquire closer to when the message is allocated.
-					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
+					iter.eoMu.RLock()
+					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
+					iter.eoMu.RUnlock()
+					ctx3 := ctx
+					if msg.Attributes != nil {
+						ctx3 = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(msg))
+						// remove googclient before handing off to client.
+						delete(msg.Attributes, "googclient_traceparent")
+					}
+					ctx3, fcSpan := tracer().Start(ctx3, subscriberFlowControlSpanName)
+					if err := fc.acquire(ctx3, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
 						for _, m := range msgs[i:] {
 							m.Nack()
@@ -1388,11 +1406,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					iter.eoMu.RLock()
-					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
-					iter.eoMu.RUnlock()
-					old := ackh.doneFunc
+					fcSpan.End()
 					msgLen := len(msg.Data)
+					old := ackh.doneFunc
 					ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
 						defer fc.release(ctx, msgLen)
 						old(ackID, ack, r, receiveTime)
@@ -1405,11 +1421,31 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					}
 					// TODO(deklerk): Can we have a generic handler at the
 					// constructor level?
+					_, schedulerSpan := tracer().Start(ctx3, subscribeSchedulerSpanName)
 					if err := sched.Add(key, msg, func(msg interface{}) {
+						m := msg.(*Message)
+						schedulerSpan.End()
 						defer wg.Done()
-						f(ctx2, msg.(*Message))
+						_, cSpan := tracer().Start(ctx2, fmt.Sprintf("%s %s", s.String(), processSpanName))
+						defer cSpan.End()
+						old2 := ackh.doneFunc
+						ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
+							var eventString string
+							if ack {
+								eventString = "msg.Ack() called"
+							} else {
+								eventString = "msg.Nack() called"
+							}
+							cSpan.AddEvent(eventString)
+							cSpan.SetAttributes(attribute.Bool(ackAttribute, ack))
+							defer cSpan.End()
+							old2(ackID, ack, r, receiveTime)
+						}
+						f(ctx2, m)
 					}); err != nil {
 						wg.Done()
+						// TODO(hongalex): propagate these errors to an otel span.
+
 						// If there are any errors with scheduling messages,
 						// nack them so they can be redelivered.
 						msg.Nack()
