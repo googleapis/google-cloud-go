@@ -410,6 +410,8 @@ func getSubSpanAttributes(sub string, msg *Message, opts ...attribute.KeyValue) 
 	return ss
 }
 
+=======
+>>>>>>> pubsub-otel-trace
 func spanRecordError(span trace.Span, err error) {
 	span.RecordError(err)
 	span.SetStatus(otelcodes.Error, err.Error())
