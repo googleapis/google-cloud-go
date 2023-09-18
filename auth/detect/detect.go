@@ -16,6 +16,7 @@ package detect
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -133,7 +134,11 @@ func DefaultCredentials(opts *Options) (*Credentials, error) {
 		return newCredentials(computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...), nil, id, "", ""), nil
 	}
 
-	return nil, fmt.Errorf("detect: could not find default credentials. See %v for more information", adcSetupURL)
+	if opts.UniverseDomain == "" || opts.UniverseDomain == internal.UniverseDomainGoogleDefault {
+		return nil, fmt.Errorf("detect: could not find default credentials. See %v for more information", adcSetupURL)
+	} else {
+		return nil, errors.New("detect: could not find default credentials")
+	}
 }
 
 // Options provides configuration for [DefaultCredentials].

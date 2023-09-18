@@ -34,7 +34,7 @@ const (
 	quotaProjectEnvVar          = "GOOGLE_CLOUD_QUOTA_PROJECT"
 	projectEnvVar               = "GOOGLE_CLOUD_PROJECT"
 	maxBodySize                 = 1 << 20
-	universeDomainGoogleDefault = "googleapis.com"
+	UniverseDomainGoogleDefault = "googleapis.com"
 )
 
 // CloneDefaultClient returns a [http.Client] with some good defaults.
@@ -76,16 +76,16 @@ func GetUniverseDomain(b []byte, override string) string {
 		return override
 	}
 	if b == nil {
-		return universeDomainGoogleDefault
+		return UniverseDomainGoogleDefault
 	}
 	var v struct {
 		UniverseDomain string `json:"universe_domain"`
 	}
 	if err := json.Unmarshal(b, &v); err != nil {
-		return universeDomainGoogleDefault
+		return UniverseDomainGoogleDefault
 	}
 	if v.UniverseDomain == "" {
-		return universeDomainGoogleDefault
+		return UniverseDomainGoogleDefault
 	}
 	return v.UniverseDomain
 }

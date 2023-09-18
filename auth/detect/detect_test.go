@@ -548,6 +548,19 @@ func TestDefaultCredentials_Fails(t *testing.T) {
 		t.Fatalf("got %v, wanted to contain %v", err, adcSetupURL)
 	}
 }
+func TestDefaultCredentials_FailsUniverseDomain(t *testing.T) {
+	t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "nothingToSeeHere")
+	t.Setenv("HOME", "nothingToSeeHere")
+	t.Setenv("APPDATA", "nothingToSeeHere")
+	allowOnGCECheck = false
+	defer func() { allowOnGCECheck = true }()
+	if _, err := DefaultCredentials(&Options{
+		Scopes: []string{"https://www.googleapis.com/auth/cloud-platform"},
+		UniverseDomain: "example.com",
+	}); strings.Contains(err.Error(), adcSetupURL) {
+		t.Fatalf("got %v, wanted not to contain %v", err, adcSetupURL)
+	}
+}
 
 func TestDefaultCredentials_BadFiletype(t *testing.T) {
 	if _, err := DefaultCredentials(&Options{
