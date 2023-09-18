@@ -972,10 +972,11 @@ service-configs:
     service-config: storagetransfer_v1.yaml
     import-path: cloud.google.com/go/storagetransfer/apiv1
     # All entries below are clients that are not currently copied by owlbot. They
-    # explicitly express thier import path for some code gen.
+    # explicitly express their import path for some code gen.
   - input-directory: google/devtools/containeranalysis/v1beta1/grafeas
     service-config: ../containeranalysis_v1beta1.yaml
     import-path: cloud.google.com/go/containeranalysis/apiv1beta1
+    rel-path: /containeranalysis/apiv1beta1
   - input-directory: google/cloud/video/stitcher/v1
     service-config: videostitcher_v1.yaml
     import-path: cloud.google.com/go/video/stitcher/apiv1
