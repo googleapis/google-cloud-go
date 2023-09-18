@@ -300,9 +300,9 @@ func (r *directoryBenchmark) downloadDirectory(ctx context.Context, numWorkers i
 
 func (r *directoryBenchmark) run(ctx context.Context) error {
 	// Upload
-	err := runOneOp(ctx, r.writeResult, func() (time.Duration, error) {
+	err := runOneSample(r.writeResult, func() (time.Duration, error) {
 		return r.uploadDirectory(ctx, r.numWorkers)
-	})
+	}, false)
 
 	// Do not attempt to read from a failed upload
 	if err != nil {
@@ -310,9 +310,9 @@ func (r *directoryBenchmark) run(ctx context.Context) error {
 	}
 
 	// Download
-	err = runOneOp(ctx, r.readResult, func() (time.Duration, error) {
+	err = runOneSample(r.readResult, func() (time.Duration, error) {
 		return r.downloadDirectory(ctx, r.numWorkers)
-	})
+	}, false)
 	if err != nil {
 		return fmt.Errorf("download directory: %w", err)
 	}
