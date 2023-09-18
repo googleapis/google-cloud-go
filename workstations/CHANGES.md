@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.4.1...workstations/v0.5.0) (2023-09-11)
+
+
+### Features
+
+* **workstations:** Add config service_account_scopes ([15be57b](https://github.com/googleapis/google-cloud-go/commit/15be57b9264a793494cedc3966034fa20f56d7c5))
+* **workstations:** Add config service_account_scopes ([15be57b](https://github.com/googleapis/google-cloud-go/commit/15be57b9264a793494cedc3966034fa20f56d7c5))
+
 ## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.4.0...workstations/v0.4.1) (2023-06-20)
 
 

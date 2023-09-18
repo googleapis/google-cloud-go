@@ -12,30 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package transport provided internal helpers for the two transport packages
+// (grpctransport and httptransport).
 package transport
 
-import (
-	"context"
-	"net/http"
+import "cloud.google.com/go/auth/detect"
 
-	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/internal"
-)
-
-const authHeaderKey = "Authorization"
-
-// SetAuthHeader sets the Authorization header on the provided request with a
-// [cloud.google.com/go/auth.Token.Value] provided by the
-// [cloud.google.com/go/auth.TokenProvider].
-func SetAuthHeader(ctx context.Context, tp auth.TokenProvider, r *http.Request) error {
-	t, err := tp.Token(ctx)
-	if err != nil {
-		return err
+// CloneDetectOptions clones a user set detect option into some new memory that
+// we can internally manipulate before sending onto the detect package.
+func CloneDetectOptions(oldDo *detect.Options) *detect.Options {
+	if oldDo == nil {
+		// it is valid for users not to set this, but we will need to to default
+		// some options for them in this case so return some initialized memory
+		// to work with.
+		return &detect.Options{}
 	}
-	typ := t.Type
-	if typ == "" {
-		typ = internal.TokenTypeBearer
+	newDo := &detect.Options{
+		// Simple types
+		Audience:          oldDo.Audience,
+		Subject:           oldDo.Subject,
+		EarlyTokenRefresh: oldDo.EarlyTokenRefresh,
+		TokenURL:          oldDo.TokenURL,
+		STSAudience:       oldDo.STSAudience,
+		CredentialsFile:   oldDo.CredentialsFile,
+		UseSelfSignedJWT:  oldDo.UseSelfSignedJWT,
+
+		// These fields are are pointer types that we just want to use exactly
+		// as the user set, copy the ref
+		Client:             oldDo.Client,
+		AuthHandlerOptions: oldDo.AuthHandlerOptions,
 	}
-	r.Header.Set(authHeaderKey, typ+" "+t.Value)
-	return nil
+
+	// Smartly size this memory and copy below.
+	if oldDo.CredentialsJSON != nil {
+		newDo.CredentialsJSON = make([]byte, len(oldDo.CredentialsJSON))
+		copy(newDo.CredentialsJSON, oldDo.CredentialsJSON)
+	}
+	if oldDo.Scopes != nil {
+		newDo.Scopes = make([]string, len(oldDo.Scopes))
+		copy(newDo.Scopes, oldDo.Scopes)
+	}
+
+	return newDo
 }

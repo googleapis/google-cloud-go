@@ -12,6 +12,7 @@ deep-remove-regex:
   - /alloydb/apiv1alpha/
   - /alloydb/apiv1beta/
   - /alloydb/connectors/apiv1alpha/
+  - /alloydb/connectors/apiv1beta/
   - /analytics/admin/apiv1alpha/
   - /apigateway/apiv1/
   - /apigeeconnect/apiv1/
@@ -330,7 +331,7 @@ deep-remove-regex:
   - /internal/generated/snippets/trace/apiv2/
   - /internal/generated/snippets/translate/apiv3/
   - /internal/generated/snippets/video/livestream/apiv1/
-  # - /internal/generated/snippets/video/stitcher/apiv1/
+  - /internal/generated/snippets/video/stitcher/apiv1/
   - /internal/generated/snippets/video/transcoder/apiv1/
   - /internal/generated/snippets/videointelligence/apiv1/
   - /internal/generated/snippets/videointelligence/apiv1beta2/
@@ -449,7 +450,7 @@ deep-remove-regex:
   - /trace/apiv2/
   - /translate/apiv3/
   - /video/livestream/apiv1/
-  # - /video/stitcher/apiv1/
+  - /video/stitcher/apiv1/
   - /video/transcoder/apiv1/
   - /videointelligence/apiv1/
   - /videointelligence/apiv1beta2/
@@ -529,6 +530,8 @@ deep-copy-regex:
   - source: /google/cloud/alloydb/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/alloydb/connectors/v1alpha/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/alloydb/connectors/v1beta/cloud.google.com/go
     dest: /
   - source: /google/analytics/admin/v1alpha/cloud.google.com/go
     dest: /
@@ -946,8 +949,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/video/livestream/v1/cloud.google.com/go
     dest: /
-  # - source: /google/cloud/video/stitcher/v1/cloud.google.com/go
-  #   dest: /
+  - source: /google/cloud/video/stitcher/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/video/transcoder/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/videointelligence/v1/cloud.google.com/go

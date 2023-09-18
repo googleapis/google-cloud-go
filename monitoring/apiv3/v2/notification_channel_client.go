@@ -226,6 +226,8 @@ func (c *NotificationChannelClient) GetNotificationChannelDescriptor(ctx context
 }
 
 // ListNotificationChannels lists the notification channels that have been created for the project.
+// To list the types of notification channels that are supported, use
+// the ListNotificationChannelDescriptors method.
 func (c *NotificationChannelClient) ListNotificationChannels(ctx context.Context, req *monitoringpb.ListNotificationChannelsRequest, opts ...gax.CallOption) *NotificationChannelIterator {
 	return c.internalClient.ListNotificationChannels(ctx, req, opts...)
 }
@@ -241,17 +243,32 @@ func (c *NotificationChannelClient) GetNotificationChannel(ctx context.Context, 
 
 // CreateNotificationChannel creates a new notification channel, representing a single notification
 // endpoint such as an email address, SMS number, or PagerDuty service.
+//
+// Design your application to single-thread API calls that modify the state of
+// notification channels in a single project. This includes calls to
+// CreateNotificationChannel, DeleteNotificationChannel and
+// UpdateNotificationChannel.
 func (c *NotificationChannelClient) CreateNotificationChannel(ctx context.Context, req *monitoringpb.CreateNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
 	return c.internalClient.CreateNotificationChannel(ctx, req, opts...)
 }
 
 // UpdateNotificationChannel updates a notification channel. Fields not specified in the field mask
 // remain unchanged.
+//
+// Design your application to single-thread API calls that modify the state of
+// notification channels in a single project. This includes calls to
+// CreateNotificationChannel, DeleteNotificationChannel and
+// UpdateNotificationChannel.
 func (c *NotificationChannelClient) UpdateNotificationChannel(ctx context.Context, req *monitoringpb.UpdateNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
 	return c.internalClient.UpdateNotificationChannel(ctx, req, opts...)
 }
 
 // DeleteNotificationChannel deletes a notification channel.
+//
+// Design your application to single-thread API calls that modify the state of
+// notification channels in a single project. This includes calls to
+// CreateNotificationChannel, DeleteNotificationChannel and
+// UpdateNotificationChannel.
 func (c *NotificationChannelClient) DeleteNotificationChannel(ctx context.Context, req *monitoringpb.DeleteNotificationChannelRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteNotificationChannel(ctx, req, opts...)
 }

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.12.1...networkconnectivity/v1.13.0) (2023-09-12)
+
+
+### Features
+
+* **networkconnectivity:** Add PolicyBasedRouting APIs ([0449518](https://github.com/googleapis/google-cloud-go/commit/0449518f8396cc0280c0f3303c103edcee34016b))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.12.0...networkconnectivity/v1.12.1) (2023-06-20)
 
 
