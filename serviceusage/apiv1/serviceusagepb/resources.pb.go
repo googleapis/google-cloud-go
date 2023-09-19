@@ -24,7 +24,6 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	monitoredres "google.golang.org/genproto/googleapis/api/monitoredres"
 	serviceconfig "google.golang.org/genproto/googleapis/api/serviceconfig"
-	usage "google.golang.org/genproto/googleapis/api/usage"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	apipb "google.golang.org/protobuf/types/known/apipb"
@@ -204,7 +203,7 @@ type ServiceConfig struct {
 	// Auth configuration. Contains only the OAuth rules.
 	Authentication *serviceconfig.Authentication `protobuf:"bytes,11,opt,name=authentication,proto3" json:"authentication,omitempty"`
 	// Configuration controlling usage of this service.
-	Usage *usage.Usage `protobuf:"bytes,15,opt,name=usage,proto3" json:"usage,omitempty"`
+	Usage *serviceconfig.Usage `protobuf:"bytes,15,opt,name=usage,proto3" json:"usage,omitempty"`
 	// Configuration for network endpoints. Contains only the names and aliases
 	// of the endpoints.
 	Endpoints []*serviceconfig.Endpoint `protobuf:"bytes,18,rep,name=endpoints,proto3" json:"endpoints,omitempty"`
@@ -291,7 +290,7 @@ func (x *ServiceConfig) GetAuthentication() *serviceconfig.Authentication {
 	return nil
 }
 
-func (x *ServiceConfig) GetUsage() *usage.Usage {
+func (x *ServiceConfig) GetUsage() *serviceconfig.Usage {
 	if x != nil {
 		return x.Usage
 	}
@@ -493,7 +492,7 @@ var file_google_api_serviceusage_v1_resources_proto_goTypes = []interface{}{
 	(*serviceconfig.Documentation)(nil),              // 5: google.api.Documentation
 	(*serviceconfig.Quota)(nil),                      // 6: google.api.Quota
 	(*serviceconfig.Authentication)(nil),             // 7: google.api.Authentication
-	(*usage.Usage)(nil),                              // 8: google.api.Usage
+	(*serviceconfig.Usage)(nil),                      // 8: google.api.Usage
 	(*serviceconfig.Endpoint)(nil),                   // 9: google.api.Endpoint
 	(*monitoredres.MonitoredResourceDescriptor)(nil), // 10: google.api.MonitoredResourceDescriptor
 	(*serviceconfig.Monitoring)(nil),                 // 11: google.api.Monitoring
