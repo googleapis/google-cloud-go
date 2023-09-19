@@ -1058,7 +1058,7 @@ type OAuthSettings struct {
 	// Note: IAP does not verify that the id token's hd claim matches this value
 	// since access behavior is managed by IAM policies.
 	LoginHint *wrapperspb.StringValue `protobuf:"bytes,2,opt,name=login_hint,json=loginHint,proto3" json:"login_hint,omitempty"`
-	// List of Oauth client IDs allowed to programmatically authenticate with IAP.
+	// List of OAuth client IDs allowed to programmatically authenticate with IAP.
 	ProgrammaticClients []string `protobuf:"bytes,5,rep,name=programmatic_clients,json=programmaticClients,proto3" json:"programmatic_clients,omitempty"`
 }
 
