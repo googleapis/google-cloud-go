@@ -45,10 +45,12 @@ type datastoreClient struct {
 
 func newDatastoreClient(conn grpc.ClientConnInterface, projectID, databaseID string) pb.DatastoreClient {
 	resourcePrefixValue := "projects/" + projectID
-	if databaseID != "" {
+	reqParamsHeaderValue := "project_id=" + url.QueryEscape(projectID)
+
+	if databaseID != DefaultDatabaseID {
 		resourcePrefixValue += "/databases/" + databaseID
+		reqParamsHeaderValue += "&database_id=" + databaseID
 	}
-	reqParamsHeaderValue := fmt.Sprintf("project_id=%s&database_id=%s", url.QueryEscape(projectID), url.QueryEscape(databaseID))
 
 	return &datastoreClient{
 		c: pb.NewDatastoreClient(conn),
