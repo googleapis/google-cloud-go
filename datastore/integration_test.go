@@ -131,7 +131,7 @@ func testMain(m *testing.M) int {
 					return fmt.Errorf("missing values")
 				}
 				wantValue := fmt.Sprintf("project_id=%s", url.QueryEscape(testutil.ProjID()))
-				if databaseID != DefaultDatabaseID {
+				if databaseID != DefaultDatabaseID && databaseID != "" {
 					wantValue = fmt.Sprintf("%s&database_id=%s", wantValue, url.QueryEscape(databaseID))
 				}
 				for _, gotValue := range values {

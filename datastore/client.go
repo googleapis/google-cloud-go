@@ -47,8 +47,8 @@ func newDatastoreClient(conn grpc.ClientConnInterface, projectID, databaseID str
 	resourcePrefixValue := "projects/" + projectID
 	reqParamsHeaderValue := "project_id=" + url.QueryEscape(projectID)
 
-	if databaseID != DefaultDatabaseID {
-		resourcePrefixValue += "/databases/" + databaseID
+	if databaseID != DefaultDatabaseID && databaseID != "" {
+		resourcePrefixValue += "/databases/" + url.QueryEscape(databaseID)
 		reqParamsHeaderValue += "&database_id=" + databaseID
 	}
 
