@@ -614,6 +614,78 @@ func TestPutInvalidEntity(t *testing.T) {
 	})
 }
 
+func TestPutNestedArray(t *testing.T) {
+	type InnerByte struct {
+		ArrByte []byte
+	}
+
+	type OuterByte struct {
+		InnerArr []InnerByte `datastore:"arrbyte,flatten"`
+	}
+
+	type InnerStr struct {
+		ArrStr []string
+	}
+
+	type OuterStr struct {
+		InnerArr []InnerStr `datastore:"arrstr,flatten"`
+	}
+
+	ctx := context.Background()
+	client := &Client{
+		client: &fakeDatastoreClient{
+			commit: func(req *pb.CommitRequest) (*pb.CommitResponse, error) {
+				return &pb.CommitResponse{}, nil
+			},
+		},
+	}
+
+	testcases := []struct {
+		desc        string
+		src         interface{}
+		key         *Key
+		wantFailure bool
+		wantErrMsg  string
+	}{
+		{
+			desc: "Nested byte slice should pass",
+			src: &OuterByte{
+				InnerArr: []InnerByte{
+					{
+						ArrByte: []byte("Test string"),
+					},
+				},
+			},
+			key: NameKey("OuterByte", "OuterByte1", nil),
+		},
+		{
+			desc: "Nested slice not of byte type should fail",
+			src: &OuterStr{
+				InnerArr: []InnerStr{
+					{
+						ArrStr: []string{"a", "b"},
+					},
+				},
+			},
+			key:         NameKey("OuterStr", "OuterStr1", nil),
+			wantFailure: true,
+			wantErrMsg:  "flattening nested structs leads to a slice of slices",
+		},
+	}
+
+	for _, tc := range testcases {
+		gotKey, gotErr := client.Put(ctx, tc.key, tc.src)
+		gotFailure := gotErr != nil
+		if gotFailure != tc.wantFailure ||
+			(gotErr != nil && !strings.Contains(gotErr.Error(), tc.wantErrMsg)) {
+			t.Errorf("%q: Mismatch in error got: %v, want: %q", tc.desc, gotErr, tc.wantErrMsg)
+		}
+		if gotErr == nil && !gotKey.Equal(tc.key) {
+			t.Errorf("%q: Mismatch in key got: %v, want: %q", tc.desc, gotKey, tc.key)
+		}
+	}
+}
+
 func TestDeferred(t *testing.T) {
 	type Ent struct {
 		A int
