@@ -84,7 +84,7 @@ type oauth2Error struct {
 	ErrorURI         string `json:"error_uri"`
 }
 
-// RetrieveErrorFromAuthError returns the same error provided and adds a
+// AddRetrieveErrorToAuthError returns the same error provided and adds a
 // [golang.org/x/oauth2.RetrieveError] to the error chain by setting the `Err` field on the
 // [cloud.google.com/go/auth.Error].
 func AddRetrieveErrorToAuthError(err *auth.Error) *auth.Error {
