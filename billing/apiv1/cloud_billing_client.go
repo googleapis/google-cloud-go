@@ -401,7 +401,7 @@ func (c *CloudBillingClient) UpdateBillingAccount(ctx context.Context, req *bill
 // typically given to billing account
 // administrators (at https://cloud.google.com/billing/docs/how-to/billing-access).
 // This method will return an error if the parent account has not been
-// provisioned as a reseller account.
+// provisioned for subaccounts.
 func (c *CloudBillingClient) CreateBillingAccount(ctx context.Context, req *billingpb.CreateBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
 	return c.internalClient.CreateBillingAccount(ctx, req, opts...)
 }
@@ -1102,7 +1102,7 @@ func (c *cloudBillingRESTClient) UpdateBillingAccount(ctx context.Context, req *
 // typically given to billing account
 // administrators (at https://cloud.google.com/billing/docs/how-to/billing-access).
 // This method will return an error if the parent account has not been
-// provisioned as a reseller account.
+// provisioned for subaccounts.
 func (c *cloudBillingRESTClient) CreateBillingAccount(ctx context.Context, req *billingpb.CreateBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetBillingAccount()
