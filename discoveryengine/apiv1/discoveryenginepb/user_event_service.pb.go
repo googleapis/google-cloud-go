@@ -115,7 +115,7 @@ type CollectUserEventRequest struct {
 	UserEvent string `protobuf:"bytes,2,opt,name=user_event,json=userEvent,proto3" json:"user_event,omitempty"`
 	// The URL including cgi-parameters but excluding the hash fragment with a
 	// length limit of 5,000 characters. This is often more useful than the
-	// referer URL, because many browsers only send the domain for 3rd party
+	// referer URL, because many browsers only send the domain for third-party
 	// requests.
 	Uri *string `protobuf:"bytes,3,opt,name=uri,proto3,oneof" json:"uri,omitempty"`
 	// The event timestamp in milliseconds. This prevents browser caching of
@@ -428,7 +428,7 @@ type UserEventServiceClient interface {
 	// Writes a single user event.
 	WriteUserEvent(ctx context.Context, in *WriteUserEventRequest, opts ...grpc.CallOption) (*UserEvent, error)
 	// Writes a single user event from the browser. This uses a GET request to
-	// due to browser restriction of POST-ing to a 3rd party domain.
+	// due to browser restriction of POST-ing to a third-party domain.
 	//
 	// This method is used only by the Discovery Engine API JavaScript pixel and
 	// Google Tag Manager. Users should not call this method directly.
@@ -483,7 +483,7 @@ type UserEventServiceServer interface {
 	// Writes a single user event.
 	WriteUserEvent(context.Context, *WriteUserEventRequest) (*UserEvent, error)
 	// Writes a single user event from the browser. This uses a GET request to
-	// due to browser restriction of POST-ing to a 3rd party domain.
+	// due to browser restriction of POST-ing to a third-party domain.
 	//
 	// This method is used only by the Discovery Engine API JavaScript pixel and
 	// Google Tag Manager. Users should not call this method directly.

@@ -36,8 +36,8 @@ the OwlBot lock file.
 2. Make changes to the post-processor.
 3. Test your changes. You can run the post-processor locally on selected
    clients or on all of the clients in the root directory. If the `branch`
-   flag is not set to a non-empty value, the post-processor will exit early
-   without changes. In the `google-cloud-go/internal/postprocessor` directory:
+   flag is empty/unset, the post-processor will exit early without changes.
+   In the `google-cloud-go/internal/postprocessor` directory:
 
    ```bash
    go run . -client-root="../.." -googleapis-dir="/path/to/local/googleapis" -branch="my-branch"

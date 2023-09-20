@@ -44,7 +44,7 @@ import (
 )
 
 const (
-	codeVersion = "0.9.1" // to keep track of which version of the code a benchmark ran on
+	codeVersion = "0.10.1" // to keep track of which version of the code a benchmark ran on
 	useDefault  = -1
 	tracerName  = "storage-benchmark"
 )
@@ -96,6 +96,7 @@ type benchmarkOptions struct {
 
 	enableTracing   bool
 	traceSampleRate float64
+	warmup          time.Duration
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -194,6 +195,8 @@ func parseFlags() {
 	flag.IntVar(&opts.workload, "workload", 1, "which workload to run")
 	flag.IntVar(&opts.numObjectsPerDirectory, "directory_num_objects", 1000, "total number of objects in directory")
 
+	flag.DurationVar(&opts.warmup, "warmup", 0, "time to warmup benchmarks; w1r3 benchmarks will be run for this duration without recording any results")
+
 	flag.Parse()
 
 	if len(projectID) < 1 {
@@ -283,6 +286,9 @@ func main() {
 		log.Fatalf("populateDependencyVersions: %v", err)
 	}
 
+	if err := warmupW1R3(ctx, opts); err != nil {
+		log.Fatal(err)
+	}
 	recordResultGroup, _ := errgroup.WithContext(ctx)
 	startRecordingResults(w, recordResultGroup, opts.outType)
 
