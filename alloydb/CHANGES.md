@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.4.0...alloydb/v1.5.0) (2023-09-20)
+
+
+### Features
+
+* **alloydb:** Added enum value for PG15 ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+* **alloydb:** Added enum value for PG15 ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+* **alloydb:** Changed description for recovery_window_days in ContinuousBackupConfig ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.3.0...alloydb/v1.4.0) (2023-07-31)
 
 
