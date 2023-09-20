@@ -21,11 +21,8 @@
 package billingpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -282,9 +281,9 @@ type ListBillingAccountsRequest struct {
 	// call. If unspecified, the first page of results is returned.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Options for how to filter the returned billing accounts.
-	// Currently this only supports filtering for
+	// This only supports filtering for
 	// [subaccounts](https://cloud.google.com/billing/docs/concepts) under a
-	// single provided reseller billing account.
+	// single provided parent billing account.
 	// (e.g. "master_billing_account=billingAccounts/012345-678901-ABCDEF").
 	// Boolean algebra and other fields are not currently supported.
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
@@ -1300,7 +1299,7 @@ type CloudBillingClient interface {
 	// typically given to billing account
 	// [administrators](https://cloud.google.com/billing/docs/how-to/billing-access).
 	// This method will return an error if the parent account has not been
-	// provisioned as a reseller account.
+	// provisioned for subaccounts.
 	CreateBillingAccount(ctx context.Context, in *CreateBillingAccountRequest, opts ...grpc.CallOption) (*BillingAccount, error)
 	// Lists the projects associated with a billing account. The current
 	// authenticated user must have the `billing.resourceAssociations.list` IAM
@@ -1491,7 +1490,7 @@ type CloudBillingServer interface {
 	// typically given to billing account
 	// [administrators](https://cloud.google.com/billing/docs/how-to/billing-access).
 	// This method will return an error if the parent account has not been
-	// provisioned as a reseller account.
+	// provisioned for subaccounts.
 	CreateBillingAccount(context.Context, *CreateBillingAccountRequest) (*BillingAccount, error)
 	// Lists the projects associated with a billing account. The current
 	// authenticated user must have the `billing.resourceAssociations.list` IAM
