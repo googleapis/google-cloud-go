@@ -21,11 +21,8 @@
 package documentaipb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -179,8 +178,8 @@ func (BatchProcessMetadata_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_documentai_v1_document_processor_service_proto_rawDescGZIP(), []int{6, 0}
 }
 
-// Training Method for CDE. TRAINING_METHOD_UNSPECIFIED will fallback to
-// MODEL_BASED.
+// Training Method for CDE. `TRAINING_METHOD_UNSPECIFIED` will fall back to
+// `MODEL_BASED`.
 type TrainProcessorVersionRequest_CustomDocumentExtractionOptions_TrainingMethod int32
 
 const (
