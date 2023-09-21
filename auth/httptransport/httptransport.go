@@ -153,22 +153,21 @@ func NewClient(opts *Options) (*http.Client, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	// TODO(codyoss): re-add in a future PR
 
-	// tOpts := &transport.Options{
-	// 	Endpoint:           opts.Endpoint,
-	// 	ClientCertProvider: opts.ClientCertProvider,
-	// 	Client:             opts.client(),
-	// }
-	// if io := opts.InternalOptions; io != nil {
-	// 	tOpts.DefaultEndpoint = io.DefaultEndpoint
-	// 	tOpts.DefaultMTLSEndpoint = io.DefaultMTLSEndpoint
-	// }
-	// clientCertProvider, dialTLSContext, err := transport.GetHTTPTransportConfig(tOpts)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	trans, err := newTransport(defaultBaseTransport(nil), opts)
+	tOpts := &transport.Options{
+		Endpoint:           opts.Endpoint,
+		ClientCertProvider: opts.ClientCertProvider,
+		Client:             opts.client(),
+	}
+	if io := opts.InternalOptions; io != nil {
+		tOpts.DefaultEndpoint = io.DefaultEndpoint
+		tOpts.DefaultMTLSEndpoint = io.DefaultMTLSEndpoint
+	}
+	clientCertProvider, dialTLSContext, err := transport.GetHTTPTransportConfig(tOpts)
+	if err != nil {
+		return nil, err
+	}
+	trans, err := newTransport(defaultBaseTransport(clientCertProvider, dialTLSContext), opts)
 	if err != nil {
 		return nil, err
 	}
