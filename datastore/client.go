@@ -44,14 +44,14 @@ type datastoreClient struct {
 }
 
 func newDatastoreClient(conn grpc.ClientConnInterface, projectID, databaseID string) pb.DatastoreClient {
-	resourcePrefixValue := "projects/" + projectID
+	resourcePrefixValue := "projects/" + url.QueryEscape(projectID)
 	reqParamsHeaderValue := "project_id=" + url.QueryEscape(projectID)
 
 	if databaseID != DefaultDatabaseID && databaseID != "" {
 		resourcePrefixValue += "/databases/" + url.QueryEscape(databaseID)
-		reqParamsHeaderValue += "&database_id=" + databaseID
+		reqParamsHeaderValue += "&database_id=" + url.QueryEscape(databaseID)
 	}
-
+	fmt.Printf("resourcePrefixValue: %v, reqParamsHeaderValue: %v\n", resourcePrefixValue, reqParamsHeaderValue)
 	return &datastoreClient{
 		c: pb.NewDatastoreClient(conn),
 		md: metadata.Pairs(
