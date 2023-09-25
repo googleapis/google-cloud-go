@@ -32,6 +32,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
+	"cloud.google.com/go/pubsublite/internal"
 	pslinternal "cloud.google.com/go/pubsublite/internal"
 	gax "github.com/googleapis/gax-go/v2"
 )
@@ -206,27 +207,52 @@ func streamClientOptions(region string) []option.ClientOption {
 // NewAdminClient creates a new gapic AdminClient for a region.
 func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.AdminClient, error) {
 	options := append(defaultClientOptions(region), opts...)
-	return vkit.NewAdminClient(ctx, options...)
+	c, err := vkit.NewAdminClient(ctx, options...)
+	if err != nil {
+		return nil, err
+	}
+	c.SetGoogleClientInfo("gccl", internal.Version)
+	return c, nil
 }
 
 func newPublisherClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.PublisherClient, error) {
 	options := append(streamClientOptions(region), opts...)
-	return vkit.NewPublisherClient(ctx, options...)
+	c, err := vkit.NewPublisherClient(ctx, options...)
+	if err != nil {
+		return nil, err
+	}
+	c.SetGoogleClientInfo("gccl", internal.Version)
+	return c, nil
 }
 
 func newSubscriberClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.SubscriberClient, error) {
 	options := append(streamClientOptions(region), opts...)
-	return vkit.NewSubscriberClient(ctx, options...)
+	c, err := vkit.NewSubscriberClient(ctx, options...)
+	if err != nil {
+		return nil, err
+	}
+	c.SetGoogleClientInfo("gccl", internal.Version)
+	return c, nil
 }
 
 func newCursorClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.CursorClient, error) {
 	options := append(streamClientOptions(region), opts...)
-	return vkit.NewCursorClient(ctx, options...)
+	c, err := vkit.NewCursorClient(ctx, options...)
+	if err != nil {
+		return nil, err
+	}
+	c.SetGoogleClientInfo("gccl", internal.Version)
+	return c, nil
 }
 
 func newPartitionAssignmentClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.PartitionAssignmentClient, error) {
 	options := append(defaultClientOptions(region), opts...)
-	return vkit.NewPartitionAssignmentClient(ctx, options...)
+	c, err := vkit.NewPartitionAssignmentClient(ctx, options...)
+	if err != nil {
+		return nil, err
+	}
+	c.SetGoogleClientInfo("gccl", internal.Version)
+	return c, nil
 }
 
 const (
