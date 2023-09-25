@@ -99,6 +99,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/alloydb/connectors/apiv1beta": {
+    "api_shortname": "connectors",
+    "distribution_name": "cloud.google.com/go/alloydb/connectors/apiv1beta",
+    "description": "AlloyDB connectors",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/connectors/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/analytics/admin/apiv1alpha": {
     "api_shortname": "analyticsadmin",
     "distribution_name": "cloud.google.com/go/analytics/admin/apiv1alpha",
