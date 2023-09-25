@@ -138,29 +138,29 @@ type internalFleetRoutingClient interface {
 //
 // Validity of certain types of fields:
 //
-//	google.protobuf.Timestamp
+//   google.protobuf.Timestamp
 //
-//	  Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
+//     Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.protobuf.Duration
+//   google.protobuf.Duration
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.type.LatLng
+//   google.type.LatLng
 //
-//	  latitude must be in [-90.0, 90.0].
+//     latitude must be in [-90.0, 90.0].
 //
-//	  longitude must be in [-180.0, 180.0].
+//     longitude must be in [-180.0, 180.0].
 //
-//	  at least one of latitude and longitude must be non-zero.
+//     at least one of latitude and longitude must be non-zero.
 type FleetRoutingClient struct {
 	// The internal transport-dependent client.
 	internalClient internalFleetRoutingClient
@@ -271,29 +271,29 @@ type fleetRoutingGRPCClient struct {
 //
 // Validity of certain types of fields:
 //
-//	google.protobuf.Timestamp
+//   google.protobuf.Timestamp
 //
-//	  Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
+//     Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.protobuf.Duration
+//   google.protobuf.Duration
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.type.LatLng
+//   google.type.LatLng
 //
-//	  latitude must be in [-90.0, 90.0].
+//     latitude must be in [-90.0, 90.0].
 //
-//	  longitude must be in [-180.0, 180.0].
+//     longitude must be in [-180.0, 180.0].
 //
-//	  at least one of latitude and longitude must be non-zero.
+//     at least one of latitude and longitude must be non-zero.
 func NewFleetRoutingClient(ctx context.Context, opts ...option.ClientOption) (*FleetRoutingClient, error) {
 	clientOpts := defaultFleetRoutingGRPCClientOptions()
 	if newFleetRoutingClientHook != nil {
@@ -383,29 +383,29 @@ type fleetRoutingRESTClient struct {
 //
 // Validity of certain types of fields:
 //
-//	google.protobuf.Timestamp
+//   google.protobuf.Timestamp
 //
-//	  Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
+//     Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.protobuf.Duration
+//   google.protobuf.Duration
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.type.LatLng
+//   google.type.LatLng
 //
-//	  latitude must be in [-90.0, 90.0].
+//     latitude must be in [-90.0, 90.0].
 //
-//	  longitude must be in [-180.0, 180.0].
+//     longitude must be in [-180.0, 180.0].
 //
-//	  at least one of latitude and longitude must be non-zero.
+//     at least one of latitude and longitude must be non-zero.
 func NewFleetRoutingRESTClient(ctx context.Context, opts ...option.ClientOption) (*FleetRoutingClient, error) {
 	clientOpts := append(defaultFleetRoutingRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
