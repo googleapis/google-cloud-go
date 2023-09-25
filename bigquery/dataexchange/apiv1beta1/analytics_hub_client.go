@@ -38,7 +38,6 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -638,7 +637,7 @@ type analyticsHubGRPCClient struct {
 	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewAnalyticsHubClient creates a new analytics hub service client based on gRPC.
@@ -693,7 +692,7 @@ func (c *analyticsHubGRPCClient) Connection() *grpc.ClientConn {
 func (c *analyticsHubGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -710,8 +709,8 @@ type analyticsHubRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing AnalyticsHubClient
 	CallOptions **AnalyticsHubCallOptions
@@ -758,7 +757,7 @@ func defaultAnalyticsHubRESTClientOptions() []option.ClientOption {
 func (c *analyticsHubRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -776,9 +775,10 @@ func (c *analyticsHubRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *analyticsHubGRPCClient) ListDataExchanges(ctx context.Context, req *dataexchangepb.ListDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDataExchanges[0:len((*c.CallOptions).ListDataExchanges):len((*c.CallOptions).ListDataExchanges)], opts...)
 	it := &DataExchangeIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListDataExchangesRequest)
@@ -821,9 +821,10 @@ func (c *analyticsHubGRPCClient) ListDataExchanges(ctx context.Context, req *dat
 }
 
 func (c *analyticsHubGRPCClient) ListOrgDataExchanges(ctx context.Context, req *dataexchangepb.ListOrgDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "organization", url.QueryEscape(req.GetOrganization())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "organization", url.QueryEscape(req.GetOrganization()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOrgDataExchanges[0:len((*c.CallOptions).ListOrgDataExchanges):len((*c.CallOptions).ListOrgDataExchanges)], opts...)
 	it := &DataExchangeIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListOrgDataExchangesRequest)
@@ -866,9 +867,10 @@ func (c *analyticsHubGRPCClient) ListOrgDataExchanges(ctx context.Context, req *
 }
 
 func (c *analyticsHubGRPCClient) GetDataExchange(ctx context.Context, req *dataexchangepb.GetDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataExchange[0:len((*c.CallOptions).GetDataExchange):len((*c.CallOptions).GetDataExchange)], opts...)
 	var resp *dataexchangepb.DataExchange
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -883,9 +885,10 @@ func (c *analyticsHubGRPCClient) GetDataExchange(ctx context.Context, req *datae
 }
 
 func (c *analyticsHubGRPCClient) CreateDataExchange(ctx context.Context, req *dataexchangepb.CreateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataExchange[0:len((*c.CallOptions).CreateDataExchange):len((*c.CallOptions).CreateDataExchange)], opts...)
 	var resp *dataexchangepb.DataExchange
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -900,9 +903,10 @@ func (c *analyticsHubGRPCClient) CreateDataExchange(ctx context.Context, req *da
 }
 
 func (c *analyticsHubGRPCClient) UpdateDataExchange(ctx context.Context, req *dataexchangepb.UpdateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_exchange.name", url.QueryEscape(req.GetDataExchange().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_exchange.name", url.QueryEscape(req.GetDataExchange().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDataExchange[0:len((*c.CallOptions).UpdateDataExchange):len((*c.CallOptions).UpdateDataExchange)], opts...)
 	var resp *dataexchangepb.DataExchange
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -917,9 +921,10 @@ func (c *analyticsHubGRPCClient) UpdateDataExchange(ctx context.Context, req *da
 }
 
 func (c *analyticsHubGRPCClient) DeleteDataExchange(ctx context.Context, req *dataexchangepb.DeleteDataExchangeRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDataExchange[0:len((*c.CallOptions).DeleteDataExchange):len((*c.CallOptions).DeleteDataExchange)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -930,9 +935,10 @@ func (c *analyticsHubGRPCClient) DeleteDataExchange(ctx context.Context, req *da
 }
 
 func (c *analyticsHubGRPCClient) ListListings(ctx context.Context, req *dataexchangepb.ListListingsRequest, opts ...gax.CallOption) *ListingIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListListings[0:len((*c.CallOptions).ListListings):len((*c.CallOptions).ListListings)], opts...)
 	it := &ListingIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListListingsRequest)
@@ -975,9 +981,10 @@ func (c *analyticsHubGRPCClient) ListListings(ctx context.Context, req *dataexch
 }
 
 func (c *analyticsHubGRPCClient) GetListing(ctx context.Context, req *dataexchangepb.GetListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetListing[0:len((*c.CallOptions).GetListing):len((*c.CallOptions).GetListing)], opts...)
 	var resp *dataexchangepb.Listing
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -992,9 +999,10 @@ func (c *analyticsHubGRPCClient) GetListing(ctx context.Context, req *dataexchan
 }
 
 func (c *analyticsHubGRPCClient) CreateListing(ctx context.Context, req *dataexchangepb.CreateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateListing[0:len((*c.CallOptions).CreateListing):len((*c.CallOptions).CreateListing)], opts...)
 	var resp *dataexchangepb.Listing
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1009,9 +1017,10 @@ func (c *analyticsHubGRPCClient) CreateListing(ctx context.Context, req *dataexc
 }
 
 func (c *analyticsHubGRPCClient) UpdateListing(ctx context.Context, req *dataexchangepb.UpdateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "listing.name", url.QueryEscape(req.GetListing().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "listing.name", url.QueryEscape(req.GetListing().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateListing[0:len((*c.CallOptions).UpdateListing):len((*c.CallOptions).UpdateListing)], opts...)
 	var resp *dataexchangepb.Listing
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1026,9 +1035,10 @@ func (c *analyticsHubGRPCClient) UpdateListing(ctx context.Context, req *dataexc
 }
 
 func (c *analyticsHubGRPCClient) DeleteListing(ctx context.Context, req *dataexchangepb.DeleteListingRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteListing[0:len((*c.CallOptions).DeleteListing):len((*c.CallOptions).DeleteListing)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1039,9 +1049,10 @@ func (c *analyticsHubGRPCClient) DeleteListing(ctx context.Context, req *dataexc
 }
 
 func (c *analyticsHubGRPCClient) SubscribeListing(ctx context.Context, req *dataexchangepb.SubscribeListingRequest, opts ...gax.CallOption) (*dataexchangepb.SubscribeListingResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SubscribeListing[0:len((*c.CallOptions).SubscribeListing):len((*c.CallOptions).SubscribeListing)], opts...)
 	var resp *dataexchangepb.SubscribeListingResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1056,9 +1067,10 @@ func (c *analyticsHubGRPCClient) SubscribeListing(ctx context.Context, req *data
 }
 
 func (c *analyticsHubGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1073,9 +1085,10 @@ func (c *analyticsHubGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 }
 
 func (c *analyticsHubGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1090,9 +1103,10 @@ func (c *analyticsHubGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 }
 
 func (c *analyticsHubGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1107,9 +1121,10 @@ func (c *analyticsHubGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 }
 
 func (c *analyticsHubGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1124,9 +1139,10 @@ func (c *analyticsHubGRPCClient) GetLocation(ctx context.Context, req *locationp
 }
 
 func (c *analyticsHubGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -1200,7 +1216,8 @@ func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dat
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1288,7 +1305,8 @@ func (c *analyticsHubRESTClient) ListOrgDataExchanges(ctx context.Context, req *
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1352,9 +1370,11 @@ func (c *analyticsHubRESTClient) GetDataExchange(ctx context.Context, req *datae
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataExchange[0:len((*c.CallOptions).GetDataExchange):len((*c.CallOptions).GetDataExchange)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.DataExchange{}
@@ -1417,9 +1437,11 @@ func (c *analyticsHubRESTClient) CreateDataExchange(ctx context.Context, req *da
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataExchange[0:len((*c.CallOptions).CreateDataExchange):len((*c.CallOptions).CreateDataExchange)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.DataExchange{}
@@ -1488,9 +1510,11 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_exchange.name", url.QueryEscape(req.GetDataExchange().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_exchange.name", url.QueryEscape(req.GetDataExchange().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDataExchange[0:len((*c.CallOptions).UpdateDataExchange):len((*c.CallOptions).UpdateDataExchange)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.DataExchange{}
@@ -1541,9 +1565,11 @@ func (c *analyticsHubRESTClient) DeleteDataExchange(ctx context.Context, req *da
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1599,7 +1625,8 @@ func (c *analyticsHubRESTClient) ListListings(ctx context.Context, req *dataexch
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1663,9 +1690,11 @@ func (c *analyticsHubRESTClient) GetListing(ctx context.Context, req *dataexchan
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetListing[0:len((*c.CallOptions).GetListing):len((*c.CallOptions).GetListing)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.Listing{}
@@ -1728,9 +1757,11 @@ func (c *analyticsHubRESTClient) CreateListing(ctx context.Context, req *dataexc
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateListing[0:len((*c.CallOptions).CreateListing):len((*c.CallOptions).CreateListing)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.Listing{}
@@ -1799,9 +1830,11 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "listing.name", url.QueryEscape(req.GetListing().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "listing.name", url.QueryEscape(req.GetListing().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateListing[0:len((*c.CallOptions).UpdateListing):len((*c.CallOptions).UpdateListing)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.Listing{}
@@ -1852,9 +1885,11 @@ func (c *analyticsHubRESTClient) DeleteListing(ctx context.Context, req *dataexc
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1898,9 +1933,11 @@ func (c *analyticsHubRESTClient) SubscribeListing(ctx context.Context, req *data
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:subscribe", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SubscribeListing[0:len((*c.CallOptions).SubscribeListing):len((*c.CallOptions).SubscribeListing)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.SubscribeListingResponse{}
@@ -1957,9 +1994,11 @@ func (c *analyticsHubRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2016,9 +2055,11 @@ func (c *analyticsHubRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2075,9 +2116,11 @@ func (c *analyticsHubRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -2128,9 +2171,11 @@ func (c *analyticsHubRESTClient) GetLocation(ctx context.Context, req *locationp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -2207,7 +2252,8 @@ func (c *analyticsHubRESTClient) ListLocations(ctx context.Context, req *locatio
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path

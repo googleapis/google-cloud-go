@@ -40,6 +40,11 @@
                 "GetAgentValidationResult"
               ]
             },
+            "GetGenerativeSettings": {
+              "methods": [
+                "GetGenerativeSettings"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -73,6 +78,11 @@
             "UpdateAgent": {
               "methods": [
                 "UpdateAgent"
+              ]
+            },
+            "UpdateGenerativeSettings": {
+              "methods": [
+                "UpdateGenerativeSettings"
               ]
             },
             "ValidateAgent": {
@@ -115,6 +125,11 @@
                 "GetAgentValidationResult"
               ]
             },
+            "GetGenerativeSettings": {
+              "methods": [
+                "GetGenerativeSettings"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -148,6 +163,11 @@
             "UpdateAgent": {
               "methods": [
                 "UpdateAgent"
+              ]
+            },
+            "UpdateGenerativeSettings": {
+              "methods": [
+                "UpdateGenerativeSettings"
               ]
             },
             "ValidateAgent": {

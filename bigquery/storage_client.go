@@ -135,13 +135,19 @@ type readSession struct {
 
 // Start initiates a read session
 func (rs *readSession) start() error {
+	var preferredMinStreamCount int32
+	maxStreamCount := int32(rs.settings.maxStreamCount)
+	if maxStreamCount == 0 {
+		preferredMinStreamCount = int32(rs.settings.maxWorkerCount)
+	}
 	createReadSessionRequest := &storagepb.CreateReadSessionRequest{
 		Parent: fmt.Sprintf("projects/%s", rs.table.ProjectID),
 		ReadSession: &storagepb.ReadSession{
 			Table:      rs.tableID,
 			DataFormat: storagepb.DataFormat_ARROW,
 		},
-		MaxStreamCount: int32(rs.settings.maxStreamCount),
+		MaxStreamCount:          maxStreamCount,
+		PreferredMinStreamCount: preferredMinStreamCount,
 	}
 	rpcOpts := gax.WithGRPCOptions(
 		// Read API can send batches up to 128MB

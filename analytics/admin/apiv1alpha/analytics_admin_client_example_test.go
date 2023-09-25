@@ -994,6 +994,135 @@ func ExampleAnalyticsAdminClient_AcknowledgeUserDataCollection() {
 	_ = resp
 }
 
+func ExampleAnalyticsAdminClient_GetSKAdNetworkConversionValueSchema() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetSKAdNetworkConversionValueSchemaRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetSKAdNetworkConversionValueSchemaRequest.
+	}
+	resp, err := c.GetSKAdNetworkConversionValueSchema(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_CreateSKAdNetworkConversionValueSchema() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateSKAdNetworkConversionValueSchemaRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateSKAdNetworkConversionValueSchemaRequest.
+	}
+	resp, err := c.CreateSKAdNetworkConversionValueSchema(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_DeleteSKAdNetworkConversionValueSchema() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.DeleteSKAdNetworkConversionValueSchemaRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#DeleteSKAdNetworkConversionValueSchemaRequest.
+	}
+	err = c.DeleteSKAdNetworkConversionValueSchema(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_UpdateSKAdNetworkConversionValueSchema() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateSKAdNetworkConversionValueSchemaRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateSKAdNetworkConversionValueSchemaRequest.
+	}
+	resp, err := c.UpdateSKAdNetworkConversionValueSchema(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListSKAdNetworkConversionValueSchemas() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListSKAdNetworkConversionValueSchemasRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#ListSKAdNetworkConversionValueSchemasRequest.
+	}
+	it := c.ListSKAdNetworkConversionValueSchemas(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -1093,6 +1222,31 @@ func ExampleAnalyticsAdminClient_CreateConversionEvent() {
 		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#CreateConversionEventRequest.
 	}
 	resp, err := c.CreateConversionEvent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_UpdateConversionEvent() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateConversionEventRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#UpdateConversionEventRequest.
+	}
+	resp, err := c.UpdateConversionEvent(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

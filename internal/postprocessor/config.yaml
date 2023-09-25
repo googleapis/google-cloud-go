@@ -31,6 +31,7 @@ modules:
   - commerce
   - compute
   - confidentialcomputing
+  - config
   - contactcenterinsights
   - container
   - containeranalysis
@@ -305,6 +306,9 @@ service-configs:
   - input-directory: google/cloud/alloydb/connectors/v1alpha
     service-config: connectors_v1alpha.yaml
     import-path: cloud.google.com/go/alloydb/connectors/apiv1alpha
+  - input-directory: google/cloud/alloydb/connectors/v1beta
+    service-config: connectors_v1beta.yaml
+    import-path: cloud.google.com/go/alloydb/connectors/apiv1beta
   - input-directory: google/cloud/apigateway/v1
     service-config: apigateway_v1.yaml
     import-path: cloud.google.com/go/apigateway/apiv1
@@ -359,6 +363,12 @@ service-configs:
   - input-directory: google/cloud/bigquery/analyticshub/v1
     service-config: analyticshub_v1.yaml
     import-path: cloud.google.com/go/bigquery/analyticshub/apiv1
+  - input-directory: google/cloud/bigquery/biglake/v1
+    service-config: biglake_v1.yaml
+    import-path: cloud.google.com/go/bigquery/biglake/apiv1
+  - input-directory: google/cloud/bigquery/biglake/v1alpha1
+    service-config: biglake_v1alpha1.yaml
+    import-path: cloud.google.com/go/bigquery/biglake/apiv1alpha1
   - input-directory: google/cloud/bigquery/connection/v1
     service-config: bigqueryconnection_v1.yaml
     import-path: cloud.google.com/go/bigquery/connection/apiv1
@@ -425,6 +435,9 @@ service-configs:
   - input-directory: google/cloud/compute/v1
     service-config: compute_v1.yaml
     import-path: cloud.google.com/go/compute/apiv1
+  - input-directory: google/cloud/config/v1
+    service-config: config_v1.yaml
+    import-path: cloud.google.com/go/config/apiv1
   - input-directory: google/cloud/contactcenterinsights/v1
     service-config: contactcenterinsights_v1.yaml
     import-path: cloud.google.com/go/contactcenterinsights/apiv1
@@ -555,6 +568,9 @@ service-configs:
   - input-directory: google/cloud/language/v1beta2
     service-config: language_v1beta2.yaml
     import-path: cloud.google.com/go/language/apiv1beta2
+  - input-directory: google/cloud/language/v2
+    service-config: language_v2.yaml
+    import-path: cloud.google.com/go/language/apiv2
   - input-directory: google/cloud/lifesciences/v2beta
     service-config: lifesciences_v2beta.yaml
     import-path: cloud.google.com/go/lifesciences/apiv2beta
@@ -603,6 +619,9 @@ service-configs:
   - input-directory: google/cloud/notebooks/v1beta1
     service-config: notebooks_v1beta1.yaml
     import-path: cloud.google.com/go/notebooks/apiv1beta1
+  - input-directory: google/cloud/notebooks/v2
+    service-config: notebooks_v2.yaml
+    import-path: cloud.google.com/go/notebooks/apiv2
   - input-directory: google/cloud/optimization/v1
     service-config: cloudoptimization_v1.yaml
     import-path: cloud.google.com/go/optimization/apiv1
@@ -645,6 +664,9 @@ service-configs:
   - input-directory: google/cloud/policysimulator/v1
     service-config: policysimulator_v1.yaml
     import-path: cloud.google.com/go/policysimulator/apiv1
+  - input-directory: google/cloud/policytroubleshooter/iam/v3
+    service-config: policytroubleshooter_v3.yaml
+    import-path: cloud.google.com/go/policytroubleshooter/iam/apiv3
   - input-directory: google/cloud/policytroubleshooter/v1
     service-config: policytroubleshooter_v1.yaml
     import-path: cloud.google.com/go/policytroubleshooter/apiv1
@@ -950,10 +972,11 @@ service-configs:
     service-config: storagetransfer_v1.yaml
     import-path: cloud.google.com/go/storagetransfer/apiv1
     # All entries below are clients that are not currently copied by owlbot. They
-    # explicitly express thier import path for some code gen.
+    # explicitly express their import path for some code gen.
   - input-directory: google/devtools/containeranalysis/v1beta1/grafeas
     service-config: ../containeranalysis_v1beta1.yaml
     import-path: cloud.google.com/go/containeranalysis/apiv1beta1
+    rel-path: /containeranalysis/apiv1beta1
   - input-directory: google/cloud/video/stitcher/v1
     service-config: videostitcher_v1.yaml
     import-path: cloud.google.com/go/video/stitcher/apiv1

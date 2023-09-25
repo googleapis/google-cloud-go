@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.48.0",
+    "version": "1.50.0",
     "language": "GO",
     "apis": [
       {
@@ -16568,6 +16568,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_TensorboardService_ReadTensorboardSize_sync",
+      "title": "aiplatform ReadTensorboardSize Sample",
+      "description": "ReadTensorboardSize returns the storage size for a given TensorBoard instance.",
+      "file": "TensorboardClient/ReadTensorboardSize/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReadTensorboardSize",
+        "fullName": "google.cloud.aiplatform.v1.TensorboardClient.ReadTensorboardSize",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ReadTensorboardSizeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.ReadTensorboardSizeResponse",
+        "client": {
+          "shortName": "TensorboardClient",
+          "fullName": "google.cloud.aiplatform.v1.TensorboardClient"
+        },
+        "method": {
+          "shortName": "ReadTensorboardSize",
+          "fullName": "google.cloud.aiplatform.v1.TensorboardService.ReadTensorboardSize",
+          "service": {
+            "shortName": "TensorboardService",
+            "fullName": "google.cloud.aiplatform.v1.TensorboardService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

@@ -1,0 +1,8 @@
+{
+    "installed": {
+        "client_id": "222-installed.apps.googleusercontent.com",
+        "redirect_uris": [
+            "https://www.example.com/oauth2callback"
+        ]
+    }
+}
