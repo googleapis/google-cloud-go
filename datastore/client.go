@@ -51,7 +51,6 @@ func newDatastoreClient(conn grpc.ClientConnInterface, projectID, databaseID str
 		resourcePrefixValue += "/databases/" + url.QueryEscape(databaseID)
 		reqParamsHeaderValue += "&database_id=" + url.QueryEscape(databaseID)
 	}
-	fmt.Printf("resourcePrefixValue: %v, reqParamsHeaderValue: %v\n", resourcePrefixValue, reqParamsHeaderValue)
 	return &datastoreClient{
 		c: pb.NewDatastoreClient(conn),
 		md: metadata.Pairs(
