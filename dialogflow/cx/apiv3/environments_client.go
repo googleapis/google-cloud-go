@@ -389,10 +389,10 @@ func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEn
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: Environment
+//   response: Environment
 func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *cxpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
 	return c.internalClient.CreateEnvironment(ctx, req, opts...)
 }
@@ -410,10 +410,10 @@ func (c *EnvironmentsClient) CreateEnvironmentOperation(name string) *CreateEnvi
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: Environment
+//   response: Environment
 func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *cxpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
 	return c.internalClient.UpdateEnvironment(ctx, req, opts...)
 }
@@ -443,11 +443,11 @@ func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	RunContinuousTestMetadata
+//   metadata:
+//   RunContinuousTestMetadata
 //
-//	response:
-//	RunContinuousTestResponse
+//   response:
+//   RunContinuousTestResponse
 func (c *EnvironmentsClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
 	return c.internalClient.RunContinuousTest(ctx, req, opts...)
 }
@@ -470,11 +470,11 @@ func (c *EnvironmentsClient) ListContinuousTestResults(ctx context.Context, req 
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	DeployFlowMetadata
+//   metadata:
+//   DeployFlowMetadata
 //
-//	response:
-//	DeployFlowResponse
+//   response:
+//   DeployFlowResponse
 func (c *EnvironmentsClient) DeployFlow(ctx context.Context, req *cxpb.DeployFlowRequest, opts ...gax.CallOption) (*DeployFlowOperation, error) {
 	return c.internalClient.DeployFlow(ctx, req, opts...)
 }
@@ -1239,10 +1239,10 @@ func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *cxpb.G
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: Environment
+//   response: Environment
 func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *cxpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEnvironment()
@@ -1320,10 +1320,10 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *cxp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: Environment
+//   response: Environment
 func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *cxpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEnvironment()
@@ -1541,11 +1541,11 @@ func (c *environmentsRESTClient) LookupEnvironmentHistory(ctx context.Context, r
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	RunContinuousTestMetadata
+//   metadata:
+//   RunContinuousTestMetadata
 //
-//	response:
-//	RunContinuousTestResponse
+//   response:
+//   RunContinuousTestResponse
 func (c *environmentsRESTClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1711,11 +1711,11 @@ func (c *environmentsRESTClient) ListContinuousTestResults(ctx context.Context, 
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	DeployFlowMetadata
+//   metadata:
+//   DeployFlowMetadata
 //
-//	response:
-//	DeployFlowResponse
+//   response:
+//   DeployFlowResponse
 func (c *environmentsRESTClient) DeployFlow(ctx context.Context, req *cxpb.DeployFlowRequest, opts ...gax.CallOption) (*DeployFlowOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
