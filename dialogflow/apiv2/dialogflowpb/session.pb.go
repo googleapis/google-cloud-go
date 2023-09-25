@@ -22,6 +22,9 @@ package dialogflowpb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -33,8 +36,6 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -834,30 +835,33 @@ func (x *QueryResult) GetSentimentAnalysisResult() *SentimentAnalysisResult {
 //
 // 1.  The first message must contain
 // [session][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.session],
-//     [query_input][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.query_input]
-//     plus optionally
-//     [query_params][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.query_params].
-//     If the client wants to receive an audio response, it should also contain
-//     [output_audio_config][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.output_audio_config].
-//     The message must not contain
-//     [input_audio][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.input_audio].
+//
+//	[query_input][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.query_input]
+//	plus optionally
+//	[query_params][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.query_params].
+//	If the client wants to receive an audio response, it should also contain
+//	[output_audio_config][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.output_audio_config].
+//	The message must not contain
+//	[input_audio][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.input_audio].
+//
 // 2.  If
 // [query_input][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.query_input]
 // was set to
-//     [query_input.audio_config][google.cloud.dialogflow.v2.InputAudioConfig],
-//     all subsequent messages must contain
-//     [input_audio][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.input_audio]
-//     to continue with Speech recognition. If you decide to rather detect an
-//     intent from text input after you already started Speech recognition,
-//     please send a message with
-//     [query_input.text][google.cloud.dialogflow.v2.QueryInput.text].
 //
-//     However, note that:
+//	[query_input.audio_config][google.cloud.dialogflow.v2.InputAudioConfig],
+//	all subsequent messages must contain
+//	[input_audio][google.cloud.dialogflow.v2.StreamingDetectIntentRequest.input_audio]
+//	to continue with Speech recognition. If you decide to rather detect an
+//	intent from text input after you already started Speech recognition,
+//	please send a message with
+//	[query_input.text][google.cloud.dialogflow.v2.QueryInput.text].
 //
-//     * Dialogflow will bill you for the audio duration so far.
-//     * Dialogflow discards all Speech recognition results in favor of the
-//       input text.
-//     * Dialogflow will use the language code from the first message.
+//	However, note that:
+//
+//	* Dialogflow will bill you for the audio duration so far.
+//	* Dialogflow discards all Speech recognition results in favor of the
+//	  input text.
+//	* Dialogflow will use the language code from the first message.
 //
 // After you sent all input, you must half-close or abort the request stream.
 type StreamingDetectIntentRequest struct {
@@ -1234,14 +1238,14 @@ func (x *CloudConversationDebuggingInfo) GetClientHalfCloseStreamingTimeOffset()
 //
 // Multiple response messages can be returned in order:
 //
-// 1.  If the `StreamingDetectIntentRequest.input_audio` field was
+//  1. If the `StreamingDetectIntentRequest.input_audio` field was
 //     set, the `recognition_result` field is populated for one
 //     or more messages.
 //     See the
 //     [StreamingRecognitionResult][google.cloud.dialogflow.v2.StreamingRecognitionResult]
 //     message for details about the result message sequence.
 //
-// 2.  The next message contains `response_id`, `query_result`
+//  2. The next message contains `response_id`, `query_result`
 //     and optionally `webhook_status` if a WebHook was called.
 type StreamingDetectIntentResponse struct {
 	state         protoimpl.MessageState
