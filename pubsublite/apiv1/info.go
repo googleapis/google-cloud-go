@@ -58,4 +58,3 @@ func (c *CursorClient) SetGoogleClientInfo(keyval ...string) {
 func (c *PartitionAssignmentClient) SetGoogleClientInfo(keyval ...string) {
 	c.setGoogleClientInfo(keyval...)
 }
-
