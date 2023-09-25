@@ -60,6 +60,7 @@ type CallOptions struct {
 	Rollback            []gax.CallOption
 	PartitionQuery      []gax.CallOption
 	PartitionRead       []gax.CallOption
+	BatchWrite          []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -234,6 +235,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		BatchWrite: []gax.CallOption{},
 	}
 }
 
@@ -388,6 +390,9 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		BatchWrite: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -411,12 +416,13 @@ type internalClient interface {
 	Rollback(context.Context, *spannerpb.RollbackRequest, ...gax.CallOption) error
 	PartitionQuery(context.Context, *spannerpb.PartitionQueryRequest, ...gax.CallOption) (*spannerpb.PartitionResponse, error)
 	PartitionRead(context.Context, *spannerpb.PartitionReadRequest, ...gax.CallOption) (*spannerpb.PartitionResponse, error)
+	BatchWrite(context.Context, *spannerpb.BatchWriteRequest, ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error)
 }
 
 // Client is a client for interacting with Cloud Spanner API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Cloud Spanner API
+// Cloud Spanner API
 //
 // The Cloud Spanner API can be used to manage sessions and execute
 // transactions on data stored in Cloud Spanner databases.
@@ -636,6 +642,25 @@ func (c *Client) PartitionRead(ctx context.Context, req *spannerpb.PartitionRead
 	return c.internalClient.PartitionRead(ctx, req, opts...)
 }
 
+// BatchWrite batches the supplied mutation groups in a collection of efficient
+// transactions. All mutations in a group are committed atomically. However,
+// mutations across groups can be committed non-atomically in an unspecified
+// order and thus, they must be independent of each other. Partial failure is
+// possible, i.e., some groups may have been committed successfully, while
+// some may have failed. The results of individual batches are streamed into
+// the response as the batches are applied.
+//
+// BatchWrite requests are not replay protected, meaning that each mutation
+// group may be applied more than once. Replays of non-idempotent mutations
+// may have undesirable effects. For example, replays of an insert mutation
+// may produce an already exists error or if you use generated or commit
+// timestamp-based keys, it may result in additional rows being added to the
+// mutation’s table. We recommend structuring your mutation groups to be
+// idempotent to avoid this issue.
+func (c *Client) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
+	return c.internalClient.BatchWrite(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Cloud Spanner API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -656,7 +681,7 @@ type gRPCClient struct {
 // NewClient creates a new spanner client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Cloud Spanner API
+// Cloud Spanner API
 //
 // The Cloud Spanner API can be used to manage sessions and execute
 // transactions on data stored in Cloud Spanner databases.
@@ -728,7 +753,7 @@ type restClient struct {
 
 // NewRESTClient creates a new spanner rest client.
 //
-// # Cloud Spanner API
+// Cloud Spanner API
 //
 // The Cloud Spanner API can be used to manage sessions and execute
 // transactions on data stored in Cloud Spanner databases.
@@ -1064,6 +1089,24 @@ func (c *gRPCClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.PartitionRead(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchWrite[0:len((*c.CallOptions).BatchWrite):len((*c.CallOptions).BatchWrite)], opts...)
+	var resp spannerpb.Spanner_BatchWriteClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.BatchWrite(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -2228,6 +2271,126 @@ func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 		return nil, e
 	}
 	return resp, nil
+}
+
+// BatchWrite batches the supplied mutation groups in a collection of efficient
+// transactions. All mutations in a group are committed atomically. However,
+// mutations across groups can be committed non-atomically in an unspecified
+// order and thus, they must be independent of each other. Partial failure is
+// possible, i.e., some groups may have been committed successfully, while
+// some may have failed. The results of individual batches are streamed into
+// the response as the batches are applied.
+//
+// BatchWrite requests are not replay protected, meaning that each mutation
+// group may be applied more than once. Replays of non-idempotent mutations
+// may have undesirable effects. For example, replays of an insert mutation
+// may produce an already exists error or if you use generated or commit
+// timestamp-based keys, it may result in additional rows being added to the
+// mutation’s table. We recommend structuring your mutation groups to be
+// idempotent to avoid this issue.
+func (c *restClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:batchWrite", req.GetSession())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	var streamClient *batchWriteRESTClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		streamClient = &batchWriteRESTClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&spannerpb.BatchWriteResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// batchWriteRESTClient is the stream client used to consume the server stream created by
+// the REST implementation of BatchWrite.
+type batchWriteRESTClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *batchWriteRESTClient) Recv() (*spannerpb.BatchWriteResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*spannerpb.BatchWriteResponse)
+	return res, nil
+}
+
+func (c *batchWriteRESTClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *batchWriteRESTClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *batchWriteRESTClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented for a server-stream")
+}
+
+func (c *batchWriteRESTClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *batchWriteRESTClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented for a server-stream")
+}
+
+func (c *batchWriteRESTClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented, use Recv")
 }
 
 // SessionIterator manages a stream of *spannerpb.Session.
