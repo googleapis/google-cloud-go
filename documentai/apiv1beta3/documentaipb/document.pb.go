@@ -21,9 +21,6 @@
 package documentaipb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	color "google.golang.org/genproto/googleapis/type/color"
@@ -34,6 +31,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -340,7 +339,7 @@ func (Document_Provenance_OperationType) EnumDescriptor() ([]byte, []int) {
 type RevisionRef_RevisionCase int32
 
 const (
-	// Unspecified case, fallback to read the LATEST_HUMAN_REVIEW.
+	// Unspecified case, fall back to read the `LATEST_HUMAN_REVIEW`.
 	RevisionRef_REVISION_CASE_UNSPECIFIED RevisionRef_RevisionCase = 0
 	// The latest revision made by a human.
 	RevisionRef_LATEST_HUMAN_REVIEW RevisionRef_RevisionCase = 1
