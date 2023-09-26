@@ -1305,7 +1305,9 @@ type AllocationPolicy_Disk struct {
 	SizeGb int64 `protobuf:"varint,2,opt,name=size_gb,json=sizeGb,proto3" json:"size_gb,omitempty"`
 	// Local SSDs are available through both "SCSI" and "NVMe" interfaces.
 	// If not indicated, "NVMe" will be the default one for local ssds.
-	// We only support "SCSI" for persistent disks now.
+	// This field is ignored for persistent disks as the interface is chosen
+	// automatically. See
+	// https://cloud.google.com/compute/docs/disks/persistent-disks#choose_an_interface.
 	DiskInterface string `protobuf:"bytes,6,opt,name=disk_interface,json=diskInterface,proto3" json:"disk_interface,omitempty"`
 }
 
