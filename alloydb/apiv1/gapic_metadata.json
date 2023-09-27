@@ -80,6 +80,11 @@
                 "FailoverInstance"
               ]
             },
+            "GenerateClientCertificate": {
+              "methods": [
+                "GenerateClientCertificate"
+              ]
+            },
             "GetBackup": {
               "methods": [
                 "GetBackup"
@@ -88,6 +93,11 @@
             "GetCluster": {
               "methods": [
                 "GetCluster"
+              ]
+            },
+            "GetConnectionInfo": {
+              "methods": [
+                "GetConnectionInfo"
               ]
             },
             "GetInstance": {
@@ -260,6 +270,11 @@
                 "FailoverInstance"
               ]
             },
+            "GenerateClientCertificate": {
+              "methods": [
+                "GenerateClientCertificate"
+              ]
+            },
             "GetBackup": {
               "methods": [
                 "GetBackup"
@@ -268,6 +283,11 @@
             "GetCluster": {
               "methods": [
                 "GetCluster"
+              ]
+            },
+            "GetConnectionInfo": {
+              "methods": [
+                "GetConnectionInfo"
               ]
             },
             "GetInstance": {
