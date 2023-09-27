@@ -523,7 +523,7 @@ func TestRetryConformance(t *testing.T) {
 						t.Logf("No tests for operation %v", methodName)
 					}
 					for i, fn := range methods[methodName] {
-						transports := []string{"json", "grpc"}
+						transports := []string{"http", "grpc"}
 						for _, transport := range transports {
 							testName := fmt.Sprintf("%v-%v-%v-%v/%v", retryTest.Id, instructions.Instructions, methodName, i, transport)
 							t.Run(testName, func(t *testing.T) {
@@ -702,7 +702,7 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 
 	// Create wrapped client which will send a retry test id via a constant header
 	var client *Client
-	if transport == "json" {
+	if transport == "http" {
 		client, err = wrappedClient(et.T, et.id)
 		if err != nil {
 			et.Fatalf("creating wrapped client: %v", err)
