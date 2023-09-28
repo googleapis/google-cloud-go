@@ -35,7 +35,8 @@ type tokenProviderAdapter struct {
 	ts oauth2.TokenSource
 }
 
-// Token fulfills the [cloud.google.com/go/auth.TokenProvider] interface.
+// Token fulfills the [cloud.google.com/go/auth.TokenProvider] interface. It
+// is a light wrapper around the underlying TokenSource.
 func (tp *tokenProviderAdapter) Token(context.Context) (*auth.Token, error) {
 	tok, err := tp.ts.Token()
 	if err != nil {
@@ -62,7 +63,8 @@ type tokenSourceAdapter struct {
 	tp auth.TokenProvider
 }
 
-// Token fulfills the [golang.org/x/oauth2.TokenSource] interface.
+// Token fulfills the [golang.org/x/oauth2.TokenSource] interface. It
+// is a light wrapper around the underlying TokenProvider.
 func (ts *tokenSourceAdapter) Token() (*oauth2.Token, error) {
 	tok, err := ts.tp.Token(context.Background())
 	if err != nil {
