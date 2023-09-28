@@ -72,6 +72,8 @@ type AlloyDBAdminCallOptions struct {
 	UpdateBackup               []gax.CallOption
 	DeleteBackup               []gax.CallOption
 	ListSupportedDatabaseFlags []gax.CallOption
+	GenerateClientCertificate  []gax.CallOption
+	GetConnectionInfo          []gax.CallOption
 	ListUsers                  []gax.CallOption
 	GetUser                    []gax.CallOption
 	CreateUser                 []gax.CallOption
@@ -223,6 +225,30 @@ func defaultAlloyDBAdminCallOptions() *AlloyDBAdminCallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListSupportedDatabaseFlags: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GenerateClientCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetConnectionInfo: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -388,6 +414,28 @@ func defaultAlloyDBAdminRESTCallOptions() *AlloyDBAdminCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GenerateClientCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetConnectionInfo: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListUsers: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -458,6 +506,8 @@ type internalAlloyDBAdminClient interface {
 	DeleteBackup(context.Context, *alloydbpb.DeleteBackupRequest, ...gax.CallOption) (*DeleteBackupOperation, error)
 	DeleteBackupOperation(name string) *DeleteBackupOperation
 	ListSupportedDatabaseFlags(context.Context, *alloydbpb.ListSupportedDatabaseFlagsRequest, ...gax.CallOption) *SupportedDatabaseFlagIterator
+	GenerateClientCertificate(context.Context, *alloydbpb.GenerateClientCertificateRequest, ...gax.CallOption) (*alloydbpb.GenerateClientCertificateResponse, error)
+	GetConnectionInfo(context.Context, *alloydbpb.GetConnectionInfoRequest, ...gax.CallOption) (*alloydbpb.ConnectionInfo, error)
 	ListUsers(context.Context, *alloydbpb.ListUsersRequest, ...gax.CallOption) *UserIterator
 	GetUser(context.Context, *alloydbpb.GetUserRequest, ...gax.CallOption) (*alloydbpb.User, error)
 	CreateUser(context.Context, *alloydbpb.CreateUserRequest, ...gax.CallOption) (*alloydbpb.User, error)
@@ -750,6 +800,20 @@ func (c *AlloyDBAdminClient) DeleteBackupOperation(name string) *DeleteBackupOpe
 // ListSupportedDatabaseFlags lists SupportedDatabaseFlags for a given project and location.
 func (c *AlloyDBAdminClient) ListSupportedDatabaseFlags(ctx context.Context, req *alloydbpb.ListSupportedDatabaseFlagsRequest, opts ...gax.CallOption) *SupportedDatabaseFlagIterator {
 	return c.internalClient.ListSupportedDatabaseFlags(ctx, req, opts...)
+}
+
+// GenerateClientCertificate generate a client certificate signed by a Cluster CA.
+// The sole purpose of this endpoint is to support AlloyDB connectors and the
+// Auth Proxy client. The endpoint’s behavior is subject to change without
+// notice, so do not rely on its behavior remaining constant. Future changes
+// will not break AlloyDB connectors or the Auth Proxy client.
+func (c *AlloyDBAdminClient) GenerateClientCertificate(ctx context.Context, req *alloydbpb.GenerateClientCertificateRequest, opts ...gax.CallOption) (*alloydbpb.GenerateClientCertificateResponse, error) {
+	return c.internalClient.GenerateClientCertificate(ctx, req, opts...)
+}
+
+// GetConnectionInfo get instance metadata used for a connection.
+func (c *AlloyDBAdminClient) GetConnectionInfo(ctx context.Context, req *alloydbpb.GetConnectionInfoRequest, opts ...gax.CallOption) (*alloydbpb.ConnectionInfo, error) {
+	return c.internalClient.GetConnectionInfo(ctx, req, opts...)
 }
 
 // ListUsers lists Users in a given project and location.
@@ -1560,6 +1624,42 @@ func (c *alloyDBAdminGRPCClient) ListSupportedDatabaseFlags(ctx context.Context,
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *alloyDBAdminGRPCClient) GenerateClientCertificate(ctx context.Context, req *alloydbpb.GenerateClientCertificateRequest, opts ...gax.CallOption) (*alloydbpb.GenerateClientCertificateResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateClientCertificate[0:len((*c.CallOptions).GenerateClientCertificate):len((*c.CallOptions).GenerateClientCertificate)], opts...)
+	var resp *alloydbpb.GenerateClientCertificateResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.alloyDBAdminClient.GenerateClientCertificate(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *alloyDBAdminGRPCClient) GetConnectionInfo(ctx context.Context, req *alloydbpb.GetConnectionInfoRequest, opts ...gax.CallOption) (*alloydbpb.ConnectionInfo, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetConnectionInfo[0:len((*c.CallOptions).GetConnectionInfo):len((*c.CallOptions).GetConnectionInfo)], opts...)
+	var resp *alloydbpb.ConnectionInfo
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.alloyDBAdminClient.GetConnectionInfo(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *alloyDBAdminGRPCClient) ListUsers(ctx context.Context, req *alloydbpb.ListUsersRequest, opts ...gax.CallOption) *UserIterator {
@@ -3706,6 +3806,139 @@ func (c *alloyDBAdminRESTClient) ListSupportedDatabaseFlags(ctx context.Context,
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GenerateClientCertificate generate a client certificate signed by a Cluster CA.
+// The sole purpose of this endpoint is to support AlloyDB connectors and the
+// Auth Proxy client. The endpoint’s behavior is subject to change without
+// notice, so do not rely on its behavior remaining constant. Future changes
+// will not break AlloyDB connectors or the Auth Proxy client.
+func (c *alloyDBAdminRESTClient) GenerateClientCertificate(ctx context.Context, req *alloydbpb.GenerateClientCertificateRequest, opts ...gax.CallOption) (*alloydbpb.GenerateClientCertificateResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:generateClientCertificate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateClientCertificate[0:len((*c.CallOptions).GenerateClientCertificate):len((*c.CallOptions).GenerateClientCertificate)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &alloydbpb.GenerateClientCertificateResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetConnectionInfo get instance metadata used for a connection.
+func (c *alloyDBAdminRESTClient) GetConnectionInfo(ctx context.Context, req *alloydbpb.GetConnectionInfoRequest, opts ...gax.CallOption) (*alloydbpb.ConnectionInfo, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/connectionInfo", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetConnectionInfo[0:len((*c.CallOptions).GetConnectionInfo):len((*c.CallOptions).GetConnectionInfo)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &alloydbpb.ConnectionInfo{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ListUsers lists Users in a given project and location.
