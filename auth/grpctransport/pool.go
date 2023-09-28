@@ -22,7 +22,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// GRPCClientConn is an interface that satisfies
+// GRPCClientConnPool is an interface that satisfies
 // [google.golang.org/grpc.ClientConnInterface] and has some utility functions
 // that are needed for connection lifecycle when using in a client library. It
 // may be a pool or a single connection. This interface is not intended to, and

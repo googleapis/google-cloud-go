@@ -119,6 +119,7 @@ func (o *Options) resolveDetectOptions() *detect.Options {
 	return do
 }
 
+// InternalOptions are only meant to be set by generated client code. These are
 // not meant to be set directly by consumers of this package. Configuration in
 // this type is considered EXPERIMENTAL and may be removed at any time in the
 // future without warning.
