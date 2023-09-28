@@ -4260,3 +4260,47 @@ func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
 		t.Fatalf("context error mismatch\nWant: nil\nGot: %v", ctx.Err())
 	}
 }
+
+func TestClient_CustomRetryAndTimeoutSettings(t *testing.T) {
+	co := &vkit.CallOptions{
+		ExecuteSql: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    500 * time.Millisecond,
+					Max:        64000 * time.Millisecond,
+					Multiplier: 1.5,
+				})
+			}),
+		},
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteSql,
+		SimulatedExecutionTime{MinimumExecutionTime: time.Second},
+	)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
+	defer cancel()
+
+	_, err := client.ReadWriteTransaction(
+		ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+			if err != nil {
+				return err
+			}
+			if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+				return fmt.Errorf("update count mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			return nil
+		})
+	if err == nil {
+		t.Fatal("missing expected error")
+	}
+	se := ToSpannerError(err)
+	if g, w := ErrCode(se), codes.DeadlineExceeded; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
