@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/cx/apiv3beta1",
-    "version": "1.43.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -3862,6 +3862,52 @@
       ]
     },
     {
+      "regionTag": "dialogflow_v3beta1_generated_Intents_ExportIntents_sync",
+      "title": "dialogflow ExportIntents Sample",
+      "description": "ExportIntents exports the selected intents.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: \n[ExportIntentsMetadata][google.cloud.dialogflow.cx.v3beta1.ExportIntentsMetadata]\n- `response`: \n[ExportIntentsResponse][google.cloud.dialogflow.cx.v3beta1.ExportIntentsResponse]",
+      "file": "IntentsClient/ExportIntents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportIntents",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.IntentsClient.ExportIntents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.ExportIntentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportIntentsOperation",
+        "client": {
+          "shortName": "IntentsClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.IntentsClient"
+        },
+        "method": {
+          "shortName": "ExportIntents",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents.ExportIntents",
+          "service": {
+            "shortName": "Intents",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dialogflow_v3beta1_generated_Intents_GetIntent_sync",
       "title": "dialogflow GetIntent Sample",
       "description": "GetIntent retrieves the specified intent.",
@@ -3995,6 +4041,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3beta1_generated_Intents_ImportIntents_sync",
+      "title": "dialogflow ImportIntents Sample",
+      "description": "ImportIntents imports the specified intents into the agent.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: \n[ImportIntentsMetadata][google.cloud.dialogflow.cx.v3beta1.ImportIntentsMetadata]\n- `response`: \n[ImportIntentsResponse][google.cloud.dialogflow.cx.v3beta1.ImportIntentsResponse]",
+      "file": "IntentsClient/ImportIntents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportIntents",
+        "fullName": "google.cloud.dialogflow.cx.v3beta1.IntentsClient.ImportIntents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.ImportIntentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportIntentsOperation",
+        "client": {
+          "shortName": "IntentsClient",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.IntentsClient"
+        },
+        "method": {
+          "shortName": "ImportIntents",
+          "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents.ImportIntents",
+          "service": {
+            "shortName": "Intents",
+            "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
