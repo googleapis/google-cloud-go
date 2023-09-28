@@ -50,6 +50,7 @@ type DocumentCallOptions struct {
 	UpdateDataset        []gax.CallOption
 	ImportDocuments      []gax.CallOption
 	GetDocument          []gax.CallOption
+	ListDocuments        []gax.CallOption
 	BatchDeleteDocuments []gax.CallOption
 	GetDatasetSchema     []gax.CallOption
 	UpdateDatasetSchema  []gax.CallOption
@@ -77,6 +78,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 		UpdateDataset:        []gax.CallOption{},
 		ImportDocuments:      []gax.CallOption{},
 		GetDocument:          []gax.CallOption{},
+		ListDocuments:        []gax.CallOption{},
 		BatchDeleteDocuments: []gax.CallOption{},
 		GetDatasetSchema:     []gax.CallOption{},
 		UpdateDatasetSchema:  []gax.CallOption{},
@@ -93,6 +95,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 		UpdateDataset:        []gax.CallOption{},
 		ImportDocuments:      []gax.CallOption{},
 		GetDocument:          []gax.CallOption{},
+		ListDocuments:        []gax.CallOption{},
 		BatchDeleteDocuments: []gax.CallOption{},
 		GetDatasetSchema:     []gax.CallOption{},
 		UpdateDatasetSchema:  []gax.CallOption{},
@@ -114,6 +117,7 @@ type internalDocumentClient interface {
 	ImportDocuments(context.Context, *documentaipb.ImportDocumentsRequest, ...gax.CallOption) (*ImportDocumentsOperation, error)
 	ImportDocumentsOperation(name string) *ImportDocumentsOperation
 	GetDocument(context.Context, *documentaipb.GetDocumentRequest, ...gax.CallOption) (*documentaipb.GetDocumentResponse, error)
+	ListDocuments(context.Context, *documentaipb.ListDocumentsRequest, ...gax.CallOption) *DocumentMetadataIterator
 	BatchDeleteDocuments(context.Context, *documentaipb.BatchDeleteDocumentsRequest, ...gax.CallOption) (*BatchDeleteDocumentsOperation, error)
 	BatchDeleteDocumentsOperation(name string) *BatchDeleteDocumentsOperation
 	GetDatasetSchema(context.Context, *documentaipb.GetDatasetSchemaRequest, ...gax.CallOption) (*documentaipb.DatasetSchema, error)
@@ -190,6 +194,11 @@ func (c *DocumentClient) ImportDocumentsOperation(name string) *ImportDocumentsO
 // GetDocument returns relevant fields present in the requested document.
 func (c *DocumentClient) GetDocument(ctx context.Context, req *documentaipb.GetDocumentRequest, opts ...gax.CallOption) (*documentaipb.GetDocumentResponse, error) {
 	return c.internalClient.GetDocument(ctx, req, opts...)
+}
+
+// ListDocuments returns a list of documents present in the dataset.
+func (c *DocumentClient) ListDocuments(ctx context.Context, req *documentaipb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentMetadataIterator {
+	return c.internalClient.ListDocuments(ctx, req, opts...)
 }
 
 // BatchDeleteDocuments deletes a set of documents.
@@ -471,6 +480,52 @@ func (c *documentGRPCClient) GetDocument(ctx context.Context, req *documentaipb.
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *documentaipb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentMetadataIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dataset", url.QueryEscape(req.GetDataset()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
+	it := &DocumentMetadataIterator{}
+	req = proto.Clone(req).(*documentaipb.ListDocumentsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.DocumentMetadata, string, error) {
+		resp := &documentaipb.ListDocumentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.documentClient.ListDocuments(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDocumentMetadata(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *documentGRPCClient) BatchDeleteDocuments(ctx context.Context, req *documentaipb.BatchDeleteDocumentsRequest, opts ...gax.CallOption) (*BatchDeleteDocumentsOperation, error) {
@@ -904,6 +959,95 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *documentaipb.
 		return nil, e
 	}
 	return resp, nil
+}
+
+// ListDocuments returns a list of documents present in the dataset.
+func (c *documentRESTClient) ListDocuments(ctx context.Context, req *documentaipb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentMetadataIterator {
+	it := &DocumentMetadataIterator{}
+	req = proto.Clone(req).(*documentaipb.ListDocumentsRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.DocumentMetadata, string, error) {
+		resp := &documentaipb.ListDocumentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta3/%v:listDocuments", req.GetDataset())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDocumentMetadata(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // BatchDeleteDocuments deletes a set of documents.
@@ -1703,4 +1847,51 @@ func (op *UpdateDatasetOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateDatasetOperation) Name() string {
 	return op.lro.Name()
+}
+
+// DocumentMetadataIterator manages a stream of *documentaipb.DocumentMetadata.
+type DocumentMetadataIterator struct {
+	items    []*documentaipb.DocumentMetadata
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*documentaipb.DocumentMetadata, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *DocumentMetadataIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DocumentMetadataIterator) Next() (*documentaipb.DocumentMetadata, error) {
+	var item *documentaipb.DocumentMetadata
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DocumentMetadataIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DocumentMetadataIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }

@@ -763,6 +763,56 @@ func ExampleAlloyDBAdminClient_ListSupportedDatabaseFlags() {
 	}
 }
 
+func ExampleAlloyDBAdminClient_GenerateClientCertificate() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := alloydb.NewAlloyDBAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &alloydbpb.GenerateClientCertificateRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#GenerateClientCertificateRequest.
+	}
+	resp, err := c.GenerateClientCertificate(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAlloyDBAdminClient_GetConnectionInfo() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := alloydb.NewAlloyDBAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &alloydbpb.GetConnectionInfoRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#GetConnectionInfoRequest.
+	}
+	resp, err := c.GetConnectionInfo(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleAlloyDBAdminClient_ListUsers() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
