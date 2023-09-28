@@ -361,6 +361,175 @@ func TestSchemaToProtoConversion(t *testing.T) {
 			},
 		},
 		{
+			description: "nested with reused submessage in different levels",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{
+						Name: "reused_inner_struct",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_REQUIRED,
+						Fields: []*storagepb.TableFieldSchema{
+							{
+								Name: "leaf",
+								Type: storagepb.TableFieldSchema_STRING,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+							},
+						},
+					},
+					{
+						Name: "outer_struct",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_REQUIRED,
+						Fields: []*storagepb.TableFieldSchema{
+							{
+								Name: "another_inner_struct",
+								Type: storagepb.TableFieldSchema_STRUCT,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+								Fields: []*storagepb.TableFieldSchema{
+									{
+										Name: "another_leaf",
+										Type: storagepb.TableFieldSchema_STRING,
+										Mode: storagepb.TableFieldSchema_REQUIRED,
+									},
+								},
+							},
+							{
+								Name: "reused_inner_struct_one",
+								Type: storagepb.TableFieldSchema_STRUCT,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+								Fields: []*storagepb.TableFieldSchema{
+									{
+										Name: "leaf",
+										Type: storagepb.TableFieldSchema_STRING,
+										Mode: storagepb.TableFieldSchema_REQUIRED,
+									},
+								},
+							},
+							{
+								Name: "reused_inner_struct_two",
+								Type: storagepb.TableFieldSchema_STRUCT,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+								Fields: []*storagepb.TableFieldSchema{
+									{
+										Name: "leaf",
+										Type: storagepb.TableFieldSchema_STRING,
+										Mode: storagepb.TableFieldSchema_REQUIRED,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantProto2: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("reused_inner_struct"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__reused_inner_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:     proto.String("outer_struct"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__outer_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+				},
+			},
+			wantProto2Normalized: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("reused_inner_struct"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("root__reused_inner_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:     proto.String("outer_struct"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("root__outer_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("root__reused_inner_struct"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("leaf"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("root__outer_struct__another_inner_struct"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("another_leaf"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("root__outer_struct"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("another_inner_struct"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("root__outer_struct__another_inner_struct"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+							{
+								Name:     proto.String("reused_inner_struct_one"),
+								Number:   proto.Int32(2),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("root__reused_inner_struct"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+							{
+								Name:     proto.String("reused_inner_struct_two"),
+								Number:   proto.Int32(3),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("root__reused_inner_struct"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+						},
+					},
+				},
+			},
+			wantProto3: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("reused_inner_struct"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__reused_inner_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("outer_struct"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__outer_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+		},
+		{
 			description: "multiple nesting levels",
 			bq: &storagepb.TableSchema{
 				Fields: []*storagepb.TableFieldSchema{

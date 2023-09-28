@@ -24,11 +24,11 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/transport"
 )
 
 const (
 	defaultTokenLifetime = "3600s"
+	authHeaderKey        = "Authorization"
 )
 
 // generateAccesstokenReq is used for service account impersonation
@@ -93,7 +93,7 @@ func (tp *Options) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, fmt.Errorf("detect: unable to create impersonation request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	if err := transport.SetAuthHeader(ctx, tp.Tp, req); err != nil {
+	if err := setAuthHeader(ctx, tp.Tp, req); err != nil {
 		return nil, err
 	}
 	resp, err := tp.Client.Do(req)
@@ -122,4 +122,17 @@ func (tp *Options) Token(ctx context.Context) (*auth.Token, error) {
 		Expiry: expiry,
 		Type:   internal.TokenTypeBearer,
 	}, nil
+}
+
+func setAuthHeader(ctx context.Context, tp auth.TokenProvider, r *http.Request) error {
+	t, err := tp.Token(ctx)
+	if err != nil {
+		return err
+	}
+	typ := t.Type
+	if typ == "" {
+		typ = internal.TokenTypeBearer
+	}
+	r.Header.Set(authHeaderKey, typ+" "+t.Value)
+	return nil
 }

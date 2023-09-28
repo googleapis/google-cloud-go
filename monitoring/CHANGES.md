@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.15.1...monitoring/v1.16.0) (2023-09-12)
+
+
+### Features
+
+* **monitoring/apiv3:** Added support for retriggering notifications in AlertPolicy ([0449518](https://github.com/googleapis/google-cloud-go/commit/0449518f8396cc0280c0f3303c103edcee34016b))
+
 ## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.15.0...monitoring/v1.15.1) (2023-06-20)
 
 
