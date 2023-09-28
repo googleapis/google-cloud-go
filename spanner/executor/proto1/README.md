@@ -1,0 +1,3 @@
+protoc --go_out=plugins=grpc:. -I=/usr/local/google/home/sriharshach/github/Executor-Framework/googleapis/google/api/ -I=/usr/local/google/home/sriharshach/github/Executor-Framework/google-cloud-go/spanner/executor/proto/ *.proto 
+
+protoc --go_out=plugins=grpc:. -I=/usr/local/google/home/sriharshach/github/Executor-Framework/googleapis/google/api/ /usr/local/google/home/sriharshach/github/Executor-Framework/google-cloud-go/spanner/executor/proto/cloud_executor.proto 
