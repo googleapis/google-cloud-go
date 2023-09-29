@@ -17,66 +17,75 @@
 // Package storage is an auto-generated package for the
 // Cloud Storage API.
 //
-// Lets you store and retrieve potentially-large, immutable data objects.
+// Stop. This folder is likely not what you are looking for. This folder
+// contains protocol buffer definitions for an unreleased API for accessing
+// Cloud Storage. Unless told otherwise by a Google Cloud representative, do
+// not use any of the contents of this folder. If you would like to use Cloud
+// Storage, please consult our official documentation (at
+// https://cloud.google.com/storage/docs/apis) for details on our XML and
+// JSON APIs, or else consider one of our client libraries (at
+// https://cloud.google.com/storage/docs/reference/libraries). This API
+// defined in this folder is unreleased and may shut off, break, or fail at
+// any time for any users who are not registered as a part of a private
+// preview program.
 //
-// # General documentation
+// General documentation
 //
 // For information that is relevant for all client libraries please reference
 // https://pkg.go.dev/cloud.google.com/go#pkg-overview. Some information on this
 // page includes:
 //
-//   - [Authentication and Authorization]
-//   - [Timeouts and Cancellation]
-//   - [Testing against Client Libraries]
-//   - [Debugging Client Libraries]
-//   - [Inspecting errors]
+//  - [Authentication and Authorization]
+//  - [Timeouts and Cancellation]
+//  - [Testing against Client Libraries]
+//  - [Debugging Client Libraries]
+//  - [Inspecting errors]
 //
-// # Example usage
+// Example usage
 //
 // To get started with this package, create a client.
-//
-//	ctx := context.Background()
-//	// This snippet has been automatically generated and should be regarded as a code template only.
-//	// It will require modifications to work:
-//	// - It may require correct/in-range values for request initialization.
-//	// - It may require specifying regional endpoints when creating the service client as shown in:
-//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := storage.NewClient(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	defer c.Close()
+//  ctx := context.Background()
+//  // This snippet has been automatically generated and should be regarded as a code template only.
+//  // It will require modifications to work:
+//  // - It may require correct/in-range values for request initialization.
+//  // - It may require specifying regional endpoints when creating the service client as shown in:
+//  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//  c, err := storage.NewClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
 //
 // The client will use your default application credentials. Clients should be reused instead of created as needed.
 // The methods of Client are safe for concurrent use by multiple goroutines.
 // The returned client must be Closed when it is done being used.
 //
-// # Using the Client
+// Using the Client
 //
 // The following is an example of making an API call with the newly created client.
 //
-//	ctx := context.Background()
-//	// This snippet has been automatically generated and should be regarded as a code template only.
-//	// It will require modifications to work:
-//	// - It may require correct/in-range values for request initialization.
-//	// - It may require specifying regional endpoints when creating the service client as shown in:
-//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := storage.NewClient(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	defer c.Close()
+//  ctx := context.Background()
+//  // This snippet has been automatically generated and should be regarded as a code template only.
+//  // It will require modifications to work:
+//  // - It may require correct/in-range values for request initialization.
+//  // - It may require specifying regional endpoints when creating the service client as shown in:
+//  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//  c, err := storage.NewClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
 //
-//	req := &storagepb.DeleteBucketRequest{
-//		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#DeleteBucketRequest.
-//	}
-//	err = c.DeleteBucket(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
+//  req := &storagepb.DeleteBucketRequest{
+//  	// TODO: Fill request struct fields.
+//  	// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#DeleteBucketRequest.
+//  }
+//  err = c.DeleteBucket(ctx, req)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
 //
-// # Use of Context
+// Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
