@@ -21,6 +21,7 @@ import "google/bigtable/v2/bigtable.proto";
 option csharp_namespace = "Google.Cloud.Bigtable.V2.Tests.Conformance";
 option java_outer_classname = "TestDefinition";
 option java_package = "com.google.cloud.conformance.bigtable.v2";
+option go_package = "cloud.google.com/go/bigtable/internal/conformance";
 
 message TestFile {
   repeated ReadRowsTest read_rows_tests = 1;
