@@ -24,9 +24,9 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
+	btspb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/types/known/wrapperspb"
-	btspb "google.golang.org/genproto/googleapis/bigtable/v2"
 )
 
 // Indicates that a field in the proto should be omitted, rather than included

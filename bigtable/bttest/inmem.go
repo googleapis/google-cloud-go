@@ -50,8 +50,6 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 	"github.com/google/btree"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
@@ -61,7 +59,9 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"rsc.io/binaryregexp"
 )
 
