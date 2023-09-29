@@ -19,6 +19,7 @@ import (
 	"os"
 
 	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/httptransport"
 )
 
 func ExampleDefaultCredentials() {
@@ -28,16 +29,13 @@ func ExampleDefaultCredentials() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_ = creds
-	// TODO(codyoss):fixup after more code is added
-
-	// client, err := httptransport.NewClient(&httptransport.Options{
-	// 	TokenProvider: creds,
-	// })
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// client.Get("...")
+	client, err := httptransport.NewClient(&httptransport.Options{
+		TokenProvider: creds,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	client.Get("...")
 }
 
 func ExampleDefaultCredentials_withFilepath() {
@@ -56,16 +54,13 @@ func ExampleDefaultCredentials_withFilepath() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_ = creds
-	// TODO(codyoss):fixup after more code is added
-
-	// client, err := httptransport.NewClient(&httptransport.Options{
-	// 	TokenProvider: creds,
-	// })
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// client.Get("...")
+	client, err := httptransport.NewClient(&httptransport.Options{
+		TokenProvider: creds,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	client.Get("...")
 }
 
 func ExampleDefaultCredentials_withJSON() {
@@ -80,14 +75,11 @@ func ExampleDefaultCredentials_withJSON() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_ = creds
-	// TODO(codyoss):fixup after more code is added
-
-	// client, err := httptransport.NewClient(&httptransport.Options{
-	// 	TokenProvider: creds,
-	// })
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// client.Get("...")
+	client, err := httptransport.NewClient(&httptransport.Options{
+		TokenProvider: creds,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	client.Get("...")
 }
