@@ -234,7 +234,6 @@ func (cs *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]
 	// Only the us-east-2 part should be used.
 	bodyLen := len(respBody)
 	if bodyLen == 0 {
-		// TODO(codyoss): this was the old behaviour, but maybe this should be an error
 		return "", nil
 	}
 	return string(respBody[:bodyLen-1]), nil
