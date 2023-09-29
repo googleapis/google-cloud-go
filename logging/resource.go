@@ -126,7 +126,7 @@ func detectCloudFunction() *mrpb.MonitoredResource {
 	}
 }
 
-func (r *resource) isCloudRun() bool {
+func (r *resource) isCloudRunService() bool {
 	config := r.attrs.EnvVar("K_CONFIGURATION")
 	// note that this envvar is also present in Cloud Function environments
 	service := r.attrs.EnvVar("K_SERVICE")
@@ -134,7 +134,15 @@ func (r *resource) isCloudRun() bool {
 	return config != "" && service != "" && revision != ""
 }
 
-func detectCloudRunResource() *mrpb.MonitoredResource {
+func (r *resource) isCloudRunJob() bool {
+	job := r.attrs.EnvVar("CLOUD_RUN_JOB")
+	execution := r.attrs.EnvVar("CLOUD_RUN_EXECUTION")
+	taskIndex := r.attrs.EnvVar("CLOUD_RUN_TASK_INDEX")
+	taskAttempt := r.attrs.EnvVar("CLOUD_RUN_TASK_ATTEMPT")
+	return job != "" && execution != "" && taskIndex != "" && taskAttempt != ""
+}
+
+func detectCloudRunServiceResource() *mrpb.MonitoredResource {
 	projectID := detectedResource.metadataProjectID()
 	if projectID == "" {
 		return nil
@@ -151,6 +159,23 @@ func detectCloudRunResource() *mrpb.MonitoredResource {
 			"service_name":       service,
 			"revision_name":      revision,
 			"configuration_name": config,
+		},
+	}
+}
+
+func detectCloudRunJobResource() *mrpb.MonitoredResource {
+	projectID := detectedResource.metadataProjectID()
+	if projectID == "" {
+		return nil
+	}
+	region := detectedResource.metadataRegion()
+	job := detectedResource.attrs.EnvVar("CLOUD_RUN_JOB")
+	return &mrpb.MonitoredResource{
+		Type: "cloud_run_job",
+		Labels: map[string]string{
+			"project_id": projectID,
+			"location":   region,
+			"job_name":   job,
 		},
 	}
 }
@@ -226,8 +251,12 @@ func detectResource() *mrpb.MonitoredResource {
 				detectedResource.pb = detectAppEngineResource()
 			case name == "Google Cloud Functions", detectedResource.isCloudFunction():
 				detectedResource.pb = detectCloudFunction()
-			case name == "Google Cloud Run", detectedResource.isCloudRun():
-				detectedResource.pb = detectCloudRunResource()
+			// cannot use name validation for Cloud Run resources because
+			// both of them set product name to "Google Cloud Run"
+			case detectedResource.isCloudRunService():
+				detectedResource.pb = detectCloudRunServiceResource()
+			case detectedResource.isCloudRunJob():
+				detectedResource.pb = detectCloudRunJobResource()
 			// cannot use name validation for GKE and GCE because
 			// both of them set product name to "Google Compute Engine"
 			case detectedResource.isKubernetesEngine():
