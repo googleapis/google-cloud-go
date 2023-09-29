@@ -139,6 +139,20 @@ func (r *Row) ColumnName(i int) string {
 	return r.fields[i].Name
 }
 
+func (r *Row) ColumnType(i int) *sppb.Type {
+	if i < 0 || i >= len(r.fields) {
+		return nil
+	}
+	return r.fields[i].Type
+}
+
+func (r *Row) ColumnValue(i int) *proto3.Value {
+	if i < 0 || i >= len(r.fields) {
+		return nil
+	}
+	return r.vals[i]
+}
+
 // ColumnIndex returns the index of the column with the given name. The
 // comparison is case-sensitive.
 func (r *Row) ColumnIndex(name string) (int, error) {
