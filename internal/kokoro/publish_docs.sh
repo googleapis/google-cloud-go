@@ -19,6 +19,7 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
+git config --global --add safe.directory $PWD
 cd github/google-cloud-go/internal/godocfx
 go install
 cd -
