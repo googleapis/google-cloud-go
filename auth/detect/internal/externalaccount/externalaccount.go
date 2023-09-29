@@ -127,6 +127,7 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 
 type subjectTokenProvider interface {
 	subjectToken(ctx context.Context) (string, error)
+	providerType() string
 }
 
 // tokenProvider is the provider that handles external credentials. It is used to retrieve Tokens.
@@ -152,6 +153,7 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	}
 	header := make(http.Header)
 	header.Set("Content-Type", "application/x-www-form-urlencoded")
+	header.Add("x-goog-api-client", getGoogHeaderValue(tp.opts, tp.stp))
 	clientAuth := clientAuthentication{
 		AuthStyle:    auth.StyleInHeader,
 		ClientID:     tp.opts.ClientID,
@@ -239,4 +241,13 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 		return execProvider, nil
 	}
 	return nil, errors.New("detect: unable to parse credential source")
+}
+
+func getGoogHeaderValue(conf *Options, p subjectTokenProvider) string {
+	return fmt.Sprintf("gl-go/%s auth/%s google-byoid-sdk source/%s sa-impersonation/%t config-lifetime/%t",
+		goVersion(),
+		"unknown",
+		p.providerType(),
+		conf.ServiceAccountImpersonationURL != "",
+		conf.ServiceAccountImpersonationLifetimeSeconds != 0)
 }
