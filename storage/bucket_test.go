@@ -65,7 +65,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true},
+		Autoclass:  &Autoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -169,7 +169,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
 		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &raw.BucketAutoclass{Enabled: true},
+		Autoclass:  &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
 				Action: &raw.BucketLifecycleRuleAction{
@@ -398,7 +398,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass: "NEARLINE",
-		Autoclass:    &Autoclass{Enabled: false},
+		Autoclass:    &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -442,8 +442,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:         &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:         &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass:    "NEARLINE",
-		Autoclass:       &raw.BucketAutoclass{Enabled: false, ForceSendFields: []string{"Enabled"}},
-		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle"},
+		Autoclass:       &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "ARCHIVE", ForceSendFields: []string{"Enabled"}},
+		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle", "Autoclass"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -648,8 +648,10 @@ func TestNewBucket(t *testing.T) {
 		Website:       &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		ProjectNumber: 123231313,
 		Autoclass: &raw.BucketAutoclass{
-			Enabled:    true,
-			ToggleTime: "2017-10-23T04:05:06Z",
+			Enabled:                        true,
+			ToggleTime:                     "2017-10-23T04:05:06Z",
+			TerminalStorageClass:           "NEARLINE",
+			TerminalStorageClassUpdateTime: "2017-10-23T04:05:06Z",
 		},
 	}
 	want := &BucketAttrs{
@@ -702,8 +704,10 @@ func TestNewBucket(t *testing.T) {
 		LocationType:     "dual-region",
 		ProjectNumber:    123231313,
 		Autoclass: &Autoclass{
-			Enabled:    true,
-			ToggleTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+			Enabled:                        true,
+			ToggleTime:                     time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+			TerminalStorageClass:           "NEARLINE",
+			TerminalStorageClassUpdateTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
 		},
 	}
 	got, err := newBucket(rb)
@@ -753,7 +757,12 @@ func TestNewBucketFromProto(t *testing.T) {
 		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
 		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
 		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true, ToggleTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))},
+		Autoclass: &storagepb.Bucket_Autoclass{
+			Enabled:    true,
+			ToggleTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			// TerminalStorageClass:           "NEARLINE",
+			TerminalStorageClassUpdateTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
@@ -794,7 +803,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), TerminalStorageClassUpdateTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
