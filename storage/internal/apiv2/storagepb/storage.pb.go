@@ -6136,6 +6136,12 @@ type Bucket_Autoclass struct {
 	// Autoclass is enabled when the bucket is created, the toggle_time is set
 	// to the bucket creation time.
 	ToggleTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=toggle_time,json=toggleTime,proto3" json:"toggle_time,omitempty"`
+	// An object in an Autoclass bucket will eventually cool down to the
+	// terminal storage class if there is no access to the object.
+	// The only valid values are NEARLINE and ARCHIVE.
+	TerminalStorageClass *string `protobuf:"bytes,3,opt,name=terminal_storage_class,json=terminalStorageClass,proto3,oneof" json:"terminal_storage_class,omitempty"`
+	// Latest instant at which the autoclass terminal storage class was updated.
+	TerminalStorageClassUpdateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=terminal_storage_class_update_time,json=terminalStorageClassUpdateTime,proto3,oneof" json:"terminal_storage_class_update_time,omitempty"`
 }
 
 func (x *Bucket_Autoclass) Reset() {
@@ -6180,6 +6186,20 @@ func (x *Bucket_Autoclass) GetEnabled() bool {
 func (x *Bucket_Autoclass) GetToggleTime() *timestamppb.Timestamp {
 	if x != nil {
 		return x.ToggleTime
+	}
+	return nil
+}
+
+func (x *Bucket_Autoclass) GetTerminalStorageClass() string {
+	if x != nil && x.TerminalStorageClass != nil {
+		return *x.TerminalStorageClass
+	}
+	return ""
+}
+
+func (x *Bucket_Autoclass) GetTerminalStorageClassUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.TerminalStorageClassUpdateTime
 	}
 	return nil
 }
@@ -7379,7 +7399,7 @@ var file_google_storage_v2_storage_proto_rawDesc = []byte{
 	0x45, 0x43, 0x54, 0x53, 0x5f, 0x52, 0x45, 0x51, 0x55, 0x45, 0x53, 0x54, 0x10, 0xe8, 0x07, 0x12,
 	0x1e, 0x0a, 0x1a, 0x53, 0x50, 0x4c, 0x49, 0x54, 0x5f, 0x54, 0x4f, 0x4b, 0x45, 0x4e, 0x5f, 0x4d,
 	0x41, 0x58, 0x5f, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x5f, 0x44, 0x41, 0x59, 0x53, 0x10, 0x0e, 0x1a,
-	0x02, 0x10, 0x01, 0x22, 0xab, 0x1e, 0x0a, 0x06, 0x42, 0x75, 0x63, 0x6b, 0x65, 0x74, 0x12, 0x17,
+	0x02, 0x10, 0x01, 0x22, 0x9b, 0x20, 0x0a, 0x06, 0x42, 0x75, 0x63, 0x6b, 0x65, 0x74, 0x12, 0x17,
 	0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
 	0x05, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x20, 0x0a, 0x09, 0x62, 0x75, 0x63, 0x6b, 0x65,
 	0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52,
@@ -7607,13 +7627,28 @@ var file_google_storage_v2_storage_proto_rawDesc = []byte{
 	0x61, 0x63, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x25, 0x0a,
 	0x0e, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18,
 	0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0d, 0x64, 0x61, 0x74, 0x61, 0x4c, 0x6f, 0x63, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x73, 0x1a, 0x67, 0x0a, 0x09, 0x41, 0x75, 0x74, 0x6f, 0x63, 0x6c, 0x61, 0x73,
-	0x73, 0x12, 0x18, 0x0a, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x08, 0x52, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x12, 0x40, 0x0a, 0x0b, 0x74,
-	0x6f, 0x67, 0x67, 0x6c, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
-	0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x03, 0xe0, 0x41,
-	0x03, 0x52, 0x0a, 0x74, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x1a, 0x39, 0x0a,
+	0x69, 0x6f, 0x6e, 0x73, 0x1a, 0xd6, 0x02, 0x0a, 0x09, 0x41, 0x75, 0x74, 0x6f, 0x63, 0x6c, 0x61,
+	0x73, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x12, 0x40, 0x0a, 0x0b,
+	0x74, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x03, 0xe0,
+	0x41, 0x03, 0x52, 0x0a, 0x74, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x39,
+	0x0a, 0x16, 0x74, 0x65, 0x72, 0x6d, 0x69, 0x6e, 0x61, 0x6c, 0x5f, 0x73, 0x74, 0x6f, 0x72, 0x61,
+	0x67, 0x65, 0x5f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00,
+	0x52, 0x14, 0x74, 0x65, 0x72, 0x6d, 0x69, 0x6e, 0x61, 0x6c, 0x53, 0x74, 0x6f, 0x72, 0x61, 0x67,
+	0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x88, 0x01, 0x01, 0x12, 0x70, 0x0a, 0x22, 0x74, 0x65, 0x72,
+	0x6d, 0x69, 0x6e, 0x61, 0x6c, 0x5f, 0x73, 0x74, 0x6f, 0x72, 0x61, 0x67, 0x65, 0x5f, 0x63, 0x6c,
+	0x61, 0x73, 0x73, 0x5f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
+	0x70, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x48, 0x01, 0x52, 0x1e, 0x74, 0x65, 0x72, 0x6d, 0x69, 0x6e,
+	0x61, 0x6c, 0x53, 0x74, 0x6f, 0x72, 0x61, 0x67, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x88, 0x01, 0x01, 0x42, 0x19, 0x0a, 0x17, 0x5f,
+	0x74, 0x65, 0x72, 0x6d, 0x69, 0x6e, 0x61, 0x6c, 0x5f, 0x73, 0x74, 0x6f, 0x72, 0x61, 0x67, 0x65,
+	0x5f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x42, 0x25, 0x0a, 0x23, 0x5f, 0x74, 0x65, 0x72, 0x6d, 0x69,
+	0x6e, 0x61, 0x6c, 0x5f, 0x73, 0x74, 0x6f, 0x72, 0x61, 0x67, 0x65, 0x5f, 0x63, 0x6c, 0x61, 0x73,
+	0x73, 0x5f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x1a, 0x39, 0x0a,
 	0x0b, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03,
 	0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14,
 	0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76,
@@ -8363,77 +8398,78 @@ var file_google_storage_v2_storage_proto_depIdxs = []int32{
 	76,  // 81: google.storage.v2.Bucket.RetentionPolicy.effective_time:type_name -> google.protobuf.Timestamp
 	77,  // 82: google.storage.v2.Bucket.RetentionPolicy.retention_duration:type_name -> google.protobuf.Duration
 	76,  // 83: google.storage.v2.Bucket.Autoclass.toggle_time:type_name -> google.protobuf.Timestamp
-	76,  // 84: google.storage.v2.Bucket.IamConfig.UniformBucketLevelAccess.lock_time:type_name -> google.protobuf.Timestamp
-	71,  // 85: google.storage.v2.Bucket.Lifecycle.Rule.action:type_name -> google.storage.v2.Bucket.Lifecycle.Rule.Action
-	72,  // 86: google.storage.v2.Bucket.Lifecycle.Rule.condition:type_name -> google.storage.v2.Bucket.Lifecycle.Rule.Condition
-	78,  // 87: google.storage.v2.Bucket.Lifecycle.Rule.Condition.created_before:type_name -> google.type.Date
-	78,  // 88: google.storage.v2.Bucket.Lifecycle.Rule.Condition.custom_time_before:type_name -> google.type.Date
-	78,  // 89: google.storage.v2.Bucket.Lifecycle.Rule.Condition.noncurrent_time_before:type_name -> google.type.Date
-	1,   // 90: google.storage.v2.Storage.DeleteBucket:input_type -> google.storage.v2.DeleteBucketRequest
-	2,   // 91: google.storage.v2.Storage.GetBucket:input_type -> google.storage.v2.GetBucketRequest
-	3,   // 92: google.storage.v2.Storage.CreateBucket:input_type -> google.storage.v2.CreateBucketRequest
-	4,   // 93: google.storage.v2.Storage.ListBuckets:input_type -> google.storage.v2.ListBucketsRequest
-	6,   // 94: google.storage.v2.Storage.LockBucketRetentionPolicy:input_type -> google.storage.v2.LockBucketRetentionPolicyRequest
-	79,  // 95: google.storage.v2.Storage.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
-	80,  // 96: google.storage.v2.Storage.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
-	81,  // 97: google.storage.v2.Storage.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
-	7,   // 98: google.storage.v2.Storage.UpdateBucket:input_type -> google.storage.v2.UpdateBucketRequest
-	8,   // 99: google.storage.v2.Storage.DeleteNotificationConfig:input_type -> google.storage.v2.DeleteNotificationConfigRequest
-	9,   // 100: google.storage.v2.Storage.GetNotificationConfig:input_type -> google.storage.v2.GetNotificationConfigRequest
-	10,  // 101: google.storage.v2.Storage.CreateNotificationConfig:input_type -> google.storage.v2.CreateNotificationConfigRequest
-	11,  // 102: google.storage.v2.Storage.ListNotificationConfigs:input_type -> google.storage.v2.ListNotificationConfigsRequest
-	13,  // 103: google.storage.v2.Storage.ComposeObject:input_type -> google.storage.v2.ComposeObjectRequest
-	14,  // 104: google.storage.v2.Storage.DeleteObject:input_type -> google.storage.v2.DeleteObjectRequest
-	15,  // 105: google.storage.v2.Storage.CancelResumableWrite:input_type -> google.storage.v2.CancelResumableWriteRequest
-	18,  // 106: google.storage.v2.Storage.GetObject:input_type -> google.storage.v2.GetObjectRequest
-	17,  // 107: google.storage.v2.Storage.ReadObject:input_type -> google.storage.v2.ReadObjectRequest
-	30,  // 108: google.storage.v2.Storage.UpdateObject:input_type -> google.storage.v2.UpdateObjectRequest
-	21,  // 109: google.storage.v2.Storage.WriteObject:input_type -> google.storage.v2.WriteObjectRequest
-	23,  // 110: google.storage.v2.Storage.ListObjects:input_type -> google.storage.v2.ListObjectsRequest
-	26,  // 111: google.storage.v2.Storage.RewriteObject:input_type -> google.storage.v2.RewriteObjectRequest
-	28,  // 112: google.storage.v2.Storage.StartResumableWrite:input_type -> google.storage.v2.StartResumableWriteRequest
-	24,  // 113: google.storage.v2.Storage.QueryWriteStatus:input_type -> google.storage.v2.QueryWriteStatusRequest
-	31,  // 114: google.storage.v2.Storage.GetServiceAccount:input_type -> google.storage.v2.GetServiceAccountRequest
-	32,  // 115: google.storage.v2.Storage.CreateHmacKey:input_type -> google.storage.v2.CreateHmacKeyRequest
-	34,  // 116: google.storage.v2.Storage.DeleteHmacKey:input_type -> google.storage.v2.DeleteHmacKeyRequest
-	35,  // 117: google.storage.v2.Storage.GetHmacKey:input_type -> google.storage.v2.GetHmacKeyRequest
-	36,  // 118: google.storage.v2.Storage.ListHmacKeys:input_type -> google.storage.v2.ListHmacKeysRequest
-	38,  // 119: google.storage.v2.Storage.UpdateHmacKey:input_type -> google.storage.v2.UpdateHmacKeyRequest
-	82,  // 120: google.storage.v2.Storage.DeleteBucket:output_type -> google.protobuf.Empty
-	41,  // 121: google.storage.v2.Storage.GetBucket:output_type -> google.storage.v2.Bucket
-	41,  // 122: google.storage.v2.Storage.CreateBucket:output_type -> google.storage.v2.Bucket
-	5,   // 123: google.storage.v2.Storage.ListBuckets:output_type -> google.storage.v2.ListBucketsResponse
-	41,  // 124: google.storage.v2.Storage.LockBucketRetentionPolicy:output_type -> google.storage.v2.Bucket
-	83,  // 125: google.storage.v2.Storage.GetIamPolicy:output_type -> google.iam.v1.Policy
-	83,  // 126: google.storage.v2.Storage.SetIamPolicy:output_type -> google.iam.v1.Policy
-	84,  // 127: google.storage.v2.Storage.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
-	41,  // 128: google.storage.v2.Storage.UpdateBucket:output_type -> google.storage.v2.Bucket
-	82,  // 129: google.storage.v2.Storage.DeleteNotificationConfig:output_type -> google.protobuf.Empty
-	46,  // 130: google.storage.v2.Storage.GetNotificationConfig:output_type -> google.storage.v2.NotificationConfig
-	46,  // 131: google.storage.v2.Storage.CreateNotificationConfig:output_type -> google.storage.v2.NotificationConfig
-	12,  // 132: google.storage.v2.Storage.ListNotificationConfigs:output_type -> google.storage.v2.ListNotificationConfigsResponse
-	48,  // 133: google.storage.v2.Storage.ComposeObject:output_type -> google.storage.v2.Object
-	82,  // 134: google.storage.v2.Storage.DeleteObject:output_type -> google.protobuf.Empty
-	16,  // 135: google.storage.v2.Storage.CancelResumableWrite:output_type -> google.storage.v2.CancelResumableWriteResponse
-	48,  // 136: google.storage.v2.Storage.GetObject:output_type -> google.storage.v2.Object
-	19,  // 137: google.storage.v2.Storage.ReadObject:output_type -> google.storage.v2.ReadObjectResponse
-	48,  // 138: google.storage.v2.Storage.UpdateObject:output_type -> google.storage.v2.Object
-	22,  // 139: google.storage.v2.Storage.WriteObject:output_type -> google.storage.v2.WriteObjectResponse
-	50,  // 140: google.storage.v2.Storage.ListObjects:output_type -> google.storage.v2.ListObjectsResponse
-	27,  // 141: google.storage.v2.Storage.RewriteObject:output_type -> google.storage.v2.RewriteResponse
-	29,  // 142: google.storage.v2.Storage.StartResumableWrite:output_type -> google.storage.v2.StartResumableWriteResponse
-	25,  // 143: google.storage.v2.Storage.QueryWriteStatus:output_type -> google.storage.v2.QueryWriteStatusResponse
-	52,  // 144: google.storage.v2.Storage.GetServiceAccount:output_type -> google.storage.v2.ServiceAccount
-	33,  // 145: google.storage.v2.Storage.CreateHmacKey:output_type -> google.storage.v2.CreateHmacKeyResponse
-	82,  // 146: google.storage.v2.Storage.DeleteHmacKey:output_type -> google.protobuf.Empty
-	45,  // 147: google.storage.v2.Storage.GetHmacKey:output_type -> google.storage.v2.HmacKeyMetadata
-	37,  // 148: google.storage.v2.Storage.ListHmacKeys:output_type -> google.storage.v2.ListHmacKeysResponse
-	45,  // 149: google.storage.v2.Storage.UpdateHmacKey:output_type -> google.storage.v2.HmacKeyMetadata
-	120, // [120:150] is the sub-list for method output_type
-	90,  // [90:120] is the sub-list for method input_type
-	90,  // [90:90] is the sub-list for extension type_name
-	90,  // [90:90] is the sub-list for extension extendee
-	0,   // [0:90] is the sub-list for field type_name
+	76,  // 84: google.storage.v2.Bucket.Autoclass.terminal_storage_class_update_time:type_name -> google.protobuf.Timestamp
+	76,  // 85: google.storage.v2.Bucket.IamConfig.UniformBucketLevelAccess.lock_time:type_name -> google.protobuf.Timestamp
+	71,  // 86: google.storage.v2.Bucket.Lifecycle.Rule.action:type_name -> google.storage.v2.Bucket.Lifecycle.Rule.Action
+	72,  // 87: google.storage.v2.Bucket.Lifecycle.Rule.condition:type_name -> google.storage.v2.Bucket.Lifecycle.Rule.Condition
+	78,  // 88: google.storage.v2.Bucket.Lifecycle.Rule.Condition.created_before:type_name -> google.type.Date
+	78,  // 89: google.storage.v2.Bucket.Lifecycle.Rule.Condition.custom_time_before:type_name -> google.type.Date
+	78,  // 90: google.storage.v2.Bucket.Lifecycle.Rule.Condition.noncurrent_time_before:type_name -> google.type.Date
+	1,   // 91: google.storage.v2.Storage.DeleteBucket:input_type -> google.storage.v2.DeleteBucketRequest
+	2,   // 92: google.storage.v2.Storage.GetBucket:input_type -> google.storage.v2.GetBucketRequest
+	3,   // 93: google.storage.v2.Storage.CreateBucket:input_type -> google.storage.v2.CreateBucketRequest
+	4,   // 94: google.storage.v2.Storage.ListBuckets:input_type -> google.storage.v2.ListBucketsRequest
+	6,   // 95: google.storage.v2.Storage.LockBucketRetentionPolicy:input_type -> google.storage.v2.LockBucketRetentionPolicyRequest
+	79,  // 96: google.storage.v2.Storage.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	80,  // 97: google.storage.v2.Storage.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	81,  // 98: google.storage.v2.Storage.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
+	7,   // 99: google.storage.v2.Storage.UpdateBucket:input_type -> google.storage.v2.UpdateBucketRequest
+	8,   // 100: google.storage.v2.Storage.DeleteNotificationConfig:input_type -> google.storage.v2.DeleteNotificationConfigRequest
+	9,   // 101: google.storage.v2.Storage.GetNotificationConfig:input_type -> google.storage.v2.GetNotificationConfigRequest
+	10,  // 102: google.storage.v2.Storage.CreateNotificationConfig:input_type -> google.storage.v2.CreateNotificationConfigRequest
+	11,  // 103: google.storage.v2.Storage.ListNotificationConfigs:input_type -> google.storage.v2.ListNotificationConfigsRequest
+	13,  // 104: google.storage.v2.Storage.ComposeObject:input_type -> google.storage.v2.ComposeObjectRequest
+	14,  // 105: google.storage.v2.Storage.DeleteObject:input_type -> google.storage.v2.DeleteObjectRequest
+	15,  // 106: google.storage.v2.Storage.CancelResumableWrite:input_type -> google.storage.v2.CancelResumableWriteRequest
+	18,  // 107: google.storage.v2.Storage.GetObject:input_type -> google.storage.v2.GetObjectRequest
+	17,  // 108: google.storage.v2.Storage.ReadObject:input_type -> google.storage.v2.ReadObjectRequest
+	30,  // 109: google.storage.v2.Storage.UpdateObject:input_type -> google.storage.v2.UpdateObjectRequest
+	21,  // 110: google.storage.v2.Storage.WriteObject:input_type -> google.storage.v2.WriteObjectRequest
+	23,  // 111: google.storage.v2.Storage.ListObjects:input_type -> google.storage.v2.ListObjectsRequest
+	26,  // 112: google.storage.v2.Storage.RewriteObject:input_type -> google.storage.v2.RewriteObjectRequest
+	28,  // 113: google.storage.v2.Storage.StartResumableWrite:input_type -> google.storage.v2.StartResumableWriteRequest
+	24,  // 114: google.storage.v2.Storage.QueryWriteStatus:input_type -> google.storage.v2.QueryWriteStatusRequest
+	31,  // 115: google.storage.v2.Storage.GetServiceAccount:input_type -> google.storage.v2.GetServiceAccountRequest
+	32,  // 116: google.storage.v2.Storage.CreateHmacKey:input_type -> google.storage.v2.CreateHmacKeyRequest
+	34,  // 117: google.storage.v2.Storage.DeleteHmacKey:input_type -> google.storage.v2.DeleteHmacKeyRequest
+	35,  // 118: google.storage.v2.Storage.GetHmacKey:input_type -> google.storage.v2.GetHmacKeyRequest
+	36,  // 119: google.storage.v2.Storage.ListHmacKeys:input_type -> google.storage.v2.ListHmacKeysRequest
+	38,  // 120: google.storage.v2.Storage.UpdateHmacKey:input_type -> google.storage.v2.UpdateHmacKeyRequest
+	82,  // 121: google.storage.v2.Storage.DeleteBucket:output_type -> google.protobuf.Empty
+	41,  // 122: google.storage.v2.Storage.GetBucket:output_type -> google.storage.v2.Bucket
+	41,  // 123: google.storage.v2.Storage.CreateBucket:output_type -> google.storage.v2.Bucket
+	5,   // 124: google.storage.v2.Storage.ListBuckets:output_type -> google.storage.v2.ListBucketsResponse
+	41,  // 125: google.storage.v2.Storage.LockBucketRetentionPolicy:output_type -> google.storage.v2.Bucket
+	83,  // 126: google.storage.v2.Storage.GetIamPolicy:output_type -> google.iam.v1.Policy
+	83,  // 127: google.storage.v2.Storage.SetIamPolicy:output_type -> google.iam.v1.Policy
+	84,  // 128: google.storage.v2.Storage.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
+	41,  // 129: google.storage.v2.Storage.UpdateBucket:output_type -> google.storage.v2.Bucket
+	82,  // 130: google.storage.v2.Storage.DeleteNotificationConfig:output_type -> google.protobuf.Empty
+	46,  // 131: google.storage.v2.Storage.GetNotificationConfig:output_type -> google.storage.v2.NotificationConfig
+	46,  // 132: google.storage.v2.Storage.CreateNotificationConfig:output_type -> google.storage.v2.NotificationConfig
+	12,  // 133: google.storage.v2.Storage.ListNotificationConfigs:output_type -> google.storage.v2.ListNotificationConfigsResponse
+	48,  // 134: google.storage.v2.Storage.ComposeObject:output_type -> google.storage.v2.Object
+	82,  // 135: google.storage.v2.Storage.DeleteObject:output_type -> google.protobuf.Empty
+	16,  // 136: google.storage.v2.Storage.CancelResumableWrite:output_type -> google.storage.v2.CancelResumableWriteResponse
+	48,  // 137: google.storage.v2.Storage.GetObject:output_type -> google.storage.v2.Object
+	19,  // 138: google.storage.v2.Storage.ReadObject:output_type -> google.storage.v2.ReadObjectResponse
+	48,  // 139: google.storage.v2.Storage.UpdateObject:output_type -> google.storage.v2.Object
+	22,  // 140: google.storage.v2.Storage.WriteObject:output_type -> google.storage.v2.WriteObjectResponse
+	50,  // 141: google.storage.v2.Storage.ListObjects:output_type -> google.storage.v2.ListObjectsResponse
+	27,  // 142: google.storage.v2.Storage.RewriteObject:output_type -> google.storage.v2.RewriteResponse
+	29,  // 143: google.storage.v2.Storage.StartResumableWrite:output_type -> google.storage.v2.StartResumableWriteResponse
+	25,  // 144: google.storage.v2.Storage.QueryWriteStatus:output_type -> google.storage.v2.QueryWriteStatusResponse
+	52,  // 145: google.storage.v2.Storage.GetServiceAccount:output_type -> google.storage.v2.ServiceAccount
+	33,  // 146: google.storage.v2.Storage.CreateHmacKey:output_type -> google.storage.v2.CreateHmacKeyResponse
+	82,  // 147: google.storage.v2.Storage.DeleteHmacKey:output_type -> google.protobuf.Empty
+	45,  // 148: google.storage.v2.Storage.GetHmacKey:output_type -> google.storage.v2.HmacKeyMetadata
+	37,  // 149: google.storage.v2.Storage.ListHmacKeys:output_type -> google.storage.v2.ListHmacKeysResponse
+	45,  // 150: google.storage.v2.Storage.UpdateHmacKey:output_type -> google.storage.v2.HmacKeyMetadata
+	121, // [121:151] is the sub-list for method output_type
+	91,  // [91:121] is the sub-list for method input_type
+	91,  // [91:91] is the sub-list for extension type_name
+	91,  // [91:91] is the sub-list for extension extendee
+	0,   // [0:91] is the sub-list for field type_name
 }
 
 func init() { file_google_storage_v2_storage_proto_init() }
@@ -9324,6 +9360,7 @@ func file_google_storage_v2_storage_proto_init() {
 	file_google_storage_v2_storage_proto_msgTypes[43].OneofWrappers = []interface{}{}
 	file_google_storage_v2_storage_proto_msgTypes[47].OneofWrappers = []interface{}{}
 	file_google_storage_v2_storage_proto_msgTypes[55].OneofWrappers = []interface{}{}
+	file_google_storage_v2_storage_proto_msgTypes[66].OneofWrappers = []interface{}{}
 	file_google_storage_v2_storage_proto_msgTypes[71].OneofWrappers = []interface{}{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
