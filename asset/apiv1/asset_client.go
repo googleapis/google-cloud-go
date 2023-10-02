@@ -714,8 +714,7 @@ func (c *Client) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveReques
 }
 
 // QueryAssets issue a job that queries assets using a SQL statement compatible with
-// BigQuery Standard
-// SQL (at http://cloud/bigquery/docs/reference/standard-sql/enabling-standard-sql).
+// BigQuery SQL (at https://cloud.google.com/bigquery/docs/introduction-sql).
 //
 // If the query execution finishes within timeout and there’s no pagination,
 // the full query results will be returned in the QueryAssetsResponse.
@@ -724,9 +723,8 @@ func (c *Client) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveReques
 // with the job_reference from the a previous QueryAssets call.
 //
 // Note, the query result has approximately 10 GB limitation enforced by
-// BigQuery
-// https://cloud.google.com/bigquery/docs/best-practices-performance-output (at https://cloud.google.com/bigquery/docs/best-practices-performance-output),
-// queries return larger results will result in errors.
+// BigQuery (at https://cloud.google.com/bigquery/docs/best-practices-performance-output).
+// Queries return larger results will result in errors.
 func (c *Client) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRequest, opts ...gax.CallOption) (*assetpb.QueryAssetsResponse, error) {
 	return c.internalClient.QueryAssets(ctx, req, opts...)
 }
@@ -2654,8 +2652,7 @@ func (c *restClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 }
 
 // QueryAssets issue a job that queries assets using a SQL statement compatible with
-// BigQuery Standard
-// SQL (at http://cloud/bigquery/docs/reference/standard-sql/enabling-standard-sql).
+// BigQuery SQL (at https://cloud.google.com/bigquery/docs/introduction-sql).
 //
 // If the query execution finishes within timeout and there’s no pagination,
 // the full query results will be returned in the QueryAssetsResponse.
@@ -2664,9 +2661,8 @@ func (c *restClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 // with the job_reference from the a previous QueryAssets call.
 //
 // Note, the query result has approximately 10 GB limitation enforced by
-// BigQuery
-// https://cloud.google.com/bigquery/docs/best-practices-performance-output (at https://cloud.google.com/bigquery/docs/best-practices-performance-output),
-// queries return larger results will result in errors.
+// BigQuery (at https://cloud.google.com/bigquery/docs/best-practices-performance-output).
+// Queries return larger results will result in errors.
 func (c *restClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRequest, opts ...gax.CallOption) (*assetpb.QueryAssetsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
