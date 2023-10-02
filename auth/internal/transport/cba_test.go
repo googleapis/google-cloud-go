@@ -241,7 +241,7 @@ func TestGetGRPCTransportConfigAndEndpoint(t *testing.T) {
 			} else {
 				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 			}
-			_, endpoint, _ := GetGRPCTransportConfigAndEndpoint(tc.opts)
+			_, endpoint, _ := GetGRPCTransportCredsAndEndpoint(tc.opts)
 			if tc.want != endpoint {
 				t.Fatalf("%s: want endpoint: [%s], got [%s]", tc.name, tc.want, endpoint)
 			}
