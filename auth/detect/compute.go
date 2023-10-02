@@ -55,8 +55,6 @@ type metadataTokenResp struct {
 }
 
 func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
-	// TODO(codyoss): account may need to be configurable if we have a constructor for
-	// the provider.
 	tokenURI, err := url.Parse(computeTokenURI)
 	if err != nil {
 		return nil, err
