@@ -25,10 +25,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/idtoken"
 	"cloud.google.com/go/auth/impersonate"
 	"cloud.google.com/go/auth/internal/testutil"
 	"cloud.google.com/go/auth/internal/testutil/testgcs"
-	"google.golang.org/api/idtoken"
 )
 
 const (
