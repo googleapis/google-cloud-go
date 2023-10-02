@@ -63,7 +63,7 @@ type Options struct {
 	// establishing a`grpc.Conn``
 	GRPCDialOpts []grpc.DialOption
 	// PoolSize is specifies how many connections to balance between when making
-	// requests. If unset the default is 1.
+	// requests. If unset or less than 1, the value defaults to 1.
 	PoolSize int
 	// TokenProvider specifies the provider used to add Authorization metadata
 	// to all requests. If set DetectOpts are ignored.
@@ -153,7 +153,7 @@ func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, 
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	if opts.PoolSize == 0 || opts.PoolSize == 1 {
+	if opts.PoolSize <= 1 {
 		conn, err := dial(ctx, secure, opts)
 		if err != nil {
 			return nil, err
