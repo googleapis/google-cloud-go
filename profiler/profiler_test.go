@@ -38,7 +38,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/pprof/profile"
-	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
@@ -1000,6 +1000,213 @@ func TestAgentWithServer(t *testing.T) {
 			t.Errorf("validateProfile(%s) got error: %v", pType, err)
 		}
 	}
+
+	if logs.Len() == 0 {
+		t.Error("expected some debug logging output, but got none")
+	}
+}
+
+func TestAgentWithServerAndContext(t *testing.T) {
+	oldDialGRPC, oldConfig, oldProfilingDone := dialGRPC, config, profilingDone
+	defer func() {
+		dialGRPC, config, profilingDone = oldDialGRPC, oldConfig, oldProfilingDone
+	}()
+
+	profilingDone = make(chan bool)
+
+	srv, err := testutil.NewServer()
+	if err != nil {
+		t.Fatalf("testutil.NewServer(): %v", err)
+	}
+	fakeServer := &fakeProfilerServer{gotProfiles: map[string][]byte{}}
+	pb.RegisterProfilerServiceServer(srv.Gsrv, fakeServer)
+	srv.Start()
+
+	dialGRPC = func(ctx context.Context, opts ...option.ClientOption) (gtransport.ConnPool, error) {
+		conn, err := gtransport.DialInsecure(ctx, opts...)
+		if err != nil {
+			return nil, err
+		}
+		return testConnPool{conn}, nil
+	}
+
+	quitProfilee := make(chan bool)
+	go profileeLoop(quitProfilee)
+
+	var logs bytes.Buffer
+	if err := StartWithContext(context.Background(), Config{
+		Service:            testService,
+		ProjectID:          testProjectID,
+		APIAddr:            srv.Addr,
+		Instance:           testInstance,
+		Zone:               testZone,
+		numProfiles:        2,
+		DebugLogging:       true,
+		DebugLoggingOutput: &logs,
+	}); err != nil {
+		t.Fatalf("StartWithContext(): %v", err)
+	}
+
+	select {
+	case <-profilingDone:
+	case <-time.After(testProfileCollectionTimeout):
+		t.Errorf("got timeout after %v, want profile collection done", testProfileCollectionTimeout)
+	}
+	quitProfilee <- true
+
+	for _, pType := range []string{"CPU", "HEAP"} {
+		if profile, ok := fakeServer.gotProfiles[pType]; !ok {
+			t.Errorf("fakeServer.gotProfiles[%s] got no profile, want profile", pType)
+		} else if err := validateProfile(profile, "profilee"); err != nil {
+			t.Errorf("validateProfile(%s) got error: %v", pType, err)
+		}
+	}
+
+	if logs.Len() == 0 {
+		t.Error("expected some debug logging output, but got none")
+	}
+}
+
+func TestAgentWithServerAndContextRestart(t *testing.T) {
+	oldDialGRPC, oldConfig, oldProfilingDone := dialGRPC, config, profilingDone
+	defer func() {
+		dialGRPC, config, profilingDone = oldDialGRPC, oldConfig, oldProfilingDone
+	}()
+
+	profilingDone = make(chan bool)
+
+	srv, err := testutil.NewServer()
+	if err != nil {
+		t.Fatalf("testutil.NewServer(): %v", err)
+	}
+	fakeServer := &fakeProfilerServer{gotProfiles: map[string][]byte{}}
+	pb.RegisterProfilerServiceServer(srv.Gsrv, fakeServer)
+	srv.Start()
+
+	dialGRPC = func(ctx context.Context, opts ...option.ClientOption) (gtransport.ConnPool, error) {
+		conn, err := gtransport.DialInsecure(ctx, opts...)
+		if err != nil {
+			return nil, err
+		}
+		return testConnPool{conn}, nil
+	}
+
+	quitProfilee := make(chan bool)
+	go profileeLoop(quitProfilee)
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	var logs bytes.Buffer
+	if err := StartWithContext(ctx, Config{
+		Service:            testService,
+		ProjectID:          testProjectID,
+		APIAddr:            srv.Addr,
+		Instance:           testInstance,
+		Zone:               testZone,
+		numProfiles:        2,
+		DebugLogging:       true,
+		DebugLoggingOutput: &logs,
+	}); err != nil {
+		t.Fatalf("StartWithContext(): %v", err)
+	}
+
+	// stop the profiler
+	cancel()
+
+	// wait until fully stopped
+	select {
+	case <-profilingDone:
+	case <-time.After(testProfileCollectionTimeout):
+		t.Errorf("got timeout after %v, want profile collection done", testProfileCollectionTimeout)
+	}
+
+	// restart
+	ctx, cancel = context.WithCancel(context.Background())
+	defer cancel()
+	if err := StartWithContext(ctx, Config{
+		Service:            testService,
+		ProjectID:          testProjectID,
+		APIAddr:            srv.Addr,
+		Instance:           testInstance,
+		Zone:               testZone,
+		numProfiles:        2,
+		DebugLogging:       true,
+		DebugLoggingOutput: &logs,
+	}); err != nil {
+		t.Fatalf("StartWithContext(): %v", err)
+	}
+
+	select {
+	case <-profilingDone:
+	case <-time.After(testProfileCollectionTimeout):
+		t.Errorf("got timeout after %v, want profile collection done", testProfileCollectionTimeout)
+	}
+	quitProfilee <- true
+
+	for _, pType := range []string{"CPU", "HEAP"} {
+		if profile, ok := fakeServer.gotProfiles[pType]; !ok {
+			t.Errorf("fakeServer.gotProfiles[%s] got no profile, want profile", pType)
+		} else if err := validateProfile(profile, "profilee"); err != nil {
+			t.Errorf("validateProfile(%s) got error: %v", pType, err)
+		}
+	}
+
+	if logs.Len() == 0 {
+		t.Error("expected some debug logging output, but got none")
+	}
+}
+
+func TestStartWithContextCancellation(t *testing.T) {
+	oldDialGRPC, oldConfig, oldProfilingDone := dialGRPC, config, profilingDone
+	defer func() {
+		dialGRPC, config, profilingDone = oldDialGRPC, oldConfig, oldProfilingDone
+	}()
+
+	profilingDone = make(chan bool)
+
+	srv, err := testutil.NewServer()
+	if err != nil {
+		t.Fatalf("testutil.NewServer(): %v", err)
+	}
+	fakeServer := &fakeProfilerServer{gotProfiles: map[string][]byte{}}
+	pb.RegisterProfilerServiceServer(srv.Gsrv, fakeServer)
+	srv.Start()
+
+	dialGRPC = func(ctx context.Context, opts ...option.ClientOption) (gtransport.ConnPool, error) {
+		conn, err := gtransport.DialInsecure(ctx, opts...)
+		if err != nil {
+			return nil, err
+		}
+		return testConnPool{conn}, nil
+	}
+
+	quitProfilee := make(chan bool)
+	go profileeLoop(quitProfilee)
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	var logs bytes.Buffer
+	if err := StartWithContext(ctx, Config{
+		Service:            testService,
+		ProjectID:          testProjectID,
+		APIAddr:            srv.Addr,
+		Instance:           testInstance,
+		Zone:               testZone,
+		DebugLogging:       true,
+		DebugLoggingOutput: &logs,
+	}); err != nil {
+		t.Fatalf("StartWithContext(): %v", err)
+	}
+
+	// stop the profiler
+	cancel()
+
+	select {
+	case <-profilingDone:
+	case <-time.After(testProfileCollectionTimeout):
+		t.Errorf("got timeout after %v, want profile collection done", testProfileCollectionTimeout)
+	}
+	quitProfilee <- true
 
 	if logs.Len() == 0 {
 		t.Error("expected some debug logging output, but got none")

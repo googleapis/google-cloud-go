@@ -224,12 +224,22 @@ func (o *allowUntilSuccess) do(f func() error) (err error) {
 // additional calls will be ignored.
 func Start(cfg Config, options ...option.ClientOption) error {
 	startError := startOnce.do(func() error {
-		return start(cfg, options...)
+		return start(context.Background(), cfg, options...)
 	})
 	return startError
 }
 
-func start(cfg Config, options ...option.ClientOption) error {
+// StartWithContext starts a goroutine to collect and upload profiles. The
+// caller must provide the service string in the config. See
+// Config for details.
+// Before calling StartWithContext again, make sure to cancel the previous call
+// using the provided ctx.
+// Profiling is stopped when ctx is canceled
+func StartWithContext(ctx context.Context, cfg Config, options ...option.ClientOption) error {
+	return start(ctx, cfg, options...)
+}
+
+func start(ctx context.Context, cfg Config, options ...option.ClientOption) error {
 	if cfg.DebugLoggingOutput == nil {
 		cfg.DebugLoggingOutput = os.Stderr
 	}
@@ -243,8 +253,6 @@ func start(cfg Config, options ...option.ClientOption) error {
 			return fmt.Errorf("mutex profiling is not supported by %s, requires Go 1.8 or later", runtime.Version())
 		}
 	}
-
-	ctx := context.Background()
 
 	opts := []option.ClientOption{
 		option.WithEndpoint(config.APIAddr),
@@ -615,18 +623,41 @@ func initializeConfig(cfg Config) error {
 	return nil
 }
 
-// pollProfilerService starts an endless loop to poll the profiler
+// pollProfilerService starts a loop to poll the profiler
 // server for instructions, and collects and uploads profiles as
 // requested.
+// The started loop is aborted when the ctx is canceled or
+// (during testing) config.numProfiles profiles have been processed.
 func pollProfilerService(ctx context.Context, a *agent) {
 	debugLog("Cloud Profiler Go Agent version: %s", internal.Version)
 	debugLog("profiler has started")
-	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
-		p := a.createProfile(ctx)
-		a.profileAndUpload(ctx, p)
+
+	done := ctx.Done()
+
+	// This variable and associated logic is only to abort after a deterministic number of profiles have been processed,
+	// for testing purposes.
+	var i int
+
+endlessLoop:
+	for {
+		select {
+		case <-done:
+			// we want to stop the loop
+			break endlessLoop
+		default:
+			if config.numProfiles != 0 { // for testing purposes
+				if i >= config.numProfiles {
+					break endlessLoop
+				}
+				i++
+			}
+
+			p := a.createProfile(ctx)
+			a.profileAndUpload(ctx, p)
+		}
 	}
 
-	if profilingDone != nil {
+	if profilingDone != nil { // for testing purposes
 		profilingDone <- true
 	}
 }
