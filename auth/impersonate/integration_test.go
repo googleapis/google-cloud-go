@@ -117,7 +117,7 @@ func TestCredentialsTokenSourceIntegration(t *testing.T) {
 	}
 }
 
-// TODO(codyoss): uncomment after adding idtoken package
+// TODO(codyoss): uncomment in #8580
 
 // func TestIDTokenSourceIntegration(t *testing.T) {
 // 	testutil.IntegrationTestCheck(t)
@@ -143,7 +143,7 @@ func TestCredentialsTokenSourceIntegration(t *testing.T) {
 // 		name := tt.name
 // 		t.Run(name, func(t *testing.T) {
 // 			creds, err := detect.DefaultCredentials(&detect.Options{
-// 				Scopes:   []string{"https://www.googleapis.com/auth/cloud-platform"},
+// 				Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 // 				CredentialsFile: tt.baseKeyFile,
 // 			})
 // 			if err != nil {

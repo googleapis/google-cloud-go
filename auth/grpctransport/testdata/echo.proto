@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package internal
+syntax = "proto3";
 
-// Version is the current tagged release of the library.
-const Version = "1.20.0"
+package echo;
+
+option go_package = "cloud.google.com/go/auth/grpctransprot/testdata;echo";
+
+service Echoer {
+    rpc Echo (EchoRequest) returns (EchoReply) {}
+  }
+  
+  message EchoRequest {
+    string message = 1;
+  }
+  
+  message EchoReply {
+    string message = 1;
+  }
