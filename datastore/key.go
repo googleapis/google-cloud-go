@@ -105,6 +105,10 @@ func (k *Key) marshal(b *bytes.Buffer) {
 	} else {
 		b.WriteString(strconv.FormatInt(k.ID, 10))
 	}
+	if k.Namespace != "" {
+		b.WriteByte(',')
+		b.WriteString(k.Namespace)
+	}
 }
 
 // String returns a string representation of the key.

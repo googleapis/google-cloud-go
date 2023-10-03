@@ -1,5 +1,13 @@
 # Changes
 
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.19.0...video/v1.20.0) (2023-09-12)
+
+
+### Features
+
+* **video/stitcher:** Refactor RPCs to use LRO ([#8561](https://github.com/googleapis/google-cloud-go/issues/8561)) ([aaebe09](https://github.com/googleapis/google-cloud-go/commit/aaebe097413bd38a969476253e951b7f5274cbbf))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.18.0...video/v1.19.0) (2023-07-24)
 
 

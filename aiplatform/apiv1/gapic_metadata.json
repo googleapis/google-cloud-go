@@ -1974,6 +1974,11 @@
                 "ReadTensorboardBlobData"
               ]
             },
+            "ReadTensorboardSize": {
+              "methods": [
+                "ReadTensorboardSize"
+              ]
+            },
             "ReadTensorboardTimeSeriesData": {
               "methods": [
                 "ReadTensorboardTimeSeriesData"

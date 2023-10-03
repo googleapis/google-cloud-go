@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.1.1...baremetalsolution/v1.2.0) (2023-08-14)
+
+
+### Features
+
+* **baremetalsolution:** Several new resources and RPCs ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+
 ## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.1.0...baremetalsolution/v1.1.1) (2023-06-20)
 
 

@@ -40,6 +40,11 @@
                 "GetAgentValidationResult"
               ]
             },
+            "GetGenerativeSettings": {
+              "methods": [
+                "GetGenerativeSettings"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -73,6 +78,11 @@
             "UpdateAgent": {
               "methods": [
                 "UpdateAgent"
+              ]
+            },
+            "UpdateGenerativeSettings": {
+              "methods": [
+                "UpdateGenerativeSettings"
               ]
             },
             "ValidateAgent": {
@@ -115,6 +125,11 @@
                 "GetAgentValidationResult"
               ]
             },
+            "GetGenerativeSettings": {
+              "methods": [
+                "GetGenerativeSettings"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -148,6 +163,11 @@
             "UpdateAgent": {
               "methods": [
                 "UpdateAgent"
+              ]
+            },
+            "UpdateGenerativeSettings": {
+              "methods": [
+                "UpdateGenerativeSettings"
               ]
             },
             "ValidateAgent": {
@@ -913,6 +933,11 @@
                 "DeleteIntent"
               ]
             },
+            "ExportIntents": {
+              "methods": [
+                "ExportIntents"
+              ]
+            },
             "GetIntent": {
               "methods": [
                 "GetIntent"
@@ -926,6 +951,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportIntents": {
+              "methods": [
+                "ImportIntents"
               ]
             },
             "ListIntents": {
@@ -968,6 +998,11 @@
                 "DeleteIntent"
               ]
             },
+            "ExportIntents": {
+              "methods": [
+                "ExportIntents"
+              ]
+            },
             "GetIntent": {
               "methods": [
                 "GetIntent"
@@ -981,6 +1016,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportIntents": {
+              "methods": [
+                "ImportIntents"
               ]
             },
             "ListIntents": {

@@ -1,5 +1,19 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.25.0...container/v1.26.0) (2023-09-11)
+
+
+### Features
+
+* **container:** Add support for NodeConfig Update ([#8461](https://github.com/googleapis/google-cloud-go/issues/8461)) ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.24.0...container/v1.25.0) (2023-08-14)
+
+
+### Features
+
+* **container:** Add APIs for GKE OOTB metrics packages ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.23.0...container/v1.24.0) (2023-07-18)
 
 

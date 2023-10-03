@@ -26,7 +26,7 @@ import (
 	"reflect"
 	"runtime"
 	"sort"
-	"sync"
+	"strings"
 	"testing"
 	"time"
 
@@ -48,15 +48,30 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	initIntegrationTest()
-	status := m.Run()
-	cleanupIntegrationTest()
-	os.Exit(status)
+	databaseIDs := []string{DefaultDatabaseID}
+	databasesStr, ok := os.LookupEnv(envDatabases)
+	if ok {
+		databaseIDs = append(databaseIDs, strings.Split(databasesStr, ",")...)
+	}
+
+	testParams = make(map[string]interface{})
+	for _, databaseID := range databaseIDs {
+		testParams["databaseID"] = databaseID
+		initIntegrationTest()
+		status := m.Run()
+		if status != 0 {
+			os.Exit(status)
+		}
+		cleanupIntegrationTest()
+	}
+
+	os.Exit(0)
 }
 
 const (
 	envProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envPrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
+	envDatabases  = "GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES"
 )
 
 var (
@@ -66,9 +81,12 @@ var (
 	collectionIDs = uid.NewSpace("go-integration-test", nil)
 	wantDBPath    string
 	indexNames    []string
+	testParams    map[string]interface{}
 )
 
 func initIntegrationTest() {
+	databaseID := testParams["databaseID"].(string)
+	log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
 	flag.Parse() // needed for testing.Short()
 	if testing.Short() {
 		return
@@ -86,7 +104,7 @@ func initIntegrationTest() {
 		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
 	}
 	projectPath := "projects/" + testProjectID
-	wantDBPath = projectPath + "/databases/(default)"
+	wantDBPath = projectPath + "/databases/" + databaseID
 
 	ti := &testutil.HeadersEnforcer{
 		Checkers: []*testutil.HeaderChecker{
@@ -107,7 +125,7 @@ func initIntegrationTest() {
 		},
 	}
 	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
-	c, err := NewClient(ctx, testProjectID, copts...)
+	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
@@ -133,7 +151,6 @@ func initIntegrationTest() {
 // Without indexes, FailedPrecondition rpc error is seen with
 // desc 'The query requires multiple indexes'.
 func createIndexes(ctx context.Context, dbPath string) {
-	var createIndexWg sync.WaitGroup
 
 	indexFields := [][]string{
 		{"updatedAt", "weight", "height"},
@@ -143,7 +160,6 @@ func createIndexes(ctx context.Context, dbPath string) {
 	indexNames = make([]string, len(indexFields))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
 
-	createIndexWg.Add(len(indexFields))
 	for i, fields := range indexFields {
 		var adminPbIndexFields []*adminpb.Index_IndexField
 		for _, field := range fields {
@@ -161,21 +177,17 @@ func createIndexes(ctx context.Context, dbPath string) {
 				Fields:     adminPbIndexFields,
 			},
 		}
-		go func(req *adminpb.CreateIndexRequest, i int) {
-			op, createErr := iAdminClient.CreateIndex(ctx, req)
-			if createErr != nil {
-				log.Fatalf("CreateIndex: %v", createErr)
-			}
+		op, createErr := iAdminClient.CreateIndex(ctx, req)
+		if createErr != nil {
+			log.Fatalf("CreateIndex: %v", createErr)
+		}
 
-			createdIndex, waitErr := op.Wait(ctx)
-			if waitErr != nil {
-				log.Fatalf("Wait: %v", waitErr)
-			}
-			indexNames[i] = createdIndex.Name
-			createIndexWg.Done()
-		}(req, i)
+		createdIndex, waitErr := op.Wait(ctx)
+		if waitErr != nil {
+			log.Fatalf("Wait: %v", waitErr)
+		}
+		indexNames[i] = createdIndex.Name
 	}
-	createIndexWg.Wait()
 }
 
 // deleteIndexes deletes composite indexes created in createIndexes function
@@ -1032,6 +1044,8 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 		{q.EndAt(1), wants[:2], true},
 		{q.EndBefore(1), wants[:1], true},
 		{q.LimitToLast(2), wants[1:], true},
+		{q.EndBefore(2).LimitToLast(2), wants[:2], true},
+		{q.StartAt(1).EndBefore(2).LimitToLast(3), wants[1:2], true},
 	} {
 		if test.orderBy {
 			test.q = test.q.OrderBy("q", Asc)
@@ -1749,6 +1763,55 @@ func TestIntegration_FieldTransforms_Set(t *testing.T) {
 
 type imap map[string]interface{}
 
+func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
+	h := testHelper{t}
+	collID := collectionIDs.New()
+	ctx := context.Background()
+	client := integrationClient(t)
+
+	partitionedQueries, err := client.CollectionGroup(collID).GetPartitionedQueries(ctx, 10)
+	h.failIfNotNil(err)
+
+	qProtoBytes, err := partitionedQueries[0].Serialize()
+	h.failIfNotNil(err)
+
+	q, err := client.CollectionGroup(collID).Deserialize(qProtoBytes)
+	h.failIfNotNil(err)
+
+	qSnapIt := q.Snapshots(ctx)
+	defer qSnapIt.Stop()
+
+	// Check if at least one snapshot exists
+	_, err = qSnapIt.Next()
+	if err == iterator.Done {
+		t.Fatalf("Expected snapshot, found none")
+	}
+
+	// Add new document to query results
+	createdDocRefs := h.mustCreateMulti(collID, []testDocument{
+		{data: map[string]interface{}{"some-key": "should-be-found"}},
+	})
+	wds := h.mustGet(createdDocRefs[0])
+
+	// Check if new snapshot is available
+	qSnap, err := qSnapIt.Next()
+	if err == iterator.Done {
+		t.Fatalf("Expected snapshot, found none")
+	}
+
+	// Check the changes in snapshot
+	if len(qSnap.Changes) != 1 {
+		t.Fatalf("Expected one change, found none")
+	}
+
+	wantChange := DocumentChange{Kind: DocumentAdded, Doc: wds, OldIndex: -1, NewIndex: 0}
+	gotChange := qSnap.Changes[0]
+	copts := append([]cmp.Option{cmpopts.IgnoreFields(DocumentSnapshot{}, "ReadTime")}, cmpOpts...)
+	if diff := testutil.Diff(gotChange, wantChange, copts...); diff != "" {
+		t.Errorf("got: %v, want: %v, diff: %v", gotChange, wantChange, diff)
+	}
+}
+
 func TestIntegration_WatchQuery(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
@@ -1963,6 +2026,39 @@ type testHelper struct {
 	t *testing.T
 }
 
+func (h testHelper) failIfNotNil(err error) {
+	if err != nil {
+		h.t.Fatal(err)
+	}
+}
+
+type testDocument struct {
+	id   string
+	data map[string]interface{}
+}
+
+func (h testHelper) mustCreateMulti(collectionPath string, docsData []testDocument) []*DocumentRef {
+	client := integrationClient(h.t)
+	collRef := client.Collection(collectionPath)
+	docsCreated := []*DocumentRef{}
+	for _, data := range docsData {
+		var docRef *DocumentRef
+		if len(data.id) == 0 {
+			docRef = collRef.NewDoc()
+		} else {
+			docRef = collRef.Doc(data.id)
+		}
+		h.mustCreate(docRef, data.data)
+		docsCreated = append(docsCreated, docRef)
+	}
+
+	h.t.Cleanup(func() {
+		deleteDocuments(docsCreated)
+	})
+
+	return docsCreated
+}
+
 func (h testHelper) mustCreate(doc *DocumentRef, data interface{}) *WriteResult {
 	wr, err := doc.Create(context.Background(), data)
 	if err != nil {
@@ -2151,6 +2247,40 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 
 	if got, want := totalCount, documentCount; got != want {
 		t.Errorf("Unexpected number of documents across partitions: got %d, want %d", got, want)
+	}
+}
+
+func TestIntegration_NewClientWithDatabase(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	for _, tc := range []struct {
+		desc    string
+		dbName  string
+		wantErr bool
+		opt     []option.ClientOption
+	}{
+		{
+			desc:    "Success",
+			dbName:  testParams["databaseID"].(string),
+			wantErr: false,
+		},
+		{
+			desc:    "Error from NewClient bubbled to NewClientWithDatabase",
+			dbName:  testParams["databaseID"].(string),
+			wantErr: true,
+			opt:     []option.ClientOption{option.WithCredentialsFile("non existent filepath")},
+		},
+	} {
+		ctx := context.Background()
+		c, err := NewClientWithDatabase(ctx, iClient.projectID, tc.dbName, tc.opt...)
+		if err != nil && !tc.wantErr {
+			t.Errorf("NewClientWithDatabase: %s got %v want nil", tc.desc, err)
+		} else if err == nil && tc.wantErr {
+			t.Errorf("NewClientWithDatabase: %s got %v wanted error", tc.desc, err)
+		} else if err == nil && c.databaseID != tc.dbName {
+			t.Errorf("NewClientWithDatabase: %s got %v want %v", tc.desc, c.databaseID, tc.dbName)
+		}
 	}
 }
 

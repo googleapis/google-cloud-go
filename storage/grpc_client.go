@@ -512,11 +512,15 @@ func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string
 func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	o := uattrs.toProtoObject(bucketResourceName(globalProjectAlias, bucket), object)
+	// For Update, generation is passed via the object message rather than a field on the request.
+	if gen >= 0 {
+		o.Generation = gen
+	}
 	req := &storagepb.UpdateObjectRequest{
 		Object:        o,
 		PredefinedAcl: uattrs.PredefinedACL,
 	}
-	if err := applyCondsProto("grpcStorageClient.UpdateObject", gen, conds, req); err != nil {
+	if err := applyCondsProto("grpcStorageClient.UpdateObject", defaultGen, conds, req); err != nil {
 		return nil, err
 	}
 	if s.userProject != "" {
@@ -783,17 +787,18 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 
 	dstObjPb := req.dstObject.attrs.toProtoObject(req.dstBucket)
 	dstObjPb.Name = req.dstObject.name
-	if err := applyCondsProto("ComposeObject destination", defaultGen, req.dstObject.conds, dstObjPb); err != nil {
-		return nil, err
-	}
+
 	if req.sendCRC32C {
 		dstObjPb.Checksums.Crc32C = &req.dstObject.attrs.CRC32C
 	}
 
 	srcs := []*storagepb.ComposeObjectRequest_SourceObject{}
 	for _, src := range req.srcs {
-		srcObjPb := &storagepb.ComposeObjectRequest_SourceObject{Name: src.name}
-		if err := applyCondsProto("ComposeObject source", src.gen, src.conds, srcObjPb); err != nil {
+		srcObjPb := &storagepb.ComposeObjectRequest_SourceObject{Name: src.name, ObjectPreconditions: &storagepb.ComposeObjectRequest_SourceObject_ObjectPreconditions{}}
+		if src.gen >= 0 {
+			srcObjPb.Generation = src.gen
+		}
+		if err := applyCondsProto("ComposeObject source", defaultGen, src.conds, srcObjPb.ObjectPreconditions); err != nil {
 			return nil, err
 		}
 		srcs = append(srcs, srcObjPb)
@@ -802,6 +807,9 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	rawReq := &storagepb.ComposeObjectRequest{
 		Destination:   dstObjPb,
 		SourceObjects: srcs,
+	}
+	if err := applyCondsProto("ComposeObject destination", defaultGen, req.dstObject.conds, rawReq); err != nil {
+		return nil, err
 	}
 	if req.predefinedACL != "" {
 		rawReq.DestinationPredefinedAcl = req.predefinedACL
@@ -1620,7 +1628,8 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		// the request. The first message on the WriteObject stream must either
 		// be the Object or the Resumable Upload ID.
 		if w.stream == nil {
-			ctx := gapic.InsertMetadata(w.ctx, metadata.Pairs("x-goog-request-params", fmt.Sprintf("bucket=projects/_/buckets/%s", url.QueryEscape(w.bucket))))
+			hds := []string{"x-goog-request-params", fmt.Sprintf("bucket=projects/_/buckets/%s", url.QueryEscape(w.bucket))}
+			ctx := gax.InsertMetadataIntoOutgoingContext(w.ctx, hds...)
 			w.stream, err = w.c.raw.WriteObject(ctx)
 			if err != nil {
 				return nil, 0, false, err
