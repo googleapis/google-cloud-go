@@ -37,7 +37,6 @@ import (
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -45,6 +44,7 @@ import (
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 const (

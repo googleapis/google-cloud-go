@@ -57,9 +57,10 @@ type Options struct {
 	Client              *http.Client
 }
 
-// GetGRPCTransportConfigAndEndpoint returns an instance of credentials.TransportCredentials, and the
+// GetGRPCTransportCredsAndEndpoint returns an instance of
+// [google.golang.org/grpc/credentials.TransportCredentials], and the
 // corresponding endpoint to use for GRPC client.
-func GetGRPCTransportConfigAndEndpoint(opts *Options) (credentials.TransportCredentials, string, error) {
+func GetGRPCTransportCredsAndEndpoint(opts *Options) (credentials.TransportCredentials, string, error) {
 	config, err := getTransportConfig(opts)
 	if err != nil {
 		return nil, "", err
@@ -91,8 +92,8 @@ func GetGRPCTransportConfigAndEndpoint(opts *Options) (credentials.TransportCred
 	return s2aTransportCreds, config.s2aMTLSEndpoint, nil
 }
 
-// GetHTTPTransportConfig returns a client certificate source, a function for dialing MTLS with S2A,
-// and the endpoint to use for HTTP client.
+// GetHTTPTransportConfig returns a client certificate source and a function for
+// dialing MTLS with S2A.
 func GetHTTPTransportConfig(opts *Options) (cert.Provider, func(context.Context, string, string) (net.Conn, error), error) {
 	config, err := getTransportConfig(opts)
 	if err != nil {
