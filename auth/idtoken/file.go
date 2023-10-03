@@ -105,6 +105,6 @@ func tokenProviderFromBytes(b []byte, opts *Options) (auth.TokenProvider, error)
 		}
 		return impersonate.NewIDTokenProvider(&config)
 	default:
-		return nil, fmt.Errorf("idtoken: unsupported credentials type")
+		return nil, fmt.Errorf("idtoken: unsupported credentials type: %v", t)
 	}
 }
