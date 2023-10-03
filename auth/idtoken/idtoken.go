@@ -86,7 +86,7 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if opts.Audience == "" {
 		return nil, fmt.Errorf("idtoken: must supply a non-empty audience")
 	}
-	if b := jsonBytes(opts); b != nil {
+	if b := opts.jsonBytes(); b != nil {
 		return tokenProviderFromBytes(b, opts)
 	}
 	if metadata.OnGCE() {
@@ -95,8 +95,8 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	return nil, fmt.Errorf("idtoken: couldn't find any credentials")
 }
 
-func jsonBytes(opts *Options) []byte {
-	if opts != nil && opts.CredentialsJSON != nil {
+func (opts *Options) jsonBytes() []byte {
+	if opts.CredentialsJSON != nil {
 		return opts.CredentialsJSON
 	}
 	var fnOverride string

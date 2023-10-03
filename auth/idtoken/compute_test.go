@@ -58,6 +58,40 @@ func TestComputeTokenSource(t *testing.T) {
 	}
 }
 
+func TestComputeTokenSource_Standard(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.Contains(r.URL.Path, identitySuffix) {
+			t.Errorf("got %q, want contains %q", r.URL.Path, identitySuffix)
+		}
+		if got, want := r.URL.Query().Get("audience"), "aud"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+		if got, want := r.URL.Query().Get("format"), ""; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+		if got, want := r.URL.Query().Get("licenses"), ""; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+		w.Write([]byte(`fake_token`))
+	}))
+	defer ts.Close()
+	t.Setenv(metadataHostEnv, strings.TrimPrefix(ts.URL, "http://"))
+	tp, err := computeTokenProvider(&Options{
+		Audience:           "aud",
+		ComputeTokenFormat: ComputeTokenFormatStandard,
+	})
+	if err != nil {
+		t.Fatalf("computeTokenProvider() = %v", err)
+	}
+	tok, err := tp.Token(context.Background())
+	if err != nil {
+		t.Fatalf("tp.Token() = %v", err)
+	}
+	if want := "fake_token"; tok.Value != want {
+		t.Errorf("got %q, want %q", tok.Value, want)
+	}
+}
+
 func TestComputeTokenSource_Invalid(t *testing.T) {
 	if _, err := computeTokenProvider(&Options{
 		Audience:     "aud",

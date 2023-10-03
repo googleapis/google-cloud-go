@@ -39,7 +39,9 @@ func computeTokenProvider(opts *Options) (auth.TokenProvider, error) {
 		format:   opts.ComputeTokenFormat,
 		client:   *metadata.NewClient(opts.client()),
 	}
-	return auth.NewCachedTokenProvider(tp, nil), nil
+	return auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
+		ExpireEarly: 5 * time.Minute,
+	}), nil
 }
 
 type computeIDTokenProvider struct {
@@ -63,12 +65,13 @@ func (c computeIDTokenProvider) Token(ctx context.Context) (*auth.Token, error) 
 		return nil, err
 	}
 	if res == "" {
-		return nil, fmt.Errorf("idtoken: invalid response from metadata service")
+		return nil, fmt.Errorf("idtoken: invalid empty response from metadata service")
 	}
 	return &auth.Token{
 		Value: res,
 		Type:  internal.TokenTypeBearer,
-		// Compute tokens are valid for one hour
+		// Compute tokens are valid for one hour:
+		// https://cloud.google.com/iam/docs/create-short-lived-credentials-direct#create-id
 		Expiry: time.Now().Add(1 * time.Hour),
 	}, nil
 }
