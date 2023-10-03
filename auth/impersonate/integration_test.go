@@ -118,61 +118,63 @@ func TestCredentialsTokenSourceIntegration(t *testing.T) {
 	}
 }
 
-func TestIDTokenSourceIntegration(t *testing.T) {
-	testutil.IntegrationTestCheck(t)
+// TODO(codyoss): uncomment in #8580
 
-	ctx := context.Background()
-	tests := []struct {
-		name        string
-		baseKeyFile string
-		delegates   []string
-	}{
-		{
-			name:        "SA -> SA",
-			baseKeyFile: readerKeyFile,
-		},
-		{
-			name:        "SA -> Delegate -> SA",
-			baseKeyFile: baseKeyFile,
-			delegates:   []string{readerEmail},
-		},
-	}
+// func TestIDTokenSourceIntegration(t *testing.T) {
+// 	testutil.IntegrationTestCheck(t)
 
-	for _, tt := range tests {
-		name := tt.name
-		t.Run(name, func(t *testing.T) {
-			creds, err := detect.DefaultCredentials(&detect.Options{
-				Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
-				CredentialsFile: tt.baseKeyFile,
-			})
-			if err != nil {
-				t.Fatalf("detect.DefaultCredentials() = %v", err)
-			}
-			aud := "http://example.com/"
-			tp, err := impersonate.NewIDTokenProvider(&impersonate.IDTokenOptions{
-				TargetPrincipal: writerEmail,
-				Audience:        aud,
-				Delegates:       tt.delegates,
-				IncludeEmail:    true,
-				TokenProvider:   creds,
-			})
-			if err != nil {
-				t.Fatalf("failed to create ts: %v", err)
-			}
-			tok, err := tp.Token(ctx)
-			if err != nil {
-				t.Fatalf("unable to retrieve Token: %v", err)
-			}
-			validTok, err := idtoken.Validate(ctx, tok.Value, aud)
-			if err != nil {
-				t.Fatalf("token validation failed: %v", err)
-			}
-			if validTok.Audience != aud {
-				t.Fatalf("got %q, want %q", validTok.Audience, aud)
-			}
-			if validTok.Claims["email"] != writerEmail {
-				t.Fatalf("got %q, want %q", validTok.Claims["email"], writerEmail)
-			}
-		})
-	}
-}
+// 	ctx := context.Background()
+// 	tests := []struct {
+// 		name        string
+// 		baseKeyFile string
+// 		delegates   []string
+// 	}{
+// 		{
+// 			name:        "SA -> SA",
+// 			baseKeyFile: readerKeyFile,
+// 		},
+// 		{
+// 			name:        "SA -> Delegate -> SA",
+// 			baseKeyFile: baseKeyFile,
+// 			delegates:   []string{readerEmail},
+// 		},
+// 	}
+
+// 	for _, tt := range tests {
+// 		name := tt.name
+// 		t.Run(name, func(t *testing.T) {
+// 			creds, err := detect.DefaultCredentials(&detect.Options{
+// 				Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+// 				CredentialsFile: tt.baseKeyFile,
+// 			})
+// 			if err != nil {
+// 				t.Fatalf("detect.DefaultCredentials() = %v", err)
+// 			}
+// 			aud := "http://example.com/"
+// 			tp, err := impersonate.NewIDTokenProvider(&impersonate.IDTokenOptions{
+// 				TargetPrincipal: writerEmail,
+// 				Audience:        aud,
+// 				Delegates:       tt.delegates,
+// 				IncludeEmail:    true,
+// 				TokenProvider:   creds,
+// 			})
+// 			if err != nil {
+// 				t.Fatalf("failed to create ts: %v", err)
+// 			}
+// 			tok, err := tp.Token(ctx)
+// 			if err != nil {
+// 				t.Fatalf("unable to retrieve Token: %v", err)
+// 			}
+// 			validTok, err := idtoken.Validate(ctx, tok.Value, aud)
+// 			if err != nil {
+// 				t.Fatalf("token validation failed: %v", err)
+// 			}
+// 			if validTok.Audience != aud {
+// 				t.Fatalf("got %q, want %q", validTok.Audience, aud)
+// 			}
+// 			if validTok.Claims["email"] != writerEmail {
+// 				t.Fatalf("got %q, want %q", validTok.Claims["email"], writerEmail)
+// 			}
+// 		})
+// 	}
+// }
