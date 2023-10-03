@@ -335,8 +335,8 @@ type EnvVar struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the environment variable. Must be a C_IDENTIFIER, and
-	// must not exceed 32768 characters.
+	// Required. Name of the environment variable. Must not exceed 32768
+	// characters.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Types that are assignable to Values:
 	//	*EnvVar_Value
