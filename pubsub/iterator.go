@@ -31,6 +31,7 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -99,8 +100,9 @@ type messageIterator struct {
 	enableExactlyOnceDelivery bool
 	sendNewAckDeadline        bool
 
-	otelMu         sync.RWMutex
-	activeContexts map[string]context.Context
+	otelMu sync.RWMutex
+	// This stores the base receive span context for each message based on ack ID.
+	activeSpanContexts map[string]trace.SpanContext
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -128,6 +130,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 	pingTicker := time.NewTicker(30 * time.Second)
 	cctx, cancel := context.WithCancel(context.Background())
 	cctx = withSubscriptionKey(cctx, subName)
+
 	it := &messageIterator{
 		ctx:                cctx,
 		cancel:             cancel,
@@ -146,7 +149,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		pendingAcks:        map[string]*AckResult{},
 		pendingNacks:       map[string]*AckResult{},
 		pendingModAcks:     map[string]*AckResult{},
-		activeContexts:     map[string]context.Context{},
+		activeSpanContexts: map[string]trace.SpanContext{},
 	}
 	it.wg.Add(1)
 	go it.sender()
@@ -280,15 +283,12 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	pendingMessages := make(map[string]*ipubsub.Message)
 	for _, m := range msgs {
 		ackID := msgAckID(m)
-		ctx := context.Background()
-		if m.Attributes != nil {
-			ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(m))
-		}
-		it.otelMu.Lock()
-		it.activeContexts[ackID] = ctx
-		it.otelMu.Unlock()
 		addRecv(m.ID, ackID, now)
 		it.keepAliveDeadlines[ackID] = maxExt
+		ctx := otel.GetTextMapPropagator().Extract(context.Background(), newMessageCarrier(m))
+		it.otelMu.Lock()
+		it.activeSpanContexts[ackID] = trace.SpanContextFromContext(ctx)
+		it.otelMu.Unlock()
 		// Don't change the mod-ack if the message is going to be nacked. This is
 		// possible if there are retries.
 		if _, ok := it.pendingNacks[ackID]; !ok {
@@ -483,7 +483,7 @@ func (it *messageIterator) handleKeepAlives() {
 			// https://groups.google.com/forum/#!msg/golang-nuts/UciASUb03Js/pzSq5iVFAQAJ.
 			delete(it.keepAliveDeadlines, id)
 			it.otelMu.Lock()
-			delete(it.activeContexts, id)
+			delete(it.activeSpanContexts, id)
 			it.otelMu.Unlock()
 		} else {
 			// Use a success AckResult since we don't propagate ModAcks back to the user.
@@ -500,8 +500,10 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	for ackID := range m {
 		ackIDs = append(ackIDs, ackID)
 		it.otelMu.RLock()
-		ctx := it.activeContexts[ackID]
+		// get the parent span context for this ackID.
+		psc := it.activeSpanContexts[ackID]
 		it.otelMu.RUnlock()
+		ctx := trace.ContextWithSpanContext(context.Background(), psc)
 		_, ackSpan := tracer().Start(ctx, ackSpanName)
 		defer ackSpan.End()
 	}
@@ -552,8 +554,10 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 	for ackID := range m {
 		ackIDs = append(ackIDs, ackID)
 		it.otelMu.RLock()
-		ctx := it.activeContexts[ackID]
+		// get the parent span context for this ackID.
+		psc := it.activeSpanContexts[ackID]
 		it.otelMu.RUnlock()
+		ctx := trace.ContextWithSpanContext(context.Background(), psc)
 		var spanName string
 		isNack := deadline == 0
 		if isNack {

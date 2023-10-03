@@ -280,6 +280,8 @@ type messageCarrier struct {
 	msg *Message
 }
 
+const googclientPrefix string = "googclient_"
+
 // newMessageCarrier creates a new PubsubMessageCarrier.
 func newMessageCarrier(msg *Message) messageCarrier {
 	return messageCarrier{msg: msg}
@@ -287,12 +289,12 @@ func newMessageCarrier(msg *Message) messageCarrier {
 
 // Get retrieves a single value for a given key.
 func (c messageCarrier) Get(key string) string {
-	return c.msg.Attributes["googclient_"+key]
+	return c.msg.Attributes[googclientPrefix+key]
 }
 
 // Set sets an attribute.
 func (c messageCarrier) Set(key, val string) {
-	c.msg.Attributes["googclient_"+key] = val
+	c.msg.Attributes[googclientPrefix+key] = val
 }
 
 // Keys returns a slice of all keys in the carrier.
@@ -314,9 +316,9 @@ const (
 	publishRPCSpanName         = "publish"
 
 	// subscribe span names
-	subscriberSpanName            = "receive"
+	subscribeReceiveSpanName      = "receive"
 	subscriberFlowControlSpanName = "subscriber flow control"
-	processSpanName               = "process"
+	subscribeProcessSpanName      = "process"
 	subscribeSchedulerSpanName    = "subscribe scheduler"
 	receiptModAckSpanName         = "send initial ModifyAckDeadline"
 	modAckSpanName                = "send ModifyAckDeadline"
@@ -383,9 +385,6 @@ func injectPropagation(ctx context.Context, msg *Message) {
 	}
 }
 
-// spanRecordError records the error, sets the status to error, and ends the span.
-// This is recommended by https://opentelemetry.io/docs/instrumentation/go/manual/#record-errors
-// since RecordError doesn't set the status of a span.
 func getSubSpanAttributes(sub string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
 	msgSize := proto.Size(&pb.PubsubMessage{
 		Data:        msg.Data,
@@ -410,6 +409,9 @@ func getSubSpanAttributes(sub string, msg *Message, opts ...attribute.KeyValue) 
 	return ss
 }
 
+// spanRecordError records the error, sets the status to error, and ends the span.
+// This is recommended by https://opentelemetry.io/docs/instrumentation/go/manual/#record-errors
+// since RecordError doesn't set the status of a span.
 func spanRecordError(span trace.Span, err error) {
 	span.RecordError(err)
 	span.SetStatus(otelcodes.Error, err.Error())

@@ -1426,7 +1426,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						m := msg.(*Message)
 						schedulerSpan.End()
 						defer wg.Done()
-						_, cSpan := tracer().Start(ctx2, fmt.Sprintf("%s %s", s.String(), processSpanName))
+						_, cSpan := tracer().Start(ctx2, fmt.Sprintf("%s %s", s.String(), subscribeProcessSpanName))
 						defer cSpan.End()
 						old2 := ackh.doneFunc
 						ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {

@@ -103,20 +103,12 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	if msg.Attributes != nil {
 		ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(msg))
 	}
-	ctx, span := tracer().Start(ctx, fmt.Sprintf("%s %s", subName, subscriberSpanName), opts...)
+	_, span := tracer().Start(ctx, fmt.Sprintf("%s %s", subName, subscribeReceiveSpanName), opts...)
 	span.SetAttributes(
 		attribute.Bool(eosAttribute, eos),
 		attribute.String(ackIDAttribute, resp.AckId),
 		attribute.Int(numBatchedMessagesAttribute, numMsgs),
-		attribute.Bool(ackAttribute, false),
 	)
-	// inject the new ctx into message for propagation across the other receive paths
-	// that cannot directly access this ctx. We do this to avoid storing context
-	// inside a message.
-	if msg.Attributes == nil {
-		msg.Attributes = map[string]string{}
-	}
-	otel.GetTextMapPropagator().Inject(ctx, newMessageCarrier(msg))
 
 	ackh.receiveTime = receiveTime
 	ackh.doneFunc = doneFunc

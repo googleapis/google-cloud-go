@@ -17,7 +17,6 @@ package pubsub
 import (
 	"context"
 	"fmt"
-	"log"
 	"testing"
 	"time"
 
@@ -29,6 +28,7 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
@@ -39,11 +39,29 @@ import (
 
 func TestTrace_MessageCarrier(t *testing.T) {
 	ctx := context.Background()
+	e := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+	defer tp.Shutdown(ctx)
+	otel.SetTracerProvider(tp)
+
+	ctx, _ = tp.Tracer("a").Start(ctx, "fake-span")
 	msg := &Message{
 		Data:        []byte("asdf"),
 		OrderingKey: "asdf",
+		Attributes:  map[string]string{},
 	}
-	otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(msg))
+	otel.GetTextMapPropagator().Inject(ctx, newMessageCarrier(msg))
+
+	if _, ok := msg.Attributes[googclientPrefix+"traceparent"]; !ok {
+		t.Fatalf("expected traceparent in message attributes, found empty string")
+	}
+
+	newCtx := context.Background()
+	otel.GetTextMapPropagator().Extract(newCtx, newMessageCarrier(msg))
+	if _, ok := msg.Attributes[googclientPrefix+"traceparent"]; !ok {
+		t.Fatalf("expected traceparent in message attributes, found empty string")
+	}
 }
 
 func TestTrace_PublishSpan(t *testing.T) {
@@ -54,6 +72,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 
 	e := tracetest.NewInMemoryExporter()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	otel.SetTextMapPropagator(propagation.TraceContext{})
 	defer tp.Shutdown(ctx)
 	otel.SetTracerProvider(tp)
 
@@ -136,8 +155,8 @@ func TestTrace_PublishSpan(t *testing.T) {
 		cmpopts.SortSlices(sortSpanStub),
 	}
 	if diff := testutil.Diff(got, expectedSpans, opts...); diff != "" {
-		log.Printf("print spans: %+v\n", got)
-		log.Printf("\n\nprint expected spans: %+v\n", expectedSpans)
+		t.Logf("got spans: %+v\n", got)
+		t.Logf("expected spans: %+v\n", expectedSpans)
 		t.Errorf("diff: -got, +want:\n%s\n", diff)
 	}
 }
@@ -151,6 +170,7 @@ func TestTrace_PublishSpanError(t *testing.T) {
 	e := tracetest.NewInMemoryExporter()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
 	defer tp.Shutdown(ctx)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
 	otel.SetTracerProvider(tp)
 
 	m := &Message{
@@ -251,7 +271,151 @@ func TestTrace_PublishSpanError(t *testing.T) {
 			t.Errorf("diff: -got, +want:\n%s\n", diff)
 		}
 	})
+}
 
+func TestTrace_SubscribeSpans(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	// For subscribe spans, we'll publish before setting the tracer provider
+	// so we don't trace the publish spans. Context propagation will be tested
+	// at a later time.
+	m := &Message{
+		Data:        []byte("test"),
+		OrderingKey: "my-key",
+	}
+
+	msgSize := proto.Size(&pb.PubsubMessage{
+		Data:        m.Data,
+		Attributes:  m.Attributes,
+		OrderingKey: m.OrderingKey,
+	})
+
+	topicID := "t"
+	// topicName := fmt.Sprintf("projects/P/topics/%s", topicID)
+
+	topic, err := c.CreateTopic(ctx, topicID)
+	if err != nil {
+		t.Fatalf("failed to create topic: %v", err)
+	}
+
+	subID := "s"
+	subName := fmt.Sprintf("projects/P/subscriptions/%s", subID)
+	enableEOS := false
+
+	sub, err := c.CreateSubscription(ctx, subID, SubscriptionConfig{
+		Topic:                     topic,
+		EnableExactlyOnceDelivery: enableEOS,
+	})
+	if err != nil {
+		t.Fatalf("failed to create subscription: %v", err)
+	}
+	if m.OrderingKey != "" {
+		topic.EnableMessageOrdering = true
+	}
+
+	// Call publish before enabling tracer provider to only test subscribe spans.
+	r := topic.Publish(ctx, m)
+	_, err = r.Get(ctx)
+	if err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	e := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	defer tp.Shutdown(ctx)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+	otel.SetTracerProvider(tp)
+
+	ctx, cancel := context.WithCancel(ctx)
+
+	sub.Receive(ctx, func(ctx context.Context, m *Message) {
+		m.Ack()
+		cancel()
+	})
+
+	expectedSpans := tracetest.SpanStubs{
+		tracetest.SpanStub{
+			Name: fmt.Sprintf("%s %s", subName, subscribeProcessSpanName),
+			Attributes: []attribute.KeyValue{
+				attribute.Bool(ackAttribute, true),
+			},
+			Events: []sdktrace.Event{},
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+		},
+		tracetest.SpanStub{
+			Name:     fmt.Sprintf("%s %s", subName, subscribeReceiveSpanName),
+			SpanKind: trace.SpanKindConsumer,
+			Attributes: []attribute.KeyValue{
+				semconv.MessagingDestinationKindTopic,
+				// Hardcoded since the fake server always returns m0 first.
+				semconv.MessagingMessageIDKey.String("m0"),
+				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+				semconv.MessagingOperationReceive,
+				// The fake server uses message ID as ackID, this is not the case with live service.
+				attribute.String(ackIDAttribute, "m0"),
+				attribute.Bool(eosAttribute, enableEOS),
+				attribute.Bool(ackAttribute, true),
+				attribute.String(orderingAttribute, m.OrderingKey),
+				semconv.MessagingSystemKey.String("pubsub"),
+				attribute.Int(numBatchedMessagesAttribute, 1),
+				attribute.String(subscriptionAttribute, subName),
+			},
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+		},
+		tracetest.SpanStub{
+			Name: subscribeSchedulerSpanName,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+		},
+		tracetest.SpanStub{
+			Name: subscriberFlowControlSpanName,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+		},
+		tracetest.SpanStub{
+			Name: ackSpanName,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+		},
+		tracetest.SpanStub{
+			Name: modAckSpanName,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+			Attributes: []attribute.KeyValue{
+				attribute.Bool(initialModackAttribute, true),
+				attribute.Int(modackDeadlineSecondsAttribute, 10),
+				attribute.Int(numBatchedMessagesAttribute, 1),
+			},
+		},
+	}
+
+	got := getSpans(e)
+	opts := []cmp.Option{
+		cmp.Comparer(spanStubComparer),
+		cmpopts.SortSlices(sortSpanStub),
+	}
+	if diff := testutil.Diff(got, expectedSpans, opts...); diff != "" {
+		t.Logf("got spans: %+v\n", got)
+		t.Logf("expected spans: %+v\n", expectedSpans)
+		t.Errorf("diff: -got, +want:\n%s\n", diff)
+	}
 }
 
 func spanStubComparer(a, b tracetest.SpanStub) bool {
