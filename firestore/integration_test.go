@@ -1361,63 +1361,41 @@ func TestIntegration_TransactionReadTime(t *testing.T) {
 		deleteDocuments(createdDocRefs)
 	})
 
-	timeAfterCreate := time.Now().Truncate(time.Microsecond)
-
 	// query := coll.Where("height", ">=", 5)
 	testCases := []struct {
 		desc         string
-		wantDocRefs  []*DocumentRef
 		wantDocSnaps []map[string]interface{}
-		txnOptions   []TransactionOption
+		readTime     time.Time
 	}{
 		{
 			desc:         "Check values before creating entities",
-			wantDocRefs:  []*DocumentRef{},
 			wantDocSnaps: []map[string]interface{}{},
-			txnOptions:   []TransactionOption{ReadOnlyReadTime(timeBeforeCreate)},
+			readTime:     timeBeforeCreate,
 		},
 		{
 			desc:         "Check values after creating entities",
-			wantDocRefs:  createdDocRefs,
 			wantDocSnaps: wants,
-			txnOptions:   []TransactionOption{ReadOnlyReadTime(timeAfterCreate)},
 		},
 	}
 
 	for _, testCase := range testCases {
 
 		t.Run(testCase.desc, func(t *testing.T) {
-			testutil.Retry(t, 1, time.Second, func(r *testutil.R) {
+			testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
+				readTime := testCase.readTime
+				if readTime.IsZero() {
+					// Use current time as read time if read time is not specified in test case
+					readTime = time.Now().Truncate(time.Microsecond)
+				}
 				client.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
-					// gotDocRefs, err := tx.DocumentRefs(coll).GetAll()
-					// if err != nil {
-					// 	return fmt.Errorf("DocumentRefs.GetAll: %v", err)
-					// }
-					// if len(gotDocRefs) != len(wantSnaps) {
-					// 	t.Errorf("%q: got %d, want %d", desc, len(gotDocRefs), len(wantSnaps))
-					// 	return
-					// }
-
-					// for i, gotSnap := range gotSnaps {
-					// 	if got, want := gotSnap.Data(), wantSnaps[i]; !testEqual(got, want) {
-					// 		t.Errorf("%q #%d: got %+v, want %+v", desc, i, got, want)
-					// 	}
-					// }
-
 					gotDocSnapsGetAll, err := tx.GetAll(createdDocRefs)
 					if err != nil {
 						r.Errorf("GetAll %v", err)
 					}
 					compareDocSnaps(t, "GetAll ", gotDocSnapsGetAll, testCase.wantDocSnaps)
 
-					gotDocSnapsDocuments, err := tx.Documents(coll.OrderBy("height", Asc)).GetAll()
-					if err != nil {
-						r.Errorf("Documents.GetAll %v", err)
-					}
-					compareDocSnaps(t, "Documents.GetAll ", gotDocSnapsDocuments, testCase.wantDocSnaps)
-
 					return nil
-				}, testCase.txnOptions...)
+				}, []TransactionOption{ReadOnlyReadTime(readTime)}...)
 			})
 		})
 

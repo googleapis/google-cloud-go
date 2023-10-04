@@ -17,7 +17,6 @@ package firestore
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -129,7 +128,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 		txOptReadOnly := &pb.TransactionOptions_ReadOnly{}
 		if t.readSettings != nil && !t.readSettings.readTime.IsZero() {
 			txOptReadOnly.ConsistencySelector = &pb.TransactionOptions_ReadOnly_ReadTime{
-				ReadTime: &timestamppb.Timestamp{Seconds: int64(t.readSettings.readTime.Unix())},
+				ReadTime: timestamppb.New(t.readSettings.readTime),
 			}
 		}
 		txOpts = &pb.TransactionOptions{
@@ -144,7 +143,6 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	for i := 0; i < t.maxAttempts; i++ {
 		t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Client.BeginTransaction")
 		var res *pb.BeginTransactionResponse
-		fmt.Printf("In %+v\n", txOpts)
 		res, err = t.c.c.BeginTransaction(t.ctx, &pb.BeginTransactionRequest{
 			Database: db,
 			Options:  txOpts,
