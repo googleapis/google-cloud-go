@@ -101,7 +101,7 @@ type internalAcceleratorTypesClient interface {
 // AcceleratorTypesClient is a client for interacting with Google Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Services
+// # Services
 //
 // The AcceleratorTypes API.
 type AcceleratorTypesClient struct {
@@ -167,7 +167,7 @@ type acceleratorTypesRESTClient struct {
 
 // NewAcceleratorTypesRESTClient creates a new accelerator types rest client.
 //
-// Services
+// # Services
 //
 // The AcceleratorTypes API.
 func NewAcceleratorTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*AcceleratorTypesClient, error) {
