@@ -31,6 +31,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -1421,12 +1422,12 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					}
 					// TODO(deklerk): Can we have a generic handler at the
 					// constructor level?
-					_, schedulerSpan := tracer().Start(ctx3, subscribeSchedulerSpanName)
+					ctx3, schedulerSpan := tracer().Start(ctx3, subscribeSchedulerSpanName)
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						m := msg.(*Message)
 						schedulerSpan.End()
 						defer wg.Done()
-						_, cSpan := tracer().Start(ctx2, fmt.Sprintf("%s %s", s.String(), subscribeProcessSpanName))
+						_, cSpan := tracer().Start(ctx3, fmt.Sprintf("%s %s", s.String(), subscribeProcessSpanName))
 						defer cSpan.End()
 						old2 := ackh.doneFunc
 						ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
@@ -1437,8 +1438,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 								eventString = "msg.Nack() called"
 							}
 							cSpan.AddEvent(eventString)
-							cSpan.SetAttributes(attribute.Bool(ackAttribute, ack))
-							defer cSpan.End()
+							cSpan.SetAttributes(
+								attribute.Bool(ackAttribute, ack),
+								semconv.MessagingOperationProcess,
+							)
 							old2(ackID, ack, r, receiveTime)
 						}
 						f(ctx2, m)
