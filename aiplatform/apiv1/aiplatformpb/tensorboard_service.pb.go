@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -662,7 +661,7 @@ type CreateTensorboardExperimentRequest struct {
 	// final component of the Tensorboard experiment's resource name.
 	//
 	// This value should be 1-128 characters, and valid characters
-	// are /[a-z][0-9]-/.
+	// are `/[a-z][0-9]-/`.
 	TensorboardExperimentId string `protobuf:"bytes,3,opt,name=tensorboard_experiment_id,json=tensorboardExperimentId,proto3" json:"tensorboard_experiment_id,omitempty"`
 }
 
@@ -1188,7 +1187,7 @@ type CreateTensorboardRunRequest struct {
 	// component of the Tensorboard run's resource name.
 	//
 	// This value should be 1-128 characters, and valid characters
-	// are /[a-z][0-9]-/.
+	// are `/[a-z][0-9]-/`.
 	TensorboardRunId string `protobuf:"bytes,3,opt,name=tensorboard_run_id,json=tensorboardRunId,proto3" json:"tensorboard_run_id,omitempty"`
 }
 

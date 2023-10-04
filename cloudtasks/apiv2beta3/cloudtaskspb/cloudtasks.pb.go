@@ -21,11 +21,8 @@
 package cloudtaskspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (

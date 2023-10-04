@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -45,7 +44,7 @@ const (
 	// Should not be used.
 	Index_INDEX_UPDATE_METHOD_UNSPECIFIED Index_IndexUpdateMethod = 0
 	// BatchUpdate: user can call UpdateIndex with files on Cloud Storage of
-	// datapoints to update.
+	// Datapoints to update.
 	Index_BATCH_UPDATE Index_IndexUpdateMethod = 1
 	// StreamUpdate: user can call UpsertDatapoints/DeleteDatapoints to update
 	// the Index and the updates will be applied in corresponding
@@ -294,7 +293,7 @@ type IndexDatapoint struct {
 	FeatureVector []float32 `protobuf:"fixed32,2,rep,packed,name=feature_vector,json=featureVector,proto3" json:"feature_vector,omitempty"`
 	// Optional. List of Restrict of the datapoint, used to perform "restricted
 	// searches" where boolean rule are used to filter the subset of the database
-	// eligible for matching. See:
+	// eligible for matching. This uses categorical tokens. See:
 	// https://cloud.google.com/vertex-ai/docs/matching-engine/filtering
 	Restricts []*IndexDatapoint_Restriction `protobuf:"bytes,4,rep,name=restricts,proto3" json:"restricts,omitempty"`
 	// Optional. CrowdingTag of the datapoint, the number of neighbors to return
@@ -427,11 +426,11 @@ type IndexDatapoint_Restriction struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The namespace of this restriction. eg: color.
+	// The namespace of this restriction. e.g.: color.
 	Namespace string `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	// The attributes to allow in this namespace. eg: 'red'
+	// The attributes to allow in this namespace. e.g.: 'red'
 	AllowList []string `protobuf:"bytes,2,rep,name=allow_list,json=allowList,proto3" json:"allow_list,omitempty"`
-	// The attributes to deny in this namespace. eg: 'blue'
+	// The attributes to deny in this namespace. e.g.: 'blue'
 	DenyList []string `protobuf:"bytes,3,rep,name=deny_list,json=denyList,proto3" json:"deny_list,omitempty"`
 }
 

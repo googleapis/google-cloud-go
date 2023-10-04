@@ -21,13 +21,12 @@
 package firestorepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1107,11 +1106,12 @@ type StructuredQuery_FieldReference struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The relative path of the document being referenced.
+	// A reference to a field in a document.
 	//
 	// Requires:
 	//
-	// * Conform to [document field name][google.firestore.v1.Document.fields]
+	// * MUST be a dot-delimited (`.`) string of segments, where each segment
+	// conforms to [document field name][google.firestore.v1.Document.fields]
 	// limitations.
 	FieldPath string `protobuf:"bytes,2,opt,name=field_path,json=fieldPath,proto3" json:"field_path,omitempty"`
 }

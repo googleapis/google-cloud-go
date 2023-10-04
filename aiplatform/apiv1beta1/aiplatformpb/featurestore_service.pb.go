@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1807,10 +1806,6 @@ type CreateFeatureRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The resource name of the EntityType or FeatureGroup to create a Feature.
-	// Format:
-	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
-	// `projects/{project}/locations/{location}/featureGroups/{feature_group}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Feature to create.
 	Feature *Feature `protobuf:"bytes,2,opt,name=feature,proto3" json:"feature,omitempty"`

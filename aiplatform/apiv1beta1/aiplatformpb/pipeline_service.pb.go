@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -449,7 +448,7 @@ type CreatePipelineJobRequest struct {
 	// generated.
 	//
 	// This value should be less than 128 characters, and valid characters
-	// are /[a-z][0-9]-/.
+	// are `/[a-z][0-9]-/`.
 	PipelineJobId string `protobuf:"bytes,3,opt,name=pipeline_job_id,json=pipelineJobId,proto3" json:"pipeline_job_id,omitempty"`
 }
 

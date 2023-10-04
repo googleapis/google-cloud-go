@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -335,7 +334,10 @@ type DeployedIndex struct {
 	//
 	// The value should be the name of the address
 	// (https://cloud.google.com/compute/docs/reference/rest/v1/addresses)
-	// Example: 'vertex-ai-ip-range'.
+	// Example: ['vertex-ai-ip-range'].
+	//
+	// For more information about subnets and network IP ranges, please see
+	// https://cloud.google.com/vpc/docs/subnets#manually_created_subnet_ip_ranges.
 	ReservedIpRanges []string `protobuf:"bytes,10,rep,name=reserved_ip_ranges,json=reservedIpRanges,proto3" json:"reserved_ip_ranges,omitempty"`
 	// Optional. The deployment group can be no longer than 64 characters (eg:
 	// 'test', 'prod'). If not set, we will use the 'default' deployment group.
