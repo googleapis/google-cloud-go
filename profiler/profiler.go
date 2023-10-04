@@ -67,10 +67,8 @@ import (
 )
 
 var (
-	config       Config
-	startOnce    allowUntilSuccess
-	mutexEnabled bool
-	logger       *log.Logger
+	startOnce allowUntilSuccess
+
 	// The functions below are stubbed to be overrideable for testing.
 	getProjectID     = gcemd.ProjectID
 	getInstanceName  = gcemd.InstanceName
@@ -104,6 +102,14 @@ const (
 	backoffMultiplier = 1.3 // Backoff envelope increases by this factor on each retry.
 	retryInfoMetadata = "google.rpc.retryinfo-bin"
 )
+
+type profiler struct {
+	ctx       context.Context
+	config    Config
+	agent     *agent
+	startOnce allowUntilSuccess
+	debugLog  logFunc
+}
 
 // Config is the profiler configuration.
 type Config struct {
@@ -212,7 +218,7 @@ func (o *allowUntilSuccess) do(f func() error) (err error) {
 			o.done = 1
 		}
 	} else {
-		debugLog("profiler.Start() called again after it was previously called")
+		//debugLog("profiler.Start() called again after it was previously called")
 		err = nil
 	}
 	return err
@@ -224,28 +230,48 @@ func (o *allowUntilSuccess) do(f func() error) (err error) {
 // additional calls will be ignored.
 func Start(cfg Config, options ...option.ClientOption) error {
 	startError := startOnce.do(func() error {
-		return start(cfg, options...)
+		ctx := context.Background()
+		p, err := newProfiler(ctx, cfg, options...)
+		if err != nil {
+			return err
+		}
+		p.start()
+		return nil
 	})
 	return startError
 }
 
-func start(cfg Config, options ...option.ClientOption) error {
+func noLog(string, ...interface{}) {}
+
+type logFunc func(format string, e ...interface{})
+
+func newProfiler(ctx context.Context, cfg Config, options ...option.ClientOption) (*profiler, error) {
+	// configure debug logging
 	if cfg.DebugLoggingOutput == nil {
 		cfg.DebugLoggingOutput = os.Stderr
 	}
-	logger = log.New(cfg.DebugLoggingOutput, "Cloud Profiler: ", log.LstdFlags)
-	if err := initializeConfig(cfg); err != nil {
-		debugLog("failed to initialize config: %v", err)
-		return err
+	var debugLog logFunc
+	if cfg.DebugLogging {
+		debugLog = log.New(cfg.DebugLoggingOutput, "Cloud Profiler: ", log.LstdFlags).Printf
+	} else {
+		debugLog = noLog
 	}
+
+	// initialize the given configuration
+	config, err := initializeConfig(cfg, debugLog)
+	if err != nil {
+		debugLog("failed to initialize config: %v", err)
+		return nil, err
+	}
+
+	// configure mutex profiling
 	if config.MutexProfiling {
-		if mutexEnabled = enableMutexProfiling(); !mutexEnabled {
-			return fmt.Errorf("mutex profiling is not supported by %s, requires Go 1.8 or later", runtime.Version())
+		if mutexEnabled := enableMutexProfiling(); !mutexEnabled {
+			return nil, fmt.Errorf("mutex profiling is not supported by %s, requires Go 1.8 or later", runtime.Version())
 		}
 	}
 
-	ctx := context.Background()
-
+	// configure grpc connection pool
 	opts := []option.ClientOption{
 		option.WithEndpoint(config.APIAddr),
 		option.WithScopes(scope),
@@ -259,22 +285,26 @@ func start(cfg Config, options ...option.ClientOption) error {
 	connPool, err := dialGRPC(ctx, opts...)
 	if err != nil {
 		debugLog("failed to dial GRPC: %v", err)
-		return err
+		return nil, err
 	}
 
-	a, err := initializeAgent(pb.NewProfilerServiceClient(connPool))
+	// initialize grpc agent
+	a, err := initializeAgent(config, pb.NewProfilerServiceClient(connPool), debugLog)
 	if err != nil {
 		debugLog("failed to start the profiling agent: %v", err)
-		return err
+		return nil, err
 	}
-	go pollProfilerService(withXGoogHeader(ctx), a)
-	return nil
+
+	return &profiler{
+		ctx:      ctx,
+		config:   config,
+		agent:    a,
+		debugLog: debugLog,
+	}, nil
 }
 
-func debugLog(format string, e ...interface{}) {
-	if config.DebugLogging {
-		logger.Printf(format, e...)
-	}
+func (p *profiler) start() {
+	go p.pollProfilerService(withXGoogHeader(p.ctx))
 }
 
 // agent polls the profiler server for instructions on behalf of a task,
@@ -284,6 +314,9 @@ type agent struct {
 	deployment    *pb.Deployment
 	profileLabels map[string]string
 	profileTypes  []pb.ProfileType
+	allocForceGC  bool
+	mutexEnabled  bool
+	debugLog      logFunc
 }
 
 // abortedBackoffDuration retrieves the retry duration from gRPC trailing
@@ -308,8 +341,9 @@ func abortedBackoffDuration(md grpcmd.MD) (time.Duration, error) {
 }
 
 type retryer struct {
-	backoff gax.Backoff
-	md      *grpcmd.MD
+	backoff  gax.Backoff
+	md       *grpcmd.MD
+	debugLog logFunc
 }
 
 func (r *retryer) Retry(err error) (time.Duration, bool) {
@@ -319,7 +353,7 @@ func (r *retryer) Retry(err error) (time.Duration, bool) {
 		if err == nil {
 			return dur, true
 		}
-		debugLog("failed to get backoff duration: %v", err)
+		r.debugLog("failed to get backoff duration: %v", err)
 	}
 	return r.backoff.Pause(), true
 }
@@ -340,11 +374,11 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	md := grpcmd.New(nil)
 
 	gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		debugLog("creating a new profile via profiler service")
+		a.debugLog("creating a new profile via profiler service")
 		var err error
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		if err != nil {
-			debugLog("failed to create profile, will retry: %v", err)
+			a.debugLog("failed to create profile, will retry: %v", err)
 			if strings.Contains(err.Error(), "x509: certificate signed by unknown authority") {
 				// gax.Invoke does not retry missing certificate error. Force a retry by returning
 				// a different error. See https://github.com/googleapis/google-cloud-go/issues/3158.
@@ -359,11 +393,12 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 				Max:        maxBackoff,
 				Multiplier: backoffMultiplier,
 			},
-			md: &md,
+			md:       &md,
+			debugLog: a.debugLog,
 		}
 	}))
 
-	debugLog("successfully created profile %v", p.GetProfileType())
+	a.debugLog("successfully created profile %v", p.GetProfileType())
 	return p
 }
 
@@ -380,7 +415,7 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 	}
 
 	if !ptEnabled {
-		debugLog("skipping collection of disabled profile type: %v", pt)
+		a.debugLog("skipping collection of disabled profile type: %v", pt)
 		return
 	}
 
@@ -388,47 +423,51 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 	case pb.ProfileType_CPU:
 		duration, err := ptypes.Duration(p.Duration)
 		if err != nil {
-			debugLog("failed to get profile duration for CPU profile: %v", err)
+			a.debugLog("failed to get profile duration for CPU profile: %v", err)
 			return
 		}
 		if err := startCPUProfile(&prof); err != nil {
-			debugLog("failed to start CPU profile: %v", err)
+			a.debugLog("failed to start CPU profile: %v", err)
 			return
 		}
 		sleep(ctx, duration)
 		stopCPUProfile()
 	case pb.ProfileType_HEAP:
 		if err := heapProfile(&prof); err != nil {
-			debugLog("failed to write heap profile: %v", err)
+			a.debugLog("failed to write heap profile: %v", err)
 			return
 		}
 	case pb.ProfileType_HEAP_ALLOC:
 		duration, err := ptypes.Duration(p.Duration)
 		if err != nil {
-			debugLog("failed to get profile duration for allocation profile: %v", err)
+			a.debugLog("failed to get profile duration for allocation profile: %v", err)
 			return
 		}
-		if err := deltaAllocProfile(ctx, duration, config.AllocForceGC, &prof); err != nil {
-			debugLog("failed to collect allocation profile: %v", err)
+		if err := deltaAllocProfile(ctx, duration, a.allocForceGC, &prof); err != nil {
+			a.debugLog("failed to collect allocation profile: %v", err)
 			return
 		}
 	case pb.ProfileType_THREADS:
 		if err := pprof.Lookup("goroutine").WriteTo(&prof, 0); err != nil {
-			debugLog("failed to collect goroutine profile: %v", err)
+			a.debugLog("failed to collect goroutine profile: %v", err)
 			return
 		}
 	case pb.ProfileType_CONTENTION:
 		duration, err := ptypes.Duration(p.Duration)
 		if err != nil {
-			debugLog("failed to get profile duration: %v", err)
+			a.debugLog("failed to get profile duration: %v", err)
+			return
+		}
+		if !a.mutexEnabled {
+			a.debugLog("failed to collect mutex profile: mutex profiling is not enabled")
 			return
 		}
 		if err := deltaMutexProfile(ctx, duration, &prof); err != nil {
-			debugLog("failed to collect mutex profile: %v", err)
+			a.debugLog("failed to collect mutex profile: %v", err)
 			return
 		}
 	default:
-		debugLog("unexpected profile type: %v", pt)
+		a.debugLog("unexpected profile type: %v", pt)
 		return
 	}
 
@@ -437,18 +476,15 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 	req := pb.UpdateProfileRequest{Profile: p}
 
 	// Upload profile, discard profile in case of error.
-	debugLog("start uploading profile")
+	a.debugLog("start uploading profile")
 	if _, err := a.client.UpdateProfile(ctx, &req); err != nil {
-		debugLog("failed to upload profile: %v", err)
+		a.debugLog("failed to upload profile: %v", err)
 	}
 }
 
 // deltaMutexProfile writes mutex profile changes over a time period specified
 // with 'duration' to 'prof'.
 func deltaMutexProfile(ctx context.Context, duration time.Duration, prof *bytes.Buffer) error {
-	if !mutexEnabled {
-		return errors.New("mutex profiling is not enabled")
-	}
 	p0, err := mutexProfile()
 	if err != nil {
 		return err
@@ -496,7 +532,7 @@ func withXGoogHeader(ctx context.Context, keyval ...string) context.Context {
 // initializeAgent initializes the profiling agent. It returns an error if
 // profile collection should not be started because collection is disabled
 // for all profile types.
-func initializeAgent(c pb.ProfilerServiceClient) (*agent, error) {
+func initializeAgent(config Config, c pb.ProfilerServiceClient, debugLog logFunc) (*agent, error) {
 	labels := map[string]string{languageLabel: "go"}
 	if config.Zone != "" {
 		labels[zoneNameLabel] = config.Zone
@@ -529,7 +565,7 @@ func initializeAgent(c pb.ProfilerServiceClient) (*agent, error) {
 	if !config.NoAllocProfiling {
 		profileTypes = append(profileTypes, pb.ProfileType_HEAP_ALLOC)
 	}
-	if mutexEnabled {
+	if config.MutexProfiling {
 		profileTypes = append(profileTypes, pb.ProfileType_CONTENTION)
 	}
 
@@ -542,12 +578,14 @@ func initializeAgent(c pb.ProfilerServiceClient) (*agent, error) {
 		deployment:    d,
 		profileLabels: profileLabels,
 		profileTypes:  profileTypes,
+		allocForceGC:  config.AllocForceGC,
+		mutexEnabled:  config.MutexProfiling,
+		debugLog:      debugLog,
 	}, nil
 }
 
-func initializeConfig(cfg Config) error {
-	config = cfg
-
+func initializeConfig(cfg Config, debugLog logFunc) (Config, error) {
+	config := cfg
 	if config.Service == "" {
 		for _, ev := range []string{"GAE_SERVICE", "K_SERVICE"} {
 			if val := os.Getenv(ev); val != "" {
@@ -557,10 +595,10 @@ func initializeConfig(cfg Config) error {
 		}
 	}
 	if config.Service == "" {
-		return errors.New("service name must be configured")
+		return config, errors.New("service name must be configured")
 	}
 	if !serviceRegexp.MatchString(config.Service) {
-		return fmt.Errorf("service name %q does not match regular expression %v", config.Service, serviceRegexp)
+		return config, fmt.Errorf("service name %q does not match regular expression %v", config.Service, serviceRegexp)
 	}
 
 	if config.ServiceVersion == "" {
@@ -585,45 +623,45 @@ func initializeConfig(cfg Config) error {
 		var err error
 		if config.ProjectID == "" {
 			if config.ProjectID, err = getProjectID(); err != nil {
-				return fmt.Errorf("failed to get the project ID from Compute Engine metadata: %w", err)
+				return config, fmt.Errorf("failed to get the project ID from Compute Engine metadata: %w", err)
 			}
 		}
 
 		if config.Zone == "" {
 			if config.Zone, err = getZone(); err != nil {
-				return fmt.Errorf("failed to get zone from Compute Engine metadata: %w", err)
+				return config, fmt.Errorf("failed to get zone from Compute Engine metadata: %w", err)
 			}
 		}
 
 		if config.Instance == "" {
 			if config.Instance, err = getInstanceName(); err != nil {
 				if _, ok := err.(gcemd.NotDefinedError); !ok {
-					return fmt.Errorf("failed to get instance name from Compute Engine metadata: %w", err)
+					return config, fmt.Errorf("failed to get instance name from Compute Engine metadata: %w", err)
 				}
 				debugLog("failed to get instance name from Compute Engine metadata, will use empty name: %v", err)
 			}
 		}
 	} else {
 		if config.ProjectID == "" {
-			return fmt.Errorf("project ID must be specified in the configuration if running outside of GCP")
+			return config, fmt.Errorf("project ID must be specified in the configuration if running outside of GCP")
 		}
 	}
 
 	if config.APIAddr == "" {
 		config.APIAddr = apiAddress
 	}
-	return nil
+	return config, nil
 }
 
 // pollProfilerService starts an endless loop to poll the profiler
 // server for instructions, and collects and uploads profiles as
 // requested.
-func pollProfilerService(ctx context.Context, a *agent) {
-	debugLog("Cloud Profiler Go Agent version: %s", internal.Version)
-	debugLog("profiler has started")
-	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
-		p := a.createProfile(ctx)
-		a.profileAndUpload(ctx, p)
+func (p *profiler) pollProfilerService(ctx context.Context) {
+	p.debugLog("Cloud Profiler Go Agent version: %s", internal.Version)
+	p.debugLog("profiler has started")
+	for i := 0; p.config.numProfiles == 0 || i < p.config.numProfiles; i++ {
+		profile := p.agent.createProfile(ctx)
+		p.agent.profileAndUpload(ctx, profile)
 	}
 
 	if profilingDone != nil {
