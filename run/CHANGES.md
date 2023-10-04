@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.2.0...run/v1.3.0) (2023-10-04)
+
+
+### Features
+
+* **run:** Adds support for cancel Execution ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+
+
+### Bug Fixes
+
+* **run:** Removes accidentally exposed field service.traffic_tags_cleanup_threshold in Cloud Run Service ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.1.1...run/v1.2.0) (2023-07-10)
 
 
