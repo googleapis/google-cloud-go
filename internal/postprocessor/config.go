@@ -98,6 +98,7 @@ func (p *postProcessor) loadConfig() error {
 			ServiceConfig: v.ServiceConfig,
 			ImportPath:    v.ImportPath,
 			RelPath:       v.RelPath,
+			ReleaseLevel:  v.ReleaseLevelOverride,
 		}
 	}
 	for _, v := range owlBotConfig.DeepCopyRegex {
