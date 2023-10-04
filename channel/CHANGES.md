@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.16.0...channel/v1.17.0) (2023-09-11)
+
+
+### Features
+
+* **channel:** Mark ChannelPartnerGranularity as deprecated and offer alternatives ([#8522](https://github.com/googleapis/google-cloud-go/issues/8522)) ([ac10224](https://github.com/googleapis/google-cloud-go/commit/ac102249403e6c1604bff7c537343645c950ae13))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.15.0...channel/v1.16.0) (2023-06-20)
 
 

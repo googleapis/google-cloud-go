@@ -197,10 +197,11 @@ func (ms *ManagedStream) Finalize(ctx context.Context, opts ...gax.CallOption) (
 func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOption) error {
 	for {
 		ms.mu.Lock()
-		if ms.err != nil {
-			return ms.err
-		}
+		err := ms.err
 		ms.mu.Unlock()
+		if err != nil {
+			return err
+		}
 		conn, err := ms.pool.selectConn(pw)
 		if err != nil {
 			pw.markDone(nil, err)
@@ -291,10 +292,11 @@ func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsReques
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
 	// before we do anything, ensure the writer isn't closed.
 	ms.mu.Lock()
-	if ms.err != nil {
-		return nil, ms.err
-	}
+	err := ms.err
 	ms.mu.Unlock()
+	if err != nil {
+		return nil, err
+	}
 	// Ensure we build the request and pending write with a consistent schema version.
 	curSchemaVersion := ms.curDescVersion
 	req := ms.buildRequest(data)

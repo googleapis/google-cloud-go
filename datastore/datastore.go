@@ -53,6 +53,9 @@ const DetectProjectID = "*detect-project-id*"
 // the resource being operated on.
 const resourcePrefixHeader = "google-cloud-resource-prefix"
 
+// reqParamsHeader is routing header required to access named databases
+const reqParamsHeader = "x-goog-request-params"
+
 // DefaultDatabaseID is ID of the default database denoted by an empty string
 const DefaultDatabaseID = ""
 

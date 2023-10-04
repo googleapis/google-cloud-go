@@ -50,8 +50,6 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/btree"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
@@ -61,7 +59,9 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"rsc.io/binaryregexp"
 )
 
@@ -619,8 +619,8 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s
 			for _, cell := range cells {
 				rrr.Chunks = append(rrr.Chunks, &btpb.ReadRowsResponse_CellChunk{
 					RowKey:          []byte(r.key),
-					FamilyName:      &wrappers.StringValue{Value: fam.name},
-					Qualifier:       &wrappers.BytesValue{Value: []byte(colName)},
+					FamilyName:      &wrapperspb.StringValue{Value: fam.name},
+					Qualifier:       &wrapperspb.BytesValue{Value: []byte(colName)},
 					TimestampMicros: cell.ts,
 					Value:           cell.value,
 					Labels:          cell.labels,

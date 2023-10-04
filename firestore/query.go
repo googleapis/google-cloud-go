@@ -637,7 +637,7 @@ func (q Query) compareFunc() func(d1, d2 *DocumentSnapshot) (int, error) {
 	return func(d1, d2 *DocumentSnapshot) (int, error) {
 		for _, ord := range orders {
 			var cmp int
-			if len(ord.fieldPath) == 1 && ord.fieldPath[0] == DocumentID {
+			if ord.isDocumentID() {
 				cmp = compareReferences(d1.Ref.Path, d2.Ref.Path)
 			} else {
 				v1, err := valueAtPath(ord.fieldPath, d1.proto.Fields)
@@ -1004,8 +1004,12 @@ func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 		// Swap cursors.
 		q.startVals, q.endVals = q.endVals, q.startVals
 		q.startDoc, q.endDoc = q.endDoc, q.startDoc
-		q.startBefore, q.endBefore = q.endBefore, q.startBefore
-
+		if q.endBefore {
+			q.endBefore = false
+			q.startBefore = false
+		} else {
+			q.startBefore, q.endBefore = q.endBefore, q.startBefore
+		}
 		q.limitToLast = false
 	}
 	var docs []*DocumentSnapshot

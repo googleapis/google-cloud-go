@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/billing/apiv1",
-    "version": "1.16.0",
+    "version": "1.17.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudbilling_v1_generated_CloudBilling_CreateBillingAccount_sync",
       "title": "cloudbilling CreateBillingAccount Sample",
-      "description": "CreateBillingAccount this method creates [billing\nsubaccounts](https: //cloud.google.com/billing/docs/concepts#subaccounts).\n\nGoogle Cloud resellers should use the\nChannel Services APIs,\n[accounts.customers.create](https: //cloud.google.com/channel/docs/reference/rest/v1/accounts.customers/create)\nand\n[accounts.customers.entitlements.create](https: //cloud.google.com/channel/docs/reference/rest/v1/accounts.customers.entitlements/create).\n\nWhen creating a subaccount, the current authenticated user must have the\n`billing.accounts.update` IAM permission on the parent account, which is\ntypically given to billing account\n[administrators](https: //cloud.google.com/billing/docs/how-to/billing-access).\nThis method will return an error if the parent account has not been\nprovisioned as a reseller account.",
+      "description": "CreateBillingAccount this method creates [billing\nsubaccounts](https: //cloud.google.com/billing/docs/concepts#subaccounts).\n\nGoogle Cloud resellers should use the\nChannel Services APIs,\n[accounts.customers.create](https: //cloud.google.com/channel/docs/reference/rest/v1/accounts.customers/create)\nand\n[accounts.customers.entitlements.create](https: //cloud.google.com/channel/docs/reference/rest/v1/accounts.customers.entitlements/create).\n\nWhen creating a subaccount, the current authenticated user must have the\n`billing.accounts.update` IAM permission on the parent account, which is\ntypically given to billing account\n[administrators](https: //cloud.google.com/billing/docs/how-to/billing-access).\nThis method will return an error if the parent account has not been\nprovisioned for subaccounts.",
       "file": "CloudBillingClient/CreateBillingAccount/main.go",
       "language": "GO",
       "clientMethod": {
