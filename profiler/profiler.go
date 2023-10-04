@@ -201,8 +201,8 @@ type allowUntilSuccess struct {
 	done uint32
 }
 
-// do calls function f only if it hasnt returned nil previously.
-// Once f returns nil, do will not call function f any more.
+// do calls function f only if it hasn't returned nil previously.
+// Once f returns nil, do will not call function f anymore.
 // This is a modified form of Go's sync.Once.Do
 func (o *allowUntilSuccess) do(f func() error) (err error) {
 	o.m.Lock()
@@ -326,7 +326,7 @@ func (r *retryer) Retry(err error) (time.Duration, bool) {
 
 // createProfile talks to the profiler server to create profile. In
 // case of error, the goroutine will sleep and retry. Sleep duration may
-// be specified by the server. Otherwise it will be an exponentially
+// be specified by the server. Otherwise, it will be an exponentially
 // increasing value, bounded by maxBackoff. Special handling for
 // certificate errors is described below.
 func (a *agent) createProfile(ctx context.Context) *pb.Profile {
