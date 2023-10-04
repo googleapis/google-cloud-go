@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.10.0...contactcenterinsights/v1.11.0) (2023-10-04)
+
+
+### Features
+
+* **contactcenterinsights:** Add optional SpeechConfig to UploadConversationRequest ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.9.1...contactcenterinsights/v1.10.0) (2023-07-10)
 
 

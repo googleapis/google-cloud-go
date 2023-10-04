@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.10.1...oslogin/v1.11.0) (2023-10-04)
+
+
+### Features
+
+* **oslogin:** Added SecurityKey.device_nickname ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.10.0...oslogin/v1.10.1) (2023-06-20)
 
 
