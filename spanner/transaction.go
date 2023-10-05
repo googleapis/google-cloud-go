@@ -1400,14 +1400,14 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-      
-      sh.mu.Lock()
+
+			sh.mu.Lock()
 			t.mu.Lock()
 			// for batch update operations, isLongRunningTransaction will be true
 			sh.eligibleForLongRunning = t.isLongRunningTransaction
 			t.mu.Unlock()
 			sh.mu.Unlock()
-      
+
 			continue
 		} else {
 			err = ToSpannerError(err)
