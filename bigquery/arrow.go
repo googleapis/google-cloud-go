@@ -17,6 +17,7 @@ package bigquery
 import (
 	"bytes"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"math/big"
@@ -74,6 +75,9 @@ type arrowIteratorReader struct {
 
 // Read makes ArrowIteratorReader implement io.Reader
 func (r *arrowIteratorReader) Read(p []byte) (int, error) {
+	if r.it == nil {
+		return -1, errors.New("bigquery: nil ArrowIterator")
+	}
 	if r.buf == nil { // init with schema
 		buf := bytes.NewBuffer(r.it.SerializedArrowSchema())
 		r.buf = buf
