@@ -117,7 +117,7 @@ type ImpersonatedServiceAccountFile struct {
 	UniverseDomain                 string          `json:"universe_domain"`
 }
 
-// Google Distributed Cloud Hosted (GDCH) service identity file representation.
+// GDCHServiceAccountFile represents the Google Distributed Cloud Hosted (GDCH) service identity file.
 type GDCHServiceAccountFile struct {
 	Type          string `json:"type"`
 	FormatVersion string `json:"format_version"`
