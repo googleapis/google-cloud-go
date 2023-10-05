@@ -19,6 +19,7 @@ use (
 	./asset
 	./assuredworkloads
 	./auth
+	./auth/oauth2adapt
 	./automl
 	./baremetalsolution
 	./batch

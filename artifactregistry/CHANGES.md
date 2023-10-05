@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.1...artifactregistry/v1.14.2) (2023-10-04)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Make repository and repository_id in CreateRepository required ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.0...artifactregistry/v1.14.1) (2023-06-20)
 
 

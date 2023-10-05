@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.0...billing/v1.17.1) (2023-10-04)
+
+
+### Documentation
+
+* **billing:** Update service documentation ([#8597](https://github.com/googleapis/google-cloud-go/issues/8597)) ([e36b9c6](https://github.com/googleapis/google-cloud-go/commit/e36b9c67173f40e9c4552e5f54467fc86f63d6fd))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.16.0...billing/v1.17.0) (2023-09-11)
 
 

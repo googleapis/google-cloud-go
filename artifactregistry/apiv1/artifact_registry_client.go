@@ -2763,9 +2763,7 @@ func (c *restClient) CreateRepository(ctx context.Context, req *artifactregistry
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	if req.GetRepositoryId() != "" {
-		params.Add("repositoryId", fmt.Sprintf("%v", req.GetRepositoryId()))
-	}
+	params.Add("repositoryId", fmt.Sprintf("%v", req.GetRepositoryId()))
 
 	baseUrl.RawQuery = params.Encode()
 

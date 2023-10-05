@@ -339,6 +339,11 @@
                 "ImportDocuments"
               ]
             },
+            "ListDocuments": {
+              "methods": [
+                "ListDocuments"
+              ]
+            },
             "ListLocations": {
               "methods": [
                 "ListLocations"
@@ -397,6 +402,11 @@
             "ImportDocuments": {
               "methods": [
                 "ImportDocuments"
+              ]
+            },
+            "ListDocuments": {
+              "methods": [
+                "ListDocuments"
               ]
             },
             "ListLocations": {
