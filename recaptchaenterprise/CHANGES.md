@@ -1,6 +1,14 @@
 # Changes
 
 
+## [2.8.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.7.2...recaptchaenterprise/v2.8.0) (2023-10-04)
+
+
+### Features
+
+* **recaptchaenterprise:** Added FraudPreventionAssessment.behavioral_trust_verdict ([481127f](https://github.com/googleapis/google-cloud-go/commit/481127fb8271cab3a754e0e1820b32567e80524a))
+* **recaptchaenterprise:** FirewallPolicy CRUD API ([#8635](https://github.com/googleapis/google-cloud-go/issues/8635)) ([481127f](https://github.com/googleapis/google-cloud-go/commit/481127fb8271cab3a754e0e1820b32567e80524a))
+
 ## [2.7.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise-v2.7.1...recaptchaenterprise/v2.7.2) (2023-06-20)
 
 
