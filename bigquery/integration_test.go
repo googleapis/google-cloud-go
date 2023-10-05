@@ -1461,6 +1461,10 @@ func TestIntegration_Load(t *testing.T) {
 	loader := table.LoaderFrom(rs)
 	loader.WriteDisposition = WriteTruncate
 	loader.Labels = map[string]string{"test": "go"}
+	loader.MediaOptions = []googleapi.MediaOption{
+		googleapi.ContentType("text/csv"),
+		googleapi.ChunkSize(googleapi.MinUploadChunkSize),
+	}
 	job, err := loader.Run(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -1480,7 +1484,8 @@ func TestIntegration_Load(t *testing.T) {
 		cmp.AllowUnexported(Table{}),
 		cmpopts.IgnoreUnexported(Client{}, ReaderSource{}),
 		// returned schema is at top level, not in the config
-		cmpopts.IgnoreFields(FileConfig{}, "Schema"))
+		cmpopts.IgnoreFields(FileConfig{}, "Schema"),
+		cmpopts.IgnoreFields(LoadConfig{}, "MediaOptions"))
 	if diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}

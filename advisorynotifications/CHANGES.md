@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.1.0...advisorynotifications/v1.2.0) (2023-10-04)
+
+
+### Features
+
+* **advisorynotifications:** Add new RPCs GetSettings, UpdateSettings and new messages Settings, NotificationSettings, GetSettingsRequest, UpdateSettingsRequest ([#8611](https://github.com/googleapis/google-cloud-go/issues/8611)) ([72b3ddd](https://github.com/googleapis/google-cloud-go/commit/72b3ddd94c77c5366a7cfcbdbe12ea41b8eb476a))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.0.0...advisorynotifications/v1.1.0) (2023-08-08)
 
 

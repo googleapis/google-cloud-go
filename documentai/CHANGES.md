@@ -1,6 +1,22 @@
 # Changes
 
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.22.1...documentai/v1.23.0) (2023-10-04)
+
+
+### Features
+
+* **documentai:** Added `SummaryOptions` to `ProcessOptions` for the Summarizer processor ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+* **documentai:** Added field Processor.processor_version_aliases ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+* **documentai:** Make `page_range` field public ([#8602](https://github.com/googleapis/google-cloud-go/issues/8602)) ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.22.0...documentai/v1.22.1) (2023-09-12)
+
+
+### Documentation
+
+* **documentai:** Update client libraries for Enterprise OCR add-ons ([#8549](https://github.com/googleapis/google-cloud-go/issues/8549)) ([0449518](https://github.com/googleapis/google-cloud-go/commit/0449518f8396cc0280c0f3303c103edcee34016b))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.21.0...documentai/v1.22.0) (2023-07-26)
 
 

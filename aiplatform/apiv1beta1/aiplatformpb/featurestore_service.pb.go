@@ -1800,14 +1800,13 @@ func (x *DeleteEntityTypeRequest) GetForce() bool {
 
 // Request message for
 // [FeaturestoreService.CreateFeature][google.cloud.aiplatform.v1beta1.FeaturestoreService.CreateFeature].
+// Request message for
+// [FeatureRegistryService.CreateFeature][google.cloud.aiplatform.v1beta1.FeatureRegistryService.CreateFeature].
 type CreateFeatureRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the EntityType to create a Feature.
-	// Format:
-	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Feature to create.
 	Feature *Feature `protobuf:"bytes,2,opt,name=feature,proto3" json:"feature,omitempty"`
@@ -1817,7 +1816,7 @@ type CreateFeatureRequest struct {
 	// This value may be up to 128 characters, and valid characters are
 	// `[a-z0-9_]`. The first character cannot be a number.
 	//
-	// The value must be unique within an EntityType.
+	// The value must be unique within an EntityType/FeatureGroup.
 	FeatureId string `protobuf:"bytes,3,opt,name=feature_id,json=featureId,proto3" json:"feature_id,omitempty"`
 }
 
@@ -1991,6 +1990,8 @@ func (x *BatchCreateFeaturesResponse) GetFeatures() []*Feature {
 
 // Request message for
 // [FeaturestoreService.GetFeature][google.cloud.aiplatform.v1beta1.FeaturestoreService.GetFeature].
+// Request message for
+// [FeatureRegistryService.GetFeature][google.cloud.aiplatform.v1beta1.FeatureRegistryService.GetFeature].
 type GetFeatureRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1999,6 +2000,7 @@ type GetFeatureRequest struct {
 	// Required. The name of the Feature resource.
 	// Format:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
+	// `projects/{project}/locations/{location}/featureGroups/{feature_group}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -2043,6 +2045,8 @@ func (x *GetFeatureRequest) GetName() string {
 
 // Request message for
 // [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1beta1.FeaturestoreService.ListFeatures].
+// Request message for
+// [FeatureRegistryService.ListFeatures][google.cloud.aiplatform.v1beta1.FeatureRegistryService.ListFeatures].
 type ListFeaturesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2051,6 +2055,7 @@ type ListFeaturesRequest struct {
 	// Required. The resource name of the Location to list Features.
 	// Format:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
+	// `projects/{project}/locations/{location}/featureGroups/{feature_group}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Lists the Features that match the filter expression. The following
 	// filters are supported:
@@ -2091,7 +2096,7 @@ type ListFeaturesRequest struct {
 	// Supported fields:
 	//
 	//   * `feature_id`
-	//   * `value_type`
+	//   * `value_type` (Not supported for FeatureRegistry Feature)
 	//   * `create_time`
 	//   * `update_time`
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
@@ -2189,6 +2194,8 @@ func (x *ListFeaturesRequest) GetLatestStatsCount() int32 {
 
 // Response message for
 // [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1beta1.FeaturestoreService.ListFeatures].
+// Response message for
+// [FeatureRegistryService.ListFeatures][google.cloud.aiplatform.v1beta1.FeatureRegistryService.ListFeatures].
 type ListFeaturesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2468,6 +2475,8 @@ func (x *SearchFeaturesResponse) GetNextPageToken() string {
 
 // Request message for
 // [FeaturestoreService.UpdateFeature][google.cloud.aiplatform.v1beta1.FeaturestoreService.UpdateFeature].
+// Request message for
+// [FeatureRegistryService.UpdateFeature][google.cloud.aiplatform.v1beta1.FeatureRegistryService.UpdateFeature].
 type UpdateFeatureRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2477,6 +2486,7 @@ type UpdateFeatureRequest struct {
 	// updated.
 	// Format:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}/features/{feature}`
+	// `projects/{project}/locations/{location}/featureGroups/{feature_group}/features/{feature}`
 	Feature *Feature `protobuf:"bytes,1,opt,name=feature,proto3" json:"feature,omitempty"`
 	// Field mask is used to specify the fields to be overwritten in the
 	// Features resource by the update.
@@ -2542,6 +2552,8 @@ func (x *UpdateFeatureRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 
 // Request message for
 // [FeaturestoreService.DeleteFeature][google.cloud.aiplatform.v1beta1.FeaturestoreService.DeleteFeature].
+// Request message for
+// [FeatureRegistryService.DeleteFeature][google.cloud.aiplatform.v1beta1.FeatureRegistryService.DeleteFeature].
 type DeleteFeatureRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2550,6 +2562,7 @@ type DeleteFeatureRequest struct {
 	// Required. The name of the Features to be deleted.
 	// Format:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}/features/{feature}`
+	// `projects/{project}/locations/{location}/featureGroups/{feature_group}/features/{feature}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

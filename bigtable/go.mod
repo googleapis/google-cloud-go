@@ -6,7 +6,6 @@ require (
 	cloud.google.com/go v0.110.4
 	cloud.google.com/go/iam v1.1.1
 	cloud.google.com/go/longrunning v0.5.1
-	github.com/golang/protobuf v1.5.3
 	github.com/google/btree v1.1.2
 	github.com/google/go-cmp v0.5.9
 	github.com/googleapis/cloud-bigtable-clients-test v0.0.0-20230505150253-16eeee810d3a
@@ -29,6 +28,7 @@ require (
 	github.com/envoyproxy/go-control-plane v0.11.1-0.20230524094728-9239064ad72f // indirect
 	github.com/envoyproxy/protoc-gen-validate v0.10.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/s2a-go v0.1.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.4 // indirect

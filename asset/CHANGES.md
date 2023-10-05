@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.14.1...asset/v1.15.0) (2023-10-04)
+
+
+### Features
+
+* **asset:** Add support for directly attached and effective tags ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.14.0...asset/v1.14.1) (2023-06-20)
 
 

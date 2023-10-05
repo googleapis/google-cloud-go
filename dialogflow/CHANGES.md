@@ -1,5 +1,30 @@
 # Changes
 
+## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.43.0...dialogflow/v1.44.0) (2023-10-04)
+
+
+### Features
+
+* **dialogflow/cx:** Add support for AdvancedSettings ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+* **dialogflow/cx:** Add support for AdvancedSettings ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+* **dialogflow:** Add the enable_partial_automated_agent_reply flag ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+* **dialogflow:** Add the enable_partial_automated_agent_reply flag ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+
+## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.42.0...dialogflow/v1.43.0) (2023-09-11)
+
+
+### Features
+
+* **dialogflow/cx:** Added generative AI, safety/security and speech endpointing settings ([fbfaf21](https://github.com/googleapis/google-cloud-go/commit/fbfaf21c15ae8a07ab39c6036cf0cee700b5627c))
+* **dialogflow/cx:** Added generative AI, safety/security and speech endpointing settings ([#8510](https://github.com/googleapis/google-cloud-go/issues/8510)) ([15be57b](https://github.com/googleapis/google-cloud-go/commit/15be57b9264a793494cedc3966034fa20f56d7c5))
+* **dialogflow:** Added speech endpointing setting ([fbfaf21](https://github.com/googleapis/google-cloud-go/commit/fbfaf21c15ae8a07ab39c6036cf0cee700b5627c))
+* **dialogflow:** Added speech endpointing setting ([#8497](https://github.com/googleapis/google-cloud-go/issues/8497)) ([fbfaf21](https://github.com/googleapis/google-cloud-go/commit/fbfaf21c15ae8a07ab39c6036cf0cee700b5627c))
+
+
+### Bug Fixes
+
+* **dialogflow/cx:** Fix Ruby namespaces for generative AI classes ([#8538](https://github.com/googleapis/google-cloud-go/issues/8538)) ([73a958d](https://github.com/googleapis/google-cloud-go/commit/73a958d4527a721ee8d496a649dd84030a24e4e0))
+
 ## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.41.0...dialogflow/v1.42.0) (2023-08-17)
 
 

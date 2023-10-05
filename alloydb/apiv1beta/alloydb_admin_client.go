@@ -837,10 +837,10 @@ func (c *AlloyDBAdminClient) ListSupportedDatabaseFlags(ctx context.Context, req
 }
 
 // GenerateClientCertificate generate a client certificate signed by a Cluster CA.
-// The sole purpose of this endpoint is to support the Auth Proxy client and
-// the endpoint’s behavior is subject to change without notice, so do not rely
-// on its behavior remaining constant. Future changes will not break the Auth
-// Proxy client.
+// The sole purpose of this endpoint is to support AlloyDB connectors and the
+// Auth Proxy client. The endpoint’s behavior is subject to change without
+// notice, so do not rely on its behavior remaining constant. Future changes
+// will not break AlloyDB connectors or the Auth Proxy client.
 func (c *AlloyDBAdminClient) GenerateClientCertificate(ctx context.Context, req *alloydbpb.GenerateClientCertificateRequest, opts ...gax.CallOption) (*alloydbpb.GenerateClientCertificateResponse, error) {
 	return c.internalClient.GenerateClientCertificate(ctx, req, opts...)
 }
@@ -3843,10 +3843,10 @@ func (c *alloyDBAdminRESTClient) ListSupportedDatabaseFlags(ctx context.Context,
 }
 
 // GenerateClientCertificate generate a client certificate signed by a Cluster CA.
-// The sole purpose of this endpoint is to support the Auth Proxy client and
-// the endpoint’s behavior is subject to change without notice, so do not rely
-// on its behavior remaining constant. Future changes will not break the Auth
-// Proxy client.
+// The sole purpose of this endpoint is to support AlloyDB connectors and the
+// Auth Proxy client. The endpoint’s behavior is subject to change without
+// notice, so do not rely on its behavior remaining constant. Future changes
+// will not break AlloyDB connectors or the Auth Proxy client.
 func (c *alloyDBAdminRESTClient) GenerateClientCertificate(ctx context.Context, req *alloydbpb.GenerateClientCertificateRequest, opts ...gax.CallOption) (*alloydbpb.GenerateClientCertificateResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

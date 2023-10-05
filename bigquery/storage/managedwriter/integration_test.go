@@ -1498,6 +1498,7 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 				WithDestinationTable(TableParentFromParts(testTable.tbl.ProjectID, testTable.tbl.DatasetID, testTable.tbl.TableID)),
 				WithType(DefaultStream),
 				WithSchemaDescriptor(testTable.dp),
+				EnableWriteRetries(true),
 			)
 			if err != nil {
 				t.Fatalf("NewManagedStream %d: %v", k, err)

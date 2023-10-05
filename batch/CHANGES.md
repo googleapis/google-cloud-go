@@ -1,6 +1,26 @@
 # Changelog
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.4.1...batch/v1.5.0) (2023-10-04)
+
+
+### Features
+
+* **batch:** Add InstancePolicy.reservation field for restricting jobs to a specific reservation ([481127f](https://github.com/googleapis/google-cloud-go/commit/481127fb8271cab3a754e0e1820b32567e80524a))
+
+
+### Documentation
+
+* **batch:** Update batch PD interface support ([#8616](https://github.com/googleapis/google-cloud-go/issues/8616)) ([8729aa0](https://github.com/googleapis/google-cloud-go/commit/8729aa07f11e40482868d4dfe53c755dc49c3e43))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.4.0...batch/v1.4.1) (2023-09-11)
+
+
+### Documentation
+
+* **batch:** Revert HTML formats in comments ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+* **batch:** Update description on size_gb in disk field ([15be57b](https://github.com/googleapis/google-cloud-go/commit/15be57b9264a793494cedc3966034fa20f56d7c5))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.3.1...batch/v1.4.0) (2023-08-08)
 
 

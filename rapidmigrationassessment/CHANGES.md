@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.0.0...rapidmigrationassessment/v1.0.1) (2023-09-20)
+
+
+### Documentation
+
+* **rapidmigrationassessment:** Update comments ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v0.1.2...rapidmigrationassessment/v1.0.0) (2023-07-24)
 
 

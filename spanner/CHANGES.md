@@ -1,5 +1,28 @@
 # Changes
 
+## [1.50.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.49.0...spanner/v1.50.0) (2023-10-03)
+
+
+### Features
+
+* **spanner/spansql:** Add support for aggregate functions ([#8498](https://github.com/googleapis/google-cloud-go/issues/8498)) ([d440d75](https://github.com/googleapis/google-cloud-go/commit/d440d75f19286653afe4bc81a5f2efcfc4fa152c))
+* **spanner/spansql:** Add support for bit functions, sequence functions and GENERATE_UUID ([#8482](https://github.com/googleapis/google-cloud-go/issues/8482)) ([3789882](https://github.com/googleapis/google-cloud-go/commit/3789882c8b30a6d3100a56c1dcc8844952605637))
+* **spanner/spansql:** Add support for SEQUENCE statements ([#8481](https://github.com/googleapis/google-cloud-go/issues/8481)) ([ccd0205](https://github.com/googleapis/google-cloud-go/commit/ccd020598921f1b5550587c95b4ceddf580705bb))
+* **spanner:** Add BatchWrite API ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+* **spanner:** Allow non-default service accounts ([#8488](https://github.com/googleapis/google-cloud-go/issues/8488)) ([c90dd00](https://github.com/googleapis/google-cloud-go/commit/c90dd00350fa018dbc5f0af5aabce80e80be0b90))
+
+## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.48.0...spanner/v1.49.0) (2023-08-24)
+
+
+### Features
+
+* **spanner/spannertest:** Support INSERT DML ([#7820](https://github.com/googleapis/google-cloud-go/issues/7820)) ([3dda7b2](https://github.com/googleapis/google-cloud-go/commit/3dda7b27ec536637d8ebaa20937fc8019c930481))
+
+
+### Bug Fixes
+
+* **spanner:** Transaction was started in a different session ([#8467](https://github.com/googleapis/google-cloud-go/issues/8467)) ([6c21558](https://github.com/googleapis/google-cloud-go/commit/6c21558f75628908a70de79c62aff2851e756e7b))
+
 ## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.47.0...spanner/v1.48.0) (2023-08-18)
 
 
