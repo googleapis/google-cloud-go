@@ -897,6 +897,92 @@ func deleteTestSession(ctx context.Context, t *testing.T, sessionName string) {
 	}
 }
 
+func TestIntegration_BatchWrite(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	mgs := make([]*MutationGroup, len(writes))
+	// Try to write four rows through the BatchWrite API.
+	for i, w := range writes {
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		ms := make([]*Mutation, 1)
+		ms[0] = m
+		mgs[i] = &MutationGroup{mutations: ms}
+	}
+	// Records the mutation group indexes received in the response.
+	seen := make(map[int32]int32)
+	numMutationGroups := len(mgs)
+	validate := func(res *sppb.BatchWriteResponse) error {
+		if status := status.ErrorProto(res.GetStatus()); status != nil {
+			t.Fatalf("Invalid status: %v", status)
+		}
+		if ts := res.GetCommitTimestamp(); ts == nil {
+			t.Fatal("Invalid commit timestamp")
+		}
+		for _, idx := range res.GetIndexes() {
+			if idx >= 0 && idx < int32(numMutationGroups) {
+				seen[idx] += 1
+			} else {
+				t.Fatalf("Index %v out of range. Expected range [%v,%v]", idx, 0, numMutationGroups-1)
+			}
+		}
+		return nil
+	}
+	iter := client.BatchWrite(ctx, mgs, TransactionTag("golang-test-batch-write"))
+	if err := iter.Do(validate); err != nil {
+		t.Fatal(err)
+	}
+	// Validate that each mutation group index is seen exactly once.
+	if numMutationGroups != len(seen) {
+		t.Fatalf("Expected %v indexes, got %v indexes", numMutationGroups, len(seen))
+	}
+	for idx, ct := range seen {
+		if ct != 1 {
+			t.Fatalf("Index %v seen %v times instead of exactly once", idx, ct)
+		}
+	}
+
+	// Verify the writes by reading the database.
+	singersQuery := "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@p1, @p2, @p3)"
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		singersQuery = "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId = $1 OR  SingerId = $2 OR  SingerId = $3"
+	}
+	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
+		OptimizerVersion:           "1",
+		OptimizerStatisticsPackage: "latest",
+	}}
+	got, err := readAll(client.Single().QueryWithOptions(ctx, Statement{
+		singersQuery,
+		map[string]interface{}{"p1": int64(1), "p2": int64(3), "p3": int64(4)},
+	}, qo))
+
+	if err != nil {
+		t.Errorf("ReadOnlyTransaction.QueryWithOptions returns error %v, want nil", err)
+	}
+
+	want := [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result from ReadOnlyTransaction.QueryWithOptions: %v, want %v", got, want)
+	}
+}
+
 func TestIntegration_SingleUse_ReadingWithLimit(t *testing.T) {
 	t.Parallel()
 
