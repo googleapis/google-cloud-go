@@ -291,6 +291,29 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 	return docSnapshotOrFieldValues, nil, nil
 }
 
+func (q *Query) processLimitToLast() {
+	if q.limitToLast {
+		// Flip order statements before posting a request.
+		for i := range q.orders {
+			if q.orders[i].dir == Asc {
+				q.orders[i].dir = Desc
+			} else {
+				q.orders[i].dir = Asc
+			}
+		}
+		// Swap cursors.
+		q.startVals, q.endVals = q.endVals, q.startVals
+		q.startDoc, q.endDoc = q.endDoc, q.startDoc
+		if q.endBefore {
+			q.endBefore = false
+			q.startBefore = false
+		} else {
+			q.startBefore, q.endBefore = q.endBefore, q.startBefore
+		}
+		q.limitToLast = false
+	}
+}
+
 func (q Query) query() *Query { return &q }
 
 // Serialize creates a RunQueryRequest wire-format byte slice from a Query object.
@@ -992,26 +1015,7 @@ func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 
 	q := it.q
 	limitedToLast := q.limitToLast
-	if q.limitToLast {
-		// Flip order statements before posting a request.
-		for i := range q.orders {
-			if q.orders[i].dir == Asc {
-				q.orders[i].dir = Desc
-			} else {
-				q.orders[i].dir = Asc
-			}
-		}
-		// Swap cursors.
-		q.startVals, q.endVals = q.endVals, q.startVals
-		q.startDoc, q.endDoc = q.endDoc, q.startDoc
-		if q.endBefore {
-			q.endBefore = false
-			q.startBefore = false
-		} else {
-			q.startBefore, q.endBefore = q.endBefore, q.startBefore
-		}
-		q.limitToLast = false
-	}
+	q.processLimitToLast()
 	var docs []*DocumentSnapshot
 	for {
 		doc, err := it.Next()
@@ -1222,6 +1226,14 @@ type AggregationQuery struct {
 	aggregateQueries []*pb.StructuredAggregationQuery_Aggregation
 	// query contains a reference pointer to the underlying structured query.
 	query *Query
+	//  tx points to an already active transaction within which the AggregationQuery runs
+	tx *Transaction
+}
+
+// Transaction specifies that aggregation query should run within provided transaction
+func (a *AggregationQuery) Transaction(tx *Transaction) *AggregationQuery {
+	a.tx = tx
+	return a
 }
 
 // WithCount specifies that the aggregation query provide a count of results
@@ -1322,6 +1334,7 @@ func (a *AggregationQuery) WithAvg(path string, alias string) *AggregationQuery 
 // Get retrieves the aggregation query results from the service.
 func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 
+	a.query.processLimitToLast()
 	client := a.query.c.c
 	q, err := a.query.toProto()
 	if err != nil {
@@ -1339,6 +1352,13 @@ func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 			},
 		},
 	}
+
+	if a.tx != nil {
+		req.ConsistencySelector = &pb.RunAggregationQueryRequest_Transaction{
+			Transaction: a.tx.id,
+		}
+	}
+
 	ctx = withResourceHeader(ctx, a.query.c.path())
 	stream, err := client.RunAggregationQuery(ctx, req)
 	if err != nil {

@@ -2364,6 +2364,7 @@ func TestIntegration_BulkWriter(t *testing.T) {
 func TestIntegration_AggregationQueries(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
+	client := integrationClient(t)
 	h := testHelper{t}
 	docs := []map[string]interface{}{
 		{"width": 1.5, "depth": 99, "model": "A"},
@@ -2383,7 +2384,13 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	query := coll.Where("width", ">=", 1)
 
 	limitQuery := coll.Where("width", ">=", 1).Limit(4)
-	limitQueryPtr := &limitQuery
+	limitToLastQuery := coll.Where("width", ">=", 2.6).OrderBy("width", Asc).LimitToLast(4)
+
+	startAtQuery := coll.Where("width", ">=", 2.6).OrderBy("width", Asc).StartAt(3.7)
+	startAfterQuery := coll.Where("width", ">=", 2.6).OrderBy("width", Asc).StartAfter(3.7)
+
+	endAtQuery := coll.Where("width", ">=", 2.6).OrderBy("width", Asc).EndAt(7.1)
+	endBeforeQuery := coll.Where("width", ">=", 2.6).OrderBy("width", Asc).EndBefore(7.1)
 
 	emptyResultsQuery := coll.Where("width", "<", 1)
 	emptyResultsQueryPtr := &emptyResultsQuery
@@ -2392,12 +2399,26 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		desc             string
 		aggregationQuery *AggregationQuery
 		wantErr          bool
+		runInTransaction bool
 		result           AggregationResult
 	}{
 		{
 			desc:             "Multiple aggregations",
 			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("width", "width_avg1").WithAvg("depth", "depth_avg1").WithSum("width", "width_sum1").WithSum("depth", "depth_sum1"),
 			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
+				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				"depth_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
+				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				"depth_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+			},
+		},
+		{
+			desc:             "Aggregations in transaction",
+			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("width", "width_avg1").WithAvg("depth", "depth_avg1").WithSum("width", "width_sum1").WithSum("depth", "depth_sum1"),
+			wantErr:          false,
+			runInTransaction: true,
 			result: map[string]interface{}{
 				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
 				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
@@ -2440,12 +2461,62 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		},
 		{
 			desc:             "Aggregations with limit",
-			aggregationQuery: limitQueryPtr.NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			aggregationQuery: (&limitQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
 				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
 				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(12.6)}},
 				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(3.15)}},
+			},
+		},
+		{
+			desc:             "Aggregations with StartAt",
+			aggregationQuery: (&startAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
+				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(35.7)}},
+				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.95)}},
+			},
+		},
+		{
+			desc:             "Aggregations with StartAfter",
+			aggregationQuery: (&startAfterQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
+				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(32)}},
+				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.4)}},
+			},
+		},
+		{
+			desc:             "Aggregations with EndAt",
+			aggregationQuery: (&endAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
+				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(30.1)}},
+				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.016666666666667)}},
+			},
+		},
+		{
+			desc:             "Aggregations with EndBefore",
+			aggregationQuery: (&endBeforeQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
+				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(23)}},
+				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.6)}},
+			},
+		},
+		{
+			desc:             "Aggregations with LimitToLast",
+			aggregationQuery: (&limitToLastQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
+				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(27.2)}},
+				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.8)}},
 			},
 		},
 		{
@@ -2475,7 +2546,16 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	for _, tc := range testcases {
-		aggResult, err := tc.aggregationQuery.Get(ctx)
+		var aggResult AggregationResult
+		var err error
+		if tc.runInTransaction {
+			client.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+				aggResult, err = tc.aggregationQuery.Transaction(tx).Get(ctx)
+				return err
+			})
+		} else {
+			aggResult, err = tc.aggregationQuery.Get(ctx)
+		}
 		if err != nil && !tc.wantErr {
 			t.Errorf("%s: got: %v, want: nil", tc.desc, err)
 			continue
