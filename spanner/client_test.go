@@ -215,7 +215,7 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 			MinOpened: 1,
 			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				ActionOnInactiveTransaction: WarnAndClose,
+				actionOnInactiveTransaction: WarnAndClose,
 			},
 		},
 	})
@@ -1442,7 +1442,7 @@ func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionSh
 			MinOpened: 1,
 			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				ActionOnInactiveTransaction: WarnAndClose,
+				actionOnInactiveTransaction: WarnAndClose,
 			},
 		},
 	})
@@ -1528,7 +1528,7 @@ func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAct
 			MinOpened: 1,
 			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				ActionOnInactiveTransaction: WarnAndClose,
+				actionOnInactiveTransaction: WarnAndClose,
 			},
 		},
 	})
@@ -4100,7 +4100,7 @@ func TestClient_WhenLongRunningPartitionedUpdateRequest_TakeNoAction(t *testing.
 			MaxOpened:                 1,
 			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				ActionOnInactiveTransaction: WarnAndClose,
+				actionOnInactiveTransaction: WarnAndClose,
 				executionFrequency:          15 * time.Millisecond, // check long-running sessions every 15ms
 			},
 		},
