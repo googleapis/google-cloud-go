@@ -46,7 +46,9 @@ const healthCheckIntervalMins = 50
 type ActionOnInactiveTransactionKind int
 
 const (
-	noAction ActionOnInactiveTransactionKind = iota
+	actionUnspecified ActionOnInactiveTransactionKind = iota
+	// NoAction action does not perform any action on inactive transactions.
+	NoAction
 	// Warn action logs inactive transactions. Any inactive transaction gets logged only once.
 	Warn
 	// Close action closes inactive transactions without logging.
@@ -495,9 +497,10 @@ var DefaultSessionPoolConfig = SessionPoolConfig{
 	HealthCheckWorkers:  10,
 	HealthCheckInterval: healthCheckIntervalMins * time.Minute,
 	InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-		executionFrequency:         2 * time.Minute,
-		idleTimeThreshold:          60 * time.Minute,
-		usedSessionsRatioThreshold: 0.95,
+		ActionOnInactiveTransaction: Warn,
+		executionFrequency:          2 * time.Minute,
+		idleTimeThreshold:           60 * time.Minute,
+		usedSessionsRatioThreshold:  0.95,
 	},
 }
 
@@ -619,6 +622,9 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	}
 	if config.healthCheckSampleInterval == 0 {
 		config.healthCheckSampleInterval = time.Minute
+	}
+	if config.ActionOnInactiveTransaction == actionUnspecified {
+		config.ActionOnInactiveTransaction = DefaultSessionPoolConfig.ActionOnInactiveTransaction
 	}
 	if config.idleTimeThreshold == 0 {
 		config.idleTimeThreshold = DefaultSessionPoolConfig.idleTimeThreshold
