@@ -65,6 +65,12 @@ runPresubmitTests() {
   if [ -f "emulator_test.sh" ]; then
     ./emulator_test.sh
   fi
+
+  # Run conformance tests against a test proxy.
+  if [ -f "conformance_test.sh" ]; then
+    ./conformance_test.sh
+  fi
+
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.
   cat sponge_log.log |
