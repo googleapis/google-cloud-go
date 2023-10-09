@@ -21,12 +21,11 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -148,7 +147,7 @@ func (x DataQualityRule_StatisticRangeExpectation_ColumnStatistic) Number() prot
 
 // Deprecated: Use DataQualityRule_StatisticRangeExpectation_ColumnStatistic.Descriptor instead.
 func (DataQualityRule_StatisticRangeExpectation_ColumnStatistic) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{4, 5, 0}
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 5, 0}
 }
 
 // DataQualityScan related setting.
@@ -456,6 +455,8 @@ type DataQualityDimensionResult struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// Output only. The dimension config specified in the DataQualitySpec, as is.
+	Dimension *DataQualityDimension `protobuf:"bytes,1,opt,name=dimension,proto3" json:"dimension,omitempty"`
 	// Whether the dimension passed or failed.
 	Passed bool `protobuf:"varint,3,opt,name=passed,proto3" json:"passed,omitempty"`
 }
@@ -492,11 +493,70 @@ func (*DataQualityDimensionResult) Descriptor() ([]byte, []int) {
 	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{3}
 }
 
+func (x *DataQualityDimensionResult) GetDimension() *DataQualityDimension {
+	if x != nil {
+		return x.Dimension
+	}
+	return nil
+}
+
 func (x *DataQualityDimensionResult) GetPassed() bool {
 	if x != nil {
 		return x.Passed
 	}
 	return false
+}
+
+// A dimension captures data quality intent about a defined subset of the rules
+// specified.
+type DataQualityDimension struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The dimension name a rule belongs to. Supported dimensions are
+	// ["COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS",
+	// "INTEGRITY"]
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (x *DataQualityDimension) Reset() {
+	*x = DataQualityDimension{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DataQualityDimension) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataQualityDimension) ProtoMessage() {}
+
+func (x *DataQualityDimension) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataQualityDimension.ProtoReflect.Descriptor instead.
+func (*DataQualityDimension) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *DataQualityDimension) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
 }
 
 // A rule captures data quality intent about a data source.
@@ -553,7 +613,7 @@ type DataQualityRule struct {
 func (x *DataQualityRule) Reset() {
 	*x = DataQualityRule{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[4]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -566,7 +626,7 @@ func (x *DataQualityRule) String() string {
 func (*DataQualityRule) ProtoMessage() {}
 
 func (x *DataQualityRule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[4]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -579,7 +639,7 @@ func (x *DataQualityRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataQualityRule.ProtoReflect.Descriptor instead.
 func (*DataQualityRule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5}
 }
 
 func (m *DataQualityRule) GetRuleType() isDataQualityRule_RuleType {
@@ -767,7 +827,7 @@ type DataQualitySpec_PostScanActions struct {
 func (x *DataQualitySpec_PostScanActions) Reset() {
 	*x = DataQualitySpec_PostScanActions{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[5]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -780,7 +840,7 @@ func (x *DataQualitySpec_PostScanActions) String() string {
 func (*DataQualitySpec_PostScanActions) ProtoMessage() {}
 
 func (x *DataQualitySpec_PostScanActions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[5]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -818,7 +878,7 @@ type DataQualitySpec_PostScanActions_BigQueryExport struct {
 func (x *DataQualitySpec_PostScanActions_BigQueryExport) Reset() {
 	*x = DataQualitySpec_PostScanActions_BigQueryExport{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[6]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -831,7 +891,7 @@ func (x *DataQualitySpec_PostScanActions_BigQueryExport) String() string {
 func (*DataQualitySpec_PostScanActions_BigQueryExport) ProtoMessage() {}
 
 func (x *DataQualitySpec_PostScanActions_BigQueryExport) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[6]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -867,7 +927,7 @@ type DataQualityResult_PostScanActionsResult struct {
 func (x *DataQualityResult_PostScanActionsResult) Reset() {
 	*x = DataQualityResult_PostScanActionsResult{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[7]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -880,7 +940,7 @@ func (x *DataQualityResult_PostScanActionsResult) String() string {
 func (*DataQualityResult_PostScanActionsResult) ProtoMessage() {}
 
 func (x *DataQualityResult_PostScanActionsResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[7]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -918,7 +978,7 @@ type DataQualityResult_PostScanActionsResult_BigQueryExportResult struct {
 func (x *DataQualityResult_PostScanActionsResult_BigQueryExportResult) Reset() {
 	*x = DataQualityResult_PostScanActionsResult_BigQueryExportResult{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[8]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -931,7 +991,7 @@ func (x *DataQualityResult_PostScanActionsResult_BigQueryExportResult) String() 
 func (*DataQualityResult_PostScanActionsResult_BigQueryExportResult) ProtoMessage() {}
 
 func (x *DataQualityResult_PostScanActionsResult_BigQueryExportResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[8]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -990,7 +1050,7 @@ type DataQualityRule_RangeExpectation struct {
 func (x *DataQualityRule_RangeExpectation) Reset() {
 	*x = DataQualityRule_RangeExpectation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[9]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1003,7 +1063,7 @@ func (x *DataQualityRule_RangeExpectation) String() string {
 func (*DataQualityRule_RangeExpectation) ProtoMessage() {}
 
 func (x *DataQualityRule_RangeExpectation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[9]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1016,7 +1076,7 @@ func (x *DataQualityRule_RangeExpectation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataQualityRule_RangeExpectation.ProtoReflect.Descriptor instead.
 func (*DataQualityRule_RangeExpectation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{4, 0}
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 0}
 }
 
 func (x *DataQualityRule_RangeExpectation) GetMinValue() string {
@@ -1057,7 +1117,7 @@ type DataQualityRule_NonNullExpectation struct {
 func (x *DataQualityRule_NonNullExpectation) Reset() {
 	*x = DataQualityRule_NonNullExpectation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[10]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1070,7 +1130,7 @@ func (x *DataQualityRule_NonNullExpectation) String() string {
 func (*DataQualityRule_NonNullExpectation) ProtoMessage() {}
 
 func (x *DataQualityRule_NonNullExpectation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[10]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1083,7 +1143,7 @@ func (x *DataQualityRule_NonNullExpectation) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use DataQualityRule_NonNullExpectation.ProtoReflect.Descriptor instead.
 func (*DataQualityRule_NonNullExpectation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{4, 1}
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 1}
 }
 
 // Evaluates whether each column value is contained by a specified set.
@@ -1099,7 +1159,7 @@ type DataQualityRule_SetExpectation struct {
 func (x *DataQualityRule_SetExpectation) Reset() {
 	*x = DataQualityRule_SetExpectation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[11]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1112,7 +1172,7 @@ func (x *DataQualityRule_SetExpectation) String() string {
 func (*DataQualityRule_SetExpectation) ProtoMessage() {}
 
 func (x *DataQualityRule_SetExpectation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[11]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1125,7 +1185,7 @@ func (x *DataQualityRule_SetExpectation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataQualityRule_SetExpectation.ProtoReflect.Descriptor instead.
 func (*DataQualityRule_SetExpectation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{4, 2}
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 2}
 }
 
 func (x *DataQualityRule_SetExpectation) GetValues() []string {
@@ -1148,7 +1208,7 @@ type DataQualityRule_RegexExpectation struct {
 func (x *DataQualityRule_RegexExpectation) Reset() {
 	*x = DataQualityRule_RegexExpectation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[12]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1161,7 +1221,7 @@ func (x *DataQualityRule_RegexExpectation) String() string {
 func (*DataQualityRule_RegexExpectation) ProtoMessage() {}
 
 func (x *DataQualityRule_RegexExpectation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[12]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1174,7 +1234,7 @@ func (x *DataQualityRule_RegexExpectation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataQualityRule_RegexExpectation.ProtoReflect.Descriptor instead.
 func (*DataQualityRule_RegexExpectation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{4, 3}
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 3}
 }
 
 func (x *DataQualityRule_RegexExpectation) GetRegex() string {
@@ -1194,7 +1254,7 @@ type DataQualityRule_UniquenessExpectation struct {
 func (x *DataQualityRule_UniquenessExpectation) Reset() {
 	*x = DataQualityRule_UniquenessExpectation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[13]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1207,7 +1267,7 @@ func (x *DataQualityRule_UniquenessExpectation) String() string {
 func (*DataQualityRule_UniquenessExpectation) ProtoMessage() {}
 
 func (x *DataQualityRule_UniquenessExpectation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[13]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1220,7 +1280,7 @@ func (x *DataQualityRule_UniquenessExpectation) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use DataQualityRule_UniquenessExpectation.ProtoReflect.Descriptor instead.
 func (*DataQualityRule_UniquenessExpectation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{4, 4}
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 4}
 }
 
 // Evaluates whether the column aggregate statistic lies between a specified
@@ -1257,7 +1317,7 @@ type DataQualityRule_StatisticRangeExpectation struct {
 func (x *DataQualityRule_StatisticRangeExpectation) Reset() {
 	*x = DataQualityRule_StatisticRangeExpectation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[14]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1270,7 +1330,7 @@ func (x *DataQualityRule_StatisticRangeExpectation) String() string {
 func (*DataQualityRule_StatisticRangeExpectation) ProtoMessage() {}
 
 func (x *DataQualityRule_StatisticRangeExpectation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[14]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1283,7 +1343,7 @@ func (x *DataQualityRule_StatisticRangeExpectation) ProtoReflect() protoreflect.
 
 // Deprecated: Use DataQualityRule_StatisticRangeExpectation.ProtoReflect.Descriptor instead.
 func (*DataQualityRule_StatisticRangeExpectation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{4, 5}
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 5}
 }
 
 func (x *DataQualityRule_StatisticRangeExpectation) GetStatistic() DataQualityRule_StatisticRangeExpectation_ColumnStatistic {
@@ -1339,7 +1399,7 @@ type DataQualityRule_RowConditionExpectation struct {
 func (x *DataQualityRule_RowConditionExpectation) Reset() {
 	*x = DataQualityRule_RowConditionExpectation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[15]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1352,7 +1412,7 @@ func (x *DataQualityRule_RowConditionExpectation) String() string {
 func (*DataQualityRule_RowConditionExpectation) ProtoMessage() {}
 
 func (x *DataQualityRule_RowConditionExpectation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[15]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1365,7 +1425,7 @@ func (x *DataQualityRule_RowConditionExpectation) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use DataQualityRule_RowConditionExpectation.ProtoReflect.Descriptor instead.
 func (*DataQualityRule_RowConditionExpectation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{4, 6}
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 6}
 }
 
 func (x *DataQualityRule_RowConditionExpectation) GetSqlExpression() string {
@@ -1393,7 +1453,7 @@ type DataQualityRule_TableConditionExpectation struct {
 func (x *DataQualityRule_TableConditionExpectation) Reset() {
 	*x = DataQualityRule_TableConditionExpectation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[16]
+		mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1406,7 +1466,7 @@ func (x *DataQualityRule_TableConditionExpectation) String() string {
 func (*DataQualityRule_TableConditionExpectation) ProtoMessage() {}
 
 func (x *DataQualityRule_TableConditionExpectation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[16]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1419,7 +1479,7 @@ func (x *DataQualityRule_TableConditionExpectation) ProtoReflect() protoreflect.
 
 // Deprecated: Use DataQualityRule_TableConditionExpectation.ProtoReflect.Descriptor instead.
 func (*DataQualityRule_TableConditionExpectation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{4, 7}
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 7}
 }
 
 func (x *DataQualityRule_TableConditionExpectation) GetSqlExpression() string {
@@ -1545,10 +1605,18 @@ var file_google_cloud_dataplex_v1_data_quality_proto_rawDesc = []byte{
 	0x52, 0x61, 0x74, 0x69, 0x6f, 0x12, 0x2c, 0x0a, 0x12, 0x66, 0x61, 0x69, 0x6c, 0x69, 0x6e, 0x67,
 	0x5f, 0x72, 0x6f, 0x77, 0x73, 0x5f, 0x71, 0x75, 0x65, 0x72, 0x79, 0x18, 0x0a, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x10, 0x66, 0x61, 0x69, 0x6c, 0x69, 0x6e, 0x67, 0x52, 0x6f, 0x77, 0x73, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x22, 0x34, 0x0a, 0x1a, 0x44, 0x61, 0x74, 0x61, 0x51, 0x75, 0x61, 0x6c, 0x69,
-	0x74, 0x79, 0x44, 0x69, 0x6d, 0x65, 0x6e, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x75, 0x6c,
-	0x74, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x61, 0x73, 0x73, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x08, 0x52, 0x06, 0x70, 0x61, 0x73, 0x73, 0x65, 0x64, 0x22, 0x8c, 0x10, 0x0a, 0x0f, 0x44, 0x61,
+	0x65, 0x72, 0x79, 0x22, 0x87, 0x01, 0x0a, 0x1a, 0x44, 0x61, 0x74, 0x61, 0x51, 0x75, 0x61, 0x6c,
+	0x69, 0x74, 0x79, 0x44, 0x69, 0x6d, 0x65, 0x6e, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x75,
+	0x6c, 0x74, 0x12, 0x51, 0x0a, 0x09, 0x64, 0x69, 0x6d, 0x65, 0x6e, 0x73, 0x69, 0x6f, 0x6e, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x2e, 0x76, 0x31,
+	0x2e, 0x44, 0x61, 0x74, 0x61, 0x51, 0x75, 0x61, 0x6c, 0x69, 0x74, 0x79, 0x44, 0x69, 0x6d, 0x65,
+	0x6e, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x09, 0x64, 0x69, 0x6d, 0x65,
+	0x6e, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x61, 0x73, 0x73, 0x65, 0x64, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x70, 0x61, 0x73, 0x73, 0x65, 0x64, 0x22, 0x2a, 0x0a,
+	0x14, 0x44, 0x61, 0x74, 0x61, 0x51, 0x75, 0x61, 0x6c, 0x69, 0x74, 0x79, 0x44, 0x69, 0x6d, 0x65,
+	0x6e, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x8c, 0x10, 0x0a, 0x0f, 0x44, 0x61,
 	0x74, 0x61, 0x51, 0x75, 0x61, 0x6c, 0x69, 0x74, 0x79, 0x52, 0x75, 0x6c, 0x65, 0x12, 0x69, 0x0a,
 	0x11, 0x72, 0x61, 0x6e, 0x67, 0x65, 0x5f, 0x65, 0x78, 0x70, 0x65, 0x63, 0x74, 0x61, 0x74, 0x69,
 	0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x3a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
@@ -1706,7 +1774,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_dataplex_v1_data_quality_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_dataplex_v1_data_quality_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_google_cloud_dataplex_v1_data_quality_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_google_cloud_dataplex_v1_data_quality_proto_goTypes = []interface{}{
 	(DataQualityResult_PostScanActionsResult_BigQueryExportResult_State)(0), // 0: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.State
 	(DataQualityRule_StatisticRangeExpectation_ColumnStatistic)(0),          // 1: google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.ColumnStatistic
@@ -1714,46 +1782,48 @@ var file_google_cloud_dataplex_v1_data_quality_proto_goTypes = []interface{}{
 	(*DataQualityResult)(nil),                                            // 3: google.cloud.dataplex.v1.DataQualityResult
 	(*DataQualityRuleResult)(nil),                                        // 4: google.cloud.dataplex.v1.DataQualityRuleResult
 	(*DataQualityDimensionResult)(nil),                                   // 5: google.cloud.dataplex.v1.DataQualityDimensionResult
-	(*DataQualityRule)(nil),                                              // 6: google.cloud.dataplex.v1.DataQualityRule
-	(*DataQualitySpec_PostScanActions)(nil),                              // 7: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions
-	(*DataQualitySpec_PostScanActions_BigQueryExport)(nil),               // 8: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.BigQueryExport
-	(*DataQualityResult_PostScanActionsResult)(nil),                      // 9: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult
-	(*DataQualityResult_PostScanActionsResult_BigQueryExportResult)(nil), // 10: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult
-	(*DataQualityRule_RangeExpectation)(nil),                             // 11: google.cloud.dataplex.v1.DataQualityRule.RangeExpectation
-	(*DataQualityRule_NonNullExpectation)(nil),                           // 12: google.cloud.dataplex.v1.DataQualityRule.NonNullExpectation
-	(*DataQualityRule_SetExpectation)(nil),                               // 13: google.cloud.dataplex.v1.DataQualityRule.SetExpectation
-	(*DataQualityRule_RegexExpectation)(nil),                             // 14: google.cloud.dataplex.v1.DataQualityRule.RegexExpectation
-	(*DataQualityRule_UniquenessExpectation)(nil),                        // 15: google.cloud.dataplex.v1.DataQualityRule.UniquenessExpectation
-	(*DataQualityRule_StatisticRangeExpectation)(nil),                    // 16: google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation
-	(*DataQualityRule_RowConditionExpectation)(nil),                      // 17: google.cloud.dataplex.v1.DataQualityRule.RowConditionExpectation
-	(*DataQualityRule_TableConditionExpectation)(nil),                    // 18: google.cloud.dataplex.v1.DataQualityRule.TableConditionExpectation
-	(*ScannedData)(nil),                                                  // 19: google.cloud.dataplex.v1.ScannedData
+	(*DataQualityDimension)(nil),                                         // 6: google.cloud.dataplex.v1.DataQualityDimension
+	(*DataQualityRule)(nil),                                              // 7: google.cloud.dataplex.v1.DataQualityRule
+	(*DataQualitySpec_PostScanActions)(nil),                              // 8: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions
+	(*DataQualitySpec_PostScanActions_BigQueryExport)(nil),               // 9: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.BigQueryExport
+	(*DataQualityResult_PostScanActionsResult)(nil),                      // 10: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult
+	(*DataQualityResult_PostScanActionsResult_BigQueryExportResult)(nil), // 11: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult
+	(*DataQualityRule_RangeExpectation)(nil),                             // 12: google.cloud.dataplex.v1.DataQualityRule.RangeExpectation
+	(*DataQualityRule_NonNullExpectation)(nil),                           // 13: google.cloud.dataplex.v1.DataQualityRule.NonNullExpectation
+	(*DataQualityRule_SetExpectation)(nil),                               // 14: google.cloud.dataplex.v1.DataQualityRule.SetExpectation
+	(*DataQualityRule_RegexExpectation)(nil),                             // 15: google.cloud.dataplex.v1.DataQualityRule.RegexExpectation
+	(*DataQualityRule_UniquenessExpectation)(nil),                        // 16: google.cloud.dataplex.v1.DataQualityRule.UniquenessExpectation
+	(*DataQualityRule_StatisticRangeExpectation)(nil),                    // 17: google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation
+	(*DataQualityRule_RowConditionExpectation)(nil),                      // 18: google.cloud.dataplex.v1.DataQualityRule.RowConditionExpectation
+	(*DataQualityRule_TableConditionExpectation)(nil),                    // 19: google.cloud.dataplex.v1.DataQualityRule.TableConditionExpectation
+	(*ScannedData)(nil),                                                  // 20: google.cloud.dataplex.v1.ScannedData
 }
 var file_google_cloud_dataplex_v1_data_quality_proto_depIdxs = []int32{
-	6,  // 0: google.cloud.dataplex.v1.DataQualitySpec.rules:type_name -> google.cloud.dataplex.v1.DataQualityRule
-	7,  // 1: google.cloud.dataplex.v1.DataQualitySpec.post_scan_actions:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions
+	7,  // 0: google.cloud.dataplex.v1.DataQualitySpec.rules:type_name -> google.cloud.dataplex.v1.DataQualityRule
+	8,  // 1: google.cloud.dataplex.v1.DataQualitySpec.post_scan_actions:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions
 	5,  // 2: google.cloud.dataplex.v1.DataQualityResult.dimensions:type_name -> google.cloud.dataplex.v1.DataQualityDimensionResult
 	4,  // 3: google.cloud.dataplex.v1.DataQualityResult.rules:type_name -> google.cloud.dataplex.v1.DataQualityRuleResult
-	19, // 4: google.cloud.dataplex.v1.DataQualityResult.scanned_data:type_name -> google.cloud.dataplex.v1.ScannedData
-	9,  // 5: google.cloud.dataplex.v1.DataQualityResult.post_scan_actions_result:type_name -> google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult
-	6,  // 6: google.cloud.dataplex.v1.DataQualityRuleResult.rule:type_name -> google.cloud.dataplex.v1.DataQualityRule
-	11, // 7: google.cloud.dataplex.v1.DataQualityRule.range_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.RangeExpectation
-	12, // 8: google.cloud.dataplex.v1.DataQualityRule.non_null_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.NonNullExpectation
-	13, // 9: google.cloud.dataplex.v1.DataQualityRule.set_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.SetExpectation
-	14, // 10: google.cloud.dataplex.v1.DataQualityRule.regex_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.RegexExpectation
-	15, // 11: google.cloud.dataplex.v1.DataQualityRule.uniqueness_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.UniquenessExpectation
-	16, // 12: google.cloud.dataplex.v1.DataQualityRule.statistic_range_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation
-	17, // 13: google.cloud.dataplex.v1.DataQualityRule.row_condition_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.RowConditionExpectation
-	18, // 14: google.cloud.dataplex.v1.DataQualityRule.table_condition_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.TableConditionExpectation
-	8,  // 15: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.bigquery_export:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.BigQueryExport
-	10, // 16: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.bigquery_export_result:type_name -> google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult
-	0,  // 17: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.state:type_name -> google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.State
-	1,  // 18: google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.statistic:type_name -> google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.ColumnStatistic
-	19, // [19:19] is the sub-list for method output_type
-	19, // [19:19] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	20, // 4: google.cloud.dataplex.v1.DataQualityResult.scanned_data:type_name -> google.cloud.dataplex.v1.ScannedData
+	10, // 5: google.cloud.dataplex.v1.DataQualityResult.post_scan_actions_result:type_name -> google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult
+	7,  // 6: google.cloud.dataplex.v1.DataQualityRuleResult.rule:type_name -> google.cloud.dataplex.v1.DataQualityRule
+	6,  // 7: google.cloud.dataplex.v1.DataQualityDimensionResult.dimension:type_name -> google.cloud.dataplex.v1.DataQualityDimension
+	12, // 8: google.cloud.dataplex.v1.DataQualityRule.range_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.RangeExpectation
+	13, // 9: google.cloud.dataplex.v1.DataQualityRule.non_null_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.NonNullExpectation
+	14, // 10: google.cloud.dataplex.v1.DataQualityRule.set_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.SetExpectation
+	15, // 11: google.cloud.dataplex.v1.DataQualityRule.regex_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.RegexExpectation
+	16, // 12: google.cloud.dataplex.v1.DataQualityRule.uniqueness_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.UniquenessExpectation
+	17, // 13: google.cloud.dataplex.v1.DataQualityRule.statistic_range_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation
+	18, // 14: google.cloud.dataplex.v1.DataQualityRule.row_condition_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.RowConditionExpectation
+	19, // 15: google.cloud.dataplex.v1.DataQualityRule.table_condition_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.TableConditionExpectation
+	9,  // 16: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.bigquery_export:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.BigQueryExport
+	11, // 17: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.bigquery_export_result:type_name -> google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult
+	0,  // 18: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.state:type_name -> google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.State
+	1,  // 19: google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.statistic:type_name -> google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.ColumnStatistic
+	20, // [20:20] is the sub-list for method output_type
+	20, // [20:20] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dataplex_v1_data_quality_proto_init() }
@@ -1812,7 +1882,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualityRule); i {
+			switch v := v.(*DataQualityDimension); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1824,7 +1894,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualitySpec_PostScanActions); i {
+			switch v := v.(*DataQualityRule); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1836,7 +1906,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualitySpec_PostScanActions_BigQueryExport); i {
+			switch v := v.(*DataQualitySpec_PostScanActions); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1848,7 +1918,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualityResult_PostScanActionsResult); i {
+			switch v := v.(*DataQualitySpec_PostScanActions_BigQueryExport); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1860,7 +1930,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualityResult_PostScanActionsResult_BigQueryExportResult); i {
+			switch v := v.(*DataQualityResult_PostScanActionsResult); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1872,7 +1942,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualityRule_RangeExpectation); i {
+			switch v := v.(*DataQualityResult_PostScanActionsResult_BigQueryExportResult); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1884,7 +1954,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualityRule_NonNullExpectation); i {
+			switch v := v.(*DataQualityRule_RangeExpectation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1896,7 +1966,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualityRule_SetExpectation); i {
+			switch v := v.(*DataQualityRule_NonNullExpectation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1908,7 +1978,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualityRule_RegexExpectation); i {
+			switch v := v.(*DataQualityRule_SetExpectation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1920,7 +1990,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualityRule_UniquenessExpectation); i {
+			switch v := v.(*DataQualityRule_RegexExpectation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1932,7 +2002,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualityRule_StatisticRangeExpectation); i {
+			switch v := v.(*DataQualityRule_UniquenessExpectation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1944,7 +2014,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataQualityRule_RowConditionExpectation); i {
+			switch v := v.(*DataQualityRule_StatisticRangeExpectation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1956,6 +2026,18 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DataQualityRule_RowConditionExpectation); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DataQualityRule_TableConditionExpectation); i {
 			case 0:
 				return &v.state
@@ -1968,7 +2050,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			}
 		}
 	}
-	file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[4].OneofWrappers = []interface{}{
+	file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[5].OneofWrappers = []interface{}{
 		(*DataQualityRule_RangeExpectation_)(nil),
 		(*DataQualityRule_NonNullExpectation_)(nil),
 		(*DataQualityRule_SetExpectation_)(nil),
@@ -1984,7 +2066,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_dataplex_v1_data_quality_proto_rawDesc,
 			NumEnums:      2,
-			NumMessages:   17,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
