@@ -3,6 +3,41 @@
 
 
 
+## [1.56.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.55.0...bigquery/v1.56.0) (2023-10-05)
+
+
+### Features
+
+* **bigquery/analyticshub:** Add Subscription resource and RPCs ([#8612](https://github.com/googleapis/google-cloud-go/issues/8612)) ([9992249](https://github.com/googleapis/google-cloud-go/commit/999224951d586513bd382483326b455c953a14f3))
+* **bigquery:** Add external dataset reference ([#8545](https://github.com/googleapis/google-cloud-go/issues/8545)) ([1001acf](https://github.com/googleapis/google-cloud-go/commit/1001acf6ac894a7d9945b7d204ad55aa7b162909))
+* **bigquery:** Add media options to LoadConfig ([#8640](https://github.com/googleapis/google-cloud-go/issues/8640)) ([62baf56](https://github.com/googleapis/google-cloud-go/commit/62baf569c052a8c565710533ba50a1f5df8176dd))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Automatic retry for multiplex test ([#8601](https://github.com/googleapis/google-cloud-go/issues/8601)) ([6ef1945](https://github.com/googleapis/google-cloud-go/commit/6ef1945a837430afcd195affd661768817cdc40b))
+* **bigquery:** Dependency detection on proto conversion ([#8566](https://github.com/googleapis/google-cloud-go/issues/8566)) ([763ab5d](https://github.com/googleapis/google-cloud-go/commit/763ab5dbd466fd0450dcd46e38c75e87cbf6c49c))
+
+
+### Documentation
+
+* **bigquery/datatransfer:** Update transferConfig.name description to indicate that it supports both formats ([0449518](https://github.com/googleapis/google-cloud-go/commit/0449518f8396cc0280c0f3303c103edcee34016b))
+
+## [1.55.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.54.0...bigquery/v1.55.0) (2023-09-11)
+
+
+### Features
+
+* **bigquery/datapolicies:** Support using custom UDF in the data policy ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+* **bigquery:** Set PreferredMinStreamCount when creating read session ([#8476](https://github.com/googleapis/google-cloud-go/issues/8476)) ([22e095a](https://github.com/googleapis/google-cloud-go/commit/22e095adea77a2bc3900f5d5c57715d4a9ed4fcb)), refs [#8432](https://github.com/googleapis/google-cloud-go/issues/8432)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Address possible deadlocks ([#8507](https://github.com/googleapis/google-cloud-go/issues/8507)) ([48b08bf](https://github.com/googleapis/google-cloud-go/commit/48b08bf47494052a2652a3ab519de76fddc74c8a))
+* **bigquery:** Field descriptor proto name should not be lowercase ([#8495](https://github.com/googleapis/google-cloud-go/issues/8495)) ([4287e4b](https://github.com/googleapis/google-cloud-go/commit/4287e4bed40e69203ddb55bd754e3adbf269ba9e))
+* **bigquery:** Value for datasetID on foreign keys ([#8447](https://github.com/googleapis/google-cloud-go/issues/8447)) ([fa6e827](https://github.com/googleapis/google-cloud-go/commit/fa6e827a5997fb7abe97375ea6abb7d2fc71047d)), refs [#8442](https://github.com/googleapis/google-cloud-go/issues/8442)
+
 ## [1.54.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.53.0...bigquery/v1.54.0) (2023-08-17)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.12.0...metastore/v1.13.0) (2023-10-04)
+
+
+### Features
+
+* **metastore:** Added EndpointLocation (v1, v1beta, v1alpha) ([e9ae601](https://github.com/googleapis/google-cloud-go/commit/e9ae6018983ae09781740e4ff939e6e365863dbb))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.11.1...metastore/v1.12.0) (2023-07-10)
 
 

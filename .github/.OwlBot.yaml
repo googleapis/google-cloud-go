@@ -11,7 +11,9 @@ deep-remove-regex:
   - /alloydb/apiv1/
   - /alloydb/apiv1alpha/
   - /alloydb/apiv1beta/
+  - /alloydb/connectors/apiv1/
   - /alloydb/connectors/apiv1alpha/
+  - /alloydb/connectors/apiv1beta/
   - /analytics/admin/apiv1alpha/
   - /apigateway/apiv1/
   - /apigeeconnect/apiv1/
@@ -67,6 +69,7 @@ deep-remove-regex:
   - /compute/apiv1
   - /confidentialcomputing/apiv1
   - /confidentialcomputing/apiv1alpha1
+  - /config/apiv1/
   - /contactcenterinsights/apiv1/
   - /container/apiv1/
   - /containeranalysis/apiv1beta1/
@@ -263,6 +266,7 @@ deep-remove-regex:
   - /internal/generated/snippets/networksecurity/apiv1beta1/
   - /internal/generated/snippets/notebooks/apiv1/
   - /internal/generated/snippets/notebooks/apiv1beta1/
+  - /internal/generated/snippets/notebooks/apiv2/
   - /internal/generated/snippets/optimization/apiv1/
   - /internal/generated/snippets/orchestration/airflow/service/apiv1/
   - /internal/generated/snippets/orgpolicy/apiv2/
@@ -328,7 +332,7 @@ deep-remove-regex:
   - /internal/generated/snippets/trace/apiv2/
   - /internal/generated/snippets/translate/apiv3/
   - /internal/generated/snippets/video/livestream/apiv1/
-  # - /internal/generated/snippets/video/stitcher/apiv1/
+  - /internal/generated/snippets/video/stitcher/apiv1/
   - /internal/generated/snippets/video/transcoder/apiv1/
   - /internal/generated/snippets/videointelligence/apiv1/
   - /internal/generated/snippets/videointelligence/apiv1beta2/
@@ -379,6 +383,7 @@ deep-remove-regex:
   - /networksecurity/apiv1beta1/
   - /notebooks/apiv1/
   - /notebooks/apiv1beta1/
+  - /notebooks/apiv2/
   - /optimization/apiv1/
   - /orchestration/airflow/service/apiv1/
   - /orgpolicy/apiv1/
@@ -446,7 +451,7 @@ deep-remove-regex:
   - /trace/apiv2/
   - /translate/apiv3/
   - /video/livestream/apiv1/
-  # - /video/stitcher/apiv1/
+  - /video/stitcher/apiv1/
   - /video/transcoder/apiv1/
   - /videointelligence/apiv1/
   - /videointelligence/apiv1beta2/
@@ -525,7 +530,11 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/alloydb/v1beta/cloud.google.com/go
     dest: /
+  - source: /google/cloud/alloydb/connectors/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/alloydb/connectors/v1alpha/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/alloydb/connectors/v1beta/cloud.google.com/go
     dest: /
   - source: /google/analytics/admin/v1alpha/cloud.google.com/go
     dest: /
@@ -636,6 +645,8 @@ deep-copy-regex:
   - source: /google/cloud/confidentialcomputing/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/confidentialcomputing/v1alpha1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/config/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go
     dest: /
@@ -801,6 +812,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/notebooks/v1beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/notebooks/v2/cloud.google.com/go
+    dest: /
   - source: /google/cloud/optimization/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/orchestration/airflow/service/v1/cloud.google.com/go
@@ -939,8 +952,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/video/livestream/v1/cloud.google.com/go
     dest: /
-  # - source: /google/cloud/video/stitcher/v1/cloud.google.com/go
-  #   dest: /
+  - source: /google/cloud/video/stitcher/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/video/transcoder/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/videointelligence/v1/cloud.google.com/go

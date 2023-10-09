@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.7.1...serviceusage/v1.8.0) (2023-09-20)
+
+
+### Features
+
+* **serviceusage:** Introduce resource class serviceusage.googleapis.com/Service ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.7.0...serviceusage/v1.7.1) (2023-06-20)
 
 

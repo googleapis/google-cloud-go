@@ -96,6 +96,9 @@
         "confidentialcomputing": {
             "component": "confidentialcomputing"
         },
+        "config": {
+            "component": "config"
+        },
         "contactcenterinsights": {
             "component": "contactcenterinsights"
         },

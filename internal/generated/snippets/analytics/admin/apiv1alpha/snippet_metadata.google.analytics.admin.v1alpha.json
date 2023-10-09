@@ -1479,6 +1479,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateSKAdNetworkConversionValueSchema_sync",
+      "title": "analyticsadmin CreateSKAdNetworkConversionValueSchema Sample",
+      "description": "CreateSKAdNetworkConversionValueSchema creates a SKAdNetworkConversionValueSchema.",
+      "file": "AnalyticsAdminClient/CreateSKAdNetworkConversionValueSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSKAdNetworkConversionValueSchema",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateSKAdNetworkConversionValueSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateSKAdNetworkConversionValueSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SKAdNetworkConversionValueSchema",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateSKAdNetworkConversionValueSchema",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSKAdNetworkConversionValueSchema",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateSearchAds360Link_sync",
       "title": "analyticsadmin CreateSearchAds360Link Sample",
       "description": "CreateSearchAds360Link creates a SearchAds360Link.",
@@ -2242,6 +2288,51 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteSKAdNetworkConversionValueSchema_sync",
+      "title": "analyticsadmin DeleteSKAdNetworkConversionValueSchema Sample",
+      "description": "DeleteSKAdNetworkConversionValueSchema deletes target SKAdNetworkConversionValueSchema.",
+      "file": "AnalyticsAdminClient/DeleteSKAdNetworkConversionValueSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSKAdNetworkConversionValueSchema",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteSKAdNetworkConversionValueSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteSKAdNetworkConversionValueSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteSKAdNetworkConversionValueSchema",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSKAdNetworkConversionValueSchema",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -3441,6 +3532,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetSKAdNetworkConversionValueSchema_sync",
+      "title": "analyticsadmin GetSKAdNetworkConversionValueSchema Sample",
+      "description": "GetSKAdNetworkConversionValueSchema looks up a single SKAdNetworkConversionValueSchema.",
+      "file": "AnalyticsAdminClient/GetSKAdNetworkConversionValueSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSKAdNetworkConversionValueSchema",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetSKAdNetworkConversionValueSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetSKAdNetworkConversionValueSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SKAdNetworkConversionValueSchema",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetSKAdNetworkConversionValueSchema",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetSKAdNetworkConversionValueSchema",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetSearchAds360Link_sync",
       "title": "analyticsadmin GetSearchAds360Link Sample",
       "description": "GetSearchAds360Link look up a single SearchAds360Link",
@@ -4437,6 +4574,52 @@
         "method": {
           "shortName": "ListProperties",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListProperties",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListSKAdNetworkConversionValueSchemas_sync",
+      "title": "analyticsadmin ListSKAdNetworkConversionValueSchemas Sample",
+      "description": "ListSKAdNetworkConversionValueSchemas lists SKAdNetworkConversionValueSchema on a stream.\nProperties can have at most one SKAdNetworkConversionValueSchema.",
+      "file": "AnalyticsAdminClient/ListSKAdNetworkConversionValueSchemas/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSKAdNetworkConversionValueSchemas",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListSKAdNetworkConversionValueSchemas",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListSKAdNetworkConversionValueSchemasRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SKAdNetworkConversionValueSchemaIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListSKAdNetworkConversionValueSchemas",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListSKAdNetworkConversionValueSchemas",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -5541,6 +5724,52 @@
         "method": {
           "shortName": "UpdateProperty",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateProperty",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateSKAdNetworkConversionValueSchema_sync",
+      "title": "analyticsadmin UpdateSKAdNetworkConversionValueSchema Sample",
+      "description": "UpdateSKAdNetworkConversionValueSchema updates a SKAdNetworkConversionValueSchema.",
+      "file": "AnalyticsAdminClient/UpdateSKAdNetworkConversionValueSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSKAdNetworkConversionValueSchema",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateSKAdNetworkConversionValueSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateSKAdNetworkConversionValueSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SKAdNetworkConversionValueSchema",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateSKAdNetworkConversionValueSchema",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSKAdNetworkConversionValueSchema",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"

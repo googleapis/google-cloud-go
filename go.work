@@ -18,6 +18,8 @@ use (
 	./artifactregistry
 	./asset
 	./assuredworkloads
+	./auth
+	./auth/oauth2adapt
 	./automl
 	./baremetalsolution
 	./batch
@@ -35,6 +37,7 @@ use (
 	./compute
 	./compute/metadata
 	./confidentialcomputing
+	./config
 	./contactcenterinsights
 	./container
 	./containeranalysis

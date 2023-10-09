@@ -26,18 +26,20 @@ import (
 )
 
 var individuallyReleasedModules map[string]bool = map[string]bool{
-	".":              true,
-	"bigquery":       true,
-	"bigtable":       true,
-	"datastore":      true,
-	"errorreporting": true,
-	"firestore":      true,
-	"logging":        true,
-	"profiler":       true,
-	"pubsub":         true,
-	"pubsublite":     true,
-	"spanner":        true,
-	"storage":        true,
+	".":                true,
+	"auth":             true,
+	"auth/oauth2adapt": true,
+	"bigquery":         true,
+	"bigtable":         true,
+	"datastore":        true,
+	"errorreporting":   true,
+	"firestore":        true,
+	"logging":          true,
+	"profiler":         true,
+	"pubsub":           true,
+	"pubsublite":       true,
+	"spanner":          true,
+	"storage":          true,
 }
 
 var defaultReleasePleaseConfig = &releasePleaseConfig{

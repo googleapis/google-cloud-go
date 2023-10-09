@@ -140,11 +140,11 @@ func (c *Client) Close() error {
 }
 
 // Calls the Jobs.Insert RPC and returns a Job.
-func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*Job, error) {
+func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader, mediaOpts ...googleapi.MediaOption) (*Job, error) {
 	call := c.bqs.Jobs.Insert(c.projectID, job).Context(ctx)
 	setClientHeader(call.Header())
 	if media != nil {
-		call.Media(media)
+		call.Media(media, mediaOpts...)
 	}
 	var res *bq.Job
 	var err error
