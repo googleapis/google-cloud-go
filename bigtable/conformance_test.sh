@@ -68,9 +68,7 @@ trap cleanup EXIT
 mkdir -p $BIGTABLE_CONFORMANCE_TESTS_HOME
 git clone https://github.com/googleapis/cloud-bigtable-clients-test.git $BIGTABLE_CONFORMANCE_TESTS_HOME
 
-pushd $BIGTABLE_CONFORMANCE_TESTS_HOME > /dev/null;
-    cd tests
-
+pushd $BIGTABLE_CONFORMANCE_TESTS_HOME/tests > /dev/null;
     # Run the conformance tests
     echo "Running Bigtable conformance tests" | tee -a $sponge_log
     (go test -v -proxy_addr=:$BIGTABLE_TEST_PROXY_PORT | tee -a $sponge_log) \
