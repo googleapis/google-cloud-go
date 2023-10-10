@@ -135,11 +135,19 @@ func (r *resource) isCloudRunService() bool {
 }
 
 func (r *resource) isCloudRunJob() bool {
-	job := r.attrs.EnvVar("CLOUD_RUN_JOB")
-	execution := r.attrs.EnvVar("CLOUD_RUN_EXECUTION")
-	taskIndex := r.attrs.EnvVar("CLOUD_RUN_TASK_INDEX")
-	taskAttempt := r.attrs.EnvVar("CLOUD_RUN_TASK_ATTEMPT")
-	return job != "" && execution != "" && taskIndex != "" && taskAttempt != ""
+	if r.attrs.EnvVar("CLOUD_RUN_JOB") == "" {
+		return false
+	}
+	if r.attrs.EnvVar("CLOUD_RUN_EXECUTION") == "" {
+		return false
+	}
+	if r.attrs.EnvVar("CLOUD_RUN_TASK_INDEX") == "" {
+		return false
+	}
+	if r.attrs.EnvVar("CLOUD_RUN_TASK_ATTEMPT") == "" {
+		return false
+	}
+	return true
 }
 
 func detectCloudRunServiceResource() *mrpb.MonitoredResource {
