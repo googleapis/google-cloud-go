@@ -86,7 +86,7 @@ func (r *arrowIteratorReader) Read(p []byte) (int, error) {
 	if err == io.EOF {
 		batch, err := r.it.Next()
 		if err == iterator.Done {
-			return -1, io.EOF
+			return 0, io.EOF
 		}
 		r.buf.Write(batch.Data)
 		return r.Read(p)
