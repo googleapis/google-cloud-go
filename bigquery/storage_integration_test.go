@@ -459,6 +459,7 @@ func TestIntegration_StorageReadArrow(t *testing.T) {
 	for r.Next() {
 		rec := r.Record()
 		rec.Retain()
+		defer rec.Release()
 		records = append(records, rec)
 		numrec += int(rec.NumRows())
 	}
@@ -491,7 +492,7 @@ func TestIntegration_StorageReadArrow(t *testing.T) {
 	var totalFromArrow int64
 	for tr.Next() {
 		rec := tr.Record()
-		vec := array.NewInt64Data(rec.Column(1).Data())
+		vec := rec.Column(1).(*array.Int64)
 		totalFromArrow += math.Int64.Sum(vec)
 	}
 	if totalFromArrow != totalFromSQL {
