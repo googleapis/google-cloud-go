@@ -15,6 +15,8 @@
 package managedwriter
 
 import (
+	"bytes"
+	"encoding/binary"
 	"hash/crc32"
 	"time"
 
@@ -225,4 +227,95 @@ func (dv *descriptorVersion) eqVersion(other *descriptorVersion) bool {
 // than the other.
 func (dv *descriptorVersion) isNewer(other *descriptorVersion) bool {
 	return dv.versionTime.UnixNano() > other.versionTime.UnixNano()
+}
+
+// versionedTemplate is used for faster comparison of the templated part of
+// an AppendRowsRequest, which bears settings-like fields related to schema
+// and default value configuration.  Direct proto comparison through something
+// like proto.Equal is far too expensive, so versionTemplate leverages a faster
+// hash-based comparison to avoid the deep equality checks.
+type versionedTemplate struct {
+	versionTime time.Time
+	hashVal     uint32
+	tmpl        *storagepb.AppendRowsRequest
+}
+
+func newVersionedTemplate() *versionedTemplate {
+	vt := &versionedTemplate{
+		versionTime: time.Now(),
+		tmpl:        &storagepb.AppendRowsRequest{},
+	}
+	vt.computeHash()
+	return vt
+}
+
+// computeHash is an internal utility function for calculating the hash value
+// for faster comparison.
+func (vt *versionedTemplate) computeHash() {
+	buf := new(bytes.Buffer)
+	if b, err := proto.Marshal(vt.tmpl); err == nil {
+		buf.Write(b)
+	} else {
+		// if we fail to serialize the proto (unlikely), consume the timestamp for input instead.
+		binary.Write(buf, binary.LittleEndian, vt.versionTime.UnixNano())
+	}
+	vt.hashVal = crc32.ChecksumIEEE(buf.Bytes())
+}
+
+type templateRevisionF func(m *storagepb.AppendRowsRequest)
+
+// revise makes a new versionedTemplate from the existing template, applying any changes
+func (vt *versionedTemplate) revise(changes ...templateRevisionF) *versionedTemplate {
+	if len(changes) == 0 {
+		// if there's no changes, simply return the base revision
+		return vt
+	}
+	out := &versionedTemplate{
+		versionTime: time.Now(),
+		tmpl:        proto.Clone(vt.tmpl).(*storagepb.AppendRowsRequest),
+	}
+	for _, r := range changes {
+		r(out.tmpl)
+	}
+	out.computeHash()
+	return out
+}
+
+// Compatible is effectively a fast equality check, that relies on the hash value
+// and avoids the potentially very costly deep comparison of the proto message templates.
+func (vt *versionedTemplate) Compatible(other *versionedTemplate) bool {
+	if other == nil {
+		return vt == nil
+	}
+	return vt.hashVal == other.hashVal
+}
+
+func reviseProtoSchema(newSchema *descriptorpb.DescriptorProto) templateRevisionF {
+	return func(m *storagepb.AppendRowsRequest) {
+		if m != nil {
+			m.Rows = &storagepb.AppendRowsRequest_ProtoRows{
+				ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+					WriterSchema: &storagepb.ProtoSchema{
+						ProtoDescriptor: proto.Clone(newSchema).(*descriptorpb.DescriptorProto),
+					},
+				},
+			}
+		}
+	}
+}
+
+func reviseMissingValueInterpretations(vi map[string]storagepb.AppendRowsRequest_MissingValueInterpretation) templateRevisionF {
+	return func(m *storagepb.AppendRowsRequest) {
+		if m != nil {
+			m.MissingValueInterpretations = vi
+		}
+	}
+}
+
+func reviseDefaultMissingValueInterpretation(def storagepb.AppendRowsRequest_MissingValueInterpretation) templateRevisionF {
+	return func(m *storagepb.AppendRowsRequest) {
+		if m != nil {
+			m.DefaultMissingValueInterpretation = def
+		}
+	}
 }

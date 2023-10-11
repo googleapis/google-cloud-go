@@ -392,3 +392,64 @@ func TestDescriptorVersion_EqVersion(t *testing.T) {
 		}
 	}
 }
+
+func TestVersionedTemplate(t *testing.T) {
+	testCases := []struct {
+		desc           string
+		inputTmpl      *storagepb.AppendRowsRequest
+		changes        []templateRevisionF
+		wantCompatible bool
+	}{
+		{
+			desc:           "nil template",
+			wantCompatible: true,
+		},
+		{
+			desc:           "no changes",
+			inputTmpl:      &storagepb.AppendRowsRequest{},
+			wantCompatible: true,
+		},
+		{
+			desc:      "empty schema",
+			inputTmpl: &storagepb.AppendRowsRequest{},
+			changes: []templateRevisionF{
+				reviseProtoSchema(nil),
+			},
+			wantCompatible: false,
+		},
+		{
+			desc: "same default mvi",
+			inputTmpl: &storagepb.AppendRowsRequest{
+				DefaultMissingValueInterpretation: storagepb.AppendRowsRequest_NULL_VALUE,
+			},
+			changes: []templateRevisionF{
+				reviseDefaultMissingValueInterpretation(storagepb.AppendRowsRequest_NULL_VALUE),
+			},
+			wantCompatible: true,
+		},
+		{
+			desc: "differing default mvi",
+			inputTmpl: &storagepb.AppendRowsRequest{
+				DefaultMissingValueInterpretation: storagepb.AppendRowsRequest_NULL_VALUE,
+			},
+			changes: []templateRevisionF{
+				reviseDefaultMissingValueInterpretation(storagepb.AppendRowsRequest_DEFAULT_VALUE),
+			},
+			wantCompatible: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		orig := newVersionedTemplate()
+		orig.tmpl = tc.inputTmpl
+		orig.computeHash()
+
+		rev := orig.revise(tc.changes...)
+		if orig.Compatible(rev) != rev.Compatible(orig) {
+			t.Errorf("case %q: inconsistent compatibility, orig %t rev %t", tc.desc, orig.Compatible(rev), rev.Compatible(orig))
+		}
+		if got := orig.Compatible(rev); tc.wantCompatible != got {
+			t.Errorf("case %q: Compatible mismatch, got %t want %t", tc.desc, got, tc.wantCompatible)
+		}
+	}
+}
