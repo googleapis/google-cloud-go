@@ -20,6 +20,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/detect/internal/externalaccount"
+	"cloud.google.com/go/auth/detect/internal/externalaccountuser"
 	"cloud.google.com/go/auth/detect/internal/gdch"
 	"cloud.google.com/go/auth/detect/internal/impersonate"
 	"cloud.google.com/go/auth/internal/internaldetect"
@@ -60,6 +61,16 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 			return nil, err
 		}
 		tp, err = handleExternalAccount(f, opts)
+		if err != nil {
+			return nil, err
+		}
+		quotaProjectID = f.QuotaProjectID
+	case internaldetect.ExternalAccountAuthorizedUserKey:
+		f, err := internaldetect.ParseExternalAccountAuthorizedUser(b)
+		if err != nil {
+			return nil, err
+		}
+		tp, err = handleExternalAccountAuthorizedUser(f, opts)
 		if err != nil {
 			return nil, err
 		}
@@ -139,6 +150,20 @@ func handleExternalAccount(f *internaldetect.ExternalAccountFile, opts *Options)
 		Client:                   opts.client(),
 	}
 	return externalaccount.NewTokenProvider(externalOpts)
+}
+
+func handleExternalAccountAuthorizedUser(f *internaldetect.ExternalAccountAuthorizedUserFile, opts *Options) (auth.TokenProvider, error) {
+	externalOpts := &externalaccountuser.Options{
+		Audience:     f.Audience,
+		RefreshToken: f.RefreshToken,
+		TokenURL:     f.TokenURL,
+		TokenInfoURL: f.TokenInfoURL,
+		ClientID:     f.ClientID,
+		ClientSecret: f.ClientSecret,
+		Scopes:       opts.scopes(),
+		Client:       opts.client(),
+	}
+	return externalaccountuser.NewTokenProvider(externalOpts)
 }
 
 func handleImpersonatedServiceAccount(f *internaldetect.ImpersonatedServiceAccountFile, opts *Options) (auth.TokenProvider, error) {

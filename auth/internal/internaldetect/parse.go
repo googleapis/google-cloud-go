@@ -55,6 +55,14 @@ func ParseExternalAccount(b []byte) (*ExternalAccountFile, error) {
 	return f, nil
 }
 
+func ParseExternalAccountAuthorizedUser(b []byte) (*ExternalAccountAuthorizedUserFile, error) {
+	var f *ExternalAccountAuthorizedUserFile
+	if err := json.Unmarshal(b, &f); err != nil {
+		return nil, err
+	}
+	return f, nil
+}
+
 // ParseImpersonatedServiceAccount parses bytes into a
 // [ImpersonatedServiceAccountFile].
 func ParseImpersonatedServiceAccount(b []byte) (*ImpersonatedServiceAccountFile, error) {

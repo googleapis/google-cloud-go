@@ -25,13 +25,11 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/detect/internal/impersonate"
+	"cloud.google.com/go/auth/detect/internal/stsexchange"
 	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
 const (
-	stsGrantType = "urn:ietf:params:oauth:grant-type:token-exchange"
-	stsTokenType = "urn:ietf:params:oauth:token-type:access_token"
-
 	timeoutMinimum = 5 * time.Second
 	timeoutMaximum = 120 * time.Second
 )
@@ -143,18 +141,18 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, err
 	}
 
-	stsRequest := &stsTokenExchangeRequest{
-		GrantType:          stsGrantType,
+	stsRequest := &stsexchange.TokenRequest{
+		GrantType:          stsexchange.GrantType,
 		Audience:           tp.opts.Audience,
 		Scope:              tp.opts.Scopes,
-		RequestedTokenType: stsTokenType,
+		RequestedTokenType: stsexchange.TokenType,
 		SubjectToken:       subjectToken,
 		SubjectTokenType:   tp.opts.SubjectTokenType,
 	}
 	header := make(http.Header)
 	header.Set("Content-Type", "application/x-www-form-urlencoded")
 	header.Add("x-goog-api-client", getGoogHeaderValue(tp.opts, tp.stp))
-	clientAuth := clientAuthentication{
+	clientAuth := stsexchange.ClientAuthentication{
 		AuthStyle:    auth.StyleInHeader,
 		ClientID:     tp.opts.ClientID,
 		ClientSecret: tp.opts.ClientSecret,
@@ -167,13 +165,13 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 			"userProject": tp.opts.WorkforcePoolUserProject,
 		}
 	}
-	stsResp, err := exchangeToken(ctx, &exchangeOptions{
-		client:         tp.client,
-		endpoint:       tp.opts.TokenURL,
-		request:        stsRequest,
-		authentication: clientAuth,
-		headers:        header,
-		extraOpts:      options,
+	stsResp, err := stsexchange.ExchangeToken(ctx, &stsexchange.Options{
+		Client:         tp.client,
+		Endpoint:       tp.opts.TokenURL,
+		Request:        stsRequest,
+		Authentication: clientAuth,
+		Headers:        header,
+		ExtraOpts:      options,
 	})
 	if err != nil {
 		return nil, err
