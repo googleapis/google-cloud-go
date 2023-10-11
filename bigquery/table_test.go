@@ -53,10 +53,12 @@ func TestBQToTableMetadata(t *testing.T) {
 					OldestEntryTime: uint64(aTimeMillis),
 				},
 				MaterializedView: &bq.MaterializedViewDefinition{
-					EnableRefresh:     true,
-					Query:             "mat view query",
-					LastRefreshTime:   aTimeMillis,
-					RefreshIntervalMs: aDurationMillis,
+					EnableRefresh:                 true,
+					Query:                         "mat view query",
+					LastRefreshTime:               aTimeMillis,
+					RefreshIntervalMs:             aDurationMillis,
+					AllowNonIncrementalDefinition: true,
+					MaxStaleness:                  "8:0:0",
 				},
 				TimePartitioning: &bq.TimePartitioning{
 					ExpirationMs: 7890,
@@ -112,10 +114,12 @@ func TestBQToTableMetadata(t *testing.T) {
 				NumLongTermBytes:   23,
 				NumRows:            7,
 				MaterializedView: &MaterializedViewDefinition{
-					EnableRefresh:   true,
-					Query:           "mat view query",
-					LastRefreshTime: aTime,
-					RefreshInterval: aDuration,
+					EnableRefresh:                 true,
+					Query:                         "mat view query",
+					LastRefreshTime:               aTime,
+					RefreshInterval:               aDuration,
+					AllowNonIncrementalDefinition: true,
+					MaxStaleness:                  "8:0:0",
 				},
 				TimePartitioning: &TimePartitioning{
 					Type:       DayPartitioningType,
