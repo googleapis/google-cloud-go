@@ -1,4 +1,6 @@
-go 1.19
+go 1.20
+
+toolchain go1.21.3
 
 use (
 	.
@@ -131,6 +133,7 @@ use (
 	./servicemanagement
 	./serviceusage
 	./shell
+	./shopping
 	./spanner
 	./speech
 	./storage
