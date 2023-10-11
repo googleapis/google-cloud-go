@@ -21,12 +21,11 @@
 package servicecontrolpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	distribution "google.golang.org/genproto/googleapis/api/distribution"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
