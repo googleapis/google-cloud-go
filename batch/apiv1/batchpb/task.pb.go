@@ -971,6 +971,14 @@ type Runnable_Container struct {
 	// Volumes to mount (bind mount) from the host machine files or directories
 	// into the container, formatted to match docker run's --volume option,
 	// e.g. /foo:/bar, or /foo:/bar:ro
+	//
+	// If the `TaskSpec.Volumes` field is specified but this field is not, Batch
+	// will mount each volume from the host machine to the container with the
+	// same mount path by default. In this case, the default mount option for
+	// containers will be read-only (ro) for existing persistent disks and
+	// read-write (rw) for other volume types, regardless of the original mount
+	// options specified in `TaskSpec.Volumes`. If you need different mount
+	// settings, you can explicitly configure them in this field.
 	Volumes []string `protobuf:"bytes,7,rep,name=volumes,proto3" json:"volumes,omitempty"`
 	// Arbitrary additional options to include in the "docker run" command when
 	// running this container, e.g. "--network host".
