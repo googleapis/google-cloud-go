@@ -21,10 +21,10 @@ set -eo pipefail
 set -x
 
 ## cd to the parent directory, i.e. the root of the git repo
-cd $(dirname $0)/..
+cd $(dirname $0)/../..
 
 rootDir=$(pwd)
-clientLibHome=$rootDir/bigtable
+clientLibHome=$rootDir/google-cloud-go/bigtable
 testProxyHome=$clientLibHome/internal/testproxy
 testProxyPort=9999
 conformanceTestsHome=$rootDir/cloud-bigtable-clients-test/tests
