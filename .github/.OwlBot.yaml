@@ -11,7 +11,9 @@ deep-remove-regex:
   - /alloydb/apiv1/
   - /alloydb/apiv1alpha/
   - /alloydb/apiv1beta/
+  - /alloydb/connectors/apiv1/
   - /alloydb/connectors/apiv1alpha/
+  - /alloydb/connectors/apiv1beta/
   - /analytics/admin/apiv1alpha/
   - /apigateway/apiv1/
   - /apigeeconnect/apiv1/
@@ -528,7 +530,11 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/alloydb/v1beta/cloud.google.com/go
     dest: /
+  - source: /google/cloud/alloydb/connectors/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/alloydb/connectors/v1alpha/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/alloydb/connectors/v1beta/cloud.google.com/go
     dest: /
   - source: /google/analytics/admin/v1alpha/cloud.google.com/go
     dest: /

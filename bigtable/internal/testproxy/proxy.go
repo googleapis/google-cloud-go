@@ -26,7 +26,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigtable"
-	"github.com/golang/protobuf/ptypes/duration"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
@@ -35,6 +34,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	stat "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 var (
@@ -369,9 +369,9 @@ func parseTableID(tableName string) (tableID string, _ error) {
 // made using the client, an appProfileID (optionally), and a
 // perOperationTimeout (optionally).
 type testClient struct {
-	c                   *bigtable.Client   // c stores the Bigtable client under test
-	appProfileID        string             // appProfileID is currently unused
-	perOperationTimeout *duration.Duration // perOperationTimeout sets a custom timeout for methods calls on this client
+	c                   *bigtable.Client     // c stores the Bigtable client under test
+	appProfileID        string               // appProfileID is currently unused
+	perOperationTimeout *durationpb.Duration // perOperationTimeout sets a custom timeout for methods calls on this client
 }
 
 // timeout adds a timeout setting to a context if perOperationTimeout is set on

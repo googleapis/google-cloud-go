@@ -1,5 +1,19 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.19.0...bigtable/v1.20.0) (2023-10-02)
+
+
+### Features
+
+* **bigtable/bttest:** Support reverse scans ([#8198](https://github.com/googleapis/google-cloud-go/issues/8198)) ([b8f164f](https://github.com/googleapis/google-cloud-go/commit/b8f164fcdf2be3a6fcf7918b3703e224801cc513))
+* **bigtable:** Support last_scanned_row in the bigtable client ([#8345](https://github.com/googleapis/google-cloud-go/issues/8345)) ([961dd38](https://github.com/googleapis/google-cloud-go/commit/961dd38f9e461d487ba8b6ee26ea14d872991eaf))
+* **bigtable:** Support last_scanned_row_key in emulator ([#8343](https://github.com/googleapis/google-cloud-go/issues/8343)) ([d53ef45](https://github.com/googleapis/google-cloud-go/commit/d53ef459893b29e7050f943da00bcd0a3f3ff900))
+
+
+### Bug Fixes
+
+* **bigtable:** Add missing veneer header ([#8607](https://github.com/googleapis/google-cloud-go/issues/8607)) ([b56f557](https://github.com/googleapis/google-cloud-go/commit/b56f557ff713d70025d2ee0e0acc2169fda77c77))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.18.1...bigtable/v1.19.0) (2023-07-06)
 
 

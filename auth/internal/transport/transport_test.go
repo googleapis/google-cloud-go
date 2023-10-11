@@ -15,52 +15,96 @@
 package transport
 
 import (
-	"context"
 	"net/http"
+	"reflect"
 	"testing"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/detect"
 )
 
-func TestSetAuthHeader(t *testing.T) {
-	tests := []struct {
-		name string
-		tp   auth.TokenProvider
-	}{
-		{
-			name: "basic success",
-			tp:   staticProvider{&auth.Token{Value: "abc123", Type: "Bearer"}},
-		},
-		{
-			name: "missing type",
-			tp:   staticProvider{&auth.Token{Value: "abc123"}},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			req, err := http.NewRequest("GET", "http://example.com", nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if err := SetAuthHeader(context.Background(), tt.tp, req); err != nil {
-				t.Fatal(err)
-			}
-			tok, err := tt.tp.Token(context.Background())
-			if err != nil {
-				t.Fatal(err)
-			}
-			if want := internal.TokenTypeBearer + " " + tok.Value; req.Header.Get(authHeaderKey) != want {
-				t.Errorf("got %q, want %q", req.Header.Get(authHeaderKey), want)
-			}
-		})
+// TestCloneDetectOptions_FieldTest is meant to fail every time a new field is
+// added to the detect.Options type. This tests exists to make sure the
+// CloneDetectOptions function is updated to copy over any new fields in the
+// future. To make the test pass simply bump the int, but please also clone the
+// relevant fields.
+func TestCloneDetectOptions_FieldTest(t *testing.T) {
+	const WantNumberOfFields = 11
+	o := detect.Options{}
+	got := reflect.TypeOf(o).NumField()
+	if got != WantNumberOfFields {
+		t.Errorf("if this fails please read comment above the test: got %v, want %v", got, WantNumberOfFields)
 	}
 }
 
-type staticProvider struct {
-	t *auth.Token
-}
+func TestCloneDetectOptions(t *testing.T) {
+	oldDo := &detect.Options{
+		Audience:          "aud",
+		Subject:           "sub",
+		EarlyTokenRefresh: 42,
+		TokenURL:          "TokenURL",
+		STSAudience:       "STSAudience",
+		CredentialsFile:   "CredentialsFile",
+		UseSelfSignedJWT:  true,
+		CredentialsJSON:   []byte{1, 2, 3, 4, 5},
+		Scopes:            []string{"a", "b"},
+		Client:            &http.Client{},
+		AuthHandlerOptions: &auth.AuthorizationHandlerOptions{
+			Handler: func(authCodeURL string) (code string, state string, err error) {
+				return "", "", nil
+			},
+			State: "state",
+			PKCEOpts: &auth.PKCEOptions{
+				Challenge:       "Challenge",
+				ChallengeMethod: "ChallengeMethod",
+				Verifier:        "Verifier",
+			},
+		},
+	}
+	newDo := CloneDetectOptions(oldDo)
 
-func (tp staticProvider) Token(context.Context) (*auth.Token, error) {
-	return tp.t, nil
+	// Simple fields
+	if got, want := newDo.Audience, oldDo.Audience; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if got, want := newDo.Subject, oldDo.Subject; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if got, want := newDo.EarlyTokenRefresh, oldDo.EarlyTokenRefresh; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if got, want := newDo.TokenURL, oldDo.TokenURL; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if got, want := newDo.STSAudience, oldDo.STSAudience; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if got, want := newDo.CredentialsFile, oldDo.CredentialsFile; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if got, want := newDo.UseSelfSignedJWT, oldDo.UseSelfSignedJWT; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+
+	// Slices
+	if got, want := len(newDo.CredentialsJSON), len(oldDo.CredentialsJSON); got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if got, want := newDo.CredentialsJSON, oldDo.CredentialsJSON; reflect.ValueOf(got).Pointer() == reflect.ValueOf(want).Pointer() {
+		t.Fatalf("CredentialsJSON should not reference the same slice")
+	}
+	if got, want := len(newDo.Scopes), len(oldDo.Scopes); got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if got, want := newDo.Scopes, oldDo.Scopes; reflect.ValueOf(got).Pointer() == reflect.ValueOf(want).Pointer() {
+		t.Fatalf("Scopes should not reference the same slice")
+	}
+
+	// Pointer types that should be the same memory
+	if got, want := newDo.Client, oldDo.Client; reflect.ValueOf(got).Pointer() != reflect.ValueOf(want).Pointer() {
+		t.Fatalf("Scopes should not reference the same slice")
+	}
+	if got, want := newDo.AuthHandlerOptions, oldDo.AuthHandlerOptions; reflect.ValueOf(got).Pointer() != reflect.ValueOf(want).Pointer() {
+		t.Fatalf("Scopes should not reference the same slice")
+	}
 }

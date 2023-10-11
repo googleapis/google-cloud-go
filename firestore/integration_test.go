@@ -26,7 +26,7 @@ import (
 	"reflect"
 	"runtime"
 	"sort"
-	"sync"
+	"strings"
 	"testing"
 	"time"
 
@@ -46,15 +46,30 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	initIntegrationTest()
-	status := m.Run()
-	cleanupIntegrationTest()
-	os.Exit(status)
+	databaseIDs := []string{DefaultDatabaseID}
+	databasesStr, ok := os.LookupEnv(envDatabases)
+	if ok {
+		databaseIDs = append(databaseIDs, strings.Split(databasesStr, ",")...)
+	}
+
+	testParams = make(map[string]interface{})
+	for _, databaseID := range databaseIDs {
+		testParams["databaseID"] = databaseID
+		initIntegrationTest()
+		status := m.Run()
+		if status != 0 {
+			os.Exit(status)
+		}
+		cleanupIntegrationTest()
+	}
+
+	os.Exit(0)
 }
 
 const (
 	envProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envPrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
+	envDatabases  = "GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES"
 )
 
 var (
@@ -64,9 +79,12 @@ var (
 	collectionIDs = uid.NewSpace("go-integration-test", nil)
 	wantDBPath    string
 	indexNames    []string
+	testParams    map[string]interface{}
 )
 
 func initIntegrationTest() {
+	databaseID := testParams["databaseID"].(string)
+	log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
 	flag.Parse() // needed for testing.Short()
 	if testing.Short() {
 		return
@@ -84,7 +102,7 @@ func initIntegrationTest() {
 		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
 	}
 	projectPath := "projects/" + testProjectID
-	wantDBPath = projectPath + "/databases/(default)"
+	wantDBPath = projectPath + "/databases/" + databaseID
 
 	ti := &testutil.HeadersEnforcer{
 		Checkers: []*testutil.HeaderChecker{
@@ -105,7 +123,7 @@ func initIntegrationTest() {
 		},
 	}
 	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
-	c, err := NewClient(ctx, testProjectID, copts...)
+	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
@@ -131,13 +149,11 @@ func initIntegrationTest() {
 // Without indexes, FailedPrecondition rpc error is seen with
 // desc 'The query requires multiple indexes'.
 func createIndexes(ctx context.Context, dbPath string) {
-	var createIndexWg sync.WaitGroup
 
 	indexFields := [][]string{{"updatedAt", "weight", "height"}, {"weight", "height"}}
 	indexNames = make([]string, len(indexFields))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
 
-	createIndexWg.Add(len(indexFields))
 	for i, fields := range indexFields {
 		var adminPbIndexFields []*adminpb.Index_IndexField
 		for _, field := range fields {
@@ -155,21 +171,17 @@ func createIndexes(ctx context.Context, dbPath string) {
 				Fields:     adminPbIndexFields,
 			},
 		}
-		go func(req *adminpb.CreateIndexRequest, i int) {
-			op, createErr := iAdminClient.CreateIndex(ctx, req)
-			if createErr != nil {
-				log.Fatalf("CreateIndex: %v", createErr)
-			}
+		op, createErr := iAdminClient.CreateIndex(ctx, req)
+		if createErr != nil {
+			log.Fatalf("CreateIndex: %v", createErr)
+		}
 
-			createdIndex, waitErr := op.Wait(ctx)
-			if waitErr != nil {
-				log.Fatalf("Wait: %v", waitErr)
-			}
-			indexNames[i] = createdIndex.Name
-			createIndexWg.Done()
-		}(req, i)
+		createdIndex, waitErr := op.Wait(ctx)
+		if waitErr != nil {
+			log.Fatalf("Wait: %v", waitErr)
+		}
+		indexNames[i] = createdIndex.Name
 	}
-	createIndexWg.Wait()
 }
 
 // deleteIndexes deletes composite indexes created in createIndexes function
@@ -2229,6 +2241,40 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 
 	if got, want := totalCount, documentCount; got != want {
 		t.Errorf("Unexpected number of documents across partitions: got %d, want %d", got, want)
+	}
+}
+
+func TestIntegration_NewClientWithDatabase(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	for _, tc := range []struct {
+		desc    string
+		dbName  string
+		wantErr bool
+		opt     []option.ClientOption
+	}{
+		{
+			desc:    "Success",
+			dbName:  testParams["databaseID"].(string),
+			wantErr: false,
+		},
+		{
+			desc:    "Error from NewClient bubbled to NewClientWithDatabase",
+			dbName:  testParams["databaseID"].(string),
+			wantErr: true,
+			opt:     []option.ClientOption{option.WithCredentialsFile("non existent filepath")},
+		},
+	} {
+		ctx := context.Background()
+		c, err := NewClientWithDatabase(ctx, iClient.projectID, tc.dbName, tc.opt...)
+		if err != nil && !tc.wantErr {
+			t.Errorf("NewClientWithDatabase: %s got %v want nil", tc.desc, err)
+		} else if err == nil && tc.wantErr {
+			t.Errorf("NewClientWithDatabase: %s got %v wanted error", tc.desc, err)
+		} else if err == nil && c.databaseID != tc.dbName {
+			t.Errorf("NewClientWithDatabase: %s got %v want %v", tc.desc, c.databaseID, tc.dbName)
+		}
 	}
 }
 
