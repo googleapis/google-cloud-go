@@ -918,7 +918,7 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/shell/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/shopping/merchant/inventories/v1beta/cloud.google.com/go
+  - source: /google/shopping/merchant/inventories/v1beta/cloud.google.com/go
     dest: /
   - source: /google/spanner/admin/database/v1/cloud.google.com/go
     dest: /
