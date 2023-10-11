@@ -2095,7 +2095,7 @@
     "description": "Merchant API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/shopping/merchant/inventories/apiv1beta",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/merchant/inventories/apiv1beta",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
