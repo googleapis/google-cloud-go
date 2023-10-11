@@ -109,20 +109,6 @@ runEmulatorTests() {
   fi
 }
 
-
-# runConformanceTests runs conformance tests in the current directory.
-runConformanceTests() {
-  if [ -f "conformance_test.sh" ]; then
-    ./conformance_test.sh
-    # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-    # xUnit XML file.
-    cat sponge_log.log |
-      go-junit-report -set-exit-code >sponge_log.xml
-    # Add the exit codes together so we exit non-zero if any module fails.
-    exit_code=$(($exit_code + $?))
-  fi
-}
-
 # testAllModules runs all modules' tests, including emulator tests.
 testAllModules() {
   echo "Testing all modules"
@@ -131,8 +117,6 @@ testAllModules() {
       runDirectoryTests
       # Run integration tests against an emulator.
       runEmulatorTests
-      # Run conformance tests against test proxy
-      runConformanceTests
     popd > /dev/null;
   done
 }
@@ -145,7 +129,6 @@ testChangedModules() {
       for gd in $goDirectories; do
         pushd "$gd" > /dev/null;
           runDirectoryTests .
-          runConformanceTests
         popd > /dev/null;
       done
     fi

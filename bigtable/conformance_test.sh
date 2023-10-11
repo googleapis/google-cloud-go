@@ -20,64 +20,38 @@ set -eo pipefail
 # Display commands being run
 set -x
 
-# Only run on Go 1.20.2+
-min_minor_ver=20
-min_patch_ver=2
+## cd to the parent directory, i.e. the root of the git repo
+cd $(dirname $0)/../..
 
-v=`go version | { read _ _ v _; echo ${v#go}; }`
-comps=(${v//./ })
-minor_ver=${comps[1]}
-patch_ver=${comps[2]}
+rootDir=$(pwd)
+clientLibHome=$rootDir/google-cloud-go/bigtable
+testProxyHome=$clientLibHome/internal/testproxy
+testProxyPort=9999
+conformanceTestsHome=$rootDir/cloud-bigtable-clients-test/tests
 
-if [ "$minor_ver" -lt $min_minor_ver ]; then
-    echo minor version $minor_ver, skipping
-    exit 0
-fi
-if [ "$patch_ver" -lt $min_patch_ver ]; then
-    echo patch version $patch_ver, skipping
-    exit 0
-fi
+sponge_log=$clientLibHome/sponge_log.log
 
-export BIGTABLE_CLIENT_LIB_HOME=$GOCLOUD_HOME/bigtable
-export BIGTABLE_TEST_PROXY_PORT=9999
-export BIGTABLE_TEST_PROXY_HOME=$BIGTABLE_CLIENT_LIB_HOME/internal/testproxy
-export BIGTABLE_CONFORMANCE_TESTS_HOME=$KOKORO_ARTIFACTS_DIR/cloud-bigtable-clients-test/
-
-sponge_log=$BIGTABLE_CLIENT_LIB_HOME/sponge_log.log
-
-pushd $BIGTABLE_TEST_PROXY_HOME > /dev/null;
+pushd $testProxyHome > /dev/null;
     go build
 popd > /dev/null;
 
-nohup $BIGTABLE_TEST_PROXY_HOME/testproxy --port $BIGTABLE_TEST_PROXY_PORT &
+nohup $testProxyHome/testproxy --port $testProxyPort &
 proxyPID=$!
 
-# Stop the testproxy & cleanup environment variables
+# Stop the testproxy
 function cleanup() {
-    echo "Cleanup testproxy"
-    rm -rf $BIGTABLE_CONFORMANCE_TESTS_HOME
+    echo "Cleanup testproxy and move logs"
     kill -9 $proxyPID
-    unset BIGTABLE_CLIENT_LIB_HOME;
-    unset BIGTABLE_TEST_PROXY_PORT;
-    unset BIGTABLE_TEST_PROXY_HOME;
-    unset BIGTABLE_CONFORMANCE_TESTS_HOME;
+    # Takes the kokoro output log (raw stdout) and creates a machine-parseable
+    # xUnit XML file.
+    cat $sponge_log |
+      go-junit-report -set-exit-code >$clientLibHome/sponge_log.xml
 }
 trap cleanup EXIT
 
-# Checkout Bigtable conformance tests 
-mkdir -p $BIGTABLE_CONFORMANCE_TESTS_HOME
-git clone https://github.com/googleapis/cloud-bigtable-clients-test.git $BIGTABLE_CONFORMANCE_TESTS_HOME
-
-pushd $BIGTABLE_CONFORMANCE_TESTS_HOME/tests > /dev/null;
+pushd $conformanceTestsHome > /dev/null;
     # Run the conformance tests
-    echo "Running Bigtable conformance tests" | tee -a $sponge_log
-    (go test -v -proxy_addr=:$BIGTABLE_TEST_PROXY_PORT | tee -a $sponge_log) \
-    || (echo "Ignoring errors from tests run without skipping known failures" | tee -a $sponge_log)
-
-    # Run the conformance tests skipping known failures
-    echo "Running Bigtable conformance tests skipping known failures" | tee -a $sponge_log
-    known_failures=$(cat $BIGTABLE_CLIENT_LIB_HOME/conformance_known_failures.txt)
-    eval "go test -v -proxy_addr=:$BIGTABLE_TEST_PROXY_PORT -skip $known_failures | tee -a $sponge_log"
+    go test -v -proxy_addr=:$testProxyPort | tee -a $sponge_log
     RETURN_CODE=$?
 popd > /dev/null;
 
