@@ -435,6 +435,7 @@ deep-remove-regex:
   - /servicemanagement/apiv1/
   - /shell/apiv1/
   - /shopping/merchant/inventories/v1beta/
+  - /shopping/type/
   - /spanner/admin/database/apiv1/
   - /spanner/admin/instance/apiv1/
   - /spanner/apiv1/
@@ -919,6 +920,8 @@ deep-copy-regex:
   - source: /google/cloud/shell/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/inventories/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/type/cloud.google.com/go
     dest: /
   - source: /google/spanner/admin/database/v1/cloud.google.com/go
     dest: /
