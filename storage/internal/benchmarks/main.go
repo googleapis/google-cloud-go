@@ -15,7 +15,6 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/csv"
 	"flag"
@@ -261,15 +260,16 @@ func main() {
 		defer cleanUp()
 	}
 
+	w := os.Stdout
+
 	// Create output file if necessary
-	var file *os.File
 	if outputFile != "" {
 		f, err := os.Create(outputFile)
 		if err != nil {
 			log.Fatalf("Failed to create file %s: %v", outputFile, err)
 		}
 		defer f.Close()
-		file = f
+		w = f
 	}
 
 	// Enable direct path
@@ -286,19 +286,6 @@ func main() {
 	closePools := initializeClientPools(ctx, opts)
 	defer closePools()
 
-	w := os.Stdout
-
-	if outputFile != "" {
-		w = file
-		// The output file is only for benchmarking data points; if sending
-		// output to a file, we can use stdout for informational logs
-		fmt.Printf("Benchmarking started: %s\n", start.UTC().Format(time.ANSIC))
-		fmt.Printf("Code version: %s\n", codeVersion)
-		fmt.Printf("Results file: %s\n", outputFile)
-		fmt.Printf("Bucket:  %s\n", opts.bucket)
-		fmt.Printf("Benchmarking options: %+v\n", opts)
-	}
-
 	if err := populateDependencyVersions(); err != nil {
 		log.Fatalf("populateDependencyVersions: %v", err)
 	}
@@ -313,6 +300,7 @@ func main() {
 	}
 
 	if serverMode {
+		// Server mode blocks forever servicing probe requests
 		runInServerMode(ctx, opts)
 	}
 
@@ -473,6 +461,8 @@ func (e multiError) Error() string {
 	return sb.String()
 }
 
+// runSamples will run benchmarks until the required number of samples is
+// collected and recorded, there is a setup failure, or we hit the deadline
 func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) error {
 	multiErr := multiError{}
 	deadline, _ := ctx.Deadline()
@@ -497,7 +487,8 @@ func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) erro
 
 	benchGroup.SetLimit(concurrentBenchmarkRuns)
 
-	// Run benchmarks
+	// Run benchmarks until the required number of samples is collected, or we
+	// hit the deadline
 	for i := 0; i < opts.numSamples && !time.Now().After(deadline); i++ {
 		benchGroup.Go(func() error {
 			var benchmark benchmark
@@ -509,21 +500,17 @@ func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) erro
 			}
 
 			if err := benchmark.setup(ctx); err != nil {
-				// If setup failed once, it will probably continue failing.
-				// Returning the error here will cancel the context to stop the
-				// benchmarking.
+				// If setup fails, it will probably continue failing.
+				// Returning the error here will cancel the context, which will
+				// stop the benchmarking.
 				return fmt.Errorf("run setup failed: %v", err)
 			}
 			if err := benchmark.run(ctx); err != nil {
 				// If a run fails, we continue, as it could be a temporary issue.
-				// We log the error and make sure the program exits with an error
-				// to indicate that we did see an error, even though we continue.
 				multiErr = append(multiErr, fmt.Errorf("run failed: %v", err))
 			}
 			if err := benchmark.cleanup(); err != nil {
-				// If cleanup fails, we continue, as a single fail is not critical.
-				// We log the error and make sure the program exits with an error
-				// to indicate that we did see an error, even though we continue.
+				// If cleanup fails, we continue, as a failure here is not critical.
 				// Cleanup may be expected to fail if there is an issue with the run.
 				multiErr = append(multiErr, fmt.Errorf("run cleanup failed: %v", err))
 			}
@@ -544,11 +531,18 @@ func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) erro
 	return nil
 }
 
-// num samples is ignored in this mode
+// runInServerMode blocks forever servicing probe requests.
+// Number of samples requested is ignored in this mode.
+// Timeouts must be properly set at the probe level to ensure requests aren't
+// being serviced concurrently
 func runInServerMode(ctx context.Context, opts *benchmarkOptions) {
 	results = make(chan benchmarkResult, 4)
 
 	serverutils.Serve(func(request *epb.ProbeRequest, reply *epb.ProbeReply) {
+		timeLimit := time.Millisecond * time.Duration(request.GetTimeLimit())
+		ctx, cancel := context.WithTimeout(ctx, timeLimit)
+		defer cancel()
+
 		var benchmark benchmark
 		benchmark = &w1r3{opts: opts, bucketName: opts.bucket}
 
@@ -558,31 +552,32 @@ func runInServerMode(ctx context.Context, opts *benchmarkOptions) {
 
 		if err := benchmark.setup(ctx); err != nil {
 			reply.ErrorMessage = proto.String(err.Error())
+			return
 		}
 		if err := benchmark.run(ctx); err != nil {
 			reply.ErrorMessage = proto.String(fmt.Errorf("run failed: %v", err).Error())
+			return
 		}
 		if err := benchmark.cleanup(); err != nil {
 			reply.ErrorMessage = proto.String(fmt.Errorf("run cleanup failed: %v", err).Error())
+			return
 		}
 
-		numResults := 2 // 1 write, 1 read
+		numResults := 4 // w1r3 will output 1 result per read/write
 
-		if opts.workload != 6 {
-			numResults += 2 // add 2 reads for w1r3
+		if opts.workload == 6 {
+			numResults = 2 // workload 6 only outputs 2 results (1 directory read, 1 write)
 		}
 
-		var payload string
+		// Synchronously gather results
+		payload := new(strings.Builder)
+
 		for i := 0; i < numResults; i++ {
 			result := <-results
-
-			buf := new(bytes.Buffer)
-			writeResultAsCloudMonitoring(buf, &result)
-
-			payload += buf.String()
+			writeResultAsCloudMonitoring(payload, &result)
 		}
 
-		reply.Payload = proto.String(payload)
+		reply.Payload = proto.String(payload.String())
 	})
 }
 
