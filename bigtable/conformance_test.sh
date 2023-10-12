@@ -31,9 +31,8 @@ conformanceTestsHome=$rootDir/cloud-bigtable-clients-test/tests
 
 sponge_log=$clientLibHome/sponge_log.log
 
-pushd $testProxyHome > /dev/null;
-    go build
-popd > /dev/null;
+cd $testProxyHome
+go build
 
 nohup $testProxyHome/testproxy --port $testProxyPort &
 proxyPID=$!
@@ -49,11 +48,12 @@ function cleanup() {
 }
 trap cleanup EXIT
 
-pushd $conformanceTestsHome > /dev/null;
-    # Run the conformance tests
-    go test -v -proxy_addr=:$testProxyPort | tee -a $sponge_log
-    RETURN_CODE=$?
-popd > /dev/null;
+# Run the conformance tests
+cd $conformanceTestsHome
+go install golang.org/dl/go1.20.2@latest
+go1.20.2 download
+go1.20.2 test -v -proxy_addr=:$testProxyPort | tee -a $sponge_log
+RETURN_CODE=$?
 
 echo "exiting with ${RETURN_CODE}"
 exit ${RETURN_CODE}
