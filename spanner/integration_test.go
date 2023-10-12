@@ -938,7 +938,7 @@ func TestIntegration_BatchWrite(t *testing.T) {
 		}
 		for _, idx := range res.GetIndexes() {
 			if idx >= 0 && idx < int32(numMutationGroups) {
-				seen[idx] += 1
+				seen[idx]++
 			} else {
 				t.Fatalf("Index %v out of range. Expected range [%v,%v]", idx, 0, numMutationGroups-1)
 			}

@@ -672,7 +672,7 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 
-// An iterator over BatchWriteResponse structures returned from BatchWrite RPC.
+// BatchWriteResponseIterator is an iterator over BatchWriteResponse structures returned from BatchWrite RPC.
 type BatchWriteResponseIterator struct {
 	ctx            context.Context
 	stream         sppb.Spanner_BatchWriteClient
@@ -772,7 +772,7 @@ func (r *BatchWriteResponseIterator) Do(f func(r *sppb.BatchWriteResponse) error
 	}
 }
 
-// Batch Write applies a list of mutation groups in a collection of efficient
+// BatchWrite applies a list of mutation groups in a collection of efficient
 // transactions. The mutation groups are applied non-atomically in an
 // unspecified order and thus, they must be independent of each other. Partial
 // failure is possible, i.e., some mutation groups may have been applied
