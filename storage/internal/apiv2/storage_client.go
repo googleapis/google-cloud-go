@@ -56,11 +56,13 @@ type CallOptions struct {
 	ListNotificationConfigs   []gax.CallOption
 	ComposeObject             []gax.CallOption
 	DeleteObject              []gax.CallOption
+	RestoreObject             []gax.CallOption
 	CancelResumableWrite      []gax.CallOption
 	GetObject                 []gax.CallOption
 	ReadObject                []gax.CallOption
 	UpdateObject              []gax.CallOption
 	WriteObject               []gax.CallOption
+	BidiWriteObject           []gax.CallOption
 	ListObjects               []gax.CallOption
 	RewriteObject             []gax.CallOption
 	StartResumableWrite       []gax.CallOption
@@ -282,6 +284,19 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		RestoreObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
 		CancelResumableWrite: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -334,6 +349,18 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		WriteObject: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		BidiWriteObject: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -498,11 +525,13 @@ type internalClient interface {
 	ListNotificationConfigs(context.Context, *storagepb.ListNotificationConfigsRequest, ...gax.CallOption) *NotificationConfigIterator
 	ComposeObject(context.Context, *storagepb.ComposeObjectRequest, ...gax.CallOption) (*storagepb.Object, error)
 	DeleteObject(context.Context, *storagepb.DeleteObjectRequest, ...gax.CallOption) error
+	RestoreObject(context.Context, *storagepb.RestoreObjectRequest, ...gax.CallOption) (*storagepb.Object, error)
 	CancelResumableWrite(context.Context, *storagepb.CancelResumableWriteRequest, ...gax.CallOption) (*storagepb.CancelResumableWriteResponse, error)
 	GetObject(context.Context, *storagepb.GetObjectRequest, ...gax.CallOption) (*storagepb.Object, error)
 	ReadObject(context.Context, *storagepb.ReadObjectRequest, ...gax.CallOption) (storagepb.Storage_ReadObjectClient, error)
 	UpdateObject(context.Context, *storagepb.UpdateObjectRequest, ...gax.CallOption) (*storagepb.Object, error)
 	WriteObject(context.Context, ...gax.CallOption) (storagepb.Storage_WriteObjectClient, error)
+	BidiWriteObject(context.Context, ...gax.CallOption) (storagepb.Storage_BidiWriteObjectClient, error)
 	ListObjects(context.Context, *storagepb.ListObjectsRequest, ...gax.CallOption) *ObjectIterator
 	RewriteObject(context.Context, *storagepb.RewriteObjectRequest, ...gax.CallOption) (*storagepb.RewriteResponse, error)
 	StartResumableWrite(context.Context, *storagepb.StartResumableWriteRequest, ...gax.CallOption) (*storagepb.StartResumableWriteResponse, error)
@@ -524,22 +553,22 @@ type internalClient interface {
 //
 // Resources are named as follows:
 //
-//	Projects are referred to as they are defined by the Resource Manager API,
-//	using strings like projects/123456 or projects/my-string-id.
+//   Projects are referred to as they are defined by the Resource Manager API,
+//   using strings like projects/123456 or projects/my-string-id.
 //
-//	Buckets are named using string names of the form:
-//	projects/{project}/buckets/{bucket}
-//	For globally unique buckets, _ may be substituted for the project.
+//   Buckets are named using string names of the form:
+//   projects/{project}/buckets/{bucket}
+//   For globally unique buckets, _ may be substituted for the project.
 //
-//	Objects are uniquely identified by their name along with the name of the
-//	bucket they belong to, as separate strings in this API. For example:
+//   Objects are uniquely identified by their name along with the name of the
+//   bucket they belong to, as separate strings in this API. For example:
 //
-//	ReadObjectRequest {
-//	  bucket: ‘projects/_/buckets/my-bucket’
-//	  object: ‘my-object’
-//	  }
-//	  Note that object names can contain / characters, which are treated as
-//	  any other character (no special directory semantics).
+// ReadObjectRequest {
+//   bucket: ‘projects/_/buckets/my-bucket’
+//   object: ‘my-object’
+//   }
+//   Note that object names can contain / characters, which are treated as
+//   any other character (no special directory semantics).
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -598,16 +627,16 @@ func (c *Client) LockBucketRetentionPolicy(ctx context.Context, req *storagepb.L
 
 // GetIamPolicy gets the IAM policy for a specified bucket or object.
 // The resource field in the request should be
-// projects//buckets/<bucket_name> for a bucket or
-// projects//buckets/<bucket_name>/objects/<object_name> for an object.
+// projects/_/buckets/{bucket} for a bucket or
+// projects/_/buckets/{bucket}/objects/{object} for an object.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
 // SetIamPolicy updates an IAM policy for the specified bucket or object.
 // The resource field in the request should be
-// projects//buckets/<bucket_name> for a bucket or
-// projects//buckets/<bucket_name>/objects/<object_name> for an object.
+// projects/_/buckets/{bucket} for a bucket or
+// projects/_/buckets/{bucket}/objects/{object} for an object.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -615,8 +644,8 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 // TestIamPermissions tests a set of permissions on the given bucket or object to see which, if
 // any, are held by the caller.
 // The resource field in the request should be
-// projects//buckets/<bucket_name> for a bucket or
-// projects//buckets/<bucket_name>/objects/<object_name> for an object.
+// projects/_/buckets/{bucket} for a bucket or
+// projects/_/buckets/{bucket}/objects/{object} for an object.
 func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
@@ -665,6 +694,11 @@ func (c *Client) DeleteObject(ctx context.Context, req *storagepb.DeleteObjectRe
 	return c.internalClient.DeleteObject(ctx, req, opts...)
 }
 
+// RestoreObject restores a soft-deleted object.
+func (c *Client) RestoreObject(ctx context.Context, req *storagepb.RestoreObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	return c.internalClient.RestoreObject(ctx, req, opts...)
+}
+
 // CancelResumableWrite cancels an in-progress resumable upload.
 //
 // Any attempts to write to the resumable upload after cancelling the upload
@@ -710,37 +744,37 @@ func (c *Client) UpdateObject(ctx context.Context, req *storagepb.UpdateObjectRe
 // error or an error response from the server), the client should do as
 // follows:
 //
-//	Check the result Status of the stream, to determine if writing can be
-//	resumed on this stream or must be restarted from scratch (by calling
-//	StartResumableWrite()). The resumable errors are DEADLINE_EXCEEDED,
-//	INTERNAL, and UNAVAILABLE. For each case, the client should use binary
-//	exponential backoff before retrying.  Additionally, writes can be
-//	resumed after RESOURCE_EXHAUSTED errors, but only after taking
-//	appropriate measures, which may include reducing aggregate send rate
-//	across clients and/or requesting a quota increase for your project.
+//   Check the result Status of the stream, to determine if writing can be
+//   resumed on this stream or must be restarted from scratch (by calling
+//   StartResumableWrite()). The resumable errors are DEADLINE_EXCEEDED,
+//   INTERNAL, and UNAVAILABLE. For each case, the client should use binary
+//   exponential backoff before retrying.  Additionally, writes can be
+//   resumed after RESOURCE_EXHAUSTED errors, but only after taking
+//   appropriate measures, which may include reducing aggregate send rate
+//   across clients and/or requesting a quota increase for your project.
 //
-//	If the call to WriteObject returns ABORTED, that indicates
-//	concurrent attempts to update the resumable write, caused either by
-//	multiple racing clients or by a single client where the previous
-//	request was timed out on the client side but nonetheless reached the
-//	server. In this case the client should take steps to prevent further
-//	concurrent writes (e.g., increase the timeouts, stop using more than
-//	one process to perform the upload, etc.), and then should follow the
-//	steps below for resuming the upload.
+//   If the call to WriteObject returns ABORTED, that indicates
+//   concurrent attempts to update the resumable write, caused either by
+//   multiple racing clients or by a single client where the previous
+//   request was timed out on the client side but nonetheless reached the
+//   server. In this case the client should take steps to prevent further
+//   concurrent writes (e.g., increase the timeouts, stop using more than
+//   one process to perform the upload, etc.), and then should follow the
+//   steps below for resuming the upload.
 //
-//	For resumable errors, the client should call QueryWriteStatus() and
-//	then continue writing from the returned persisted_size. This may be
-//	less than the amount of data the client previously sent. Note also that
-//	it is acceptable to send data starting at an offset earlier than the
-//	returned persisted_size; in this case, the service will skip data at
-//	offsets that were already persisted (without checking that it matches
-//	the previously written data), and write only the data starting from the
-//	persisted offset. Even though the data isn’t written, it may still
-//	incur a performance cost over resuming at the correct write offset.
-//	This behavior can make client-side handling simpler in some cases.
+//   For resumable errors, the client should call QueryWriteStatus() and
+//   then continue writing from the returned persisted_size. This may be
+//   less than the amount of data the client previously sent. Note also that
+//   it is acceptable to send data starting at an offset earlier than the
+//   returned persisted_size; in this case, the service will skip data at
+//   offsets that were already persisted (without checking that it matches
+//   the previously written data), and write only the data starting from the
+//   persisted offset. Even though the data isn’t written, it may still
+//   incur a performance cost over resuming at the correct write offset.
+//   This behavior can make client-side handling simpler in some cases.
 //
-//	Clients must only send data that is a multiple of 256 KiB per message,
-//	unless the object is being finished with finish_write set to true.
+//   Clients must only send data that is a multiple of 256 KiB per message,
+//   unless the object is being finished with finish_write set to true.
 //
 // The service will not view the object as complete until the client has
 // sent a WriteObjectRequest with finish_write set to true. Sending any
@@ -752,8 +786,31 @@ func (c *Client) UpdateObject(ctx context.Context, req *storagepb.UpdateObjectRe
 // Attempting to resume an already finalized object will result in an OK
 // status, with a WriteObjectResponse containing the finalized object’s
 // metadata.
+//
+// Alternatively, the BidiWriteObject operation may be used to write an
+// object with controls over flushing and the ability to fetch the ability to
+// determine the current persisted size.
 func (c *Client) WriteObject(ctx context.Context, opts ...gax.CallOption) (storagepb.Storage_WriteObjectClient, error) {
 	return c.internalClient.WriteObject(ctx, opts...)
+}
+
+// BidiWriteObject stores a new object and metadata.
+//
+// This is similar to the WriteObject call with the added support for
+// manual flushing of persisted state, and the ability to determine current
+// persisted size without closing the stream.
+//
+// The client may specify one or both of the state_lookup and flush fields
+// in each BidiWriteObjectRequest. If flush is specified, the data written
+// so far will be persisted to storage. If state_lookup is specified, the
+// service will respond with a BidiWriteObjectResponse that contains the
+// persisted size. If both flush and state_lookup are specified, the flush
+// will always occur before a state_lookup, so that both may be set in the
+// same request and the returned state will be the state of the object
+// post-flush. When the stream is closed, a BidiWriteObjectResponse will
+// always be sent to the client, regardless of the value of state_lookup.
+func (c *Client) BidiWriteObject(ctx context.Context, opts ...gax.CallOption) (storagepb.Storage_BidiWriteObjectClient, error) {
+	return c.internalClient.BidiWriteObject(ctx, opts...)
 }
 
 // ListObjects retrieves a list of objects matching the criteria.
@@ -847,22 +904,22 @@ type gRPCClient struct {
 //
 // Resources are named as follows:
 //
-//	Projects are referred to as they are defined by the Resource Manager API,
-//	using strings like projects/123456 or projects/my-string-id.
+//   Projects are referred to as they are defined by the Resource Manager API,
+//   using strings like projects/123456 or projects/my-string-id.
 //
-//	Buckets are named using string names of the form:
-//	projects/{project}/buckets/{bucket}
-//	For globally unique buckets, _ may be substituted for the project.
+//   Buckets are named using string names of the form:
+//   projects/{project}/buckets/{bucket}
+//   For globally unique buckets, _ may be substituted for the project.
 //
-//	Objects are uniquely identified by their name along with the name of the
-//	bucket they belong to, as separate strings in this API. For example:
+//   Objects are uniquely identified by their name along with the name of the
+//   bucket they belong to, as separate strings in this API. For example:
 //
-//	ReadObjectRequest {
-//	  bucket: ‘projects/_/buckets/my-bucket’
-//	  object: ‘my-object’
-//	  }
-//	  Note that object names can contain / characters, which are treated as
-//	  any other character (no special directory semantics).
+// ReadObjectRequest {
+//   bucket: ‘projects/_/buckets/my-bucket’
+//   object: ‘my-object’
+//   }
+//   Note that object names can contain / characters, which are treated as
+//   any other character (no special directory semantics).
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -1375,6 +1432,33 @@ func (c *gRPCClient) DeleteObject(ctx context.Context, req *storagepb.DeleteObje
 	return err
 }
 
+func (c *gRPCClient) RestoreObject(ctx context.Context, req *storagepb.RestoreObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RestoreObject[0:len((*c.CallOptions).RestoreObject):len((*c.CallOptions).RestoreObject)], opts...)
+	var resp *storagepb.Object
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RestoreObject(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) CancelResumableWrite(ctx context.Context, req *storagepb.CancelResumableWriteRequest, opts ...gax.CallOption) (*storagepb.CancelResumableWriteResponse, error) {
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
@@ -1490,6 +1574,21 @@ func (c *gRPCClient) WriteObject(ctx context.Context, opts ...gax.CallOption) (s
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.WriteObject(ctx, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) BidiWriteObject(ctx context.Context, opts ...gax.CallOption) (storagepb.Storage_BidiWriteObjectClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp storagepb.Storage_BidiWriteObjectClient
+	opts = append((*c.CallOptions).BidiWriteObject[0:len((*c.CallOptions).BidiWriteObject):len((*c.CallOptions).BidiWriteObject)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.BidiWriteObject(ctx, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
