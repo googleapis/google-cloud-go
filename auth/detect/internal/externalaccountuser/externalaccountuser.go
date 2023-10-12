@@ -1,3 +1,17 @@
+// Copyright 2023 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package externalaccountuser
 
 import (
@@ -47,16 +61,13 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	}
 
 	tp := &tokenProvider{
-		o:            opts,
-		refreshToken: opts.RefreshToken,
+		o: opts,
 	}
 	return auth.NewCachedTokenProvider(tp, nil), nil
 }
 
 type tokenProvider struct {
 	o *Options
-	// guarded by the wrapping with CachedTokenProvider
-	refreshToken string
 }
 
 func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
@@ -72,7 +83,7 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	stsResponse, err := stsexchange.RefreshAccessToken(ctx, &stsexchange.Options{
 		Client:         opts.Client,
 		Endpoint:       opts.TokenURL,
-		RefreshToken:   tp.refreshToken,
+		RefreshToken:   opts.RefreshToken,
 		Authentication: clientAuth,
 		Headers:        headers,
 	})
@@ -83,8 +94,9 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, errors.New("detect: invalid expiry from security token service")
 	}
 
+	// guarded by the wrapping with CachedTokenProvider
 	if stsResponse.RefreshToken != "" {
-		tp.refreshToken = stsResponse.RefreshToken
+		opts.RefreshToken = stsResponse.RefreshToken
 	}
 	return &auth.Token{
 		Value:  stsResponse.AccessToken,

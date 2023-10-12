@@ -116,6 +116,7 @@ modules:
   - servicemanagement
   - serviceusage
   - shell
+  - shopping
   - spanner
   - speech
   - storage
@@ -306,6 +307,7 @@ service-configs:
   - input-directory: google/cloud/alloydb/connectors/v1
     service-config: connectors_v1.yaml
     import-path: cloud.google.com/go/alloydb/connectors/apiv1
+    release-level-override: preview
   - input-directory: google/cloud/alloydb/connectors/v1alpha
     service-config: connectors_v1alpha.yaml
     import-path: cloud.google.com/go/alloydb/connectors/apiv1alpha
@@ -765,6 +767,12 @@ service-configs:
   - input-directory: google/cloud/shell/v1
     service-config: cloudshell_v1.yaml
     import-path: cloud.google.com/go/shell/apiv1
+  - input-directory: google/shopping/merchant/inventories/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/inventories/apiv1beta
+  - input-directory: google/shopping/type
+    service-config:
+    import-path: cloud.google.com/go/shopping/type
   - input-directory: google/cloud/speech/v1
     service-config: speech_v1.yaml
     import-path: cloud.google.com/go/speech/apiv1

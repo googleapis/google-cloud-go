@@ -36,7 +36,7 @@ type testTokenServer struct {
 	server          *httptest.Server
 }
 
-func TestExernalAccountAuthorizedUser_TokenRefreshWithRefreshTokenInRespondse(t *testing.T) {
+func TestExernalAccountAuthorizedUser_TokenRefreshWithRefreshTokenInResponse(t *testing.T) {
 	s := &testTokenServer{
 		URL:           "/",
 		Authorization: "Basic Q0xJRU5UX0lEOkNMSUVOVF9TRUNSRVQ=",

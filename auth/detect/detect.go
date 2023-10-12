@@ -37,6 +37,8 @@ const (
 
 	// Help on default credentials
 	adcSetupURL = "https://cloud.google.com/docs/authentication/external/set-up-adc"
+
+	universeDomainDefault = "googleapis.com"
 )
 
 var (
@@ -50,16 +52,19 @@ type Credentials struct {
 	json           []byte
 	projectID      string
 	quotaProjectID string
+	// universeDomain is the default service domain for a given Cloud universe.
+	universeDomain string
 
 	auth.TokenProvider
 }
 
-func newCredentials(tokenProvider auth.TokenProvider, json []byte, projectID string, quotaProjectID string) *Credentials {
+func newCredentials(tokenProvider auth.TokenProvider, json []byte, projectID string, quotaProjectID string, universeDomain string) *Credentials {
 	return &Credentials{
 		json:           json,
 		projectID:      internal.GetProjectID(json, projectID),
 		quotaProjectID: internal.GetQuotaProject(json, quotaProjectID),
 		TokenProvider:  tokenProvider,
+		universeDomain: universeDomain,
 	}
 }
 
@@ -79,6 +84,15 @@ func (c *Credentials) ProjectID() string {
 // file or environment.
 func (c *Credentials) QuotaProjectID() string {
 	return c.quotaProjectID
+}
+
+// UniverseDomain returns the default service domain for a given Cloud universe.
+// The default value is "googleapis.com".
+func (c *Credentials) UniverseDomain() string {
+	if c.universeDomain == "" {
+		return universeDomainDefault
+	}
+	return c.universeDomain
 }
 
 // OnGCE reports whether this process is running in Google Cloud.
@@ -122,7 +136,7 @@ func DefaultCredentials(opts *Options) (*Credentials, error) {
 
 	if OnGCE() {
 		id, _ := metadata.ProjectID()
-		return newCredentials(computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...), nil, id, ""), nil
+		return newCredentials(computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...), nil, id, "", ""), nil
 	}
 
 	return nil, fmt.Errorf("detect: could not find default credentials. See %v for more information", adcSetupURL)
@@ -204,7 +218,7 @@ func readCredentialsFileJSON(b []byte, opts *Options) (*Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		return newCredentials(tp, b, "", ""), nil
+		return newCredentials(tp, b, "", "", ""), nil
 	}
 	return fileCredentials(b, opts)
 }
