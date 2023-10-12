@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.1...billing/v1.17.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **billing:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.0...billing/v1.17.1) (2023-10-04)
 
 
