@@ -21,11 +21,10 @@
 package typepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -206,6 +205,59 @@ func (ReportingContext_ReportingContextEnum) EnumDescriptor() ([]byte, []int) {
 	return file_google_shopping_type_types_proto_rawDescGZIP(), []int{3, 0}
 }
 
+// Channel values.
+type Channel_ChannelEnum int32
+
+const (
+	// Not specified.
+	Channel_CHANNEL_ENUM_UNSPECIFIED Channel_ChannelEnum = 0
+	// Online product.
+	Channel_ONLINE Channel_ChannelEnum = 1
+	// Local product.
+	Channel_LOCAL Channel_ChannelEnum = 2
+)
+
+// Enum value maps for Channel_ChannelEnum.
+var (
+	Channel_ChannelEnum_name = map[int32]string{
+		0: "CHANNEL_ENUM_UNSPECIFIED",
+		1: "ONLINE",
+		2: "LOCAL",
+	}
+	Channel_ChannelEnum_value = map[string]int32{
+		"CHANNEL_ENUM_UNSPECIFIED": 0,
+		"ONLINE":                   1,
+		"LOCAL":                    2,
+	}
+)
+
+func (x Channel_ChannelEnum) Enum() *Channel_ChannelEnum {
+	p := new(Channel_ChannelEnum)
+	*p = x
+	return p
+}
+
+func (x Channel_ChannelEnum) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Channel_ChannelEnum) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_type_types_proto_enumTypes[2].Descriptor()
+}
+
+func (Channel_ChannelEnum) Type() protoreflect.EnumType {
+	return &file_google_shopping_type_types_proto_enumTypes[2]
+}
+
+func (x Channel_ChannelEnum) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Channel_ChannelEnum.Descriptor instead.
+func (Channel_ChannelEnum) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_type_types_proto_rawDescGZIP(), []int{4, 0}
+}
+
 // The price represented as a number and currency.
 type Price struct {
 	state         protoimpl.MessageState
@@ -215,6 +267,8 @@ type Price struct {
 	// The price represented as a number in micros (1 million micros is an
 	// equivalent to one's currency standard unit, for example, 1 USD = 1000000
 	// micros).
+	// This field can also be set as infinity by setting to -1.
+	// This field only support -1 and positive value.
 	AmountMicros *int64 `protobuf:"varint,1,opt,name=amount_micros,json=amountMicros,proto3,oneof" json:"amount_micros,omitempty"`
 	// The currency of the price using three-letter acronyms according to [ISO
 	// 4217](http://en.wikipedia.org/wiki/ISO_4217).
@@ -341,6 +395,7 @@ func (x *CustomAttribute) GetGroupValues() []*CustomAttribute {
 //
 // Destinations are used in Merchant Center to allow you to control where the
 // products from your data feed should be displayed.
+//
 type Destination struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -386,6 +441,7 @@ func (*Destination) Descriptor() ([]byte, []int) {
 // ads](https://support.google.com/merchants/answer/6149970)) or a subset of
 // formats within a destination (for example, [Discovery
 // ads](https://support.google.com/merchants/answer/13389785)).
+//
 type ReportingContext struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -422,6 +478,47 @@ func (x *ReportingContext) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ReportingContext.ProtoReflect.Descriptor instead.
 func (*ReportingContext) Descriptor() ([]byte, []int) {
 	return file_google_shopping_type_types_proto_rawDescGZIP(), []int{3}
+}
+
+// [Channel](https://support.google.com/merchants/answer/7361332) of a product.
+//
+// Channel is used to distinguish between online and local products.
+type Channel struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *Channel) Reset() {
+	*x = Channel{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_shopping_type_types_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Channel) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Channel) ProtoMessage() {}
+
+func (x *Channel) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_type_types_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Channel.ProtoReflect.Descriptor instead.
+func (*Channel) Descriptor() ([]byte, []int) {
+	return file_google_shopping_type_types_proto_rawDescGZIP(), []int{4}
 }
 
 var File_google_shopping_type_types_proto protoreflect.FileDescriptor
@@ -482,15 +579,20 @@ var file_google_shopping_type_types_proto_rawDesc = []byte{
 	0x0a, 0x10, 0x59, 0x4f, 0x55, 0x54, 0x55, 0x42, 0x45, 0x5f, 0x53, 0x48, 0x4f, 0x50, 0x50, 0x49,
 	0x4e, 0x47, 0x10, 0x0a, 0x12, 0x10, 0x0a, 0x0c, 0x43, 0x4c, 0x4f, 0x55, 0x44, 0x5f, 0x52, 0x45,
 	0x54, 0x41, 0x49, 0x4c, 0x10, 0x0b, 0x12, 0x16, 0x0a, 0x12, 0x4c, 0x4f, 0x43, 0x41, 0x4c, 0x5f,
-	0x43, 0x4c, 0x4f, 0x55, 0x44, 0x5f, 0x52, 0x45, 0x54, 0x41, 0x49, 0x4c, 0x10, 0x0c, 0x42, 0x70,
-	0x0a, 0x18, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68, 0x6f,
-	0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65,
-	0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x73, 0x68,
-	0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x2f, 0x74, 0x79, 0x70, 0x65,
-	0x70, 0x62, 0x3b, 0x74, 0x79, 0x70, 0x65, 0x70, 0x62, 0xaa, 0x02, 0x14, 0x47, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x53, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x54, 0x79, 0x70, 0x65,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x43, 0x4c, 0x4f, 0x55, 0x44, 0x5f, 0x52, 0x45, 0x54, 0x41, 0x49, 0x4c, 0x10, 0x0c, 0x22, 0x4d,
+	0x0a, 0x07, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x22, 0x42, 0x0a, 0x0b, 0x43, 0x68, 0x61,
+	0x6e, 0x6e, 0x65, 0x6c, 0x45, 0x6e, 0x75, 0x6d, 0x12, 0x1c, 0x0a, 0x18, 0x43, 0x48, 0x41, 0x4e,
+	0x4e, 0x45, 0x4c, 0x5f, 0x45, 0x4e, 0x55, 0x4d, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49,
+	0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0a, 0x0a, 0x06, 0x4f, 0x4e, 0x4c, 0x49, 0x4e, 0x45,
+	0x10, 0x01, 0x12, 0x09, 0x0a, 0x05, 0x4c, 0x4f, 0x43, 0x41, 0x4c, 0x10, 0x02, 0x42, 0x70, 0x0a,
+	0x18, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68, 0x6f, 0x70,
+	0x70, 0x69, 0x6e, 0x67, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73,
+	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x73, 0x68, 0x6f,
+	0x70, 0x70, 0x69, 0x6e, 0x67, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x70,
+	0x62, 0x3b, 0x74, 0x79, 0x70, 0x65, 0x70, 0x62, 0xaa, 0x02, 0x14, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x53, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x54, 0x79, 0x70, 0x65, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -505,18 +607,20 @@ func file_google_shopping_type_types_proto_rawDescGZIP() []byte {
 	return file_google_shopping_type_types_proto_rawDescData
 }
 
-var file_google_shopping_type_types_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_shopping_type_types_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_shopping_type_types_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_shopping_type_types_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_shopping_type_types_proto_goTypes = []interface{}{
 	(Destination_DestinationEnum)(0),           // 0: google.shopping.type.Destination.DestinationEnum
 	(ReportingContext_ReportingContextEnum)(0), // 1: google.shopping.type.ReportingContext.ReportingContextEnum
-	(*Price)(nil),            // 2: google.shopping.type.Price
-	(*CustomAttribute)(nil),  // 3: google.shopping.type.CustomAttribute
-	(*Destination)(nil),      // 4: google.shopping.type.Destination
-	(*ReportingContext)(nil), // 5: google.shopping.type.ReportingContext
+	(Channel_ChannelEnum)(0),                   // 2: google.shopping.type.Channel.ChannelEnum
+	(*Price)(nil),                              // 3: google.shopping.type.Price
+	(*CustomAttribute)(nil),                    // 4: google.shopping.type.CustomAttribute
+	(*Destination)(nil),                        // 5: google.shopping.type.Destination
+	(*ReportingContext)(nil),                   // 6: google.shopping.type.ReportingContext
+	(*Channel)(nil),                            // 7: google.shopping.type.Channel
 }
 var file_google_shopping_type_types_proto_depIdxs = []int32{
-	3, // 0: google.shopping.type.CustomAttribute.group_values:type_name -> google.shopping.type.CustomAttribute
+	4, // 0: google.shopping.type.CustomAttribute.group_values:type_name -> google.shopping.type.CustomAttribute
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
@@ -578,6 +682,18 @@ func file_google_shopping_type_types_proto_init() {
 				return nil
 			}
 		}
+		file_google_shopping_type_types_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Channel); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_google_shopping_type_types_proto_msgTypes[0].OneofWrappers = []interface{}{}
 	file_google_shopping_type_types_proto_msgTypes[1].OneofWrappers = []interface{}{}
@@ -586,8 +702,8 @@ func file_google_shopping_type_types_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_shopping_type_types_proto_rawDesc,
-			NumEnums:      2,
-			NumMessages:   4,
+			NumEnums:      3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
