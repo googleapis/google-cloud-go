@@ -29,6 +29,7 @@ func TestBQToTableMetadata(t *testing.T) {
 	aTimeMillis := aTime.UnixNano() / 1e6
 	aDurationMillis := int64(1800000)
 	aDuration := time.Duration(aDurationMillis) * time.Millisecond
+	aStalenessValue, _ := ParseInterval("8:0:0")
 	for _, test := range []struct {
 		in   *bq.Table
 		want *TableMetadata
@@ -119,7 +120,7 @@ func TestBQToTableMetadata(t *testing.T) {
 					LastRefreshTime:               aTime,
 					RefreshInterval:               aDuration,
 					AllowNonIncrementalDefinition: true,
-					MaxStaleness:                  "8:0:0",
+					MaxStaleness:                  aStalenessValue,
 				},
 				TimePartitioning: &TimePartitioning{
 					Type:       DayPartitioningType,

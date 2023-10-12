@@ -322,14 +322,18 @@ type MaterializedViewDefinition struct {
 	// The default value is false.
 	AllowNonIncrementalDefinition bool
 
-	// MaxStaleness of data that could be returned when materialized view
-	// is queried (formatted as Google SQL Interval type).
-	MaxStaleness string
+	// MaxStaleness of data that could be returned when materialized
+	// view is queried.
+	MaxStaleness *IntervalValue
 }
 
 func (mvd *MaterializedViewDefinition) toBQ() *bq.MaterializedViewDefinition {
 	if mvd == nil {
 		return nil
+	}
+	maxStaleness := ""
+	if mvd.MaxStaleness != nil {
+		maxStaleness = mvd.MaxStaleness.String()
 	}
 	return &bq.MaterializedViewDefinition{
 		EnableRefresh:                 mvd.EnableRefresh,
@@ -337,7 +341,7 @@ func (mvd *MaterializedViewDefinition) toBQ() *bq.MaterializedViewDefinition {
 		LastRefreshTime:               mvd.LastRefreshTime.UnixNano() / 1e6,
 		RefreshIntervalMs:             int64(mvd.RefreshInterval) / 1e6,
 		AllowNonIncrementalDefinition: mvd.AllowNonIncrementalDefinition,
-		MaxStaleness:                  mvd.MaxStaleness,
+		MaxStaleness:                  maxStaleness,
 		// force sending the bool in all cases due to how Go handles false.
 		ForceSendFields: []string{"EnableRefresh", "AllowNonIncrementalDefinition"},
 	}
@@ -347,13 +351,17 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 	if q == nil {
 		return nil
 	}
+	var maxStaleness *IntervalValue
+	if q.MaxStaleness != "" {
+		maxStaleness, _ = ParseInterval(q.MaxStaleness)
+	}
 	return &MaterializedViewDefinition{
 		EnableRefresh:                 q.EnableRefresh,
 		Query:                         q.Query,
 		LastRefreshTime:               unixMillisToTime(q.LastRefreshTime),
 		RefreshInterval:               time.Duration(q.RefreshIntervalMs) * time.Millisecond,
 		AllowNonIncrementalDefinition: q.AllowNonIncrementalDefinition,
-		MaxStaleness:                  q.MaxStaleness,
+		MaxStaleness:                  maxStaleness,
 	}
 }
 
