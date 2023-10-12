@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"io"
 	"net"
 	"net/http"
@@ -176,27 +177,30 @@ func TestInvoke(t *testing.T) {
 	} {
 		t.Run(test.desc, func(s *testing.T) {
 			counter := 0
-			req := &fakeApiaryRequest{header: http.Header{}}
 			var initialClientHeader, initialIdempotencyHeader string
-			call := func() error {
+			var gotClientHeader, gotIdempotencyHeader string
+			call := func(ctx context.Context) error {
 				if counter == 0 {
-					initialClientHeader = req.Header()["X-Goog-Api-Client"][0]
-					initialIdempotencyHeader = req.Header()["X-Goog-Gcs-Idempotency-Token"][0]
+					headers := callctx.HeadersFromContext(ctx)
+					//log.Printf("headers: %+v", headers)
+					initialClientHeader = headers["x-goog-api-client"][0]
+					initialIdempotencyHeader = headers["x-goog-gcs-idempotency-token"][0]
 				}
 				counter++
+				headers := callctx.HeadersFromContext(ctx)
+				gotClientHeader = headers["x-goog-api-client"][0]
+				gotIdempotencyHeader = headers["x-goog-gcs-idempotency-token"][0]
 				if counter <= test.count {
 					return test.initialErr
 				}
 				return test.finalErr
 			}
-			got := run(ctx, call, test.retry, test.isIdempotentValue, setRetryHeaderHTTP(req))
+			got := run(ctx, call, test.retry, test.isIdempotentValue)
 			if test.expectFinalErr && got != test.finalErr {
 				s.Errorf("got %v, want %v", got, test.finalErr)
 			} else if !test.expectFinalErr && got != test.initialErr {
 				s.Errorf("got %v, want %v", got, test.initialErr)
 			}
-			gotClientHeader := req.Header()["X-Goog-Api-Client"][0]
-			gotIdempotencyHeader := req.Header()["X-Goog-Gcs-Idempotency-Token"][0]
 			wantAttempts := 1 + test.count
 			if !test.expectFinalErr {
 				wantAttempts = 1
