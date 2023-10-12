@@ -28,15 +28,19 @@ import (
 )
 
 var (
-	dep         = flag.String("dep", "", "required, the module dependency to update")
-	version     = flag.String("version", "latest", "optional, the verison to update to, defaults to 'latest'")
-	noIndirect  = flag.Bool("no-indirect", false, "optional, ignores indirect deps, defaults to false")
-	indirectDep *regexp.Regexp
-	directDep   *regexp.Regexp
+	quiet         = flag.Bool("q", false, "quiet mode, minimal logging")
+	dep           = flag.String("dep", "", "required, the module dependency to update")
+	version       = flag.String("version", "latest", "optional, the verison to update to, defaults to 'latest'")
+	noIndirect    = flag.Bool("no-indirect", false, "optional, ignores indirect deps, defaults to false")
+	msg           = flag.String("msg", "", "nested commit message")
+	commitLevel   = flag.String("commit-level", "fix", "nested commit conventional commits type")
+	indirectDep   *regexp.Regexp
+	directDep     *regexp.Regexp
+	nestedCommits strings.Builder
 )
 
 func main() {
-	flag.BoolVar(&logg.Quiet, "q", false, "quiet mode, minimal logging")
+	logg.Quiet = *quiet
 	flag.Parse()
 	if *dep == "" {
 		logg.Fatalf("Missing required option: -dep=[module]")
@@ -47,6 +51,10 @@ func main() {
 	if *noIndirect {
 		indirectDep = regexp.MustCompile(fmt.Sprintf(`%s [\-\/\.a-zA-Z0-9]+ \/\/ indirect`, *dep))
 	}
+	if !*quiet && *msg == "" {
+		logg.Fatalf("Missing required option: -msg=[nested commit message]")
+	}
+
 	rootDir, err := os.Getwd()
 	if err != nil {
 		logg.Fatal(err)
@@ -67,9 +75,13 @@ func main() {
 		if !depends {
 			continue
 		}
-		if err := update(m, *dep, *version); err != nil {
+		if err := update(m, *dep, *version, rootDir); err != nil {
 			logg.Printf("(non-fatal) failed to update %s: %s", m, err)
 		}
+	}
+
+	if !*quiet {
+		fmt.Println(nestedCommits.String())
 	}
 }
 
@@ -103,7 +115,7 @@ func dependson(mod, dep, version string) (bool, error) {
 	return has && eligible, nil
 }
 
-func update(mod, dep, version string) error {
+func update(mod, dep, version, rootDir string) error {
 	c := exec.Command("go", "get", fmt.Sprintf("%s@%s", dep, version))
 	c.Dir = mod
 	_, err := c.Output()
@@ -116,6 +128,11 @@ func update(mod, dep, version string) error {
 	_, err = c.Output()
 	if err != nil {
 		return err
+	}
+
+	if !*quiet {
+		scope := strings.TrimPrefix(strings.TrimSpace(mod), rootDir+"/")
+		nestedCommits.WriteString(fmt.Sprintf("BEGIN_NESTED_COMMIT\n%s(%s): %s\nEND_NESTED_COMMIT\n", *commitLevel, scope, *msg))
 	}
 
 	return nil
