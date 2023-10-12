@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.0...documentai/v1.23.1) (2023-10-12)
+
+
+### Documentation
+
+* **documentai:** Minor comment update ([9c502c2](https://github.com/googleapis/google-cloud-go/commit/9c502c2cf66b15c253e53747e08da77a21549cc2))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.22.1...documentai/v1.23.0) (2023-10-04)
 
 
