@@ -176,15 +176,15 @@ type internalClient interface {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//   resources, named tables/*
+//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//	resources, named tables/*
 //
-//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//   resources, named tables/*/rows/*
+//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//	resources, named tables/*/rows/*
 //
-//   The API has a collection of
-//   [Workspace][google.area120.tables.v1alpha1.Workspace]
-//   resources, named workspaces/*.
+//	The API has a collection of
+//	[Workspace][google.area120.tables.v1alpha1.Workspace]
+//	resources, named workspaces/*.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -299,15 +299,15 @@ type gRPCClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//   resources, named tables/*
+//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//	resources, named tables/*
 //
-//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//   resources, named tables/*/rows/*
+//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//	resources, named tables/*/rows/*
 //
-//   The API has a collection of
-//   [Workspace][google.area120.tables.v1alpha1.Workspace]
-//   resources, named workspaces/*.
+//	The API has a collection of
+//	[Workspace][google.area120.tables.v1alpha1.Workspace]
+//	resources, named workspaces/*.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -379,15 +379,15 @@ type restClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//   resources, named tables/*
+//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//	resources, named tables/*
 //
-//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//   resources, named tables/*/rows/*
+//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//	resources, named tables/*/rows/*
 //
-//   The API has a collection of
-//   [Workspace][google.area120.tables.v1alpha1.Workspace]
-//   resources, named workspaces/*.
+//	The API has a collection of
+//	[Workspace][google.area120.tables.v1alpha1.Workspace]
+//	resources, named workspaces/*.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
