@@ -26,6 +26,7 @@ import (
 	"github.com/apache/arrow/go/v12/arrow/array"
 	"github.com/apache/arrow/go/v12/arrow/ipc"
 	"github.com/apache/arrow/go/v12/arrow/math"
+	"github.com/apache/arrow/go/v12/arrow/memory"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 )
@@ -447,6 +448,10 @@ func TestIntegration_StorageReadArrow(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	checkedAllocator := memory.NewCheckedAllocator(memory.DefaultAllocator)
+	it.arrowDecoder.allocator = checkedAllocator
+	defer checkedAllocator.AssertSize(t, 0)
+
 	arrowIt, err := it.ArrowIterator()
 	if err != nil {
 		t.Fatalf("expected iterator to be accelerated: %v", err)
@@ -454,7 +459,7 @@ func TestIntegration_StorageReadArrow(t *testing.T) {
 	arrowItReader := NewArrowIteratorReader(arrowIt)
 
 	records := []arrow.Record{}
-	r, err := ipc.NewReader(arrowItReader)
+	r, err := ipc.NewReader(arrowItReader, ipc.WithAllocator(checkedAllocator))
 	numrec := 0
 	for r.Next() {
 		rec := r.Record()
@@ -489,6 +494,7 @@ func TestIntegration_StorageReadArrow(t *testing.T) {
 	totalFromSQL := sumValues[0].(int64)
 
 	tr := array.NewTableReader(arrowTable, arrowTable.NumRows())
+	defer tr.Release()
 	var totalFromArrow int64
 	for tr.Next() {
 		rec := tr.Record()

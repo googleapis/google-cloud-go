@@ -26,6 +26,7 @@ import (
 	"github.com/apache/arrow/go/v12/arrow"
 	"github.com/apache/arrow/go/v12/arrow/array"
 	"github.com/apache/arrow/go/v12/arrow/ipc"
+	"github.com/apache/arrow/go/v12/arrow/memory"
 	"google.golang.org/api/iterator"
 )
 
@@ -95,6 +96,7 @@ func (r *arrowIteratorReader) Read(p []byte) (int, error) {
 }
 
 type arrowDecoder struct {
+	allocator   memory.Allocator
 	tableSchema Schema
 	arrowSchema *arrow.Schema
 }
@@ -109,12 +111,17 @@ func newArrowDecoder(arrowSerializedSchema []byte, schema Schema) (*arrowDecoder
 	p := &arrowDecoder{
 		tableSchema: schema,
 		arrowSchema: r.Schema(),
+		allocator:   memory.DefaultAllocator,
 	}
 	return p, nil
 }
 
 func (ap *arrowDecoder) createIPCReaderForBatch(arrowRecordBatch *ArrowRecordBatch) (*ipc.Reader, error) {
-	return ipc.NewReader(arrowRecordBatch, ipc.WithSchema(ap.arrowSchema))
+	return ipc.NewReader(
+		arrowRecordBatch,
+		ipc.WithSchema(ap.arrowSchema),
+		ipc.WithAllocator(ap.allocator),
+	)
 }
 
 // decodeArrowRecords decodes BQ ArrowRecordBatch into rows of []Value.
