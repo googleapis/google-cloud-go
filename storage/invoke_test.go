@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/googleapis/gax-go/v2/callctx"
 	"io"
 	"net"
 	"net/http"
@@ -27,8 +26,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/googleapis/gax-go/v2/callctx"
 	"golang.org/x/xerrors"
-
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
