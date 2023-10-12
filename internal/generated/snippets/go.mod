@@ -445,3 +445,5 @@ replace cloud.google.com/go/policysimulator => ../../../policysimulator
 replace cloud.google.com/go/netapp => ../../../netapp
 
 replace cloud.google.com/go/config => ../../../config
+
+replace cloud.google.com/go/shopping => ../../../shopping
