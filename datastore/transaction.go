@@ -291,9 +291,9 @@ func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
 	}
 	err = t.client.get(t.ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
-		return ignoreFieldMismatchErrors(t.client.readSettings.ignoreFieldMismatchErrors, me[0])
+		return t.client.processFieldMismatchError(me[0])
 	}
-	return ignoreFieldMismatchErrors(t.client.readSettings.ignoreFieldMismatchErrors, err)
+	return t.client.processFieldMismatchError(err)
 }
 
 // GetMulti is a batch version of Get.
@@ -308,7 +308,7 @@ func (t *Transaction) GetMulti(keys []*Key, dst interface{}) (err error) {
 		ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
 	}
 	getErr := t.client.get(t.ctx, keys, dst, opts)
-	return ignoreFieldMismatchErrors(t.client.readSettings.ignoreFieldMismatchErrors, getErr)
+	return t.client.processFieldMismatchError(getErr)
 }
 
 // Put is the transaction-specific version of the package function Put.
