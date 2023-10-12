@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.5.0...batch/v1.5.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **batch:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.4.1...batch/v1.5.0) (2023-10-04)
 
 
