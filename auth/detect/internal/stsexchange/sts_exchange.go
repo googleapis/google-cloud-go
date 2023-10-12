@@ -29,12 +29,15 @@ import (
 )
 
 const (
+	// GrantType for a sts exchange.
 	GrantType = "urn:ietf:params:oauth:grant-type:token-exchange"
+	// TokenType for a sts exchange.
 	TokenType = "urn:ietf:params:oauth:token-type:access_token"
 
 	jwtTokenType = "urn:ietf:params:oauth:token-type:jwt"
 )
 
+// Options stores the configuration for making an sts exchange request.
 type Options struct {
 	Client         *http.Client
 	Endpoint       string

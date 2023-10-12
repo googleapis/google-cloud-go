@@ -25,6 +25,8 @@ import (
 	"cloud.google.com/go/auth/internal"
 )
 
+// Options stores the configuration for fetching tokens with external authorized
+// user credentials.
 type Options struct {
 	// Audience is the Secure Token Service (STS) audience which contains the
 	// resource name for the workforce pool and the provider identifier in that
@@ -55,6 +57,8 @@ func (c *Options) validate() bool {
 	return c.ClientID != "" && c.ClientSecret != "" && c.RefreshToken != "" && c.TokenURL != ""
 }
 
+// NewTokenProvider returns a [cloud.google.com/go/auth.TokenProvider]
+// configured with the provided options.
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if !opts.validate() {
 		return nil, errors.New("detect: invalid external_account_authorized_user configuration")

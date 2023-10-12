@@ -55,6 +55,8 @@ func ParseExternalAccount(b []byte) (*ExternalAccountFile, error) {
 	return f, nil
 }
 
+// ParseExternalAccountAuthorizedUser parses bytes into a
+// [ExternalAccountAuthorizedUserFile].
 func ParseExternalAccountAuthorizedUser(b []byte) (*ExternalAccountAuthorizedUserFile, error) {
 	var f *ExternalAccountAuthorizedUserFile
 	if err := json.Unmarshal(b, &f); err != nil {
