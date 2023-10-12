@@ -499,7 +499,7 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	rawObj := attrs.toRawObject(bucket)
 	rawObj.ForceSendFields = forceSendFields
 	rawObj.NullFields = nullFields
-	call := c.raw.Objects.Patch(bucket, object, rawObj).Projection("full").Context(ctx)
+	call := c.raw.Objects.Patch(bucket, object, rawObj).Projection("full")
 	if err := applyConds("Update", gen, conds, call); err != nil {
 		return nil, err
 	}
@@ -514,7 +514,7 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	}
 	var obj *raw.Object
 	var err error
-	err = run(ctx, func(ctx context.Context) error { obj, err = call.Do(); return err }, s.retry, s.idempotent)
+	err = run(ctx, func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }, s.retry, s.idempotent)
 	var e *googleapi.Error
 	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -541,7 +541,7 @@ func (c *httpStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket st
 	req := c.raw.DefaultObjectAccessControls.List(bucket)
 	configureACLCall(ctx, s.userProject, req)
 	err = run(ctx, func(ctx context.Context) error {
-		acls, err = req.Do()
+		acls, err = req.Context(ctx).Do()
 		return err
 	}, s.retry, true)
 	if err != nil {
@@ -560,12 +560,11 @@ func (c *httpStorageClient) UpdateDefaultObjectACL(ctx context.Context, bucket s
 		Entity: string(entity),
 		Role:   string(role),
 	}
-	var req setRequest
 	var err error
-	req = c.raw.DefaultObjectAccessControls.Update(bucket, string(entity), acl)
+	req := c.raw.DefaultObjectAccessControls.Update(bucket, string(entity), acl)
 	configureACLCall(ctx, s.userProject, req)
 	return run(ctx, func(ctx context.Context) error {
-		_, err = req.Do()
+		_, err = req.Context(ctx).Do()
 		return err
 	}, s.retry, s.idempotent)
 }
@@ -586,7 +585,7 @@ func (c *httpStorageClient) ListBucketACLs(ctx context.Context, bucket string, o
 	req := c.raw.BucketAccessControls.List(bucket)
 	configureACLCall(ctx, s.userProject, req)
 	err = run(ctx, func(ctx context.Context) error {
-		acls, err = req.Do()
+		acls, err = req.Context(ctx).Do()
 		return err
 	}, s.retry, true)
 	if err != nil {
@@ -606,7 +605,7 @@ func (c *httpStorageClient) UpdateBucketACL(ctx context.Context, bucket string, 
 	configureACLCall(ctx, s.userProject, req)
 	var err error
 	return run(ctx, func(ctx context.Context) error {
-		_, err = req.Do()
+		_, err = req.Context(ctx).Do()
 		return err
 	}, s.retry, s.idempotent)
 }
@@ -640,7 +639,7 @@ func (c *httpStorageClient) ListObjectACLs(ctx context.Context, bucket, object s
 	req := c.raw.ObjectAccessControls.List(bucket, object)
 	configureACLCall(ctx, s.userProject, req)
 	err = run(ctx, func(ctx context.Context) error {
-		acls, err = req.Do()
+		acls, err = req.Context(ctx).Do()
 		return err
 	}, s.retry, s.idempotent)
 	if err != nil {
@@ -661,12 +660,11 @@ func (c *httpStorageClient) UpdateObjectACL(ctx context.Context, bucket, object 
 		Entity: string(entity),
 		Role:   string(role),
 	}
-	var req setRequest
 	var err error
-	req = c.raw.ObjectAccessControls.Update(bucket, object, string(entity), acl)
+	req := c.raw.ObjectAccessControls.Update(bucket, object, string(entity), acl)
 	configureACLCall(ctx, s.userProject, req)
 	return run(ctx, func(ctx context.Context) error {
-		_, err = req.Do()
+		_, err = req.Context(ctx).Do()
 		return err
 	}, s.retry, s.idempotent)
 }
@@ -692,7 +690,7 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 		rawReq.SourceObjects = append(rawReq.SourceObjects, srcObj)
 	}
 
-	call := c.raw.Objects.Compose(req.dstBucket, req.dstObject.name, rawReq).Context(ctx)
+	call := c.raw.Objects.Compose(req.dstBucket, req.dstObject.name, rawReq)
 	if err := applyConds("ComposeFrom destination", defaultGen, req.dstObject.conds, call); err != nil {
 		return nil, err
 	}
@@ -709,7 +707,7 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	setClientHeader(call.Header())
 
 	var err error
-	retryCall := func(ctx context.Context) error { obj, err = call.Do(); return err }
+	retryCall := func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
 		return nil, err
@@ -721,7 +719,7 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	rawObject := req.dstObject.attrs.toRawObject("")
 	call := c.raw.Objects.Rewrite(req.srcObject.bucket, req.srcObject.name, req.dstObject.bucket, req.dstObject.name, rawObject)
 
-	call.Context(ctx).Projection("full")
+	call.Projection("full")
 	if req.token != "" {
 		call.RewriteToken(req.token)
 	}
@@ -757,7 +755,7 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	var err error
 	setClientHeader(call.Header())
 
-	retryCall := func(ctx context.Context) error { res, err = call.Do(); return err }
+	retryCall := func(ctx context.Context) error { res, err = call.Context(ctx).Do(); return err }
 
 	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
 		return nil, err
@@ -801,7 +799,6 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	if err != nil {
 		return nil, err
 	}
-	req = req.WithContext(ctx)
 
 	if s.userProject != "" {
 		req.Header.Set("X-Goog-User-Project", s.userProject)
@@ -821,7 +818,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	}
 
 	reopen := readerReopen(ctx, req.Header, params, s,
-		func() (*http.Response, error) { return c.hc.Do(req) },
+		func(ctx context.Context) (*http.Response, error) { return c.hc.Do(req.WithContext(ctx)) },
 		func() error { return setConditionsHeaders(req.Header, params.conds) },
 		func() { req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen) })
 
@@ -836,7 +833,6 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 	call := c.raw.Objects.Get(params.bucket, params.object)
 
 	setClientHeader(call.Header())
-	call.Context(ctx)
 	call.Projection("full")
 
 	if s.userProject != "" {
@@ -847,7 +843,7 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 		return nil, err
 	}
 
-	reopen := readerReopen(ctx, call.Header(), params, s, func() (*http.Response, error) { return call.Download() },
+	reopen := readerReopen(ctx, call.Header(), params, s, func(ctx context.Context) (*http.Response, error) { return call.Context(ctx).Download() },
 		func() error { return applyConds("NewReader", params.gen, params.conds, call) },
 		func() { call.Generation(params.gen) })
 
@@ -1246,7 +1242,7 @@ func setRangeReaderHeaders(h http.Header, params *newRangeReaderParams) error {
 // readerReopen initiates a Read with offset and length, assuming we
 // have already read seen bytes.
 func readerReopen(ctx context.Context, header http.Header, params *newRangeReaderParams, s *settings,
-	doDownload func() (*http.Response, error), applyConditions func() error, setGeneration func()) func(int64) (*http.Response, error) {
+	doDownload func(context.Context) (*http.Response, error), applyConditions func() error, setGeneration func()) func(int64) (*http.Response, error) {
 	return func(seen int64) (*http.Response, error) {
 		// If the context has already expired, return immediately without making a
 		// call.
@@ -1274,7 +1270,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 		var err error
 		var res *http.Response
 		err = run(ctx, func(ctx context.Context) error {
-			res, err = doDownload()
+			res, err = doDownload(ctx)
 			if err != nil {
 				var e *googleapi.Error
 				if errors.As(err, &e) {
