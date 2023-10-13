@@ -720,6 +720,7 @@ func TestNewBucket(t *testing.T) {
 }
 
 func TestNewBucketFromProto(t *testing.T) {
+	autoclassTSC := "NEARLINE"
 	pb := &storagepb.Bucket{
 		Name: "name",
 		Acl: []*storagepb.BucketAccessControl{
@@ -758,9 +759,9 @@ func TestNewBucketFromProto(t *testing.T) {
 		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
 		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
 		Autoclass: &storagepb.Bucket_Autoclass{
-			Enabled:    true,
-			ToggleTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
-			// TerminalStorageClass:           "NEARLINE",
+			Enabled:                        true,
+			ToggleTime:                     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			TerminalStorageClass:           &autoclassTSC,
 			TerminalStorageClassUpdateTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
 		},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
@@ -803,7 +804,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), TerminalStorageClassUpdateTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), TerminalStorageClass: "NEARLINE", TerminalStorageClassUpdateTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -851,7 +852,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true},
+		Autoclass:  &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -867,6 +868,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		Etag:           "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
 	}
 	got := attrs.toProtoBucket()
+	autoclassTSC := "ARCHIVE"
 	want := &storagepb.Bucket{
 		Name: "name",
 		Acl: []*storagepb.BucketAccessControl{
@@ -900,7 +902,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
 		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
 		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true},
+		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true, TerminalStorageClass: &autoclassTSC},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
