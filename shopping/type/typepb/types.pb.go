@@ -35,68 +35,228 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Destinations available for a product.
-//
-// Destinations are used in Merchant Center to allow you to control where the
-// products from your data feed should be displayed.
-type Destination int32
+// Destination values.
+type Destination_DestinationEnum int32
 
 const (
 	// Not specified.
-	Destination_DESTINATION_UNSPECIFIED Destination = 0
-	// Shopping ads.
-	Destination_SHOPPING_ADS Destination = 1
-	// Local inventory ads.
-	Destination_LOCAL_INVENTORY_ADS Destination = 2
-	// Free listings.
-	Destination_FREE_LISTINGS Destination = 3
-	// Free local product listings.
-	Destination_FREE_LOCAL_LISTINGS Destination = 4
+	Destination_DESTINATION_ENUM_UNSPECIFIED Destination_DestinationEnum = 0
+	// [Shopping ads](https://support.google.com/google-ads/answer/2454022).
+	Destination_SHOPPING_ADS Destination_DestinationEnum = 1
+	// [Display ads](https://support.google.com/merchants/answer/6069387).
+	Destination_DISPLAY_ADS Destination_DestinationEnum = 2
+	// [Local inventory
+	// ads](https://support.google.com/merchants/answer/3057972).
+	Destination_LOCAL_INVENTORY_ADS Destination_DestinationEnum = 3
+	// [Free listings](https://support.google.com/merchants/answer/9199328).
+	Destination_FREE_LISTINGS Destination_DestinationEnum = 4
+	// [Free local product
+	// listings](https://support.google.com/merchants/answer/9825611).
+	Destination_FREE_LOCAL_LISTINGS Destination_DestinationEnum = 5
+	// [YouTube Shopping](https://support.google.com/merchants/answer/12362804).
+	Destination_YOUTUBE_SHOPPING Destination_DestinationEnum = 6
 )
 
-// Enum value maps for Destination.
+// Enum value maps for Destination_DestinationEnum.
 var (
-	Destination_name = map[int32]string{
-		0: "DESTINATION_UNSPECIFIED",
+	Destination_DestinationEnum_name = map[int32]string{
+		0: "DESTINATION_ENUM_UNSPECIFIED",
 		1: "SHOPPING_ADS",
-		2: "LOCAL_INVENTORY_ADS",
-		3: "FREE_LISTINGS",
-		4: "FREE_LOCAL_LISTINGS",
+		2: "DISPLAY_ADS",
+		3: "LOCAL_INVENTORY_ADS",
+		4: "FREE_LISTINGS",
+		5: "FREE_LOCAL_LISTINGS",
+		6: "YOUTUBE_SHOPPING",
 	}
-	Destination_value = map[string]int32{
-		"DESTINATION_UNSPECIFIED": 0,
-		"SHOPPING_ADS":            1,
-		"LOCAL_INVENTORY_ADS":     2,
-		"FREE_LISTINGS":           3,
-		"FREE_LOCAL_LISTINGS":     4,
+	Destination_DestinationEnum_value = map[string]int32{
+		"DESTINATION_ENUM_UNSPECIFIED": 0,
+		"SHOPPING_ADS":                 1,
+		"DISPLAY_ADS":                  2,
+		"LOCAL_INVENTORY_ADS":          3,
+		"FREE_LISTINGS":                4,
+		"FREE_LOCAL_LISTINGS":          5,
+		"YOUTUBE_SHOPPING":             6,
 	}
 )
 
-func (x Destination) Enum() *Destination {
-	p := new(Destination)
+func (x Destination_DestinationEnum) Enum() *Destination_DestinationEnum {
+	p := new(Destination_DestinationEnum)
 	*p = x
 	return p
 }
 
-func (x Destination) String() string {
+func (x Destination_DestinationEnum) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (Destination) Descriptor() protoreflect.EnumDescriptor {
+func (Destination_DestinationEnum) Descriptor() protoreflect.EnumDescriptor {
 	return file_google_shopping_type_types_proto_enumTypes[0].Descriptor()
 }
 
-func (Destination) Type() protoreflect.EnumType {
+func (Destination_DestinationEnum) Type() protoreflect.EnumType {
 	return &file_google_shopping_type_types_proto_enumTypes[0]
 }
 
-func (x Destination) Number() protoreflect.EnumNumber {
+func (x Destination_DestinationEnum) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use Destination.Descriptor instead.
-func (Destination) EnumDescriptor() ([]byte, []int) {
-	return file_google_shopping_type_types_proto_rawDescGZIP(), []int{0}
+// Deprecated: Use Destination_DestinationEnum.Descriptor instead.
+func (Destination_DestinationEnum) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_type_types_proto_rawDescGZIP(), []int{2, 0}
+}
+
+// Reporting context values.
+type ReportingContext_ReportingContextEnum int32
+
+const (
+	// Not specified.
+	ReportingContext_REPORTING_CONTEXT_ENUM_UNSPECIFIED ReportingContext_ReportingContextEnum = 0
+	// [Shopping ads](https://support.google.com/merchants/answer/6149970).
+	ReportingContext_SHOPPING_ADS ReportingContext_ReportingContextEnum = 1
+	// [Discovery and Demand Gen
+	// ads](https://support.google.com/merchants/answer/13389785).
+	ReportingContext_DISCOVERY_ADS ReportingContext_ReportingContextEnum = 2
+	// [Video ads](https://support.google.com/google-ads/answer/6340491).
+	ReportingContext_VIDEO_ADS ReportingContext_ReportingContextEnum = 3
+	// [Display ads](https://support.google.com/merchants/answer/6069387).
+	ReportingContext_DISPLAY_ADS ReportingContext_ReportingContextEnum = 4
+	// [Local inventory
+	// ads](https://support.google.com/merchants/answer/3271956).
+	ReportingContext_LOCAL_INVENTORY_ADS ReportingContext_ReportingContextEnum = 5
+	// [Vehicle inventory
+	// ads](https://support.google.com/merchants/answer/11544533).
+	ReportingContext_VEHICLE_INVENTORY_ADS ReportingContext_ReportingContextEnum = 6
+	// [Free product
+	// listings](https://support.google.com/merchants/answer/9199328).
+	ReportingContext_FREE_LISTINGS ReportingContext_ReportingContextEnum = 7
+	// [Free local product
+	// listings](https://support.google.com/merchants/answer/9825611).
+	ReportingContext_FREE_LOCAL_LISTINGS ReportingContext_ReportingContextEnum = 8
+	// [Free local vehicle
+	// listings](https://support.google.com/merchants/answer/11544533).
+	ReportingContext_FREE_LOCAL_VEHICLE_LISTINGS ReportingContext_ReportingContextEnum = 9
+	// [YouTube
+	// Shopping](https://support.google.com/merchants/answer/13478370).
+	ReportingContext_YOUTUBE_SHOPPING ReportingContext_ReportingContextEnum = 10
+	// [Cloud retail](https://cloud.google.com/solutions/retail).
+	ReportingContext_CLOUD_RETAIL ReportingContext_ReportingContextEnum = 11
+	// [Local cloud retail](https://cloud.google.com/solutions/retail).
+	ReportingContext_LOCAL_CLOUD_RETAIL ReportingContext_ReportingContextEnum = 12
+)
+
+// Enum value maps for ReportingContext_ReportingContextEnum.
+var (
+	ReportingContext_ReportingContextEnum_name = map[int32]string{
+		0:  "REPORTING_CONTEXT_ENUM_UNSPECIFIED",
+		1:  "SHOPPING_ADS",
+		2:  "DISCOVERY_ADS",
+		3:  "VIDEO_ADS",
+		4:  "DISPLAY_ADS",
+		5:  "LOCAL_INVENTORY_ADS",
+		6:  "VEHICLE_INVENTORY_ADS",
+		7:  "FREE_LISTINGS",
+		8:  "FREE_LOCAL_LISTINGS",
+		9:  "FREE_LOCAL_VEHICLE_LISTINGS",
+		10: "YOUTUBE_SHOPPING",
+		11: "CLOUD_RETAIL",
+		12: "LOCAL_CLOUD_RETAIL",
+	}
+	ReportingContext_ReportingContextEnum_value = map[string]int32{
+		"REPORTING_CONTEXT_ENUM_UNSPECIFIED": 0,
+		"SHOPPING_ADS":                       1,
+		"DISCOVERY_ADS":                      2,
+		"VIDEO_ADS":                          3,
+		"DISPLAY_ADS":                        4,
+		"LOCAL_INVENTORY_ADS":                5,
+		"VEHICLE_INVENTORY_ADS":              6,
+		"FREE_LISTINGS":                      7,
+		"FREE_LOCAL_LISTINGS":                8,
+		"FREE_LOCAL_VEHICLE_LISTINGS":        9,
+		"YOUTUBE_SHOPPING":                   10,
+		"CLOUD_RETAIL":                       11,
+		"LOCAL_CLOUD_RETAIL":                 12,
+	}
+)
+
+func (x ReportingContext_ReportingContextEnum) Enum() *ReportingContext_ReportingContextEnum {
+	p := new(ReportingContext_ReportingContextEnum)
+	*p = x
+	return p
+}
+
+func (x ReportingContext_ReportingContextEnum) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ReportingContext_ReportingContextEnum) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_type_types_proto_enumTypes[1].Descriptor()
+}
+
+func (ReportingContext_ReportingContextEnum) Type() protoreflect.EnumType {
+	return &file_google_shopping_type_types_proto_enumTypes[1]
+}
+
+func (x ReportingContext_ReportingContextEnum) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ReportingContext_ReportingContextEnum.Descriptor instead.
+func (ReportingContext_ReportingContextEnum) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_type_types_proto_rawDescGZIP(), []int{3, 0}
+}
+
+// Channel values.
+type Channel_ChannelEnum int32
+
+const (
+	// Not specified.
+	Channel_CHANNEL_ENUM_UNSPECIFIED Channel_ChannelEnum = 0
+	// Online product.
+	Channel_ONLINE Channel_ChannelEnum = 1
+	// Local product.
+	Channel_LOCAL Channel_ChannelEnum = 2
+)
+
+// Enum value maps for Channel_ChannelEnum.
+var (
+	Channel_ChannelEnum_name = map[int32]string{
+		0: "CHANNEL_ENUM_UNSPECIFIED",
+		1: "ONLINE",
+		2: "LOCAL",
+	}
+	Channel_ChannelEnum_value = map[string]int32{
+		"CHANNEL_ENUM_UNSPECIFIED": 0,
+		"ONLINE":                   1,
+		"LOCAL":                    2,
+	}
+)
+
+func (x Channel_ChannelEnum) Enum() *Channel_ChannelEnum {
+	p := new(Channel_ChannelEnum)
+	*p = x
+	return p
+}
+
+func (x Channel_ChannelEnum) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Channel_ChannelEnum) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_type_types_proto_enumTypes[2].Descriptor()
+}
+
+func (Channel_ChannelEnum) Type() protoreflect.EnumType {
+	return &file_google_shopping_type_types_proto_enumTypes[2]
+}
+
+func (x Channel_ChannelEnum) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Channel_ChannelEnum.Descriptor instead.
+func (Channel_ChannelEnum) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_type_types_proto_rawDescGZIP(), []int{4, 0}
 }
 
 // The price represented as a number and currency.
@@ -108,6 +268,8 @@ type Price struct {
 	// The price represented as a number in micros (1 million micros is an
 	// equivalent to one's currency standard unit, for example, 1 USD = 1000000
 	// micros).
+	// This field can also be set as infinity by setting to -1.
+	// This field only support -1 and positive value.
 	AmountMicros *int64 `protobuf:"varint,1,opt,name=amount_micros,json=amountMicros,proto3,oneof" json:"amount_micros,omitempty"`
 	// The currency of the price using three-letter acronyms according to [ISO
 	// 4217](http://en.wikipedia.org/wiki/ISO_4217).
@@ -230,6 +392,134 @@ func (x *CustomAttribute) GetGroupValues() []*CustomAttribute {
 	return nil
 }
 
+// Destinations available for a product.
+//
+// Destinations are used in Merchant Center to allow you to control where the
+// products from your data feed should be displayed.
+type Destination struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *Destination) Reset() {
+	*x = Destination{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_shopping_type_types_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Destination) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Destination) ProtoMessage() {}
+
+func (x *Destination) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_type_types_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Destination.ProtoReflect.Descriptor instead.
+func (*Destination) Descriptor() ([]byte, []int) {
+	return file_google_shopping_type_types_proto_rawDescGZIP(), []int{2}
+}
+
+// Reporting contexts that your account and product issues apply to.
+//
+// Reporting contexts are groups of surfaces and formats for product results on
+// Google. They can represent the entire destination (for example, [Shopping
+// ads](https://support.google.com/merchants/answer/6149970)) or a subset of
+// formats within a destination (for example, [Discovery
+// ads](https://support.google.com/merchants/answer/13389785)).
+type ReportingContext struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ReportingContext) Reset() {
+	*x = ReportingContext{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_shopping_type_types_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ReportingContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReportingContext) ProtoMessage() {}
+
+func (x *ReportingContext) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_type_types_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReportingContext.ProtoReflect.Descriptor instead.
+func (*ReportingContext) Descriptor() ([]byte, []int) {
+	return file_google_shopping_type_types_proto_rawDescGZIP(), []int{3}
+}
+
+// [Channel](https://support.google.com/merchants/answer/7361332) of a product.
+//
+// Channel is used to distinguish between online and local products.
+type Channel struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *Channel) Reset() {
+	*x = Channel{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_shopping_type_types_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Channel) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Channel) ProtoMessage() {}
+
+func (x *Channel) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_type_types_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Channel.ProtoReflect.Descriptor instead.
+func (*Channel) Descriptor() ([]byte, []int) {
+	return file_google_shopping_type_types_proto_rawDescGZIP(), []int{4}
+}
+
 var File_google_shopping_type_types_proto protoreflect.FileDescriptor
 
 var file_google_shopping_type_types_proto_rawDesc = []byte{
@@ -254,23 +544,54 @@ var file_google_shopping_type_types_proto_rawDesc = []byte{
 	0x2e, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x43,
 	0x75, 0x73, 0x74, 0x6f, 0x6d, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x0b,
 	0x67, 0x72, 0x6f, 0x75, 0x70, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x42, 0x07, 0x0a, 0x05, 0x5f,
-	0x6e, 0x61, 0x6d, 0x65, 0x42, 0x08, 0x0a, 0x06, 0x5f, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x2a, 0x81,
-	0x01, 0x0a, 0x0b, 0x44, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1b,
-	0x0a, 0x17, 0x44, 0x45, 0x53, 0x54, 0x49, 0x4e, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x55, 0x4e,
-	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x10, 0x0a, 0x0c, 0x53,
-	0x48, 0x4f, 0x50, 0x50, 0x49, 0x4e, 0x47, 0x5f, 0x41, 0x44, 0x53, 0x10, 0x01, 0x12, 0x17, 0x0a,
+	0x6e, 0x61, 0x6d, 0x65, 0x42, 0x08, 0x0a, 0x06, 0x5f, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xc1,
+	0x01, 0x0a, 0x0b, 0x44, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xb1,
+	0x01, 0x0a, 0x0f, 0x44, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x45, 0x6e,
+	0x75, 0x6d, 0x12, 0x20, 0x0a, 0x1c, 0x44, 0x45, 0x53, 0x54, 0x49, 0x4e, 0x41, 0x54, 0x49, 0x4f,
+	0x4e, 0x5f, 0x45, 0x4e, 0x55, 0x4d, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49,
+	0x45, 0x44, 0x10, 0x00, 0x12, 0x10, 0x0a, 0x0c, 0x53, 0x48, 0x4f, 0x50, 0x50, 0x49, 0x4e, 0x47,
+	0x5f, 0x41, 0x44, 0x53, 0x10, 0x01, 0x12, 0x0f, 0x0a, 0x0b, 0x44, 0x49, 0x53, 0x50, 0x4c, 0x41,
+	0x59, 0x5f, 0x41, 0x44, 0x53, 0x10, 0x02, 0x12, 0x17, 0x0a, 0x13, 0x4c, 0x4f, 0x43, 0x41, 0x4c,
+	0x5f, 0x49, 0x4e, 0x56, 0x45, 0x4e, 0x54, 0x4f, 0x52, 0x59, 0x5f, 0x41, 0x44, 0x53, 0x10, 0x03,
+	0x12, 0x11, 0x0a, 0x0d, 0x46, 0x52, 0x45, 0x45, 0x5f, 0x4c, 0x49, 0x53, 0x54, 0x49, 0x4e, 0x47,
+	0x53, 0x10, 0x04, 0x12, 0x17, 0x0a, 0x13, 0x46, 0x52, 0x45, 0x45, 0x5f, 0x4c, 0x4f, 0x43, 0x41,
+	0x4c, 0x5f, 0x4c, 0x49, 0x53, 0x54, 0x49, 0x4e, 0x47, 0x53, 0x10, 0x05, 0x12, 0x14, 0x0a, 0x10,
+	0x59, 0x4f, 0x55, 0x54, 0x55, 0x42, 0x45, 0x5f, 0x53, 0x48, 0x4f, 0x50, 0x50, 0x49, 0x4e, 0x47,
+	0x10, 0x06, 0x22, 0xd9, 0x02, 0x0a, 0x10, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x69, 0x6e, 0x67,
+	0x43, 0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x22, 0xc4, 0x02, 0x0a, 0x14, 0x52, 0x65, 0x70, 0x6f,
+	0x72, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x45, 0x6e, 0x75, 0x6d,
+	0x12, 0x26, 0x0a, 0x22, 0x52, 0x45, 0x50, 0x4f, 0x52, 0x54, 0x49, 0x4e, 0x47, 0x5f, 0x43, 0x4f,
+	0x4e, 0x54, 0x45, 0x58, 0x54, 0x5f, 0x45, 0x4e, 0x55, 0x4d, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45,
+	0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x10, 0x0a, 0x0c, 0x53, 0x48, 0x4f, 0x50,
+	0x50, 0x49, 0x4e, 0x47, 0x5f, 0x41, 0x44, 0x53, 0x10, 0x01, 0x12, 0x11, 0x0a, 0x0d, 0x44, 0x49,
+	0x53, 0x43, 0x4f, 0x56, 0x45, 0x52, 0x59, 0x5f, 0x41, 0x44, 0x53, 0x10, 0x02, 0x12, 0x0d, 0x0a,
+	0x09, 0x56, 0x49, 0x44, 0x45, 0x4f, 0x5f, 0x41, 0x44, 0x53, 0x10, 0x03, 0x12, 0x0f, 0x0a, 0x0b,
+	0x44, 0x49, 0x53, 0x50, 0x4c, 0x41, 0x59, 0x5f, 0x41, 0x44, 0x53, 0x10, 0x04, 0x12, 0x17, 0x0a,
 	0x13, 0x4c, 0x4f, 0x43, 0x41, 0x4c, 0x5f, 0x49, 0x4e, 0x56, 0x45, 0x4e, 0x54, 0x4f, 0x52, 0x59,
-	0x5f, 0x41, 0x44, 0x53, 0x10, 0x02, 0x12, 0x11, 0x0a, 0x0d, 0x46, 0x52, 0x45, 0x45, 0x5f, 0x4c,
-	0x49, 0x53, 0x54, 0x49, 0x4e, 0x47, 0x53, 0x10, 0x03, 0x12, 0x17, 0x0a, 0x13, 0x46, 0x52, 0x45,
-	0x45, 0x5f, 0x4c, 0x4f, 0x43, 0x41, 0x4c, 0x5f, 0x4c, 0x49, 0x53, 0x54, 0x49, 0x4e, 0x47, 0x53,
-	0x10, 0x04, 0x42, 0x70, 0x0a, 0x18, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x42, 0x0a,
-	0x54, 0x79, 0x70, 0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2f, 0x63, 0x6c,
-	0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67,
-	0x6f, 0x2f, 0x73, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x2f,
-	0x74, 0x79, 0x70, 0x65, 0x70, 0x62, 0x3b, 0x74, 0x79, 0x70, 0x65, 0x70, 0x62, 0xaa, 0x02, 0x14,
-	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x53, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e,
-	0x54, 0x79, 0x70, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x5f, 0x41, 0x44, 0x53, 0x10, 0x05, 0x12, 0x19, 0x0a, 0x15, 0x56, 0x45, 0x48, 0x49, 0x43, 0x4c,
+	0x45, 0x5f, 0x49, 0x4e, 0x56, 0x45, 0x4e, 0x54, 0x4f, 0x52, 0x59, 0x5f, 0x41, 0x44, 0x53, 0x10,
+	0x06, 0x12, 0x11, 0x0a, 0x0d, 0x46, 0x52, 0x45, 0x45, 0x5f, 0x4c, 0x49, 0x53, 0x54, 0x49, 0x4e,
+	0x47, 0x53, 0x10, 0x07, 0x12, 0x17, 0x0a, 0x13, 0x46, 0x52, 0x45, 0x45, 0x5f, 0x4c, 0x4f, 0x43,
+	0x41, 0x4c, 0x5f, 0x4c, 0x49, 0x53, 0x54, 0x49, 0x4e, 0x47, 0x53, 0x10, 0x08, 0x12, 0x1f, 0x0a,
+	0x1b, 0x46, 0x52, 0x45, 0x45, 0x5f, 0x4c, 0x4f, 0x43, 0x41, 0x4c, 0x5f, 0x56, 0x45, 0x48, 0x49,
+	0x43, 0x4c, 0x45, 0x5f, 0x4c, 0x49, 0x53, 0x54, 0x49, 0x4e, 0x47, 0x53, 0x10, 0x09, 0x12, 0x14,
+	0x0a, 0x10, 0x59, 0x4f, 0x55, 0x54, 0x55, 0x42, 0x45, 0x5f, 0x53, 0x48, 0x4f, 0x50, 0x50, 0x49,
+	0x4e, 0x47, 0x10, 0x0a, 0x12, 0x10, 0x0a, 0x0c, 0x43, 0x4c, 0x4f, 0x55, 0x44, 0x5f, 0x52, 0x45,
+	0x54, 0x41, 0x49, 0x4c, 0x10, 0x0b, 0x12, 0x16, 0x0a, 0x12, 0x4c, 0x4f, 0x43, 0x41, 0x4c, 0x5f,
+	0x43, 0x4c, 0x4f, 0x55, 0x44, 0x5f, 0x52, 0x45, 0x54, 0x41, 0x49, 0x4c, 0x10, 0x0c, 0x22, 0x4d,
+	0x0a, 0x07, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x22, 0x42, 0x0a, 0x0b, 0x43, 0x68, 0x61,
+	0x6e, 0x6e, 0x65, 0x6c, 0x45, 0x6e, 0x75, 0x6d, 0x12, 0x1c, 0x0a, 0x18, 0x43, 0x48, 0x41, 0x4e,
+	0x4e, 0x45, 0x4c, 0x5f, 0x45, 0x4e, 0x55, 0x4d, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49,
+	0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0a, 0x0a, 0x06, 0x4f, 0x4e, 0x4c, 0x49, 0x4e, 0x45,
+	0x10, 0x01, 0x12, 0x09, 0x0a, 0x05, 0x4c, 0x4f, 0x43, 0x41, 0x4c, 0x10, 0x02, 0x42, 0x70, 0x0a,
+	0x18, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x73, 0x68, 0x6f, 0x70,
+	0x70, 0x69, 0x6e, 0x67, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73,
+	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x73, 0x68, 0x6f,
+	0x70, 0x70, 0x69, 0x6e, 0x67, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x70,
+	0x62, 0x3b, 0x74, 0x79, 0x70, 0x65, 0x70, 0x62, 0xaa, 0x02, 0x14, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x53, 0x68, 0x6f, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x2e, 0x54, 0x79, 0x70, 0x65, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -285,15 +606,20 @@ func file_google_shopping_type_types_proto_rawDescGZIP() []byte {
 	return file_google_shopping_type_types_proto_rawDescData
 }
 
-var file_google_shopping_type_types_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_shopping_type_types_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_google_shopping_type_types_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_shopping_type_types_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_shopping_type_types_proto_goTypes = []interface{}{
-	(Destination)(0),        // 0: google.shopping.type.Destination
-	(*Price)(nil),           // 1: google.shopping.type.Price
-	(*CustomAttribute)(nil), // 2: google.shopping.type.CustomAttribute
+	(Destination_DestinationEnum)(0),           // 0: google.shopping.type.Destination.DestinationEnum
+	(ReportingContext_ReportingContextEnum)(0), // 1: google.shopping.type.ReportingContext.ReportingContextEnum
+	(Channel_ChannelEnum)(0),                   // 2: google.shopping.type.Channel.ChannelEnum
+	(*Price)(nil),                              // 3: google.shopping.type.Price
+	(*CustomAttribute)(nil),                    // 4: google.shopping.type.CustomAttribute
+	(*Destination)(nil),                        // 5: google.shopping.type.Destination
+	(*ReportingContext)(nil),                   // 6: google.shopping.type.ReportingContext
+	(*Channel)(nil),                            // 7: google.shopping.type.Channel
 }
 var file_google_shopping_type_types_proto_depIdxs = []int32{
-	2, // 0: google.shopping.type.CustomAttribute.group_values:type_name -> google.shopping.type.CustomAttribute
+	4, // 0: google.shopping.type.CustomAttribute.group_values:type_name -> google.shopping.type.CustomAttribute
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
@@ -331,6 +657,42 @@ func file_google_shopping_type_types_proto_init() {
 				return nil
 			}
 		}
+		file_google_shopping_type_types_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Destination); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_shopping_type_types_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ReportingContext); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_shopping_type_types_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Channel); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_google_shopping_type_types_proto_msgTypes[0].OneofWrappers = []interface{}{}
 	file_google_shopping_type_types_proto_msgTypes[1].OneofWrappers = []interface{}{}
@@ -339,8 +701,8 @@ func file_google_shopping_type_types_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_shopping_type_types_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   2,
+			NumEnums:      3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
