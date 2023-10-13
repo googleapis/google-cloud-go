@@ -342,10 +342,10 @@ func UpdateMissingValueInterpretations(mvi map[string]storagepb.AppendRowsReques
 	}
 }
 
-// UpdateDefaultMissingValueInterpretations updates the default intepretations setting for the stream,
+// UpdateDefaultMissingValueInterpretation updates the default intepretations setting for the stream,
 // and is retained for subsequent writes.  See the WithDefaultMissingValueInterpretations WriterOption for
 // more details.
-func UpdateDefaultMissingValueInterpretations(def storagepb.AppendRowsRequest_MissingValueInterpretation) AppendOption {
+func UpdateDefaultMissingValueInterpretation(def storagepb.AppendRowsRequest_MissingValueInterpretation) AppendOption {
 	return func(pw *pendingWrite) {
 		prev := pw.reqTmpl
 		if prev == nil {

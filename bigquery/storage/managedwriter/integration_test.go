@@ -259,7 +259,9 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 		t.Run("TestLargeInsertWithRetry", func(t *testing.T) {
 			testLargeInsertWithRetry(ctx, t, mwClient, bqClient, dataset)
 		})
-
+		t.Run("DefaultValueHandling", func(t *testing.T) {
+			testDefaultValueHandling(ctx, t, mwClient, bqClient, dataset)
+		})
 	})
 }
 
@@ -1259,6 +1261,97 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		withExactRowCount(int64(curOffset+5)),
 		withNullCount("name", 0),
 		withNonNullCount("other", 6),
+	)
+}
+
+func testDefaultValueHandling(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset, opts ...WriterOption) {
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.DefaultValueSchema}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	m := &testdata.DefaultValuesPartialSchema{
+		// We only popu
+		Id: proto.String("someval"),
+	}
+	var data []byte
+	var err error
+	if data, err = proto.Marshal(m); err != nil {
+		t.Fatalf("failed to marshal test row data")
+	}
+	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
+
+	// setup a new stream.
+	opts = append(opts, WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)))
+	opts = append(opts, WithSchemaDescriptor(descriptorProto))
+	ms, err := mwClient.NewManagedStream(ctx, opts...)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
+
+	var result *AppendResult
+
+	// Send one row, verify default values were set as expected.
+
+	result, err = ms.AppendRows(ctx, [][]byte{data})
+	if err != nil {
+		t.Errorf("append failed: %v", err)
+	}
+	// Wait for the result to indicate ready, then validate.
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on append: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after first row",
+		withExactRowCount(1),
+		withNonNullCount("id", 1),
+		withNullCount("strcol", 1),
+		withNonNullCount("strcol_withdef", 1),
+		withNullCount("intcol", 1),
+		withNonNullCount("intcol_withdef", 1))
+
+	// Change default MVI to use nulls
+	result, err = ms.AppendRows(ctx, [][]byte{data}, UpdateDefaultMissingValueInterpretation(storagepb.AppendRowsRequest_NULL_VALUE))
+	if err != nil {
+		t.Errorf("append failed: %v", err)
+	}
+	// Wait for the result to indicate ready, then validate.
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on append: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after second row (default mvi)",
+		withExactRowCount(2),
+		withNullCount("strcol", 2),
+		withNullCount("strcol_withdef", 1),
+		withNullCount("intcol", 2),
+		withNullCount("strcol_withdef", 1),
+	)
+
+	// Change per-column MVI to use default value
+	result, err = ms.AppendRows(ctx, [][]byte{data},
+		UpdateMissingValueInterpretations(map[string]storagepb.AppendRowsRequest_MissingValueInterpretation{
+			"strcol_withdefault": storagepb.AppendRowsRequest_NULL_VALUE,
+		}))
+	if err != nil {
+		t.Errorf("append failed: %v", err)
+	}
+	// Wait for the result to indicate ready, then validate.
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on append: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after second row (default mvi)",
+		withExactRowCount(3),
+		withNullCount("strcol", 3),
+		withNullCount("strcol_withdef", 1),
+		withNullCount("intcol", 3),
+		withNullCount("strcol_withdef", 2),
 	)
 }
 

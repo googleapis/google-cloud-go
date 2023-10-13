@@ -305,6 +305,13 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 	for _, opt := range opts {
 		opt(pw)
 	}
+	// Post-request fixup after options are applied.
+	if pw.reqTmpl != nil {
+		if pw.reqTmpl.tmpl != nil {
+			// MVIs must be set on each request, but _default_ MVIs persist across the stream lifetime.  Sigh.
+			pw.req.MissingValueInterpretations = pw.reqTmpl.tmpl.GetMissingValueInterpretations()
+		}
+	}
 
 	// Call the underlying append.  The stream has it's own retained context and will surface expiry on
 	// it's own, but we also need to respect any deadline for the provided context.
