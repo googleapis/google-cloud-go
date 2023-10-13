@@ -203,10 +203,12 @@ func (vt *versionedTemplate) computeHash() {
 
 type templateRevisionF func(m *storagepb.AppendRowsRequest)
 
-// revise makes a new versionedTemplate from the existing template, applying any changes
+// revise makes a new versionedTemplate from the existing template, applying any changes.
+// The original revision is returned if there's no effective difference after changes are
+// applied.
 func (vt *versionedTemplate) revise(changes ...templateRevisionF) *versionedTemplate {
 	if len(changes) == 0 {
-		// if there's no changes, simply return the base revision
+		// if there's no changes, return the base revision immediately.
 		return vt
 	}
 	out := &versionedTemplate{
@@ -217,6 +219,11 @@ func (vt *versionedTemplate) revise(changes ...templateRevisionF) *versionedTemp
 		r(out.tmpl)
 	}
 	out.computeHash()
+	if out.Compatible(vt) {
+		// The changes didn't yield an measured difference.  Return the base revision to avoid
+		// possible connection churn from no-op revisions.
+		return vt
+	}
 	return out
 }
 
