@@ -1308,13 +1308,14 @@ func testDefaultValueHandling(ctx context.Context, t *testing.T, mwClient *Clien
 	validateTableConstraints(ctx, t, bqClient, testTable, "after first row",
 		withExactRowCount(1),
 		withNonNullCount("id", 1),
-		withNullCount("strcol", 1),
-		withNonNullCount("strcol_withdef", 1),
-		withNullCount("intcol", 1),
-		withNonNullCount("intcol_withdef", 1))
+		withNullCount("strcol_withdef", 1),
+		withNullCount("intcol_withdef", 1),
+		withNullCount("otherstr_withdef", 0)) // not part of partial schema
 
-	// Change default MVI to use nulls
-	result, err = ms.AppendRows(ctx, [][]byte{data}, UpdateDefaultMissingValueInterpretation(storagepb.AppendRowsRequest_NULL_VALUE))
+	// Change default MVI to use nulls.
+	// We expect the fields in the partial schema to leverage nulls rather than default values.
+	// The fields outside the partial schema continue to obey default values.
+	result, err = ms.AppendRows(ctx, [][]byte{data}, UpdateDefaultMissingValueInterpretation(storagepb.AppendRowsRequest_DEFAULT_VALUE))
 	if err != nil {
 		t.Errorf("append failed: %v", err)
 	}
@@ -1324,18 +1325,15 @@ func testDefaultValueHandling(ctx context.Context, t *testing.T, mwClient *Clien
 		t.Errorf("error on append: %v", err)
 	}
 
-	validateTableConstraints(ctx, t, bqClient, testTable, "after second row (default mvi)",
+	validateTableConstraints(ctx, t, bqClient, testTable, "after second row (default mvi is DEFAULT_VALUE)",
 		withExactRowCount(2),
-		withNullCount("strcol", 2),
-		withNullCount("strcol_withdef", 1),
-		withNullCount("intcol", 2),
-		withNullCount("strcol_withdef", 1),
-	)
+		withNullCount("strcol_withdef", 1), // doesn't increment, as it gets default value
+		withNullCount("intcol_withdef", 1)) // doesn't increment, as it gets default value
 
 	// Change per-column MVI to use default value
 	result, err = ms.AppendRows(ctx, [][]byte{data},
 		UpdateMissingValueInterpretations(map[string]storagepb.AppendRowsRequest_MissingValueInterpretation{
-			"strcol_withdefault": storagepb.AppendRowsRequest_NULL_VALUE,
+			"strcol_withdef": storagepb.AppendRowsRequest_NULL_VALUE,
 		}))
 	if err != nil {
 		t.Errorf("append failed: %v", err)
@@ -1346,12 +1344,14 @@ func testDefaultValueHandling(ctx context.Context, t *testing.T, mwClient *Clien
 		t.Errorf("error on append: %v", err)
 	}
 
-	validateTableConstraints(ctx, t, bqClient, testTable, "after second row (default mvi)",
+	validateTableConstraints(ctx, t, bqClient, testTable, "after third row (explicit column mvi)",
 		withExactRowCount(3),
-		withNullCount("strcol", 3),
-		withNullCount("strcol_withdef", 1),
-		withNullCount("intcol", 3),
-		withNullCount("strcol_withdef", 2),
+		withNullCount("strcol_withdef", 2),      // increments as it's null for this column
+		withNullCount("intcol_withdef", 1),      // doesn't increment, still default value
+		withNonNullCount("otherstr_withdef", 3), // not part of descriptor, always gets default value
+		withNullCount("otherstr", 3),            // not part of descriptor, always gets null
+		withNullCount("strcol", 3),              // no default value defined, always gets null
+		withNullCount("intcol", 3),              // no default value defined, always gets null
 	)
 }
 

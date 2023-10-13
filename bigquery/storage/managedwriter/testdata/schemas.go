@@ -320,5 +320,14 @@ var (
 			Type:                   bigquery.IntegerFieldType,
 			DefaultValueExpression: "-99",
 		},
+		{
+			Name: "otherstr",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name:                   "otherstr_withdef",
+			Type:                   bigquery.StringFieldType,
+			DefaultValueExpression: "\"otherval\"",
+		},
 	}
 )
