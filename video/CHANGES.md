@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.0...video/v1.20.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **video:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.19.0...video/v1.20.0) (2023-09-12)
 
 

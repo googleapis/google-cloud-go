@@ -23,8 +23,8 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/httptransport"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/testutil"
 )
 
 // Client is a lightweight DNS client for testing.
@@ -36,7 +36,7 @@ type Client struct {
 // [cloud.google.com/go/auth.TokenProvider] for authentication.
 func NewClient(tp auth.TokenProvider) *Client {
 	client := internal.CloneDefaultClient()
-	testutil.AddAuthorizationMiddleware(client, tp)
+	httptransport.AddAuthorizationMiddleware(client, tp)
 	return &Client{
 		client: client,
 	}

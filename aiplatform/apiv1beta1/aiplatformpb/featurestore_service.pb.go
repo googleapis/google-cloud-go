@@ -1807,10 +1807,6 @@ type CreateFeatureRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The resource name of the EntityType or FeatureGroup to create a Feature.
-	// Format:
-	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
-	// `projects/{project}/locations/{location}/featureGroups/{feature_group}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Feature to create.
 	Feature *Feature `protobuf:"bytes,2,opt,name=feature,proto3" json:"feature,omitempty"`
