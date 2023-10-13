@@ -21,8 +21,11 @@
 package optimizationpb
 
 import (
-	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
 	grpc "google.golang.org/grpc"
@@ -32,8 +35,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -1156,10 +1157,10 @@ func (*BatchOptimizeToursResponse) Descriptor() ([]byte, []int) {
 // A shipment model contains a set of shipments which must be performed by a
 // set of vehicles, while minimizing the overall cost, which is the sum of:
 //
-// * the cost of routing the vehicles (sum of cost per total time, cost per
-//   travel time, and fixed cost over all vehicles).
-// * the unperformed shipment penalties.
-// * the cost of the global duration of the shipments
+//   - the cost of routing the vehicles (sum of cost per total time, cost per
+//     travel time, and fixed cost over all vehicles).
+//   - the unperformed shipment penalties.
+//   - the cost of the global duration of the shipments
 type ShipmentModel struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2403,8 +2404,10 @@ func (x *Vehicle) GetEndLoadIntervals() []*CapacityQuantityInterval {
 // [ShipmentModel.global_end_time][google.cloud.optimization.v1.ShipmentModel.global_end_time])
 // and should respect:
 // ```
-//   0 <= `start_time` <= `soft_start_time` <= `end_time` and
-//   0 <= `start_time` <= `soft_end_time` <= `end_time`.
+//
+//	0 <= `start_time` <= `soft_start_time` <= `end_time` and
+//	0 <= `start_time` <= `soft_end_time` <= `end_time`.
+//
 // ```
 type TimeWindow struct {
 	state         protoimpl.MessageState
@@ -3052,12 +3055,12 @@ func (x *Location) GetHeading() int32 {
 // is a contiguous period of time during which the vehicle remains idle at its
 // current position and cannot perform any visit. A break may occur:
 //
-// * during the travel between two visits (which includes the time right
-//   before or right after a visit, but not in the middle of a visit), in
-//   which case it extends the corresponding transit time between the visits,
-// * or before the vehicle start (the vehicle may not start in the middle of
-//   a break), in which case it does not affect the vehicle start time.
-// * or after the vehicle end (ditto, with the vehicle end time).
+//   - during the travel between two visits (which includes the time right
+//     before or right after a visit, but not in the middle of a visit), in
+//     which case it extends the corresponding transit time between the visits,
+//   - or before the vehicle start (the vehicle may not start in the middle of
+//     a break), in which case it does not affect the vehicle start time.
+//   - or after the vehicle end (ditto, with the vehicle end time).
 type BreakRule struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3119,85 +3122,97 @@ func (x *BreakRule) GetFrequencyConstraints() []*BreakRule_FrequencyConstraint {
 // A vehicle's route can be decomposed, along the time axis, like this (we
 // assume there are n visits):
 // ```
-//   |            |            |          |       |  T[2], |        |      |
-//   | Transition |  Visit #0  |          |       |  V[2], |        |      |
-//   |     #0     |    aka     |   T[1]   |  V[1] |  ...   | V[n-1] | T[n] |
-//   |  aka T[0]  |    V[0]    |          |       | V[n-2],|        |      |
-//   |            |            |          |       | T[n-1] |        |      |
-//   ^            ^            ^          ^       ^        ^        ^      ^
+//
+//	|            |            |          |       |  T[2], |        |      |
+//	| Transition |  Visit #0  |          |       |  V[2], |        |      |
+//	|     #0     |    aka     |   T[1]   |  V[1] |  ...   | V[n-1] | T[n] |
+//	|  aka T[0]  |    V[0]    |          |       | V[n-2],|        |      |
+//	|            |            |          |       | T[n-1] |        |      |
+//	^            ^            ^          ^       ^        ^        ^      ^
+//
 // vehicle    V[0].start   V[0].end     V[1].   V[1].    V[n].    V[n]. vehicle
-//  start     (arrival)   (departure)   start   end      start    end     end
+//
+//	start     (arrival)   (departure)   start   end      start    end     end
+//
 // ```
 // Note that we make a difference between:
 //
-// * "punctual events", such as the vehicle start and end and each visit's start
-//   and end (aka arrival and departure). They happen at a given second.
-// * "time intervals", such as the visits themselves, and the transition between
-//   visits. Though time intervals can sometimes have zero duration, i.e. start
-//   and end at the same second, they often have a positive duration.
+//   - "punctual events", such as the vehicle start and end and each visit's start
+//     and end (aka arrival and departure). They happen at a given second.
+//   - "time intervals", such as the visits themselves, and the transition between
+//     visits. Though time intervals can sometimes have zero duration, i.e. start
+//     and end at the same second, they often have a positive duration.
 //
 // Invariants:
 //
-// * If there are n visits, there are n+1 transitions.
-// * A visit is always surrounded by a transition before it (same index) and a
-//   transition after it (index + 1).
-// * The vehicle start is always followed by transition #0.
-// * The vehicle end is always preceded by transition #n.
+//   - If there are n visits, there are n+1 transitions.
+//   - A visit is always surrounded by a transition before it (same index) and a
+//     transition after it (index + 1).
+//   - The vehicle start is always followed by transition #0.
+//   - The vehicle end is always preceded by transition #n.
 //
 // Zooming in, here is what happens during a `Transition` and a `Visit`:
 // ```
 // ---+-------------------------------------+-----------------------------+-->
-//    |           TRANSITION[i]             |           VISIT[i]          |
-//    |                                     |                             |
-//    |  * TRAVEL: the vehicle moves from   |      PERFORM the visit:     |
-//    |    VISIT[i-1].departure_location to |                             |
-//    |    VISIT[i].arrival_location, which |  * Spend some time:         |
-//    |    takes a given travel duration    |    the "visit duration".    |
-//    |    and distance                     |                             |
-//    |                                     |  * Load or unload           |
-//    |  * BREAKS: the driver may have      |    some quantities from the |
-//    |    breaks (e.g. lunch break).       |    vehicle: the "demand".   |
-//    |                                     |                             |
-//    |  * WAIT: the driver/vehicle does    |                             |
-//    |    nothing. This can happen for     |                             |
-//    |    many reasons, for example when   |                             |
-//    |    the vehicle reaches the next     |                             |
-//    |    event's destination before the   |                             |
-//    |    start of its time window         |                             |
-//    |                                     |                             |
-//    |  * DELAY: *right before* the next   |                             |
-//    |    arrival. E.g. the vehicle and/or |                             |
-//    |    driver spends time unloading.    |                             |
-//    |                                     |                             |
+//
+//	|           TRANSITION[i]             |           VISIT[i]          |
+//	|                                     |                             |
+//	|  * TRAVEL: the vehicle moves from   |      PERFORM the visit:     |
+//	|    VISIT[i-1].departure_location to |                             |
+//	|    VISIT[i].arrival_location, which |  * Spend some time:         |
+//	|    takes a given travel duration    |    the "visit duration".    |
+//	|    and distance                     |                             |
+//	|                                     |  * Load or unload           |
+//	|  * BREAKS: the driver may have      |    some quantities from the |
+//	|    breaks (e.g. lunch break).       |    vehicle: the "demand".   |
+//	|                                     |                             |
+//	|  * WAIT: the driver/vehicle does    |                             |
+//	|    nothing. This can happen for     |                             |
+//	|    many reasons, for example when   |                             |
+//	|    the vehicle reaches the next     |                             |
+//	|    event's destination before the   |                             |
+//	|    start of its time window         |                             |
+//	|                                     |                             |
+//	|  * DELAY: *right before* the next   |                             |
+//	|    arrival. E.g. the vehicle and/or |                             |
+//	|    driver spends time unloading.    |                             |
+//	|                                     |                             |
+//
 // ---+-------------------------------------+-----------------------------+-->
-//    ^                                     ^                             ^
+//
+//	^                                     ^                             ^
+//
 // V[i-1].end                           V[i].start                    V[i].end
 // ```
 // Lastly, here is how the TRAVEL, BREAKS, DELAY and WAIT can be arranged
 // during a transition.
 //
-// * They don't overlap.
-// * The DELAY is unique and *must* be a contiguous period of time right
-//   before the next visit (or vehicle end). Thus, it suffice to know the
-//   delay duration to know its start and end time.
-// * The BREAKS are contiguous, non-overlapping periods of time. The
-//   response specifies the start time and duration of each break.
-// * TRAVEL and WAIT are "preemptable": they can be interrupted several times
-//   during this transition. Clients can assume that travel happens "as soon as
-//   possible" and that "wait" fills the remaining time.
+//   - They don't overlap.
+//   - The DELAY is unique and *must* be a contiguous period of time right
+//     before the next visit (or vehicle end). Thus, it suffice to know the
+//     delay duration to know its start and end time.
+//   - The BREAKS are contiguous, non-overlapping periods of time. The
+//     response specifies the start time and duration of each break.
+//   - TRAVEL and WAIT are "preemptable": they can be interrupted several times
+//     during this transition. Clients can assume that travel happens "as soon as
+//     possible" and that "wait" fills the remaining time.
 //
 // A (complex) example:
 // ```
-//                                TRANSITION[i]
+//
+//	TRANSITION[i]
+//
 // --++-----+-----------------------------------------------------------++-->
-//   ||     |       |           |       |           |         |         ||
-//   ||  T  |   B   |     T     |       |     B     |         |    D    ||
-//   ||  r  |   r   |     r     |   W   |     r     |    W    |    e    ||
-//   ||  a  |   e   |     a     |   a   |     e     |    a    |    l    ||
-//   ||  v  |   a   |     v     |   i   |     a     |    i    |    a    ||
-//   ||  e  |   k   |     e     |   t   |     k     |    t    |    y    ||
-//   ||  l  |       |     l     |       |           |         |         ||
-//   ||     |       |           |       |           |         |         ||
+//
+//	||     |       |           |       |           |         |         ||
+//	||  T  |   B   |     T     |       |     B     |         |    D    ||
+//	||  r  |   r   |     r     |   W   |     r     |    W    |    e    ||
+//	||  a  |   e   |     a     |   a   |     e     |    a    |    l    ||
+//	||  v  |   a   |     v     |   i   |     a     |    i    |    a    ||
+//	||  e  |   k   |     e     |   t   |     k     |    t    |    y    ||
+//	||  l  |       |     l     |       |           |         |         ||
+//	||     |       |           |       |           |         |         ||
+//
 // --++-----------------------------------------------------------------++-->
 // ```
 type ShipmentRoute struct {
@@ -4484,12 +4499,12 @@ func (x *ShipmentModel_PrecedenceRule) GetOffsetDuration() *durationpb.Duration 
 // remains idle at its current position and cannot perform any visit. A break
 // may occur:
 //
-// * during the travel between two visits (which includes the time right
-//   before or right after a visit, but not in the middle of a visit), in
-//   which case it extends the corresponding transit time between the visits
-// * before the vehicle start (the vehicle may not start in the middle of
-//   a break), in which case it does not affect the vehicle start time.
-// * after the vehicle end (ditto, with the vehicle end time).
+//   - during the travel between two visits (which includes the time right
+//     before or right after a visit, but not in the middle of a visit), in
+//     which case it extends the corresponding transit time between the visits
+//   - before the vehicle start (the vehicle may not start in the middle of
+//     a break), in which case it does not affect the vehicle start time.
+//   - after the vehicle end (ditto, with the vehicle end time).
 //
 // Deprecated: Marked as deprecated in google/cloud/optimization/v1/fleet_routing.proto.
 type ShipmentModel_BreakRule struct {
@@ -4689,10 +4704,12 @@ func (x *ShipmentModel_BreakRule_BreakRequest) GetMinDuration() *durationpb.Dura
 // must be at least one break of at least one hour", that example would
 // translate to the following `FrequencyConstraint`:
 // ```
-// {
-//    min_break_duration { seconds: 3600 }         # 1 hour.
-//    max_inter_break_duration { seconds: 39600 }  # 11 hours (12 - 1 = 11).
-// }
+//
+//	{
+//	   min_break_duration { seconds: 3600 }         # 1 hour.
+//	   max_inter_break_duration { seconds: 39600 }  # 11 hours (12 - 1 = 11).
+//	}
+//
 // ```
 //
 // The timing and duration of the breaks in the solution will respect all
@@ -4702,18 +4719,20 @@ func (x *ShipmentModel_BreakRule_BreakRequest) GetMinDuration() *durationpb.Dura
 // A `FrequencyConstraint` may in practice apply to non-consecutive breaks.
 // For example, the following schedule honors the "1h every 12h" example:
 // ```
-//   04:00 vehicle start
-//    .. performing travel and visits ..
-//   09:00 1 hour break
-//   10:00 end of the break
-//    .. performing travel and visits ..
-//   12:00 20-min lunch break
-//   12:20 end of the break
-//    .. performing travel and visits ..
-//   21:00 1 hour break
-//   22:00 end of the break
-//    .. performing travel and visits ..
-//   23:59 vehicle end
+//
+//	04:00 vehicle start
+//	 .. performing travel and visits ..
+//	09:00 1 hour break
+//	10:00 end of the break
+//	 .. performing travel and visits ..
+//	12:00 20-min lunch break
+//	12:20 end of the break
+//	 .. performing travel and visits ..
+//	21:00 1 hour break
+//	22:00 end of the break
+//	 .. performing travel and visits ..
+//	23:59 vehicle end
+//
 // ```
 type ShipmentModel_BreakRule_FrequencyConstraint struct {
 	state         protoimpl.MessageState
@@ -5386,10 +5405,12 @@ func (x *BreakRule_BreakRequest) GetMinDuration() *durationpb.Duration {
 // must be at least one break of at least one hour", that example would
 // translate to the following `FrequencyConstraint`:
 // ```
-// {
-//    min_break_duration { seconds: 3600 }         # 1 hour.
-//    max_inter_break_duration { seconds: 39600 }  # 11 hours (12 - 1 = 11).
-// }
+//
+//	{
+//	   min_break_duration { seconds: 3600 }         # 1 hour.
+//	   max_inter_break_duration { seconds: 39600 }  # 11 hours (12 - 1 = 11).
+//	}
+//
 // ```
 //
 // The timing and duration of the breaks in the solution will respect all
@@ -5399,18 +5420,20 @@ func (x *BreakRule_BreakRequest) GetMinDuration() *durationpb.Duration {
 // A `FrequencyConstraint` may in practice apply to non-consecutive breaks.
 // For example, the following schedule honors the "1h every 12h" example:
 // ```
-//   04:00 vehicle start
-//    .. performing travel and visits ..
-//   09:00 1 hour break
-//   10:00 end of the break
-//    .. performing travel and visits ..
-//   12:00 20-min lunch break
-//   12:20 end of the break
-//    .. performing travel and visits ..
-//   21:00 1 hour break
-//   22:00 end of the break
-//    .. performing travel and visits ..
-//   23:59 vehicle end
+//
+//	04:00 vehicle start
+//	 .. performing travel and visits ..
+//	09:00 1 hour break
+//	10:00 end of the break
+//	 .. performing travel and visits ..
+//	12:00 20-min lunch break
+//	12:20 end of the break
+//	 .. performing travel and visits ..
+//	21:00 1 hour break
+//	22:00 end of the break
+//	 .. performing travel and visits ..
+//	23:59 vehicle end
+//
 // ```
 type BreakRule_FrequencyConstraint struct {
 	state         protoimpl.MessageState
@@ -6172,20 +6195,24 @@ func (x *ShipmentRoute_TravelStep) GetRoutePolyline() *ShipmentRoute_EncodedPoly
 // i.e. where all fields are the same except for `example_vehicle_index`.
 // Example:
 // ```
-// reasons {
-//   code: DEMAND_EXCEEDS_VEHICLE_CAPACITY
-//   example_vehicle_index: 1
-//   example_exceeded_capacity_type: "Apples"
-// }
-// reasons {
-//   code: DEMAND_EXCEEDS_VEHICLE_CAPACITY
-//   example_vehicle_index: 3
-//   example_exceeded_capacity_type: "Pears"
-// }
-// reasons {
-//   code: CANNOT_BE_PERFORMED_WITHIN_VEHICLE_DISTANCE_LIMIT
-//   example_vehicle_index: 1
-// }
+//
+//	reasons {
+//	  code: DEMAND_EXCEEDS_VEHICLE_CAPACITY
+//	  example_vehicle_index: 1
+//	  example_exceeded_capacity_type: "Apples"
+//	}
+//
+//	reasons {
+//	  code: DEMAND_EXCEEDS_VEHICLE_CAPACITY
+//	  example_vehicle_index: 3
+//	  example_exceeded_capacity_type: "Pears"
+//	}
+//
+//	reasons {
+//	  code: CANNOT_BE_PERFORMED_WITHIN_VEHICLE_DISTANCE_LIMIT
+//	  example_vehicle_index: 1
+//	}
+//
 // ```
 // The skipped shipment is incompatible with all vehicles. The reasons may
 // be different for all vehicles but at least one vehicle's "Apples"
@@ -6342,17 +6369,18 @@ func (x *InjectedSolutionConstraint_ConstraintRelaxation) GetVehicleIndices() []
 // `relaxations(i).level` specifies the constraint relaxation level applied
 // to a visit #j that satisfies:
 //
-//   * `route.visits(j).start_time >= relaxations(i).threshold_time` AND
-//   * `j + 1 >= relaxations(i).threshold_visit_count`
+//   - `route.visits(j).start_time >= relaxations(i).threshold_time` AND
+//   - `j + 1 >= relaxations(i).threshold_visit_count`
 //
 // Similarly, the vehicle start is relaxed to `relaxations(i).level` if it
 // satisfies:
 //
-//   * `vehicle_start_time >= relaxations(i).threshold_time` AND
-//   * `relaxations(i).threshold_visit_count == 0`
+//   - `vehicle_start_time >= relaxations(i).threshold_time` AND
+//   - `relaxations(i).threshold_visit_count == 0`
+//
 // and the vehicle end is relaxed to `relaxations(i).level` if it satisfies:
-//   * `vehicle_end_time >= relaxations(i).threshold_time` AND
-//   * `route.visits_size() + 1 >= relaxations(i).threshold_visit_count`
+//   - `vehicle_end_time >= relaxations(i).threshold_time` AND
+//   - `route.visits_size() + 1 >= relaxations(i).threshold_visit_count`
 //
 // To apply a relaxation level if a visit meets the `threshold_visit_count`
 // OR the `threshold_time` add two `relaxations` with the same `level`:
