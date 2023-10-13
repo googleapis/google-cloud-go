@@ -62,11 +62,11 @@ func TestSendOptimizer(t *testing.T) {
 			description: "verbose-optimizer",
 			optimizer:   &verboseOptimizer{},
 			reqs: func() []*pendingWrite {
-				dv := newDescriptorVersion(exampleDP)
+				tmpl := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -84,11 +84,11 @@ func TestSendOptimizer(t *testing.T) {
 			description: "simplex no errors",
 			optimizer:   &simplexOptimizer{},
 			reqs: func() []*pendingWrite {
-				dv := newDescriptorVersion(exampleDP)
+				tmpl := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -114,11 +114,11 @@ func TestSendOptimizer(t *testing.T) {
 			description: "simplex w/partial errors",
 			optimizer:   &simplexOptimizer{},
 			reqs: func() []*pendingWrite {
-				dv := newDescriptorVersion(exampleDP)
+				tmpl := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -144,11 +144,11 @@ func TestSendOptimizer(t *testing.T) {
 			description: "multiplex single all errors",
 			optimizer:   &multiplexOptimizer{},
 			reqs: func() []*pendingWrite {
-				dv := newDescriptorVersion(exampleDP)
+				tmpl := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -166,11 +166,11 @@ func TestSendOptimizer(t *testing.T) {
 			description: "multiplex single no errors",
 			optimizer:   &multiplexOptimizer{},
 			reqs: func() []*pendingWrite {
-				dv := newDescriptorVersion(exampleDP)
+				tmpl := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), tmpl, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -193,8 +193,8 @@ func TestSendOptimizer(t *testing.T) {
 			description: "multiplex interleave",
 			optimizer:   &multiplexOptimizer{},
 			reqs: func() []*pendingWrite {
-				dvA := newDescriptorVersion(exampleDP)
-				dvB := newDescriptorVersion(protodesc.ToDescriptorProto((&testdata.AllSupportedTypes{}).ProtoReflect().Descriptor()))
+				tmplA := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
+				tmplB := newVersionedTemplate().revise(reviseProtoSchema(protodesc.ToDescriptorProto((&testdata.AllSupportedTypes{}).ProtoReflect().Descriptor())))
 
 				reqA := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
 				reqA.WriteStream = "alpha"
@@ -203,16 +203,16 @@ func TestSendOptimizer(t *testing.T) {
 				reqB.WriteStream = "beta"
 
 				writes := make([]*pendingWrite, 10)
-				writes[0] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceID)
-				writes[1] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceID)
-				writes[2] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceID)
-				writes[3] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceID)
-				writes[4] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceID)
-				writes[5] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceID)
-				writes[6] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceID)
-				writes[7] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceID)
-				writes[8] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceID)
-				writes[9] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceID)
+				writes[0] = newPendingWrite(ctx, nil, reqA, tmplA, reqA.GetWriteStream(), exampleTraceID)
+				writes[1] = newPendingWrite(ctx, nil, reqA, tmplA, reqA.GetWriteStream(), exampleTraceID)
+				writes[2] = newPendingWrite(ctx, nil, reqB, tmplB, reqB.GetWriteStream(), exampleTraceID)
+				writes[3] = newPendingWrite(ctx, nil, reqA, tmplA, reqA.GetWriteStream(), exampleTraceID)
+				writes[4] = newPendingWrite(ctx, nil, reqB, tmplB, reqB.GetWriteStream(), exampleTraceID)
+				writes[5] = newPendingWrite(ctx, nil, reqB, tmplB, reqB.GetWriteStream(), exampleTraceID)
+				writes[6] = newPendingWrite(ctx, nil, reqB, tmplB, reqB.GetWriteStream(), exampleTraceID)
+				writes[7] = newPendingWrite(ctx, nil, reqB, tmplB, reqB.GetWriteStream(), exampleTraceID)
+				writes[8] = newPendingWrite(ctx, nil, reqA, tmplA, reqA.GetWriteStream(), exampleTraceID)
+				writes[9] = newPendingWrite(ctx, nil, reqA, tmplA, reqA.GetWriteStream(), exampleTraceID)
 
 				return writes
 			}(),
@@ -270,16 +270,16 @@ func TestSendOptimizer(t *testing.T) {
 			description: "multiplex w/evolution",
 			optimizer:   &multiplexOptimizer{},
 			reqs: func() []*pendingWrite {
-				dvOld := newDescriptorVersion(exampleDP)
-				dvNew := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("new")})
+				tmplOld := newVersionedTemplate().revise(reviseProtoSchema(exampleDP))
+				tmplNew := tmplOld.revise(reviseProtoSchema(&descriptorpb.DescriptorProto{Name: proto.String("new")}))
 
 				example := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
 
 				writes := make([]*pendingWrite, 4)
-				writes[0] = newPendingWrite(ctx, nil, example, dvOld, exampleStreamID, exampleTraceID)
-				writes[1] = newPendingWrite(ctx, nil, example, dvOld, exampleStreamID, exampleTraceID)
-				writes[2] = newPendingWrite(ctx, nil, example, dvNew, exampleStreamID, exampleTraceID)
-				writes[3] = newPendingWrite(ctx, nil, example, dvNew, exampleStreamID, exampleTraceID)
+				writes[0] = newPendingWrite(ctx, nil, example, tmplOld, exampleStreamID, exampleTraceID)
+				writes[1] = newPendingWrite(ctx, nil, example, tmplOld, exampleStreamID, exampleTraceID)
+				writes[2] = newPendingWrite(ctx, nil, example, tmplNew, exampleStreamID, exampleTraceID)
+				writes[3] = newPendingWrite(ctx, nil, example, tmplNew, exampleStreamID, exampleTraceID)
 
 				return writes
 			}(),
@@ -332,63 +332,6 @@ func TestSendOptimizer(t *testing.T) {
 			if diff := cmp.Diff(testARC.requests[k], wr, protocmp.Transform()); diff != "" {
 				t.Errorf("%s (req %d) mismatch: -got, +want:\n%s", tc.description, k, diff)
 			}
-		}
-	}
-}
-
-func TestDescriptorVersion_EqVersion(t *testing.T) {
-
-	exampleDV := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("foo")})
-	copiedExampleDV := &descriptorVersion{versionTime: exampleDV.versionTime, descriptorProto: &descriptorpb.DescriptorProto{Name: proto.String("foo")}, hashVal: exampleDV.hashVal}
-	exampleDV2 := &descriptorVersion{versionTime: exampleDV.versionTime, descriptorProto: &descriptorpb.DescriptorProto{Name: proto.String("bar")}, hashVal: exampleDV.hashVal}
-
-	testCases := []struct {
-		desc    string
-		current *descriptorVersion
-		other   *descriptorVersion
-		want    bool
-	}{
-		{
-			desc: "both nil",
-		},
-		{
-			desc:  "nil current",
-			other: newDescriptorVersion(&descriptorpb.DescriptorProto{}),
-			want:  false,
-		},
-		{
-			desc:    "nil other",
-			current: newDescriptorVersion(&descriptorpb.DescriptorProto{}),
-			want:    false,
-		},
-		{
-			desc:    "mismatched",
-			current: newDescriptorVersion(&descriptorpb.DescriptorProto{}),
-			other:   newDescriptorVersion(&descriptorpb.DescriptorProto{}),
-			want:    false,
-		},
-		{
-			desc:    "equal, same reference",
-			current: exampleDV,
-			other:   exampleDV,
-			want:    true,
-		},
-		{
-			desc:    "equal, different references",
-			current: exampleDV,
-			other:   copiedExampleDV,
-			want:    true,
-		},
-		{
-			desc:    "almost equal aka a collision",
-			current: exampleDV,
-			other:   exampleDV2,
-			want:    true,
-		},
-	}
-	for _, tc := range testCases {
-		if got := tc.current.eqVersion(tc.other); got != tc.want {
-			t.Errorf("case %q, got %t want %t", tc.desc, got, tc.want)
 		}
 	}
 }

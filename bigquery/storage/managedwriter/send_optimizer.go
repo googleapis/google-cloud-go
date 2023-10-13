@@ -106,15 +106,15 @@ func (so *simplexOptimizer) isMultiplexing() bool {
 // Schema evolution is simply a case of sending the new WriterSchema as part of the request(s).  No explicit
 // reconnection is necessary.
 type multiplexOptimizer struct {
-	prevStream            string
-	prevDescriptorVersion *descriptorVersion
-	multiplexStreams      bool
+	prevStream       string
+	prevTemplate     *versionedTemplate
+	multiplexStreams bool
 }
 
 func (mo *multiplexOptimizer) signalReset() {
 	mo.prevStream = ""
 	mo.multiplexStreams = false
-	mo.prevDescriptorVersion = nil
+	mo.prevTemplate = nil
 }
 
 func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
@@ -125,7 +125,7 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 		err = arc.Send(req)
 		if err == nil {
 			mo.prevStream = req.GetWriteStream()
-			mo.prevDescriptorVersion = pw.descVersion
+			mo.prevTemplate = pw.reqTmpl
 		}
 	} else {
 		// We have a previous send.  Determine if it's the same stream or a different one.
@@ -137,15 +137,15 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 			// swapOnSuccess tracks if we need to update schema versions on successful send.
 			swapOnSuccess := false
 			req := pw.req
-			if mo.prevDescriptorVersion != nil {
-				if !mo.prevDescriptorVersion.eqVersion(pw.descVersion) {
+			if mo.prevTemplate != nil {
+				if !mo.prevTemplate.Compatible(pw.reqTmpl) {
 					swapOnSuccess = true
 					req = pw.constructFullRequest(false) // full request minus traceID.
 				}
 			}
 			err = arc.Send(req)
 			if err == nil && swapOnSuccess {
-				mo.prevDescriptorVersion = pw.descVersion
+				mo.prevTemplate = pw.reqTmpl
 			}
 		} else {
 			// The previous send was for a different stream.  Send a full request, minus traceId.
@@ -154,7 +154,7 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 			if err == nil {
 				// Send successful.  Update state to reflect this send is now the "previous" state.
 				mo.prevStream = pw.writeStreamID
-				mo.prevDescriptorVersion = pw.descVersion
+				mo.prevTemplate = pw.reqTmpl
 			}
 			// Also, note that we've sent traffic for multiple streams, which means the backend recognizes this
 			// is a multiplex stream as well.
@@ -166,67 +166,6 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 
 func (mo *multiplexOptimizer) isMultiplexing() bool {
 	return mo.multiplexStreams
-}
-
-// getDescriptorFromAppend is a utility method for extracting the deeply nested schema
-// descriptor from a request.  It returns a nil if the descriptor is not set.
-func getDescriptorFromAppend(req *storagepb.AppendRowsRequest) *descriptorpb.DescriptorProto {
-	if pr := req.GetProtoRows(); pr != nil {
-		if ws := pr.GetWriterSchema(); ws != nil {
-			return ws.GetProtoDescriptor()
-		}
-	}
-	return nil
-}
-
-// descriptorVersion is used for faster comparisons of proto descriptors.  Deep equality comparisons
-// of DescriptorProto can be very costly, so we use a simple versioning strategy based on
-// time and a crc32 hash of the serialized proto bytes.
-//
-// The descriptorVersion is used for retaining schema, signalling schema change and optimizing requests.
-type descriptorVersion struct {
-	versionTime     time.Time
-	descriptorProto *descriptorpb.DescriptorProto
-	hashVal         uint32
-}
-
-func newDescriptorVersion(in *descriptorpb.DescriptorProto) *descriptorVersion {
-	var hashVal uint32
-	// It is a known issue that we may have non-deterministic serialization of a DescriptorProto
-	// due to the nature of protobuf.  Our primary protection is the time-based version identifier,
-	// this hashing is primarily for time collisions.
-	if b, err := proto.Marshal(in); err == nil {
-		hashVal = crc32.ChecksumIEEE(b)
-	}
-	return &descriptorVersion{
-		versionTime:     time.Now(),
-		descriptorProto: proto.Clone(in).(*descriptorpb.DescriptorProto),
-		hashVal:         hashVal,
-	}
-}
-
-// eqVersion is the fast equality comparison that uses the versionTime and crc32 hash
-// in place of deep proto equality.
-func (dv *descriptorVersion) eqVersion(other *descriptorVersion) bool {
-	if dv == nil || other == nil {
-		return false
-	}
-	if dv.versionTime != other.versionTime {
-		return false
-	}
-	if dv.hashVal == 0 || other.hashVal == 0 {
-		return false
-	}
-	if dv.hashVal != other.hashVal {
-		return false
-	}
-	return true
-}
-
-// isNewer reports whether the current schema bears a newer time (version)
-// than the other.
-func (dv *descriptorVersion) isNewer(other *descriptorVersion) bool {
-	return dv.versionTime.UnixNano() > other.versionTime.UnixNano()
 }
 
 // versionedTemplate is used for faster comparison of the templated part of

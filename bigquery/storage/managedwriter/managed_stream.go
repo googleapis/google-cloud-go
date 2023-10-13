@@ -78,9 +78,9 @@ type ManagedStream struct {
 
 	streamSettings *streamSettings
 	// retains the current descriptor for the stream.
-	curDescVersion *descriptorVersion
-	c              *Client
-	retry          *statelessRetryer
+	curTemplate *versionedTemplate
+	c           *Client
+	retry       *statelessRetryer
 
 	// writer state
 	mu     sync.Mutex
@@ -298,9 +298,9 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 		return nil, err
 	}
 	// Ensure we build the request and pending write with a consistent schema version.
-	curSchemaVersion := ms.curDescVersion
+	curTemplate := ms.curTemplate
 	req := ms.buildRequest(data)
-	pw := newPendingWrite(ctx, ms, req, curSchemaVersion, ms.streamSettings.streamID, ms.streamSettings.TraceID)
+	pw := newPendingWrite(ctx, ms, req, curTemplate, ms.streamSettings.streamID, ms.streamSettings.TraceID)
 	// apply AppendOption opts
 	for _, opt := range opts {
 		opt(pw)
