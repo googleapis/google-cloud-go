@@ -327,6 +327,9 @@
         "shell": {
             "component": "shell"
         },
+        "shopping": {
+            "component": "shopping"
+        },
         "speech": {
             "component": "speech"
         },

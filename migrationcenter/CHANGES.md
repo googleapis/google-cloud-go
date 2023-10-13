@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.0...migrationcenter/v0.2.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **migrationcenter:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.1.0...migrationcenter/v0.2.0) (2023-09-20)
 
 

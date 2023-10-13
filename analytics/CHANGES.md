@@ -1,5 +1,12 @@
 # Changes
 
+## [0.21.4](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.3...analytics/v0.21.4) (2023-10-12)
+
+
+### Bug Fixes
+
+* **analytics:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [0.21.3](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.2...analytics/v0.21.3) (2023-07-27)
 
 
