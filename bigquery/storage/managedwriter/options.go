@@ -267,7 +267,6 @@ func WithMissingValueInterpretations(mvi map[string]storagepb.AppendRowsRequest_
 // for a given stream.  See WithMissingValueIntepretations for more information about
 // missing values.
 //
-
 // WithMissingValueIntepretations set for individual colums can override the default chosen
 // with this option.
 //
