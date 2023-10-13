@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.2...talent/v1.6.3) (2023-10-12)
+
+
+### Bug Fixes
+
+* **talent:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.1...talent/v1.6.2) (2023-06-20)
 
 

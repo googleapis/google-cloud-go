@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.10.0...notebooks/v1.10.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **notebooks:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.9.1...notebooks/v1.10.0) (2023-08-21)
 
 
