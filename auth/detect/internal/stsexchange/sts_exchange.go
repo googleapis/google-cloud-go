@@ -44,8 +44,10 @@ type Options struct {
 	Request        *TokenRequest
 	Authentication ClientAuthentication
 	Headers        http.Header
-	ExtraOpts      map[string]interface{}
-	RefreshToken   string
+	// ExtraOpts are optional fields marshalled into the `options` field of the
+	// request body.
+	ExtraOpts    map[string]interface{}
+	RefreshToken string
 }
 
 // RefreshAccessToken performs the token exchange using a refresh token flow.
