@@ -78,10 +78,10 @@ type Options struct {
 
 func (o *Options) validate() error {
 	if o.Tp == nil {
-		return errors.New("detect: missing required 'source_credentials' field in credentials")
+		return errors.New("detect: missing required 'source_credentials' field in impersonated credentials")
 	}
 	if o.URL == "" {
-		return errors.New("detect: missing required 'service_account_impersonation_url' field in credentials")
+		return errors.New("detect: missing required 'service_account_impersonation_url' field in impersonated credentials")
 	}
 	return nil
 }
