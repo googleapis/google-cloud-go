@@ -193,7 +193,7 @@ func (o *Options) validate() error {
 		return errors.New("detect: options must be provided")
 	}
 	if len(o.Scopes) > 0 && o.Audience != "" {
-		return errors.New("detect: both scopes or audience were provided")
+		return errors.New("detect: both scopes and audience were provided")
 	}
 	if len(o.CredentialsJSON) > 0 && o.CredentialsFile != "" {
 		return errors.New("detect: both credentials file and JSON were provided")
