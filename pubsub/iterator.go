@@ -17,6 +17,7 @@ package pubsub
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"strings"
@@ -31,6 +32,7 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -100,7 +102,7 @@ type messageIterator struct {
 	enableExactlyOnceDelivery bool
 	sendNewAckDeadline        bool
 
-	// This maps trace span contexts to ackIDs, used for otel tracing.
+	// This maps trace parent spans to ackIDs, used for otel tracing.
 	activeSpanContexts sync.Map
 }
 
@@ -283,8 +285,6 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		ackID := msgAckID(m)
 		addRecv(m.ID, ackID, now)
 		it.keepAliveDeadlines[ackID] = maxExt
-		ctx := otel.GetTextMapPropagator().Extract(context.Background(), newMessageCarrier(m))
-		it.activeSpanContexts.Store(ackID, trace.SpanContextFromContext(ctx))
 		// Don't change the mod-ack if the message is going to be nacked. This is
 		// possible if there are retries.
 		if _, ok := it.pendingNacks[ackID]; !ok {
@@ -299,6 +299,27 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 				ackIDs[ackID] = ipubsub.NewAckResult()
 				pendingMessages[ackID] = m
 			}
+		}
+
+		ctx := context.Background()
+
+		opts := getSubSpanAttributes(it.subName, m, semconv.MessagingOperationReceive)
+		if m.Attributes != nil {
+			ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(m))
+		}
+		_, span := tracer().Start(ctx, fmt.Sprintf("%s %s", it.subName, subscribeReceiveSpanName), opts...)
+		span.SetAttributes(
+			attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
+			attribute.String(ackIDAttribute, ackID),
+			attribute.Int(numBatchedMessagesAttribute, len(pendingMessages)),
+		)
+		it.activeSpanContexts.Store(ackID, span)
+		ackh, _ := msgAckHandler(m, it.enableExactlyOnceDelivery)
+		old := ackh.doneFunc
+		ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
+			span.SetAttributes(attribute.Bool(ackAttribute, ack))
+			defer span.End()
+			old(ackID, ack, r, receiveTime)
 		}
 	}
 	deadline := it.ackDeadline()
@@ -490,15 +511,16 @@ func (it *messageIterator) handleKeepAlives() {
 // sendAck is used to confirm acknowledgement of a message. If exactly once delivery is
 // enabled, we'll retry these messages for a short duration in a goroutine.
 func (it *messageIterator) sendAck(m map[string]*AckResult) {
+	_, ackSpan := tracer().Start(context.Background(), ackSpanName)
+	defer ackSpan.End()
 	ackIDs := make([]string, 0, len(m))
 	for ackID := range m {
 		ackIDs = append(ackIDs, ackID)
 		// get the parent span context for this ackID for otel tracing.
 		s, _ := it.activeSpanContexts.Load(ackID)
-		sc := s.(trace.SpanContext)
-		ctx := trace.ContextWithSpanContext(context.Background(), sc)
-		_, ackSpan := tracer().Start(ctx, ackSpanName)
-		defer ackSpan.End()
+		span := s.(trace.Span)
+		span.AddEvent("ack start")
+		defer span.AddEvent("ack end")
 	}
 	it.eoMu.RLock()
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery
@@ -543,28 +565,34 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 // enabled, we retry it in a separate goroutine for a short duration.
 func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration, logOnInvalid, isReceipt bool) {
 	deadlineSec := int32(deadline / time.Second)
+
+	var spanName, eventName string
+	isNack := deadline == 0
+	if isNack {
+		spanName = nackSpanName
+		eventName = "nack"
+	} else {
+		spanName = modAckSpanName
+		eventName = "modack"
+	}
+	_, mSpan := tracer().Start(context.Background(), spanName)
+	if !isNack {
+		mSpan.SetAttributes(attribute.Int(modackDeadlineSecondsAttribute, int(deadlineSec)),
+			attribute.Bool(initialModackAttribute, isReceipt))
+		mSpan.SetAttributes(attribute.Int(numBatchedMessagesAttribute, len(m)))
+	}
+
 	ackIDs := make([]string, 0, len(m))
 	for ackID := range m {
 		ackIDs = append(ackIDs, ackID)
+
 		// get the parent span context for this ackID for otel tracing.
 		s, _ := it.activeSpanContexts.Load(ackID)
-		psc := s.(trace.SpanContext)
-		ctx := trace.ContextWithSpanContext(context.Background(), psc)
-		var spanName string
-		isNack := deadline == 0
-		if isNack {
-			spanName = nackSpanName
-		} else {
-			spanName = modAckSpanName
-		}
-		_, span := tracer().Start(ctx, spanName)
-		if !isNack {
-			span.SetAttributes(attribute.Int(modackDeadlineSecondsAttribute, int(deadlineSec)),
-				attribute.Bool(initialModackAttribute, isReceipt))
-			span.SetAttributes(attribute.Int(numBatchedMessagesAttribute, len(m)))
-		}
-		defer span.End()
+		parentSpan := s.(trace.Span)
+		parentSpan.AddEvent(eventName + " start")
+		defer parentSpan.AddEvent(eventName + " end")
 	}
+	defer mSpan.End()
 	it.eoMu.RLock()
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery
 	it.eoMu.RUnlock()

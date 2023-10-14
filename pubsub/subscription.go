@@ -29,9 +29,9 @@ import (
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -1392,13 +1392,13 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					iter.eoMu.RLock()
 					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
-					ctx3 := ctx
 					if msg.Attributes != nil {
-						ctx3 = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(msg))
-						// remove googclient before handing off to client.
 						delete(msg.Attributes, "googclient_traceparent")
 					}
-					ctx3, fcSpan := tracer().Start(ctx3, subscriberFlowControlSpanName)
+					c, _ := iter.activeSpanContexts.Load(ackh.ackID)
+					sc := c.(trace.Span)
+					ctx4 := trace.ContextWithSpanContext(context.Background(), sc.SpanContext())
+					ctx3, fcSpan := tracer().Start(ctx4, subscriberFlowControlSpanName)
 					if err := fc.acquire(ctx3, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
 						for _, m := range msgs[i:] {

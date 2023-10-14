@@ -15,15 +15,11 @@
 package pubsub
 
 import (
-	"context"
 	"fmt"
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 )
 
 // Message represents a Pub/Sub message.
@@ -98,25 +94,8 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	msg.DeliveryAttempt = deliveryAttempt
 	msg.OrderingKey = resp.Message.OrderingKey
 
-	ctx := context.Background()
-	opts := getSubSpanAttributes(subName, msg, semconv.MessagingOperationReceive)
-	if msg.Attributes != nil {
-		ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(msg))
-	}
-	_, span := tracer().Start(ctx, fmt.Sprintf("%s %s", subName, subscribeReceiveSpanName), opts...)
-	span.SetAttributes(
-		attribute.Bool(eosAttribute, eos),
-		attribute.String(ackIDAttribute, resp.AckId),
-		attribute.Int(numBatchedMessagesAttribute, numMsgs),
-	)
-
 	ackh.receiveTime = receiveTime
 	ackh.doneFunc = doneFunc
-	ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
-		span.SetAttributes(attribute.Bool(ackAttribute, ack))
-		defer span.End()
-		doneFunc(ackID, ack, r, receiveTime)
-	}
 	ackh.ackResult = ipubsub.NewAckResult()
 	return msg, nil
 }
