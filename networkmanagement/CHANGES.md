@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.9.0...networkmanagement/v1.9.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.8.0...networkmanagement/v1.9.0) (2023-08-14)
 
 
