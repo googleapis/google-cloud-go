@@ -72,9 +72,14 @@ type chunkReader struct {
 }
 
 // newChunkReader returns a new chunkReader for handling read rows responses.
-func newChunkReader(reversed bool) *chunkReader {
-	return &chunkReader{reversed: reversed, state: newRow}
+func newChunkReader() *chunkReader {
+	return &chunkReader{reversed: false, state: newRow}
 }
+
+func newReverseChunkReader() *chunkReader {
+	return &chunkReader{reversed: true, state: newRow}
+}
+
 
 // Process takes a cell chunk and returns a new Row if the given chunk
 // completes a Row, or nil otherwise.
