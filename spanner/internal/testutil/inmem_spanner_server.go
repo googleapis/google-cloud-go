@@ -18,8 +18,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"math/rand"
+	"reflect"
 	"sort"
 	"strings"
 	"sync"
@@ -206,11 +208,12 @@ func (s StatementResult) getResultSetWithTransactionSet(selector *spannerpb.Tran
 		ResumeTokens: s.ResumeTokens,
 	}
 	if s.ResultSet != nil {
-		res.ResultSet = &spannerpb.ResultSet{
-			Metadata: s.ResultSet.Metadata,
-			Rows:     s.ResultSet.Rows,
-			Stats:    s.ResultSet.Stats,
+		p, err := deepCopy(s.ResultSet)
+		if err != nil {
+			// panic here as this should never happen.
+			panic(err)
 		}
+		res.ResultSet = p.(*spannerpb.ResultSet)
 	}
 	if _, ok := selector.GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
 		if res.ResultSet == nil {
@@ -222,6 +225,20 @@ func (s StatementResult) getResultSetWithTransactionSet(selector *spannerpb.Tran
 		res.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: tx}
 	}
 	return res
+}
+
+func deepCopy(v interface{}) (interface{}, error) {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+
+	vptr := reflect.New(reflect.TypeOf(v))
+	err = json.Unmarshal(data, vptr.Interface())
+	if err != nil {
+		return nil, err
+	}
+	return vptr.Elem().Interface(), err
 }
 
 // SimulatedExecutionTime represents the time the execution of a method
@@ -879,7 +896,7 @@ func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlReques
 		return err
 	}
 	s.mu.Lock()
-	statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
+	statementResult = statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
 	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
 	s.mu.Unlock()
 	switch statementResult.Type {

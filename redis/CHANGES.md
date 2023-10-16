@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.13.1...redis/v1.13.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **redis:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.13.0...redis/v1.13.1) (2023-06-20)
 
 

@@ -51,9 +51,6 @@
         "assuredworkloads": {
             "component": "assuredworkloads"
         },
-        "auth/oauth2adapt": {
-            "component": "auth/oauth2adapt"
-        },
         "automl": {
             "component": "automl"
         },
@@ -329,6 +326,9 @@
         },
         "shell": {
             "component": "shell"
+        },
+        "shopping": {
+            "component": "shopping"
         },
         "speech": {
             "component": "speech"
