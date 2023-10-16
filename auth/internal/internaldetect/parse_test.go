@@ -139,7 +139,10 @@ func TestParseClientCredential_Installed(t *testing.T) {
 	want := &ClientCredentialsFile{
 		Installed: &Config3LO{
 			ClientID:     "222-installed.apps.googleusercontent.com",
+			ClientSecret: "shhhh",
 			RedirectURIs: []string{"https://www.example.com/oauth2callback"},
+			AuthURI:      "https://accounts.google.com/o/oauth2/auth",
+			TokenURI:     "https://accounts.google.com/o/oauth2/token",
 		},
 	}
 	if diff := cmp.Diff(want, got); diff != "" {

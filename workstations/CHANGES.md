@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.0...workstations/v0.5.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **workstations:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.4.1...workstations/v0.5.0) (2023-09-11)
 
 
