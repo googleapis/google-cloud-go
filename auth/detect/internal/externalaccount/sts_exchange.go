@@ -116,7 +116,6 @@ type stsTokenExchangeResponse struct {
 	TokenType       string `json:"token_type"`
 	ExpiresIn       int    `json:"expires_in"`
 	Scope           string `json:"scope"`
-	// TODO(codyoss): original impl parsed but did not use a refresh token here, do we need it?
 }
 
 // clientAuthentication represents an OAuth client ID and secret and the

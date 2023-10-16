@@ -178,7 +178,7 @@ func TestError_Error(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_JSONResponse(t *testing.T) {
+func TestNew2LOTokenProvider_JSONResponse(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{
@@ -221,7 +221,7 @@ func TestConfigJWT2LO_JSONResponse(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_BadResponse(t *testing.T) {
+func TestNew2LOTokenProvider_BadResponse(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"scope": "user", "token_type": "bearer"}`))
@@ -259,7 +259,7 @@ func TestConfigJWT2LO_BadResponse(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_BadResponseType(t *testing.T) {
+func TestNew2LOTokenProvider_BadResponseType(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"access_token":123, "scope": "user", "token_type": "bearer"}`))
@@ -283,7 +283,7 @@ func TestConfigJWT2LO_BadResponseType(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_Assertion(t *testing.T) {
+func TestNew2LOTokenProvider_Assertion(t *testing.T) {
 	var assertion string
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
@@ -339,7 +339,7 @@ func TestConfigJWT2LO_Assertion(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_AssertionPayload(t *testing.T) {
+func TestNew2LOTokenProvider_AssertionPayload(t *testing.T) {
 	var assertion string
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
@@ -436,7 +436,7 @@ func TestConfigJWT2LO_AssertionPayload(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_TokenError(t *testing.T) {
+func TestNew2LOTokenProvider_TokenError(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -465,5 +465,44 @@ func TestConfigJWT2LO_TokenError(t *testing.T) {
 	expected := fmt.Sprintf("auth: cannot fetch token: %v\nResponse: %s", "400", `{"error": "invalid_grant"}`)
 	if errStr := err.Error(); errStr != expected {
 		t.Fatalf("got %#v, expected %#v", errStr, expected)
+	}
+}
+
+func TestNew2LOTokenProvider_Validate(t *testing.T) {
+	tests := []struct {
+		name string
+		opts *Options2LO
+	}{
+		{
+			name: "missing options",
+		},
+		{
+			name: "missing email",
+			opts: &Options2LO{
+				PrivateKey: []byte("key"),
+				TokenURL:   "url",
+			},
+		},
+		{
+			name: "missing key",
+			opts: &Options2LO{
+				Email:    "email",
+				TokenURL: "url",
+			},
+		},
+		{
+			name: "missing URL",
+			opts: &Options2LO{
+				Email:      "email",
+				PrivateKey: []byte("key"),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if _, err := New2LOTokenProvider(tt.opts); err == nil {
+				t.Error("got nil, want an error")
+			}
+		})
 	}
 }
