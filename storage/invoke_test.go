@@ -181,7 +181,6 @@ func TestInvoke(t *testing.T) {
 			call := func(ctx context.Context) error {
 				if counter == 0 {
 					headers := callctx.HeadersFromContext(ctx)
-					//log.Printf("headers: %+v", headers)
 					initialClientHeader = headers["x-goog-api-client"][0]
 					initialIdempotencyHeader = headers["x-goog-gcs-idempotency-token"][0]
 				}
