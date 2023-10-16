@@ -132,8 +132,9 @@ func handleUserCredential(f *internaldetect.UserCredentialsFile, opts *Options) 
 		TokenURL:         opts.tokenURL(),
 		AuthStyle:        auth.StyleInParams,
 		EarlyTokenExpiry: opts.EarlyTokenRefresh,
+		RefreshToken:     f.RefreshToken,
 	}
-	return auth.New3LOTokenProvider(f.RefreshToken, opts3LO)
+	return auth.New3LOTokenProvider(opts3LO)
 }
 
 func handleExternalAccount(f *internaldetect.ExternalAccountFile, opts *Options) (auth.TokenProvider, error) {

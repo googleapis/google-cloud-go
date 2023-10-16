@@ -618,3 +618,36 @@ func TestDefaultCredentials_BadFiletype(t *testing.T) {
 		t.Fatal("got nil, want non-nil err")
 	}
 }
+
+func TestDefaultCredentials_Validate(t *testing.T) {
+	tests := []struct {
+		name string
+		opts *Options
+	}{
+		{
+			name: "missing options",
+		},
+		{
+			name: "scope and audience provided",
+			opts: &Options{
+				Scopes:   []string{"scope"},
+				Audience: "aud",
+			},
+		},
+		{
+			name: "file and json provided",
+			opts: &Options{
+				Scopes:          []string{"scope"},
+				CredentialsFile: "path",
+				CredentialsJSON: []byte(`{"some":"json"}`),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if _, err := DefaultCredentials(tt.opts); err == nil {
+				t.Error("got nil, want an error")
+			}
+		})
+	}
+}
