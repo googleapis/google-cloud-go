@@ -19,6 +19,7 @@ package bigtable
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 )
@@ -58,6 +59,7 @@ const (
 // chunkReader handles cell chunks from the read rows response and combines
 // them into full Rows.
 type chunkReader struct {
+	reversed  bool
 	state     rrState
 	curKey    []byte
 	curLabels []string
@@ -70,8 +72,8 @@ type chunkReader struct {
 }
 
 // newChunkReader returns a new chunkReader for handling read rows responses.
-func newChunkReader() *chunkReader {
-	return &chunkReader{state: newRow}
+func newChunkReader(reversed bool) *chunkReader {
+	return &chunkReader{reversed: reversed, state: newRow}
 }
 
 // Process takes a cell chunk and returns a new Row if the given chunk
@@ -200,9 +202,19 @@ func (cr *chunkReader) validateNewRow(cc *btpb.ReadRowsResponse_CellChunk) error
 	if cc.RowKey == nil || cc.FamilyName == nil || cc.Qualifier == nil {
 		return fmt.Errorf("missing key field for new row %v", cc)
 	}
-	if cr.lastKey != "" && cr.lastKey >= string(cc.RowKey) {
-		return fmt.Errorf("out of order row key: %q, %q", cr.lastKey, string(cc.RowKey))
+
+	if cr.lastKey != "" {
+		r := strings.Compare(string(cc.RowKey), cr.lastKey)
+		direction := ">"
+		if cr.reversed {
+			r *= -1
+			direction = "<"
+		}
+		if r < 0 {
+			return fmt.Errorf("out of order row key, new key %q must be %s prev row: %q", cc.RowKey, direction, cr.lastKey)
+		}
 	}
+
 	return nil
 }
 

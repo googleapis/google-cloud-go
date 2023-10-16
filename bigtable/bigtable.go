@@ -18,9 +18,11 @@ package bigtable // import "cloud.google.com/go/bigtable"
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/url"
 	"strconv"
 	"time"
@@ -158,12 +160,22 @@ type Table struct {
 
 // Open opens a table.
 func (c *Client) Open(table string) *Table {
+	ff := btpb.FeatureFlags{
+		ReverseScans: true,
+	}
+	ffOut, err := proto.Marshal(&ff)
+	if err != nil {
+		log.Fatal("Failed to compose feature flags %v", err)
+	}
+	ffEncoded := base64.URLEncoding.EncodeToString(ffOut)
+
 	return &Table{
 		c:     c,
 		table: table,
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
+			featureFlagsHeader, ffEncoded,
 		), btopt.WithFeatureFlags()),
 	}
 }
@@ -207,7 +219,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 		if err != nil {
 			return err
 		}
-		cr := newChunkReader()
+		cr := newChunkReader(req.Reversed)
 		for {
 			res, err := stream.Recv()
 			if err == io.EOF {
@@ -306,6 +318,10 @@ type RowSet interface {
 	// given row key or any row key lexicographically less than it.
 	retainRowsAfter(lastRowKey string) RowSet
 
+	// retainRowsBefore returns a new RowSet that does not include the
+	// given row key or any row key lexicographically greater than it.
+	retainRowsBefore(lastRowKey string) RowSet
+
 	// Valid reports whether this set can cover at least one row.
 	valid() bool
 }
@@ -325,6 +341,16 @@ func (r RowList) retainRowsAfter(lastRowKey string) RowSet {
 	var retryKeys RowList
 	for _, key := range r {
 		if key > lastRowKey {
+			retryKeys = append(retryKeys, key)
+		}
+	}
+	return retryKeys
+}
+
+func (r RowList) retainRowsBefore(lastRowKey string) RowSet {
+	var retryKeys RowList
+	for _, key := range r {
+		if key < lastRowKey {
 			retryKeys = append(retryKeys, key)
 		}
 	}
@@ -425,6 +451,14 @@ func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
 	return NewRange(start, r.limit)
 }
 
+func (r RowRange) retainRowsBefore(lastRowKey string) RowSet {
+	if lastRowKey == "" || (r.limit != "" && r.limit <= lastRowKey) {
+		return r
+	}
+
+	return NewRange(r.start, lastRowKey)
+}
+
 func (r RowRange) valid() bool {
 	return r.Unbounded() || r.start < r.limit
 }
@@ -449,6 +483,21 @@ func (r RowRangeList) retainRowsAfter(lastRowKey string) RowSet {
 	var ranges RowRangeList
 	for _, rr := range r {
 		retained := rr.retainRowsAfter(lastRowKey)
+		if retained.valid() {
+			ranges = append(ranges, retained.(RowRange))
+		}
+	}
+	return ranges
+}
+
+func (r RowRangeList) retainRowsBefore(lastRowKey string) RowSet {
+	if lastRowKey == "" {
+		return r
+	}
+	// Return a list of any range that has not yet been completely processed
+	var ranges RowRangeList
+	for _, rr := range r {
+		retained := rr.retainRowsBefore(lastRowKey)
 		if retained.valid() {
 			ranges = append(ranges, retained.(RowRange))
 		}
@@ -607,6 +656,25 @@ type withFullReadStats struct {
 func (wrs withFullReadStats) set(settings *readSettings) {
 	settings.req.RequestStatsView = btpb.ReadRowsRequest_REQUEST_STATS_FULL
 	settings.fullReadStatsFunc = wrs.f
+}
+
+// ReverseScan returns a RadOption that will reverse the results of a Scan.
+// The rows will be streamed in reverse lexiographic order of the keys. The row key ranges of the RowSet are
+// still expected to be oriented the same way as forwards. ie [a,c] where a <= c. The row content
+// will remain unchanged from the ordering forward scans. This is particularly useful to get the
+// last N records before a key:
+//
+// table.ReadRows(ctx, NewOpenClosedRange("", "key"), func(row bigtable.Row) bool {
+//    return true
+// }, bigtable.ReverseScan(), bigtable.LimitRows(10))
+func ReverseScan() ReadOption {
+	return reverseScan{}
+}
+
+type reverseScan struct {}
+
+func (rs reverseScan) set(settings *readSettings) {
+	settings.req.Reversed = true
 }
 
 // mutationsAreRetryable returns true if all mutations are idempotent
