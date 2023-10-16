@@ -51,6 +51,142 @@ func TestPrefix(t *testing.T) {
 	}
 }
 
+func TestNewClosedOpenRange(t *testing.T) {
+	start := "b"
+	limit := "b\x01"
+	r := NewClosedOpenRange(start, limit)
+	for _, test := range []struct {
+		k string
+		contains bool
+	}{
+		{"a", false},
+		{"b", true},
+		{"b\x00", true},
+		{"b\x01", false},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("NewClosedOpenRange(%q, %q).Contains(%q) = %t, want %t", start, limit, test.k, got, want)
+		}
+	}
+
+	for _, test := range []struct {
+		start, limit string
+		valid bool
+	} {
+		{"a", "a", false},
+		{"b", "a", false},
+		{"a", "a\x00", true},
+		{"a", "b", true},
+	} {
+		r := NewClosedOpenRange(test.start, test.limit)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("NewClosedOpenRange(%q, %q).valid() = %t, want %t", test.start, test.limit, got, want)
+		}
+	}
+}
+func TestNewOpenClosedRange(t *testing.T) {
+	start := "b"
+	limit := "b\x01"
+	r := NewOpenClosedRange(start, limit)
+	for _, test := range []struct {
+		k string
+		contains bool
+	}{
+		{"a", false},
+		{"b", false},
+		{"b\x00", true},
+		{"b\x01", true},
+		{"b\x01\x00", false},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("NewOpenClosedRange(%q, %q).Contains(%q) = %t, want %t", start, limit, test.k,  got, want)
+		}
+	}
+
+	for _, test := range []struct {
+		start, limit string
+		valid bool
+	} {
+		{"a", "a", false},
+		{"b", "a", false},
+		{"a", "a\x00", true},
+		{"a", "b", true},
+	} {
+		r := NewOpenClosedRange(test.start, test.limit)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("NewOpenClosedRange(%q, %q).valid() = %t, want %t", test.start, test.limit, got, want)
+		}
+	}
+}
+func TestNewClosedRange(t *testing.T) {
+	start := "b"
+	limit := "b"
+
+	r := NewClosedRange(start, limit)
+	for _, test := range []struct {
+		k string
+		contains bool
+	}{
+		{"a", false},
+		{"b", true},
+		{"b\x01", false},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("NewClosedRange(%q, %q).Contains(%q) = %t, want %t", "a", "a\x01", test.k,  got, test.contains)
+		}
+	}
+
+	for _, test := range []struct {
+		start, limit string
+		valid bool
+	} {
+		{"a", "b", true},
+		{"b", "b", true},
+		{"b", "b\x00", true},
+		{"b\x00", "b", false},
+	} {
+		r := NewClosedRange(test.start, test.limit)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("NewClosedRange(%q, %q).valid() = %t, want %t", test.start, test.limit, got, want)
+		}
+	}
+}
+
+func TestNewOpenRange(t *testing.T) {
+	start := "b"
+	limit := "b\x01"
+
+	r := NewOpenRange(start, limit)
+	for _, test := range []struct {
+		k string
+		contains bool
+	}{
+		{"a", false},
+		{"b", false},
+		{"b\x00", true},
+		{"b\x01", false},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("NewOpenRange(%q, %q).Contains(%q) = %t, want %t", "a", "a\x01", test.k,  got, test.contains)
+		}
+	}
+
+	for _, test := range []struct {
+		start, limit string
+		valid bool
+	} {
+		{"a", "a", false},
+		{"a", "b", true},
+		{"a", "a\x00", false},
+		{"a", "a\x01", true},
+	} {
+		r := NewOpenRange(test.start, test.limit)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("NewOpenRange(%q, %q).valid() = %t, want %t", test.start, test.limit, got, want)
+		}
+	}
+}
+
 func TestApplyErrors(t *testing.T) {
 	ctx := context.Background()
 	table := &Table{

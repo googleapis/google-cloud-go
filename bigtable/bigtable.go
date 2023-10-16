@@ -352,6 +352,38 @@ func NewRange(begin, end string) RowRange {
 	}
 }
 
+func NewClosedOpenRange(begin, limit string) RowRange {
+	return NewRange(begin, limit)
+}
+func NewOpenClosedRange(start, limit string) RowRange {
+	// contract the start to exclude the first key
+	if start != "" {
+		start = start + "\x00"
+	}
+	// expand the end to include the last key
+	if limit != "" {
+		limit = limit + "\x00"
+	}
+	return NewRange(start, limit)
+}
+
+func NewOpenRange(start, limit string) RowRange {
+	// contract the start to exclude the first key
+	if start != "" {
+		start = start + "\x00"
+	}
+	return NewRange(start, limit)
+}
+
+func NewClosedRange(begin, end string) RowRange {
+	// expand the end to include the last key
+	if end != "" {
+		end = end + "\x00"
+	}
+	return NewRange(begin, end)
+}
+
+
 // Unbounded tests whether a RowRange is unbounded.
 func (r RowRange) Unbounded() bool {
 	return r.limit == ""
