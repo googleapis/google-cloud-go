@@ -22,12 +22,13 @@ on:
   pull_request:
     paths:
       - 'bigtable/**'
-name: conformance
+name: bigtable_conformance
 jobs:
-  conformance:
+  bigtable_conformance:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        # Bigtable test proxy can be run on any of these Go versions
         go: [ '1.19', '1.20', '1.21' ]
         folders: ['bigtable']
     steps:
