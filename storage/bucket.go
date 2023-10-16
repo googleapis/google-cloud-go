@@ -745,7 +745,7 @@ type Autoclass struct {
 	// time. Valid values are NEARLINE and ARCHIVE.
 	TerminalStorageClass string
 	// TerminalStorageClassUpdateTime represents the time of the most recent
-	// update to "terminalStorageClass".
+	// update to "TerminalStorageClass".
 	TerminalStorageClassUpdateTime time.Time
 }
 

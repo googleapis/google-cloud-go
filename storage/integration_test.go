@@ -883,7 +883,7 @@ func TestIntegration_Autoclass(t *testing.T) {
 		defer h.mustDeleteBucket(bkt)
 
 		// Get Autoclass configuration from bucket attrs.
-		// Autoclass.TerminalStorageClass is defaulted to NEARLINE if not specified
+		// Autoclass.TerminalStorageClass is defaulted to NEARLINE if not specified.
 		attrs, err := bkt.Attrs(ctx)
 		if err != nil {
 			t.Fatalf("get bucket attrs failed: %v", err)
@@ -914,12 +914,12 @@ func TestIntegration_Autoclass(t *testing.T) {
 		if got, want := attrs.Autoclass.TerminalStorageClass, "ARCHIVE"; got != want {
 			t.Errorf("attr.Autoclass.TerminalStorageClass = %v, want %v", got, want)
 		}
-		latestTscUpdateTime := attrs.Autoclass.TerminalStorageClassUpdateTime
-		if latestTscUpdateTime.IsZero() {
+		latestTSCUpdateTime := attrs.Autoclass.TerminalStorageClassUpdateTime
+		if latestTSCUpdateTime.IsZero() {
 			t.Error("got a zero time value, want a populated value")
 		}
-		if latestTscUpdateTime.Before(tscUpdateTime) {
-			t.Error("latestTscUpdateTime should be newer than bucket creation tscUpdateTime")
+		if !latestTSCUpdateTime.After(tscUpdateTime) {
+			t.Error("latestTSCUpdateTime should be newer than bucket creation tscUpdateTime")
 		}
 
 		// Disable Autoclass on the bucket.
@@ -932,7 +932,7 @@ func TestIntegration_Autoclass(t *testing.T) {
 		if latestToggleTime.IsZero() {
 			t.Error("got a zero time value, want a populated value")
 		}
-		if latestToggleTime.Before(toggleTime) {
+		if !latestToggleTime.After(toggleTime) {
 			t.Error("latestToggleTime should be newer than bucket creation toggleTime")
 		}
 	})
