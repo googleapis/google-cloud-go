@@ -38,7 +38,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/pprof/profile"
-	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
@@ -77,6 +77,7 @@ func createTestAgent(psc pb.ProfilerServiceClient) *agent {
 		deployment:    createTestDeployment(),
 		profileLabels: map[string]string{instanceLabel: testInstance},
 		profileTypes:  []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_HEAP_ALLOC, pb.ProfileType_THREADS},
+		debugLog:      log.Printf,
 	}
 }
 
@@ -305,7 +306,8 @@ func TestRetry(t *testing.T) {
 				Max:        maxBackoff,
 				Multiplier: backoffMultiplier,
 			},
-			md: &md,
+			md:       &md,
+			debugLog: log.Printf,
 		}
 
 		pause, shouldRetry := r.Retry(status.Error(codes.Aborted, ""))
@@ -368,11 +370,6 @@ func TestWithXGoogHeader(t *testing.T) {
 }
 
 func TestInitializeAgent(t *testing.T) {
-	oldConfig, oldMutexEnabled := config, mutexEnabled
-	defer func() {
-		config, mutexEnabled = oldConfig, oldMutexEnabled
-	}()
-
 	for _, tt := range []struct {
 		config               Config
 		enableMutex          bool
@@ -436,11 +433,11 @@ func TestInitializeAgent(t *testing.T) {
 		},
 	} {
 
-		config = tt.config
+		config := tt.config
 		config.ProjectID = testProjectID
 		config.Service = testService
-		mutexEnabled = tt.enableMutex
-		a, err := initializeAgent(nil)
+		config.MutexProfiling = tt.enableMutex
+		a, err := initializeAgent(config, nil, log.Printf)
 		if err != nil {
 			if !tt.wantErr {
 				t.Fatalf("initializeAgent() got error: %v, want no error", err)
@@ -466,9 +463,9 @@ func TestInitializeAgent(t *testing.T) {
 }
 
 func TestInitializeConfig(t *testing.T) {
-	oldConfig, oldGAEService, oldGAEVersion, oldKnativeService, oldKnativeVersion, oldEnvProjectID, oldGetProjectID, oldGetInstanceName, oldGetZone, oldOnGCE := config, os.Getenv("GAE_SERVICE"), os.Getenv("GAE_VERSION"), os.Getenv("K_SERVICE"), os.Getenv("K_REVISION"), os.Getenv("GOOGLE_CLOUD_PROJECT"), getProjectID, getInstanceName, getZone, onGCE
+	oldGAEService, oldGAEVersion, oldKnativeService, oldKnativeVersion, oldEnvProjectID, oldGetProjectID, oldGetInstanceName, oldGetZone, oldOnGCE := os.Getenv("GAE_SERVICE"), os.Getenv("GAE_VERSION"), os.Getenv("K_SERVICE"), os.Getenv("K_REVISION"), os.Getenv("GOOGLE_CLOUD_PROJECT"), getProjectID, getInstanceName, getZone, onGCE
 	defer func() {
-		config, getProjectID, getInstanceName, getZone, onGCE = oldConfig, oldGetProjectID, oldGetInstanceName, oldGetZone, oldOnGCE
+		getProjectID, getInstanceName, getZone, onGCE = oldGetProjectID, oldGetInstanceName, oldGetZone, oldOnGCE
 		if err := os.Setenv("GAE_SERVICE", oldGAEService); err != nil {
 			t.Fatal(err)
 		}
@@ -715,7 +712,8 @@ func TestInitializeConfig(t *testing.T) {
 		}
 
 		errorString := ""
-		if err := initializeConfig(tt.config); err != nil {
+		config, err := initializeConfig(tt.config, log.Printf)
+		if err != nil {
 			errorString = err.Error()
 		}
 
@@ -762,7 +760,8 @@ func TestInitializeConfig(t *testing.T) {
 		getZone = func() (string, error) { return testZone, tt.getZoneError }
 		getInstanceName = func() (string, error) { return testInstance, tt.getInstanceError }
 
-		if err := initializeConfig(Config{Service: testService}); (err != nil) != tt.wantErr {
+		_, err := initializeConfig(Config{Service: testService}, log.Printf)
+		if (err != nil) != tt.wantErr {
 			t.Errorf("%s: initializeConfig() got error: %v, want error %t", tt.desc, err, tt.wantErr)
 		}
 	}
@@ -853,12 +852,11 @@ func validateProfile(rawData []byte, wantFunctionName string) error {
 }
 
 func TestDeltaMutexProfile(t *testing.T) {
-	oldMutexEnabled, oldMaxProcs := mutexEnabled, runtime.GOMAXPROCS(10)
+	oldMaxProcs := runtime.GOMAXPROCS(10)
 	defer func() {
-		mutexEnabled = oldMutexEnabled
 		runtime.GOMAXPROCS(oldMaxProcs)
 	}()
-	if mutexEnabled = enableMutexProfiling(); !mutexEnabled {
+	if mutexEnabled := enableMutexProfiling(); !mutexEnabled {
 		t.Skip("Go too old - mutex profiling not supported.")
 	}
 
@@ -946,9 +944,9 @@ func hog(dt time.Duration, hogger func(mu1, mu2 *sync.Mutex, start time.Time, dt
 }
 
 func TestAgentWithServer(t *testing.T) {
-	oldDialGRPC, oldConfig, oldProfilingDone := dialGRPC, config, profilingDone
+	oldDialGRPC, oldProfilingDone := dialGRPC, profilingDone
 	defer func() {
-		dialGRPC, config, profilingDone = oldDialGRPC, oldConfig, oldProfilingDone
+		dialGRPC, profilingDone = oldDialGRPC, oldProfilingDone
 	}()
 
 	profilingDone = make(chan bool)
