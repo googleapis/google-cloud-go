@@ -18,11 +18,9 @@ package bigtable // import "cloud.google.com/go/bigtable"
 
 import (
 	"context"
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/url"
 	"strconv"
 	"time"
@@ -160,22 +158,13 @@ type Table struct {
 
 // Open opens a table.
 func (c *Client) Open(table string) *Table {
-	ff := btpb.FeatureFlags{
-		ReverseScans: true,
-	}
-	ffOut, err := proto.Marshal(&ff)
-	if err != nil {
-		log.Fatal("Failed to compose feature flags %v", err)
-	}
-	ffEncoded := base64.URLEncoding.EncodeToString(ffOut)
-
 	return &Table{
 		c:     c,
 		table: table,
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-			featureFlagsHeader, ffEncoded,
+			featureFlagsHeader,
 		), btopt.WithFeatureFlags()),
 	}
 }
