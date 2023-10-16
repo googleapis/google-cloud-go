@@ -1232,8 +1232,19 @@ type AggregationQuery struct {
 
 // Transaction specifies that aggregation query should run within provided transaction
 func (a *AggregationQuery) Transaction(tx *Transaction) *AggregationQuery {
+	a = a.clone()
 	a.tx = tx
 	return a
+}
+
+func (a *AggregationQuery) clone() *AggregationQuery {
+	x := *a
+	// Copy the contents of the slice-typed fields to a new backing store.
+	if len(a.aggregateQueries) > 0 {
+		x.aggregateQueries = make([]*pb.StructuredAggregationQuery_Aggregation, len(a.aggregateQueries))
+		copy(x.aggregateQueries, a.aggregateQueries)
+	}
+	return &x
 }
 
 // WithCount specifies that the aggregation query provide a count of results
