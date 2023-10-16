@@ -164,7 +164,6 @@ func (c *Client) Open(table string) *Table {
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullTableName(table),
 			requestParamsHeader, c.requestParamsHeaderValue(table),
-			featureFlagsHeader,
 		), btopt.WithFeatureFlags()),
 	}
 }

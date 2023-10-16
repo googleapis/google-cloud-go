@@ -126,5 +126,3 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 // requestParamsHeader is the name of the metadata header used for routing
 // requests based on resources accessed.
 const requestParamsHeader = "x-goog-request-params"
-
-const featureFlagsHeader = "bigtable-features"
