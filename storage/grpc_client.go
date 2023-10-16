@@ -408,17 +408,13 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		LexicographicStart:       it.query.StartOffset,
 		LexicographicEnd:         it.query.EndOffset,
 		IncludeTrailingDelimiter: it.query.IncludeTrailingDelimiter,
+		MatchGlob:                it.query.MatchGlob,
 		ReadMask:                 q.toFieldMask(), // a nil Query still results in a "*" FieldMask
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
-		// MatchGlob not yet supported for gRPC.
-		// TODO: add support when b/287306063 resolved.
-		if q != nil && q.MatchGlob != "" {
-			return "", status.Errorf(codes.Unimplemented, "MatchGlob is not supported for gRPC")
-		}
 		var objects []*storagepb.Object
 		var gitr *gapic.ObjectIterator
 		err = run(it.ctx, func(ctx context.Context) error {
