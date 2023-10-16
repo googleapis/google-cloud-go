@@ -215,7 +215,7 @@ func (cr *chunkReader) validateNewRow(cc *btpb.ReadRowsResponse_CellChunk) error
 			r *= -1
 			direction = "<"
 		}
-		if r < 0 {
+		if r <= 0 {
 			return fmt.Errorf("out of order row key, new key %q must be %s prev row: %q", cc.RowKey, direction, cr.lastKey)
 		}
 	}
