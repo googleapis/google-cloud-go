@@ -35,9 +35,20 @@ export GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES=database-01
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=gcloud-golang-firestore-tests
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=$KOKORO_KEYSTORE_DIR/72523_go_firestore_integration_service_account
 export GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES=database-02
-export GCLOUD_TESTS_API_KEY=`cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key`
+export GCLOUD_TESTS_API_KEY=$(cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key)
 export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/us/keyRings/go-integration-test
 export GCLOUD_TESTS_GOLANG_PROFILER_ZONE="us-west1-b"
+export GCLOUD_TESTS_IMPERSONATE_READER_KEY="${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-impersonate-reader-service-account"
+export GCLOUD_TESTS_IMPERSONATE_READER_EMAIL="impersonate-reader@${GCLOUD_TESTS_GOLANG_PROJECT_ID}.iam.gserviceaccount.com"
+export GCLOUD_TESTS_IMPERSONATE_WRITER_EMAIL="impersonate-writer@${GCLOUD_TESTS_GOLANG_PROJECT_ID}.iam.gserviceaccount.com"
+export GCLOUD_TESTS_GOLANG_PROJECT_NUMBER=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-project-number)
+export GCLOUD_TESTS_GOLANG_SERVICE_ACCOUNT_CLIENT_ID=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-client-id)
+export GCLOUD_TESTS_GOLANG_AWS_ACCOUNT_ID=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aws-acc-id)
+export GCLOUD_TESTS_GOLANG_AWS_ROLE_NAME=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aws-role-name)
+export GCLOUD_TESTS_GOLANG_AWS_ROLE_ID="arn:aws:iam::$GCLOUD_TESTS_GOLANG_AWS_ACCOUNT_ID:role/$GCLOUD_TESTS_GOLANG_AWS_ROLE_NAME"
+export GCLOUD_TESTS_GOLANG_AUDIENCE_OIDC=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aud-oidc)
+export GCLOUD_TESTS_GOLANG_AUDIENCE_AWS=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aud-aws)
+export GOOGLE_EXTERNAL_ACCOUNT_ALLOW_EXECUTABLES="1"
 
 # Bigtable integration tests expect an existing instance and cluster
 #  ❯ cbt createinstance gc-bt-it-instance gc-bt-it-instance \
