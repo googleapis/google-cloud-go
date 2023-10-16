@@ -161,8 +161,12 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # CHANGED_DIRS is the list of significant top-level directories that changed,
   # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
   CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
+  if [[ -n $TARGET_MODULE ]]; then
+    pushd $TARGET_MODULE > /dev/null;
+      runDirectoryTests
+    popd > /dev/null
+  elif [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
   # If PR changes affect all submodules, then run all tests.
-  if [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
     testAllModules
   else
     runDirectoryTests . # Always run base tests.
