@@ -1,5 +1,20 @@
 # Changes
 
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.11.0...language/v1.11.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **language:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.10.1...language/v1.11.0) (2023-08-17)
+
+
+### Features
+
+* **language:** Start generating apiv2 ([#8434](https://github.com/googleapis/google-cloud-go/issues/8434)) ([e3b9cdc](https://github.com/googleapis/google-cloud-go/commit/e3b9cdc8d2fddcf829b9b308402be0b729242134))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.10.0...language/v1.10.1) (2023-06-20)
 
 

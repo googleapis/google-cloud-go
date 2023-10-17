@@ -1,5 +1,20 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.12.0...workflows/v1.12.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **workflows:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.11.1...workflows/v1.12.0) (2023-08-17)
+
+
+### Features
+
+* **workflows/executions:** Add UNAVAILABLE and QUEUED to state enum ([#8430](https://github.com/googleapis/google-cloud-go/issues/8430)) ([404097e](https://github.com/googleapis/google-cloud-go/commit/404097e6081cffde41b8cc647775a6a7dba23420))
+* **workflows:** Add UNAVAILABLE to state enum of workflow deployment ([b3dbdde](https://github.com/googleapis/google-cloud-go/commit/b3dbdde48ddfa215c3c3bb110e0051fd8158f451))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.11.0...workflows/v1.11.1) (2023-06-20)
 
 

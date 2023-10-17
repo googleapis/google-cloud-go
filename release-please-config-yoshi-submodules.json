@@ -96,6 +96,9 @@
         "confidentialcomputing": {
             "component": "confidentialcomputing"
         },
+        "config": {
+            "component": "config"
+        },
         "contactcenterinsights": {
             "component": "contactcenterinsights"
         },
@@ -323,6 +326,9 @@
         },
         "shell": {
             "component": "shell"
+        },
+        "shopping": {
+            "component": "shopping"
         },
         "speech": {
             "component": "speech"

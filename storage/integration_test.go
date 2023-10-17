@@ -241,9 +241,9 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	gc, err := newGRPCClient(ctx, opts...)
+	gc, err := NewGRPCClient(ctx, opts...)
 	if err != nil {
-		t.Fatalf("newHybridClient: %v", err)
+		t.Fatalf("NewGRPCClient: %v", err)
 	}
 
 	return
@@ -1294,8 +1294,7 @@ func TestIntegration_ObjectIteration(t *testing.T) {
 func TestIntegration_ObjectIterationMatchGlob(t *testing.T) {
 	// This is a separate test from the Object Iteration test above because
 	// MatchGlob is not yet implemented for gRPC.
-	ctx := skipGRPC("https://github.com/googleapis/google-cloud-go/issues/7727")
-	multiTransportTest(skipJSONReads(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		// Reset testTime, 'cause object last modification time should be within 5 min
 		// from test (test iteration if -count passed) start time.
 		testTime = time.Now().UTC()
@@ -3108,9 +3107,9 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 				// Retry to account for propagation delay to objects in metadata update
 				// (we updated the metadata to add the otherUserEmail as owner on the bucket)
 				o := bucket.Object(objectName)
-				ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
+				ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*15)
 				defer cancel()
-				// Only retry when we expect success to avoid retrying for 10 seconds
+				// Only retry when we expect success to avoid retrying
 				// when we know it will fail
 				if test.expectSuccess {
 					o = o.Retryer(WithErrorFunc(retryOnTransient400and403))

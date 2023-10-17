@@ -1,6 +1,31 @@
 # Changelog
 
 
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.0...alloydb/v1.6.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **alloydb:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.5.0...alloydb/v1.6.0) (2023-10-04)
+
+
+### Features
+
+* **alloydb/connectors:** Start generating apiv1 ([#8648](https://github.com/googleapis/google-cloud-go/issues/8648)) ([c68448e](https://github.com/googleapis/google-cloud-go/commit/c68448eb1787d56dbd91920f376cc9dad2cb163e))
+* **alloydb:** Add support to generate client certificate and get connection info for auth proxy in AlloyDB v1 ([e9ae601](https://github.com/googleapis/google-cloud-go/commit/e9ae6018983ae09781740e4ff939e6e365863dbb))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.4.0...alloydb/v1.5.0) (2023-09-20)
+
+
+### Features
+
+* **alloydb:** Added enum value for PG15 ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+* **alloydb:** Added enum value for PG15 ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+* **alloydb:** Changed description for recovery_window_days in ContinuousBackupConfig ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.3.0...alloydb/v1.4.0) (2023-07-31)
 
 

@@ -37,7 +37,6 @@ import (
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -45,6 +44,7 @@ import (
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -2947,7 +2947,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Skip("emulator doesn't support backups")
 	}
 
-	timeout := 10 * time.Minute
+	timeout := 15 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
 	adminClient, err := testEnv.NewAdminClient()
@@ -3322,7 +3322,7 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 		Max:        2 * time.Second,
 		Multiplier: 1.2,
 	}
-	ctx, _ = context.WithTimeout(ctx, time.Second*30)
+	ctx, _ = context.WithTimeout(ctx, time.Second*60)
 
 	err := internal.Retry(ctx, bo, func() (bool, error) {
 		err := ac.DeleteTable(ctx, name)

@@ -1,5 +1,26 @@
 # Changes
 
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.14.0...networkconnectivity/v1.14.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.13.0...networkconnectivity/v1.14.0) (2023-10-04)
+
+
+### Features
+
+* **networkconnectivity:** Add Network Connectivity Center APIs related to VPC spokes ([#8621](https://github.com/googleapis/google-cloud-go/issues/8621)) ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.12.1...networkconnectivity/v1.13.0) (2023-09-12)
+
+
+### Features
+
+* **networkconnectivity:** Add PolicyBasedRouting APIs ([0449518](https://github.com/googleapis/google-cloud-go/commit/0449518f8396cc0280c0f3303c103edcee34016b))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.12.0...networkconnectivity/v1.12.1) (2023-06-20)
 
 

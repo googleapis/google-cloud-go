@@ -48,11 +48,20 @@ type HubCallOptions struct {
 	CreateHub          []gax.CallOption
 	UpdateHub          []gax.CallOption
 	DeleteHub          []gax.CallOption
+	ListHubSpokes      []gax.CallOption
 	ListSpokes         []gax.CallOption
 	GetSpoke           []gax.CallOption
 	CreateSpoke        []gax.CallOption
 	UpdateSpoke        []gax.CallOption
+	RejectHubSpoke     []gax.CallOption
+	AcceptHubSpoke     []gax.CallOption
 	DeleteSpoke        []gax.CallOption
+	GetRouteTable      []gax.CallOption
+	GetRoute           []gax.CallOption
+	ListRoutes         []gax.CallOption
+	ListRouteTables    []gax.CallOption
+	GetGroup           []gax.CallOption
+	ListGroups         []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
 	GetIamPolicy       []gax.CallOption
@@ -111,6 +120,18 @@ func defaultHubCallOptions() *HubCallOptions {
 		DeleteHub: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListHubSpokes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListSpokes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -141,8 +162,104 @@ func defaultHubCallOptions() *HubCallOptions {
 		UpdateSpoke: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		RejectHubSpoke: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AcceptHubSpoke: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		DeleteSpoke: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRouteTable: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListRoutes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListRouteTables: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
@@ -169,14 +286,25 @@ type internalHubClient interface {
 	UpdateHubOperation(name string) *UpdateHubOperation
 	DeleteHub(context.Context, *networkconnectivitypb.DeleteHubRequest, ...gax.CallOption) (*DeleteHubOperation, error)
 	DeleteHubOperation(name string) *DeleteHubOperation
+	ListHubSpokes(context.Context, *networkconnectivitypb.ListHubSpokesRequest, ...gax.CallOption) *SpokeIterator
 	ListSpokes(context.Context, *networkconnectivitypb.ListSpokesRequest, ...gax.CallOption) *SpokeIterator
 	GetSpoke(context.Context, *networkconnectivitypb.GetSpokeRequest, ...gax.CallOption) (*networkconnectivitypb.Spoke, error)
 	CreateSpoke(context.Context, *networkconnectivitypb.CreateSpokeRequest, ...gax.CallOption) (*CreateSpokeOperation, error)
 	CreateSpokeOperation(name string) *CreateSpokeOperation
 	UpdateSpoke(context.Context, *networkconnectivitypb.UpdateSpokeRequest, ...gax.CallOption) (*UpdateSpokeOperation, error)
 	UpdateSpokeOperation(name string) *UpdateSpokeOperation
+	RejectHubSpoke(context.Context, *networkconnectivitypb.RejectHubSpokeRequest, ...gax.CallOption) (*RejectHubSpokeOperation, error)
+	RejectHubSpokeOperation(name string) *RejectHubSpokeOperation
+	AcceptHubSpoke(context.Context, *networkconnectivitypb.AcceptHubSpokeRequest, ...gax.CallOption) (*AcceptHubSpokeOperation, error)
+	AcceptHubSpokeOperation(name string) *AcceptHubSpokeOperation
 	DeleteSpoke(context.Context, *networkconnectivitypb.DeleteSpokeRequest, ...gax.CallOption) (*DeleteSpokeOperation, error)
 	DeleteSpokeOperation(name string) *DeleteSpokeOperation
+	GetRouteTable(context.Context, *networkconnectivitypb.GetRouteTableRequest, ...gax.CallOption) (*networkconnectivitypb.RouteTable, error)
+	GetRoute(context.Context, *networkconnectivitypb.GetRouteRequest, ...gax.CallOption) (*networkconnectivitypb.Route, error)
+	ListRoutes(context.Context, *networkconnectivitypb.ListRoutesRequest, ...gax.CallOption) *RouteIterator
+	ListRouteTables(context.Context, *networkconnectivitypb.ListRouteTablesRequest, ...gax.CallOption) *RouteTableIterator
+	GetGroup(context.Context, *networkconnectivitypb.GetGroupRequest, ...gax.CallOption) (*networkconnectivitypb.Group, error)
+	ListGroups(context.Context, *networkconnectivitypb.ListGroupsRequest, ...gax.CallOption) *GroupIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -274,6 +402,13 @@ func (c *HubClient) DeleteHubOperation(name string) *DeleteHubOperation {
 	return c.internalClient.DeleteHubOperation(name)
 }
 
+// ListHubSpokes lists the Network Connectivity Center spokes associated with a
+// specified hub and location. The list includes both spokes that are attached
+// to the hub and spokes that have been proposed but not yet accepted.
+func (c *HubClient) ListHubSpokes(ctx context.Context, req *networkconnectivitypb.ListHubSpokesRequest, opts ...gax.CallOption) *SpokeIterator {
+	return c.internalClient.ListHubSpokes(ctx, req, opts...)
+}
+
 // ListSpokes lists the Network Connectivity Center spokes in a specified project and
 // location.
 func (c *HubClient) ListSpokes(ctx context.Context, req *networkconnectivitypb.ListSpokesRequest, opts ...gax.CallOption) *SpokeIterator {
@@ -307,6 +442,32 @@ func (c *HubClient) UpdateSpokeOperation(name string) *UpdateSpokeOperation {
 	return c.internalClient.UpdateSpokeOperation(name)
 }
 
+// RejectHubSpoke rejects a Network Connectivity Center spoke from being attached to a hub.
+// If the spoke was previously in the ACTIVE state, it
+// transitions to the INACTIVE state and is no longer able to
+// connect to other spokes that are attached to the hub.
+func (c *HubClient) RejectHubSpoke(ctx context.Context, req *networkconnectivitypb.RejectHubSpokeRequest, opts ...gax.CallOption) (*RejectHubSpokeOperation, error) {
+	return c.internalClient.RejectHubSpoke(ctx, req, opts...)
+}
+
+// RejectHubSpokeOperation returns a new RejectHubSpokeOperation from a given name.
+// The name must be that of a previously created RejectHubSpokeOperation, possibly from a different process.
+func (c *HubClient) RejectHubSpokeOperation(name string) *RejectHubSpokeOperation {
+	return c.internalClient.RejectHubSpokeOperation(name)
+}
+
+// AcceptHubSpoke accepts a proposal to attach a Network Connectivity Center spoke
+// to a hub.
+func (c *HubClient) AcceptHubSpoke(ctx context.Context, req *networkconnectivitypb.AcceptHubSpokeRequest, opts ...gax.CallOption) (*AcceptHubSpokeOperation, error) {
+	return c.internalClient.AcceptHubSpoke(ctx, req, opts...)
+}
+
+// AcceptHubSpokeOperation returns a new AcceptHubSpokeOperation from a given name.
+// The name must be that of a previously created AcceptHubSpokeOperation, possibly from a different process.
+func (c *HubClient) AcceptHubSpokeOperation(name string) *AcceptHubSpokeOperation {
+	return c.internalClient.AcceptHubSpokeOperation(name)
+}
+
 // DeleteSpoke deletes a Network Connectivity Center spoke.
 func (c *HubClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.DeleteSpokeRequest, opts ...gax.CallOption) (*DeleteSpokeOperation, error) {
 	return c.internalClient.DeleteSpoke(ctx, req, opts...)
@@ -316,6 +477,36 @@ func (c *HubClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.
 // The name must be that of a previously created DeleteSpokeOperation, possibly from a different process.
 func (c *HubClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation {
 	return c.internalClient.DeleteSpokeOperation(name)
+}
+
+// GetRouteTable gets details about a Network Connectivity Center route table.
+func (c *HubClient) GetRouteTable(ctx context.Context, req *networkconnectivitypb.GetRouteTableRequest, opts ...gax.CallOption) (*networkconnectivitypb.RouteTable, error) {
+	return c.internalClient.GetRouteTable(ctx, req, opts...)
+}
+
+// GetRoute gets details about the specified route.
+func (c *HubClient) GetRoute(ctx context.Context, req *networkconnectivitypb.GetRouteRequest, opts ...gax.CallOption) (*networkconnectivitypb.Route, error) {
+	return c.internalClient.GetRoute(ctx, req, opts...)
+}
+
+// ListRoutes lists routes in a given project.
+func (c *HubClient) ListRoutes(ctx context.Context, req *networkconnectivitypb.ListRoutesRequest, opts ...gax.CallOption) *RouteIterator {
+	return c.internalClient.ListRoutes(ctx, req, opts...)
+}
+
+// ListRouteTables lists route tables in a given project.
+func (c *HubClient) ListRouteTables(ctx context.Context, req *networkconnectivitypb.ListRouteTablesRequest, opts ...gax.CallOption) *RouteTableIterator {
+	return c.internalClient.ListRouteTables(ctx, req, opts...)
+}
+
+// GetGroup gets details about a Network Connectivity Center group.
+func (c *HubClient) GetGroup(ctx context.Context, req *networkconnectivitypb.GetGroupRequest, opts ...gax.CallOption) (*networkconnectivitypb.Group, error) {
+	return c.internalClient.GetGroup(ctx, req, opts...)
+}
+
+// ListGroups lists groups in a given hub.
+func (c *HubClient) ListGroups(ctx context.Context, req *networkconnectivitypb.ListGroupsRequest, opts ...gax.CallOption) *GroupIterator {
+	return c.internalClient.ListGroups(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -597,6 +788,52 @@ func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 	}, nil
 }
 
+func (c *hubGRPCClient) ListHubSpokes(ctx context.Context, req *networkconnectivitypb.ListHubSpokesRequest, opts ...gax.CallOption) *SpokeIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListHubSpokes[0:len((*c.CallOptions).ListHubSpokes):len((*c.CallOptions).ListHubSpokes)], opts...)
+	it := &SpokeIterator{}
+	req = proto.Clone(req).(*networkconnectivitypb.ListHubSpokesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Spoke, string, error) {
+		resp := &networkconnectivitypb.ListHubSpokesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.hubClient.ListHubSpokes(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSpokes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivitypb.ListSpokesRequest, opts ...gax.CallOption) *SpokeIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -701,6 +938,46 @@ func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 	}, nil
 }
 
+func (c *hubGRPCClient) RejectHubSpoke(ctx context.Context, req *networkconnectivitypb.RejectHubSpokeRequest, opts ...gax.CallOption) (*RejectHubSpokeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RejectHubSpoke[0:len((*c.CallOptions).RejectHubSpoke):len((*c.CallOptions).RejectHubSpoke)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.hubClient.RejectHubSpoke(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RejectHubSpokeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *hubGRPCClient) AcceptHubSpoke(ctx context.Context, req *networkconnectivitypb.AcceptHubSpokeRequest, opts ...gax.CallOption) (*AcceptHubSpokeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AcceptHubSpoke[0:len((*c.CallOptions).AcceptHubSpoke):len((*c.CallOptions).AcceptHubSpoke)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.hubClient.AcceptHubSpoke(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AcceptHubSpokeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.DeleteSpokeRequest, opts ...gax.CallOption) (*DeleteSpokeOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -719,6 +996,198 @@ func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 	return &DeleteSpokeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *hubGRPCClient) GetRouteTable(ctx context.Context, req *networkconnectivitypb.GetRouteTableRequest, opts ...gax.CallOption) (*networkconnectivitypb.RouteTable, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetRouteTable[0:len((*c.CallOptions).GetRouteTable):len((*c.CallOptions).GetRouteTable)], opts...)
+	var resp *networkconnectivitypb.RouteTable
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.hubClient.GetRouteTable(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *hubGRPCClient) GetRoute(ctx context.Context, req *networkconnectivitypb.GetRouteRequest, opts ...gax.CallOption) (*networkconnectivitypb.Route, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetRoute[0:len((*c.CallOptions).GetRoute):len((*c.CallOptions).GetRoute)], opts...)
+	var resp *networkconnectivitypb.Route
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.hubClient.GetRoute(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *hubGRPCClient) ListRoutes(ctx context.Context, req *networkconnectivitypb.ListRoutesRequest, opts ...gax.CallOption) *RouteIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListRoutes[0:len((*c.CallOptions).ListRoutes):len((*c.CallOptions).ListRoutes)], opts...)
+	it := &RouteIterator{}
+	req = proto.Clone(req).(*networkconnectivitypb.ListRoutesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Route, string, error) {
+		resp := &networkconnectivitypb.ListRoutesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.hubClient.ListRoutes(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRoutes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *hubGRPCClient) ListRouteTables(ctx context.Context, req *networkconnectivitypb.ListRouteTablesRequest, opts ...gax.CallOption) *RouteTableIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListRouteTables[0:len((*c.CallOptions).ListRouteTables):len((*c.CallOptions).ListRouteTables)], opts...)
+	it := &RouteTableIterator{}
+	req = proto.Clone(req).(*networkconnectivitypb.ListRouteTablesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.RouteTable, string, error) {
+		resp := &networkconnectivitypb.ListRouteTablesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.hubClient.ListRouteTables(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRouteTables(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *hubGRPCClient) GetGroup(ctx context.Context, req *networkconnectivitypb.GetGroupRequest, opts ...gax.CallOption) (*networkconnectivitypb.Group, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetGroup[0:len((*c.CallOptions).GetGroup):len((*c.CallOptions).GetGroup)], opts...)
+	var resp *networkconnectivitypb.Group
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.hubClient.GetGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *hubGRPCClient) ListGroups(ctx context.Context, req *networkconnectivitypb.ListGroupsRequest, opts ...gax.CallOption) *GroupIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListGroups[0:len((*c.CallOptions).ListGroups):len((*c.CallOptions).ListGroups)], opts...)
+	it := &GroupIterator{}
+	req = proto.Clone(req).(*networkconnectivitypb.ListGroupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Group, string, error) {
+		resp := &networkconnectivitypb.ListGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.hubClient.ListGroups(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGroups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *hubGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -929,6 +1398,75 @@ func (c *hubGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// AcceptHubSpokeOperation manages a long-running operation from AcceptHubSpoke.
+type AcceptHubSpokeOperation struct {
+	lro *longrunning.Operation
+}
+
+// AcceptHubSpokeOperation returns a new AcceptHubSpokeOperation from a given name.
+// The name must be that of a previously created AcceptHubSpokeOperation, possibly from a different process.
+func (c *hubGRPCClient) AcceptHubSpokeOperation(name string) *AcceptHubSpokeOperation {
+	return &AcceptHubSpokeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *AcceptHubSpokeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.AcceptHubSpokeResponse, error) {
+	var resp networkconnectivitypb.AcceptHubSpokeResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *AcceptHubSpokeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.AcceptHubSpokeResponse, error) {
+	var resp networkconnectivitypb.AcceptHubSpokeResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *AcceptHubSpokeOperation) Metadata() (*networkconnectivitypb.OperationMetadata, error) {
+	var meta networkconnectivitypb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *AcceptHubSpokeOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *AcceptHubSpokeOperation) Name() string {
+	return op.lro.Name()
 }
 
 // CreateHubOperation manages a long-running operation from CreateHub.
@@ -1185,6 +1723,75 @@ func (op *DeleteSpokeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// RejectHubSpokeOperation manages a long-running operation from RejectHubSpoke.
+type RejectHubSpokeOperation struct {
+	lro *longrunning.Operation
+}
+
+// RejectHubSpokeOperation returns a new RejectHubSpokeOperation from a given name.
+// The name must be that of a previously created RejectHubSpokeOperation, possibly from a different process.
+func (c *hubGRPCClient) RejectHubSpokeOperation(name string) *RejectHubSpokeOperation {
+	return &RejectHubSpokeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RejectHubSpokeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.RejectHubSpokeResponse, error) {
+	var resp networkconnectivitypb.RejectHubSpokeResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RejectHubSpokeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkconnectivitypb.RejectHubSpokeResponse, error) {
+	var resp networkconnectivitypb.RejectHubSpokeResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RejectHubSpokeOperation) Metadata() (*networkconnectivitypb.OperationMetadata, error) {
+	var meta networkconnectivitypb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RejectHubSpokeOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RejectHubSpokeOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateHubOperation manages a long-running operation from UpdateHub.
 type UpdateHubOperation struct {
 	lro *longrunning.Operation
@@ -1323,6 +1930,53 @@ func (op *UpdateSpokeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// GroupIterator manages a stream of *networkconnectivitypb.Group.
+type GroupIterator struct {
+	items    []*networkconnectivitypb.Group
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.Group, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *GroupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *GroupIterator) Next() (*networkconnectivitypb.Group, error) {
+	var item *networkconnectivitypb.Group
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *GroupIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *GroupIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // HubIterator manages a stream of *networkconnectivitypb.Hub.
 type HubIterator struct {
 	items    []*networkconnectivitypb.Hub
@@ -1459,6 +2113,100 @@ func (it *OperationIterator) bufLen() int {
 }
 
 func (it *OperationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// RouteIterator manages a stream of *networkconnectivitypb.Route.
+type RouteIterator struct {
+	items    []*networkconnectivitypb.Route
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.Route, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *RouteIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RouteIterator) Next() (*networkconnectivitypb.Route, error) {
+	var item *networkconnectivitypb.Route
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RouteIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RouteIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// RouteTableIterator manages a stream of *networkconnectivitypb.RouteTable.
+type RouteTableIterator struct {
+	items    []*networkconnectivitypb.RouteTable
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*networkconnectivitypb.RouteTable, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *RouteTableIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RouteTableIterator) Next() (*networkconnectivitypb.RouteTable, error) {
+	var item *networkconnectivitypb.RouteTable
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RouteTableIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RouteTableIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

@@ -52,6 +52,7 @@ type PersistentResourceCallOptions struct {
 	GetPersistentResource    []gax.CallOption
 	ListPersistentResources  []gax.CallOption
 	DeletePersistentResource []gax.CallOption
+	UpdatePersistentResource []gax.CallOption
 	GetLocation              []gax.CallOption
 	ListLocations            []gax.CallOption
 	GetIamPolicy             []gax.CallOption
@@ -82,6 +83,7 @@ func defaultPersistentResourceCallOptions() *PersistentResourceCallOptions {
 		GetPersistentResource:    []gax.CallOption{},
 		ListPersistentResources:  []gax.CallOption{},
 		DeletePersistentResource: []gax.CallOption{},
+		UpdatePersistentResource: []gax.CallOption{},
 		GetLocation:              []gax.CallOption{},
 		ListLocations:            []gax.CallOption{},
 		GetIamPolicy:             []gax.CallOption{},
@@ -101,6 +103,7 @@ func defaultPersistentResourceRESTCallOptions() *PersistentResourceCallOptions {
 		GetPersistentResource:    []gax.CallOption{},
 		ListPersistentResources:  []gax.CallOption{},
 		DeletePersistentResource: []gax.CallOption{},
+		UpdatePersistentResource: []gax.CallOption{},
 		GetLocation:              []gax.CallOption{},
 		ListLocations:            []gax.CallOption{},
 		GetIamPolicy:             []gax.CallOption{},
@@ -125,6 +128,8 @@ type internalPersistentResourceClient interface {
 	ListPersistentResources(context.Context, *aiplatformpb.ListPersistentResourcesRequest, ...gax.CallOption) *PersistentResourceIterator
 	DeletePersistentResource(context.Context, *aiplatformpb.DeletePersistentResourceRequest, ...gax.CallOption) (*DeletePersistentResourceOperation, error)
 	DeletePersistentResourceOperation(name string) *DeletePersistentResourceOperation
+	UpdatePersistentResource(context.Context, *aiplatformpb.UpdatePersistentResourceRequest, ...gax.CallOption) (*UpdatePersistentResourceOperation, error)
+	UpdatePersistentResourceOperation(name string) *UpdatePersistentResourceOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -177,7 +182,7 @@ func (c *PersistentResourceClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreatePersistentResource uploads a Model artifact into Vertex AI.
+// CreatePersistentResource creates a PersistentResource.
 func (c *PersistentResourceClient) CreatePersistentResource(ctx context.Context, req *aiplatformpb.CreatePersistentResourceRequest, opts ...gax.CallOption) (*CreatePersistentResourceOperation, error) {
 	return c.internalClient.CreatePersistentResource(ctx, req, opts...)
 }
@@ -207,6 +212,17 @@ func (c *PersistentResourceClient) DeletePersistentResource(ctx context.Context,
 // The name must be that of a previously created DeletePersistentResourceOperation, possibly from a different process.
 func (c *PersistentResourceClient) DeletePersistentResourceOperation(name string) *DeletePersistentResourceOperation {
 	return c.internalClient.DeletePersistentResourceOperation(name)
+}
+
+// UpdatePersistentResource updates a PersistentResource.
+func (c *PersistentResourceClient) UpdatePersistentResource(ctx context.Context, req *aiplatformpb.UpdatePersistentResourceRequest, opts ...gax.CallOption) (*UpdatePersistentResourceOperation, error) {
+	return c.internalClient.UpdatePersistentResource(ctx, req, opts...)
+}
+
+// UpdatePersistentResourceOperation returns a new UpdatePersistentResourceOperation from a given name.
+// The name must be that of a previously created UpdatePersistentResourceOperation, possibly from a different process.
+func (c *PersistentResourceClient) UpdatePersistentResourceOperation(name string) *UpdatePersistentResourceOperation {
+	return c.internalClient.UpdatePersistentResourceOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -554,6 +570,26 @@ func (c *persistentResourceGRPCClient) DeletePersistentResource(ctx context.Cont
 	}, nil
 }
 
+func (c *persistentResourceGRPCClient) UpdatePersistentResource(ctx context.Context, req *aiplatformpb.UpdatePersistentResourceRequest, opts ...gax.CallOption) (*UpdatePersistentResourceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "persistent_resource.name", url.QueryEscape(req.GetPersistentResource().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdatePersistentResource[0:len((*c.CallOptions).UpdatePersistentResource):len((*c.CallOptions).UpdatePersistentResource)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.persistentResourceClient.UpdatePersistentResource(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdatePersistentResourceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *persistentResourceGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -782,7 +818,7 @@ func (c *persistentResourceGRPCClient) WaitOperation(ctx context.Context, req *l
 	return resp, nil
 }
 
-// CreatePersistentResource uploads a Model artifact into Vertex AI.
+// CreatePersistentResource creates a PersistentResource.
 func (c *persistentResourceRESTClient) CreatePersistentResource(ctx context.Context, req *aiplatformpb.CreatePersistentResourceRequest, opts ...gax.CallOption) (*CreatePersistentResourceOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetPersistentResource()
@@ -1050,6 +1086,83 @@ func (c *persistentResourceRESTClient) DeletePersistentResource(ctx context.Cont
 
 	override := fmt.Sprintf("/ui/%s", resp.GetName())
 	return &DeletePersistentResourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdatePersistentResource updates a PersistentResource.
+func (c *persistentResourceRESTClient) UpdatePersistentResource(ctx context.Context, req *aiplatformpb.UpdatePersistentResourceRequest, opts ...gax.CallOption) (*UpdatePersistentResourceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPersistentResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetPersistentResource().GetName())
+
+	params := url.Values{}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "persistent_resource.name", url.QueryEscape(req.GetPersistentResource().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &UpdatePersistentResourceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -1831,6 +1944,88 @@ func (op *DeletePersistentResourceOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeletePersistentResourceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdatePersistentResourceOperation manages a long-running operation from UpdatePersistentResource.
+type UpdatePersistentResourceOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// UpdatePersistentResourceOperation returns a new UpdatePersistentResourceOperation from a given name.
+// The name must be that of a previously created UpdatePersistentResourceOperation, possibly from a different process.
+func (c *persistentResourceGRPCClient) UpdatePersistentResourceOperation(name string) *UpdatePersistentResourceOperation {
+	return &UpdatePersistentResourceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdatePersistentResourceOperation returns a new UpdatePersistentResourceOperation from a given name.
+// The name must be that of a previously created UpdatePersistentResourceOperation, possibly from a different process.
+func (c *persistentResourceRESTClient) UpdatePersistentResourceOperation(name string) *UpdatePersistentResourceOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &UpdatePersistentResourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdatePersistentResourceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.PersistentResource, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.PersistentResource
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdatePersistentResourceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.PersistentResource, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.PersistentResource
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdatePersistentResourceOperation) Metadata() (*aiplatformpb.UpdatePersistentResourceOperationMetadata, error) {
+	var meta aiplatformpb.UpdatePersistentResourceOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdatePersistentResourceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdatePersistentResourceOperation) Name() string {
 	return op.lro.Name()
 }
 

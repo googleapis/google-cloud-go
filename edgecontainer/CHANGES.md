@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.1.1...edgecontainer/v1.1.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **edgecontainer:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.1.0...edgecontainer/v1.1.1) (2023-06-20)
 
 

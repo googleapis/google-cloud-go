@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.7.0...binaryauthorization/v1.7.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **binaryauthorization:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.6.1...binaryauthorization/v1.7.0) (2023-08-17)
+
+
+### Features
+
+* **binaryauthorization:** Adds support for check-based platform policy evaluation to Binary Authorization Continuous Validation logs ([b3dbdde](https://github.com/googleapis/google-cloud-go/commit/b3dbdde48ddfa215c3c3bb110e0051fd8158f451))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.6.0...binaryauthorization/v1.6.1) (2023-06-20)
 
 

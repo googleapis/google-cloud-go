@@ -1,5 +1,19 @@
 # Changes
 
+## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.0...containeranalysis/v0.11.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.10.1...containeranalysis/v0.11.0) (2023-09-11)
+
+
+### Features
+
+* **containeranalysis:** Add ExportSBOM API method ([#8518](https://github.com/googleapis/google-cloud-go/issues/8518)) ([9d1c775](https://github.com/googleapis/google-cloud-go/commit/9d1c7757ab28a4fe7dd58bffa3ccc651037b230b))
+
 ## [0.10.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.10.0...containeranalysis/v0.10.1) (2023-06-20)
 
 
