@@ -22,9 +22,6 @@ package pubsubpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -229,11 +228,12 @@ type MessageStoragePolicy struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// A list of IDs of GCP regions where messages that are published to the topic
-	// may be persisted in storage. Messages published by publishers running in
-	// non-allowed GCP regions (or running outside of GCP altogether) will be
-	// routed for storage in one of the allowed regions. An empty list means that
-	// no regions are allowed, and is not a valid configuration.
+	// A list of IDs of Google Cloud regions where messages that are published
+	// to the topic may be persisted in storage. Messages published by publishers
+	// running in non-allowed Google Cloud regions (or running outside of Google
+	// Cloud altogether) are routed for storage in one of the allowed regions.
+	// An empty list means that no regions are allowed, and is not a valid
+	// configuration.
 	AllowedPersistenceRegions []string `protobuf:"bytes,1,rep,name=allowed_persistence_regions,json=allowedPersistenceRegions,proto3" json:"allowed_persistence_regions,omitempty"`
 }
 
@@ -3195,8 +3195,8 @@ type CreateSnapshotRequest struct {
 	// in the request, the server will assign a random name for this snapshot on
 	// the same project as the subscription. Note that for REST API requests, you
 	// must specify a name.  See the [resource name
-	// rules](https://cloud.google.com/pubsub/docs/admin#resource_names). Format
-	// is `projects/{project}/snapshots/{snap}`.
+	// rules](https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
+	// Format is `projects/{project}/snapshots/{snap}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The subscription whose backlog the snapshot retains.
 	// Specifically, the created snapshot is guaranteed to retain:
@@ -6105,7 +6105,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type PublisherClient interface {
 	// Creates the given topic with the given name. See the [resource name rules]
-	// (https://cloud.google.com/pubsub/docs/admin#resource_names).
+	// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
 	CreateTopic(ctx context.Context, in *Topic, opts ...grpc.CallOption) (*Topic, error)
 	// Updates an existing topic. Note that certain properties of a
 	// topic are not modifiable.
@@ -6230,7 +6230,7 @@ func (c *publisherClient) DetachSubscription(ctx context.Context, in *DetachSubs
 // PublisherServer is the server API for Publisher service.
 type PublisherServer interface {
 	// Creates the given topic with the given name. See the [resource name rules]
-	// (https://cloud.google.com/pubsub/docs/admin#resource_names).
+	// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
 	CreateTopic(context.Context, *Topic) (*Topic, error)
 	// Updates an existing topic. Note that certain properties of a
 	// topic are not modifiable.
@@ -6511,16 +6511,16 @@ var _Publisher_serviceDesc = grpc.ServiceDesc{
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type SubscriberClient interface {
 	// Creates a subscription to a given topic. See the [resource name rules]
-	// (https://cloud.google.com/pubsub/docs/admin#resource_names).
+	// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
 	// If the subscription already exists, returns `ALREADY_EXISTS`.
 	// If the corresponding topic doesn't exist, returns `NOT_FOUND`.
 	//
 	// If the name is not provided in the request, the server will assign a random
 	// name for this subscription on the same project as the topic, conforming
 	// to the [resource name format]
-	// (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated
-	// name is populated in the returned Subscription object. Note that for REST
-	// API requests, you must specify a name in the request.
+	// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
+	// generated name is populated in the returned Subscription object. Note that
+	// for REST API requests, you must specify a name in the request.
 	CreateSubscription(ctx context.Context, in *Subscription, opts ...grpc.CallOption) (*Subscription, error)
 	// Gets the configuration details of a subscription.
 	GetSubscription(ctx context.Context, in *GetSubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
@@ -6591,7 +6591,7 @@ type SubscriberClient interface {
 	// the request, the server will assign a random
 	// name for this snapshot on the same project as the subscription, conforming
 	// to the [resource name format]
-	// (https://cloud.google.com/pubsub/docs/admin#resource_names). The
+	// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
 	// generated name is populated in the returned Snapshot object. Note that for
 	// REST API requests, you must specify a name in the request.
 	CreateSnapshot(ctx context.Context, in *CreateSnapshotRequest, opts ...grpc.CallOption) (*Snapshot, error)
@@ -6798,16 +6798,16 @@ func (c *subscriberClient) Seek(ctx context.Context, in *SeekRequest, opts ...gr
 // SubscriberServer is the server API for Subscriber service.
 type SubscriberServer interface {
 	// Creates a subscription to a given topic. See the [resource name rules]
-	// (https://cloud.google.com/pubsub/docs/admin#resource_names).
+	// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
 	// If the subscription already exists, returns `ALREADY_EXISTS`.
 	// If the corresponding topic doesn't exist, returns `NOT_FOUND`.
 	//
 	// If the name is not provided in the request, the server will assign a random
 	// name for this subscription on the same project as the topic, conforming
 	// to the [resource name format]
-	// (https://cloud.google.com/pubsub/docs/admin#resource_names). The generated
-	// name is populated in the returned Subscription object. Note that for REST
-	// API requests, you must specify a name in the request.
+	// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
+	// generated name is populated in the returned Subscription object. Note that
+	// for REST API requests, you must specify a name in the request.
 	CreateSubscription(context.Context, *Subscription) (*Subscription, error)
 	// Gets the configuration details of a subscription.
 	GetSubscription(context.Context, *GetSubscriptionRequest) (*Subscription, error)
@@ -6878,7 +6878,7 @@ type SubscriberServer interface {
 	// the request, the server will assign a random
 	// name for this snapshot on the same project as the subscription, conforming
 	// to the [resource name format]
-	// (https://cloud.google.com/pubsub/docs/admin#resource_names). The
+	// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names). The
 	// generated name is populated in the returned Snapshot object. Note that for
 	// REST API requests, you must specify a name in the request.
 	CreateSnapshot(context.Context, *CreateSnapshotRequest) (*Snapshot, error)
