@@ -58,10 +58,9 @@ func main() {
 	} else {
 		commitLevel = *commitLvl
 	}
-	if *msg == "" {
+	commitMsg := *msg
+	if commitMsg == "" {
 		commitMsg = fmt.Sprintf("update %s to %s", *dep, *version)
-	} else {
-		commitMsg = *msg
 	}
 
 	rootDir, err := os.Getwd()
