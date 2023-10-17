@@ -150,7 +150,9 @@ func update(modDir, dep, version, rootDir string) error {
 		if strings.Contains(scope, "internal/") {
 			return nil
 		}
-		nestedCommits.WriteString(fmt.Sprintf("BEGIN_NESTED_COMMIT\n%s(%s): %s\nEND_NESTED_COMMIT\n", commitLevel, scope, commitMsg))
+		nestedCommits.WriteString("BEGIN_NESTED_COMMIT\n")
+		nestedCommits.WriteString(fmt.Sprintf("%s(%s): %s\n",  commitLevel, scope, commitMsg))
+		nestedCommits.WriteString("END_NESTED_COMMIT\n")
 	}
 
 	return nil
