@@ -21,11 +21,8 @@
 package documentaipb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -343,6 +342,7 @@ type ProcessOptions struct {
 	// processed. NOTICE: If any of the page range is set, we will extract and
 	// process only the given pages from the document. In the output document,
 	// the page_number is referring to the page number in the original document.
+	// This config only applies to sync requests.
 	//
 	// Types that are assignable to PageRange:
 	//	*ProcessOptions_IndividualPageSelector_
