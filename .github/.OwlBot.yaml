@@ -324,7 +324,6 @@ deep-remove-regex:
   - /internal/generated/snippets/speech/apiv1/
   - /internal/generated/snippets/speech/apiv1p1beta1/
   - /internal/generated/snippets/speech/apiv2/
-  - /internal/generated/snippets/storage/internal/apiv2/
   - /internal/generated/snippets/storageinsights/apiv1/
   - /internal/generated/snippets/storagetransfer/apiv1/
   - /internal/generated/snippets/support/apiv2/
