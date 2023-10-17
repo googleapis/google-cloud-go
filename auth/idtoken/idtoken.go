@@ -15,6 +15,7 @@
 package idtoken
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -76,15 +77,22 @@ func (o *Options) client() *http.Client {
 	return o.Client
 }
 
+func (o *Options) validate() error {
+	if o == nil {
+		return errors.New("idtoken: opts must be provided")
+	}
+	if o.Audience == "" {
+		return errors.New("idtoken: audience must be specified")
+	}
+	return nil
+}
+
 // NewTokenProvider creates a [cloud.google.com/go/auth.TokenProvider] that
 // returns ID tokens configured by the opts provided. The parameter
 // opts.Audience may not be empty.
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
-	if opts == nil {
-		return nil, fmt.Errorf("idtoken: opts must be provided")
-	}
-	if opts.Audience == "" {
-		return nil, fmt.Errorf("idtoken: must supply a non-empty audience")
+	if err := opts.validate(); err != nil {
+		return nil, err
 	}
 	if b := opts.jsonBytes(); b != nil {
 		return tokenProviderFromBytes(b, opts)
