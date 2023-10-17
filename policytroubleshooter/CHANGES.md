@@ -2,6 +2,13 @@
 
 
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.9.1...policytroubleshooter/v1.10.0) (2023-10-17)
+
+
+### Features
+
+* **policytroubleshooter/iam:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.9.0...policytroubleshooter/v1.9.1) (2023-10-12)
 
 

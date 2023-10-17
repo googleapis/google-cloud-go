@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.5.1...optimization/v1.6.0) (2023-10-17)
+
+
+### Features
+
+* **optimization:** Added the route modifiers ([56ce871](https://github.com/googleapis/google-cloud-go/commit/56ce87195320634b07ae0b012efcc5f2b3813fb0))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.5.0...optimization/v1.5.1) (2023-10-12)
 
 
