@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package externalaccount
+package stsexchange
 
 import (
 	"context"
@@ -29,21 +29,21 @@ import (
 )
 
 var (
-	clientAuth = clientAuthentication{
+	clientAuth = ClientAuthentication{
 		AuthStyle:    auth.StyleInHeader,
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 	}
-	tokenRequest = stsTokenExchangeRequest{
+	tokReq = TokenRequest{
 		ActingParty: struct {
 			ActorToken     string
 			ActorTokenType string
 		}{},
-		GrantType:          stsGrantType,
+		GrantType:          GrantType,
 		Resource:           "",
 		Audience:           "32555940559.apps.googleusercontent.com",
 		Scope:              []string{"https://www.googleapis.com/auth/devstorage.full_control"},
-		RequestedTokenType: stsTokenType,
+		RequestedTokenType: TokenType,
 		SubjectToken:       "Sample.Subject.Token",
 		SubjectTokenType:   jwtTokenType,
 	}
@@ -53,9 +53,9 @@ var (
 
 func TestExchangeToken(t *testing.T) {
 	requestbody := "audience=32555940559.apps.googleusercontent.com&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange&requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aaccess_token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdevstorage.full_control&subject_token=Sample.Subject.Token&subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Ajwt"
-	wantToken := stsTokenExchangeResponse{
+	wantToken := TokenResponse{
 		AccessToken:     "Sample.Access.Token",
-		IssuedTokenType: stsTokenType,
+		IssuedTokenType: TokenType,
 		TokenType:       internal.TokenTypeBearer,
 		ExpiresIn:       3600,
 		Scope:           "https://www.googleapis.com/auth/cloud-platform",
@@ -85,13 +85,13 @@ func TestExchangeToken(t *testing.T) {
 	headers := http.Header{}
 	headers.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	resp, err := exchangeToken(context.Background(), &exchangeOptions{
-		client:         internal.CloneDefaultClient(),
-		endpoint:       ts.URL,
-		request:        &tokenRequest,
-		authentication: clientAuth,
-		headers:        headers,
-		extraOpts:      nil,
+	resp, err := ExchangeToken(context.Background(), &Options{
+		Client:         internal.CloneDefaultClient(),
+		Endpoint:       ts.URL,
+		Request:        &tokReq,
+		Authentication: clientAuth,
+		Headers:        headers,
+		ExtraOpts:      nil,
 	})
 	if err != nil {
 		t.Fatalf("exchangeToken() = %v", err)
@@ -111,13 +111,13 @@ func TestExchangeToken_Err(t *testing.T) {
 
 	headers := http.Header{}
 	headers.Set("Content-Type", "application/x-www-form-urlencoded")
-	if _, err := exchangeToken(context.Background(), &exchangeOptions{
-		client:         internal.CloneDefaultClient(),
-		endpoint:       ts.URL,
-		request:        &tokenRequest,
-		authentication: clientAuth,
-		headers:        headers,
-		extraOpts:      nil,
+	if _, err := ExchangeToken(context.Background(), &Options{
+		Client:         internal.CloneDefaultClient(),
+		Endpoint:       ts.URL,
+		Request:        &tokReq,
+		Authentication: clientAuth,
+		Headers:        headers,
+		ExtraOpts:      nil,
 	}); err == nil {
 		t.Errorf("got nil, want an error")
 	}
@@ -201,13 +201,13 @@ func TestExchangeToken_Opts(t *testing.T) {
 	inputOpts["one"] = firstOption
 	inputOpts["two"] = secondOption
 
-	exchangeToken(context.Background(), &exchangeOptions{
-		client:         internal.CloneDefaultClient(),
-		endpoint:       ts.URL,
-		request:        &tokenRequest,
-		authentication: clientAuth,
-		headers:        headers,
-		extraOpts:      inputOpts,
+	ExchangeToken(context.Background(), &Options{
+		Client:         internal.CloneDefaultClient(),
+		Endpoint:       ts.URL,
+		Request:        &tokReq,
+		Authentication: clientAuth,
+		Headers:        headers,
+		ExtraOpts:      inputOpts,
 	})
 }
 
@@ -215,8 +215,8 @@ var (
 	clientID           = "rbrgnognrhongo3bi4gb9ghg9g"
 	clientSecret       = "notsosecret"
 	audience           = []string{"32555940559.apps.googleusercontent.com"}
-	grantType          = []string{stsGrantType}
-	requestedTokenType = []string{stsTokenType}
+	grantType          = []string{GrantType}
+	requestedTokenType = []string{TokenType}
 	subjectTokenType   = []string{jwtTokenType}
 	subjectToken       = []string{"eyJhbGciOiJSUzI1NiIsImtpZCI6IjJjNmZhNmY1OTUwYTdjZTQ2NWZjZjI0N2FhMGIwOTQ4MjhhYzk1MmMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzMjU1NTk0MDU1OS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsImF1ZCI6IjMyNTU1OTQwNTU5LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTEzMzE4NTQxMDA5MDU3Mzc4MzI4IiwiaGQiOiJnb29nbGUuY29tIiwiZW1haWwiOiJpdGh1cmllbEBnb29nbGUuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiI5OVJVYVFrRHJsVDFZOUV0SzdiYXJnIiwiaWF0IjoxNjAxNTgxMzQ5LCJleHAiOjE2MDE1ODQ5NDl9.SZ-4DyDcogDh_CDUKHqPCiT8AKLg4zLMpPhGQzmcmHQ6cJiV0WRVMf5Lq911qsvuekgxfQpIdKNXlD6yk3FqvC2rjBbuEztMF-OD_2B8CEIYFlMLGuTQimJlUQksLKM-3B2ITRDCxnyEdaZik0OVssiy1CBTsllS5MgTFqic7w8w0Cd6diqNkfPFZRWyRYsrRDRlHHbH5_TUnv2wnLVHBHlNvU4wU2yyjDIoqOvTRp8jtXdq7K31CDhXd47-hXsVFQn2ZgzuUEAkH2Q6NIXACcVyZOrjBcZiOQI9IRWz-g03LzbzPSecO7I8dDrhqUSqMrdNUz_f8Kr8JFhuVMfVug"}
 	scope              = []string{"https://www.googleapis.com/auth/devstorage.full_control"}
@@ -236,7 +236,7 @@ func TestClientAuthentication_InjectHeaderAuthentication(t *testing.T) {
 		"Content-Type": ContentType,
 	}
 
-	headerAuthentication := clientAuthentication{
+	headerAuthentication := ClientAuthentication{
 		AuthStyle:    auth.StyleInHeader,
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
@@ -278,7 +278,7 @@ func TestClientAuthentication_ParamsAuthentication(t *testing.T) {
 	headerP := http.Header{
 		"Content-Type": ContentType,
 	}
-	paramsAuthentication := clientAuthentication{
+	paramsAuthentication := ClientAuthentication{
 		AuthStyle:    auth.StyleInParams,
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
