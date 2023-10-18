@@ -1,5 +1,17 @@
 # Changes
 
+## [1.51.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.50.0...spanner/v1.51.0) (2023-10-17)
+
+
+### Features
+
+* **spanner/admin/instance:** Add autoscaling config to the instance proto ([#8701](https://github.com/googleapis/google-cloud-go/issues/8701)) ([56ce871](https://github.com/googleapis/google-cloud-go/commit/56ce87195320634b07ae0b012efcc5f2b3813fb0))
+
+
+### Bug Fixes
+
+* **spanner:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.50.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.49.0...spanner/v1.50.0) (2023-10-03)
 
 

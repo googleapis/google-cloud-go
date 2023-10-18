@@ -70,6 +70,19 @@ type ExternalAccountFile struct {
 	UniverseDomain                 string                          `json:"universe_domain"`
 }
 
+// ExternalAccountAuthorizedUserFile representation.
+type ExternalAccountAuthorizedUserFile struct {
+	Type           string `json:"type"`
+	Audience       string `json:"audience"`
+	ClientID       string `json:"client_id"`
+	ClientSecret   string `json:"client_secret"`
+	RefreshToken   string `json:"refresh_token"`
+	TokenURL       string `json:"token_url"`
+	TokenInfoURL   string `json:"token_info_url"`
+	RevokeURL      string `json:"revoke_url"`
+	QuotaProjectID string `json:"quota_project_id"`
+}
+
 // CredentialSource stores the information necessary to retrieve the credentials for the STS exchange.
 //
 // One field amongst File, URL, and Executable should be filled, depending on the kind of credential in question.
