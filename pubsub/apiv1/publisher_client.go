@@ -378,7 +378,7 @@ func (c *PublisherClient) Connection() *grpc.ClientConn {
 }
 
 // CreateTopic creates the given topic with the given name. See the [resource name rules]
-// (https://cloud.google.com/pubsub/docs/admin#resource_names (at https://cloud.google.com/pubsub/docs/admin#resource_names)).
+// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names (at https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names)).
 func (c *PublisherClient) CreateTopic(ctx context.Context, req *pubsubpb.Topic, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	return c.internalClient.CreateTopic(ctx, req, opts...)
 }
@@ -904,7 +904,7 @@ func (c *publisherGRPCClient) TestIamPermissions(ctx context.Context, req *iampb
 }
 
 // CreateTopic creates the given topic with the given name. See the [resource name rules]
-// (https://cloud.google.com/pubsub/docs/admin#resource_names (at https://cloud.google.com/pubsub/docs/admin#resource_names)).
+// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names (at https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names)).
 func (c *publisherRESTClient) CreateTopic(ctx context.Context, req *pubsubpb.Topic, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

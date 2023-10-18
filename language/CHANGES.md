@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.11.1...language/v1.12.0) (2023-10-17)
+
+
+### Features
+
+* **language:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.11.0...language/v1.11.1) (2023-10-12)
 
 
