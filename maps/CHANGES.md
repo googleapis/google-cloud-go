@@ -2,6 +2,13 @@
 
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.4.1...maps/v1.5.0) (2023-10-17)
+
+
+### Features
+
+* **maps:** New clients ([#8739](https://github.com/googleapis/google-cloud-go/issues/8739)) ([5f1d27a](https://github.com/googleapis/google-cloud-go/commit/5f1d27aae41ff75573fdab254da2548052556b1f))
+
 ## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.4.0...maps/v1.4.1) (2023-10-12)
 
 

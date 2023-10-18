@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.10.1...notebooks/v1.11.0) (2023-10-17)
+
+
+### Features
+
+* **notebooks:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.10.0...notebooks/v1.10.1) (2023-10-12)
 
 
