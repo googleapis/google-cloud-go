@@ -441,7 +441,7 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 	}
 
 	config := bigtable.ClientConfig{
-		AppProfile: "my-app-profile",
+		AppProfile: req.AppProfileId,
 	}
 	c, err := bigtable.NewClientWithConfig(ctx, req.ProjectId, req.InstanceId, config, option.WithGRPCConn(conn))
 	if err != nil {
