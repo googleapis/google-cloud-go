@@ -15,7 +15,6 @@
     "artifactregistry": "1.14.3",
     "asset": "1.15.1",
     "assuredworkloads": "1.11.2",
-    "auth/oauth2adapt": "0.0.0",
     "automl": "1.13.2",
     "baremetalsolution": "1.2.1",
     "batch": "1.6.0",
