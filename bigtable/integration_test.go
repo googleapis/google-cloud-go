@@ -256,6 +256,39 @@ func TestIntegration_ReadRowList(t *testing.T) {
 		t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
 	}
 }
+func TestIntegration_ReadRowListReverse(t *testing.T) {
+	ctx := context.Background()
+	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
+
+	// Read a RowList
+	var elt []string
+	rowRange := NewOpenClosedRange("gwashington", "wmckinley")
+	want := "wmckinley-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1"
+	err = table.ReadRows(ctx, rowRange, func(r Row) bool {
+		for _, ris := range r {
+			for _, ri := range ris {
+				elt = append(elt, formatReadItem(ri))
+			}
+		}
+		return true
+	}, ReverseScan())
+
+	if err != nil {
+		t.Fatalf("read RowList: %v", err)
+	}
+
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
+	}
+}
 
 func TestIntegration_DeleteRow(t *testing.T) {
 	ctx := context.Background()
