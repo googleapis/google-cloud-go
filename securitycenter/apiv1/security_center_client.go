@@ -81,6 +81,7 @@ type CallOptions struct {
 	SetMute                                            []gax.CallOption
 	SetIamPolicy                                       []gax.CallOption
 	TestIamPermissions                                 []gax.CallOption
+	SimulateSecurityHealthAnalyticsCustomModule        []gax.CallOption
 	UpdateExternalSystem                               []gax.CallOption
 	UpdateFinding                                      []gax.CallOption
 	UpdateMuteConfig                                   []gax.CallOption
@@ -355,7 +356,8 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		UpdateExternalSystem: []gax.CallOption{},
+		SimulateSecurityHealthAnalyticsCustomModule: []gax.CallOption{},
+		UpdateExternalSystem:                        []gax.CallOption{},
 		UpdateFinding: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -614,7 +616,8 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateExternalSystem: []gax.CallOption{},
+		SimulateSecurityHealthAnalyticsCustomModule: []gax.CallOption{},
+		UpdateExternalSystem:                        []gax.CallOption{},
 		UpdateFinding: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -684,6 +687,7 @@ type internalClient interface {
 	SetMute(context.Context, *securitycenterpb.SetMuteRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	SimulateSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) (*securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse, error)
 	UpdateExternalSystem(context.Context, *securitycenterpb.UpdateExternalSystemRequest, ...gax.CallOption) (*securitycenterpb.ExternalSystem, error)
 	UpdateFinding(context.Context, *securitycenterpb.UpdateFindingRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
 	UpdateMuteConfig(context.Context, *securitycenterpb.UpdateMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
@@ -946,6 +950,11 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 // TestIamPermissions returns the permissions that a caller has on the specified source.
 func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// SimulateSecurityHealthAnalyticsCustomModule simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+func (c *Client) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse, error) {
+	return c.internalClient.SimulateSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
 }
 
 // UpdateExternalSystem updates external system. This is for a given finding.
@@ -2052,6 +2061,24 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule)], opts...)
+	var resp *securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SimulateSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -4686,6 +4713,72 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SimulateSecurityHealthAnalyticsCustomModule simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+func (c *restClient) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/customModules:simulate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
