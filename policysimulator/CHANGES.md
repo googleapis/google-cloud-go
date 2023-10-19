@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.1.1...policysimulator/v0.2.0) (2023-10-17)
+
+
+### Features
+
+* **policysimulator:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.1.0...policysimulator/v0.1.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **policysimulator:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## 0.1.0 (2023-07-27)
 
 

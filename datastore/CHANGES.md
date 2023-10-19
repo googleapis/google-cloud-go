@@ -1,5 +1,18 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.14.0...datastore/v1.15.0) (2023-10-06)
+
+
+### Features
+
+* **datastore:** Adding dynamic routing header ([#8364](https://github.com/googleapis/google-cloud-go/issues/8364)) ([d235a42](https://github.com/googleapis/google-cloud-go/commit/d235a427a4e8d84466599cad4a68539a7a57a5db))
+
+
+### Bug Fixes
+
+* **datastore:** Allow saving nested byte slice ([#8540](https://github.com/googleapis/google-cloud-go/issues/8540)) ([8e53787](https://github.com/googleapis/google-cloud-go/commit/8e53787eac6f724ea4282533349abef3cbaffefe))
+* **datastore:** Handle loading nil values ([#8544](https://github.com/googleapis/google-cloud-go/issues/8544)) ([25dbb9c](https://github.com/googleapis/google-cloud-go/commit/25dbb9cf1041d9e19edecd5c48b698b6f81f2d20))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.13.0...datastore/v1.14.0) (2023-08-22)
 
 

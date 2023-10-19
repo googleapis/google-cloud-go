@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.10.0...dataplex/v1.10.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **dataplex:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.9.1...dataplex/v1.10.0) (2023-10-12)
+
+
+### Features
+
+* **dataplex:** DataQualityDimension is now part of the DataQualityDimensionResult message ([#8663](https://github.com/googleapis/google-cloud-go/issues/8663)) ([a811f4c](https://github.com/googleapis/google-cloud-go/commit/a811f4c49f0c3c769467239d866d4267a9ba2b44))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.9.0...dataplex/v1.9.1) (2023-08-08)
 
 

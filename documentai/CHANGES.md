@@ -1,6 +1,36 @@
 # Changes
 
 
+## [1.23.3](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.2...documentai/v1.23.3) (2023-10-17)
+
+
+### Documentation
+
+* **documentai:** Minor clarification on fields related to page range ([#8734](https://github.com/googleapis/google-cloud-go/issues/8734)) ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.1...documentai/v1.23.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **documentai:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.0...documentai/v1.23.1) (2023-10-12)
+
+
+### Documentation
+
+* **documentai:** Minor comment update ([9c502c2](https://github.com/googleapis/google-cloud-go/commit/9c502c2cf66b15c253e53747e08da77a21549cc2))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.22.1...documentai/v1.23.0) (2023-10-04)
+
+
+### Features
+
+* **documentai:** Added `SummaryOptions` to `ProcessOptions` for the Summarizer processor ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+* **documentai:** Added field Processor.processor_version_aliases ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+* **documentai:** Make `page_range` field public ([#8602](https://github.com/googleapis/google-cloud-go/issues/8602)) ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+
 ## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.22.0...documentai/v1.22.1) (2023-09-12)
 
 

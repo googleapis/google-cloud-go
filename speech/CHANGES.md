@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.19.0...speech/v1.19.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **speech:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.18.0...speech/v1.19.0) (2023-07-18)
 
 

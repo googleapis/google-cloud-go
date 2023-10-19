@@ -1,5 +1,19 @@
 # Changes
 
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.0...datacatalog/v1.18.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.17.1...datacatalog/v1.18.0) (2023-10-04)
+
+
+### Features
+
+* **datacatalog:** Enable Vertex AI Ingestion on DataPlex ([e9ae601](https://github.com/googleapis/google-cloud-go/commit/e9ae6018983ae09781740e4ff939e6e365863dbb))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.17.0...datacatalog/v1.17.1) (2023-09-11)
 
 
