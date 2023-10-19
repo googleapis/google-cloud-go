@@ -1,5 +1,12 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.23.1...securitycenter/v1.24.0) (2023-10-19)
+
+
+### Features
+
+* **securitycenter:** Add SimulateSecurityHealthAnalyticsCustomModule API for testing SHA custom module ([#8743](https://github.com/googleapis/google-cloud-go/issues/8743)) ([f3e2b05](https://github.com/googleapis/google-cloud-go/commit/f3e2b05129582f599fa9f53598f0cd7abe177493))
+
 ## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.23.0...securitycenter/v1.23.1) (2023-10-12)
 
 
