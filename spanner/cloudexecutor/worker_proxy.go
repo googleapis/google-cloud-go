@@ -38,6 +38,7 @@ var (
 	spannerPort    = flag.String("spanner_port", "", "Port of Spanner Frontend to which to send requests.")
 	cert           = flag.String("cert", "", "Certificate used to connect to Spanner GFE.")
 	serviceKeyFile = flag.String("service_key_file", "", "Service key file used to set authentication.")
+	ipAddress      = "127.0.0.1:"
 )
 
 func main() {
@@ -88,16 +89,8 @@ func main() {
 // Constructs client options needed to run executor for systests
 func getClientOptionsForSysTests() []option.ClientOption {
 	var options []option.ClientOption
-
-	endpoint := "127.0.0.1:" + *spannerPort
-	log.Printf("endpoint for grpc dial:  %s", endpoint)
-	options = append(options, option.WithEndpoint(endpoint))
-
-	creds, err := credentials.NewClientTLSFromFile(*cert, "test-cert-2")
-	if err != nil {
-		log.Println(err)
-	}
-	options = append(options, option.WithGRPCDialOption(grpc.WithTransportCredentials(creds)))
+	options = append(options, option.WithEndpoint(getEndPoint()))
+	options = append(options, option.WithGRPCDialOption(grpc.WithTransportCredentials(getCredentials())))
 
 	const (
 		spannerAdminScope = "https://www.googleapis.com/auth/spanner.admin"
@@ -128,20 +121,25 @@ func (f *fakeTokenSource) Token() (*oauth2.Token, error) {
 // Constructs client options needed to run executor for unit tests
 func getClientOptionsForUnitTests() []option.ClientOption {
 	var options []option.ClientOption
+	options = append(options, option.WithEndpoint(getEndPoint()))
+	options = append(options, option.WithGRPCDialOption(grpc.WithTransportCredentials(getCredentials())))
+	options = append(options, option.WithTokenSource(&fakeTokenSource{}))
 
-	endpoint := "127.0.0.1:" + *spannerPort
+	return options
+}
+
+func getEndPoint() string {
+	endpoint := ipAddress + *spannerPort
 	log.Printf("endpoint for grpc dial:  %s", endpoint)
+	return endpoint
+}
 
-	options = append(options, option.WithEndpoint(endpoint))
+func getCredentials() credentials.TransportCredentials {
 	creds, err := credentials.NewClientTLSFromFile(*cert, "test-cert-2")
 	if err != nil {
 		log.Println(err)
 	}
-
-	options = append(options, option.WithGRPCDialOption(grpc.WithTransportCredentials(creds)))
-	options = append(options, option.WithTokenSource(&fakeTokenSource{}))
-
-	return options
+	return creds
 }
 
 // Constructs client options needed to run executor on local machine
