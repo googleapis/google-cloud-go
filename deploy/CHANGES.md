@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.13.1...deploy/v1.14.0) (2023-10-19)
+
+
+### Features
+
+* **deploy:** Added platform log RolloutUpdateEvent ([f3e2b05](https://github.com/googleapis/google-cloud-go/commit/f3e2b05129582f599fa9f53598f0cd7abe177493))
+
 ## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.13.0...deploy/v1.13.1) (2023-10-12)
 
 
