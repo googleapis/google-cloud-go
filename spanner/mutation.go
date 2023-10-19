@@ -141,7 +141,7 @@ type Mutation struct {
 	values []interface{}
 }
 
-// A MutationGroup is a list of mutations to be committed atomically.
+// A MutationGroup is a list of Mutation to be committed atomically.
 type MutationGroup struct {
 	// The mutations in this group
 	mutations []*Mutation
