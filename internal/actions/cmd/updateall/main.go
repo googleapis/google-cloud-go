@@ -135,8 +135,9 @@ func update(modDir, dep, version, rootDir string) error {
 	}
 
 	if !*quiet {
-		scope := strings.TrimPrefix(strings.TrimSpace(modDir), rootDir+"/")
-		if scope == "" || scope == "main" || strings.Contains(scope, "internal/") {
+		modDir = strings.TrimSpace(modDir)
+		scope := strings.TrimPrefix(modDir, rootDir+"/")
+		if scope == modDir || scope == "" || scope == "main" || strings.Contains(scope, "internal/") {
 			return nil
 		}
 		nestedCommits.WriteString("BEGIN_NESTED_COMMIT\n")
