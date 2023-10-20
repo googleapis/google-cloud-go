@@ -14,6 +14,9 @@
 
 package executor
 
+// cloud_executor_impl.go contains the implementation of the executor proxy RPC.
+// This RPC gets invoked through the gRPC stream exposed via proxy port by worker_proxy.go file.
+
 import (
 	"context"
 

@@ -14,6 +14,8 @@
 
 package executor
 
+// cloud_client_executor_mapping.go handles mapping from executor actions to client library structure.
+
 import (
 	executorpb "cloud.google.com/go/spanner/cloudexecutor/proto"
 )

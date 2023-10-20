@@ -14,6 +14,9 @@
 
 package main
 
+// worker_proxy.go handles creation of the gRPC stream, and registering needed services.
+// This file is responsible for spinning up the server for receiving requests from the client through gRPC stream.
+
 import (
 	"context"
 	"flag"
