@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"context"
+	"reflect"
 	"testing"
 	"time"
 
@@ -56,7 +57,7 @@ func TestNewClosedOpenRange(t *testing.T) {
 	limit := "b\x01"
 	r := NewClosedOpenRange(start, limit)
 	for _, test := range []struct {
-		k string
+		k        string
 		contains bool
 	}{
 		{"a", false},
@@ -71,8 +72,8 @@ func TestNewClosedOpenRange(t *testing.T) {
 
 	for _, test := range []struct {
 		start, limit string
-		valid bool
-	} {
+		valid        bool
+	}{
 		{"a", "a", false},
 		{"b", "a", false},
 		{"a", "a\x00", true},
@@ -89,7 +90,7 @@ func TestNewOpenClosedRange(t *testing.T) {
 	limit := "b\x01"
 	r := NewOpenClosedRange(start, limit)
 	for _, test := range []struct {
-		k string
+		k        string
 		contains bool
 	}{
 		{"a", false},
@@ -99,14 +100,14 @@ func TestNewOpenClosedRange(t *testing.T) {
 		{"b\x01\x00", false},
 	} {
 		if want, got := test.contains, r.Contains(test.k); want != got {
-			t.Errorf("NewOpenClosedRange(%q, %q).Contains(%q) = %t, want %t", start, limit, test.k,  got, want)
+			t.Errorf("NewOpenClosedRange(%q, %q).Contains(%q) = %t, want %t", start, limit, test.k, got, want)
 		}
 	}
 
 	for _, test := range []struct {
 		start, limit string
-		valid bool
-	} {
+		valid        bool
+	}{
 		{"a", "a", false},
 		{"b", "a", false},
 		{"a", "a\x00", true},
@@ -124,7 +125,7 @@ func TestNewClosedRange(t *testing.T) {
 
 	r := NewClosedRange(start, limit)
 	for _, test := range []struct {
-		k string
+		k        string
 		contains bool
 	}{
 		{"a", false},
@@ -132,14 +133,14 @@ func TestNewClosedRange(t *testing.T) {
 		{"b\x01", false},
 	} {
 		if want, got := test.contains, r.Contains(test.k); want != got {
-			t.Errorf("NewClosedRange(%q, %q).Contains(%q) = %t, want %t", "a", "a\x01", test.k,  got, test.contains)
+			t.Errorf("NewClosedRange(%q, %q).Contains(%q) = %t, want %t", "a", "a\x01", test.k, got, test.contains)
 		}
 	}
 
 	for _, test := range []struct {
 		start, limit string
-		valid bool
-	} {
+		valid        bool
+	}{
 		{"a", "b", true},
 		{"b", "b", true},
 		{"b", "b\x00", true},
@@ -158,7 +159,7 @@ func TestNewOpenRange(t *testing.T) {
 
 	r := NewOpenRange(start, limit)
 	for _, test := range []struct {
-		k string
+		k        string
 		contains bool
 	}{
 		{"a", false},
@@ -167,14 +168,14 @@ func TestNewOpenRange(t *testing.T) {
 		{"b\x01", false},
 	} {
 		if want, got := test.contains, r.Contains(test.k); want != got {
-			t.Errorf("NewOpenRange(%q, %q).Contains(%q) = %t, want %t", "a", "a\x01", test.k,  got, test.contains)
+			t.Errorf("NewOpenRange(%q, %q).Contains(%q) = %t, want %t", "a", "a\x01", test.k, got, test.contains)
 		}
 	}
 
 	for _, test := range []struct {
 		start, limit string
-		valid bool
-	} {
+		valid        bool
+	}{
 		{"a", "a", false},
 		{"a", "b", true},
 		{"a", "a\x00", false},
@@ -309,6 +310,72 @@ func requestCallback(callback func()) func(ctx context.Context, desc *grpc.Strea
 			ClientStream:    clientStream,
 			requestCallback: callback,
 		}, err
+	}
+}
+
+func TestRowRangeProto(t *testing.T) {
+
+	for _, test := range []struct {
+		desc  string
+		rr    RowSet
+		proto *btpb.RowSet
+	}{
+		{
+			desc: "RowRange proto start and limit",
+			rr:   RowRange{start: "a", limit: "b"},
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("b")},
+			}}},
+		},
+		{
+			desc: "RowRange proto start but no limit",
+			rr:   RowRange{start: "a"},
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+			}}},
+		},
+		{
+			desc: "RowRange proto start but empty limit",
+			rr:   RowRange{start: "a", limit: ""},
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+			}}},
+		},
+		{
+			desc:  "RowRange proto unbound",
+			rr:    RowRange{start: "", limit: ""},
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{}}},
+		},
+		{
+			desc:  "RowRange proto unbound with no start or limit",
+			rr:    RowRange{},
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{}}},
+		},
+		{
+			desc: "RowRange proto open closed",
+			rr:   NewOpenClosedRange("a", "b"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyOpen{StartKeyOpen: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("b")},
+			}}},
+		},
+		{
+			desc: "RowRange proto closed open",
+			rr:   NewClosedOpenRange("a", "b"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("b")},
+			}}},
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			got := test.rr.proto()
+			want := test.proto
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("Bad proto: got %v, want %v", got, want)
+			}
+		})
 	}
 }
 
