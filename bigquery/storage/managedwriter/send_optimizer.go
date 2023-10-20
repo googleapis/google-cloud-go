@@ -207,22 +207,26 @@ type templateRevisionF func(m *storagepb.AppendRowsRequest)
 // The original revision is returned if there's no effective difference after changes are
 // applied.
 func (vt *versionedTemplate) revise(changes ...templateRevisionF) *versionedTemplate {
+	before := vt
+	if before == nil {
+		before = newVersionedTemplate()
+	}
 	if len(changes) == 0 {
 		// if there's no changes, return the base revision immediately.
-		return vt
+		return before
 	}
 	out := &versionedTemplate{
 		versionTime: time.Now(),
-		tmpl:        proto.Clone(vt.tmpl).(*storagepb.AppendRowsRequest),
+		tmpl:        proto.Clone(before.tmpl).(*storagepb.AppendRowsRequest),
 	}
 	for _, r := range changes {
 		r(out.tmpl)
 	}
 	out.computeHash()
-	if out.Compatible(vt) {
+	if out.Compatible(before) {
 		// The changes didn't yield an measured difference.  Return the base revision to avoid
 		// possible connection churn from no-op revisions.
-		return vt
+		return before
 	}
 	return out
 }

@@ -239,7 +239,7 @@ func WithSchemaDescriptor(dp *descriptorpb.DescriptorProto) WriterOption {
 	}
 }
 
-// WithMissingValueInterpretations controls over how missing values are interpreted
+// WithMissingValueInterpretations controls how missing values are interpreted
 // for individual columns.
 //
 // You must provide a map to indicate how to interpret missing value for some fields. Missing
@@ -247,13 +247,18 @@ func WithSchemaDescriptor(dp *descriptorpb.DescriptorProto) WriterOption {
 // the field name. The value is the interpretation of missing values for the
 // field.
 //
-// For example, a map {'foo': NULL_VALUE, 'bar': DEFAULT_VALUE} means all
-// missing values in field foo are interpreted as NULL, all missing values in
-// field bar are interpreted as the default value of field bar in table
-// schema.
+// For example, the following option would indicate that missing values in the "foo"
+// column are interpreted as null, whereas missing values in the "bar" column are
+// treated as the default value:
+//
+//	   WithMissingValueInterpretations(map[string]storagepb.AppendRowsRequest_MissingValueInterpretation{
+//					"foo": storagepb.AppendRowsRequest_DEFAULT_VALUE,
+//					"bar": storagepb.AppendRowsRequest_NULL_VALUE,
+//		  })
 //
 // If a field is not in this map and has missing values, the missing values
-// in this field are interpreted as NULL.
+// in this field are interpreted as NULL unless overridden with a default missing
+// value interpretation.
 //
 // Currently, field name can only be top-level column name, can't be a struct
 // field path like 'foo.bar'.
@@ -320,11 +325,7 @@ type AppendOption func(*pendingWrite)
 // with a given stream.
 func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
 	return func(pw *pendingWrite) {
-		prev := pw.reqTmpl
-		if prev == nil {
-			prev = newVersionedTemplate()
-		}
-		pw.reqTmpl = prev.revise(reviseProtoSchema(schema))
+		pw.reqTmpl = pw.reqTmpl.revise(reviseProtoSchema(schema))
 	}
 }
 
@@ -333,11 +334,7 @@ func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
 // more details.
 func UpdateMissingValueInterpretations(mvi map[string]storagepb.AppendRowsRequest_MissingValueInterpretation) AppendOption {
 	return func(pw *pendingWrite) {
-		prev := pw.reqTmpl
-		if prev == nil {
-			prev = newVersionedTemplate()
-		}
-		pw.reqTmpl = prev.revise(reviseMissingValueInterpretations(mvi))
+		pw.reqTmpl = pw.reqTmpl.revise(reviseMissingValueInterpretations(mvi))
 	}
 }
 
@@ -346,11 +343,7 @@ func UpdateMissingValueInterpretations(mvi map[string]storagepb.AppendRowsReques
 // more details.
 func UpdateDefaultMissingValueInterpretation(def storagepb.AppendRowsRequest_MissingValueInterpretation) AppendOption {
 	return func(pw *pendingWrite) {
-		prev := pw.reqTmpl
-		if prev == nil {
-			prev = newVersionedTemplate()
-		}
-		pw.reqTmpl = prev.revise(reviseDefaultMissingValueInterpretation(def))
+		pw.reqTmpl = pw.reqTmpl.revise(reviseDefaultMissingValueInterpretation(def))
 	}
 }
 
