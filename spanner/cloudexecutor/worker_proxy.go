@@ -21,6 +21,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 
 	"cloud.google.com/go/spanner/cloudexecutor/executor"
 	executorpb "cloud.google.com/go/spanner/cloudexecutor/proto"
@@ -38,7 +39,7 @@ var (
 	spannerPort    = flag.String("spanner_port", "", "Port of Spanner Frontend to which to send requests.")
 	cert           = flag.String("cert", "", "Certificate used to connect to Spanner GFE.")
 	serviceKeyFile = flag.String("service_key_file", "", "Service key file used to set authentication.")
-	ipAddress      = "127.0.0.1:"
+	ipAddress      = "127.0.0.1"
 )
 
 func main() {
@@ -129,7 +130,7 @@ func getClientOptionsForUnitTests() []option.ClientOption {
 }
 
 func getEndPoint() string {
-	endpoint := ipAddress + *spannerPort
+	endpoint := strings.Join([]string{ipAddress, *spannerPort}, ":")
 	log.Printf("endpoint for grpc dial:  %s", endpoint)
 	return endpoint
 }
