@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.1.1...policysimulator/v0.2.0) (2023-10-17)
+
+
+### Features
+
+* **policysimulator:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.1.0...policysimulator/v0.1.1) (2023-10-12)
 
 
