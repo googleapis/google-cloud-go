@@ -924,6 +924,31 @@ func ExampleClient_TestIamPermissions() {
 	_ = resp
 }
 
+func ExampleClient_SimulateSecurityHealthAnalyticsCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#SimulateSecurityHealthAnalyticsCustomModuleRequest.
+	}
+	resp, err := c.SimulateSecurityHealthAnalyticsCustomModule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_UpdateExternalSystem() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.7.2...apigeeregistry/v0.8.0) (2023-10-17)
+
+
+### Features
+
+* **apigeeregistry:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
 ## [0.7.2](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.7.1...apigeeregistry/v0.7.2) (2023-10-12)
 
 

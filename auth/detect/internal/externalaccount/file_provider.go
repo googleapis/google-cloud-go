@@ -26,6 +26,10 @@ import (
 	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
+const (
+	fileProviderType = "file"
+)
+
 type fileSubjectProvider struct {
 	File   string
 	Format internaldetect.Format
@@ -63,4 +67,8 @@ func (sp *fileSubjectProvider) subjectToken(context.Context) (string, error) {
 	default:
 		return "", errors.New("detect: invalid credential_source file format type: " + sp.Format.Type)
 	}
+}
+
+func (sp *fileSubjectProvider) providerType() string {
+	return fileProviderType
 }

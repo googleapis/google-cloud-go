@@ -33,6 +33,34 @@ func (tp mockProvider) Token(context.Context) (*auth.Token, error) {
 	}, nil
 }
 
+func TestNewImpersonatedTokenProvider_Validation(t *testing.T) {
+	tests := []struct {
+		name string
+		opt  *Options
+	}{
+		{
+			name: "missing source creds",
+			opt: &Options{
+				URL: "some-url",
+			},
+		},
+		{
+			name: "missing url",
+			opt: &Options{
+				Tp: &Options{},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := NewTokenProvider(tt.opt)
+			if err == nil {
+				t.Errorf("got nil, want an error")
+			}
+		})
+	}
+}
+
 func TestNewImpersonatedTokenProvider(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if got, want := r.Header.Get("Authorization"), "Bearer fake_token_base"; got != want {

@@ -16,6 +16,7 @@ package detect
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -119,7 +120,9 @@ func OnGCE() bool {
 //     runtimes, and Google App Engine flexible environment, it fetches
 //     credentials from the metadata server.
 func DefaultCredentials(opts *Options) (*Credentials, error) {
-	// TODO(codyoss): add some validation logic here.
+	if err := opts.validate(); err != nil {
+		return nil, err
+	}
 	if opts.CredentialsJSON != nil {
 		return readCredentialsFileJSON(opts.CredentialsJSON, opts)
 	}
@@ -145,7 +148,8 @@ func DefaultCredentials(opts *Options) (*Credentials, error) {
 // Options provides configuration for [DefaultCredentials].
 type Options struct {
 	// Scopes that credentials tokens should have. Example:
-	// https://www.googleapis.com/auth/cloud-platform
+	// https://www.googleapis.com/auth/cloud-platform. Required if Audience is
+	// not provided.
 	Scopes []string
 	// Audience that credentials tokens should have. Only applicable for 2LO
 	// flows with service accounts. If specified, scopes should not be provided.
@@ -168,10 +172,12 @@ type Options struct {
 	// Currently this only used for GDCH auth flow, for which it is required.
 	STSAudience string
 	// CredentialsFile overrides detection logic and sources a credential file
-	// from the provided filepath. Optional.
+	// from the provided filepath. If provided, CredentialsJSON must not be.
+	// Optional.
 	CredentialsFile string
 	// CredentialsJSON overrides detection logic and uses the JSON bytes as the
-	// source for the credential. Optional.
+	// source for the credential. If provided, CredentialsFile must not be.
+	// Optional.
 	CredentialsJSON []byte
 	// UseSelfSignedJWT directs service account based credentials to create a
 	// self-signed JWT with the private key found in the file, skipping any
@@ -180,6 +186,19 @@ type Options struct {
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Optional.
 	Client *http.Client
+}
+
+func (o *Options) validate() error {
+	if o == nil {
+		return errors.New("detect: options must be provided")
+	}
+	if len(o.Scopes) > 0 && o.Audience != "" {
+		return errors.New("detect: both scopes and audience were provided")
+	}
+	if len(o.CredentialsJSON) > 0 && o.CredentialsFile != "" {
+		return errors.New("detect: both credentials file and JSON were provided")
+	}
+	return nil
 }
 
 func (o *Options) tokenURL() string {
@@ -214,7 +233,10 @@ func readCredentialsFileJSON(b []byte, opts *Options) (*Credentials, error) {
 	// attempt to parse jsonData as a Google Developers Console client_credentials.json.
 	config := clientCredConfigFromJSON(b, opts)
 	if config != nil {
-		tp, err := auth.New3LOTokenProvider("", config)
+		if config.AuthHandlerOpts == nil {
+			return nil, errors.New("detect: auth handler must be specified for this credential filetype")
+		}
+		tp, err := auth.New3LOTokenProvider(config)
 		if err != nil {
 			return nil, err
 		}
@@ -242,7 +264,6 @@ func clientCredConfigFromJSON(b []byte, opts *Options) *auth.Options3LO {
 	}
 	var handleOpts *auth.AuthorizationHandlerOptions
 	if opts.AuthHandlerOptions != nil {
-		// TODO(codyoss): these have to be here for this flow, validate that
 		handleOpts = &auth.AuthorizationHandlerOptions{
 			Handler:  opts.AuthHandlerOptions.Handler,
 			State:    opts.AuthHandlerOptions.State,
