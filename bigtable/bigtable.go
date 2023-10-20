@@ -441,7 +441,8 @@ func (r RowRange) String() string {
 func (r RowRange) proto() *btpb.RowSet {
 	var rr = btpb.RowRange{}
 
-	if r.startBound == unbounded || r.start == "" {
+	// empty strings are NOT considered unbounded for backwards compatibility
+	if r.startBound == unbounded {
 		// leave unbounded
 	} else if r.startBound == closed || r.startBound == undefined {
 		rr.StartKey = &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)}
@@ -449,6 +450,7 @@ func (r RowRange) proto() *btpb.RowSet {
 		rr.StartKey = &btpb.RowRange_StartKeyOpen{StartKeyOpen: []byte(r.start)}
 	}
 
+	// empty strings are considered unbounded for backwards compatibility
 	if r.endBound == unbounded || r.limit == "" {
 		// leave unbounded
 	} else if r.endBound == closed {

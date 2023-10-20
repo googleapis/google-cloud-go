@@ -343,14 +343,18 @@ func TestRowRangeProto(t *testing.T) {
 			}}},
 		},
 		{
-			desc:  "RowRange proto unbound",
-			rr:    RowRange{start: "", limit: ""},
-			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{}}},
+			desc: "RowRange proto unbound",
+			rr:   RowRange{start: "", limit: ""},
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("")},
+			}}},
 		},
 		{
-			desc:  "RowRange proto unbound with no start or limit",
-			rr:    RowRange{},
-			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{}}},
+			desc: "RowRange proto unbound with no start or limit",
+			rr:   RowRange{},
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("")},
+			}}},
 		},
 		{
 			desc: "RowRange proto open closed",
