@@ -356,13 +356,24 @@ func (r RowList) valid() bool {
 	return len(r) > 0
 }
 
+type BoundType int64
+
+const (
+	undefined BoundType = iota
+	unbounded
+	closed
+	open
+)
+
 // A RowRange is a half-open interval [Start, Limit) encompassing
 // all the rows with keys at least as large as Start, and less than Limit.
 // (Bigtable string comparison is the same as Go's.)
 // A RowRange can be unbounded, encompassing all keys at least as large as Start.
 type RowRange struct {
-	start string
-	limit string
+	start      string
+	startBound BoundType
+	limit      string
+	endBound   BoundType
 }
 
 // NewRange returns the new RowRange [begin, end).
@@ -374,40 +385,43 @@ func NewRange(begin, end string) RowRange {
 }
 
 func NewClosedOpenRange(begin, limit string) RowRange {
-	return NewRange(begin, limit)
+	return RowRange{
+		start:      begin,
+		limit:      limit,
+		startBound: closed,
+		endBound:   open,
+	}
 }
 func NewOpenClosedRange(start, limit string) RowRange {
-	// contract the start to exclude the first key
-	if start != "" {
-		start = start + "\x00"
+	return RowRange{
+		start:      start,
+		limit:      limit,
+		startBound: open,
+		endBound:   closed,
 	}
-	// expand the end to include the last key
-	if limit != "" {
-		limit = limit + "\x00"
-	}
-	return NewRange(start, limit)
 }
 
 func NewOpenRange(start, limit string) RowRange {
-	// contract the start to exclude the first key
-	if start != "" {
-		start = start + "\x00"
+	return RowRange{
+		start:      start,
+		limit:      limit,
+		startBound: open,
+		endBound:   open,
 	}
-	return NewRange(start, limit)
 }
 
 func NewClosedRange(begin, end string) RowRange {
-	// expand the end to include the last key
-	if end != "" {
-		end = end + "\x00"
+	return RowRange{
+		start:      begin,
+		limit:      end,
+		startBound: closed,
+		endBound:   closed,
 	}
-	return NewRange(begin, end)
 }
-
 
 // Unbounded tests whether a RowRange is unbounded.
 func (r RowRange) Unbounded() bool {
-	return r.limit == ""
+	return r.limit == "" || r.endBound == unbounded
 }
 
 // Contains says whether the RowRange contains the key.
@@ -425,13 +439,25 @@ func (r RowRange) String() string {
 }
 
 func (r RowRange) proto() *btpb.RowSet {
-	rr := &btpb.RowRange{
-		StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)},
+	var rr = btpb.RowRange{}
+
+	if r.startBound == unbounded || r.start == "" {
+		// leave unbounded
+	} else if r.startBound == closed || r.startBound == undefined {
+		rr.StartKey = &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)}
+	} else {
+		rr.StartKey = &btpb.RowRange_StartKeyOpen{StartKeyOpen: []byte(r.start)}
 	}
-	if !r.Unbounded() {
+
+	if r.endBound == unbounded || r.limit == "" {
+		// leave unbounded
+	} else if r.endBound == closed {
+		rr.EndKey = &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte(r.limit)}
+	} else {
 		rr.EndKey = &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.limit)}
 	}
-	return &btpb.RowSet{RowRanges: []*btpb.RowRange{rr}}
+
+	return &btpb.RowSet{RowRanges: []*btpb.RowRange{&rr}}
 }
 
 func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
@@ -526,8 +552,18 @@ func PrefixRange(prefix string) RowRange {
 // large as start.
 func InfiniteRange(start string) RowRange {
 	return RowRange{
-		start: start,
-		limit: "",
+		start:    start,
+		endBound: unbounded,
+	}
+}
+
+// InfiniteReverseRange returns the RowRange consisting of all keys at least as
+// large as start.
+func InfiniteReverseRange(limit string) RowRange {
+	return RowRange{
+		limit:      limit,
+		startBound: unbounded,
+		endBound:   closed,
 	}
 }
 
@@ -659,14 +695,14 @@ func (wrs withFullReadStats) set(settings *readSettings) {
 // will remain unchanged from the ordering forward scans. This is particularly useful to get the
 // last N records before a key:
 //
-// table.ReadRows(ctx, NewOpenClosedRange("", "key"), func(row bigtable.Row) bool {
-//    return true
-// }, bigtable.ReverseScan(), bigtable.LimitRows(10))
+//	table.ReadRows(ctx, NewOpenClosedRange("", "key"), func(row bigtable.Row) bool {
+//	   return true
+//	}, bigtable.ReverseScan(), bigtable.LimitRows(10))
 func ReverseScan() ReadOption {
 	return reverseScan{}
 }
 
-type reverseScan struct {}
+type reverseScan struct{}
 
 func (rs reverseScan) set(settings *readSettings) {
 	settings.req.Reversed = true

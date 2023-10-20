@@ -1161,10 +1161,11 @@ func TestIntegration_FullReadStats(t *testing.T) {
 	}
 
 	for _, test := range []struct {
-		desc   string
-		rr     RowSet
-		filter Filter     // may be nil
-		limit  ReadOption // may be nil
+		desc        string
+		rr          RowSet
+		filter      Filter     // may be nil
+		limit       ReadOption // may be nil
+		reverseScan bool
 
 		// We do the read and grab all the stats.
 		cellsReturnedCount int64
@@ -1391,6 +1392,20 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
+		{
+			desc:               "reverse read all, unfiltered",
+			rr:                 RowRange{},
+			reverseScan:        true,
+			cellsReturnedCount: 7,
+			rowsReturnedCount:  4,
+		},
+		{
+			desc:               "reverse read with InfiniteRange, unfiltered",
+			rr:                 InfiniteReverseRange("wmckinley"),
+			reverseScan:        true,
+			cellsReturnedCount: 7,
+			rowsReturnedCount:  4,
+		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var opts []ReadOption
@@ -1399,6 +1414,9 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			}
 			if test.limit != nil {
 				opts = append(opts, test.limit)
+			}
+			if test.reverseScan {
+				opts = append(opts, ReverseScan())
 			}
 			// Define a callback for validating request stats.
 			callbackInvoked := false
@@ -1420,7 +1438,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 					// We use lenient checks for CellsSeenCount and RowsSeenCount. Exact checks would be brittle.
 					// Note that the emulator and prod sometimes yield different values:
 					// - Sometimes prod scans fewer cells due to optimizations that allow prod to skip cells.
-					// - Sometimes prod scans more cells due to to filters that must rescan cells.
+					// - Sometimes prod scans more cells due to filters that must rescan cells.
 					// Similar issues apply for RowsSeenCount.
 					if got, want := readStats.CellsSeenCount, readStats.CellsReturnedCount; got < want {
 						t.Errorf("CellsSeenCount should be greater than or equal to CellsReturnedCount. got: %d < want: %d",
