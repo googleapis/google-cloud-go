@@ -96,7 +96,7 @@ func (r *Routine) Metadata(ctx context.Context) (rm *RoutineMetadata, err error)
 	req := r.c.bqs.Routines.Get(r.ProjectID, r.DatasetID, r.RoutineID).Context(ctx)
 	setClientHeader(req.Header())
 	var routine *bq.Routine
-	err = runWithRetry(ctx, func() (err error) {
+	err = runWithRetry(ctx, r.c.retry, func() (err error) {
 		ctx = trace.StartSpan(ctx, "bigquery.routines.get")
 		routine, err = req.Do()
 		trace.EndSpan(ctx, err)
@@ -130,7 +130,7 @@ func (r *Routine) Update(ctx context.Context, upd *RoutineMetadataToUpdate, etag
 		call.Header().Set("If-Match", etag)
 	}
 	var res *bq.Routine
-	if err := runWithRetry(ctx, func() (err error) {
+	if err := runWithRetry(ctx, r.c.retry, func() (err error) {
 		ctx = trace.StartSpan(ctx, "bigquery.routines.update")
 		res, err = call.Do()
 		trace.EndSpan(ctx, err)

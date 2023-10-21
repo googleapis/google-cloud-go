@@ -85,7 +85,7 @@ func (m *Model) Metadata(ctx context.Context) (mm *ModelMetadata, err error) {
 	req := m.c.bqs.Models.Get(m.ProjectID, m.DatasetID, m.ModelID).Context(ctx)
 	setClientHeader(req.Header())
 	var model *bq.Model
-	err = runWithRetry(ctx, func() (err error) {
+	err = runWithRetry(ctx, m.c.retry, func() (err error) {
 		ctx = trace.StartSpan(ctx, "bigquery.models.get")
 		model, err = req.Do()
 		trace.EndSpan(ctx, err)
@@ -112,7 +112,7 @@ func (m *Model) Update(ctx context.Context, mm ModelMetadataToUpdate, etag strin
 		call.Header().Set("If-Match", etag)
 	}
 	var res *bq.Model
-	if err := runWithRetry(ctx, func() (err error) {
+	if err := runWithRetry(ctx, m.c.retry, func() (err error) {
 		ctx = trace.StartSpan(ctx, "bigquery.models.patch")
 		res, err = call.Do()
 		trace.EndSpan(ctx, err)

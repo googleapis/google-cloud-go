@@ -61,8 +61,9 @@ func (c *bqIAMClient) GetWithVersion(ctx context.Context, resource string, reque
 	call := c.bqs.Tables.GetIamPolicy(resource, iamReq).Context(ctx)
 	setClientHeader(call.Header())
 
+	retry := defaultRetryConfig()
 	var bqp *bq.Policy
-	err = runWithRetry(ctx, func() error {
+	err = runWithRetry(ctx, retry, func() error {
 		bqp, err = call.Do()
 		return err
 	})
@@ -76,10 +77,11 @@ func (c *bqIAMClient) Set(ctx context.Context, resource string, p *iampb.Policy)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.IAM.Set")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	retry := defaultRetryConfig()
 	bqp := iamToBigQueryPolicy(p)
 	call := c.bqs.Tables.SetIamPolicy(resource, &bq.SetIamPolicyRequest{Policy: bqp}).Context(ctx)
 	setClientHeader(call.Header())
-	return runWithRetry(ctx, func() error {
+	return runWithRetry(ctx, retry, func() error {
 		_, err := call.Do()
 		return err
 	})
@@ -92,8 +94,9 @@ func (c *bqIAMClient) Test(ctx context.Context, resource string, perms []string)
 	call := c.bqs.Tables.TestIamPermissions(resource, &bq.TestIamPermissionsRequest{Permissions: perms}).Context(ctx)
 	setClientHeader(call.Header())
 
+	retry := defaultRetryConfig()
 	var res *bq.TestIamPermissionsResponse
-	err = runWithRetry(ctx, func() error {
+	err = runWithRetry(ctx, retry, func() error {
 		res, err = call.Do()
 		return err
 	})
