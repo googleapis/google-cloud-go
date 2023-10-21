@@ -123,9 +123,10 @@ func (ci *CreateIndex) clearOffset()   { ci.Position.Offset = 0 }
 // CreateView represents a CREATE [OR REPLACE] VIEW statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#view_statements
 type CreateView struct {
-	Name      ID
-	OrReplace bool
-	Query     Query
+	Name         ID
+	OrReplace    bool
+	SecurityType SecurityType
+	Query        Query
 
 	Position Position // position of the "CREATE" token
 }
@@ -134,6 +135,13 @@ func (cv *CreateView) String() string { return fmt.Sprintf("%#v", cv) }
 func (*CreateView) isDDLStmt()        {}
 func (cv *CreateView) Pos() Position  { return cv.Position }
 func (cv *CreateView) clearOffset()   { cv.Position.Offset = 0 }
+
+type SecurityType int
+
+const (
+	Invoker SecurityType = iota
+	Definer
+)
 
 // CreateRole represents a CREATE Role statement.
 // https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#create_role

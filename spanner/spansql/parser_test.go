@@ -904,8 +904,9 @@ func TestParseDDL(t *testing.T) {
 				Position: line(58),
 			},
 			&CreateView{
-				Name:      "SingersView",
-				OrReplace: false,
+				Name:         "SingersView",
+				OrReplace:    false,
+				SecurityType: Invoker,
 				Query: Query{
 					Select: Select{
 						List: []Expr{ID("SingerId"), ID("FullName")},
@@ -1298,8 +1299,9 @@ func TestParseDDL(t *testing.T) {
 			&DDL{
 				Filename: "filename", List: []DDLStmt{
 					&CreateView{
-						Name:      "SingersView",
-						OrReplace: true,
+						Name:         "SingersView",
+						OrReplace:    true,
+						SecurityType: Invoker,
 						Query: Query{
 							Select: Select{
 								List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
@@ -1682,6 +1684,28 @@ func TestParseDDL(t *testing.T) {
 						Name:     "sname",
 						IfExists: true,
 						Position: line(3),
+					},
+				},
+			},
+		},
+		{
+			`CREATE VIEW vname SQL SECURITY DEFINER AS SELECT cname FROM tname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateView{
+						Name:         "vname",
+						OrReplace:    false,
+						SecurityType: Definer,
+						Query: Query{
+							Select: Select{
+								List: []Expr{ID("cname")},
+								From: []SelectFrom{SelectFromTable{
+									Table: "tname",
+								}},
+							},
+						},
+						Position: line(1),
 					},
 				},
 			},
