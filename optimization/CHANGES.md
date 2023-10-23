@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.5.0...optimization/v1.5.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **optimization:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.4.2...optimization/v1.5.0) (2023-09-11)
 
 

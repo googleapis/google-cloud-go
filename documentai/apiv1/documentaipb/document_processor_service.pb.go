@@ -342,9 +342,7 @@ type ProcessOptions struct {
 	// A subset of pages to process. If not specified, all pages will be
 	// processed. NOTICE: If any of the page range is set, we will extract and
 	// process only the given pages from the document. In the output document,
-	// [Document.Page.page_number][google.cloud.documentai.v1.Document.Page.page_number]
-	// is referring to the page number in the original document. This
-	// configuration only applies to sync requests.
+	// the page_number is referring to the page number in the original document.
 	//
 	// Types that are assignable to PageRange:
 	//	*ProcessOptions_IndividualPageSelector_
@@ -433,8 +431,8 @@ type ProcessOptions_IndividualPageSelector_ struct {
 }
 
 type ProcessOptions_FromStart struct {
-	// Only process certain pages from the start. Process all if the document
-	// has fewer pages.
+	// Only process certain pages from the start, process all if the document
+	// has less pages.
 	FromStart int32 `protobuf:"varint,6,opt,name=from_start,json=fromStart,proto3,oneof"`
 }
 

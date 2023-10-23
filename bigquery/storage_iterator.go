@@ -267,6 +267,14 @@ func (it *storageArrowIterator) processStream(readStream string) {
 			if it.session.ctx.Err() != nil { // context cancelled, don't queue error
 				return
 			}
+			backoff, shouldRetry := retryReadRows(bo, err)
+			if shouldRetry {
+				if err := gax.Sleep(it.ctx, backoff); err != nil {
+					return // context cancelled
+				}
+				continue
+			}
+			it.errs <- fmt.Errorf("failed to read rows on stream %s: %w", readStream, err)
 			// try to re-open row stream with updated offset
 		}
 	}

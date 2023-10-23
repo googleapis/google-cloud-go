@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/support/v1.0.0...support/v1.0.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **support:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/support/v0.2.2...support/v1.0.0) (2023-07-24)
 
 

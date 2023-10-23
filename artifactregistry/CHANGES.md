@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.2...artifactregistry/v1.14.3) (2023-10-12)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.1...artifactregistry/v1.14.2) (2023-10-04)
 
 
