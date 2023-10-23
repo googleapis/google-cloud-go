@@ -775,6 +775,11 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
+	beforePreview := client.enableQueryPreview
+	// ensure we restore the preview setting on test exit
+	defer func() {
+		client.enableQueryPreview = beforePreview
+	}()
 	ctx := context.Background()
 
 	testCases := []struct {
@@ -797,7 +802,7 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			// in the job config, but switching to relying on jobs.getQueryResults allows the
 			// service to decide the behavior.
 			description: "ctas ddl",
-			query:       fmt.Sprintf("CREATE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
+			query:       fmt.Sprintf("CREATE OR REPLACE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
 			want:        nil,
 		},
 		{
@@ -813,18 +818,38 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			want:        [][]Value{},
 		},
 	}
-	for _, tc := range testCases {
-		curCase := tc
-		t.Run(curCase.description, func(t *testing.T) {
-			t.Parallel()
-			q := client.Query(curCase.query)
-			it, err := q.Read(ctx)
-			if err != nil {
-				t.Fatalf("%s read error: %v", curCase.description, err)
-			}
-			checkReadAndTotalRows(t, curCase.description, it, curCase.want)
-		})
-	}
+
+	t.Run("nopreview_group", func(t *testing.T) {
+		client.enableQueryPreview = false
+		for _, tc := range testCases {
+			curCase := tc
+			t.Run(curCase.description, func(t *testing.T) {
+				t.Parallel()
+				q := client.Query(curCase.query)
+				it, err := q.Read(ctx)
+				if err != nil {
+					t.Fatalf("%s read error: %v", curCase.description, err)
+				}
+				checkReadAndTotalRows(t, curCase.description, it, curCase.want)
+			})
+		}
+	})
+	t.Run("preview_group", func(t *testing.T) {
+		client.enableQueryPreview = true
+		for _, tc := range testCases {
+			curCase := tc
+			t.Run(curCase.description, func(t *testing.T) {
+				t.Parallel()
+				q := client.Query(curCase.query)
+				it, err := q.Read(ctx)
+				if err != nil {
+					t.Fatalf("%s read error: %v", curCase.description, err)
+				}
+				checkReadAndTotalRows(t, curCase.description, it, curCase.want)
+			})
+		}
+	})
+
 }
 
 func TestIntegration_QueryIterationPager(t *testing.T) {
