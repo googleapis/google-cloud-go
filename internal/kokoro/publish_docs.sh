@@ -20,8 +20,7 @@ set -eo pipefail
 set -x
 
 cd github/google-cloud-go/internal/godocfx
-git config --global --add safe.directory $PWD
-go install
+go install -buildvcs=false
 cd -
 
 export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
