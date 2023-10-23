@@ -48,6 +48,9 @@ const (
 	ExternalAccountKey
 	// GDCHServiceAccountKey represents a GDCH file type.
 	GDCHServiceAccountKey
+	// ExternalAccountAuthorizedUserKey represents a external account authorized
+	// user file type.
+	ExternalAccountAuthorizedUserKey
 )
 
 // parseCredentialType returns the associated filetype based on the parsed
@@ -62,6 +65,8 @@ func parseCredentialType(typeString string) CredentialType {
 		return ImpersonatedServiceAccountKey
 	case "external_account":
 		return ExternalAccountKey
+	case "external_account_authorized_user":
+		return ExternalAccountAuthorizedUserKey
 	case "gdch_service_account":
 		return GDCHServiceAccountKey
 	default:

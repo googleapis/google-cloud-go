@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.1.1...shopping/v0.2.0) (2023-10-17)
+
+
+### Features
+
+* **shopping:** Channel enum is added ([56ce871](https://github.com/googleapis/google-cloud-go/commit/56ce87195320634b07ae0b012efcc5f2b3813fb0))
+* **shopping:** ReportingContext enum is added ([56ce871](https://github.com/googleapis/google-cloud-go/commit/56ce87195320634b07ae0b012efcc5f2b3813fb0))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.1.0...shopping/v0.1.1) (2023-10-12)
 
 

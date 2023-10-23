@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -46,7 +47,9 @@ type impersonateTokenResponse struct {
 // NewTokenProvider uses a source credential, stored in Ts, to request an access token to the provided URL.
 // Scopes can be defined when the access token is requested.
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
-	// TODO(codyoss): add validation
+	if err := opts.validate(); err != nil {
+		return nil, err
+	}
 	return opts, nil
 }
 
@@ -71,6 +74,16 @@ type Options struct {
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Required.
 	Client *http.Client
+}
+
+func (o *Options) validate() error {
+	if o.Tp == nil {
+		return errors.New("detect: missing required 'source_credentials' field in impersonated credentials")
+	}
+	if o.URL == "" {
+		return errors.New("detect: missing required 'service_account_impersonation_url' field in impersonated credentials")
+	}
+	return nil
 }
 
 // Token performs the exchange to get a temporary service account token to allow access to GCP.
