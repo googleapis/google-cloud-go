@@ -372,8 +372,9 @@ const (
 type RowRange struct {
 	start      string
 	startBound BoundType
-	limit      string
-	endBound   BoundType
+	// todo rename this field. it's module private so we won't break anybody
+	limit    string
+	endBound BoundType
 }
 
 // NewRange returns the new RowRange [begin, end).
