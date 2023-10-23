@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.5.1...batch/v1.6.0) (2023-10-17)
+
+
+### Features
+
+* **batch:** Expose display_name to batch v1 API ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.5.0...batch/v1.5.1) (2023-10-12)
 
 
