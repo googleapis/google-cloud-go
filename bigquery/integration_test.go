@@ -806,6 +806,12 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			query:       "select count(*) from unnest(generate_array(1,1000000)), unnest(generate_array(1, 1000)) as foo",
 			want:        [][]Value{{int64(1000000000)}},
 		},
+		{
+			// Query doesn't yield a result.
+			description: "DML",
+			query:       fmt.Sprintf("CREATE OR REPLACE TABLE %s.%s (foo STRING, bar INT64)", dataset.DatasetID, tableIDs.New()),
+			want:        [][]Value{},
+		},
 	}
 	for _, tc := range testCases {
 		curCase := tc
@@ -3284,21 +3290,28 @@ func checkReadAndTotalRows(t *testing.T, msg string, it *RowIterator, want [][]V
 
 func compareRead(it *RowIterator, want [][]Value, compareTotalRows bool) (msg string, ok bool) {
 	got, _, totalRows, err := readAll(it)
+	jobStr := ""
+	if it.SourceJob() != nil {
+		jobStr = it.SourceJob().jobID
+	}
+	if jobStr != "" {
+		jobStr = fmt.Sprintf("(Job: %s)", jobStr)
+	}
 	if err != nil {
 		return err.Error(), false
 	}
 	if len(got) != len(want) {
-		return fmt.Sprintf("got %d rows, want %d", len(got), len(want)), false
+		return fmt.Sprintf("%s got %d rows, want %d", len(got), len(want)), jobStr, false
 	}
 	if compareTotalRows && len(got) != int(totalRows) {
-		return fmt.Sprintf("got %d rows, but totalRows = %d", len(got), totalRows), false
+		return fmt.Sprintf("%s got %d rows, but totalRows = %d", jobStr, len(got), totalRows), false
 	}
 	sort.Sort(byCol0(got))
 	for i, r := range got {
 		gotRow := []Value(r)
 		wantRow := want[i]
 		if !testutil.Equal(gotRow, wantRow) {
-			return fmt.Sprintf("#%d: got %#v, want %#v", i, gotRow, wantRow), false
+			return fmt.Sprintf("%s #%d: got %#v, want %#v", jobStr, i, gotRow, wantRow), false
 		}
 	}
 	return "", true
