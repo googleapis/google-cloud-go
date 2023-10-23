@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.0.1...rapidmigrationassessment/v1.0.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **rapidmigrationassessment:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.0.0...rapidmigrationassessment/v1.0.1) (2023-09-20)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.3](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.2...kms/v1.15.3) (2023-10-12)
+
+
+### Bug Fixes
+
+* **kms:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.15.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.1...kms/v1.15.2) (2023-09-11)
 
 

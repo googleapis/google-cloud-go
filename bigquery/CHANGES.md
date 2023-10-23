@@ -3,6 +3,26 @@
 
 
 
+## [1.56.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.55.0...bigquery/v1.56.0) (2023-10-05)
+
+
+### Features
+
+* **bigquery/analyticshub:** Add Subscription resource and RPCs ([#8612](https://github.com/googleapis/google-cloud-go/issues/8612)) ([9992249](https://github.com/googleapis/google-cloud-go/commit/999224951d586513bd382483326b455c953a14f3))
+* **bigquery:** Add external dataset reference ([#8545](https://github.com/googleapis/google-cloud-go/issues/8545)) ([1001acf](https://github.com/googleapis/google-cloud-go/commit/1001acf6ac894a7d9945b7d204ad55aa7b162909))
+* **bigquery:** Add media options to LoadConfig ([#8640](https://github.com/googleapis/google-cloud-go/issues/8640)) ([62baf56](https://github.com/googleapis/google-cloud-go/commit/62baf569c052a8c565710533ba50a1f5df8176dd))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Automatic retry for multiplex test ([#8601](https://github.com/googleapis/google-cloud-go/issues/8601)) ([6ef1945](https://github.com/googleapis/google-cloud-go/commit/6ef1945a837430afcd195affd661768817cdc40b))
+* **bigquery:** Dependency detection on proto conversion ([#8566](https://github.com/googleapis/google-cloud-go/issues/8566)) ([763ab5d](https://github.com/googleapis/google-cloud-go/commit/763ab5dbd466fd0450dcd46e38c75e87cbf6c49c))
+
+
+### Documentation
+
+* **bigquery/datatransfer:** Update transferConfig.name description to indicate that it supports both formats ([0449518](https://github.com/googleapis/google-cloud-go/commit/0449518f8396cc0280c0f3303c103edcee34016b))
+
 ## [1.55.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.54.0...bigquery/v1.55.0) (2023-09-11)
 
 

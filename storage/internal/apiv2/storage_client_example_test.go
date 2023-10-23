@@ -18,6 +18,7 @@ package storage_test
 
 import (
 	"context"
+	"io"
 
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	storage "cloud.google.com/go/storage/internal/apiv2"
@@ -423,6 +424,31 @@ func ExampleClient_DeleteObject() {
 	}
 }
 
+func ExampleClient_RestoreObject() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.RestoreObjectRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#RestoreObjectRequest.
+	}
+	resp, err := c.RestoreObject(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CancelResumableWrite() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -496,6 +522,46 @@ func ExampleClient_UpdateObject() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleClient_BidiWriteObject() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+	stream, err := c.BidiWriteObject(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	go func() {
+		reqs := []*storagepb.BidiWriteObjectRequest{
+			// TODO: Create requests.
+		}
+		for _, req := range reqs {
+			if err := stream.Send(req); err != nil {
+				// TODO: Handle error.
+			}
+		}
+		stream.CloseSend()
+	}()
+	for {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
 
 func ExampleClient_ListObjects() {

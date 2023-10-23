@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.2...servicemanagement/v1.9.3) (2023-10-12)
+
+
+### Bug Fixes
+
+* **servicemanagement:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.1...servicemanagement/v1.9.2) (2023-06-27)
 
 
