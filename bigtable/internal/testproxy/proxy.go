@@ -570,6 +570,12 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		rs = bigtable.InfiniteRange("")
 	}
 
+	var opts []bigtable.ReadOption
+
+	if rrq.Reversed {
+		opts = append(opts, bigtable.ReverseScan())
+	}
+
 	ctx, cancel := btc.timeout(ctx)
 	defer cancel()
 
@@ -588,7 +594,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		}
 		rowsPb = append(rowsPb, rpb)
 		return true
-	})
+	}, opts...)
 
 	res := &pb.RowsResult{
 		Status: &statpb.Status{
