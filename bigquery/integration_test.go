@@ -3301,7 +3301,7 @@ func compareRead(it *RowIterator, want [][]Value, compareTotalRows bool) (msg st
 		return err.Error(), false
 	}
 	if len(got) != len(want) {
-		return fmt.Sprintf("%s got %d rows, want %d", len(got), len(want)), jobStr, false
+		return fmt.Sprintf("%s got %d rows, want %d", jobStr, len(got), len(want)), false
 	}
 	if compareTotalRows && len(got) != int(totalRows) {
 		return fmt.Sprintf("%s got %d rows, but totalRows = %d", jobStr, len(got), totalRows), false
