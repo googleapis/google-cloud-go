@@ -48,8 +48,9 @@ items:
     holds arbitrary data as a sequence of bytes, like a file. You\nrefer to objects
     using a handle, just as with buckets, but unlike buckets\nyou don&apos;t explicitly
     create an object. Instead, the first time you write\nto an object it will be created.
-    You can use the standard Go <a href=\"/io#Reader\">io.Reader</a>\nand <a href=\"/io#Writer\">io.Writer</a>
-    interfaces to read and write object data:\n<pre class=\"prettyprint\">obj := bkt.Object(&quot;data&quot;)\n//
+    You can use the standard Go <a href=\"https://pkg.go.dev/io#Reader\">io.Reader</a>\nand
+    <a href=\"https://pkg.go.dev/io#Writer\">io.Writer</a> interfaces to read and
+    write object data:\n<pre class=\"prettyprint\">obj := bkt.Object(&quot;data&quot;)\n//
     Write something to obj.\n// w implements io.Writer.\nw := obj.NewWriter(ctx)\n//
     Write some text to obj. This will either create the object or overwrite whatever
     is there already.\nif _, err := fmt.Fprintf(w, &quot;This object contains text.\\n&quot;);
@@ -124,16 +125,16 @@ items:
     or\n<li>you are logged into <a href=\"https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login\">gcloud
     using application default credentials</a>\nwith <a href=\"https://cloud.google.com/sdk/gcloud/reference#--impersonate-service-account\">impersonation
     enabled</a>.\n</ul>\n<p>Detecting GoogleAccessID may not be possible if you are
-    authenticated using a\ntoken source or using <a href=\"/google.golang.org/api/option#WithHTTPClient\">option.WithHTTPClient</a>.
+    authenticated using a\ntoken source or using <a href=\"https://pkg.go.dev/google.golang.org/api/option#WithHTTPClient\">option.WithHTTPClient</a>.
     In this case, you can provide a\nservice account email for GoogleAccessID and
     the client will attempt to sign\nthe URL or Post Policy using that service account.\n<p>To
     generate the signature, you must have:\n<ul>\n<li>iam.serviceAccounts.signBlob
     permissions on the GoogleAccessID service\naccount, and\n<li>the <a href=\"https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview\">IAM
     Service Account Credentials API</a> enabled (unless authenticating\nwith a downloaded
     private key).\n</ul>\n<h2 id=\"hdr-Errors\">Errors</h2>\n<p>Errors returned by
-    this client are often of the type <a href=\"/google.golang.org/api/googleapi#Error\">googleapi.Error</a>.\nThese
-    errors can be introspected for more information by using <a href=\"/errors#As\">errors.As</a>\nwith
-    the richer <a href=\"/google.golang.org/api/googleapi#Error\">googleapi.Error</a>
+    this client are often of the type <a href=\"https://pkg.go.dev/google.golang.org/api/googleapi#Error\">googleapi.Error</a>.\nThese
+    errors can be introspected for more information by using <a href=\"https://pkg.go.dev/errors#As\">errors.As</a>\nwith
+    the richer <a href=\"https://pkg.go.dev/google.golang.org/api/googleapi#Error\">googleapi.Error</a>
     type. For example:\n<pre class=\"prettyprint\">var e &#42;googleapi.Error\nif
     ok := errors.As(err, &amp;e); ok {\n\t  if e.Code == 409 { ... }\n}\n</pre>\n<h2
     id=\"hdr-Retrying_failed_requests\">Retrying failed requests</h2>\n<p>Methods
