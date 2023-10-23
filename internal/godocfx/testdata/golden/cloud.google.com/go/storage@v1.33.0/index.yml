@@ -15,7 +15,7 @@ items:
     application credentials. Clients should be\nreused instead of created as needed.
     The methods of <a href=\"#Client\">Client</a> are safe for\nconcurrent use by
     multiple goroutines.\n<p>You may configure the client by passing in options from
-    the <a href=\"/google.golang.org/api/option\">google.golang.org/api/option</a>\npackage.
+    the <a href=\"https://pkg.go.dev/google.golang.org/api/option\">google.golang.org/api/option</a>\npackage.
     You may also use options defined in this package, such as <a href=\"#WithJSONReads\">WithJSONReads</a>.\n<p>If
     you only wish to access public data, you can create\nan unauthenticated client
     with\n<pre class=\"prettyprint\">client, err := storage.NewClient(ctx, option.WithoutAuthentication())\n</pre>\n<p>To
@@ -159,7 +159,7 @@ items:
     cancel()\n\n// Delete an object using the specified strategy and timeout.\nif
     err := o.Delete(ctx); err != nil {\n\t// Handle err.\n}\n</pre>\n<h2 id=\"hdr-Sending_Custom_Headers\">Sending
     Custom Headers</h2>\n<p>You can add custom headers to any API call made by this
-    package by using\n<a href=\"/github.com/googleapis/gax-go/v2/callctx#SetHeaders\">callctx.SetHeaders</a>
+    package by using\n<a href=\"https://pkg.go.dev/github.com/googleapis/gax-go/v2/callctx#SetHeaders\">callctx.SetHeaders</a>
     on the context which is passed to the method. For example,\nto add a <a href=\"https://cloud.google.com/storage/docs/audit-logging#add-custom-metadata\">custom
     audit logging</a> header:\n<pre class=\"prettyprint\">ctx := context.Background()\nctx
     = callctx.SetHeaders(ctx, &quot;x-goog-custom-audit-&lt;key&gt;&quot;, &quot;&lt;value&gt;&quot;)\n//
