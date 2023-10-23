@@ -945,7 +945,7 @@ func TestIntegration_BatchWrite(t *testing.T) {
 		}
 		return nil
 	}
-	iter := client.BatchWrite(ctx, mgs, TransactionTag("golang-test-batch-write"))
+	iter := client.BatchWrite(ctx, mgs)
 	if err := iter.Do(validate); err != nil {
 		t.Fatal(err)
 	}

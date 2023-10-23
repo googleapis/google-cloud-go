@@ -4423,32 +4423,32 @@ func checkBatchWriteForExpectedRequestOptions(t *testing.T, server InMemSpannerS
 	}
 }
 
-func TestClient_BatchWrite_ApplyOptions(t *testing.T) {
+func TestClient_BatchWrite_Options(t *testing.T) {
 	t.Parallel()
 
 	testcases := []struct {
 		name               string
-		client             []ApplyOption
-		write              []ApplyOption
+		client             BatchWriteOptions
+		write              BatchWriteOptions
 		wantTransactionTag string
 		wantPriority       sppb.RequestOptions_Priority
 	}{
 		{
 			name:               "Client level",
-			client:             []ApplyOption{TransactionTag("testTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			client:             BatchWriteOptions{TransactionTag: "testTransactionTag", Priority: sppb.RequestOptions_PRIORITY_LOW},
 			wantTransactionTag: "testTransactionTag",
 			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
 		},
 		{
 			name:               "Write level",
-			write:              []ApplyOption{TransactionTag("testTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			write:              BatchWriteOptions{TransactionTag: "testTransactionTag", Priority: sppb.RequestOptions_PRIORITY_LOW},
 			wantTransactionTag: "testTransactionTag",
 			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
 		},
 		{
 			name:               "Write level has precedence over client level",
-			client:             []ApplyOption{TransactionTag("clientTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
-			write:              []ApplyOption{TransactionTag("writeTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_MEDIUM)},
+			client:             BatchWriteOptions{TransactionTag: "clientTransactionTag", Priority: sppb.RequestOptions_PRIORITY_LOW},
+			write:              BatchWriteOptions{TransactionTag: "writeTransactionTag", Priority: sppb.RequestOptions_PRIORITY_MEDIUM},
 			wantTransactionTag: "writeTransactionTag",
 			wantPriority:       sppb.RequestOptions_PRIORITY_MEDIUM,
 		},
@@ -4456,7 +4456,7 @@ func TestClient_BatchWrite_ApplyOptions(t *testing.T) {
 
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ApplyOptions: tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{BatchWriteOptions: tt.client})
 			defer teardown()
 
 			mutationGroups := []*MutationGroup{
@@ -4464,7 +4464,7 @@ func TestClient_BatchWrite_ApplyOptions(t *testing.T) {
 					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
 				}},
 			}
-			iter := client.BatchWrite(context.Background(), mutationGroups, tt.write...)
+			iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, tt.write)
 			doFunc := func(r *sppb.BatchWriteResponse) error {
 				return nil
 			}

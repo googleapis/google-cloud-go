@@ -100,6 +100,7 @@ type Client struct {
 	ro                   ReadOptions
 	ao                   []ApplyOption
 	txo                  TransactionOptions
+	bwo                  BatchWriteOptions
 	ct                   *commonTags
 	disableRouteToLeader bool
 }
@@ -140,6 +141,9 @@ type ClientConfig struct {
 
 	// TransactionOptions is the configuration for a transaction.
 	TransactionOptions TransactionOptions
+
+	// BatchWriteOptions is the configuration for a BatchWrite request.
+	BatchWriteOptions BatchWriteOptions
 
 	// CallOptions is the configuration for providing custom retry settings that
 	// override the default values.
@@ -284,6 +288,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		ro:                   config.ReadOptions,
 		ao:                   config.ApplyOptions,
 		txo:                  config.TransactionOptions,
+		bwo:                  config.BatchWriteOptions,
 		ct:                   getCommonTags(sc),
 		disableRouteToLeader: config.DisableRouteToLeader,
 	}
@@ -672,6 +677,31 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 
+// BatchWriteOptions provides options for a BatchWriteRequest.
+type BatchWriteOptions struct {
+	// Priority is the RPC priority to use for this request.
+	Priority sppb.RequestOptions_Priority
+
+	// The transaction tag to use for this request.
+	TransactionTag string
+}
+
+// merge combines two BatchWriteOptions such that the input parameter will have higher
+// order of precedence.
+func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
+	merged := BatchWriteOptions{
+		TransactionTag: bwo.TransactionTag,
+		Priority:       bwo.Priority,
+	}
+	if opts.TransactionTag != "" {
+		merged.TransactionTag = opts.TransactionTag
+	}
+	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		merged.Priority = opts.Priority
+	}
+	return merged
+}
+
 // BatchWriteResponseIterator is an iterator over BatchWriteResponse structures returned from BatchWrite RPC.
 type BatchWriteResponseIterator struct {
 	ctx            context.Context
@@ -786,7 +816,12 @@ func (r *BatchWriteResponseIterator) Do(f func(r *sppb.BatchWriteResponse) error
 // timestamp-based keys, it may result in additional rows being added to the
 // mutation's table. We recommend structuring your mutation groups to be
 // idempotent to avoid this issue.
-func (c *Client) BatchWrite(ctx context.Context, mgs []*MutationGroup, opts ...ApplyOption) *BatchWriteResponseIterator {
+func (c *Client) BatchWrite(ctx context.Context, mgs []*MutationGroup) *BatchWriteResponseIterator {
+	return c.BatchWriteWithOptions(ctx, mgs, BatchWriteOptions{})
+}
+
+// BatchWriteWithOptions is same as BatchWrite. It accepts additional options to customize the request.
+func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup, opts BatchWriteOptions) *BatchWriteResponseIterator {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchWrite")
 
 	var err error
@@ -794,13 +829,7 @@ func (c *Client) BatchWrite(ctx context.Context, mgs []*MutationGroup, opts ...A
 		trace.EndSpan(ctx, err)
 	}()
 
-	ao := &applyOption{}
-	for _, opt := range c.ao {
-		opt(ao)
-	}
-	for _, opt := range opts {
-		opt(ao)
-	}
+	opts = c.bwo.merge(opts)
 
 	mgsPb, err := mutationGroupsProto(mgs)
 	if err != nil {
@@ -818,7 +847,7 @@ func (c *Client) BatchWrite(ctx context.Context, mgs []*MutationGroup, opts ...A
 		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
 			Session:        sh.getID(),
 			MutationGroups: mgsPb,
-			RequestOptions: createRequestOptions(ao.priority, "", ao.transactionTag),
+			RequestOptions: createRequestOptions(opts.Priority, "", opts.TransactionTag),
 		}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 		if getGFELatencyMetricsFlag() && md != nil && c.ct != nil {
