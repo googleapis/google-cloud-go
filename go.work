@@ -1,4 +1,4 @@
-go 1.19
+go 1.20
 
 use (
 	.
@@ -124,6 +124,7 @@ use (
 	./run
 	./scheduler
 	./secretmanager
+	./securesourcemanager
 	./security
 	./securitycenter
 	./servicecontrol

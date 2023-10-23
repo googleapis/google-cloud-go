@@ -69,6 +69,7 @@ const (
 
 	awsTimeFormatLong  = "20060102T150405Z"
 	awsTimeFormatShort = "20060102"
+	awsProviderType    = "aws"
 )
 
 type awsSubjectProvider struct {
@@ -166,6 +167,10 @@ func (sp *awsSubjectProvider) subjectToken(ctx context.Context) (string, error) 
 		return "", err
 	}
 	return url.QueryEscape(string(result)), nil
+}
+
+func (sp *awsSubjectProvider) providerType() string {
+	return awsProviderType
 }
 
 func (cs *awsSubjectProvider) getAWSSessionToken(ctx context.Context) (string, error) {

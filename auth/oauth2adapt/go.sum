@@ -1,3 +1,5 @@
+cloud.google.com/go/auth v0.1.0 h1:IW6zQbwuzQYbczgasiV1f+R0GpY3KKfDnGxQ7ZAhXWQ=
+cloud.google.com/go/auth v0.1.0/go.mod h1:/Qq1aRmdEDFEBtjhFLNtzLM0aEAtSL0JhQeKeQGZNqw=
 cloud.google.com/go/compute v1.20.1 h1:6aKEtlUiwEpJzM001l0yFkpXmUVXaN8W+fbkb2AZNbg=
 cloud.google.com/go/compute/metadata v0.2.3 h1:mg4jlk7mCAj6xXp9UJ4fjI9VUI5rubuGBW5aJ7UnBMY=
 github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e h1:1r7pUrabqp18hOBcwBwiTsbnFeTZHV9eER/QT5JVZxY=
