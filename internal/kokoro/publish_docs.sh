@@ -19,9 +19,8 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
-git config --global --add safe.directory $PWD
 cd github/google-cloud-go/internal/godocfx
-go install
+go install -buildvcs=false
 cd -
 
 export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
