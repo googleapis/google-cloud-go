@@ -42,17 +42,17 @@ fi
 gcloud auth activate-service-account --key-file "$KOKORO_KEYSTORE_DIR/73713_docuploader_service_account"
 
 for f in $(find obj/api -name docs.metadata); do
-  d=$(dirname $f)
-  # Extract the module and version from the docs.metadata file.
-  module=$(cat $d/docs.metadata  | grep name    | sed 's/.*"\(.*\)"/\1/')
-  version=$(cat $d/docs.metadata | grep version | sed 's/.*"\(.*\)"/\1/')
+  # Extract the module name and version from the docs.metadata file.
+  module=$(cat $f  | grep name    | sed 's/.*"\(.*\)"/\1/')
+  version=$(cat $f | grep version | sed 's/.*"\(.*\)"/\1/')
   name="docfx-go-$module-$version.tar.gz"
-  mkdir -p $(dirname $name)
+  tar_dir=$(dirname $name)
+  mkdir -p $tar_dir
   tar \
     --create \
-    --directory=$d \
+    --directory=$(dirname $f) \
     --file=$name \
     --gzip \
     .
-  gsutil cp $name gs://docs-staging-v2
+  gsutil cp $name gs://docs-staging-v2/$tar_dir
 done
