@@ -1271,7 +1271,7 @@ func testDefaultValueHandling(ctx context.Context, t *testing.T, mwClient *Clien
 	}
 
 	m := &testdata.DefaultValuesPartialSchema{
-		// We only popu
+		// We only populate the id, as remaining fields are used to test default values.
 		Id: proto.String("someval"),
 	}
 	var data []byte
