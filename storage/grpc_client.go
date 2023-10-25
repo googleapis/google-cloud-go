@@ -1659,6 +1659,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// when the backend closes the stream and wants to return an error
 			// status. Closing the stream receives the status as an error.
 			_, err = w.stream.CloseAndRecv()
+			w.stream = nil
 
 			// Retriable errors mean we should start over and attempt to
 			// resend the entire buffer via a new stream.
