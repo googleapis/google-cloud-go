@@ -259,7 +259,9 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 		t.Run("TestLargeInsertWithRetry", func(t *testing.T) {
 			testLargeInsertWithRetry(ctx, t, mwClient, bqClient, dataset)
 		})
-
+		t.Run("DefaultValueHandling", func(t *testing.T) {
+			testDefaultValueHandling(ctx, t, mwClient, bqClient, dataset)
+		})
 	})
 }
 
@@ -1259,6 +1261,97 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		withExactRowCount(int64(curOffset+5)),
 		withNullCount("name", 0),
 		withNonNullCount("other", 6),
+	)
+}
+
+func testDefaultValueHandling(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset, opts ...WriterOption) {
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.DefaultValueSchema}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	m := &testdata.DefaultValuesPartialSchema{
+		// We only populate the id, as remaining fields are used to test default values.
+		Id: proto.String("someval"),
+	}
+	var data []byte
+	var err error
+	if data, err = proto.Marshal(m); err != nil {
+		t.Fatalf("failed to marshal test row data")
+	}
+	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
+
+	// setup a new stream.
+	opts = append(opts, WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)))
+	opts = append(opts, WithSchemaDescriptor(descriptorProto))
+	ms, err := mwClient.NewManagedStream(ctx, opts...)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
+
+	var result *AppendResult
+
+	// Send one row, verify default values were set as expected.
+
+	result, err = ms.AppendRows(ctx, [][]byte{data})
+	if err != nil {
+		t.Errorf("append failed: %v", err)
+	}
+	// Wait for the result to indicate ready, then validate.
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on append: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after first row",
+		withExactRowCount(1),
+		withNonNullCount("id", 1),
+		withNullCount("strcol_withdef", 1),
+		withNullCount("intcol_withdef", 1),
+		withNullCount("otherstr_withdef", 0)) // not part of partial schema
+
+	// Change default MVI to use nulls.
+	// We expect the fields in the partial schema to leverage nulls rather than default values.
+	// The fields outside the partial schema continue to obey default values.
+	result, err = ms.AppendRows(ctx, [][]byte{data}, UpdateDefaultMissingValueInterpretation(storagepb.AppendRowsRequest_DEFAULT_VALUE))
+	if err != nil {
+		t.Errorf("append failed: %v", err)
+	}
+	// Wait for the result to indicate ready, then validate.
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on append: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after second row (default mvi is DEFAULT_VALUE)",
+		withExactRowCount(2),
+		withNullCount("strcol_withdef", 1), // doesn't increment, as it gets default value
+		withNullCount("intcol_withdef", 1)) // doesn't increment, as it gets default value
+
+	// Change per-column MVI to use default value
+	result, err = ms.AppendRows(ctx, [][]byte{data},
+		UpdateMissingValueInterpretations(map[string]storagepb.AppendRowsRequest_MissingValueInterpretation{
+			"strcol_withdef": storagepb.AppendRowsRequest_NULL_VALUE,
+		}))
+	if err != nil {
+		t.Errorf("append failed: %v", err)
+	}
+	// Wait for the result to indicate ready, then validate.
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on append: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after third row (explicit column mvi)",
+		withExactRowCount(3),
+		withNullCount("strcol_withdef", 2),      // increments as it's null for this column
+		withNullCount("intcol_withdef", 1),      // doesn't increment, still default value
+		withNonNullCount("otherstr_withdef", 3), // not part of descriptor, always gets default value
+		withNullCount("otherstr", 3),            // not part of descriptor, always gets null
+		withNullCount("strcol", 3),              // no default value defined, always gets null
+		withNullCount("intcol", 3),              // no default value defined, always gets null
 	)
 }
 
