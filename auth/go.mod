@@ -5,11 +5,11 @@ go 1.19
 require (
 	cloud.google.com/go/compute/metadata v0.2.3
 	github.com/google/go-cmp v0.5.9
-	github.com/google/s2a-go v0.1.7
+	github.com/google/s2a-go v0.1.5
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3
 	go.opencensus.io v0.24.0
 	golang.org/x/net v0.17.0
-	google.golang.org/grpc v1.57.0
+	google.golang.org/grpc v1.56.3
 	google.golang.org/protobuf v1.31.0
 )
 
