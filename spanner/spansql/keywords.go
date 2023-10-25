@@ -153,6 +153,10 @@ func init() {
 	// Special case of SEQUENCE arg for GET_NEXT_SEQUENCE_VALUE, GET_INTERNAL_SEQUENCE_STATE
 	funcArgParsers["GET_NEXT_SEQUENCE_VALUE"] = sequenceArgParser
 	funcArgParsers["GET_INTERNAL_SEQUENCE_STATE"] = sequenceArgParser
+	// Special case for ARRAY_FILTER, ARRAY_INCLUDES, ARRAY_TRANSFORM
+	funcArgParsers["ARRAY_FILTER"] = lambdaArgParser
+	funcArgParsers["ARRAY_INCLUDES"] = lambdaArgParser
+	funcArgParsers["ARRAY_TRANSFORM"] = lambdaArgParser
 }
 
 var funcNames = []string{
@@ -237,8 +241,11 @@ var funcNames = []string{
 	// Array functions.
 	"ARRAY",
 	"ARRAY_CONCAT",
+	"ARRAY_FILTER",
+	"ARRAY_INCLUDES",
 	"ARRAY_LENGTH",
 	"ARRAY_TO_STRING",
+	"ARRAY_TRANSFORM",
 	"GENERATE_ARRAY", "GENERATE_DATE_ARRAY",
 	"OFFSET", "ORDINAL",
 	"ARRAY_REVERSE",
