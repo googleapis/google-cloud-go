@@ -422,19 +422,19 @@ func TestReadRowsInvalidRowSet(t *testing.T) {
 		valid bool
 	}{
 		{
-			rr:    RowRange{startBound: unbounded, endBound: unbounded},
+			rr:    RowRange{startBound: rangeUnbounded, endBound: rangeUnbounded},
 			valid: true,
 		},
 		{
-			rr:    RowRange{startBound: closed, start: "b", endBound: unbounded},
+			rr:    RowRange{startBound: rangeClosed, start: "b", endBound: rangeUnbounded},
 			valid: true,
 		},
 		{
-			rr:    RowRange{startBound: closed, start: "b", endBound: open, end: "c"},
+			rr:    RowRange{startBound: rangeClosed, start: "b", endBound: rangeOpen, end: "c"},
 			valid: true,
 		},
 		{
-			rr:    RowRange{startBound: closed, start: "b", endBound: open, end: "a"},
+			rr:    RowRange{startBound: rangeClosed, start: "b", endBound: rangeOpen, end: "a"},
 			valid: false,
 		},
 		{

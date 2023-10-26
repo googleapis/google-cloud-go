@@ -356,49 +356,49 @@ func (r RowList) valid() bool {
 	return len(r) > 0
 }
 
-type BoundType int64
+type rangeBoundType int64
 
 const (
-	open BoundType = iota
-	closed
-	unbounded
+	rangeOpen rangeBoundType = iota
+	rangeClosed
+	rangeUnbounded
 )
 
 // A RowRange describes a range of rows between the start and end key. Start and
-// end keys may be open, closed or unbounded.
+// end keys may be rangeOpen, rangeClosed or rangeUnbounded.
 type RowRange struct {
-	startBound BoundType
+	startBound rangeBoundType
 	start      string
-	endBound   BoundType
+	endBound   rangeBoundType
 	end        string
 }
 
 // NewRange returns the new RowRange [begin, end).
 func NewRange(begin, end string) RowRange {
-	return createRowRange(closed, begin, open, end)
+	return createRowRange(rangeClosed, begin, rangeOpen, end)
 }
 
 func NewClosedOpenRange(begin, end string) RowRange {
-	return createRowRange(closed, begin, open, end)
+	return createRowRange(rangeClosed, begin, rangeOpen, end)
 }
 func NewOpenClosedRange(start, end string) RowRange {
-	return createRowRange(open, start, closed, end)
+	return createRowRange(rangeOpen, start, rangeClosed, end)
 }
 
 func NewOpenRange(start, end string) RowRange {
-	return createRowRange(open, start, open, end)
+	return createRowRange(rangeOpen, start, rangeOpen, end)
 }
 
 func NewClosedRange(start, end string) RowRange {
-	return createRowRange(closed, start, closed, end)
+	return createRowRange(rangeClosed, start, rangeClosed, end)
 }
 
-func createRowRange(startBound BoundType, start string, endBound BoundType, end string) RowRange {
+func createRowRange(startBound rangeBoundType, start string, endBound rangeBoundType, end string) RowRange {
 	if start == "" {
-		startBound = unbounded
+		startBound = rangeUnbounded
 	}
 	if end == "" {
-		endBound = unbounded
+		endBound = rangeUnbounded
 	}
 	return RowRange{
 		startBound: startBound,
@@ -410,7 +410,7 @@ func createRowRange(startBound BoundType, start string, endBound BoundType, end 
 
 // Unbounded tests whether a RowRange is unbounded.
 func (r RowRange) Unbounded() bool {
-	return r.startBound == unbounded || r.endBound == unbounded
+	return r.startBound == rangeUnbounded || r.endBound == rangeUnbounded
 }
 
 // todo test
@@ -419,24 +419,24 @@ func (r RowRange) Contains(row string) bool {
 	contains := true
 
 	switch r.startBound {
-	case open:
+	case rangeOpen:
 		contains = contains && r.start < row
 		break
-	case closed:
+	case rangeClosed:
 		contains = contains && r.start <= row
 		break
-	case unbounded:
+	case rangeUnbounded:
 		break
 	}
 
 	switch r.endBound {
-	case open:
+	case rangeOpen:
 		contains = contains && r.end > row
 		break
-	case closed:
+	case rangeClosed:
 		contains = contains && r.end >= row
 		break
-	case unbounded:
+	case rangeUnbounded:
 		break
 	}
 
@@ -447,26 +447,26 @@ func (r RowRange) Contains(row string) bool {
 func (r RowRange) String() string {
 	var startStr string
 	switch r.startBound {
-	case open:
+	case rangeOpen:
 		startStr = "(" + strconv.Quote(r.start)
 		break
-	case closed:
+	case rangeClosed:
 		startStr = "[" + strconv.Quote(r.start)
 		break
-	case unbounded:
+	case rangeUnbounded:
 		startStr = "(∞"
 		break
 	}
 
 	var endStr string
 	switch r.endBound {
-	case open:
+	case rangeOpen:
 		endStr = r.end + ")"
 		break
-	case closed:
+	case rangeClosed:
 		endStr = r.end + "]"
 		break
-	case unbounded:
+	case rangeUnbounded:
 		endStr = "∞)"
 		break
 	}
@@ -478,25 +478,25 @@ func (r RowRange) proto() *btpb.RowSet {
 	var rr = btpb.RowRange{}
 
 	switch r.startBound {
-	case open:
+	case rangeOpen:
 		rr.StartKey = &btpb.RowRange_StartKeyOpen{StartKeyOpen: []byte(r.start)}
 		break
-	case closed:
+	case rangeClosed:
 		rr.StartKey = &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)}
 		break
-	case unbounded:
+	case rangeUnbounded:
 		// leave unbounded
 		break
 	}
 
 	switch r.endBound {
-	case open:
+	case rangeOpen:
 		rr.EndKey = &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.end)}
 		break
-	case closed:
+	case rangeClosed:
 		rr.EndKey = &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte(r.end)}
 		break
-	case unbounded:
+	case rangeUnbounded:
 		// leave unbounded
 		break
 	}
@@ -511,7 +511,7 @@ func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
 
 	return RowRange{
 		// Set the beginning of the range to the row after the last scanned.
-		startBound: open,
+		startBound: rangeOpen,
 		start:      lastRowKey,
 		endBound:   r.endBound,
 		end:        r.end,
@@ -519,14 +519,14 @@ func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
 }
 
 func (r RowRange) retainRowsBefore(lastRowKey string) RowSet {
-	if lastRowKey == "" || (r.endBound != unbounded && r.end <= lastRowKey) {
+	if lastRowKey == "" || (r.endBound != rangeUnbounded && r.end <= lastRowKey) {
 		return r
 	}
 
 	return RowRange{
 		startBound: r.startBound,
 		start:      r.start,
-		endBound:   open,
+		endBound:   rangeOpen,
 		end:        lastRowKey,
 	}
 }
@@ -536,9 +536,9 @@ func (r RowRange) valid() bool {
 		return true
 	}
 
-	if r.startBound == open || r.endBound == open {
+	if r.startBound == rangeOpen || r.endBound == rangeOpen {
 		return r.start < r.end
-	} else if r.startBound == closed {
+	} else if r.startBound == rangeClosed {
 		return r.start <= r.end
 	} else {
 		return true
@@ -605,9 +605,9 @@ func SingleRow(row string) RowSet {
 func PrefixRange(prefix string) RowRange {
 	end := prefixSuccessor(prefix)
 	return RowRange{
-		startBound: closed,
+		startBound: rangeClosed,
 		start:      prefix,
-		endBound:   validateBound(end, open),
+		endBound:   validateBound(end, rangeOpen),
 		end:        end,
 	}
 }
@@ -616,16 +616,16 @@ func PrefixRange(prefix string) RowRange {
 // large as start.
 func InfiniteRange(start string) RowRange {
 	return RowRange{
-		startBound: validateBound(start, closed),
+		startBound: validateBound(start, rangeClosed),
 		start:      start,
-		endBound:   unbounded,
+		endBound:   rangeUnbounded,
 		end:        "",
 	}
 }
 
-func validateBound(bound string, defaultBoundType BoundType) BoundType {
+func validateBound(bound string, defaultBoundType rangeBoundType) rangeBoundType {
 	if bound == "" {
-		return unbounded
+		return rangeUnbounded
 	} else {
 		return defaultBoundType
 	}
@@ -635,9 +635,9 @@ func validateBound(bound string, defaultBoundType BoundType) BoundType {
 // large as start.
 func InfiniteReverseRange(end string) RowRange {
 	return RowRange{
-		startBound: unbounded,
+		startBound: rangeUnbounded,
 		start:      "",
-		endBound:   validateBound(end, closed),
+		endBound:   validateBound(end, rangeClosed),
 		end:        end,
 	}
 }
