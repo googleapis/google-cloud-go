@@ -15,7 +15,7 @@ items:
     application credentials. Clients should be\nreused instead of created as needed.
     The methods of <a href=\"#Client\">Client</a> are safe for\nconcurrent use by
     multiple goroutines.\n<p>You may configure the client by passing in options from
-    the <a href=\"/google.golang.org/api/option\">google.golang.org/api/option</a>\npackage.
+    the <a href=\"https://pkg.go.dev/google.golang.org/api/option\">google.golang.org/api/option</a>\npackage.
     You may also use options defined in this package, such as <a href=\"#WithJSONReads\">WithJSONReads</a>.\n<p>If
     you only wish to access public data, you can create\nan unauthenticated client
     with\n<pre class=\"prettyprint\">client, err := storage.NewClient(ctx, option.WithoutAuthentication())\n</pre>\n<p>To
@@ -48,8 +48,9 @@ items:
     holds arbitrary data as a sequence of bytes, like a file. You\nrefer to objects
     using a handle, just as with buckets, but unlike buckets\nyou don&apos;t explicitly
     create an object. Instead, the first time you write\nto an object it will be created.
-    You can use the standard Go <a href=\"/io#Reader\">io.Reader</a>\nand <a href=\"/io#Writer\">io.Writer</a>
-    interfaces to read and write object data:\n<pre class=\"prettyprint\">obj := bkt.Object(&quot;data&quot;)\n//
+    You can use the standard Go <a href=\"https://pkg.go.dev/io#Reader\">io.Reader</a>\nand
+    <a href=\"https://pkg.go.dev/io#Writer\">io.Writer</a> interfaces to read and
+    write object data:\n<pre class=\"prettyprint\">obj := bkt.Object(&quot;data&quot;)\n//
     Write something to obj.\n// w implements io.Writer.\nw := obj.NewWriter(ctx)\n//
     Write some text to obj. This will either create the object or overwrite whatever
     is there already.\nif _, err := fmt.Fprintf(w, &quot;This object contains text.\\n&quot;);
@@ -124,16 +125,16 @@ items:
     or\n<li>you are logged into <a href=\"https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login\">gcloud
     using application default credentials</a>\nwith <a href=\"https://cloud.google.com/sdk/gcloud/reference#--impersonate-service-account\">impersonation
     enabled</a>.\n</ul>\n<p>Detecting GoogleAccessID may not be possible if you are
-    authenticated using a\ntoken source or using <a href=\"/google.golang.org/api/option#WithHTTPClient\">option.WithHTTPClient</a>.
+    authenticated using a\ntoken source or using <a href=\"https://pkg.go.dev/google.golang.org/api/option#WithHTTPClient\">option.WithHTTPClient</a>.
     In this case, you can provide a\nservice account email for GoogleAccessID and
     the client will attempt to sign\nthe URL or Post Policy using that service account.\n<p>To
     generate the signature, you must have:\n<ul>\n<li>iam.serviceAccounts.signBlob
     permissions on the GoogleAccessID service\naccount, and\n<li>the <a href=\"https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview\">IAM
     Service Account Credentials API</a> enabled (unless authenticating\nwith a downloaded
     private key).\n</ul>\n<h2 id=\"hdr-Errors\">Errors</h2>\n<p>Errors returned by
-    this client are often of the type <a href=\"/google.golang.org/api/googleapi#Error\">googleapi.Error</a>.\nThese
-    errors can be introspected for more information by using <a href=\"/errors#As\">errors.As</a>\nwith
-    the richer <a href=\"/google.golang.org/api/googleapi#Error\">googleapi.Error</a>
+    this client are often of the type <a href=\"https://pkg.go.dev/google.golang.org/api/googleapi#Error\">googleapi.Error</a>.\nThese
+    errors can be introspected for more information by using <a href=\"https://pkg.go.dev/errors#As\">errors.As</a>\nwith
+    the richer <a href=\"https://pkg.go.dev/google.golang.org/api/googleapi#Error\">googleapi.Error</a>
     type. For example:\n<pre class=\"prettyprint\">var e &#42;googleapi.Error\nif
     ok := errors.As(err, &amp;e); ok {\n\t  if e.Code == 409 { ... }\n}\n</pre>\n<h2
     id=\"hdr-Retrying_failed_requests\">Retrying failed requests</h2>\n<p>Methods
@@ -156,7 +157,26 @@ items:
     Use a context timeout to set an overall deadline on the call, including all\n//
     potential retries.\nctx, cancel := context.WithTimeout(ctx, 5&#42;time.Second)\ndefer
     cancel()\n\n// Delete an object using the specified strategy and timeout.\nif
-    err := o.Delete(ctx); err != nil {\n\t// Handle err.\n}\n</pre>\n"
+    err := o.Delete(ctx); err != nil {\n\t// Handle err.\n}\n</pre>\n<h2 id=\"hdr-Sending_Custom_Headers\">Sending
+    Custom Headers</h2>\n<p>You can add custom headers to any API call made by this
+    package by using\n<a href=\"https://pkg.go.dev/github.com/googleapis/gax-go/v2/callctx#SetHeaders\">callctx.SetHeaders</a>
+    on the context which is passed to the method. For example,\nto add a <a href=\"https://cloud.google.com/storage/docs/audit-logging#add-custom-metadata\">custom
+    audit logging</a> header:\n<pre class=\"prettyprint\">ctx := context.Background()\nctx
+    = callctx.SetHeaders(ctx, &quot;x-goog-custom-audit-&lt;key&gt;&quot;, &quot;&lt;value&gt;&quot;)\n//
+    Use client as usual with the context and the additional headers will be sent.\nclient.Bucket(&quot;my-bucket&quot;).Attrs(ctx)\n</pre>\n<h2
+    id=\"hdr-Experimental_gRPC_API\">Experimental gRPC API</h2>\n<p>This package includes
+    support for the Cloud Storage gRPC API, which is currently\nin preview. This implementation
+    uses gRPC rather than the current JSON &amp; XML\nAPIs to make requests to Cloud
+    Storage. If you would like to try the API,\nplease contact your GCP account rep
+    for more information. The gRPC API is not\nyet generally available, so it may
+    be subject to breaking changes.\n<p>To create a client which will use gRPC, use
+    the alternate constructor:\n<pre class=\"prettyprint\">ctx := context.Background()\nclient,
+    err := storage.NewGRPCClient(ctx)\nif err != nil {\n\t// TODO: Handle error.\n}\n//
+    Use client as usual.\n</pre>\n<p>If the application is running within GCP, users
+    may get better performance by\nenabling DirectPath (enabling requests to skip
+    some proxy steps). To enable,\nset the environment variable `GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS=true`
+    and add\nthe following side-effect imports to your application:\n<pre class=\"prettyprint\">import
+    (\n\t_ &quot;google.golang.org/grpc/balancer/rls&quot;\n\t_ &quot;google.golang.org/grpc/xds/googledirectpath&quot;\n)\n</pre>\n"
   type: package
   langs:
   - go
@@ -210,6 +230,7 @@ items:
   - cloud.google.com/go/storage.CORS
   - cloud.google.com/go/storage.Client
   - cloud.google.com/go/storage.Client.NewClient
+  - cloud.google.com/go/storage.Client.NewGRPCClient
   - cloud.google.com/go/storage.Client.Bucket
   - cloud.google.com/go/storage.Client.Buckets
   - cloud.google.com/go/storage.Client.Close
@@ -969,7 +990,9 @@ items:
   id: If
   summary: |
     If returns a new BucketHandle that applies a set of preconditions.
-    Preconditions already set on the BucketHandle are ignored.
+    Preconditions already set on the BucketHandle are ignored. The supplied
+    BucketConditions must have exactly one field set to a non-zero value;
+    otherwise an error will be returned from any operation on the BucketHandle.
     Operations on the new handle will return an error if the preconditions are not
     satisfied. The only valid preconditions for buckets are MetagenerationMatch
     and MetagenerationNotMatch.
@@ -1317,7 +1340,7 @@ items:
     func NewClient
   id: NewClient
   summary: |
-    NewClient creates a new Google Cloud Storage client.
+    NewClient creates a new Google Cloud Storage client using the HTTP transport.
     The default scope is ScopeFullControl. To use a different scope, like
     ScopeReadOnly, use option.WithScopes.
 
@@ -1349,6 +1372,33 @@ items:
       Use the client.\n\n\t// Close the client when finished.\n\tif err := client.Close();
       err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
     name: unauthenticated
+- uid: cloud.google.com/go/storage.Client.NewGRPCClient
+  name: |
+    func NewGRPCClient
+  id: NewGRPCClient
+  summary: |
+    NewGRPCClient creates a new Storage client using the gRPC transport and API.
+    Client methods which have not been implemented in gRPC will return an error.
+    In particular, methods for Cloud Pub/Sub notifications are not supported.
+
+    The storage gRPC API is still in preview and not yet publicly available.
+    If you would like to use the API, please first contact your GCP account rep to
+    request access. The API may be subject to breaking changes.
+
+    Clients should be reused instead of created as needed. The methods of Client
+    are safe for concurrent use by multiple goroutines.
+
+    You may configure the client by passing in options from the [google.golang.org/api/option]
+    package.
+  parent: cloud.google.com/go/storage.Client
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func NewGRPCClient(ctx <a href="https://pkg.go.dev/context">context</a>.<a
+      href="https://pkg.go.dev/context#Context">Context</a>, opts ...<a href="https://pkg.go.dev/google.golang.org/api/option">option</a>.<a
+      href="https://pkg.go.dev/google.golang.org/api/option#ClientOption">ClientOption</a>)
+      (*<a href="#cloud_google_com_go_storage_Client">Client</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
 - uid: cloud.google.com/go/storage.Client.Bucket
   name: |
     func (*Client) Bucket
@@ -1409,8 +1459,6 @@ items:
   id: CreateHMACKey
   summary: |
     CreateHMACKey invokes an RPC for Google Cloud Storage to create a new HMACKey.
-
-    This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.Client
   type: method
   langs:
@@ -1433,8 +1481,6 @@ items:
   id: HMACKeyHandle
   summary: |
     HMACKeyHandle creates a handle that will be used for HMACKey operations.
-
-    This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.Client
   type: method
   langs:
@@ -1450,8 +1496,6 @@ items:
     ListHMACKeys returns an iterator for listing HMACKeys.
 
     Note: This iterator is not safe for concurrent operations without explicit synchronization.
-
-    This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.Client
   type: method
   langs:
@@ -1688,8 +1732,6 @@ items:
 
     HMAC keys are used to authenticate signed access to objects. To enable HMAC key
     authentication, please visit https://cloud.google.com/storage/docs/migrating.
-
-    This type is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage
   type: type
   langs:
@@ -1715,8 +1757,6 @@ items:
   id: HMACKeyAttrsToUpdate
   summary: |
     HMACKeyAttrsToUpdate defines the attributes of an HMACKey that will be updated.
-
-    This type is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage
   type: type
   langs:
@@ -1730,8 +1770,6 @@ items:
   id: HMACKeyHandle
   summary: |
     HMACKeyHandle helps provide access and management for HMAC keys.
-
-    This type is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage
   type: type
   langs:
@@ -1746,8 +1784,6 @@ items:
     Delete invokes an RPC to delete the key referenced by accessID, on Google Cloud Storage.
     Only inactive HMAC keys can be deleted.
     After deletion, a key cannot be used to authenticate requests.
-
-    This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeyHandle
   type: method
   langs:
@@ -1774,8 +1810,6 @@ items:
 
     Options such as UserProjectForHMACKeys can be used to set the
     userProject to be billed against for operations.
-
-    This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeyHandle
   type: method
   langs:
@@ -1797,8 +1831,6 @@ items:
   id: Update
   summary: |
     Update mutates the HMACKey referred to by accessID.
-
-    This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeyHandle
   type: method
   langs:
@@ -1821,8 +1853,6 @@ items:
   id: HMACKeyOption
   summary: |
     HMACKeyOption configures the behavior of HMACKey related methods and actions.
-
-    This interface is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage
   type: type
   langs:
@@ -1840,8 +1870,6 @@ items:
 
     Only one service account email can be used as a filter, so if multiple
     of these options are applied, the last email to be set will be used.
-
-    This option is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeyOption
   type: function
   langs:
@@ -1855,8 +1883,6 @@ items:
   id: ShowDeletedHMACKeys
   summary: |
     ShowDeletedHMACKeys will also list keys whose state is "DELETED".
-
-    This option is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeyOption
   type: function
   langs:
@@ -1872,8 +1898,6 @@ items:
     if userProjectID is non-empty.
 
     Note: This is a noop right now and only provided for API compatibility.
-
-    This option is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeyOption
   type: function
   langs:
@@ -1888,8 +1912,6 @@ items:
     An HMACKeysIterator is an iterator over HMACKeys.
 
     Note: This iterator is not safe for concurrent operations without explicit synchronization.
-
-    This type is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage
   type: type
   langs:
@@ -1907,8 +1929,6 @@ items:
     calls will return iterator.Done.
 
     Note: This iterator is not safe for concurrent operations without explicit synchronization.
-
-    This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeysIterator
   type: method
   langs:
@@ -1924,8 +1944,6 @@ items:
     PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
 
     Note: This iterator is not safe for concurrent operations without explicit synchronization.
-
-    This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeysIterator
   type: method
   langs:
@@ -1939,8 +1957,6 @@ items:
   id: HMACState
   summary: |
     HMACState is the state of the HMAC key.
-
-    This type is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage
   type: type
   langs:
@@ -2429,7 +2445,9 @@ items:
   id: If
   summary: |
     If returns a new ObjectHandle that applies a set of preconditions.
-    Preconditions already set on the ObjectHandle are ignored.
+    Preconditions already set on the ObjectHandle are ignored. The supplied
+    Conditions must have at least one field set to a non-default value;
+    otherwise an error will be returned from any operation on the ObjectHandle.
     Operations on the new handle will return an error if the preconditions are not
     satisfied. See https://cloud.google.com/storage/docs/generations-preconditions
     for more details.
@@ -2865,9 +2883,9 @@ items:
   - go
   syntax:
     content: "type PostPolicyV4Options struct {\n\t// GoogleAccessID represents the
-      authorizer of the signed URL generation.\n\t// It is typically the Google service
-      account client email address from\n\t// the Google Developers Console in the
-      form of \"xxx@developer.gserviceaccount.com\".\n\t// Required.\n\tGoogleAccessID
+      authorizer of the signed post policy generation.\n\t// It is typically the Google
+      service account client email address from\n\t// the Google Developers Console
+      in the form of \"xxx@developer.gserviceaccount.com\".\n\t// Required.\n\tGoogleAccessID
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// PrivateKey
       is the Google service account private key. It is obtainable\n\t// from the Google
       Developers Console.\n\t// At https://console.developers.google.com/project/<your-project-id>/apiui/credential,\n\t//
@@ -2898,8 +2916,8 @@ items:
       may use the same signing function for the two.\n\t//\n\t// Exactly one of PrivateKey
       or SignRawBytes must be non-nil.\n\tSignRawBytes func(bytes []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>)
       (signature []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>, err <a href=\"https://pkg.go.dev/builtin#error\">error</a>)\n\n\t//
-      Expires is the expiration time on the signed URL.\n\t// It must be a time in
-      the future.\n\t// Required.\n\tExpires <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      Expires is the expiration time on the signed post policy.\n\t// It must be a
+      time in the future.\n\t// Required.\n\tExpires <a href=\"https://pkg.go.dev/time\">time</a>.<a
       href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// Style provides options
       for the type of URL to use. Options are\n\t// PathStyle (default), BucketBoundHostname,
       and VirtualHostedStyle. See\n\t// https://cloud.google.com/storage/docs/request-endpoints
@@ -2912,7 +2930,10 @@ items:
       The conditions that the uploaded file will be expected to conform to.\n\t//
       When used, the failure of an upload to satisfy a condition will result in\n\t//
       a 4XX status code, back with the message describing the problem.\n\t// Optional.\n\tConditions
-      []<a href=\"#cloud_google_com_go_storage_PostPolicyV4Condition\">PostPolicyV4Condition</a>\n\t//
+      []<a href=\"#cloud_google_com_go_storage_PostPolicyV4Condition\">PostPolicyV4Condition</a>\n\n\t//
+      Hostname sets the host of the signed post policy. This field overrides\n\t//
+      any endpoint set on a storage Client or through STORAGE_EMULATOR_HOST.\n\t//
+      Only compatible with PathStyle URLStyle.\n\t// Optional.\n\tHostname <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
       contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.ProjectTeam
   name: ProjectTeam
@@ -3017,10 +3038,11 @@ items:
       fashion.\n\t// Results will contain only objects whose names, aside from the\n\t//
       prefix, do not contain delimiter. Objects whose names,\n\t// aside from the
       prefix, contain delimiter will have their name,\n\t// truncated after the delimiter,
-      returned in prefixes.\n\t// Duplicate prefixes are omitted.\n\t// Optional.\n\tDelimiter
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Prefix is the
-      prefix filter to query objects\n\t// whose names begin with this prefix.\n\t//
-      Optional.\n\tPrefix <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      returned in prefixes.\n\t// Duplicate prefixes are omitted.\n\t// Must be set
+      to / when used with the MatchGlob parameter to filter results\n\t// in a directory-like
+      mode.\n\t// Optional.\n\tDelimiter <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Prefix is the prefix filter to query objects\n\t// whose names begin with this
+      prefix.\n\t// Optional.\n\tPrefix <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       Versions indicates whether multiple versions of the same\n\t// object will be
       included in the results.\n\tVersions <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
       StartOffset is used to filter results to objects whose names are\n\t// lexicographically
@@ -3038,7 +3060,11 @@ items:
       is \"foo/bar/\") are included in the results. By default, these\n\t// objects
       only show up as prefixes. If IncludeTrailingDelimiter is set to\n\t// true,
       they will also be included as objects and their metadata will be\n\t// populated
-      in the returned ObjectAttrs.\n\tIncludeTrailingDelimiter <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\t//
+      in the returned ObjectAttrs.\n\tIncludeTrailingDelimiter <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
+      MatchGlob is a glob pattern used to filter results (for example, foo*bar). See\n\t//
+      https://cloud.google.com/storage/docs/json_api/v1/objects/list#list-object-glob\n\t//
+      for syntax details. When Delimiter is set in conjunction with MatchGlob,\n\t//
+      it must be set to /.\n\tMatchGlob <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
       contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.Query.SetAttrSelection
   name: |
@@ -3463,7 +3489,10 @@ items:
       determines whether the signed URL should use HTTPS (default) or\n\t// HTTP.\n\t//
       Only supported for V4 signing.\n\t// Optional.\n\tInsecure <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
       Scheme determines the version of URL signing to use. Default is\n\t// SigningSchemeV2.\n\tScheme
-      <a href=\"#cloud_google_com_go_storage_SigningScheme\">SigningScheme</a>\n}"
+      <a href=\"#cloud_google_com_go_storage_SigningScheme\">SigningScheme</a>\n\n\t//
+      Hostname sets the host of the signed URL. This field overrides any\n\t// endpoint
+      set on a storage Client or through STORAGE_EMULATOR_HOST.\n\t// Only compatible
+      with PathStyle URLStyle.\n\t// Optional.\n\tHostname <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.SigningScheme
   name: SigningScheme
   id: SigningScheme
@@ -3492,7 +3521,7 @@ items:
   name: URLStyle
   id: URLStyle
   summary: |
-    URLStyle determines the style to use for the signed URL. pathStyle is the
+    URLStyle determines the style to use for the signed URL. PathStyle is the
     default. All non-default options work with V4 scheme only. See
     https://cloud.google.com/storage/docs/request-endpoints for details.
   parent: cloud.google.com/go/storage
@@ -3527,7 +3556,10 @@ items:
   id: PathStyle
   summary: |
     PathStyle is the default style, and will generate a URL of the form
-    "storage.googleapis.com/<bucket-name>/<object-name>".
+    "<host-name>/<bucket-name>/<object-name>". By default, <host-name> is
+    storage.googleapis.com, but setting an endpoint on the storage Client or
+    through STORAGE_EMULATOR_HOST overrides this. Setting Hostname on
+    SignedURLOptions or PostPolicyV4Options overrides everything else.
   parent: cloud.google.com/go/storage.URLStyle
   type: function
   langs:

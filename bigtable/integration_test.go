@@ -2862,11 +2862,14 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			continue
 		}
 
-		got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
+		// Retry to see if the update has been completed
+		testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
+			got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
 
-		if !proto.Equal(got, test.want) {
-			t.Fatalf("%s : got profile : %v, want profile: %v", test.desc, gotProfile, test.want)
-		}
+			if !proto.Equal(got, test.want) {
+				r.Errorf("%s : got profile : %v, want profile: %v", test.desc, gotProfile, test.want)
+			}
+		})
 
 	}
 
