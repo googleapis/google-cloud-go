@@ -29,7 +29,6 @@ import (
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
-	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
@@ -1395,7 +1394,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					if msg.Attributes != nil {
 						delete(msg.Attributes, "googclient_traceparent")
 					}
-					c, _ := iter.activeSpanContexts.Load(ackh.ackID)
+					c, _ := iter.activeSpan.Load(ackh.ackID)
 					sc := c.(trace.Span)
 					ctx4 := trace.ContextWithSpanContext(context.Background(), sc.SpanContext())
 					ctx3, fcSpan := tracer().Start(ctx4, subscriberFlowControlSpanName)
@@ -1438,10 +1437,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 								eventString = "msg.Nack() called"
 							}
 							cSpan.AddEvent(eventString)
-							cSpan.SetAttributes(
-								attribute.Bool(ackAttribute, ack),
-								semconv.MessagingOperationProcess,
-							)
+							cSpan.SetAttributes(semconv.MessagingOperationProcess)
 							old2(ackID, ack, r, receiveTime)
 						}
 						f(ctx2, m)

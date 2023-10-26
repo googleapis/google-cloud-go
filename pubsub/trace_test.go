@@ -340,7 +340,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 		tracetest.SpanStub{
 			Name: fmt.Sprintf("%s %s", subName, subscribeProcessSpanName),
 			Attributes: []attribute.KeyValue{
-				attribute.Bool(ackAttribute, true),
+				attribute.String(resultAttribute, "ack"),
 			},
 			Events: []sdktrace.Event{},
 			InstrumentationLibrary: instrumentation.Scope{
@@ -360,7 +360,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				// The fake server uses message ID as ackID, this is not the case with live service.
 				attribute.String(ackIDAttribute, "m0"),
 				attribute.Bool(eosAttribute, enableEOS),
-				attribute.Bool(ackAttribute, true),
+				attribute.String(resultAttribute, "ack"),
 				attribute.String(orderingAttribute, m.OrderingKey),
 				semconv.MessagingSystemKey.String("pubsub"),
 				attribute.Int(numBatchedMessagesAttribute, 1),

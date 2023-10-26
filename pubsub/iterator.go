@@ -32,7 +32,7 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -103,7 +103,7 @@ type messageIterator struct {
 	sendNewAckDeadline        bool
 
 	// This maps trace parent spans to ackIDs, used for otel tracing.
-	activeSpanContexts sync.Map
+	activeSpan sync.Map
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -306,6 +306,8 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		opts := getSubSpanAttributes(it.subName, m, semconv.MessagingOperationReceive)
 		if m.Attributes != nil {
 			ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(m))
+
+			log.Printf("context extracted: %+v\n", ctx)
 		}
 		_, span := tracer().Start(ctx, fmt.Sprintf("%s %s", it.subName, subscribeReceiveSpanName), opts...)
 		span.SetAttributes(
@@ -313,14 +315,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			attribute.String(ackIDAttribute, ackID),
 			attribute.Int(numBatchedMessagesAttribute, len(pendingMessages)),
 		)
-		it.activeSpanContexts.Store(ackID, span)
-		ackh, _ := msgAckHandler(m, it.enableExactlyOnceDelivery)
-		old := ackh.doneFunc
-		ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
-			span.SetAttributes(attribute.Bool(ackAttribute, ack))
-			defer span.End()
-			old(ackID, ack, r, receiveTime)
-		}
+		it.activeSpan.Store(ackID, span)
 	}
 	deadline := it.ackDeadline()
 	it.mu.Unlock()
@@ -494,12 +489,17 @@ func (it *messageIterator) handleKeepAlives() {
 	now := time.Now()
 	for id, expiry := range it.keepAliveDeadlines {
 		if expiry.Before(now) {
+			// Message is now expired.
 			// This delete will not result in skipping any map items, as implied by
 			// the spec at https://golang.org/ref/spec#For_statements, "For
 			// statements with range clause", note 3, and stated explicitly at
 			// https://groups.google.com/forum/#!msg/golang-nuts/UciASUb03Js/pzSq5iVFAQAJ.
 			delete(it.keepAliveDeadlines, id)
-			it.activeSpanContexts.Delete(id)
+			// get the parent span context for this ackID for otel tracing.
+			s, _ := it.activeSpan.LoadAndDelete(id)
+			span := s.(trace.Span)
+			span.SetAttributes(attribute.String(resultAttribute, "expired"))
+			span.End()
 		} else {
 			// Use a success AckResult since we don't propagate ModAcks back to the user.
 			it.pendingModAcks[id] = newSuccessAckResult()
@@ -511,16 +511,9 @@ func (it *messageIterator) handleKeepAlives() {
 // sendAck is used to confirm acknowledgement of a message. If exactly once delivery is
 // enabled, we'll retry these messages for a short duration in a goroutine.
 func (it *messageIterator) sendAck(m map[string]*AckResult) {
-	_, ackSpan := tracer().Start(context.Background(), ackSpanName)
-	defer ackSpan.End()
 	ackIDs := make([]string, 0, len(m))
 	for ackID := range m {
 		ackIDs = append(ackIDs, ackID)
-		// get the parent span context for this ackID for otel tracing.
-		s, _ := it.activeSpanContexts.Load(ackID)
-		span := s.(trace.Span)
-		span.AddEvent("ack start")
-		defer span.AddEvent("ack end")
 	}
 	it.eoMu.RLock()
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery
@@ -530,30 +523,51 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	for len(ackIDs) > 0 {
 		toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
 
-		recordStat(it.ctx, AckCount, int64(len(toSend)))
-		addAcks(toSend)
-		// Use context.Background() as the call's context, not it.ctx. We don't
-		// want to cancel this RPC when the iterator is stopped.
-		cctx2, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
-		defer cancel2()
-		err := it.subc.Acknowledge(cctx2, &pb.AcknowledgeRequest{
-			Subscription: it.subName,
-			AckIds:       toSend,
-		})
-		if exactlyOnceDelivery {
-			resultsByAckID := make(map[string]*AckResult)
+		// Use of anonymous local function allows span.End to be deferred to end of each loop.
+		func() {
+			numBatch := len(toSend)
+			links := make([]trace.Link, 0, numBatch)
 			for _, ackID := range toSend {
-				resultsByAckID[ackID] = m[ackID]
+				// get the parent span context for this ackID for otel tracing.
+				s, _ := it.activeSpan.Load(ackID)
+				parentSpan := s.(trace.Span)
+				defer parentSpan.End()
+				defer parentSpan.SetAttributes(attribute.String(resultAttribute, "ack"))
+				parentSpan.AddEvent("ack start", trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
+				defer parentSpan.AddEvent("ack end")
+				if parentSpan.SpanContext().IsSampled() {
+					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
+				}
 			}
-			st, md := extractMetadata(err)
-			_, toRetry := processResults(st, resultsByAckID, md)
-			if len(toRetry) > 0 {
-				// Retry acks in a separate goroutine.
-				go func() {
-					it.retryAcks(toRetry)
-				}()
+			_, ackSpan := tracer().Start(context.Background(), ackSpanName, trace.WithLinks(links...))
+			defer ackSpan.End()
+			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch))
+
+			recordStat(it.ctx, AckCount, int64(len(toSend)))
+			addAcks(toSend)
+			// Use context.Background() as the call's context, not it.ctx. We don't
+			// want to cancel this RPC when the iterator is stopped.
+			cctx2, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
+			defer cancel2()
+			err := it.subc.Acknowledge(cctx2, &pb.AcknowledgeRequest{
+				Subscription: it.subName,
+				AckIds:       toSend,
+			})
+			if exactlyOnceDelivery {
+				resultsByAckID := make(map[string]*AckResult)
+				for _, ackID := range toSend {
+					resultsByAckID[ackID] = m[ackID]
+				}
+				st, md := extractMetadata(err)
+				_, toRetry := processResults(st, resultsByAckID, md)
+				if len(toRetry) > 0 {
+					// Retry acks in a separate goroutine.
+					go func() {
+						it.retryAcks(toRetry)
+					}()
+				}
 			}
-		}
+		}()
 	}
 }
 
@@ -566,69 +580,84 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration, logOnInvalid, isReceipt bool) {
 	deadlineSec := int32(deadline / time.Second)
 
-	var spanName, eventName string
 	isNack := deadline == 0
-	if isNack {
-		spanName = nackSpanName
-		eventName = "nack"
-	} else {
-		spanName = modAckSpanName
-		eventName = "modack"
-	}
-	_, mSpan := tracer().Start(context.Background(), spanName)
-	if !isNack {
-		mSpan.SetAttributes(attribute.Int(modackDeadlineSecondsAttribute, int(deadlineSec)),
-			attribute.Bool(initialModackAttribute, isReceipt))
-		mSpan.SetAttributes(attribute.Int(numBatchedMessagesAttribute, len(m)))
-	}
 
 	ackIDs := make([]string, 0, len(m))
 	for ackID := range m {
 		ackIDs = append(ackIDs, ackID)
 
-		// get the parent span context for this ackID for otel tracing.
-		s, _ := it.activeSpanContexts.Load(ackID)
-		parentSpan := s.(trace.Span)
-		parentSpan.AddEvent(eventName + " start")
-		defer parentSpan.AddEvent(eventName + " end")
 	}
-	defer mSpan.End()
 	it.eoMu.RLock()
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery
 	it.eoMu.RUnlock()
 	var toSend []string
 	for len(ackIDs) > 0 {
 		toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
-		if deadline == 0 {
+
+		var spanName, eventName string
+		if isNack {
 			recordStat(it.ctx, NackCount, int64(len(toSend)))
+			spanName = nackSpanName
+			eventName = "nack"
 		} else {
 			recordStat(it.ctx, ModAckCount, int64(len(toSend)))
+			spanName = modAckSpanName
+			eventName = "modack"
 		}
-		addModAcks(toSend, deadlineSec)
-		// Use context.Background() as the call's context, not it.ctx. We don't
-		// want to cancel this RPC when the iterator is stopped.
-		cctx, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
-		defer cancel2()
-		err := it.subc.ModifyAckDeadline(cctx, &pb.ModifyAckDeadlineRequest{
-			Subscription:       it.subName,
-			AckDeadlineSeconds: deadlineSec,
-			AckIds:             toSend,
-		})
-		if exactlyOnceDelivery {
-			resultsByAckID := make(map[string]*AckResult)
-			for _, ackID := range toSend {
-				resultsByAckID[ackID] = m[ackID]
-			}
 
-			st, md := extractMetadata(err)
-			_, toRetry := processResults(st, resultsByAckID, md)
-			if len(toRetry) > 0 {
-				// Retry modacks/nacks in a separate goroutine.
-				go func() {
-					it.retryModAcks(toRetry, deadlineSec, logOnInvalid)
-				}()
+		// Use of anonymous local function allows span.End to be deferred to end of each loop.
+		func() {
+			numBatch := len(toSend)
+			links := make([]trace.Link, 0, numBatch)
+			for _, ackID := range toSend {
+				// get the parent span context for this ackID for otel tracing.
+				s, _ := it.activeSpan.Load(ackID)
+				parentSpan := s.(trace.Span)
+				if isNack {
+					defer parentSpan.End()
+					defer parentSpan.SetAttributes(attribute.String(resultAttribute, "nack"))
+				}
+				parentSpan.AddEvent(eventName+" start", trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
+				defer parentSpan.AddEvent(eventName + " end")
+				if parentSpan.IsRecording() {
+					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
+				}
+
+				_, mSpan := tracer().Start(context.Background(), spanName, trace.WithLinks(links...))
+				defer mSpan.End()
+				if !isNack {
+					mSpan.SetAttributes(
+						attribute.Int(modackDeadlineSecondsAttribute, int(deadlineSec)),
+						attribute.Bool(initialModackAttribute, isReceipt))
+				}
+				mSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch))
 			}
-		}
+			addModAcks(toSend, deadlineSec)
+			// Use context.Background() as the call's context, not it.ctx. We don't
+			// want to cancel this RPC when the iterator is stopped.
+			cctx, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
+			defer cancel2()
+			err := it.subc.ModifyAckDeadline(cctx, &pb.ModifyAckDeadlineRequest{
+				Subscription:       it.subName,
+				AckDeadlineSeconds: deadlineSec,
+				AckIds:             toSend,
+			})
+			if exactlyOnceDelivery {
+				resultsByAckID := make(map[string]*AckResult)
+				for _, ackID := range toSend {
+					resultsByAckID[ackID] = m[ackID]
+				}
+
+				st, md := extractMetadata(err)
+				_, toRetry := processResults(st, resultsByAckID, md)
+				if len(toRetry) > 0 {
+					// Retry modacks/nacks in a separate goroutine.
+					go func() {
+						it.retryModAcks(toRetry, deadlineSec, logOnInvalid)
+					}()
+				}
+			}
+		}()
 	}
 }
 

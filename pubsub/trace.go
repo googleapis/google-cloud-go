@@ -332,7 +332,7 @@ const (
 	deliveryAttemptAttribute       = "messaging.pubsub.delivery_attempt"
 	eosAttribute                   = "messaging.pubsub.exactly_once_delivery"
 	ackIDAttribute                 = "messaging.pubsub.ack_id"
-	ackAttribute                   = "messaging.pubsub.is_acked"
+	resultAttribute                = "messaging.pubsub.result"
 	modackDeadlineSecondsAttribute = "messaging.pubsub.modack_deadline_seconds"
 	initialModackAttribute         = "messaging.pubsub.is_initial_modack"
 )
