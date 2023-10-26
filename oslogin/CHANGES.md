@@ -5,7 +5,6 @@
 
 ### Bug Fixes
 
-* **oslogin:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
 * **oslogin:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
 
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.11.1...oslogin/v1.12.0) (2023-10-17)
