@@ -457,7 +457,7 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	if !testutil.Equal(r, wantRow) {
 		t.Fatalf("Cell with multiple versions and LatestNFilter(2),\n got %v\nwant %v", r, wantRow)
 	}
-	// Check cell offset / limit
+	// Check cell offset / end
 	r, err = table.ReadRow(ctx, "testrow", RowFilter(CellsPerRowLimitFilter(3)))
 	if err != nil {
 		t.Fatalf("Reading row: %v", err)
@@ -811,7 +811,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 	verifyDirectPathRemoteAddress(testEnv, t)
 	if rc != wantRc {
-		t.Fatalf("Scan with row limit returned %d rows, want %d", rc, wantRc)
+		t.Fatalf("Scan with row end returned %d rows, want %d", rc, wantRc)
 	}
 
 	// Test bulk mutations
@@ -918,7 +918,7 @@ func TestIntegration_Read(t *testing.T) {
 	}{
 		{
 			desc: "read all, unfiltered",
-			rr:   RowRange{},
+			rr:   InfiniteRange(""),
 			want: "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
 		},
 		{
@@ -943,80 +943,80 @@ func TestIntegration_Read(t *testing.T) {
 		},
 		{
 			desc:   "read all, with ColumnFilter",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			want:   "gwashington-j§adams-1,j§adams-tjefferson-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read all, with ColumnFilter, prefix",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: ColumnFilter("j"), // no matches
 			want:   "",
 		},
 		{
 			desc:   "read range, with ColumnRangeFilter",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: ColumnRangeFilter("follows", "h", "k"),
 			want:   "gwashington-j§adams-1,tjefferson-j§adams-1",
 		},
 		{
 			desc:   "read range from empty, with ColumnRangeFilter",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: ColumnRangeFilter("follows", "", "u"),
 			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read range from start to empty, with ColumnRangeFilter",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: ColumnRangeFilter("follows", "h", ""),
 			want:   "gwashington-j§adams-1,j§adams-tjefferson-1,tjefferson-j§adams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read with RowKeyFilter",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: RowKeyFilter(".*wash.*"),
 			want:   "gwashington-j§adams-1",
 		},
 		{
 			desc:   "read with RowKeyFilter unicode",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: RowKeyFilter(".*j§.*"),
 			want:   "j§adams-gwashington-1,j§adams-tjefferson-1",
 		},
 		{
 			desc:   "read with RowKeyFilter escaped",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: RowKeyFilter(`.*j\xC2\xA7.*`),
 			want:   "j§adams-gwashington-1,j§adams-tjefferson-1",
 		},
 		{
 			desc:   "read with RowKeyFilter, prefix",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: RowKeyFilter("gwash"),
 			want:   "",
 		},
 		{
 			desc:   "read with RowKeyFilter, no matches",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: RowKeyFilter(".*xxx.*"),
 			want:   "",
 		},
 		{
 			desc:   "read with FamilyFilter, no matches",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: FamilyFilter(".*xxx.*"),
 			want:   "",
 		},
 		{
-			desc:   "read with ColumnFilter + row limit",
-			rr:     RowRange{},
+			desc:   "read with ColumnFilter + row end",
+			rr:     InfiniteRange(""),
 			filter: ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			limit:  LimitRows(2),
 			want:   "gwashington-j§adams-1,j§adams-tjefferson-1",
 		},
 		{
 			desc:       "apply labels to the result rows",
-			rr:         RowRange{},
+			rr:         InfiniteRange(""),
 			filter:     LabelFilter("test-label"),
 			limit:      LimitRows(2),
 			want:       "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1",
@@ -1024,63 +1024,63 @@ func TestIntegration_Read(t *testing.T) {
 		},
 		{
 			desc:   "read all, strip values",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: StripValueFilter(),
 			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
-			desc:   "read with ColumnFilter + row limit + strip values",
-			rr:     RowRange{},
+			desc:   "read with ColumnFilter + row end + strip values",
+			rr:     InfiniteRange(""),
 			filter: ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "j§adams" and "tjefferson"
 			limit:  LimitRows(2),
 			want:   "gwashington-j§adams-,j§adams-tjefferson-",
 		},
 		{
 			desc:   "read with condition, strip values on true",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: ConditionFilter(ColumnFilter(".*j.*"), StripValueFilter(), nil),
 			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
 			desc:   "read with condition, strip values on false",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: ConditionFilter(ColumnFilter(".*xxx.*"), nil, StripValueFilter()),
 			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
-			desc:   "read with ValueRangeFilter + row limit",
-			rr:     RowRange{},
+			desc:   "read with ValueRangeFilter + row end",
+			rr:     InfiniteRange(""),
 			filter: ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
 			limit:  LimitRows(2),
 			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1",
 		},
 		{
 			desc:   "read with ValueRangeFilter, no match on exclusive end",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: ValueRangeFilter([]byte("0"), []byte("1")), // no match
 			want:   "",
 		},
 		{
 			desc:   "read with ValueRangeFilter, no matches",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: ValueRangeFilter([]byte("3"), []byte("5")), // matches nothing
 			want:   "",
 		},
 		{
 			desc:   "read with InterleaveFilter, no matches on all filters",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*")),
 			want:   "",
 		},
 		{
 			desc:   "read with InterleaveFilter, no duplicate cells",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*j.*")),
 			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read with InterleaveFilter, with duplicate cells",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*g.*")),
 			want:   "j§adams-gwashington-1,j§adams-gwashington-1,tjefferson-gwashington-1,tjefferson-gwashington-1",
 		},
@@ -1091,13 +1091,13 @@ func TestIntegration_Read(t *testing.T) {
 		},
 		{
 			desc:   "chain that excludes rows and matches nothing, in a condition",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), ColumnFilter(".*mckinley.*")), StripValueFilter(), nil),
 			want:   "",
 		},
 		{
 			desc:   "chain that ends with an interleave that has no match. covers #804",
-			rr:     RowRange{},
+			rr:     InfiniteRange(""),
 			filter: ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*"))), StripValueFilter(), nil),
 			want:   "",
 		},
@@ -1173,7 +1173,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 	}{
 		{
 			desc:               "read all, unfiltered",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			cellsReturnedCount: 7,
 			rowsReturnedCount:  4,
 		},
@@ -1209,84 +1209,84 @@ func TestIntegration_FullReadStats(t *testing.T) {
 		},
 		{
 			desc:               "read all, with ColumnFilter",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			cellsReturnedCount: 4,
 			rowsReturnedCount:  4,
 		},
 		{
 			desc:               "read all, with ColumnFilter, prefix",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             ColumnFilter("j"), // no matches
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
 		{
 			desc:               "read range, with ColumnRangeFilter",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             ColumnRangeFilter("follows", "h", "k"),
 			cellsReturnedCount: 2,
 			rowsReturnedCount:  2,
 		},
 		{
 			desc:               "read range from empty, with ColumnRangeFilter",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             ColumnRangeFilter("follows", "", "u"),
 			cellsReturnedCount: 6,
 			rowsReturnedCount:  4,
 		},
 		{
 			desc:               "read range from start to empty, with ColumnRangeFilter",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             ColumnRangeFilter("follows", "h", ""),
 			cellsReturnedCount: 5,
 			rowsReturnedCount:  4,
 		},
 		{
 			desc:               "read with RowKeyFilter",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             RowKeyFilter(".*wash.*"),
 			cellsReturnedCount: 1,
 			rowsReturnedCount:  1,
 		},
 		{
 			desc:               "read with RowKeyFilter unicode",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             RowKeyFilter(".*j§.*"),
 			cellsReturnedCount: 2,
 			rowsReturnedCount:  1,
 		},
 		{
 			desc:               "read with RowKeyFilter escaped",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             RowKeyFilter(`.*j\xC2\xA7.*`),
 			cellsReturnedCount: 2,
 			rowsReturnedCount:  1,
 		},
 		{
 			desc:               "read with RowKeyFilter, prefix",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             RowKeyFilter("gwash"),
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
 		{
 			desc:               "read with RowKeyFilter, no matches",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             RowKeyFilter(".*xxx.*"),
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
 		{
 			desc:               "read with FamilyFilter, no matches",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             FamilyFilter(".*xxx.*"),
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
 		{
-			desc:               "read with ColumnFilter + row limit",
-			rr:                 RowRange{},
+			desc:               "read with ColumnFilter + row end",
+			rr:                 InfiniteRange(""),
 			filter:             ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			limit:              LimitRows(2),
 			cellsReturnedCount: 2,
@@ -1294,7 +1294,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 		},
 		{
 			desc:               "apply labels to the result rows",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             LabelFilter("test-label"),
 			limit:              LimitRows(2),
 			cellsReturnedCount: 3,
@@ -1302,14 +1302,14 @@ func TestIntegration_FullReadStats(t *testing.T) {
 		},
 		{
 			desc:               "read all, strip values",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             StripValueFilter(),
 			cellsReturnedCount: 7,
 			rowsReturnedCount:  4,
 		},
 		{
-			desc:               "read with ColumnFilter + row limit + strip values",
-			rr:                 RowRange{},
+			desc:               "read with ColumnFilter + row end + strip values",
+			rr:                 InfiniteRange(""),
 			filter:             ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "j§adams" and "tjefferson"
 			limit:              LimitRows(2),
 			cellsReturnedCount: 2,
@@ -1317,21 +1317,21 @@ func TestIntegration_FullReadStats(t *testing.T) {
 		},
 		{
 			desc:               "read with condition, strip values on true",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             ConditionFilter(ColumnFilter(".*j.*"), StripValueFilter(), nil),
 			cellsReturnedCount: 7,
 			rowsReturnedCount:  4,
 		},
 		{
 			desc:               "read with condition, strip values on false",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             ConditionFilter(ColumnFilter(".*xxx.*"), nil, StripValueFilter()),
 			cellsReturnedCount: 7,
 			rowsReturnedCount:  4,
 		},
 		{
-			desc:               "read with ValueRangeFilter + row limit",
-			rr:                 RowRange{},
+			desc:               "read with ValueRangeFilter + row end",
+			rr:                 InfiniteRange(""),
 			filter:             ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
 			limit:              LimitRows(2),
 			cellsReturnedCount: 3,
@@ -1339,35 +1339,35 @@ func TestIntegration_FullReadStats(t *testing.T) {
 		},
 		{
 			desc:               "read with ValueRangeFilter, no match on exclusive end",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             ValueRangeFilter([]byte("0"), []byte("1")), // no match
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
 		{
 			desc:               "read with ValueRangeFilter, no matches",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             ValueRangeFilter([]byte("3"), []byte("5")), // matches nothing
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
 		{
 			desc:               "read with InterleaveFilter, no matches on all filters",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*")),
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
 		{
 			desc:               "read with InterleaveFilter, no duplicate cells",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*j.*")),
 			cellsReturnedCount: 6,
 			rowsReturnedCount:  4,
 		},
 		{
 			desc:               "read with InterleaveFilter, with duplicate cells",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*g.*")),
 			cellsReturnedCount: 4,
 			rowsReturnedCount:  2,
@@ -1380,21 +1380,21 @@ func TestIntegration_FullReadStats(t *testing.T) {
 		},
 		{
 			desc:               "chain that excludes rows and matches nothing, in a condition",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), ColumnFilter(".*mckinley.*")), StripValueFilter(), nil),
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
 		{
 			desc:               "chain that ends with an interleave that has no match. covers #804",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			filter:             ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*"))), StripValueFilter(), nil),
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
 		{
 			desc:               "reverse read all, unfiltered",
-			rr:                 RowRange{},
+			rr:                 InfiniteRange(""),
 			reverseScan:        true,
 			cellsReturnedCount: 7,
 			rowsReturnedCount:  4,
@@ -1820,7 +1820,7 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 
 	var gotRowCount int
-	must(tbl.ReadRows(ctx, RowRange{}, func(row Row) bool {
+	must(tbl.ReadRows(ctx, InfiniteRange(""), func(row Row) bool {
 		gotRowCount++
 		if !strings.HasPrefix(row.Key(), "b") {
 			t.Errorf("Invalid row after dropping range: %v", row)
@@ -1836,7 +1836,7 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 
 	gotRowCount = 0
-	must(tbl.ReadRows(ctx, RowRange{}, func(row Row) bool {
+	must(tbl.ReadRows(ctx, InfiniteRange(""), func(row Row) bool {
 		gotRowCount++
 		return true
 	}))
@@ -2170,7 +2170,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		time.Sleep(time.Second * 10)
 	}
 	if encryptionKeyVersion == "" {
-		t.Fatalf("Encryption Key not created within alotted time limit")
+		t.Fatalf("Encryption Key not created within alotted time end")
 	}
 
 	// Validate Encryption Info under getTable

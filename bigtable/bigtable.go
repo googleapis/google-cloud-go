@@ -359,105 +359,146 @@ func (r RowList) valid() bool {
 type BoundType int64
 
 const (
-	undefined BoundType = iota
-	unbounded
+	open BoundType = iota
 	closed
-	open
+	unbounded
 )
 
-// A RowRange is a half-open interval [Start, Limit) encompassing
-// all the rows with keys at least as large as Start, and less than Limit.
-// (Bigtable string comparison is the same as Go's.)
-// A RowRange can be unbounded, encompassing all keys at least as large as Start.
+// A RowRange describes a range of rows between the start and end key. Start and
+// end keys may be open, closed or unbounded.
 type RowRange struct {
-	start      string
 	startBound BoundType
-	// todo rename this field. it's module private so we won't break anybody
-	limit    string
-	endBound BoundType
+	start      string
+	endBound   BoundType
+	end        string
 }
 
 // NewRange returns the new RowRange [begin, end).
 func NewRange(begin, end string) RowRange {
-	return RowRange{
-		start: begin,
-		limit: end,
-	}
+	return createRowRange(closed, begin, open, end)
 }
 
-func NewClosedOpenRange(begin, limit string) RowRange {
-	return RowRange{
-		start:      begin,
-		limit:      limit,
-		startBound: closed,
-		endBound:   open,
-	}
+func NewClosedOpenRange(begin, end string) RowRange {
+	return createRowRange(closed, begin, open, end)
 }
-func NewOpenClosedRange(start, limit string) RowRange {
+func NewOpenClosedRange(start, end string) RowRange {
+	return createRowRange(open, start, closed, end)
+}
+
+func NewOpenRange(start, end string) RowRange {
+	return createRowRange(open, start, open, end)
+}
+
+func NewClosedRange(start, end string) RowRange {
+	return createRowRange(closed, start, closed, end)
+}
+
+func createRowRange(startBound BoundType, start string, endBound BoundType, end string) RowRange {
+	if start == "" {
+		startBound = unbounded
+	}
+	if end == "" {
+		endBound = unbounded
+	}
 	return RowRange{
+		startBound: startBound,
 		start:      start,
-		limit:      limit,
-		startBound: open,
-		endBound:   closed,
-	}
-}
-
-func NewOpenRange(start, limit string) RowRange {
-	return RowRange{
-		start:      start,
-		limit:      limit,
-		startBound: open,
-		endBound:   open,
-	}
-}
-
-func NewClosedRange(begin, end string) RowRange {
-	return RowRange{
-		start:      begin,
-		limit:      end,
-		startBound: closed,
-		endBound:   closed,
+		endBound:   endBound,
+		end:        end,
 	}
 }
 
 // Unbounded tests whether a RowRange is unbounded.
 func (r RowRange) Unbounded() bool {
-	return r.limit == "" || r.endBound == unbounded
+	return r.startBound == unbounded || r.endBound == unbounded
 }
 
+// todo test
 // Contains says whether the RowRange contains the key.
 func (r RowRange) Contains(row string) bool {
-	return r.start <= row && (r.limit == "" || r.limit > row)
+	contains := true
+
+	switch r.startBound {
+	case open:
+		contains = contains && r.start < row
+		break
+	case closed:
+		contains = contains && r.start <= row
+		break
+	case unbounded:
+		break
+	}
+
+	switch r.endBound {
+	case open:
+		contains = contains && r.end > row
+		break
+	case closed:
+		contains = contains && r.end >= row
+		break
+	case unbounded:
+		break
+	}
+
+	return contains
 }
 
 // String provides a printable description of a RowRange.
 func (r RowRange) String() string {
-	a := strconv.Quote(r.start)
-	if r.Unbounded() {
-		return fmt.Sprintf("[%s,∞)", a)
+	var startStr string
+	switch r.startBound {
+	case open:
+		startStr = "(" + strconv.Quote(r.start)
+		break
+	case closed:
+		startStr = "[" + strconv.Quote(r.start)
+		break
+	case unbounded:
+		startStr = "(∞"
+		break
 	}
-	return fmt.Sprintf("[%s,%q)", a, r.limit)
+
+	var endStr string
+	switch r.endBound {
+	case open:
+		endStr = r.end + ")"
+		break
+	case closed:
+		endStr = r.end + "]"
+		break
+	case unbounded:
+		endStr = "∞)"
+		break
+	}
+
+	return fmt.Sprintf("%s,%s", startStr, endStr)
 }
 
 func (r RowRange) proto() *btpb.RowSet {
 	var rr = btpb.RowRange{}
 
-	// empty strings are NOT considered unbounded for backwards compatibility
-	if r.startBound == unbounded {
-		// leave unbounded
-	} else if r.startBound == closed || r.startBound == undefined {
-		rr.StartKey = &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)}
-	} else {
+	switch r.startBound {
+	case open:
 		rr.StartKey = &btpb.RowRange_StartKeyOpen{StartKeyOpen: []byte(r.start)}
+		break
+	case closed:
+		rr.StartKey = &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)}
+		break
+	case unbounded:
+		// leave unbounded
+		break
 	}
 
-	// empty strings are considered unbounded for backwards compatibility
-	if r.endBound == unbounded || r.limit == "" {
+	switch r.endBound {
+	case open:
+		rr.EndKey = &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.end)}
+		break
+	case closed:
+		rr.EndKey = &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte(r.end)}
+		break
+	case unbounded:
 		// leave unbounded
-	} else if r.endBound == closed {
-		rr.EndKey = &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte(r.limit)}
-	} else {
-		rr.EndKey = &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.limit)}
+		break
 	}
 
 	return &btpb.RowSet{RowRanges: []*btpb.RowRange{&rr}}
@@ -467,24 +508,41 @@ func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
 	if lastRowKey == "" || lastRowKey < r.start {
 		return r
 	}
-	// Set the beginning of the range to the row after the last scanned.
-	start := lastRowKey + "\x00"
-	if r.Unbounded() {
-		return InfiniteRange(start)
+
+	return RowRange{
+		// Set the beginning of the range to the row after the last scanned.
+		startBound: open,
+		start:      lastRowKey,
+		endBound:   r.endBound,
+		end:        r.end,
 	}
-	return NewRange(start, r.limit)
 }
 
 func (r RowRange) retainRowsBefore(lastRowKey string) RowSet {
-	if lastRowKey == "" || (r.limit != "" && r.limit <= lastRowKey) {
+	if lastRowKey == "" || (r.endBound != unbounded && r.end <= lastRowKey) {
 		return r
 	}
 
-	return NewRange(r.start, lastRowKey)
+	return RowRange{
+		startBound: r.startBound,
+		start:      r.start,
+		endBound:   open,
+		end:        lastRowKey,
+	}
 }
 
 func (r RowRange) valid() bool {
-	return r.Unbounded() || r.start < r.limit
+	if r.Unbounded() {
+		return true
+	}
+
+	if r.startBound == open || r.endBound == open {
+		return r.start < r.end
+	} else if r.startBound == closed {
+		return r.start <= r.end
+	} else {
+		return true
+	}
 }
 
 // RowRangeList is a sequence of RowRanges representing the union of the ranges.
@@ -545,9 +603,12 @@ func SingleRow(row string) RowSet {
 
 // PrefixRange returns a RowRange consisting of all keys starting with the prefix.
 func PrefixRange(prefix string) RowRange {
+	end := prefixSuccessor(prefix)
 	return RowRange{
-		start: prefix,
-		limit: prefixSuccessor(prefix),
+		startBound: closed,
+		start:      prefix,
+		endBound:   validateBound(end, open),
+		end:        end,
 	}
 }
 
@@ -555,18 +616,29 @@ func PrefixRange(prefix string) RowRange {
 // large as start.
 func InfiniteRange(start string) RowRange {
 	return RowRange{
-		start:    start,
-		endBound: unbounded,
+		startBound: validateBound(start, closed),
+		start:      start,
+		endBound:   unbounded,
+		end:        "",
+	}
+}
+
+func validateBound(bound string, defaultBoundType BoundType) BoundType {
+	if bound == "" {
+		return unbounded
+	} else {
+		return defaultBoundType
 	}
 }
 
 // InfiniteReverseRange returns the RowRange consisting of all keys at least as
 // large as start.
-func InfiniteReverseRange(limit string) RowRange {
+func InfiniteReverseRange(end string) RowRange {
 	return RowRange{
-		limit:      limit,
 		startBound: unbounded,
-		endBound:   closed,
+		start:      "",
+		endBound:   validateBound(end, closed),
+		end:        end,
 	}
 }
 
@@ -672,7 +744,7 @@ type rowFilter struct{ f Filter }
 
 func (rf rowFilter) set(settings *readSettings) { settings.req.Filter = rf.f.proto() }
 
-// LimitRows returns a ReadOption that will limit the number of rows to be read.
+// LimitRows returns a ReadOption that will end the number of rows to be read.
 func LimitRows(limit int64) ReadOption { return limitRows{limit} }
 
 type limitRows struct{ limit int64 }

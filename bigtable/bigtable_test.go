@@ -43,11 +43,11 @@ func TestPrefix(t *testing.T) {
 			continue
 		}
 		r := PrefixRange(test.prefix)
-		if test.succ == "" && r.limit != "" {
-			t.Errorf("PrefixRange(%q) got limit %q", test.prefix, r.limit)
+		if test.succ == "" && r.end != "" {
+			t.Errorf("PrefixRange(%q) got end %q", test.prefix, r.end)
 		}
-		if test.succ != "" && r.limit != test.succ {
-			t.Errorf("PrefixRange(%q) got limit %q, want %q", test.prefix, r.limit, test.succ)
+		if test.succ != "" && r.end != test.succ {
+			t.Errorf("PrefixRange(%q) got end %q, want %q", test.prefix, r.end, test.succ)
 		}
 	}
 }
@@ -66,7 +66,7 @@ func TestNewClosedOpenRange(t *testing.T) {
 		{"b\x01", false},
 	} {
 		if want, got := test.contains, r.Contains(test.k); want != got {
-			t.Errorf("NewClosedOpenRange(%q, %q).Contains(%q) = %t, want %t", start, limit, test.k, got, want)
+			t.Errorf("%s.Contains(%q) = %t, want %t", r.String(), test.k, got, want)
 		}
 	}
 
@@ -81,7 +81,7 @@ func TestNewClosedOpenRange(t *testing.T) {
 	} {
 		r := NewClosedOpenRange(test.start, test.limit)
 		if want, got := test.valid, r.valid(); want != got {
-			t.Errorf("NewClosedOpenRange(%q, %q).valid() = %t, want %t", test.start, test.limit, got, want)
+			t.Errorf("%s.valid() = %t, want %t", r.String(), got, want)
 		}
 	}
 }
@@ -100,7 +100,7 @@ func TestNewOpenClosedRange(t *testing.T) {
 		{"b\x01\x00", false},
 	} {
 		if want, got := test.contains, r.Contains(test.k); want != got {
-			t.Errorf("NewOpenClosedRange(%q, %q).Contains(%q) = %t, want %t", start, limit, test.k, got, want)
+			t.Errorf("%s.Contains(%q) = %t, want %t", r.String(), test.k, got, want)
 		}
 	}
 
@@ -115,7 +115,7 @@ func TestNewOpenClosedRange(t *testing.T) {
 	} {
 		r := NewOpenClosedRange(test.start, test.limit)
 		if want, got := test.valid, r.valid(); want != got {
-			t.Errorf("NewOpenClosedRange(%q, %q).valid() = %t, want %t", test.start, test.limit, got, want)
+			t.Errorf("%s.valid() = %t, want %t", r.String(), got, want)
 		}
 	}
 }
@@ -178,7 +178,7 @@ func TestNewOpenRange(t *testing.T) {
 	}{
 		{"a", "a", false},
 		{"a", "b", true},
-		{"a", "a\x00", false},
+		{"a", "a\x00", true},
 		{"a", "a\x01", true},
 	} {
 		r := NewOpenRange(test.start, test.limit)
@@ -317,44 +317,33 @@ func TestRowRangeProto(t *testing.T) {
 
 	for _, test := range []struct {
 		desc  string
-		rr    RowSet
+		rr    RowRange
 		proto *btpb.RowSet
 	}{
 		{
-			desc: "RowRange proto start and limit",
-			rr:   RowRange{start: "a", limit: "b"},
+			desc: "RowRange proto start and end",
+			rr:   NewClosedOpenRange("a", "b"),
 			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
 				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
 				EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("b")},
 			}}},
 		},
 		{
-			desc: "RowRange proto start but no limit",
-			rr:   RowRange{start: "a"},
+			desc: "RowRange proto start but empty end",
+			rr:   NewClosedOpenRange("a", ""),
 			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
 				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
 			}}},
 		},
 		{
-			desc: "RowRange proto start but empty limit",
-			rr:   RowRange{start: "a", limit: ""},
-			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
-				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
-			}}},
+			desc:  "RowRange proto unbound",
+			rr:    NewClosedOpenRange("", ""),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{}}},
 		},
 		{
-			desc: "RowRange proto unbound",
-			rr:   RowRange{start: "", limit: ""},
-			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
-				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("")},
-			}}},
-		},
-		{
-			desc: "RowRange proto unbound with no start or limit",
-			rr:   RowRange{},
-			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
-				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("")},
-			}}},
+			desc:  "RowRange proto unbound with no start or end",
+			rr:    InfiniteRange(""),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{}}},
 		},
 		{
 			desc: "RowRange proto open closed",
@@ -362,6 +351,20 @@ func TestRowRangeProto(t *testing.T) {
 			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
 				StartKey: &btpb.RowRange_StartKeyOpen{StartKeyOpen: []byte("a")},
 				EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("b")},
+			}}},
+		},
+		{
+			desc: "RowRange proto open closed and empty start",
+			rr:   NewOpenClosedRange("", "b"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				EndKey: &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("b")},
+			}}},
+		},
+		{
+			desc: "RowRange proto open closed and empty start",
+			rr:   NewOpenClosedRange("", "b"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				EndKey: &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("b")},
 			}}},
 		},
 		{
@@ -377,7 +380,7 @@ func TestRowRangeProto(t *testing.T) {
 			got := test.rr.proto()
 			want := test.proto
 			if !reflect.DeepEqual(got, want) {
-				t.Errorf("Bad proto: got %v, want %v", got, want)
+				t.Errorf("Bad proto for %s: got %v, want %v", test.rr.String(), got, want)
 			}
 		})
 	}
@@ -419,19 +422,19 @@ func TestReadRowsInvalidRowSet(t *testing.T) {
 		valid bool
 	}{
 		{
-			rr:    RowRange{},
+			rr:    RowRange{startBound: unbounded, endBound: unbounded},
 			valid: true,
 		},
 		{
-			rr:    RowRange{start: "b"},
+			rr:    RowRange{startBound: closed, start: "b", endBound: unbounded},
 			valid: true,
 		},
 		{
-			rr:    RowRange{start: "b", limit: "c"},
+			rr:    RowRange{startBound: closed, start: "b", endBound: open, end: "c"},
 			valid: true,
 		},
 		{
-			rr:    RowRange{start: "b", limit: "a"},
+			rr:    RowRange{startBound: closed, start: "b", endBound: open, end: "a"},
 			valid: false,
 		},
 		{
@@ -514,7 +517,7 @@ func TestReadRowsRequestStats(t *testing.T) {
 	statsChannel := make(chan FullReadStats, 1)
 
 	readStart := time.Now()
-	if err := table.ReadRows(ctx, RowRange{}, func(r Row) bool { return true }, WithFullReadStats(func(s *FullReadStats) { statsChannel <- *s }), RowFilter(ColumnFilter("q.*"))); err != nil {
+	if err := table.ReadRows(ctx, InfiniteRange(""), func(r Row) bool { return true }, WithFullReadStats(func(s *FullReadStats) { statsChannel <- *s }), RowFilter(ColumnFilter("q.*"))); err != nil {
 		t.Fatalf("NewClient failed: %v", err)
 	}
 	readElapsed := time.Since(readStart)

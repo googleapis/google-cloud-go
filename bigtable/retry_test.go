@@ -345,7 +345,7 @@ func writeMutateRowsResponse(ss grpc.ServerStream, codes ...codes.Code) error {
 func TestRetainRowsAfter(t *testing.T) {
 	prevRowRange := NewRange("a", "z")
 	prevRowKey := "m"
-	want := NewRange("m\x00", "z")
+	want := NewOpenRange("m", "z")
 	got := prevRowRange.retainRowsAfter(prevRowKey)
 	if !testutil.Equal(want, got, cmp.AllowUnexported(RowRange{})) {
 		t.Errorf("range retry: got %v, want %v", got, want)
@@ -353,7 +353,7 @@ func TestRetainRowsAfter(t *testing.T) {
 
 	prevRowRangeList := RowRangeList{NewRange("a", "d"), NewRange("e", "g"), NewRange("h", "l")}
 	prevRowKey = "f"
-	wantRowRangeList := RowRangeList{NewRange("f\x00", "g"), NewRange("h", "l")}
+	wantRowRangeList := RowRangeList{NewOpenRange("f", "g"), NewRange("h", "l")}
 	got = prevRowRangeList.retainRowsAfter(prevRowKey)
 	if !testutil.Equal(wantRowRangeList, got, cmp.AllowUnexported(RowRange{})) {
 		t.Errorf("range list retry: got %v, want %v", got, wantRowRangeList)
@@ -406,7 +406,7 @@ func TestRetryReadRows(t *testing.T) {
 			err = status.Errorf(codes.Unavailable, "")
 		case 2:
 			// Retryable request failure
-			if want, got := "b\x00", string(req.Rows.RowRanges[0].GetStartKeyClosed()); want != got {
+			if want, got := "b", string(req.Rows.RowRanges[0].GetStartKeyOpen()); want != got {
 				t.Errorf("2 range retries: got %q, want %q", got, want)
 			}
 			err = status.Errorf(codes.Unavailable, "")
@@ -418,7 +418,7 @@ func TestRetryReadRows(t *testing.T) {
 			must(ss.SendMsg(&btpb.ReadRowsResponse{LastScannedRowKey: []byte("e")}))
 			err = status.Errorf(codes.Unavailable, "")
 		case 5:
-			if want, got := "e\x00", string(req.Rows.RowRanges[0].GetStartKeyClosed()); want != got {
+			if want, got := "e", string(req.Rows.RowRanges[0].GetStartKeyOpen()); want != got {
 				t.Errorf("3 range retries: got %q, want %q", got, want)
 			}
 			must(writeReadRowsResponse(ss, "f", "g"))
