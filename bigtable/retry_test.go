@@ -439,6 +439,80 @@ func TestRetryReadRows(t *testing.T) {
 	}
 }
 
+func TestRetryReverseReadRows(t *testing.T) {
+	ctx := context.Background()
+
+	// Intercept requests and delegate to an interceptor defined by the test case
+	errCount := 0
+	var f func(grpc.ServerStream) error
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if strings.HasSuffix(info.FullMethod, "ReadRows") {
+			return f(ss)
+		}
+		return handler(ctx, ss)
+	}
+
+	tbl, cleanup, err := setupFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	errCount = 0
+	// Test overall request failure and retries
+	f = func(ss grpc.ServerStream) error {
+		var err error
+		req := new(btpb.ReadRowsRequest)
+		must(ss.RecvMsg(req))
+		switch errCount {
+		case 0:
+			// Retryable request failure
+			err = status.Errorf(codes.Unavailable, "")
+		case 1:
+			// Write two rows then error
+			if want, got := "z", string(req.Rows.RowRanges[0].GetEndKeyClosed()); want != got {
+				t.Errorf("first retry, no data received yet: got %q, want %q", got, want)
+			}
+			must(writeReadRowsResponse(ss, "g", "f"))
+			err = status.Errorf(codes.Unavailable, "")
+		case 2:
+			// Retryable request failure
+			if want, got := "f", string(req.Rows.RowRanges[0].GetEndKeyOpen()); want != got {
+				t.Errorf("2 range retries: got %q, want %q", got, want)
+			}
+			err = status.Errorf(codes.Unavailable, "")
+		case 3:
+			must(ss.SendMsg(&btpb.ReadRowsResponse{LastScannedRowKey: []byte("e")}))
+			err = status.Errorf(codes.Unavailable, "")
+		case 4:
+			if want, got := "e", string(req.Rows.RowRanges[0].GetEndKeyOpen()); want != got {
+				t.Errorf("3 range retries: got %q, want %q", got, want)
+			}
+			// Write two more rows
+			must(writeReadRowsResponse(ss, "d", "c"))
+			err = status.Errorf(codes.Unavailable, "")
+		case 5:
+			if want, got := "c", string(req.Rows.RowRanges[0].GetEndKeyOpen()); want != got {
+				t.Errorf("3 range retries: got %q, want %q", got, want)
+			}
+			must(writeReadRowsResponse(ss, "b", "a"))
+			err = nil
+		}
+		errCount++
+		return err
+	}
+
+	var got []string
+	must(tbl.ReadRows(ctx, NewClosedRange("a", "z"), func(r Row) bool {
+		got = append(got, r.Key())
+		return true
+	}, ReverseScan()))
+	want := []string{"g", "f", "d", "c", "b", "a"}
+	if !testutil.Equal(got, want) {
+		t.Errorf("retry range integration: got %v, want %v", got, want)
+	}
+}
+
 func writeReadRowsResponse(ss grpc.ServerStream, rowKeys ...string) error {
 	var chunks []*btpb.ReadRowsResponse_CellChunk
 	for _, key := range rowKeys {

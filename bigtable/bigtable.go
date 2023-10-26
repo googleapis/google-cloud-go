@@ -222,7 +222,12 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 			}
 			if err != nil {
 				// Reset arg for next Invoke call.
-				arg = arg.retainRowsAfter(prevRowKey)
+				if req.Reversed {
+					arg = arg.retainRowsBefore(prevRowKey)
+				} else {
+					arg = arg.retainRowsAfter(prevRowKey)
+				}
+				// todo is this different for reverse
 				attrMap["rowKey"] = prevRowKey
 				attrMap["error"] = err.Error()
 				attrMap["time_secs"] = time.Since(startTime).Seconds()
