@@ -4317,7 +4317,7 @@ func TestClient_BatchWrite(t *testing.T) {
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
-	responseCount := int(0)
+	responseCount := 0
 	doFunc := func(r *sppb.BatchWriteResponse) error {
 		responseCount++
 		return nil
@@ -4352,7 +4352,7 @@ func TestClient_BatchWrite_SessionNotFound(t *testing.T) {
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
-	responseCount := int(0)
+	responseCount := 0
 	doFunc := func(r *sppb.BatchWriteResponse) error {
 		responseCount++
 		return nil
@@ -4390,7 +4390,7 @@ func TestClient_BatchWrite_Error(t *testing.T) {
 		}},
 	}
 	iter := client.BatchWrite(context.Background(), mutationGroups)
-	responseCount := int(0)
+	responseCount := 0
 	doFunc := func(r *sppb.BatchWriteResponse) error {
 		responseCount++
 		return nil
