@@ -110,7 +110,7 @@ func TestStorageIteratorRetry(t *testing.T) {
 				settings:     defaultReadClientSettings(),
 				readRowsFunc: readRowsFunc,
 				bqSession:    &storagepb.ReadSession{},
-			})
+			}, Schema{})
 			if err != nil {
 				t.Fatalf("case %s: newRawStorageRowIterator: %v", tc.desc, err)
 			}

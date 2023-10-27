@@ -44,7 +44,8 @@ type RowIterator struct {
 	ctx context.Context
 	src *rowSource
 
-	arrowIterator *arrowIterator
+	arrowIterator ArrowIterator
+	arrowDecoder  *arrowDecoder
 
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
@@ -239,7 +240,11 @@ func fetchPage(ctx context.Context, src *rowSource, schema Schema, startIndex ui
 		if src.j != nil {
 			return fetchJobResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
 		}
-		return fetchTableResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
+		if src.t != nil {
+			return fetchTableResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
+		}
+		// No rows, but no table or job reference.  Return an empty result set.
+		return &fetchPageResult{}, nil
 	}
 	return result, nil
 }
