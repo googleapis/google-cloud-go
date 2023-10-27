@@ -10,9 +10,9 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.0
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/otel v1.19.0
+	go.opentelemetry.io/otel/sdk v1.19.0
 	go.opentelemetry.io/otel/trace v1.19.0
 	golang.org/x/oauth2 v0.11.0
-	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/api v0.128.0
 	google.golang.org/genproto v0.0.0-20230822172742-b8732ec3820d
 	google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d
