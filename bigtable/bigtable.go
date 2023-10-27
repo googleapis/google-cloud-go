@@ -227,7 +227,6 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 				} else {
 					arg = arg.retainRowsAfter(prevRowKey)
 				}
-				// todo is this different for reverse
 				attrMap["rowKey"] = prevRowKey
 				attrMap["error"] = err.Error()
 				attrMap["time_secs"] = time.Since(startTime).Seconds()
@@ -418,7 +417,6 @@ func (r RowRange) Unbounded() bool {
 	return r.startBound == rangeUnbounded || r.endBound == rangeUnbounded
 }
 
-// todo test
 // Contains says whether the RowRange contains the key.
 func (r RowRange) Contains(row string) bool {
 	contains := true
@@ -628,22 +626,22 @@ func InfiniteRange(start string) RowRange {
 	}
 }
 
-func validateBound(bound string, defaultBoundType rangeBoundType) rangeBoundType {
-	if bound == "" {
-		return rangeUnbounded
-	} else {
-		return defaultBoundType
-	}
-}
-
-// InfiniteReverseRange returns the RowRange consisting of all keys at least as
-// large as start.
+// InfiniteReverseRange returns the RowRange consisting of all keys less than or
+// equal to the end.
 func InfiniteReverseRange(end string) RowRange {
 	return RowRange{
 		startBound: rangeUnbounded,
 		start:      "",
 		endBound:   validateBound(end, rangeClosed),
 		end:        end,
+	}
+}
+
+func validateBound(bound string, defaultBoundType rangeBoundType) rangeBoundType {
+	if bound == "" {
+		return rangeUnbounded
+	} else {
+		return defaultBoundType
 	}
 }
 

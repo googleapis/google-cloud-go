@@ -188,6 +188,65 @@ func TestNewOpenRange(t *testing.T) {
 	}
 }
 
+func TestInfiniteRange(t *testing.T) {
+	r := InfiniteRange("b")
+	for _, test := range []struct {
+		k        string
+		contains bool
+	}{
+		{"a", false},
+		{"b", true},
+		{"b\x00", true},
+		{"z", true},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("%s.Contains(%q) = %t, want %t", r.String(), test.k, got, want)
+		}
+	}
+
+	for _, test := range []struct {
+		start string
+		valid bool
+	}{
+		{"a", true},
+		{"", true},
+	} {
+		r := InfiniteRange(test.start)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("%s.valid() = %t, want %t", r.String(), got, want)
+		}
+	}
+}
+
+func TestInfiniteReverseRange(t *testing.T) {
+	r := InfiniteReverseRange("z")
+	for _, test := range []struct {
+		k        string
+		contains bool
+	}{
+		{"a", true},
+		{"z", true},
+		{"z\x00", false},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("%s.Contains(%q) = %t, want %t", r.String(), test.k, got, want)
+		}
+	}
+
+	for _, test := range []struct {
+		start string
+		valid bool
+	}{
+		{"a", true},
+		{"", true},
+	} {
+		r := InfiniteReverseRange(test.start)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("%s.valid() = %t, want %t", r.String(), got, want)
+		}
+	}
+}
+
 func TestApplyErrors(t *testing.T) {
 	ctx := context.Background()
 	table := &Table{
@@ -381,6 +440,59 @@ func TestRowRangeProto(t *testing.T) {
 			want := test.proto
 			if !reflect.DeepEqual(got, want) {
 				t.Errorf("Bad proto for %s: got %v, want %v", test.rr.String(), got, want)
+			}
+		})
+	}
+}
+
+func TestRowRangeString(t *testing.T) {
+
+	for _, test := range []struct {
+		desc string
+		rr   RowRange
+		str  string
+	}{
+		{
+			desc: "RowRange closed open",
+			rr:   NewClosedOpenRange("a", "b"),
+			str:  "[\"a\",b)",
+		},
+		{
+			desc: "RowRange open open",
+			rr:   NewOpenRange("c", "d"),
+			str:  "(\"c\",d)",
+		},
+		{
+			desc: "RowRange closed closed",
+			rr:   NewClosedRange("e", "f"),
+			str:  "[\"e\",f]",
+		},
+		{
+			desc: "RowRange open closed",
+			rr:   NewOpenClosedRange("g", "h"),
+			str:  "(\"g\",h]",
+		},
+		{
+			desc: "RowRange unbound unbound",
+			rr:   InfiniteRange(""),
+			str:  "(∞,∞)",
+		},
+		{
+			desc: "RowRange closed unbound",
+			rr:   InfiniteRange("b"),
+			str:  "[\"b\",∞)",
+		},
+		{
+			desc: "RowRange unbound closed",
+			rr:   InfiniteReverseRange("c"),
+			str:  "(∞,c]",
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			got := test.rr.String()
+			want := test.str
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("Bad String(): got %v, want %v", got, want)
 			}
 		})
 	}
