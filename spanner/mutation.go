@@ -143,7 +143,7 @@ type Mutation struct {
 
 // A MutationGroup is a list of Mutation to be committed atomically.
 type MutationGroup struct {
-	// The mutations in this group
+	// The Mutations in this group
 	Mutations []*Mutation
 }
 
