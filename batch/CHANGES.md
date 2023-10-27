@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.0...batch/v1.6.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **batch:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.5.1...batch/v1.6.0) (2023-10-17)
 
 
