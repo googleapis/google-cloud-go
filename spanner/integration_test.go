@@ -924,7 +924,7 @@ func TestIntegration_BatchWrite(t *testing.T) {
 			w.row)
 		ms := make([]*Mutation, 1)
 		ms[0] = m
-		mgs[i] = &MutationGroup{mutations: ms}
+		mgs[i] = &MutationGroup{Mutations: ms}
 	}
 	// Records the mutation group indexes received in the response.
 	seen := make(map[int32]int32)
