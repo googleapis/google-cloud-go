@@ -144,7 +144,7 @@ type Mutation struct {
 // A MutationGroup is a list of Mutation to be committed atomically.
 type MutationGroup struct {
 	// The mutations in this group
-	mutations []*Mutation
+	Mutations []*Mutation
 }
 
 // mapToMutationParams converts Go map into mutation parameters.
@@ -444,7 +444,7 @@ func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, error) {
 func mutationGroupsProto(mgs []*MutationGroup) ([]*sppb.BatchWriteRequest_MutationGroup, error) {
 	gs := make([]*sppb.BatchWriteRequest_MutationGroup, 0, len(mgs))
 	for _, mg := range mgs {
-		ms, err := mutationsProto(mg.mutations)
+		ms, err := mutationsProto(mg.Mutations)
 		if err != nil {
 			return nil, err
 		}
