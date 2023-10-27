@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.1...metastore/v1.13.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **metastore:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.0...metastore/v1.13.1) (2023-10-12)
 
 
