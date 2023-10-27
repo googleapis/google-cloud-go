@@ -31,6 +31,7 @@ import (
 	itestutil "cloud.google.com/go/internal/testutil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -4302,5 +4303,252 @@ func TestClient_CustomRetryAndTimeoutSettings(t *testing.T) {
 	se := ToSpannerError(err)
 	if g, w := ErrCode(se), codes.DeadlineExceeded; g != w {
 		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
+func TestClient_BatchWrite(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	mutationGroups := []*MutationGroup{
+		{[]*Mutation{
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+		}},
+	}
+	iter := client.BatchWrite(context.Background(), mutationGroups)
+	responseCount := 0
+	doFunc := func(r *sppb.BatchWriteResponse) error {
+		responseCount++
+		return nil
+	}
+	if err := iter.Do(doFunc); err != nil {
+		t.Fatal(err)
+	}
+	if responseCount != len(mutationGroups) {
+		t.Fatalf("Response count mismatch.\nGot: %v\nWant:%v", responseCount, len(mutationGroups))
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BatchWriteRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_BatchWrite_SessionNotFound(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodBatchWrite,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	mutationGroups := []*MutationGroup{
+		{[]*Mutation{
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+		}},
+	}
+	iter := client.BatchWrite(context.Background(), mutationGroups)
+	responseCount := 0
+	doFunc := func(r *sppb.BatchWriteResponse) error {
+		responseCount++
+		return nil
+	}
+	if err := iter.Do(doFunc); err != nil {
+		t.Fatal(err)
+	}
+	if responseCount != len(mutationGroups) {
+		t.Fatalf("Response count mismatch.\nGot: %v\nWant:%v", responseCount, len(mutationGroups))
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BatchWriteRequest{},
+		&sppb.BatchWriteRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_BatchWrite_Error(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	injectedErr := status.Error(codes.InvalidArgument, "Invalid argument")
+	server.TestSpanner.PutExecutionTime(
+		MethodBatchWrite,
+		SimulatedExecutionTime{Errors: []error{injectedErr}},
+	)
+	mutationGroups := []*MutationGroup{
+		{[]*Mutation{
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+		}},
+	}
+	iter := client.BatchWrite(context.Background(), mutationGroups)
+	responseCount := 0
+	doFunc := func(r *sppb.BatchWriteResponse) error {
+		responseCount++
+		return nil
+	}
+	if err := iter.Do(doFunc); status.Code(err) != status.Code(injectedErr) {
+		t.Fatalf("Error mismatch.\nGot:%v\nExpected:%v\n", err, injectedErr)
+	}
+	if responseCount != 0 {
+		t.Fatalf("Do function unexpectedly called %v times", responseCount)
+	}
+}
+
+func checkBatchWriteForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, want *sppb.RequestOptions) {
+	reqs := drainRequestsFromServer(server)
+	var got *sppb.RequestOptions
+
+	for _, req := range reqs {
+		if request, ok := req.(*sppb.BatchWriteRequest); ok {
+			got = request.RequestOptions
+			break
+		}
+	}
+
+	if got == nil {
+		t.Fatalf("Missing BatchWrite RequestOptions")
+	}
+
+	if diff := itestutil.Diff(got, want, cmpopts.IgnoreUnexported(sppb.RequestOptions{})); diff != "" {
+		t.Fatalf("RequestOptions mismatch. (+Got, -Want):%v", diff)
+	}
+}
+
+func TestClient_BatchWrite_Options(t *testing.T) {
+	t.Parallel()
+
+	testcases := []struct {
+		name               string
+		client             BatchWriteOptions
+		write              BatchWriteOptions
+		wantTransactionTag string
+		wantPriority       sppb.RequestOptions_Priority
+	}{
+		{
+			name:               "Client level",
+			client:             BatchWriteOptions{TransactionTag: "testTransactionTag", Priority: sppb.RequestOptions_PRIORITY_LOW},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "Write level",
+			write:              BatchWriteOptions{TransactionTag: "testTransactionTag", Priority: sppb.RequestOptions_PRIORITY_LOW},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "Write level has precedence over client level",
+			client:             BatchWriteOptions{TransactionTag: "clientTransactionTag", Priority: sppb.RequestOptions_PRIORITY_LOW},
+			write:              BatchWriteOptions{TransactionTag: "writeTransactionTag", Priority: sppb.RequestOptions_PRIORITY_MEDIUM},
+			wantTransactionTag: "writeTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_MEDIUM,
+		},
+	}
+
+	for _, tt := range testcases {
+		t.Run(tt.name, func(t *testing.T) {
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{BatchWriteOptions: tt.client})
+			defer teardown()
+
+			mutationGroups := []*MutationGroup{
+				{[]*Mutation{
+					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+				}},
+			}
+			iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, tt.write)
+			doFunc := func(r *sppb.BatchWriteResponse) error {
+				return nil
+			}
+			if err := iter.Do(doFunc); err != nil {
+				t.Fatal(err)
+			}
+			checkBatchWriteForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{Priority: tt.wantPriority, TransactionTag: tt.wantTransactionTag})
+		})
+	}
+}
+
+func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
+	// This test cannot be parallel, as the TestExporter does not support that.
+	te := itestutil.NewTestExporter()
+	defer te.Unregister()
+	minOpened := uint64(1)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     minOpened,
+			WriteSessions: 0,
+		},
+	})
+	defer teardown()
+
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != minOpened {
+			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
+
+	server.TestSpanner.PutExecutionTime(
+		MethodBatchWrite,
+		SimulatedExecutionTime{Errors: errors},
+	)
+	mutationGroups := []*MutationGroup{
+		{[]*Mutation{
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+		}},
+	}
+	iter := client.BatchWrite(context.Background(), mutationGroups)
+	iter.Do(func(r *sppb.BatchWriteResponse) error {
+		return nil
+	})
+	select {
+	case <-te.Stats:
+	case <-time.After(1 * time.Second):
+		t.Fatal("No stats were exported before timeout")
+	}
+	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
+	// cannot do that.
+	if len(te.Spans) == 0 {
+		t.Fatal("No spans were exported")
+	}
+	s := te.Spans[len(te.Spans)-1].Status
+	if s.Code != int32(code) {
+		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, code)
+	}
+}
+func TestClient_BatchWrite_SpanExported(t *testing.T) {
+	testcases := []struct {
+		name   string
+		code   codes.Code
+		errors []error
+	}{
+		{
+			name:   "Success",
+			code:   codes.OK,
+			errors: []error{},
+		},
+		{
+			name:   "Error",
+			code:   codes.InvalidArgument,
+			errors: []error{status.Error(codes.InvalidArgument, "Invalid argument")},
+		},
+	}
+
+	for _, tt := range testcases {
+		t.Run(tt.name, func(t *testing.T) {
+			checkBatchWriteSpan(t, tt.errors, tt.code)
+		})
 	}
 }
