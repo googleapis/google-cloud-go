@@ -279,3 +279,28 @@ func TestParseExternalAccount_Cmd(t *testing.T) {
 		t.Errorf("(-want +got):\n%s", diff)
 	}
 }
+
+func TestParseExternalAccountAuthorizedUser(t *testing.T) {
+	b, err := os.ReadFile("../testdata/exaccount_user.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := ParseExternalAccountAuthorizedUser(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := &ExternalAccountAuthorizedUserFile{
+		Type:           "external_account_authorized_user",
+		Audience:       "//iam.googleapis.com/locations/global/workforcePools/$POOL_ID/providers/$PROVIDER_ID",
+		ClientID:       "abc123.apps.googleusercontent.com",
+		ClientSecret:   "shh",
+		RefreshToken:   "refreshing",
+		TokenURL:       "https://sts.googleapis.com/v1/oauthtoken",
+		TokenInfoURL:   "https://sts.googleapis.com/v1/info",
+		RevokeURL:      "https://sts.googleapis.com/v1/revoke",
+		QuotaProjectID: "fake_project2",
+	}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("(-want +got):\n%s", diff)
+	}
+}
