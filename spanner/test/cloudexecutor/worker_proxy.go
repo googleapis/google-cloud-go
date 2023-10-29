@@ -15,7 +15,7 @@
 package main
 
 // worker_proxy.go handles creation of the gRPC stream, and registering needed services.
-// This file is responsible for spinning up the server for receiving requests from the client through gRPC stream.
+// This file is responsible for spinning up the server for client to make requests to ExecuteActionAsync RPC.
 
 import (
 	"context"
@@ -26,8 +26,8 @@ import (
 	"os"
 	"strings"
 
-	"cloud.google.com/go/spanner/cloudexecutor/executor"
-	executorpb "cloud.google.com/go/spanner/cloudexecutor/proto"
+	"cloud.google.com/go/spanner/test/cloudexecutor/executor"
+	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"

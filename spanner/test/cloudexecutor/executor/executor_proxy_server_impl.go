@@ -14,13 +14,14 @@
 
 package executor
 
-// cloud_executor_impl.go contains the implementation of the executor proxy RPC.
+// executor_proxy_server_impl.go contains the implementation of the executor proxy RPC.
 // This RPC gets invoked through the gRPC stream exposed via proxy port by worker_proxy.go file.
 
 import (
 	"context"
 
-	executorpb "cloud.google.com/go/spanner/cloudexecutor/proto"
+	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/input_stream"
+	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"google.golang.org/api/option"
 )
 
@@ -37,10 +38,11 @@ func NewCloudProxyServer(ctx context.Context, opts []option.ClientOption) (*Clou
 
 // ExecuteActionAsync is implementation of ExecuteActionAsync in SpannerExecutorProxyServer. It's a
 // streaming method in which client and server exchange SpannerActions and SpannerActionOutcomes.
-func (s *CloudProxyServer) ExecuteActionAsync(stream executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer) error {
-	handler := &cloudStreamHandler{
-		cloudProxyServer: s,
-		stream:           stream,
+func (s *CloudProxyServer) ExecuteActionAsync(inputStream executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer) error {
+	handler := &input_stream.CloudStreamHandler{
+		Stream:        inputStream,
+		ServerContext: s.serverContext,
+		Options:       s.options,
 	}
-	return handler.execute()
+	return handler.Execute()
 }
