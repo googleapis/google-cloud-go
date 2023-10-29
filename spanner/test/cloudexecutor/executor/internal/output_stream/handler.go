@@ -27,6 +27,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// if OutcomeSender.rowCount exceed maxRowsPerBatch value, we should send rows back to the client in batch.
+const maxRowsPerBatch = 100
+
 // OutcomeSender is a utility class used for sending action outcomes back to the client. For read
 // actions, it buffers rows and sends partial read results in batches.
 type OutcomeSender struct {
@@ -54,9 +57,6 @@ type OutcomeSender struct {
 	// modified row count in dml result
 	rowsModified []int64
 }
-
-// if rowCount exceed this value, we should send rows back in batch.
-const maxRowsPerBatch = 100
 
 func NewOutcomeSender(actionId int32, stream executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer) *OutcomeSender {
 	return &OutcomeSender{
