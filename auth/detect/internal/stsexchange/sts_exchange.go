@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package externalaccount
+package stsexchange
 
 import (
 	"context"
@@ -28,50 +28,72 @@ import (
 	"cloud.google.com/go/auth/internal"
 )
 
-type exchangeOptions struct {
-	client         *http.Client
-	endpoint       string
-	request        *stsTokenExchangeRequest
-	authentication clientAuthentication
-	headers        http.Header
-	extraOpts      map[string]interface{}
+const (
+	// GrantType for a sts exchange.
+	GrantType = "urn:ietf:params:oauth:grant-type:token-exchange"
+	// TokenType for a sts exchange.
+	TokenType = "urn:ietf:params:oauth:token-type:access_token"
+
+	jwtTokenType = "urn:ietf:params:oauth:token-type:jwt"
+)
+
+// Options stores the configuration for making an sts exchange request.
+type Options struct {
+	Client         *http.Client
+	Endpoint       string
+	Request        *TokenRequest
+	Authentication ClientAuthentication
+	Headers        http.Header
+	// ExtraOpts are optional fields marshalled into the `options` field of the
+	// request body.
+	ExtraOpts    map[string]interface{}
+	RefreshToken string
 }
 
-// exchangeToken performs an oauth2 token exchange with the provided endpoint.
-// The first 4 fields are all mandatory.  headers can be used to pass additional
-// headers beyond the bare minimum required by the token exchange.  options can
-// be used to pass additional JSON-structured options to the remote server.
-func exchangeToken(ctx context.Context, opts *exchangeOptions) (*stsTokenExchangeResponse, error) {
+// RefreshAccessToken performs the token exchange using a refresh token flow.
+func RefreshAccessToken(ctx context.Context, opts *Options) (*TokenResponse, error) {
 	data := url.Values{}
-	data.Set("audience", opts.request.Audience)
-	data.Set("grant_type", stsGrantType)
-	data.Set("requested_token_type", stsTokenType)
-	data.Set("subject_token_type", opts.request.SubjectTokenType)
-	data.Set("subject_token", opts.request.SubjectToken)
-	data.Set("scope", strings.Join(opts.request.Scope, " "))
-	if opts.extraOpts != nil {
-		opts, err := json.Marshal(opts.extraOpts)
+	data.Set("grant_type", "refresh_token")
+	data.Set("refresh_token", opts.RefreshToken)
+	return doRequest(ctx, opts, data)
+}
+
+// ExchangeToken performs an oauth2 token exchange with the provided endpoint.
+func ExchangeToken(ctx context.Context, opts *Options) (*TokenResponse, error) {
+	data := url.Values{}
+	data.Set("audience", opts.Request.Audience)
+	data.Set("grant_type", GrantType)
+	data.Set("requested_token_type", TokenType)
+	data.Set("subject_token_type", opts.Request.SubjectTokenType)
+	data.Set("subject_token", opts.Request.SubjectToken)
+	data.Set("scope", strings.Join(opts.Request.Scope, " "))
+	if opts.ExtraOpts != nil {
+		opts, err := json.Marshal(opts.ExtraOpts)
 		if err != nil {
 			return nil, fmt.Errorf("detect: failed to marshal additional options: %w", err)
 		}
 		data.Set("options", string(opts))
 	}
-	opts.authentication.InjectAuthentication(data, opts.headers)
+	return doRequest(ctx, opts, data)
+}
+
+func doRequest(ctx context.Context, opts *Options, data url.Values) (*TokenResponse, error) {
+	opts.Authentication.InjectAuthentication(data, opts.Headers)
 	encodedData := data.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, "POST", opts.endpoint, strings.NewReader(encodedData))
+	req, err := http.NewRequestWithContext(ctx, "POST", opts.Endpoint, strings.NewReader(encodedData))
 	if err != nil {
 		return nil, fmt.Errorf("detect: failed to properly build http request: %w", err)
 
 	}
-	for key, list := range opts.headers {
+	for key, list := range opts.Headers {
 		for _, val := range list {
 			req.Header.Add(key, val)
 		}
 	}
 	req.Header.Set("Content-Length", strconv.Itoa(len(encodedData)))
 
-	resp, err := opts.client.Do(req)
+	resp, err := opts.Client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("detect: invalid response from Secure Token Server: %w", err)
 	}
@@ -84,7 +106,7 @@ func exchangeToken(ctx context.Context, opts *exchangeOptions) (*stsTokenExchang
 	if c := resp.StatusCode; c < http.StatusOK || c > http.StatusMultipleChoices {
 		return nil, fmt.Errorf("detect: status code %d: %s", c, body)
 	}
-	var stsResp stsTokenExchangeResponse
+	var stsResp TokenResponse
 	if err := json.Unmarshal(body, &stsResp); err != nil {
 		return nil, fmt.Errorf("detect: failed to unmarshal response body from Secure Token Server: %w", err)
 	}
@@ -92,9 +114,9 @@ func exchangeToken(ctx context.Context, opts *exchangeOptions) (*stsTokenExchang
 	return &stsResp, nil
 }
 
-// stsTokenExchangeRequest contains fields necessary to make an oauth2 token
+// TokenRequest contains fields necessary to make an oauth2 token
 // exchange.
-type stsTokenExchangeRequest struct {
+type TokenRequest struct {
 	ActingParty struct {
 		ActorToken     string
 		ActorTokenType string
@@ -108,20 +130,20 @@ type stsTokenExchangeRequest struct {
 	SubjectTokenType   string
 }
 
-// stsTokenExchangeResponse is used to decode the remote server response during
+// TokenResponse is used to decode the remote server response during
 // an oauth2 token exchange.
-type stsTokenExchangeResponse struct {
+type TokenResponse struct {
 	AccessToken     string `json:"access_token"`
 	IssuedTokenType string `json:"issued_token_type"`
 	TokenType       string `json:"token_type"`
 	ExpiresIn       int    `json:"expires_in"`
 	Scope           string `json:"scope"`
-	// TODO(codyoss): original impl parsed but did not use a refresh token here, do we need it?
+	RefreshToken    string `json:"refresh_token"`
 }
 
-// clientAuthentication represents an OAuth client ID and secret and the
+// ClientAuthentication represents an OAuth client ID and secret and the
 // mechanism for passing these credentials as stated in rfc6749#2.3.1.
-type clientAuthentication struct {
+type ClientAuthentication struct {
 	AuthStyle    auth.Style
 	ClientID     string
 	ClientSecret string
@@ -130,7 +152,7 @@ type clientAuthentication struct {
 // InjectAuthentication is used to add authentication to a Secure Token Service
 // exchange request.  It modifies either the passed url.Values or http.Header
 // depending on the desired authentication format.
-func (c *clientAuthentication) InjectAuthentication(values url.Values, headers http.Header) {
+func (c *ClientAuthentication) InjectAuthentication(values url.Values, headers http.Header) {
 	if c.ClientID == "" || c.ClientSecret == "" || values == nil || headers == nil {
 		return
 	}

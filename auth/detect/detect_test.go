@@ -538,6 +538,64 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 		t.Fatalf("got %q, want %q", tok.Type, want)
 	}
 }
+func TestDefaultCredentials_ExternalAccountAuthorizedUserKey(t *testing.T) {
+	b, err := os.ReadFile("../internal/testdata/exaccount_user.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	f, err := internaldetect.ParseExternalAccountAuthorizedUser(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+		if got, want := r.URL.Path, "/sts"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+		r.ParseForm()
+		if got, want := r.Form.Get("refresh_token"), "refreshing"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+		if got, want := r.Form.Get("grant_type"), "refresh_token"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+
+		resp := &struct {
+			AccessToken string `json:"access_token"`
+			ExpiresIn   int    `json:"expires_in"`
+		}{
+			AccessToken: "a_fake_token",
+			ExpiresIn:   60,
+		}
+		if err := json.NewEncoder(w).Encode(&resp); err != nil {
+			t.Error(err)
+		}
+	}))
+	f.TokenURL = ts.URL + "/sts"
+	b, err = json.Marshal(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	creds, err := DefaultCredentials(&Options{
+		CredentialsJSON:  b,
+		Scopes:           []string{"https://www.googleapis.com/auth/cloud-platform"},
+		UseSelfSignedJWT: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tok, err := creds.Token(context.Background())
+	if err != nil {
+		t.Fatalf("creds.Token() = %v", err)
+	}
+	if want := "a_fake_token"; tok.Value != want {
+		t.Fatalf("got %q, want %q", tok.Value, want)
+	}
+	if want := internal.TokenTypeBearer; tok.Type != want {
+		t.Fatalf("got %q, want %q", tok.Type, want)
+	}
+}
 
 func TestDefaultCredentials_Fails(t *testing.T) {
 	t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "nothingToSeeHere")
@@ -558,5 +616,38 @@ func TestDefaultCredentials_BadFiletype(t *testing.T) {
 		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 	}); err == nil {
 		t.Fatal("got nil, want non-nil err")
+	}
+}
+
+func TestDefaultCredentials_Validate(t *testing.T) {
+	tests := []struct {
+		name string
+		opts *Options
+	}{
+		{
+			name: "missing options",
+		},
+		{
+			name: "scope and audience provided",
+			opts: &Options{
+				Scopes:   []string{"scope"},
+				Audience: "aud",
+			},
+		},
+		{
+			name: "file and json provided",
+			opts: &Options{
+				Scopes:          []string{"scope"},
+				CredentialsFile: "path",
+				CredentialsJSON: []byte(`{"some":"json"}`),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if _, err := DefaultCredentials(tt.opts); err == nil {
+				t.Error("got nil, want an error")
+			}
+		})
 	}
 }

@@ -1,5 +1,19 @@
 # Changes
 
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.11.2...orgpolicy/v1.11.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.11.1...orgpolicy/v1.11.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.11.0...orgpolicy/v1.11.1) (2023-06-20)
 
 

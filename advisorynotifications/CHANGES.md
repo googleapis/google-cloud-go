@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.2.1...advisorynotifications/v1.2.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **advisorynotifications:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.2.0...advisorynotifications/v1.2.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **advisorynotifications:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.1.0...advisorynotifications/v1.2.0) (2023-10-04)
 
 

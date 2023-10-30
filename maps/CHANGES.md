@@ -2,6 +2,27 @@
 
 
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.5.0...maps/v1.5.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **maps:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.4.1...maps/v1.5.0) (2023-10-17)
+
+
+### Features
+
+* **maps:** New clients ([#8739](https://github.com/googleapis/google-cloud-go/issues/8739)) ([5f1d27a](https://github.com/googleapis/google-cloud-go/commit/5f1d27aae41ff75573fdab254da2548052556b1f))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.4.0...maps/v1.4.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **maps:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.3.0...maps/v1.4.0) (2023-07-24)
 
 

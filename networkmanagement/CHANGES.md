@@ -1,5 +1,19 @@
 # Changes
 
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.9.1...networkmanagement/v1.9.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.9.0...networkmanagement/v1.9.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.8.0...networkmanagement/v1.9.0) (2023-08-14)
 
 
