@@ -447,10 +447,11 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 
 	t := &BatchReadOnlyTransaction{
 		ReadOnlyTransaction: ReadOnlyTransaction{
-			tx:              tx,
-			txReadyOrClosed: make(chan struct{}),
-			state:           txActive,
-			rts:             rts,
+			tx:                       tx,
+			txReadyOrClosed:          make(chan struct{}),
+			state:                    txActive,
+			rts:                      rts,
+			isLongRunningTransaction: true,
 		},
 		ID: BatchReadOnlyTransactionID{
 			tid: tx,
@@ -481,10 +482,11 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 
 	t := &BatchReadOnlyTransaction{
 		ReadOnlyTransaction: ReadOnlyTransaction{
-			tx:              tid.tid,
-			txReadyOrClosed: make(chan struct{}),
-			state:           txActive,
-			rts:             tid.rts,
+			tx:                       tid.tid,
+			txReadyOrClosed:          make(chan struct{}),
+			state:                    txActive,
+			rts:                      tid.rts,
+			isLongRunningTransaction: true,
 		},
 		ID: tid,
 	}
@@ -566,6 +568,14 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 			// Session handle hasn't been allocated or has been destroyed.
 			sh, err = c.idleSessions.take(ctx)
+			if t != nil {
+				// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
+				sh.mu.Lock()
+				t.mu.Lock()
+				sh.eligibleForLongRunning = t.isLongRunningTransaction
+				t.mu.Unlock()
+				sh.mu.Unlock()
+			}
 			if err != nil {
 				// If session retrieval fails, just fail the transaction.
 				return err
