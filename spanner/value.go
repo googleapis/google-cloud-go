@@ -3471,6 +3471,30 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 		}
 		pt = listType(intType())
+	case uint:
+		pb.Kind = stringKind(strconv.FormatInt(int64(v), 10))
+		pt = intType()
+	case []uint:
+		if v != nil {
+			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		pt = listType(intType())
+	case *uint:
+		if v != nil {
+			return encodeValue(*v)
+		}
+		pt = intType()
+	case []*uint:
+		if v != nil {
+			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		pt = listType(intType())
 	case bool:
 		pb.Kind = &proto3.Value_BoolValue{BoolValue: v}
 		pt = boolType()
