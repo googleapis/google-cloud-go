@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@
 package artifactregistrypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -44,7 +43,7 @@ type Package struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The name of the package, for example:
-	// "projects/p1/locations/us-central1/repositories/repo1/packages/pkg1".
+	// `projects/p1/locations/us-central1/repositories/repo1/packages/pkg1`.
 	// If the package ID part contains slashes, the slashes are escaped.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The display name of the package.
