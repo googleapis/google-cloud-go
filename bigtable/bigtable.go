@@ -520,7 +520,7 @@ func (r RowRange) String() string {
 }
 
 func (r RowRange) proto() *btpb.RowSet {
-	var rr = btpb.RowRange{}
+	rr := &btpb.RowRange{}
 
 	switch r.startBound {
 	case rangeOpen:
@@ -546,7 +546,7 @@ func (r RowRange) proto() *btpb.RowSet {
 		break
 	}
 
-	return &btpb.RowSet{RowRanges: []*btpb.RowRange{&rr}}
+	return &btpb.RowSet{RowRanges: []*btpb.RowRange{rr}}
 }
 
 func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
