@@ -22,14 +22,15 @@ package pubsublitepb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -516,10 +517,10 @@ func (*SubscribeRequest_FlowControl) isSubscribeRequest_Request() {}
 
 // Response containing a list of messages. Upon delivering a MessageResponse to
 // the client, the server:
-// *  Updates the stream's delivery cursor to one greater than the cursor of the
-//    last message in the list.
-// *  Subtracts the total number of bytes and messages from the tokens available
-//    to the server.
+//   - Updates the stream's delivery cursor to one greater than the cursor of the
+//     last message in the list.
+//   - Subtracts the total number of bytes and messages from the tokens available
+//     to the server.
 type MessageResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

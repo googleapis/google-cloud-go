@@ -22,6 +22,9 @@ package placespb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	grpc "google.golang.org/grpc"
@@ -29,8 +32,6 @@ import (
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -335,8 +336,6 @@ func (x *SearchNearbyRequest) GetRankPreference() SearchNearbyRequest_RankPrefer
 }
 
 // Response proto for Search Nearby.
-//
-//
 type SearchNearbyResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -387,8 +386,6 @@ func (x *SearchNearbyResponse) GetPlaces() []*Place {
 }
 
 // Request proto for SearchText.
-//
-//
 type SearchTextRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -570,7 +567,6 @@ func (x *SearchTextRequest) GetLocationRestriction() *SearchTextRequest_Location
 }
 
 // Response proto for SearchText.
-//
 type SearchTextResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
