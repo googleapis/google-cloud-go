@@ -80,7 +80,6 @@ func newReverseChunkReader() *chunkReader {
 	return &chunkReader{reversed: true, state: newRow}
 }
 
-
 // Process takes a cell chunk and returns a new Row if the given chunk
 // completes a Row, or nil otherwise.
 func (cr *chunkReader) Process(cc *btpb.ReadRowsResponse_CellChunk) (Row, error) {
