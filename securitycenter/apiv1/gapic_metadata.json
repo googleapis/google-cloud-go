@@ -200,6 +200,11 @@
                 "SetMute"
               ]
             },
+            "SimulateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "SimulateSecurityHealthAnalyticsCustomModule"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
@@ -443,6 +448,11 @@
             "SetMute": {
               "methods": [
                 "SetMute"
+              ]
+            },
+            "SimulateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "SimulateSecurityHealthAnalyticsCustomModule"
               ]
             },
             "TestIamPermissions": {

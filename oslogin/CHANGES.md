@@ -1,5 +1,19 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.12.0...oslogin/v1.12.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **oslogin:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.11.1...oslogin/v1.12.0) (2023-10-17)
+
+
+### Features
+
+* **oslogin:** Location-based HTTP binding for SignSshPublicKey ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.11.0...oslogin/v1.11.1) (2023-10-12)
 
 

@@ -1319,8 +1319,7 @@ func TestIntegration_ObjectIteration(t *testing.T) {
 func TestIntegration_ObjectIterationMatchGlob(t *testing.T) {
 	// This is a separate test from the Object Iteration test above because
 	// MatchGlob is not yet implemented for gRPC.
-	ctx := skipGRPC("https://github.com/googleapis/google-cloud-go/issues/7727")
-	multiTransportTest(skipJSONReads(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		// Reset testTime, 'cause object last modification time should be within 5 min
 		// from test (test iteration if -count passed) start time.
 		testTime = time.Now().UTC()

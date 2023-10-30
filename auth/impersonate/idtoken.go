@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -56,6 +57,19 @@ type IDTokenOptions struct {
 	Client *http.Client
 }
 
+func (o *IDTokenOptions) validate() error {
+	if o == nil {
+		return errors.New("impersonate: options must be provided")
+	}
+	if o.Audience == "" {
+		return errors.New("impersonate: audience must be provided")
+	}
+	if o.TargetPrincipal == "" {
+		return errors.New("impersonate: target service account must be provided")
+	}
+	return nil
+}
+
 var (
 	defaultAud   = "https://iamcredentials.googleapis.com/"
 	defaultScope = "https://www.googleapis.com/auth/cloud-platform"
@@ -67,16 +81,9 @@ var (
 // Default Credentials as the base credentials if not provided with the opts.
 // The tokens produced are valid for one hour and are automatically refreshed.
 func NewIDTokenProvider(opts *IDTokenOptions) (auth.TokenProvider, error) {
-	if opts == nil {
-		return nil, fmt.Errorf("impersonate: opts must be provided")
+	if err := opts.validate(); err != nil {
+		return nil, err
 	}
-	if opts.Audience == "" {
-		return nil, fmt.Errorf("impersonate: an audience must be provided")
-	}
-	if opts.TargetPrincipal == "" {
-		return nil, fmt.Errorf("impersonate: a target service account must be provided")
-	}
-
 	var client *http.Client
 	if opts.Client == nil && opts.TokenProvider == nil {
 		var err error

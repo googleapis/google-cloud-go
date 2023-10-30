@@ -343,6 +343,7 @@ type ProcessOptions struct {
 	// processed. NOTICE: If any of the page range is set, we will extract and
 	// process only the given pages from the document. In the output document,
 	// the page_number is referring to the page number in the original document.
+	// This config only applies to sync requests.
 	//
 	// Types that are assignable to PageRange:
 	//	*ProcessOptions_IndividualPageSelector_

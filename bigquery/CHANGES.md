@@ -3,6 +3,24 @@
 
 
 
+## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.56.0...bigquery/v1.57.0) (2023-10-30)
+
+
+### Features
+
+* **bigquery/biglake:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+* **bigquery/storage/managedwriter:** Support default value controls ([#8686](https://github.com/googleapis/google-cloud-go/issues/8686)) ([dfa8e22](https://github.com/googleapis/google-cloud-go/commit/dfa8e22edf560211ae2a2ebf1f9a23b86887c7be))
+* **bigquery:** Expose Apache Arrow data through ArrowIterator  ([#8506](https://github.com/googleapis/google-cloud-go/issues/8506)) ([c8e7692](https://github.com/googleapis/google-cloud-go/commit/c8e76923621b379fb7deb6dfb944011af1d980bd)), refs [#8100](https://github.com/googleapis/google-cloud-go/issues/8100)
+* **bigquery:** Introduce query preview features ([#8653](https://github.com/googleapis/google-cloud-go/issues/8653)) ([f29683b](https://github.com/googleapis/google-cloud-go/commit/f29683bcd06567e4fc2d404f53bedbea5b5f0f90))
+
+
+### Bug Fixes
+
+* **bigquery:** Handle storage read api Recv call errors ([#8666](https://github.com/googleapis/google-cloud-go/issues/8666)) ([c73963f](https://github.com/googleapis/google-cloud-go/commit/c73963f64ef667daa8a33a5a4cc2156818fc6914))
+* **bigquery:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+* **bigquery:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **bigquery:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.56.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.55.0...bigquery/v1.56.0) (2023-10-05)
 
 
