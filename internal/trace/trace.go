@@ -33,23 +33,28 @@ import (
 )
 
 const (
-	telemetryPlatformTracing              = "GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING"
 	telemetryPlatformTracingOpenCensus    = "opencensus"
 	telemetryPlatformTracingOpenTelemetry = "opentelemetry"
 )
 
 var (
 	// TODO(chrisdsmith): What is the correct name for the OpenTelemetry tracer?
-	OpenTelemetryTracerName string = "cloud.google.com/go/internal/trace"
+	OpenTelemetryTracerName  string = "cloud.google.com/go/internal/trace"
+	TelemetryPlatformTracing        = strings.TrimSpace(os.Getenv("GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING"))
 )
 
+// IsOpenCensusTracingEnabled returns true if the environment variable
+// GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING is NOT set to the
+// case-insensitive value "opentelemetry".
 func IsOpenCensusTracingEnabled() bool {
 	return !IsOpenTelemetryTracingEnabled()
 }
 
+// IsOpenTelemetryTracingEnabled returns true if the environment variable
+// GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING is set to the
+// case-insensitive value "opentelemetry".
 func IsOpenTelemetryTracingEnabled() bool {
-	env := strings.TrimSpace(os.Getenv(telemetryPlatformTracing))
-	return strings.EqualFold(env, telemetryPlatformTracingOpenTelemetry)
+	return strings.EqualFold(TelemetryPlatformTracing, telemetryPlatformTracingOpenTelemetry)
 }
 
 // StartSpan adds a span to the trace with the given name.
