@@ -2513,9 +2513,13 @@ func TestIntegration_Encryption(t *testing.T) {
 
 		checkRead("first object", obj, key, contents)
 
+		// We create 2 objects here and we can interleave operations to get around
+		// the rate limit for object mutation operations (create, update, and delete).
 		obj2 := client.Bucket(bucket).Object("customer-encryption-2")
+		obj4 := client.Bucket(bucket).Object("customer-encryption-4")
+
 		// Copying an object without the key should fail.
-		if _, err := obj2.CopierFrom(obj).Run(ctx); err == nil {
+		if _, err := obj4.CopierFrom(obj).Run(ctx); err == nil {
 			t.Fatal("want error, got nil")
 		}
 		// Copying an object with the key should succeed.
@@ -2564,11 +2568,11 @@ func TestIntegration_Encryption(t *testing.T) {
 
 		// You can't compose one or more unencrypted source objects into an
 		// encrypted destination object.
-		_, err := obj2.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
+		_, err := obj4.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := obj3.Key(key).ComposerFrom(obj2).Run(ctx); err == nil {
+		if _, err := obj3.Key(key).ComposerFrom(obj4).Run(ctx); err == nil {
 			t.Fatal("got nil, want error")
 		}
 	})
