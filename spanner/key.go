@@ -77,6 +77,8 @@ func keyPartValue(part interface{}) (pb *proto3.Value, err error) {
 		pb, _, err = encodeValue(int64(v))
 	case int32:
 		pb, _, err = encodeValue(int64(v))
+	case uint:
+		pb, _, err = encodeValue(int64(v))
 	case uint8:
 		pb, _, err = encodeValue(int64(v))
 	case uint16:
