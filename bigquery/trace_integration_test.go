@@ -16,20 +16,54 @@ package bigquery
 
 import (
 	"context"
+	"os"
 	"strings"
 	"testing"
 	"time"
 
 	"go.opencensus.io/trace"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 // testExporter is a testing exporter for validating captured spans.
+// Implements both OpenCensus and OpenTelemetry Exporter interface.
 type testExporter struct {
-	spans []*trace.SpanData
+	spans []testSpanData
 }
 
 func (te *testExporter) ExportSpan(s *trace.SpanData) {
-	te.spans = append(te.spans, s)
+	te.spans = append(te.spans, testSpanData{
+		ocSpan: s,
+	})
+}
+
+func (te *testExporter) ExportSpans(ctx context.Context, spans []sdktrace.ReadOnlySpan) error {
+	for _, s := range spans {
+		te.spans = append(te.spans, testSpanData{
+			otelSpan: s,
+		})
+	}
+	return nil
+}
+
+func (te *testExporter) Shutdown(ctx context.Context) error {
+	return nil
+}
+
+type testSpanData struct {
+	ocSpan   *trace.SpanData
+	otelSpan sdktrace.ReadOnlySpan
+}
+
+func (s *testSpanData) Name() string {
+	if s.ocSpan != nil {
+		return s.ocSpan.Name
+	}
+	if s.otelSpan != nil {
+		return s.otelSpan.Name()
+	}
+	return ""
 }
 
 // hasSpans checks that the exporter has all the span names
@@ -40,7 +74,7 @@ func (te *testExporter) hasSpans(names []string) []string {
 		matches[n] = struct{}{}
 	}
 	for _, s := range te.spans {
-		delete(matches, s.Name)
+		delete(matches, s.Name())
 	}
 	var unmatched []string
 	for k := range matches {
@@ -56,7 +90,7 @@ func TestIntegration_Tracing(t *testing.T) {
 
 	ctx := context.Background()
 
-	for _, tc := range []struct {
+	testCases := []struct {
 		description string
 		callF       func(ctx context.Context)
 		wantSpans   []string
@@ -84,16 +118,42 @@ func TestIntegration_Tracing(t *testing.T) {
 			},
 			wantSpans: []string{"bigquery.tables.get", "cloud.google.com/go/bigquery.Table.Metadata"},
 		},
-	} {
-		exporter := &testExporter{}
-		trace.RegisterExporter(exporter)
-		traceCtx, span := trace.StartSpan(ctx, "testspan", trace.WithSampler(trace.AlwaysSample()))
-		tc.callF(traceCtx)
-		span.End()
-		trace.UnregisterExporter(exporter)
-
-		if unmatched := exporter.hasSpans(tc.wantSpans); len(unmatched) > 0 {
-			t.Errorf("case (%s): unmatched spans: %s", tc.description, strings.Join(unmatched, ","))
-		}
 	}
+
+	t.Run("OpenTelemetry", func(t *testing.T) {
+		os.Setenv("GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING", "opentelemetry")
+		tracer := otel.Tracer("test")
+		for _, tc := range testCases {
+			exporter := &testExporter{}
+			tp := sdktrace.NewTracerProvider(
+				sdktrace.WithSyncer(exporter),
+				sdktrace.WithSampler(sdktrace.AlwaysSample()),
+			)
+			defer tp.Shutdown(context.Background())
+			otel.SetTracerProvider(tp)
+			traceCtx, span := tracer.Start(ctx, "testspan")
+			tc.callF(traceCtx)
+			span.End()
+
+			if unmatched := exporter.hasSpans(tc.wantSpans); len(unmatched) > 0 {
+				t.Errorf("case (%s): unmatched spans: %s", tc.description, strings.Join(unmatched, ","))
+			}
+		}
+	})
+
+	t.Run("OpenCensus", func(t *testing.T) {
+		os.Setenv("GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING", "opencensus")
+		for _, tc := range testCases {
+			exporter := &testExporter{}
+			trace.RegisterExporter(exporter)
+			traceCtx, span := trace.StartSpan(ctx, "testspan", trace.WithSampler(trace.AlwaysSample()))
+			tc.callF(traceCtx)
+			span.End()
+			trace.UnregisterExporter(exporter)
+
+			if unmatched := exporter.hasSpans(tc.wantSpans); len(unmatched) > 0 {
+				t.Errorf("case (%s): unmatched spans: %s", tc.description, strings.Join(unmatched, ","))
+			}
+		}
+	})
 }
