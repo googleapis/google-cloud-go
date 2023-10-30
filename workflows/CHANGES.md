@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.12.1...workflows/v1.12.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **workflows:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/workflows/v1.12.0...workflows/v1.12.1) (2023-10-12)
 
 

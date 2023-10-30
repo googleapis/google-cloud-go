@@ -89,6 +89,7 @@ const (
 	MethodExecuteStreamingSql string = "EXECUTE_STREAMING_SQL"
 	MethodExecuteBatchDml     string = "EXECUTE_BATCH_DML"
 	MethodStreamingRead       string = "EXECUTE_STREAMING_READ"
+	MethodBatchWrite          string = "BATCH_WRITE"
 )
 
 // StatementResult represents a mocked result on the test server. The result is
@@ -1160,4 +1161,37 @@ func DecodeResumeToken(t []byte) (uint64, error) {
 		return 0, fmt.Errorf("invalid resume token: %v", t)
 	}
 	return s, nil
+}
+
+func (s *inMemSpannerServer) BatchWrite(req *spannerpb.BatchWriteRequest, stream spannerpb.Spanner_BatchWriteServer) error {
+	if err := s.simulateExecutionTime(MethodBatchWrite, req); err != nil {
+		return err
+	}
+	return s.batchWrite(req, stream)
+}
+
+func (s *inMemSpannerServer) batchWrite(req *spannerpb.BatchWriteRequest, stream spannerpb.Spanner_BatchWriteServer) error {
+	if req.Session == "" {
+		return gstatus.Error(codes.InvalidArgument, "Missing session name")
+	}
+	session, err := s.findSession(req.Session)
+	if err != nil {
+		return err
+	}
+	s.updateSessionLastUseTime(session.Name)
+	if len(req.GetMutationGroups()) == 0 {
+		return gstatus.Error(codes.InvalidArgument, "No mutations in Batch Write")
+	}
+	// For each MutationGroup, write a BatchWriteResponse to the response stream
+	for idx := range req.GetMutationGroups() {
+		res := &spannerpb.BatchWriteResponse{
+			Indexes:         []int32{int32(idx)},
+			CommitTimestamp: getCurrentTimestamp(),
+			Status:          &status.Status{},
+		}
+		if err = stream.Send(res); err != nil {
+			return err
+		}
+	}
+	return nil
 }
