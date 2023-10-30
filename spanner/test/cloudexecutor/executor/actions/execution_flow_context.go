@@ -21,7 +21,6 @@ import (
 
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/utility"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -52,28 +51,6 @@ type ExecutionFlowContext struct {
 	transactionSeed          string                                 // Log the workid and op pair for tracing the thread.
 	currentActiveTransaction currentActiveTransaction
 	TxnContext               context.Context
-	// Contain the error string for buffered mutation if bad delete range error exists, this will be
-	// used when commit reads only followed by bad delete range mutation.
-	badDeleteRangeErr string
-}
-
-// Check if given mutation contains bad delete range.
-func (c *ExecutionFlowContext) checkBadDeleteRange(m *executorpb.MutationAction) {
-	for _, mod := range m.Mod {
-		if mod.GetDeleteKeys() != nil {
-			for _, kr := range mod.GetDeleteKeys().GetRange() {
-				start := kr.GetStart()
-				limit := kr.GetLimit()
-				for i, p := range start.GetValue() {
-					if c.badDeleteRangeErr == "" && i < len(start.GetValue())-1 && p != limit.GetValue()[i] {
-						//c.badDeleteRangeErr = fmt.Sprintf("For delete ranges, start and limit keys may only differ in the final key part: start=%s limit=%s", start.String(), limit.String())
-						c.badDeleteRangeErr = ""
-						return
-					}
-				}
-			}
-		}
-	}
 }
 
 // isTransactionActiveLocked returns true if any kind of transaction is currently active. Must hold c.mu
