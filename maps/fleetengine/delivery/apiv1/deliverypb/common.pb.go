@@ -21,15 +21,14 @@
 package deliverypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -382,7 +381,7 @@ type DeliveryVehicleLocation struct {
 	RawLocation *latlng.LatLng `protobuf:"bytes,16,opt,name=raw_location,json=rawLocation,proto3" json:"raw_location,omitempty"`
 	// Timestamp associated with the raw location.
 	RawLocationTime *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=raw_location_time,json=rawLocationTime,proto3" json:"raw_location_time,omitempty"`
-	// Source of the raw location.
+	// Source of the raw location. Defaults to `GPS`.
 	RawLocationSensor DeliveryVehicleLocationSensor `protobuf:"varint,28,opt,name=raw_location_sensor,json=rawLocationSensor,proto3,enum=maps.fleetengine.delivery.v1.DeliveryVehicleLocationSensor" json:"raw_location_sensor,omitempty"`
 	// Accuracy of `raw_location` as a radius, in meters.
 	RawLocationAccuracy *wrapperspb.DoubleValue `protobuf:"bytes,25,opt,name=raw_location_accuracy,json=rawLocationAccuracy,proto3" json:"raw_location_accuracy,omitempty"`
@@ -390,7 +389,8 @@ type DeliveryVehicleLocation struct {
 	SupplementalLocation *latlng.LatLng `protobuf:"bytes,18,opt,name=supplemental_location,json=supplementalLocation,proto3" json:"supplemental_location,omitempty"`
 	// Timestamp associated with the supplemental location.
 	SupplementalLocationTime *timestamppb.Timestamp `protobuf:"bytes,19,opt,name=supplemental_location_time,json=supplementalLocationTime,proto3" json:"supplemental_location_time,omitempty"`
-	// Source of the supplemental location.
+	// Source of the supplemental location. Defaults to
+	// `CUSTOMER_SUPPLIED_LOCATION`.
 	SupplementalLocationSensor DeliveryVehicleLocationSensor `protobuf:"varint,20,opt,name=supplemental_location_sensor,json=supplementalLocationSensor,proto3,enum=maps.fleetengine.delivery.v1.DeliveryVehicleLocationSensor" json:"supplemental_location_sensor,omitempty"`
 	// Accuracy of `supplemental_location` as a radius, in meters.
 	SupplementalLocationAccuracy *wrapperspb.DoubleValue `protobuf:"bytes,21,opt,name=supplemental_location_accuracy,json=supplementalLocationAccuracy,proto3" json:"supplemental_location_accuracy,omitempty"`
