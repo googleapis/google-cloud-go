@@ -382,19 +382,61 @@ func NewRange(begin, end string) RowRange {
 	return createRowRange(rangeClosed, begin, rangeOpen, end)
 }
 
-func NewClosedOpenRange(begin, end string) RowRange {
-	return createRowRange(rangeClosed, begin, rangeOpen, end)
+// NewClosedOpenRange returns the RowRange consisting of all greater than or
+// equal to the start and less than the end: [start, end).
+func NewClosedOpenRange(start, end string) RowRange {
+	return createRowRange(rangeClosed, start, rangeOpen, end)
 }
+
+// NewOpenClosedRange returns the RowRange consisting of all keys greater than
+// the start and less than or equal to the end: (start, end].
 func NewOpenClosedRange(start, end string) RowRange {
 	return createRowRange(rangeOpen, start, rangeClosed, end)
 }
 
+// NewOpenRange returns the RowRange consisting of all keys greater than the
+// start and less than the end: (start, end).
 func NewOpenRange(start, end string) RowRange {
 	return createRowRange(rangeOpen, start, rangeOpen, end)
 }
 
+// NewClosedRange returns the RowRange consisting of all keys greater than or
+// equal to the start and less than or equal to the end: [start, end].
 func NewClosedRange(start, end string) RowRange {
 	return createRowRange(rangeClosed, start, rangeClosed, end)
+}
+
+// PrefixRange returns a RowRange consisting of all keys starting with the prefix.
+func PrefixRange(prefix string) RowRange {
+	end := prefixSuccessor(prefix)
+	return RowRange{
+		startBound: rangeClosed,
+		start:      prefix,
+		endBound:   parseBoundType(end, rangeOpen),
+		end:        end,
+	}
+}
+
+// InfiniteRange returns the RowRange consisting of all keys at least as
+// large as start: [start, ∞).
+func InfiniteRange(start string) RowRange {
+	return RowRange{
+		startBound: parseBoundType(start, rangeClosed),
+		start:      start,
+		endBound:   rangeUnbounded,
+		end:        "",
+	}
+}
+
+// InfiniteReverseRange returns the RowRange consisting of all keys less than or
+// equal to the end: (∞, end].
+func InfiniteReverseRange(end string) RowRange {
+	return RowRange{
+		startBound: rangeUnbounded,
+		start:      "",
+		endBound:   parseBoundType(end, rangeClosed),
+		end:        end,
+	}
 }
 
 func createRowRange(startBound rangeBoundType, start string, endBound rangeBoundType, end string) RowRange {
@@ -604,45 +646,11 @@ func SingleRow(row string) RowSet {
 	return RowList{row}
 }
 
-// PrefixRange returns a RowRange consisting of all keys starting with the prefix.
-func PrefixRange(prefix string) RowRange {
-	end := prefixSuccessor(prefix)
-	return RowRange{
-		startBound: rangeClosed,
-		start:      prefix,
-		endBound:   validateBound(end, rangeOpen),
-		end:        end,
-	}
-}
-
-// InfiniteRange returns the RowRange consisting of all keys at least as
-// large as start.
-func InfiniteRange(start string) RowRange {
-	return RowRange{
-		startBound: validateBound(start, rangeClosed),
-		start:      start,
-		endBound:   rangeUnbounded,
-		end:        "",
-	}
-}
-
-// InfiniteReverseRange returns the RowRange consisting of all keys less than or
-// equal to the end.
-func InfiniteReverseRange(end string) RowRange {
-	return RowRange{
-		startBound: rangeUnbounded,
-		start:      "",
-		endBound:   validateBound(end, rangeClosed),
-		end:        end,
-	}
-}
-
-func validateBound(bound string, defaultBoundType rangeBoundType) rangeBoundType {
+func parseBoundType(bound string, defaultBoundType rangeBoundType) rangeBoundType {
 	if bound == "" {
 		return rangeUnbounded
-	} else {
-		return defaultBoundType
 	}
+	return defaultBoundType
 }
 
 // prefixSuccessor returns the lexically smallest string greater than the
