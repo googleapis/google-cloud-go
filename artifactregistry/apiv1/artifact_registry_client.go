@@ -69,6 +69,7 @@ type CallOptions struct {
 	ListVersions          []gax.CallOption
 	GetVersion            []gax.CallOption
 	DeleteVersion         []gax.CallOption
+	BatchDeleteVersions   []gax.CallOption
 	ListFiles             []gax.CallOption
 	GetFile               []gax.CallOption
 	ListTags              []gax.CallOption
@@ -163,6 +164,9 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchDeleteVersions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListFiles: []gax.CallOption{
@@ -278,6 +282,9 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		BatchDeleteVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListFiles: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -358,6 +365,8 @@ type internalClient interface {
 	GetVersion(context.Context, *artifactregistrypb.GetVersionRequest, ...gax.CallOption) (*artifactregistrypb.Version, error)
 	DeleteVersion(context.Context, *artifactregistrypb.DeleteVersionRequest, ...gax.CallOption) (*DeleteVersionOperation, error)
 	DeleteVersionOperation(name string) *DeleteVersionOperation
+	BatchDeleteVersions(context.Context, *artifactregistrypb.BatchDeleteVersionsRequest, ...gax.CallOption) (*BatchDeleteVersionsOperation, error)
+	BatchDeleteVersionsOperation(name string) *BatchDeleteVersionsOperation
 	ListFiles(context.Context, *artifactregistrypb.ListFilesRequest, ...gax.CallOption) *FileIterator
 	GetFile(context.Context, *artifactregistrypb.GetFileRequest, ...gax.CallOption) (*artifactregistrypb.File, error)
 	ListTags(context.Context, *artifactregistrypb.ListTagsRequest, ...gax.CallOption) *TagIterator
@@ -583,6 +592,18 @@ func (c *Client) DeleteVersion(ctx context.Context, req *artifactregistrypb.Dele
 // The name must be that of a previously created DeleteVersionOperation, possibly from a different process.
 func (c *Client) DeleteVersionOperation(name string) *DeleteVersionOperation {
 	return c.internalClient.DeleteVersionOperation(name)
+}
+
+// BatchDeleteVersions deletes multiple versions across a repository. The returned operation will
+// complete once the versions have been deleted.
+func (c *Client) BatchDeleteVersions(ctx context.Context, req *artifactregistrypb.BatchDeleteVersionsRequest, opts ...gax.CallOption) (*BatchDeleteVersionsOperation, error) {
+	return c.internalClient.BatchDeleteVersions(ctx, req, opts...)
+}
+
+// BatchDeleteVersionsOperation returns a new BatchDeleteVersionsOperation from a given name.
+// The name must be that of a previously created BatchDeleteVersionsOperation, possibly from a different process.
+func (c *Client) BatchDeleteVersionsOperation(name string) *BatchDeleteVersionsOperation {
+	return c.internalClient.BatchDeleteVersionsOperation(name)
 }
 
 // ListFiles lists files.
@@ -1461,6 +1482,26 @@ func (c *gRPCClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 		return nil, err
 	}
 	return &DeleteVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) BatchDeleteVersions(ctx context.Context, req *artifactregistrypb.BatchDeleteVersionsRequest, opts ...gax.CallOption) (*BatchDeleteVersionsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchDeleteVersions[0:len((*c.CallOptions).BatchDeleteVersions):len((*c.CallOptions).BatchDeleteVersions)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.BatchDeleteVersions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchDeleteVersionsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -3398,6 +3439,77 @@ func (c *restClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 	}, nil
 }
 
+// BatchDeleteVersions deletes multiple versions across a repository. The returned operation will
+// complete once the versions have been deleted.
+func (c *restClient) BatchDeleteVersions(ctx context.Context, req *artifactregistrypb.BatchDeleteVersionsRequest, opts ...gax.CallOption) (*BatchDeleteVersionsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/versions:batchDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &BatchDeleteVersionsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // ListFiles lists files.
 func (c *restClient) ListFiles(ctx context.Context, req *artifactregistrypb.ListFilesRequest, opts ...gax.CallOption) *FileIterator {
 	it := &FileIterator{}
@@ -4564,6 +4676,77 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		return nil, e
 	}
 	return resp, nil
+}
+
+// BatchDeleteVersionsOperation manages a long-running operation from BatchDeleteVersions.
+type BatchDeleteVersionsOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// BatchDeleteVersionsOperation returns a new BatchDeleteVersionsOperation from a given name.
+// The name must be that of a previously created BatchDeleteVersionsOperation, possibly from a different process.
+func (c *gRPCClient) BatchDeleteVersionsOperation(name string) *BatchDeleteVersionsOperation {
+	return &BatchDeleteVersionsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchDeleteVersionsOperation returns a new BatchDeleteVersionsOperation from a given name.
+// The name must be that of a previously created BatchDeleteVersionsOperation, possibly from a different process.
+func (c *restClient) BatchDeleteVersionsOperation(name string) *BatchDeleteVersionsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &BatchDeleteVersionsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *BatchDeleteVersionsOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *BatchDeleteVersionsOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *BatchDeleteVersionsOperation) Metadata() (*artifactregistrypb.BatchDeleteVersionsMetadata, error) {
+	var meta artifactregistrypb.BatchDeleteVersionsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *BatchDeleteVersionsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *BatchDeleteVersionsOperation) Name() string {
+	return op.lro.Name()
 }
 
 // CreateRepositoryOperation manages a long-running operation from CreateRepository.
