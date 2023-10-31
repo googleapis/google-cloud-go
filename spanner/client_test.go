@@ -1038,6 +1038,72 @@ func TestClient_ReadOnlyTransaction_ReadOptions(t *testing.T) {
 	}
 }
 
+func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				actionOnInactiveTransaction: WarnAndClose,
+				idleTimeThreshold:           3 * time.Second,
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 2 * time.Second,
+		})
+	server.TestSpanner.PutExecutionTime(MethodStreamingRead,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 2 * time.Second,
+		})
+	ctx := context.Background()
+	p := client.idleSessions
+
+	roTxn := client.ReadOnlyTransaction()
+	defer roTxn.Close()
+	iter := roTxn.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	iter.Next()
+	iter.Stop()
+
+	// Get the session last use time.
+	roTxn.sh.mu.Lock()
+	sessionPrevLastUseTime := roTxn.sh.lastUseTime
+	roTxn.sh.mu.Unlock()
+
+	iter = roTxn.Read(ctx, "FOO", AllKeys(), []string{"BAR"})
+	iter.Next()
+	iter.Stop()
+
+	// Get the latest session last use time
+	roTxn.sh.mu.Lock()
+	sessionLatestLastUseTime := roTxn.sh.lastUseTime
+	sessionCheckoutTime := roTxn.sh.checkoutTime
+	roTxn.sh.mu.Unlock()
+
+	// sessionLatestLastUseTime should not be equal to sessionPrevLastUseTime.
+	// This is because session lastUse time should be updated whenever a new operation is being executed on the transaction.
+	if (sessionLatestLastUseTime.Sub(sessionPrevLastUseTime)).Seconds() <= 0 {
+		t.Fatalf("Session lastUseTime times should not be equal")
+	}
+
+	if (time.Now().Sub(sessionPrevLastUseTime)).Seconds() < 4 {
+		t.Fatalf("Expected session to be checkedout for more than 4 seconds")
+	}
+	if (time.Now().Sub(sessionCheckoutTime)).Seconds() < 4 {
+		t.Fatalf("Expected session to be checkedout for more than 4 seconds")
+	}
+	// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
+	// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
+	p.removeLongRunningSessions()
+	if p.numOfLeakedSessionsRemoved > 0 {
+		t.Fatalf("Expected session to not get cleaned by background maintainer")
+	}
+}
+
 func setQueryOptionsEnvVars(opts *sppb.ExecuteSqlRequest_QueryOptions) func() {
 	os.Setenv("SPANNER_OPTIMIZER_VERSION", opts.OptimizerVersion)
 	os.Setenv("SPANNER_OPTIMIZER_STATISTICS_PACKAGE", opts.OptimizerStatisticsPackage)
