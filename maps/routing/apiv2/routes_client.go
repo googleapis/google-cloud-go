@@ -129,29 +129,29 @@ func (c *RoutesClient) Connection() *grpc.ClientConn {
 //
 // For example, in this method:
 //
-//   Field mask of all available fields (for manual inspection):
-//   X-Goog-FieldMask: *
+//	Field mask of all available fields (for manual inspection):
+//	X-Goog-FieldMask: *
 //
-//   Field mask of Route-level duration, distance, and polyline (an example
-//   production setup):
-//   X-Goog-FieldMask: routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline
+//	Field mask of Route-level duration, distance, and polyline (an example
+//	production setup):
+//	X-Goog-FieldMask: routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline
 //
 // Google discourage the use of the wildcard (*) response field mask, or
 // specifying the field mask at the top level (routes), because:
 //
-//   Selecting only the fields that you need helps our server save computation
-//   cycles, allowing us to return the result to you with a lower latency.
+//	Selecting only the fields that you need helps our server save computation
+//	cycles, allowing us to return the result to you with a lower latency.
 //
-//   Selecting only the fields that you need
-//   in your production job ensures stable latency performance. We might add
-//   more response fields in the future, and those new fields might require
-//   extra computation time. If you select all fields, or if you select all
-//   fields at the top level, then you might experience performance degradation
-//   because any new field we add will be automatically included in the
-//   response.
+//	Selecting only the fields that you need
+//	in your production job ensures stable latency performance. We might add
+//	more response fields in the future, and those new fields might require
+//	extra computation time. If you select all fields, or if you select all
+//	fields at the top level, then you might experience performance degradation
+//	because any new field we add will be automatically included in the
+//	response.
 //
-//   Selecting only the fields that you need results in a smaller response
-//   size, and thus higher network throughput.
+//	Selecting only the fields that you need results in a smaller response
+//	size, and thus higher network throughput.
 func (c *RoutesClient) ComputeRoutes(ctx context.Context, req *routingpb.ComputeRoutesRequest, opts ...gax.CallOption) (*routingpb.ComputeRoutesResponse, error) {
 	return c.internalClient.ComputeRoutes(ctx, req, opts...)
 }
@@ -170,29 +170,29 @@ func (c *RoutesClient) ComputeRoutes(ctx context.Context, req *routingpb.Compute
 //
 // For example, in this method:
 //
-//   Field mask of all available fields (for manual inspection):
-//   X-Goog-FieldMask: *
+//	Field mask of all available fields (for manual inspection):
+//	X-Goog-FieldMask: *
 //
-//   Field mask of route durations, distances, element status, condition, and
-//   element indices (an example production setup):
-//   X-Goog-FieldMask: originIndex,destinationIndex,status,condition,distanceMeters,duration
+//	Field mask of route durations, distances, element status, condition, and
+//	element indices (an example production setup):
+//	X-Goog-FieldMask: originIndex,destinationIndex,status,condition,distanceMeters,duration
 //
 // It is critical that you include status in your field mask as otherwise
 // all messages will appear to be OK. Google discourages the use of the
 // wildcard (*) response field mask, because:
 //
-//   Selecting only the fields that you need helps our server save computation
-//   cycles, allowing us to return the result to you with a lower latency.
+//	Selecting only the fields that you need helps our server save computation
+//	cycles, allowing us to return the result to you with a lower latency.
 //
-//   Selecting only the fields that you need in your production job ensures
-//   stable latency performance. We might add more response fields in the
-//   future, and those new fields might require extra computation time. If you
-//   select all fields, or if you select all fields at the top level, then you
-//   might experience performance degradation because any new field we add will
-//   be automatically included in the response.
+//	Selecting only the fields that you need in your production job ensures
+//	stable latency performance. We might add more response fields in the
+//	future, and those new fields might require extra computation time. If you
+//	select all fields, or if you select all fields at the top level, then you
+//	might experience performance degradation because any new field we add will
+//	be automatically included in the response.
 //
-//   Selecting only the fields that you need results in a smaller response
-//   size, and thus higher network throughput.
+//	Selecting only the fields that you need results in a smaller response
+//	size, and thus higher network throughput.
 func (c *RoutesClient) ComputeRouteMatrix(ctx context.Context, req *routingpb.ComputeRouteMatrixRequest, opts ...gax.CallOption) (routingpb.Routes_ComputeRouteMatrixClient, error) {
 	return c.internalClient.ComputeRouteMatrix(ctx, req, opts...)
 }
@@ -381,29 +381,29 @@ func (c *routesGRPCClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 //
 // For example, in this method:
 //
-//   Field mask of all available fields (for manual inspection):
-//   X-Goog-FieldMask: *
+//	Field mask of all available fields (for manual inspection):
+//	X-Goog-FieldMask: *
 //
-//   Field mask of Route-level duration, distance, and polyline (an example
-//   production setup):
-//   X-Goog-FieldMask: routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline
+//	Field mask of Route-level duration, distance, and polyline (an example
+//	production setup):
+//	X-Goog-FieldMask: routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline
 //
 // Google discourage the use of the wildcard (*) response field mask, or
 // specifying the field mask at the top level (routes), because:
 //
-//   Selecting only the fields that you need helps our server save computation
-//   cycles, allowing us to return the result to you with a lower latency.
+//	Selecting only the fields that you need helps our server save computation
+//	cycles, allowing us to return the result to you with a lower latency.
 //
-//   Selecting only the fields that you need
-//   in your production job ensures stable latency performance. We might add
-//   more response fields in the future, and those new fields might require
-//   extra computation time. If you select all fields, or if you select all
-//   fields at the top level, then you might experience performance degradation
-//   because any new field we add will be automatically included in the
-//   response.
+//	Selecting only the fields that you need
+//	in your production job ensures stable latency performance. We might add
+//	more response fields in the future, and those new fields might require
+//	extra computation time. If you select all fields, or if you select all
+//	fields at the top level, then you might experience performance degradation
+//	because any new field we add will be automatically included in the
+//	response.
 //
-//   Selecting only the fields that you need results in a smaller response
-//   size, and thus higher network throughput.
+//	Selecting only the fields that you need results in a smaller response
+//	size, and thus higher network throughput.
 func (c *routesRESTClient) ComputeRoutes(ctx context.Context, req *routingpb.ComputeRoutesRequest, opts ...gax.CallOption) (*routingpb.ComputeRoutesResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -480,29 +480,29 @@ func (c *routesRESTClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 //
 // For example, in this method:
 //
-//   Field mask of all available fields (for manual inspection):
-//   X-Goog-FieldMask: *
+//	Field mask of all available fields (for manual inspection):
+//	X-Goog-FieldMask: *
 //
-//   Field mask of route durations, distances, element status, condition, and
-//   element indices (an example production setup):
-//   X-Goog-FieldMask: originIndex,destinationIndex,status,condition,distanceMeters,duration
+//	Field mask of route durations, distances, element status, condition, and
+//	element indices (an example production setup):
+//	X-Goog-FieldMask: originIndex,destinationIndex,status,condition,distanceMeters,duration
 //
 // It is critical that you include status in your field mask as otherwise
 // all messages will appear to be OK. Google discourages the use of the
 // wildcard (*) response field mask, because:
 //
-//   Selecting only the fields that you need helps our server save computation
-//   cycles, allowing us to return the result to you with a lower latency.
+//	Selecting only the fields that you need helps our server save computation
+//	cycles, allowing us to return the result to you with a lower latency.
 //
-//   Selecting only the fields that you need in your production job ensures
-//   stable latency performance. We might add more response fields in the
-//   future, and those new fields might require extra computation time. If you
-//   select all fields, or if you select all fields at the top level, then you
-//   might experience performance degradation because any new field we add will
-//   be automatically included in the response.
+//	Selecting only the fields that you need in your production job ensures
+//	stable latency performance. We might add more response fields in the
+//	future, and those new fields might require extra computation time. If you
+//	select all fields, or if you select all fields at the top level, then you
+//	might experience performance degradation because any new field we add will
+//	be automatically included in the response.
 //
-//   Selecting only the fields that you need results in a smaller response
-//   size, and thus higher network throughput.
+//	Selecting only the fields that you need results in a smaller response
+//	size, and thus higher network throughput.
 func (c *routesRESTClient) ComputeRouteMatrix(ctx context.Context, req *routingpb.ComputeRouteMatrixRequest, opts ...gax.CallOption) (routingpb.Routes_ComputeRouteMatrixClient, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
