@@ -326,15 +326,15 @@ const (
 	nackSpanName                  = "send Negative Acknowledge"
 
 	// custom pubsub specific attributes
-	numBatchedMessagesAttribute    = "messaging.pubsub.num_messages_in_batch"
-	subscriptionAttribute          = "messaging.pubsub.subscription"
-	orderingAttribute              = "messaging.pubsub.ordering_key"
-	deliveryAttemptAttribute       = "messaging.pubsub.delivery_attempt"
-	eosAttribute                   = "messaging.pubsub.exactly_once_delivery"
-	ackIDAttribute                 = "messaging.pubsub.ack_id"
-	resultAttribute                = "messaging.pubsub.result"
-	modackDeadlineSecondsAttribute = "messaging.pubsub.modack_deadline_seconds"
-	initialModackAttribute         = "messaging.pubsub.is_initial_modack"
+	numBatchedMessagesAttribute    = "messaging.gcp.pubsub.num_messages_in_batch"
+	subscriptionAttribute          = "messaging.gcp.pubsub.subscription"
+	orderingAttribute              = "messaging.gcp.pubsub.ordering_key"
+	deliveryAttemptAttribute       = "messaging.gcp.pubsub.delivery_attempt"
+	eosAttribute                   = "messaging.gcp.pppubsub.exactly_once_delivery"
+	ackIDAttribute                 = "messaging.gcp.pubsub.ack_id"
+	resultAttribute                = "messaging.gcp.pubsub.result"
+	modackDeadlineSecondsAttribute = "messaging.gcp.pubsub.modack_deadline_seconds"
+	initialModackAttribute         = "messaging.gcp.pubsub.is_initial_modack"
 )
 
 func startPublishSpan(ctx context.Context, m *Message, topicName string) (context.Context, trace.Span) {
