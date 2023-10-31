@@ -10,6 +10,21 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "GetPhotoMedia": {
+              "methods": [
+                "GetPhotoMedia"
+              ]
+            },
+            "GetPlace": {
+              "methods": [
+                "GetPlace"
+              ]
+            },
+            "SearchNearby": {
+              "methods": [
+                "SearchNearby"
+              ]
+            },
             "SearchText": {
               "methods": [
                 "SearchText"
@@ -20,6 +35,21 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "GetPhotoMedia": {
+              "methods": [
+                "GetPhotoMedia"
+              ]
+            },
+            "GetPlace": {
+              "methods": [
+                "GetPlace"
+              ]
+            },
+            "SearchNearby": {
+              "methods": [
+                "SearchNearby"
+              ]
+            },
             "SearchText": {
               "methods": [
                 "SearchText"

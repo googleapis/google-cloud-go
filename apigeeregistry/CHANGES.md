@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.0...apigeeregistry/v0.8.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.7.2...apigeeregistry/v0.8.0) (2023-10-17)
 
 

@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.10.2...dataplex/v1.11.0) (2023-10-31)
+
+
+### Features
+
+* **dataplex:** DataQualityDimension is now part of the DataQualityDimensionResult message ([4d40180](https://github.com/googleapis/google-cloud-go/commit/4d40180da0557c2a2e9e2cb8b0509b429676bfc0))
+
+## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.10.1...dataplex/v1.10.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **dataplex:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.10.0...dataplex/v1.10.1) (2023-10-12)
 
 

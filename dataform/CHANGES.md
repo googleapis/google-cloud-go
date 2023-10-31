@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.8.3...dataform/v0.9.0) (2023-10-31)
+
+
+### Features
+
+* **dataform:** Support for ReleaseConfigs ([ffb0dda](https://github.com/googleapis/google-cloud-go/commit/ffb0ddabf3d9822ba8120cabaf25515fd32e9615))
+
+## [0.8.3](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.8.2...dataform/v0.8.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **dataform:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.8.1...dataform/v0.8.2) (2023-10-12)
 
 

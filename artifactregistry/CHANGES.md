@@ -1,5 +1,19 @@
 # Changes
 
+## [1.14.5](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.4...artifactregistry/v1.14.5) (2023-10-31)
+
+
+### Documentation
+
+* **artifactregistry:** Use code font for resource name references ([ffb0dda](https://github.com/googleapis/google-cloud-go/commit/ffb0ddabf3d9822ba8120cabaf25515fd32e9615))
+
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.3...artifactregistry/v1.14.4) (2023-10-26)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.2...artifactregistry/v1.14.3) (2023-10-12)
 
 
