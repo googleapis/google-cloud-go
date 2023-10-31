@@ -2,6 +2,15 @@
 
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.5.1...maps/v1.6.0) (2023-10-31)
+
+
+### Features
+
+* **maps/fleetengine/delivery:** Add default sensors for RawLocation & SupplementalLocation ([3053c79](https://github.com/googleapis/google-cloud-go/commit/3053c7933a05b1b1c10d7730c29b28688b218552))
+* **maps/fleetengine:** Add default sensors for RawLocation & SupplementalLocation ([3053c79](https://github.com/googleapis/google-cloud-go/commit/3053c7933a05b1b1c10d7730c29b28688b218552))
+* **maps/places:** New features for Places GA ([ffb0dda](https://github.com/googleapis/google-cloud-go/commit/ffb0ddabf3d9822ba8120cabaf25515fd32e9615))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.5.0...maps/v1.5.1) (2023-10-26)
 
 
