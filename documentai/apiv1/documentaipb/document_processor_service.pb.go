@@ -21,11 +21,8 @@
 package documentaipb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -339,11 +338,13 @@ type ProcessOptions struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// A subset of pages to process. If not specified, all pages will be
-	// processed. NOTICE: If any of the page range is set, we will extract and
-	// process only the given pages from the document. In the output document,
-	// the page_number is referring to the page number in the original document.
-	// This config only applies to sync requests.
+	// A subset of pages to process. If not specified, all pages are processed.
+	//  If a page range is set, only the given pages are extracted and processed
+	//  from the document. In the output document,
+	//  [Document.Page.page_number][google.cloud.documentai.v1.Document.Page.page_number]
+	//  refers to the page number in the original document. This configuration
+	//  only applies to sync requests. `page_range` can be only one of the
+	//  following:
 	//
 	// Types that are assignable to PageRange:
 	//	*ProcessOptions_IndividualPageSelector_
@@ -432,8 +433,8 @@ type ProcessOptions_IndividualPageSelector_ struct {
 }
 
 type ProcessOptions_FromStart struct {
-	// Only process certain pages from the start, process all if the document
-	// has less pages.
+	// Only process certain pages from the start. Process all if the document
+	// has fewer pages.
 	FromStart int32 `protobuf:"varint,6,opt,name=from_start,json=fromStart,proto3,oneof"`
 }
 
