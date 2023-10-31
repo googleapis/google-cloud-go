@@ -1,5 +1,12 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.19.2...speech/v1.20.0) (2023-10-31)
+
+
+### Features
+
+* **speech:** Add transcript normalization + m4a audio format support ([4d40180](https://github.com/googleapis/google-cloud-go/commit/4d40180da0557c2a2e9e2cb8b0509b429676bfc0))
+
 ## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/speech/v1.19.1...speech/v1.19.2) (2023-10-26)
 
 
