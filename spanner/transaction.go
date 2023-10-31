@@ -825,6 +825,9 @@ func (t *ReadOnlyTransaction) acquireMultiUse(ctx context.Context) (*sessionHand
 				},
 			}
 			t.mu.Unlock()
+			if sh != nil {
+				sh.updateLastUseTime()
+			}
 			return sh, ts, nil
 		}
 		state := t.state
@@ -1267,6 +1270,9 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 				},
 			}
 			t.mu.Unlock()
+			if sh != nil {
+				sh.updateLastUseTime()
+			}
 			return sh, ts, nil
 		default:
 			state := t.state
@@ -1479,6 +1485,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	if sid == "" || client == nil {
 		return resp, errSessionClosed(t.sh)
 	}
+	t.sh.updateLastUseTime()
 
 	var md metadata.MD
 	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
@@ -1527,6 +1534,7 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 	if sid == "" || client == nil {
 		return
 	}
+	t.sh.updateLastUseTime()
 	err := client.Rollback(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.RollbackRequest{
 		Session:       sid,
 		TransactionId: t.tx,
