@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.1...batch/v1.6.2) (2023-10-31)
+
+
+### Documentation
+
+* **batch:** Update default max parallel tasks per job ([#8940](https://github.com/googleapis/google-cloud-go/issues/8940)) ([4d40180](https://github.com/googleapis/google-cloud-go/commit/4d40180da0557c2a2e9e2cb8b0509b429676bfc0))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.0...batch/v1.6.1) (2023-10-26)
 
 

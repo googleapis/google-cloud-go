@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.10.3...dlp/v1.11.0) (2023-10-31)
+
+
+### Features
+
+* **dlp:** Introduce Discovery API protos and methods ([ffb0dda](https://github.com/googleapis/google-cloud-go/commit/ffb0ddabf3d9822ba8120cabaf25515fd32e9615))
+
 ## [1.10.3](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.10.2...dlp/v1.10.3) (2023-10-26)
 
 
