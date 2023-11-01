@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.9.3...webrisk/v1.9.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **webrisk:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.9.2...webrisk/v1.9.3) (2023-10-26)
 
 
