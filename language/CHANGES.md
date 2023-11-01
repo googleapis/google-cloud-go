@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.0...language/v1.12.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **language:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.11.1...language/v1.12.0) (2023-10-17)
+
+
+### Features
+
+* **language:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.11.0...language/v1.11.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **language:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.10.1...language/v1.11.0) (2023-08-17)
 
 

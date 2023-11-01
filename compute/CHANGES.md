@@ -1,5 +1,19 @@
 # Changes
 
+## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.1...compute/v1.23.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **compute:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.0...compute/v1.23.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **compute:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.22.0...compute/v1.23.0) (2023-07-26)
 
 
