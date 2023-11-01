@@ -209,13 +209,13 @@ func (cr *chunkReader) validateNewRow(cc *btpb.ReadRowsResponse_CellChunk) error
 
 	if cr.lastKey != "" {
 		r := strings.Compare(string(cc.RowKey), cr.lastKey)
-		direction := ">"
+		direction := "increasing"
 		if cr.reversed {
 			r *= -1
-			direction = "<"
+			direction = "decreasing"
 		}
 		if r <= 0 {
-			return fmt.Errorf("out of order row key, new key %q must be %s prev row: %q", cc.RowKey, direction, cr.lastKey)
+			return fmt.Errorf("out of order row key, must be strictly %s. new key: %q prev row: %q", direction, cc.RowKey, cr.lastKey)
 		}
 	}
 
