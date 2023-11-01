@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.1...optimization/v1.6.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **optimization:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.0...optimization/v1.6.1) (2023-10-26)
 
 
