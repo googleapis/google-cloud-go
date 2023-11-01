@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.2...iap/v1.9.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **iap:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.1...iap/v1.9.2) (2023-10-26)
 
 
