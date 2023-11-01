@@ -338,6 +338,7 @@ type OnDelete int
 const (
 	NoActionOnDelete OnDelete = iota
 	CascadeOnDelete
+	OnDeleteUnspecified
 )
 
 // AlterDatabase represents an ALTER DATABASE statement.
