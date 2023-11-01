@@ -735,7 +735,7 @@ func TestSQL(t *testing.T) {
 				Constraints: []TableConstraint{
 					{
 						Name:       "con1",
-						Constraint: ForeignKey{Columns: []ID{"cname2"}, RefTable: "tname2", RefColumns: []ID{"cname3"}, OnDelete: NoActionOnDelete, Position: line(4)},
+						Constraint: ForeignKey{Columns: []ID{"cname2"}, RefTable: "tname2", RefColumns: []ID{"cname3"}, OnDelete: &[]OnDelete{NoActionOnDelete}[0], Position: line(4)},
 						Position:   line(4),
 					},
 				},
@@ -757,13 +757,28 @@ func TestSQL(t *testing.T) {
 				Alteration: AddConstraint{
 					Constraint: TableConstraint{
 						Name:       "con1",
-						Constraint: ForeignKey{Columns: []ID{"cname2"}, RefTable: "tname2", RefColumns: []ID{"cname3"}, OnDelete: CascadeOnDelete, Position: line(1)},
+						Constraint: ForeignKey{Columns: []ID{"cname2"}, RefTable: "tname2", RefColumns: []ID{"cname3"}, OnDelete: &[]OnDelete{CascadeOnDelete}[0], Position: line(1)},
 						Position:   line(1),
 					},
 				},
 				Position: line(1),
 			},
 			`ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (cname2) REFERENCES tname2 (cname3) ON DELETE CASCADE`,
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "tname1",
+				Alteration: AddConstraint{
+					Constraint: TableConstraint{
+						Name:       "con1",
+						Constraint: ForeignKey{Columns: []ID{"cname2"}, RefTable: "tname2", RefColumns: []ID{"cname3"}, OnDelete: nil, Position: line(1)},
+						Position:   line(1),
+					},
+				},
+				Position: line(1),
+			},
+			`ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (cname2) REFERENCES tname2 (cname3)`,
 			reparseDDL,
 		},
 		{

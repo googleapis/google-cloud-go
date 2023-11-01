@@ -601,7 +601,9 @@ func (fk ForeignKey) SQL() string {
 	str := "FOREIGN KEY (" + idList(fk.Columns, ", ")
 	str += ") REFERENCES " + fk.RefTable.SQL() + " ("
 	str += idList(fk.RefColumns, ", ") + ")"
-	str += " ON DELETE " + fk.OnDelete.SQL()
+	if fk.OnDelete != nil {
+		str += " ON DELETE " + fk.OnDelete.SQL()
+	}
 	return str
 }
 

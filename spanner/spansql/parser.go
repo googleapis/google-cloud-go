@@ -2270,12 +2270,12 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 		return ForeignKey{}, err
 	}
 	// The ON DELETE clause is optional; it defaults to NoActionOnDelete.
-	fk.OnDelete = NoActionOnDelete
 	if p.eat("ON", "DELETE") {
-		fk.OnDelete, err = p.parseOnDelete()
+		onDelete, err := p.parseOnDelete()
 		if err != nil {
 			return ForeignKey{}, err
 		}
+		fk.OnDelete = &onDelete
 	}
 	return fk, nil
 }
