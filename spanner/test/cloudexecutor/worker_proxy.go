@@ -102,11 +102,11 @@ func getClientOptionsForSysTests() []option.ClientOption {
 	)
 
 	log.Println("Reading service key file in executor code")
-	cloudSystestCredentialsJson, err := os.ReadFile(*serviceKeyFile)
+	cloudSystestCredentialsJSON, err := os.ReadFile(*serviceKeyFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	config, err := google.JWTConfigFromJSON([]byte(cloudSystestCredentialsJson), spannerAdminScope, spannerDataScope)
+	config, err := google.JWTConfigFromJSON([]byte(cloudSystestCredentialsJSON), spannerAdminScope, spannerDataScope)
 	if err != nil {
 		log.Println(err)
 	}
