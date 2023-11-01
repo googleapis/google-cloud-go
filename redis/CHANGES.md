@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.13.3...redis/v1.14.0) (2023-10-31)
+
+
+### Features
+
+* **redis:** New client(s) ([#8948](https://github.com/googleapis/google-cloud-go/issues/8948)) ([34103cb](https://github.com/googleapis/google-cloud-go/commit/34103cb4448dee49eac5342f46623839a8b240a0))
+
 ## [1.13.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.13.2...redis/v1.13.3) (2023-10-26)
 
 

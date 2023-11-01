@@ -294,6 +294,7 @@ deep-remove-regex:
   - /internal/generated/snippets/recommender/apiv1beta1/
   - /internal/generated/snippets/redis/apiv1/
   - /internal/generated/snippets/redis/apiv1beta1/
+  - /internal/generated/snippets/redis/cluster/apiv1/
   - /internal/generated/snippets/resourcemanager/apiv2/
   - /internal/generated/snippets/resourcemanager/apiv3/
   - /internal/generated/snippets/resourcesettings/apiv1/
@@ -416,6 +417,7 @@ deep-remove-regex:
   - /recommender/apiv1beta1/
   - /redis/apiv1/
   - /redis/apiv1beta1/
+  - /redis/cluster/apiv1/
   - /resourcemanager/apiv2/
   - /resourcemanager/apiv3/
   - /resourcesettings/apiv1/
@@ -883,6 +885,8 @@ deep-copy-regex:
   - source: /google/cloud/redis/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/redis/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/redis/cluster/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/resourcemanager/v2/cloud.google.com/go
     dest: /
