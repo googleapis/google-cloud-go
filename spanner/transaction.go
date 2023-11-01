@@ -248,6 +248,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
+			if t.sh != nil {
+				t.sh.updateLastUseTime()
+			}
 			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
 					Session:          t.sh.getID(),
@@ -496,6 +499,8 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
 			req.Transaction = t.getTransactionSelector()
+			t.sh.updateLastUseTime()
+
 			client, err := client.ExecuteStreamingSql(ctx, req)
 			if err != nil {
 				if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -675,6 +680,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+		sh.updateLastUseTime()
 		var md metadata.MD
 		res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.BeginTransactionRequest{
 			Session: sh.getID(),
@@ -825,9 +831,6 @@ func (t *ReadOnlyTransaction) acquireMultiUse(ctx context.Context) (*sessionHand
 				},
 			}
 			t.mu.Unlock()
-			if sh != nil {
-				sh.updateLastUseTime()
-			}
 			return sh, ts, nil
 		}
 		state := t.state
@@ -1068,6 +1071,7 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 		hasInlineBeginTransaction = true
 	}
 
+	sh.updateLastUseTime()
 	var md metadata.MD
 	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
@@ -1165,6 +1169,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		hasInlineBeginTransaction = true
 	}
 
+	sh.updateLastUseTime()
 	var md metadata.MD
 	resp, err := sh.getClient().ExecuteBatchDml(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.ExecuteBatchDmlRequest{
 		Session:        sh.getID(),
@@ -1270,9 +1275,6 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 				},
 			}
 			t.mu.Unlock()
-			if sh != nil {
-				sh.updateLastUseTime()
-			}
 			return sh, ts, nil
 		default:
 			state := t.state
@@ -1399,6 +1401,9 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 	}()
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
+		if sh != nil {
+			sh.updateLastUseTime()
+		}
 		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts)
 		if isSessionNotFoundError(err) {
 			sh.destroy()
@@ -1737,6 +1742,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 					return ToSpannerError(err)
 				}
 			}
+			sh.updateLastUseTime()
 			res, err := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
 				Session: sh.getID(),
 				Transaction: &sppb.CommitRequest_SingleUseTransaction{
