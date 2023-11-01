@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package output_stream
+package outputstream
 
 import (
 	"log"
@@ -58,9 +58,10 @@ type OutcomeSender struct {
 	rowsModified []int64
 }
 
-func NewOutcomeSender(actionId int32, stream executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer) *OutcomeSender {
+// NewOutcomeSender returns an OutcomeSender with default fields set.
+func NewOutcomeSender(actionID int32, stream executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer) *OutcomeSender {
 	return &OutcomeSender{
-		actionID:       actionId,
+		actionID:       actionID,
 		stream:         stream,
 		hasReadResult:  false,
 		hasQueryResult: false,

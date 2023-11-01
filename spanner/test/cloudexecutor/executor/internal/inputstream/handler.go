@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package input_stream
+package inputstream
 
 // input_stream_handler.go is responsible for handling input requests to the server and
 // handles mapping from executor actions (SpannerAsyncActionRequest) to client library code.
@@ -25,6 +25,18 @@ import (
 	"google.golang.org/api/option"
 )
 
+// CloudStreamHandler handles a single streaming ExecuteActions request by performing incoming
+// actions. It maintains a state associated with the request, such as current transaction.
+//
+// CloudStreamHandler uses contexts (context.Context) to coordinate execution of asynchronous
+// actions. The Stubby stream's context becomes a parent for all individual actions' contexts. This
+// is done so that we don't leak anything when the stream is closed.
+//
+// startTxnHandler is a bit different from other actions. Read-write transactions that it
+// starts outlive the action itself, so the Stubby stream's context is used for transactions
+// instead of the action's context.
+//
+// For more info about contexts in Go, read golang.org/pkg/context
 type CloudStreamHandler struct {
 	// members below should be set by the caller
 	Stream        executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer

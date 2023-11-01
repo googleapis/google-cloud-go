@@ -20,7 +20,7 @@ package executor
 import (
 	"context"
 
-	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/input_stream"
+	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/inputstream"
 	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"google.golang.org/api/option"
 )
@@ -39,7 +39,7 @@ func NewCloudProxyServer(ctx context.Context, opts []option.ClientOption) (*Clou
 // ExecuteActionAsync is implementation of ExecuteActionAsync in SpannerExecutorProxyServer. It's a
 // streaming method in which client and server exchange SpannerActions and SpannerActionOutcomes.
 func (s *CloudProxyServer) ExecuteActionAsync(inputStream executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer) error {
-	handler := &input_stream.CloudStreamHandler{
+	handler := &inputstream.CloudStreamHandler{
 		Stream:        inputStream,
 		ServerContext: s.serverContext,
 		Options:       s.options,
