@@ -453,7 +453,7 @@ type OcrConfig struct {
 	// Deprecated: Marked as deprecated in google/cloud/documentai/v1/document_io.proto.
 	ComputeStyleInfo bool `protobuf:"varint,8,opt,name=compute_style_info,json=computeStyleInfo,proto3" json:"compute_style_info,omitempty"`
 	// Turn off character box detector in OCR engine. Character box detection is
-	// enabled by default in OCR 2.0+ processors.
+	// enabled by default in OCR 2.0 (and later) processors.
 	DisableCharacterBoxesDetection bool `protobuf:"varint,10,opt,name=disable_character_boxes_detection,json=disableCharacterBoxesDetection,proto3" json:"disable_character_boxes_detection,omitempty"`
 	// Configurations for premium OCR features.
 	PremiumFeatures *OcrConfig_PremiumFeatures `protobuf:"bytes,11,opt,name=premium_features,json=premiumFeatures,proto3" json:"premium_features,omitempty"`
@@ -735,8 +735,8 @@ type OcrConfig_PremiumFeatures struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Turn on selection mark detector in OCR engine. Only available in OCR 2.0+
-	// processors.
+	// Turn on selection mark detector in OCR engine. Only available in OCR 2.0
+	// (and later) processors.
 	EnableSelectionMarkDetection bool `protobuf:"varint,3,opt,name=enable_selection_mark_detection,json=enableSelectionMarkDetection,proto3" json:"enable_selection_mark_detection,omitempty"`
 	// Turn on font identification model and return font style information.
 	ComputeStyleInfo bool `protobuf:"varint,4,opt,name=compute_style_info,json=computeStyleInfo,proto3" json:"compute_style_info,omitempty"`

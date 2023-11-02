@@ -1,5 +1,12 @@
 # Changes
 
+## [0.21.6](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.5...analytics/v0.21.6) (2023-11-01)
+
+
+### Bug Fixes
+
+* **analytics:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [0.21.5](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.4...analytics/v0.21.5) (2023-10-26)
 
 
