@@ -416,7 +416,7 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 	if req.ClientId == "" ||
 		req.DataTarget == "" ||
 		req.ProjectId == "" ||
-		req.IngstanceId == "" {
+		req.InstanceId == "" {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s must provide ClientId, DataTarget, ProjectId, and InstanceId", logLabel))
 	}
