@@ -555,17 +555,21 @@ func (r RowRange) retainRowsBefore(lastRowKey string) RowSet {
 }
 
 func (r RowRange) valid() bool {
+	// If either end is unbounded, then the range is always valid.
 	if r.Unbounded() {
 		return true
 	}
 
+	// If either end is an open interval, then the start must be strictly less
+	// than the end and since neither end is unbounded, we don't have to check
+	// for empty strings.
 	if r.startBound == rangeOpen || r.endBound == rangeOpen {
 		return r.start < r.end
-	} else if r.startBound == rangeClosed {
-		return r.start <= r.end
-	} else {
-		return true
 	}
+
+	// At this point both endpoints must be closed, which makes [a,a] a valid
+	// interval
+	return r.start <= r.end
 }
 
 // RowRangeList is a sequence of RowRanges representing the union of the ranges.
