@@ -25,7 +25,7 @@ import (
 	adminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
-	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/output_stream"
+	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
 	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -38,7 +38,7 @@ import (
 type AdminActionHandler struct {
 	Action        *executorpb.AdminAction
 	FlowContext   *ExecutionFlowContext
-	OutcomeSender *output_stream.OutcomeSender
+	OutcomeSender *outputstream.OutcomeSender
 	Options       []option.ClientOption
 }
 
@@ -109,7 +109,7 @@ func (h *AdminActionHandler) ExecuteAction(ctx context.Context) error {
 }
 
 // execute action that creates a cloud instance.
-func executeCreateCloudInstance(ctx context.Context, action *executorpb.CreateCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeCreateCloudInstance(ctx context.Context, action *executorpb.CreateCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("creating instance:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -144,7 +144,7 @@ func executeCreateCloudInstance(ctx context.Context, action *executorpb.CreateCl
 }
 
 // execute action that updates a cloud instance.
-func executeUpdateCloudInstance(ctx context.Context, action *executorpb.UpdateCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeUpdateCloudInstance(ctx context.Context, action *executorpb.UpdateCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("updating instance:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -191,7 +191,7 @@ func executeUpdateCloudInstance(ctx context.Context, action *executorpb.UpdateCl
 }
 
 // execute action that deletes a cloud instance.
-func executeDeleteCloudInstance(ctx context.Context, action *executorpb.DeleteCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeDeleteCloudInstance(ctx context.Context, action *executorpb.DeleteCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("deleting instance:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -210,7 +210,7 @@ func executeDeleteCloudInstance(ctx context.Context, action *executorpb.DeleteCl
 }
 
 // execute action that lists cloud instances.
-func executeListCloudInstances(ctx context.Context, action *executorpb.ListCloudInstancesAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeListCloudInstances(ctx context.Context, action *executorpb.ListCloudInstancesAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing instance:  %v", action)
 	projectId := action.GetProjectId()
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
@@ -258,7 +258,7 @@ func executeListCloudInstances(ctx context.Context, action *executorpb.ListCloud
 }
 
 // execute action that lists cloud instance configs.
-func executeListInstanceConfigs(ctx context.Context, action *executorpb.ListCloudInstanceConfigsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeListInstanceConfigs(ctx context.Context, action *executorpb.ListCloudInstanceConfigsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing instance configs:  %v", action)
 	projectId := action.GetProjectId()
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
@@ -303,7 +303,7 @@ func executeListInstanceConfigs(ctx context.Context, action *executorpb.ListClou
 }
 
 // execute action that gets a cloud instance config.
-func executeGetCloudInstanceConfig(ctx context.Context, action *executorpb.GetCloudInstanceConfigAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeGetCloudInstanceConfig(ctx context.Context, action *executorpb.GetCloudInstanceConfigAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("getting instance config:  %v", action)
 	projectId := action.GetProjectId()
 	instanceConfigId := action.GetInstanceConfigId()
@@ -334,7 +334,7 @@ func executeGetCloudInstanceConfig(ctx context.Context, action *executorpb.GetCl
 }
 
 // execute action that retrieves a cloud instance.
-func executeGetCloudInstance(ctx context.Context, action *executorpb.GetCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeGetCloudInstance(ctx context.Context, action *executorpb.GetCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("retrieving instance:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -362,7 +362,7 @@ func executeGetCloudInstance(ctx context.Context, action *executorpb.GetCloudIns
 }
 
 // execute action that creates a user instance config.
-func executeCreateUserInstanceConfig(ctx context.Context, action *executorpb.CreateUserInstanceConfigAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeCreateUserInstanceConfig(ctx context.Context, action *executorpb.CreateUserInstanceConfigAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("Creating user instance config:  %v", action)
 	projectId := action.GetProjectId()
 	baseConfigId := action.GetBaseConfigId()
@@ -392,7 +392,7 @@ func executeCreateUserInstanceConfig(ctx context.Context, action *executorpb.Cre
 }
 
 // execute action that deletes a user instance config.
-func executeDeleteUserInstanceConfig(ctx context.Context, action *executorpb.DeleteUserInstanceConfigAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeDeleteUserInstanceConfig(ctx context.Context, action *executorpb.DeleteUserInstanceConfigAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("deleting user instance config:  %v", action)
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
@@ -408,7 +408,7 @@ func executeDeleteUserInstanceConfig(ctx context.Context, action *executorpb.Del
 }
 
 // execute action that creates a cloud database or cloud custom encrypted database.
-func executeCreateCloudDatabase(ctx context.Context, action *executorpb.CreateCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeCreateCloudDatabase(ctx context.Context, action *executorpb.CreateCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("creating database:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -436,7 +436,7 @@ func executeCreateCloudDatabase(ctx context.Context, action *executorpb.CreateCl
 }
 
 // execute action that updates a cloud database.
-func executeUpdateCloudDatabaseDdl(ctx context.Context, action *executorpb.UpdateCloudDatabaseDdlAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeUpdateCloudDatabaseDdl(ctx context.Context, action *executorpb.UpdateCloudDatabaseDdlAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("updating database ddl %v", action)
 	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", action.GetProjectId(), action.GetInstanceId(), action.GetDatabaseId())
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
@@ -459,7 +459,7 @@ func executeUpdateCloudDatabaseDdl(ctx context.Context, action *executorpb.Updat
 }
 
 // execute action that drops a cloud database.
-func executeDropCloudDatabase(ctx context.Context, action *executorpb.DropCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeDropCloudDatabase(ctx context.Context, action *executorpb.DropCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("dropping database:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -478,7 +478,7 @@ func executeDropCloudDatabase(ctx context.Context, action *executorpb.DropCloudD
 }
 
 // execute action that creates a cloud database backup.
-func executeCreateCloudBackup(ctx context.Context, action *executorpb.CreateCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeCreateCloudBackup(ctx context.Context, action *executorpb.CreateCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("creating backup:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -516,7 +516,7 @@ func executeCreateCloudBackup(ctx context.Context, action *executorpb.CreateClou
 }
 
 // execute action that copies a cloud database backup.
-func executeCopyCloudBackup(ctx context.Context, action *executorpb.CopyCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeCopyCloudBackup(ctx context.Context, action *executorpb.CopyCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("copying backup:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -551,7 +551,7 @@ func executeCopyCloudBackup(ctx context.Context, action *executorpb.CopyCloudBac
 }
 
 // execute action that gets a cloud database backup.
-func executeGetCloudBackup(ctx context.Context, action *executorpb.GetCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeGetCloudBackup(ctx context.Context, action *executorpb.GetCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("getting backup:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -578,7 +578,7 @@ func executeGetCloudBackup(ctx context.Context, action *executorpb.GetCloudBacku
 }
 
 // execute action that updates a cloud database backup.
-func executeUpdateCloudBackup(ctx context.Context, action *executorpb.UpdateCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeUpdateCloudBackup(ctx context.Context, action *executorpb.UpdateCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("updating backup:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -611,7 +611,7 @@ func executeUpdateCloudBackup(ctx context.Context, action *executorpb.UpdateClou
 }
 
 // execute action that deletes a cloud database backup.
-func executeDeleteCloudBackup(ctx context.Context, action *executorpb.DeleteCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeDeleteCloudBackup(ctx context.Context, action *executorpb.DeleteCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("deleting backup:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -630,7 +630,7 @@ func executeDeleteCloudBackup(ctx context.Context, action *executorpb.DeleteClou
 }
 
 // execute action that lists cloud database backups.
-func executeListCloudBackups(ctx context.Context, action *executorpb.ListCloudBackupsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeListCloudBackups(ctx context.Context, action *executorpb.ListCloudBackupsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing backup:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -672,7 +672,7 @@ func executeListCloudBackups(ctx context.Context, action *executorpb.ListCloudBa
 }
 
 // execute action that lists cloud database backup operations.
-func executeListCloudBackupOperations(ctx context.Context, action *executorpb.ListCloudBackupOperationsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeListCloudBackupOperations(ctx context.Context, action *executorpb.ListCloudBackupOperationsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing backup operation:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -713,7 +713,7 @@ func executeListCloudBackupOperations(ctx context.Context, action *executorpb.Li
 }
 
 // execute action that list cloud databases.
-func executeListCloudDatabases(ctx context.Context, action *executorpb.ListCloudDatabasesAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeListCloudDatabases(ctx context.Context, action *executorpb.ListCloudDatabasesAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing database:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -753,7 +753,7 @@ func executeListCloudDatabases(ctx context.Context, action *executorpb.ListCloud
 }
 
 // execute action that lists cloud database operations.
-func executeListCloudDatabaseOperations(ctx context.Context, action *executorpb.ListCloudDatabaseOperationsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeListCloudDatabaseOperations(ctx context.Context, action *executorpb.ListCloudDatabaseOperationsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing database operation:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -795,7 +795,7 @@ func executeListCloudDatabaseOperations(ctx context.Context, action *executorpb.
 }
 
 // execute action that restores a cloud database.
-func executeRestoreCloudDatabase(ctx context.Context, action *executorpb.RestoreCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeRestoreCloudDatabase(ctx context.Context, action *executorpb.RestoreCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("restoring database:  %v", action)
 	projectId := action.GetProjectId()
 	databaseInstanceId := action.GetDatabaseInstanceId()
@@ -831,7 +831,7 @@ func executeRestoreCloudDatabase(ctx context.Context, action *executorpb.Restore
 }
 
 // execute action that gets a cloud database.
-func executeGetCloudDatabase(ctx context.Context, action *executorpb.GetCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeGetCloudDatabase(ctx context.Context, action *executorpb.GetCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("getting database:  %v", action)
 	projectId := action.GetProjectId()
 	instanceId := action.GetInstanceId()
@@ -859,7 +859,7 @@ func executeGetCloudDatabase(ctx context.Context, action *executorpb.GetCloudDat
 }
 
 // execute action that gets an operation.
-func executeGetOperation(ctx context.Context, action *executorpb.GetOperationAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeGetOperation(ctx context.Context, action *executorpb.GetOperationAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("getting operation:  %v", action)
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
@@ -884,7 +884,7 @@ func executeGetOperation(ctx context.Context, action *executorpb.GetOperationAct
 }
 
 // execute action that cancels an operation.
-func executeCancelOperation(ctx context.Context, action *executorpb.CancelOperationAction, h *ExecutionFlowContext, opts []option.ClientOption, o *output_stream.OutcomeSender) error {
+func executeCancelOperation(ctx context.Context, action *executorpb.CancelOperationAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("cancelling operation:  %v", action)
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {

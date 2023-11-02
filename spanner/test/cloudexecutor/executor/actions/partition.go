@@ -21,7 +21,7 @@ import (
 
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/output_stream"
+	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/utility"
 	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
@@ -32,7 +32,7 @@ import (
 type PartitionReadActionHandler struct {
 	Action        *executorpb.GenerateDbPartitionsForReadAction
 	FlowContext   *ExecutionFlowContext
-	OutcomeSender *output_stream.OutcomeSender
+	OutcomeSender *outputstream.OutcomeSender
 }
 
 // ExecuteAction executes action that generates database partitions for the given read.
@@ -103,7 +103,7 @@ func (h *PartitionReadActionHandler) ExecuteAction(ctx context.Context) error {
 type PartitionQueryActionHandler struct {
 	Action        *executorpb.GenerateDbPartitionsForQueryAction
 	FlowContext   *ExecutionFlowContext
-	OutcomeSender *output_stream.OutcomeSender
+	OutcomeSender *outputstream.OutcomeSender
 }
 
 // ExecuteAction executes action that generates database partitions for the given query.
@@ -151,7 +151,7 @@ func (h *PartitionQueryActionHandler) ExecuteAction(ctx context.Context) error {
 type ExecutePartition struct {
 	Action        *executorpb.ExecutePartitionAction
 	FlowContext   *ExecutionFlowContext
-	OutcomeSender *output_stream.OutcomeSender
+	OutcomeSender *outputstream.OutcomeSender
 }
 
 // ExecuteAction executes a read or query for the given partitions.
@@ -195,7 +195,7 @@ func (h *ExecutePartition) ExecuteAction(ctx context.Context) error {
 type PartitionedUpdate struct {
 	Action        *executorpb.PartitionedUpdateAction
 	FlowContext   *ExecutionFlowContext
-	OutcomeSender *output_stream.OutcomeSender
+	OutcomeSender *outputstream.OutcomeSender
 }
 
 // ExecuteAction executes a partitioned update which runs different partitions in parallel.

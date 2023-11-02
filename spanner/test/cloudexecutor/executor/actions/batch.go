@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner"
-	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/output_stream"
+	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/utility"
 	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"google.golang.org/api/option"
@@ -32,7 +32,7 @@ import (
 type StartBatchTxnHandler struct {
 	Action        *executorpb.StartBatchTransactionAction
 	FlowContext   *ExecutionFlowContext
-	OutcomeSender *output_stream.OutcomeSender
+	OutcomeSender *outputstream.OutcomeSender
 	Options       []option.ClientOption
 }
 
@@ -88,7 +88,7 @@ func (h *StartBatchTxnHandler) ExecuteAction(ctx context.Context) error {
 type BatchDmlHandler struct {
 	Action        *executorpb.BatchDmlAction
 	FlowContext   *ExecutionFlowContext
-	OutcomeSender *output_stream.OutcomeSender
+	OutcomeSender *outputstream.OutcomeSender
 }
 
 // ExecuteAction that execute a BatchDml update action request, store the results in the OutcomeSender
@@ -140,7 +140,7 @@ func executeBatchDml(ctx context.Context, stmts []spanner.Statement, flowContext
 type CloseBatchTxnHandler struct {
 	Action        *executorpb.CloseBatchTransactionAction
 	FlowContext   *ExecutionFlowContext
-	OutcomeSender *output_stream.OutcomeSender
+	OutcomeSender *outputstream.OutcomeSender
 }
 
 // ExecuteAction that finishes a batch transaction
