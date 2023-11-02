@@ -883,11 +883,13 @@ func TestIntegration_Autoclass(t *testing.T) {
 		defer h.mustDeleteBucket(bkt)
 
 		// Get Autoclass configuration from bucket attrs.
+		// Autoclass.TerminalStorageClass is defaulted to NEARLINE if not specified.
 		attrs, err := bkt.Attrs(ctx)
 		if err != nil {
 			t.Fatalf("get bucket attrs failed: %v", err)
 		}
 		var toggleTime time.Time
+		var tscUpdateTime time.Time
 		if attrs != nil && attrs.Autoclass != nil {
 			if got, want := attrs.Autoclass.Enabled, true; got != want {
 				t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
@@ -895,10 +897,33 @@ func TestIntegration_Autoclass(t *testing.T) {
 			if toggleTime = attrs.Autoclass.ToggleTime; toggleTime.IsZero() {
 				t.Error("got a zero time value, want a populated value")
 			}
+			if got, want := attrs.Autoclass.TerminalStorageClass, "NEARLINE"; got != want {
+				t.Errorf("attr.Autoclass.TerminalStorageClass = %v, want %v", got, want)
+			}
+			if tscUpdateTime := attrs.Autoclass.TerminalStorageClassUpdateTime; tscUpdateTime.IsZero() {
+				t.Error("got a zero time value, want a populated value")
+			}
+		}
+
+		// Update TerminalStorageClass on the bucket.
+		ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.Autoclass.Enabled, true; got != want {
+			t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
+		}
+		if got, want := attrs.Autoclass.TerminalStorageClass, "ARCHIVE"; got != want {
+			t.Errorf("attr.Autoclass.TerminalStorageClass = %v, want %v", got, want)
+		}
+		latestTSCUpdateTime := attrs.Autoclass.TerminalStorageClassUpdateTime
+		if latestTSCUpdateTime.IsZero() {
+			t.Error("got a zero time value, want a populated value")
+		}
+		if !latestTSCUpdateTime.After(tscUpdateTime) {
+			t.Error("latestTSCUpdateTime should be newer than bucket creation tscUpdateTime")
 		}
 
 		// Disable Autoclass on the bucket.
-		ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
+		ua = BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
 		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
 		if got, want := attrs.Autoclass.Enabled, false; got != want {
 			t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
@@ -907,7 +932,7 @@ func TestIntegration_Autoclass(t *testing.T) {
 		if latestToggleTime.IsZero() {
 			t.Error("got a zero time value, want a populated value")
 		}
-		if latestToggleTime.Before(toggleTime) {
+		if !latestToggleTime.After(toggleTime) {
 			t.Error("latestToggleTime should be newer than bucket creation toggleTime")
 		}
 	})

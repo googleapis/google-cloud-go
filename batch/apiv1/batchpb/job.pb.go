@@ -808,7 +808,8 @@ type TaskGroup struct {
 	// Default is 1.
 	TaskCount int64 `protobuf:"varint,4,opt,name=task_count,json=taskCount,proto3" json:"task_count,omitempty"`
 	// Max number of tasks that can run in parallel.
-	// Default to min(task_count, 1000).
+	// Default to min(task_count, parallel tasks per job limit).
+	// See: [Job Limits](https://cloud.google.com/batch/quotas#job_limits).
 	// Field parallelism must be 1 if the scheduling_policy is IN_ORDER.
 	Parallelism int64 `protobuf:"varint,5,opt,name=parallelism,proto3" json:"parallelism,omitempty"`
 	// Scheduling policy for Tasks in the TaskGroup.
