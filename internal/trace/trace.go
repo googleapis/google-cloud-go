@@ -58,7 +58,14 @@ func IsOpenTelemetryTracingEnabled() bool {
 	return strings.EqualFold(TelemetryPlatformTracing, telemetryPlatformTracingOpenTelemetry)
 }
 
-// StartSpan adds a span to the trace with the given name.
+// StartSpan adds a span to the trace with the given name. If IsOpenCensusTracingEnabled
+// returns true, the span will be an OpenCensus span. If IsOpenTelemetryTracingEnabled
+// returns true, the span will be an OpenTelemetry span. Set the environment variable
+// GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING to the case-insensitive
+// value "opentelemetry" before loading the package to use OpenTelemetry tracing.
+// The default will remain OpenCensus until [TBD], at which time the default will
+// switch to "opentelemetry" and explicitly setting the environment variable to
+// "opencensus" will be required to continue using OpenCensus tracing.
 func StartSpan(ctx context.Context, name string) context.Context {
 	if IsOpenTelemetryTracingEnabled() {
 		ctx, _ = otel.GetTracerProvider().Tracer(OpenTelemetryTracerName).Start(ctx, name)
@@ -68,7 +75,14 @@ func StartSpan(ctx context.Context, name string) context.Context {
 	return ctx
 }
 
-// EndSpan ends a span with the given error.
+// EndSpan ends a span with the given error. If IsOpenCensusTracingEnabled
+// returns true, the span will be an OpenCensus span. If IsOpenTelemetryTracingEnabled
+// returns true, the span will be an OpenTelemetry span. Set the environment variable
+// GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING to the case-insensitive
+// value "opentelemetry" before loading the package to use OpenTelemetry tracing.
+// The default will remain OpenCensus until [TBD], at which time the default will
+// switch to "opentelemetry" and explicitly setting the environment variable to
+// "opencensus" will be required to continue using OpenCensus tracing.
 func EndSpan(ctx context.Context, err error) {
 	if IsOpenTelemetryTracingEnabled() {
 		span := ottrace.SpanFromContext(ctx)
@@ -147,15 +161,23 @@ func httpStatusCodeToOCCode(httpStatusCode int) int32 {
 // * calls Span.Annotatef if OpenCensus is enabled; or
 // * calls Span.AddEvent if OpenTelemetry is enabled.
 //
-// TODO: (odeke-em): perhaps just pass around spans due to the cost
-// incurred from using trace.FromContext(ctx) yet we could avoid
-// throwing away the work done by ctx, span := trace.StartSpan.
+// If IsOpenCensusTracingEnabled returns true, the expected span must be an
+// OpenCensus span. If IsOpenTelemetryTracingEnabled returns true, the expected
+// span must be an OpenTelemetry span. Set the environment variable
+// GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING to the case-insensitive
+// value "opentelemetry" before loading the package to use OpenTelemetry tracing.
+// The default will remain OpenCensus until [TBD], at which time the default will
+// switch to "opentelemetry" and explicitly setting the environment variable to
+// "opencensus" will be required to continue using OpenCensus tracing.
 func TracePrintf(ctx context.Context, attrMap map[string]interface{}, format string, args ...interface{}) {
 	if IsOpenTelemetryTracingEnabled() {
 		attrs := otAttrs(attrMap)
 		ottrace.SpanFromContext(ctx).AddEvent(fmt.Sprintf(format, args...), ottrace.WithAttributes(attrs...))
 	} else {
 		attrs := ocAttrs(attrMap)
+		// TODO: (odeke-em): perhaps just pass around spans due to the cost
+		// incurred from using trace.FromContext(ctx) yet we could avoid
+		// throwing away the work done by ctx, span := trace.StartSpan.
 		trace.FromContext(ctx).Annotatef(attrs, format, args...)
 	}
 }
