@@ -409,40 +409,30 @@ func NewClosedRange(start, end string) RowRange {
 // PrefixRange returns a RowRange consisting of all keys starting with the prefix.
 func PrefixRange(prefix string) RowRange {
 	end := prefixSuccessor(prefix)
-	return RowRange{
-		startBound: rangeClosed,
-		start:      prefix,
-		endBound:   parseBoundType(end, rangeOpen),
-		end:        end,
-	}
+	return createRowRange(rangeClosed, prefix, rangeOpen, end)
 }
 
 // InfiniteRange returns the RowRange consisting of all keys at least as
 // large as start: [start, ∞).
 func InfiniteRange(start string) RowRange {
-	return RowRange{
-		startBound: parseBoundType(start, rangeClosed),
-		start:      start,
-		endBound:   rangeUnbounded,
-		end:        "",
-	}
+	return createRowRange(rangeClosed, start, rangeUnbounded, "")
 }
 
 // InfiniteReverseRange returns the RowRange consisting of all keys less than or
 // equal to the end: (∞, end].
 func InfiniteReverseRange(end string) RowRange {
-	return RowRange{
-		startBound: rangeUnbounded,
-		start:      "",
-		endBound:   parseBoundType(end, rangeClosed),
-		end:        end,
-	}
+	return createRowRange(rangeUnbounded, "", rangeClosed, end)
 }
 
+// createRowRange creates a new RowRange, normalizing start and end
+// rangeBoundType to rangeUnbounded if they're empty strings because empty
+// strings also represent unbounded keys
 func createRowRange(startBound rangeBoundType, start string, endBound rangeBoundType, end string) RowRange {
+	// normalize start bound type
 	if start == "" {
 		startBound = rangeUnbounded
 	}
+	// normalize end bound type
 	if end == "" {
 		endBound = rangeUnbounded
 	}
@@ -461,31 +451,31 @@ func (r RowRange) Unbounded() bool {
 
 // Contains says whether the RowRange contains the key.
 func (r RowRange) Contains(row string) bool {
-	contains := true
-
 	switch r.startBound {
 	case rangeOpen:
-		contains = contains && r.start < row
-		break
+		if r.start >= row {
+			return false
+		}
 	case rangeClosed:
-		contains = contains && r.start <= row
-		break
+		if r.start > row {
+			return false
+		}
 	case rangeUnbounded:
-		break
 	}
 
 	switch r.endBound {
 	case rangeOpen:
-		contains = contains && r.end > row
-		break
+		if r.end <= row {
+			return false
+		}
 	case rangeClosed:
-		contains = contains && r.end >= row
-		break
+		if r.end < row {
+			return false
+		}
 	case rangeUnbounded:
-		break
 	}
 
-	return contains
+	return true
 }
 
 // String provides a printable description of a RowRange.
@@ -494,26 +484,20 @@ func (r RowRange) String() string {
 	switch r.startBound {
 	case rangeOpen:
 		startStr = "(" + strconv.Quote(r.start)
-		break
 	case rangeClosed:
 		startStr = "[" + strconv.Quote(r.start)
-		break
 	case rangeUnbounded:
 		startStr = "(∞"
-		break
 	}
 
 	var endStr string
 	switch r.endBound {
 	case rangeOpen:
 		endStr = r.end + ")"
-		break
 	case rangeClosed:
 		endStr = r.end + "]"
-		break
 	case rangeUnbounded:
 		endStr = "∞)"
-		break
 	}
 
 	return fmt.Sprintf("%s,%s", startStr, endStr)
@@ -525,25 +509,19 @@ func (r RowRange) proto() *btpb.RowSet {
 	switch r.startBound {
 	case rangeOpen:
 		rr.StartKey = &btpb.RowRange_StartKeyOpen{StartKeyOpen: []byte(r.start)}
-		break
 	case rangeClosed:
 		rr.StartKey = &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)}
-		break
 	case rangeUnbounded:
 		// leave unbounded
-		break
 	}
 
 	switch r.endBound {
 	case rangeOpen:
 		rr.EndKey = &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.end)}
-		break
 	case rangeClosed:
 		rr.EndKey = &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte(r.end)}
-		break
 	case rangeUnbounded:
 		// leave unbounded
-		break
 	}
 
 	return &btpb.RowSet{RowRanges: []*btpb.RowRange{rr}}
@@ -564,7 +542,7 @@ func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
 }
 
 func (r RowRange) retainRowsBefore(lastRowKey string) RowSet {
-	if lastRowKey == "" || (r.endBound != rangeUnbounded && r.end <= lastRowKey) {
+	if lastRowKey == "" || (r.endBound != rangeUnbounded && r.end < lastRowKey) {
 		return r
 	}
 
@@ -644,13 +622,6 @@ func (r RowRangeList) valid() bool {
 // SingleRow returns a RowSet for reading a single row.
 func SingleRow(row string) RowSet {
 	return RowList{row}
-}
-
-func parseBoundType(bound string, defaultBoundType rangeBoundType) rangeBoundType {
-	if bound == "" {
-		return rangeUnbounded
-	}
-	return defaultBoundType
 }
 
 // prefixSuccessor returns the lexically smallest string greater than the

@@ -445,6 +445,62 @@ func TestRowRangeProto(t *testing.T) {
 	}
 }
 
+func TestRowRangeRetainRowsBefore(t *testing.T) {
+	for _, test := range []struct {
+		desc  string
+		rr    RowSet
+		proto *btpb.RowSet
+	}{
+		{
+			desc: "retain rows before",
+			rr:   NewRange("a", "c").retainRowsBefore("b"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("b")},
+			}}},
+		},
+		{
+			desc: "retain rows before empty key",
+			rr:   NewRange("a", "c").retainRowsBefore(""),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("c")},
+			}}},
+		},
+		{
+			desc: "retain rows before key greater than range end",
+			rr:   NewClosedRange("a", "c").retainRowsBefore("d"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("c")},
+			}}},
+		},
+		{
+			desc: "retain rows before key same as closed end key",
+			rr:   NewClosedRange("a", "c").retainRowsBefore("c"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("c")},
+			}}},
+		},
+		{
+			desc: "retain rows before on unbounded range",
+			rr:   InfiniteRange("").retainRowsBefore("z"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				EndKey: &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("z")},
+			}}},
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			got := test.rr.proto()
+			want := test.proto
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("Bad retain rows before proto: got %v, want %v", got, want)
+			}
+		})
+	}
+}
+
 func TestRowRangeString(t *testing.T) {
 
 	for _, test := range []struct {
