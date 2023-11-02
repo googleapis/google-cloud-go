@@ -56,6 +56,9 @@ func TestRetrieveURLSubjectToken_Text(t *testing.T) {
 	if want := "testTokenValue"; got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}
+	if got, want := base.providerType(), urlProviderType; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
 }
 
 func TestRetrieveURLSubjectToken_Untyped(t *testing.T) {

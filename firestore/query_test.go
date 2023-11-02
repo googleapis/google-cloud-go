@@ -1179,3 +1179,183 @@ func TestAggregationQuery(t *testing.T) {
 		t.Errorf("got: %v\nwant: %v\n; result: %v\n", cv.GetIntegerValue(), 1, count)
 	}
 }
+
+func TestWithSum(t *testing.T) {
+	ctx := context.Background()
+	sumAlias := "sum"
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(nil, []interface{}{
+		&pb.RunAggregationQueryResponse{
+			Result: &pb.AggregationResult{
+				AggregateFields: map[string]*pb.Value{
+					"sum": intval(1),
+				},
+			},
+		},
+	})
+
+	testcases := []struct {
+		desc    string
+		path    string
+		wantErr bool
+	}{
+		{
+			desc:    "Invalid path",
+			path:    "path*",
+			wantErr: true,
+		},
+		{
+			desc:    "Valid path",
+			path:    "path",
+			wantErr: false,
+		},
+	}
+	for _, tc := range testcases {
+
+		query := c.Collection("C")
+		aggQuery := query.NewAggregationQuery().WithSum(tc.path, sumAlias)
+		_, err := aggQuery.Get(ctx)
+		if err == nil && tc.wantErr {
+			t.Fatalf("%s: got nil wanted error", tc.desc)
+		} else if err != nil && !tc.wantErr {
+			t.Fatalf("%s: got %v, want nil", tc.desc, err)
+		}
+	}
+}
+
+func TestWithSumPath(t *testing.T) {
+	ctx := context.Background()
+	sumAlias := "sum"
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(nil, []interface{}{
+		&pb.RunAggregationQueryResponse{
+			Result: &pb.AggregationResult{
+				AggregateFields: map[string]*pb.Value{
+					"sum": intval(1),
+				},
+			},
+		},
+	})
+
+	testcases := []struct {
+		desc      string
+		fieldPath FieldPath
+		wantErr   bool
+	}{
+		{
+			desc:      "Invalid path",
+			fieldPath: []string{},
+			wantErr:   true,
+		},
+		{
+			desc:      "Valid path",
+			fieldPath: []string{"path"},
+			wantErr:   false,
+		},
+	}
+	for _, tc := range testcases {
+
+		query := c.Collection("C")
+		aggQuery := query.NewAggregationQuery().WithSumPath(tc.fieldPath, sumAlias)
+		_, err := aggQuery.Get(ctx)
+		if err == nil && tc.wantErr {
+			t.Fatalf("%s: got nil wanted error", tc.desc)
+		} else if err != nil && !tc.wantErr {
+			t.Fatalf("%s: got %v, want nil", tc.desc, err)
+		}
+	}
+}
+
+func TestWithAvg(t *testing.T) {
+	ctx := context.Background()
+	avgAlias := "avg"
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(nil, []interface{}{
+		&pb.RunAggregationQueryResponse{
+			Result: &pb.AggregationResult{
+				AggregateFields: map[string]*pb.Value{
+					"avg": intval(1),
+				},
+			},
+		},
+	})
+
+	testcases := []struct {
+		desc    string
+		path    string
+		wantErr bool
+	}{
+		{
+			desc:    "Invalid path",
+			path:    "path*",
+			wantErr: true,
+		},
+		{
+			desc:    "Valid path",
+			path:    "path",
+			wantErr: false,
+		},
+	}
+	for _, tc := range testcases {
+
+		query := c.Collection("C")
+		aggQuery := query.NewAggregationQuery().WithAvg(tc.path, avgAlias)
+		_, err := aggQuery.Get(ctx)
+		if err == nil && tc.wantErr {
+			t.Fatalf("%s: got nil wanted error", tc.desc)
+		} else if err != nil && !tc.wantErr {
+			t.Fatalf("%s: got %v, want nil", tc.desc, err)
+		}
+	}
+}
+
+func TestWithAvgPath(t *testing.T) {
+	ctx := context.Background()
+	avgAlias := "avg"
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(nil, []interface{}{
+		&pb.RunAggregationQueryResponse{
+			Result: &pb.AggregationResult{
+				AggregateFields: map[string]*pb.Value{
+					"avg": intval(1),
+				},
+			},
+		},
+	})
+
+	testcases := []struct {
+		desc      string
+		fieldPath FieldPath
+		wantErr   bool
+	}{
+		{
+			desc:      "Invalid path",
+			fieldPath: []string{},
+			wantErr:   true,
+		},
+		{
+			desc:      "Valid path",
+			fieldPath: []string{"path"},
+			wantErr:   false,
+		},
+	}
+	for _, tc := range testcases {
+
+		query := c.Collection("C")
+		aggQuery := query.NewAggregationQuery().WithAvgPath(tc.fieldPath, avgAlias)
+		_, err := aggQuery.Get(ctx)
+		if err == nil && tc.wantErr {
+			t.Fatalf("%s: got nil wanted error", tc.desc)
+		} else if err != nil && !tc.wantErr {
+			t.Fatalf("%s: got %v, want nil", tc.desc, err)
+		}
+	}
+}

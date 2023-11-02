@@ -250,7 +250,7 @@ type internalClient interface {
 // Client is a client for interacting with Rapid Migration Assessment API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Rapid Migration Assessment service
+// Service describing handlers for resources.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -337,6 +337,7 @@ func (c *Client) UpdateCollectorOperation(name string) *UpdateCollectorOperation
 }
 
 // DeleteCollector deletes a single Collector - changes state of collector to “Deleting”.
+// Background jobs does final deletion thorugh producer api.
 func (c *Client) DeleteCollector(ctx context.Context, req *rapidmigrationassessmentpb.DeleteCollectorRequest, opts ...gax.CallOption) (*DeleteCollectorOperation, error) {
 	return c.internalClient.DeleteCollector(ctx, req, opts...)
 }
@@ -439,7 +440,7 @@ type gRPCClient struct {
 // NewClient creates a new rapid migration assessment client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Rapid Migration Assessment service
+// Service describing handlers for resources.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -526,7 +527,7 @@ type restClient struct {
 
 // NewRESTClient creates a new rapid migration assessment rest client.
 //
-// Rapid Migration Assessment service
+// Service describing handlers for resources.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1412,6 +1413,7 @@ func (c *restClient) UpdateCollector(ctx context.Context, req *rapidmigrationass
 }
 
 // DeleteCollector deletes a single Collector - changes state of collector to “Deleting”.
+// Background jobs does final deletion thorugh producer api.
 func (c *restClient) DeleteCollector(ctx context.Context, req *rapidmigrationassessmentpb.DeleteCollectorRequest, opts ...gax.CallOption) (*DeleteCollectorOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

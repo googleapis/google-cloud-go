@@ -1985,7 +1985,7 @@ type PartitionQueryResponse struct {
 	//  * query, start_at B
 	//
 	// An empty result may indicate that the query has too few results to be
-	// partitioned.
+	// partitioned, or that the query is not yet supported for partitioning.
 	Partitions []*Cursor `protobuf:"bytes,1,rep,name=partitions,proto3" json:"partitions,omitempty"`
 	// A page token that may be used to request an additional set of results, up
 	// to the number specified by `partition_count` in the PartitionQuery request.
@@ -2502,6 +2502,21 @@ type Target struct {
 	ResumeType isTarget_ResumeType `protobuf_oneof:"resume_type"`
 	// The target ID that identifies the target on the stream. Must be a positive
 	// number and non-zero.
+	//
+	// If `target_id` is 0 (or unspecified), the server will assign an ID for this
+	// target and return that in a `TargetChange::ADD` event. Once a target with
+	// `target_id=0` is added, all subsequent targets must also have
+	// `target_id=0`. If an `AddTarget` request with `target_id != 0` is
+	// sent to the server after a target with `target_id=0` is added, the server
+	// will immediately send a response with a `TargetChange::Remove` event.
+	//
+	// Note that if the client sends multiple `AddTarget` requests
+	// without an ID, the order of IDs returned in `TargetChage.target_ids` are
+	// undefined. Therefore, clients should provide a target ID instead of relying
+	// on the server to assign one.
+	//
+	// If `target_id` is non-zero, there must not be an existing active target on
+	// this stream with the same ID.
 	TargetId int32 `protobuf:"varint,5,opt,name=target_id,json=targetId,proto3" json:"target_id,omitempty"`
 	// If the target should be removed once it is current and consistent.
 	Once bool `protobuf:"varint,6,opt,name=once,proto3" json:"once,omitempty"`

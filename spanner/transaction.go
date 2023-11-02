@@ -694,6 +694,8 @@ type ReadOnlyTransaction struct {
 	rts time.Time
 	// tb is the read staleness bound specification for transactional reads.
 	tb TimestampBound
+	// isLongRunningTransaction indicates whether the transaction is long-running or not.
+	isLongRunningTransaction bool
 }
 
 // errTxInitTimeout returns error for timeout in waiting for initialization of
@@ -746,6 +748,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
 		sh, err = t.sp.take(ctx)
+		sh.eligibleForLongRunning = t.isLongRunningTransaction
 		if err != nil {
 			return err
 		}
@@ -1094,6 +1097,8 @@ type ReadWriteTransaction struct {
 	state txState
 	// wb is the set of buffered mutations waiting to be committed.
 	wb []*Mutation
+	// isLongRunningTransaction indicates whether the transaction is long-running or not.
+	isLongRunningTransaction bool
 }
 
 // BufferWrite adds a list of mutations to the set of updates that will be
@@ -1209,6 +1214,14 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	if err != nil {
 		return nil, err
 	}
+	// mark transaction and session to be eligible for long-running
+	t.mu.Lock()
+	t.isLongRunningTransaction = true
+	t.mu.Unlock()
+	t.sh.mu.Lock()
+	t.sh.eligibleForLongRunning = true
+	t.sh.mu.Unlock()
+
 	// Cloud Spanner will return "Session not found" on bad sessions.
 	sid := sh.getID()
 	if sid == "" {
@@ -1479,6 +1492,14 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
+
+			sh.mu.Lock()
+			t.mu.Lock()
+			// for batch update operations, isLongRunningTransaction will be true
+			sh.eligibleForLongRunning = t.isLongRunningTransaction
+			t.mu.Unlock()
+			sh.mu.Unlock()
+
 			continue
 		} else {
 			err = ToSpannerError(err)

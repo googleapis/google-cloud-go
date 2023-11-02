@@ -31,8 +31,6 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/ptypes"
-	durpb "github.com/golang/protobuf/ptypes/duration"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/iterator"
@@ -43,6 +41,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/durationpb"
 	field_mask "google.golang.org/protobuf/types/known/fieldmaskpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const adminAddr = "bigtableadmin.googleapis.com:443"
@@ -565,10 +564,10 @@ func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapsh
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
-	var ttlProto *durpb.Duration
+	var ttlProto *durationpb.Duration
 
 	if ttl > 0 {
-		ttlProto = ptypes.DurationProto(ttl)
+		ttlProto = durationpb.New(ttl)
 	}
 
 	req := &btapb.SnapshotTableRequest{
@@ -643,15 +642,15 @@ func newSnapshotInfo(snapshot *btapb.Snapshot) (*SnapshotInfo, error) {
 	tablePathParts := strings.Split(snapshot.SourceTable.Name, "/")
 	tableID := tablePathParts[len(tablePathParts)-1]
 
-	createTime, err := ptypes.Timestamp(snapshot.CreateTime)
-	if err != nil {
+	if err := snapshot.CreateTime.CheckValid(); err != nil {
 		return nil, fmt.Errorf("invalid createTime: %w", err)
 	}
+	createTime := snapshot.CreateTime.AsTime()
 
-	deleteTime, err := ptypes.Timestamp(snapshot.DeleteTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid deleteTime: %w", err)
+	if err := snapshot.DeleteTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid deleteTime: %v", err)
 	}
+	deleteTime := snapshot.DeleteTime.AsTime()
 
 	return &SnapshotInfo{
 		Name:        name,
@@ -1092,7 +1091,7 @@ func (iac *InstanceAdminClient) UpdateInstanceWithClusters(ctx context.Context, 
 				return fmt.Errorf("UpdateCluster %q failed %w; however UpdateInstance succeeded",
 					cluster.ClusterID, clusterErr)
 			}
-			return err
+			return clusterErr
 		}
 	}
 
@@ -1902,10 +1901,7 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
-	parsedExpireTime, err := ptypes.TimestampProto(expireTime)
-	if err != nil {
-		return err
-	}
+	parsedExpireTime := timestamppb.New(expireTime)
 
 	req := &btapb.CreateBackupRequest{
 		Parent:   prefix + "/clusters/" + cluster,
@@ -1977,20 +1973,20 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 	tablePathParts := strings.Split(backup.SourceTable, "/")
 	tableID := tablePathParts[len(tablePathParts)-1]
 
-	startTime, err := ptypes.Timestamp(backup.StartTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid startTime: %w", err)
+	if err := backup.StartTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid startTime: %v", err)
 	}
+	startTime := backup.StartTime.AsTime()
 
-	endTime, err := ptypes.Timestamp(backup.EndTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid endTime: %w", err)
+	if err := backup.EndTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid endTime: %v", err)
 	}
+	endTime := backup.EndTime.AsTime()
 
-	expireTime, err := ptypes.Timestamp(backup.ExpireTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid expireTime: %w", err)
+	if err := backup.ExpireTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid expireTime: %v", err)
 	}
+	expireTime := backup.ExpireTime.AsTime()
 	encryptionInfo := newEncryptionInfo(backup.EncryptionInfo)
 	bi := BackupInfo{
 		Name:           name,
@@ -2081,10 +2077,7 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
-	expireTimestamp, err := ptypes.TimestampProto(expireTime)
-	if err != nil {
-		return err
-	}
+	expireTimestamp := timestamppb.New(expireTime)
 
 	updateMask := &field_mask.FieldMask{}
 	updateMask.Paths = append(updateMask.Paths, "expire_time")
@@ -2096,6 +2089,6 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 		},
 		UpdateMask: updateMask,
 	}
-	_, err = ac.tClient.UpdateBackup(ctx, req)
+	_, err := ac.tClient.UpdateBackup(ctx, req)
 	return err
 }

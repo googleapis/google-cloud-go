@@ -55,7 +55,9 @@ func TestNewTokenProvider(t *testing.T) {
 
 	}))
 	defer ts.Close()
+	oldEndpoint := identityBindingEndpoint
 	identityBindingEndpoint = ts.URL
+	t.Cleanup(func() { identityBindingEndpoint = oldEndpoint })
 	tp, err := NewTokenProvider(&Options{
 		BaseProvider: staticTokenProvider("token_base"),
 		Rules: []AccessBoundaryRule{

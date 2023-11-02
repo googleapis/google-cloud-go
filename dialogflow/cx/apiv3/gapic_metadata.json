@@ -933,6 +933,11 @@
                 "DeleteIntent"
               ]
             },
+            "ExportIntents": {
+              "methods": [
+                "ExportIntents"
+              ]
+            },
             "GetIntent": {
               "methods": [
                 "GetIntent"
@@ -946,6 +951,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportIntents": {
+              "methods": [
+                "ImportIntents"
               ]
             },
             "ListIntents": {
@@ -988,6 +998,11 @@
                 "DeleteIntent"
               ]
             },
+            "ExportIntents": {
+              "methods": [
+                "ExportIntents"
+              ]
+            },
             "GetIntent": {
               "methods": [
                 "GetIntent"
@@ -1001,6 +1016,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportIntents": {
+              "methods": [
+                "ImportIntents"
               ]
             },
             "ListIntents": {

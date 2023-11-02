@@ -455,3 +455,11 @@ func (p *Partition) UnmarshalBinary(data []byte) error {
 	}
 	return err
 }
+
+// GetPartitionToken returns partition token
+func (p *Partition) GetPartitionToken() []byte {
+	if p != nil {
+		return p.pt
+	}
+	return nil
+}

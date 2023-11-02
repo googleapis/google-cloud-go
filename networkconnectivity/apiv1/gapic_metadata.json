@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "HubClient",
           "rpcs": {
+            "AcceptHubSpoke": {
+              "methods": [
+                "AcceptHubSpoke"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -40,6 +45,11 @@
                 "DeleteSpoke"
               ]
             },
+            "GetGroup": {
+              "methods": [
+                "GetGroup"
+              ]
+            },
             "GetHub": {
               "methods": [
                 "GetHub"
@@ -60,9 +70,29 @@
                 "GetOperation"
               ]
             },
+            "GetRoute": {
+              "methods": [
+                "GetRoute"
+              ]
+            },
+            "GetRouteTable": {
+              "methods": [
+                "GetRouteTable"
+              ]
+            },
             "GetSpoke": {
               "methods": [
                 "GetSpoke"
+              ]
+            },
+            "ListGroups": {
+              "methods": [
+                "ListGroups"
+              ]
+            },
+            "ListHubSpokes": {
+              "methods": [
+                "ListHubSpokes"
               ]
             },
             "ListHubs": {
@@ -80,9 +110,24 @@
                 "ListOperations"
               ]
             },
+            "ListRouteTables": {
+              "methods": [
+                "ListRouteTables"
+              ]
+            },
+            "ListRoutes": {
+              "methods": [
+                "ListRoutes"
+              ]
+            },
             "ListSpokes": {
               "methods": [
                 "ListSpokes"
+              ]
+            },
+            "RejectHubSpoke": {
+              "methods": [
+                "RejectHubSpoke"
               ]
             },
             "SetIamPolicy": {
