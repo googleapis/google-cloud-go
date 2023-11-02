@@ -166,7 +166,7 @@ type pendingWrite struct {
 	// likely outcome when processing requests and it allows us to be efficient on send.
 	// We retain the additional information to build the complete request in the related fields.
 	req           *storagepb.AppendRowsRequest
-	descVersion   *descriptorVersion // schema at time of creation
+	reqTmpl       *versionedTemplate // request template at time of creation
 	traceID       string
 	writeStreamID string
 
@@ -188,21 +188,21 @@ type pendingWrite struct {
 // to the pending results for later consumption.  The provided context is
 // embedded in the pending write, as the write may be retried and we want
 // to respect the original context for expiry/cancellation etc.
-func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest, curDescVersion *descriptorVersion, writeStreamID, traceID string) *pendingWrite {
+func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest, reqTmpl *versionedTemplate, writeStreamID, traceID string) *pendingWrite {
 	pw := &pendingWrite{
 		writer: src,
 		result: newAppendResult(),
 		reqCtx: ctx,
 
-		req:           req,
-		descVersion:   curDescVersion,
+		req:           req,     // minimal req, typically just row data
+		reqTmpl:       reqTmpl, // remainder of templated request
 		writeStreamID: writeStreamID,
 		traceID:       traceID,
 	}
 	// Compute the approx size for flow control purposes.
 	pw.reqSize = proto.Size(pw.req) + len(writeStreamID) + len(traceID)
-	if pw.descVersion != nil {
-		pw.reqSize += proto.Size(pw.descVersion.descriptorProto)
+	if pw.reqTmpl != nil {
+		pw.reqSize += proto.Size(pw.reqTmpl.tmpl)
 	}
 	return pw
 }
@@ -221,33 +221,22 @@ func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error) 
 	close(pw.result.ready)
 	// Cleanup references remaining on the write explicitly.
 	pw.req = nil
-	pw.descVersion = nil
+	pw.reqTmpl = nil
 	pw.writer = nil
 	pw.reqCtx = nil
 }
 
 func (pw *pendingWrite) constructFullRequest(addTrace bool) *storagepb.AppendRowsRequest {
 	req := &storagepb.AppendRowsRequest{}
+	if pw.reqTmpl != nil {
+		req = proto.Clone(pw.reqTmpl.tmpl).(*storagepb.AppendRowsRequest)
+	}
 	if pw.req != nil {
-		req = proto.Clone(pw.req).(*storagepb.AppendRowsRequest)
+		proto.Merge(req, pw.req)
 	}
 	if addTrace {
 		req.TraceId = buildTraceID(&streamSettings{TraceID: pw.traceID})
 	}
 	req.WriteStream = pw.writeStreamID
-	if pw.descVersion != nil {
-		ps := &storagepb.ProtoSchema{
-			ProtoDescriptor: pw.descVersion.descriptorProto,
-		}
-		if pr := req.GetProtoRows(); pr != nil {
-			pr.WriterSchema = ps
-		} else {
-			req.Rows = &storagepb.AppendRowsRequest_ProtoRows{
-				ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
-					WriterSchema: ps,
-				},
-			}
-		}
-	}
 	return req
 }

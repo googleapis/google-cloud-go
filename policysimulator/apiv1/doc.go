@@ -25,8 +25,6 @@
 // and compares those results to determine how your members’ access might
 // change under the proposed policy.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference
