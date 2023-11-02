@@ -29,6 +29,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// StartBatchTxnHandler holds the necessary components and options required for start batch transaction action.
 type StartBatchTxnHandler struct {
 	Action        *executorpb.StartBatchTransactionAction
 	FlowContext   *ExecutionFlowContext
@@ -61,12 +62,12 @@ func (h *StartBatchTxnHandler) ExecuteAction(ctx context.Context) error {
 			return h.OutcomeSender.FinishWithError(err)
 		}
 	} else if h.Action.GetTid() != nil {
-		batchTransactionId := spanner.BatchReadOnlyTransactionID{}
-		err = batchTransactionId.UnmarshalBinary(h.Action.GetTid())
+		batchTransactionID := spanner.BatchReadOnlyTransactionID{}
+		err = batchTransactionID.UnmarshalBinary(h.Action.GetTid())
 		if err != nil {
 			return h.OutcomeSender.FinishWithError(err)
 		}
-		txn = client.BatchReadOnlyTransactionFromID(batchTransactionId)
+		txn = client.BatchReadOnlyTransactionFromID(batchTransactionID)
 	} else {
 		return h.OutcomeSender.FinishWithError(spanner.ToSpannerError(status.Error(codes.InvalidArgument, "Either timestamp or tid must be set")))
 	}
@@ -74,17 +75,18 @@ func (h *StartBatchTxnHandler) ExecuteAction(ctx context.Context) error {
 	h.FlowContext.batchTxn = txn
 	h.FlowContext.currentActiveTransaction = Batch
 	h.FlowContext.initReadState()
-	batchTxnIdMarshal, err := txn.ID.MarshalBinary()
+	batchTxnIDMarshal, err := txn.ID.MarshalBinary()
 	if err != nil {
 		return h.OutcomeSender.FinishWithError(err)
 	}
 	spannerActionOutcome := &executorpb.SpannerActionOutcome{
 		Status:     &spb.Status{Code: int32(codes.OK)},
-		BatchTxnId: batchTxnIdMarshal,
+		BatchTxnId: batchTxnIDMarshal,
 	}
 	return h.OutcomeSender.SendOutcome(spannerActionOutcome)
 }
 
+// BatchDmlHandler holds the necessary components required for BatchDmlAction.
 type BatchDmlHandler struct {
 	Action        *executorpb.BatchDmlAction
 	FlowContext   *ExecutionFlowContext
@@ -137,6 +139,7 @@ func executeBatchDml(ctx context.Context, stmts []spanner.Statement, flowContext
 	return txn.BatchUpdate(ctx, stmts)
 }
 
+// CloseBatchTxnHandler holds the necessary components required for closing batch transaction.
 type CloseBatchTxnHandler struct {
 	Action        *executorpb.CloseBatchTransactionAction
 	FlowContext   *ExecutionFlowContext

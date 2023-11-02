@@ -35,6 +35,7 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
+// AdminActionHandler holds the necessary components and options required for performing admin tasks.
 type AdminActionHandler struct {
 	Action        *executorpb.AdminAction
 	FlowContext   *ExecutionFlowContext
@@ -111,8 +112,8 @@ func (h *AdminActionHandler) ExecuteAction(ctx context.Context) error {
 // execute action that creates a cloud instance.
 func executeCreateCloudInstance(ctx context.Context, action *executorpb.CreateCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("creating instance:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
 		return err
@@ -120,10 +121,10 @@ func executeCreateCloudInstance(ctx context.Context, action *executorpb.CreateCl
 	defer instanceAdminClient.Close()
 	op, err := instanceAdminClient.CreateInstance(ctx, &instancepb.CreateInstanceRequest{
 		Parent:     fmt.Sprintf("projects/%s", action.GetProjectId()),
-		InstanceId: instanceId,
+		InstanceId: instanceID,
 		Instance: &instancepb.Instance{
-			Config:          fmt.Sprintf("projects/%s/instanceConfigs/%s", projectId, action.GetInstanceConfigId()),
-			DisplayName:     instanceId,
+			Config:          fmt.Sprintf("projects/%s/instanceConfigs/%s", projectID, action.GetInstanceConfigId()),
+			DisplayName:     instanceID,
 			NodeCount:       action.GetNodeCount(),
 			ProcessingUnits: action.GetProcessingUnits(),
 			Labels:          action.GetLabels(),
@@ -146,18 +147,18 @@ func executeCreateCloudInstance(ctx context.Context, action *executorpb.CreateCl
 // execute action that updates a cloud instance.
 func executeUpdateCloudInstance(ctx context.Context, action *executorpb.UpdateCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("updating instance:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	defer instanceAdminClient.Close()
-	instanceObj := &instancepb.Instance{Name: fmt.Sprintf("projects/%s/instances/%s", projectId, instanceId)}
+	instanceObj := &instancepb.Instance{Name: fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID)}
 	var fieldsToUpdate []string
 	if action.DisplayName != nil {
 		fieldsToUpdate = append(fieldsToUpdate, "display_name")
-		instanceObj.DisplayName = instanceId
+		instanceObj.DisplayName = instanceID
 	}
 	if action.NodeCount != nil {
 		fieldsToUpdate = append(fieldsToUpdate, "node_count")
@@ -193,15 +194,15 @@ func executeUpdateCloudInstance(ctx context.Context, action *executorpb.UpdateCl
 // execute action that deletes a cloud instance.
 func executeDeleteCloudInstance(ctx context.Context, action *executorpb.DeleteCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("deleting instance:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	defer instanceAdminClient.Close()
 	err = instanceAdminClient.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{
-		Name: fmt.Sprintf("projects/%s/instances/%s", projectId, instanceId),
+		Name: fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID),
 	})
 	if err != nil {
 		return err
@@ -212,14 +213,14 @@ func executeDeleteCloudInstance(ctx context.Context, action *executorpb.DeleteCl
 // execute action that lists cloud instances.
 func executeListCloudInstances(ctx context.Context, action *executorpb.ListCloudInstancesAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing instance:  %v", action)
-	projectId := action.GetProjectId()
+	projectID := action.GetProjectId()
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	defer instanceAdminClient.Close()
 	listInstancesRequest := &instancepb.ListInstancesRequest{
-		Parent: fmt.Sprintf("projects/%s", projectId),
+		Parent: fmt.Sprintf("projects/%s", projectID),
 	}
 	if action.PageSize != nil {
 		listInstancesRequest.PageSize = action.GetPageSize()
@@ -260,14 +261,14 @@ func executeListCloudInstances(ctx context.Context, action *executorpb.ListCloud
 // execute action that lists cloud instance configs.
 func executeListInstanceConfigs(ctx context.Context, action *executorpb.ListCloudInstanceConfigsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing instance configs:  %v", action)
-	projectId := action.GetProjectId()
+	projectID := action.GetProjectId()
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	defer instanceAdminClient.Close()
 	listInstanceConfigsRequest := &instancepb.ListInstanceConfigsRequest{
-		Parent: fmt.Sprintf("projects/%s", projectId),
+		Parent: fmt.Sprintf("projects/%s", projectID),
 	}
 	if action.PageSize != nil {
 		listInstanceConfigsRequest.PageSize = action.GetPageSize()
@@ -305,15 +306,15 @@ func executeListInstanceConfigs(ctx context.Context, action *executorpb.ListClou
 // execute action that gets a cloud instance config.
 func executeGetCloudInstanceConfig(ctx context.Context, action *executorpb.GetCloudInstanceConfigAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("getting instance config:  %v", action)
-	projectId := action.GetProjectId()
-	instanceConfigId := action.GetInstanceConfigId()
+	projectID := action.GetProjectId()
+	instanceConfigID := action.GetInstanceConfigId()
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	defer instanceAdminClient.Close()
 	instanceConfig, err := instanceAdminClient.GetInstanceConfig(ctx, &instancepb.GetInstanceConfigRequest{
-		Name: fmt.Sprintf("projects/%s/instanceConfigs/%s", projectId, instanceConfigId),
+		Name: fmt.Sprintf("projects/%s/instanceConfigs/%s", projectID, instanceConfigID),
 	})
 	if err != nil {
 		return err
@@ -336,15 +337,15 @@ func executeGetCloudInstanceConfig(ctx context.Context, action *executorpb.GetCl
 // execute action that retrieves a cloud instance.
 func executeGetCloudInstance(ctx context.Context, action *executorpb.GetCloudInstanceAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("retrieving instance:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	defer instanceAdminClient.Close()
 	instanceObj, err := instanceAdminClient.GetInstance(ctx, &instancepb.GetInstanceRequest{
-		Name: fmt.Sprintf("projects/%s/instances/%s", projectId, instanceId),
+		Name: fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID),
 	})
 	spannerActionOutcome := &executorpb.SpannerActionOutcome{
 		Status: &spb.Status{Code: int32(codes.OK)},
@@ -364,21 +365,21 @@ func executeGetCloudInstance(ctx context.Context, action *executorpb.GetCloudIns
 // execute action that creates a user instance config.
 func executeCreateUserInstanceConfig(ctx context.Context, action *executorpb.CreateUserInstanceConfigAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("Creating user instance config:  %v", action)
-	projectId := action.GetProjectId()
-	baseConfigId := action.GetBaseConfigId()
-	userConfigId := action.GetUserConfigId()
+	projectID := action.GetProjectId()
+	baseConfigID := action.GetBaseConfigId()
+	userConfigID := action.GetUserConfigId()
 	instanceAdminClient, err := instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	op, err := instanceAdminClient.CreateInstanceConfig(ctx, &instancepb.CreateInstanceConfigRequest{
-		Parent:           fmt.Sprintf("projects/%s", projectId),
-		InstanceConfigId: userConfigId,
+		Parent:           fmt.Sprintf("projects/%s", projectID),
+		InstanceConfigId: userConfigID,
 		InstanceConfig: &instancepb.InstanceConfig{
-			Name:        fmt.Sprintf("projects/%s/instanceConfigs/%s", projectId, userConfigId),
-			DisplayName: userConfigId,
+			Name:        fmt.Sprintf("projects/%s/instanceConfigs/%s", projectID, userConfigID),
+			DisplayName: userConfigID,
 			Replicas:    action.GetReplicas(),
-			BaseConfig:  fmt.Sprintf("projects/%s/instanceConfigs/%s", projectId, baseConfigId),
+			BaseConfig:  fmt.Sprintf("projects/%s/instanceConfigs/%s", projectID, baseConfigID),
 		},
 	})
 	if err != nil {
@@ -410,16 +411,16 @@ func executeDeleteUserInstanceConfig(ctx context.Context, action *executorpb.Del
 // execute action that creates a cloud database or cloud custom encrypted database.
 func executeCreateCloudDatabase(ctx context.Context, action *executorpb.CreateCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("creating database:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
-	databaseId := action.GetDatabaseId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
+	databaseID := action.GetDatabaseId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	createDatabaseRequest := &adminpb.CreateDatabaseRequest{
-		Parent:          fmt.Sprintf("projects/%s/instances/%s", projectId, instanceId),
-		CreateStatement: "CREATE DATABASE `" + databaseId + "`",
+		Parent:          fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID),
+		CreateStatement: "CREATE DATABASE `" + databaseID + "`",
 		ExtraStatements: action.GetSdlStatement(),
 	}
 	if action.GetEncryptionConfig() != nil {
@@ -461,15 +462,15 @@ func executeUpdateCloudDatabaseDdl(ctx context.Context, action *executorpb.Updat
 // execute action that drops a cloud database.
 func executeDropCloudDatabase(ctx context.Context, action *executorpb.DropCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("dropping database:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
-	databaseId := action.GetDatabaseId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
+	databaseID := action.GetDatabaseId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	err = databaseAdminClient.DropDatabase(ctx, &adminpb.DropDatabaseRequest{
-		Database: fmt.Sprintf("projects/%s/instances/%s/databases/%s", projectId, instanceId, databaseId),
+		Database: fmt.Sprintf("projects/%s/instances/%s/databases/%s", projectID, instanceID, databaseID),
 	})
 	if err != nil {
 		return err
@@ -480,19 +481,19 @@ func executeDropCloudDatabase(ctx context.Context, action *executorpb.DropCloudD
 // execute action that creates a cloud database backup.
 func executeCreateCloudBackup(ctx context.Context, action *executorpb.CreateCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("creating backup:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
-	databaseId := action.GetDatabaseId()
-	backupId := action.GetBackupId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
+	databaseID := action.GetDatabaseId()
+	backupID := action.GetBackupId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	op, err := databaseAdminClient.CreateBackup(ctx, &adminpb.CreateBackupRequest{
-		Parent:   fmt.Sprintf("projects/%s/instances/%s", projectId, instanceId),
-		BackupId: backupId,
+		Parent:   fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID),
+		BackupId: backupID,
 		Backup: &adminpb.Backup{
-			Database:    fmt.Sprintf("projects/%s/instances/%s/databases/%s", projectId, instanceId, databaseId),
+			Database:    fmt.Sprintf("projects/%s/instances/%s/databases/%s", projectID, instanceID, databaseID),
 			VersionTime: action.GetVersionTime(),
 			ExpireTime:  action.GetExpireTime(),
 		},
@@ -518,18 +519,18 @@ func executeCreateCloudBackup(ctx context.Context, action *executorpb.CreateClou
 // execute action that copies a cloud database backup.
 func executeCopyCloudBackup(ctx context.Context, action *executorpb.CopyCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("copying backup:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
-	backupId := action.GetBackupId()
-	sourceBackupId := action.GetSourceBackup()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
+	backupID := action.GetBackupId()
+	sourceBackupID := action.GetSourceBackup()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	op, err := databaseAdminClient.CopyBackup(ctx, &adminpb.CopyBackupRequest{
-		Parent:       fmt.Sprintf("projects/%s/instances/%s", projectId, instanceId),
-		BackupId:     backupId,
-		SourceBackup: fmt.Sprintf("projects/%s/instances/%s/backups/%s", projectId, instanceId, sourceBackupId),
+		Parent:       fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID),
+		BackupId:     backupID,
+		SourceBackup: fmt.Sprintf("projects/%s/instances/%s/backups/%s", projectID, instanceID, sourceBackupID),
 		ExpireTime:   action.GetExpireTime(),
 	})
 	if err != nil {
@@ -553,15 +554,15 @@ func executeCopyCloudBackup(ctx context.Context, action *executorpb.CopyCloudBac
 // execute action that gets a cloud database backup.
 func executeGetCloudBackup(ctx context.Context, action *executorpb.GetCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("getting backup:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
-	backupId := action.GetBackupId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
+	backupID := action.GetBackupId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	backup, err := databaseAdminClient.GetBackup(ctx, &adminpb.GetBackupRequest{
-		Name: fmt.Sprintf("projects/%s/instances/%s/backups/%s", projectId, instanceId, backupId),
+		Name: fmt.Sprintf("projects/%s/instances/%s/backups/%s", projectID, instanceID, backupID),
 	})
 	if err != nil {
 		return err
@@ -580,9 +581,9 @@ func executeGetCloudBackup(ctx context.Context, action *executorpb.GetCloudBacku
 // execute action that updates a cloud database backup.
 func executeUpdateCloudBackup(ctx context.Context, action *executorpb.UpdateCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("updating backup:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
-	backupId := action.GetBackupId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
+	backupID := action.GetBackupId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
@@ -590,7 +591,7 @@ func executeUpdateCloudBackup(ctx context.Context, action *executorpb.UpdateClou
 	backup, err := databaseAdminClient.UpdateBackup(ctx, &adminpb.UpdateBackupRequest{
 		Backup: &adminpb.Backup{
 			ExpireTime: action.GetExpireTime(),
-			Name:       fmt.Sprintf("projects/%s/instances/%s/backups/%s", projectId, instanceId, backupId),
+			Name:       fmt.Sprintf("projects/%s/instances/%s/backups/%s", projectID, instanceID, backupID),
 		},
 		UpdateMask: &fieldmaskpb.FieldMask{
 			Paths: []string{"expire_time"},
@@ -613,15 +614,15 @@ func executeUpdateCloudBackup(ctx context.Context, action *executorpb.UpdateClou
 // execute action that deletes a cloud database backup.
 func executeDeleteCloudBackup(ctx context.Context, action *executorpb.DeleteCloudBackupAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("deleting backup:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
-	backupId := action.GetBackupId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
+	backupID := action.GetBackupId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	err = databaseAdminClient.DeleteBackup(ctx, &adminpb.DeleteBackupRequest{
-		Name: fmt.Sprintf("projects/%s/instances/%s/backups/%s", projectId, instanceId, backupId),
+		Name: fmt.Sprintf("projects/%s/instances/%s/backups/%s", projectID, instanceID, backupID),
 	})
 	if err != nil {
 		return err
@@ -632,14 +633,14 @@ func executeDeleteCloudBackup(ctx context.Context, action *executorpb.DeleteClou
 // execute action that lists cloud database backups.
 func executeListCloudBackups(ctx context.Context, action *executorpb.ListCloudBackupsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing backup:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	iter := databaseAdminClient.ListBackups(ctx, &adminpb.ListBackupsRequest{
-		Parent:    fmt.Sprintf("projects/%s/instances/%s", projectId, instanceId),
+		Parent:    fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID),
 		Filter:    action.GetFilter(),
 		PageSize:  action.GetPageSize(),
 		PageToken: action.GetPageToken(),
@@ -674,14 +675,14 @@ func executeListCloudBackups(ctx context.Context, action *executorpb.ListCloudBa
 // execute action that lists cloud database backup operations.
 func executeListCloudBackupOperations(ctx context.Context, action *executorpb.ListCloudBackupOperationsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing backup operation:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	iter := databaseAdminClient.ListBackupOperations(ctx, &adminpb.ListBackupOperationsRequest{
-		Parent:    fmt.Sprintf("projects/%s/instances/%s", projectId, instanceId),
+		Parent:    fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID),
 		Filter:    action.GetFilter(),
 		PageSize:  action.GetPageSize(),
 		PageToken: action.GetPageToken(),
@@ -715,14 +716,14 @@ func executeListCloudBackupOperations(ctx context.Context, action *executorpb.Li
 // execute action that list cloud databases.
 func executeListCloudDatabases(ctx context.Context, action *executorpb.ListCloudDatabasesAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing database:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	iter := databaseAdminClient.ListDatabases(ctx, &adminpb.ListDatabasesRequest{
-		Parent:    fmt.Sprintf("projects/%s/instances/%s", projectId, instanceId),
+		Parent:    fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID),
 		PageSize:  action.GetPageSize(),
 		PageToken: action.GetPageToken(),
 	})
@@ -755,14 +756,14 @@ func executeListCloudDatabases(ctx context.Context, action *executorpb.ListCloud
 // execute action that lists cloud database operations.
 func executeListCloudDatabaseOperations(ctx context.Context, action *executorpb.ListCloudDatabaseOperationsAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("listing database operation:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	iter := databaseAdminClient.ListDatabaseOperations(ctx, &adminpb.ListDatabaseOperationsRequest{
-		Parent:    fmt.Sprintf("projects/%s/instances/%s", projectId, instanceId),
+		Parent:    fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID),
 		PageSize:  action.GetPageSize(),
 		Filter:    action.GetFilter(),
 		PageToken: action.GetPageToken(),
@@ -797,17 +798,17 @@ func executeListCloudDatabaseOperations(ctx context.Context, action *executorpb.
 // execute action that restores a cloud database.
 func executeRestoreCloudDatabase(ctx context.Context, action *executorpb.RestoreCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("restoring database:  %v", action)
-	projectId := action.GetProjectId()
-	databaseInstanceId := action.GetDatabaseInstanceId()
+	projectID := action.GetProjectId()
+	databaseInstanceID := action.GetDatabaseInstanceId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	restoreOp, err := databaseAdminClient.RestoreDatabase(ctx, &adminpb.RestoreDatabaseRequest{
-		Parent:     fmt.Sprintf("projects/%s/instances/%s", projectId, databaseInstanceId),
-		DatabaseId: fmt.Sprintf("projects/%s/instances/%s/databases/%s", projectId, databaseInstanceId, action.GetDatabaseId()),
+		Parent:     fmt.Sprintf("projects/%s/instances/%s", projectID, databaseInstanceID),
+		DatabaseId: fmt.Sprintf("projects/%s/instances/%s/databases/%s", projectID, databaseInstanceID, action.GetDatabaseId()),
 		Source: &adminpb.RestoreDatabaseRequest_Backup{
-			Backup: fmt.Sprintf("projects/%s/instances/%s/backups/%s", projectId, action.GetBackupInstanceId(), action.GetBackupId()),
+			Backup: fmt.Sprintf("projects/%s/instances/%s/backups/%s", projectID, action.GetBackupInstanceId(), action.GetBackupId()),
 		},
 		EncryptionConfig: nil,
 	})
@@ -833,15 +834,15 @@ func executeRestoreCloudDatabase(ctx context.Context, action *executorpb.Restore
 // execute action that gets a cloud database.
 func executeGetCloudDatabase(ctx context.Context, action *executorpb.GetCloudDatabaseAction, h *ExecutionFlowContext, opts []option.ClientOption, o *outputstream.OutcomeSender) error {
 	log.Printf("getting database:  %v", action)
-	projectId := action.GetProjectId()
-	instanceId := action.GetInstanceId()
-	databaseId := action.GetDatabaseId()
+	projectID := action.GetProjectId()
+	instanceID := action.GetInstanceId()
+	databaseID := action.GetDatabaseId()
 	databaseAdminClient, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		return err
 	}
 	db, err := databaseAdminClient.GetDatabase(ctx, &adminpb.GetDatabaseRequest{
-		Name: fmt.Sprintf("projects/%s/instances/%s/databases/%s", projectId, instanceId, databaseId),
+		Name: fmt.Sprintf("projects/%s/instances/%s/databases/%s", projectID, instanceID, databaseID),
 	})
 	if err != nil {
 		return err

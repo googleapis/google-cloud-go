@@ -29,6 +29,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// PartitionReadActionHandler holds the necessary components required for performing partition read action.
 type PartitionReadActionHandler struct {
 	Action        *executorpb.GenerateDbPartitionsForReadAction
 	FlowContext   *ExecutionFlowContext
@@ -100,6 +101,7 @@ func (h *PartitionReadActionHandler) ExecuteAction(ctx context.Context) error {
 	return err
 }
 
+// PartitionQueryActionHandler holds the necessary components required for performing partition query action.
 type PartitionQueryActionHandler struct {
 	Action        *executorpb.GenerateDbPartitionsForQueryAction
 	FlowContext   *ExecutionFlowContext
@@ -148,6 +150,7 @@ func (h *PartitionQueryActionHandler) ExecuteAction(ctx context.Context) error {
 	return err
 }
 
+// ExecutePartition holds the necessary components required for executing partition.
 type ExecutePartition struct {
 	Action        *executorpb.ExecutePartitionAction
 	FlowContext   *ExecutionFlowContext
@@ -192,6 +195,7 @@ func (h *ExecutePartition) ExecuteAction(ctx context.Context) error {
 	return h.OutcomeSender.FinishSuccessfully()
 }
 
+// PartitionedUpdate holds the necessary components required for performing partitioned update.
 type PartitionedUpdate struct {
 	Action        *executorpb.PartitionedUpdateAction
 	FlowContext   *ExecutionFlowContext

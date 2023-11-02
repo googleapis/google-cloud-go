@@ -27,6 +27,7 @@ import (
 
 type currentActiveTransaction int
 
+// Current transaction status
 const (
 	None currentActiveTransaction = iota
 	Read
