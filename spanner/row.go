@@ -184,7 +184,7 @@ func (r *Row) ColumnType(i int) *sppb.Type {
 
 // ColumnValue returns the Cloud Spanner Value of column i, or nil for invalid column.
 func (r *Row) ColumnValue(i int) *proto3.Value {
-	if i < 0 || i >= len(r.fields) {
+	if i < 0 || i >= len(r.vals) {
 		return nil
 	}
 	return r.vals[i]
