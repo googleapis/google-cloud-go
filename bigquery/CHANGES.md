@@ -3,6 +3,13 @@
 
 
 
+## [1.57.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.57.0...bigquery/v1.57.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **bigquery:** Correct deps issue ([#8958](https://github.com/googleapis/google-cloud-go/issues/8958)) ([abd6ca7](https://github.com/googleapis/google-cloud-go/commit/abd6ca7e4d59595abe6ffb2abf738b445955d0ce))
+
 ## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.56.0...bigquery/v1.57.0) (2023-10-30)
 
 
