@@ -363,9 +363,9 @@ func (r RowList) valid() bool {
 type rangeBoundType int64
 
 const (
-	rangeOpen rangeBoundType = iota
+	rangeUnbounded rangeBoundType = iota
+	rangeOpen
 	rangeClosed
-	rangeUnbounded
 )
 
 // A RowRange describes a range of rows between the start and end key. Start and
