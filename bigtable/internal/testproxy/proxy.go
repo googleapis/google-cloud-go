@@ -440,10 +440,7 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		return nil, stat.Error(codes.Unknown, fmt.Sprintf("%s: failed to create connection: %v", logLabel, err))
 	}
 
-	config := bigtable.ClientConfig{
-		AppProfile: req.AppProfileId,
-	}
-	c, err := bigtable.NewClientWithConfig(ctx, req.ProjectId, req.InstanceId, config, option.WithGRPCConn(conn))
+	c, err := bigtable.NewClient(ctx, req.ProjectId, req.InstanceId, option.WithGRPCConn(conn))
 	if err != nil {
 		return nil, stat.Error(codes.Internal,
 			fmt.Sprintf("%s: failed to create client: %v", logLabel, err))
@@ -573,12 +570,6 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		rs = bigtable.InfiniteRange("")
 	}
 
-	var opts []bigtable.ReadOption
-
-	if rrq.Reversed {
-		opts = append(opts, bigtable.ReverseScan())
-	}
-
 	ctx, cancel := btc.timeout(ctx)
 	defer cancel()
 
@@ -597,7 +588,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		}
 		rowsPb = append(rowsPb, rpb)
 		return true
-	}, opts...)
+	})
 
 	res := &pb.RowsResult{
 		Status: &statpb.Status{
@@ -608,10 +599,11 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 
 	if err != nil {
 		log.Printf("error from Table.ReadRows: %v\n", err)
-		st, _ := stat.FromError(err)
-		res.Status = &statpb.Status{
-			Code:    st.Proto().Code,
-			Message: st.Message(),
+		if st, ok := stat.FromError(err); ok {
+			res.Status = &statpb.Status{
+				Code:    st.Proto().Code,
+				Message: st.Message(),
+			}
 		}
 		return res, nil
 	}

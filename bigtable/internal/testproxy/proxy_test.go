@@ -20,7 +20,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"reflect"
 	"testing"
 
 	"cloud.google.com/go/bigtable"
@@ -42,8 +41,7 @@ const (
 	testProxyClient  = "testProxyClient"
 	testProxyAddress = "localhost:9990"
 	bigtableAddress  = "localhost:9999"
-	rowKey1          = "row1"
-	rowKey2          = "row2"
+	rowKey           = "row"
 )
 
 var (
@@ -100,12 +98,7 @@ func populateTable(bts *bttest.Server) error {
 				rmw := bigtable.NewReadModifyWrite()
 				rmw.AppendValue(fmt.Sprintf("%s%d", columnFamily, fc), fmt.Sprintf("coll%d", cc), []byte("test data"))
 
-				_, err = t.ApplyReadModifyWrite(ctx, rowKey1, rmw)
-				if err != nil {
-					return fmt.Errorf("testproxy setup: failure populating row: %v", err)
-				}
-
-				_, err = t.ApplyReadModifyWrite(ctx, rowKey2, rmw)
+				_, err = t.ApplyReadModifyWrite(ctx, rowKey, rmw)
 				if err != nil {
 					return fmt.Errorf("testproxy setup: failure populating row: %v", err)
 				}
@@ -213,7 +206,7 @@ func TestReadRow(t *testing.T) {
 	req := &pb.ReadRowRequest{
 		TableName: tableName,
 		ClientId:  testProxyClient,
-		RowKey:    rowKey1,
+		RowKey:    rowKey,
 	}
 
 	resp, err := client.ReadRow(ctx, req)
@@ -227,7 +220,7 @@ func TestReadRow(t *testing.T) {
 	}
 
 	row := resp.Row
-	if string(row.Key) != "row1" {
+	if string(row.Key) != "row" {
 		t.Errorf("testproxy test: ReadRow() returned wrong row")
 	}
 }
@@ -240,7 +233,7 @@ func TestBulkMutateRows(t *testing.T) {
 			TableName: tableName,
 			Entries: []*btpb.MutateRowsRequest_Entry{
 				{
-					RowKey: []byte(rowKey1),
+					RowKey: []byte(rowKey),
 					Mutations: []*btpb.Mutation{
 						{
 							Mutation: &btpb.Mutation_SetCell_{
@@ -277,7 +270,7 @@ func TestMutateRow(t *testing.T) {
 		ClientId: testProxyClient,
 		Request: &btpb.MutateRowRequest{
 			TableName: tableName,
-			RowKey:    []byte(rowKey1),
+			RowKey:    []byte(rowKey),
 			Mutations: []*btpb.Mutation{
 				{
 					Mutation: &btpb.Mutation_SetCell_{
@@ -321,34 +314,9 @@ func TestReadRows(t *testing.T) {
 		t.Errorf("testproxy test: ReadRows() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	rowKeys := []string{string(resp.Rows[0].Key), string(resp.Rows[1].Key)}
-	if !reflect.DeepEqual(rowKeys, []string{"row1", "row2"}) {
-		t.Errorf("testproxy test: SampleRowKeys() returned wrong row keys; got: %v", rowKeys)
-	}
-}
+	if len(resp.Rows) != 1 {
+		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Rows))
 
-func TestReadRowsReverse(t *testing.T) {
-	ctx := context.Background()
-	req := &pb.ReadRowsRequest{
-		ClientId: testProxyClient,
-		Request: &btpb.ReadRowsRequest{
-			TableName: tableName,
-			Reversed:  true,
-		},
-	}
-
-	resp, err := client.ReadRows(ctx, req)
-	if err != nil {
-		t.Fatalf("testproxy test: ReadRows returned error: %v", err)
-	}
-
-	if resp.Status.Code != int32(codes.OK) {
-		t.Errorf("testproxy test: ReadRows() didn't return OK; got %v", resp.Status.Code)
-	}
-
-	rowKeys := []string{string(resp.Rows[0].Key), string(resp.Rows[1].Key)}
-	if !reflect.DeepEqual(rowKeys, []string{"row2", "row1"}) {
-		t.Errorf("testproxy test: SampleRowKeys() returned wrong row keys; got: %v", rowKeys)
 	}
 }
 
@@ -358,7 +326,7 @@ func TestCheckAndMutateRow(t *testing.T) {
 		ClientId: testProxyClient,
 		Request: &btpb.CheckAndMutateRowRequest{
 			TableName: tableName,
-			RowKey:    []byte(rowKey1),
+			RowKey:    []byte(rowKey),
 			PredicateFilter: &btpb.RowFilter{
 				Filter: &btpb.RowFilter_PassAllFilter{},
 			},
@@ -430,7 +398,7 @@ func TestReadWriteRow(t *testing.T) {
 		ClientId: testProxyClient,
 		Request: &btpb.ReadModifyWriteRowRequest{
 			TableName: tableName,
-			RowKey:    []byte(rowKey1),
+			RowKey:    []byte(rowKey),
 			Rules: []*btpb.ReadModifyWriteRule{
 				{
 					Rule: &btpb.ReadModifyWriteRule_AppendValue{
@@ -452,7 +420,7 @@ func TestReadWriteRow(t *testing.T) {
 		t.Errorf("testproxy test: ReadModifyWriteRow() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	if string(resp.Row.Key) != rowKey1 {
+	if string(resp.Row.Key) != rowKey {
 		t.Errorf("testproxy test: ReadModifyWriteRow() returned wrong results; got: %v", resp.Row.Key)
 	}
 }
