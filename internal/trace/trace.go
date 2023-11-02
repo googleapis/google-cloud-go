@@ -35,12 +35,13 @@ import (
 const (
 	telemetryPlatformTracingOpenCensus    = "opencensus"
 	telemetryPlatformTracingOpenTelemetry = "opentelemetry"
+	telemetryPlatformTracingVar           = "GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING"
 )
 
 var (
 	// TODO(chrisdsmith): What is the correct name for the OpenTelemetry tracer?
 	OpenTelemetryTracerName  string = "cloud.google.com/go/internal/trace"
-	TelemetryPlatformTracing        = strings.TrimSpace(os.Getenv("GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING"))
+	TelemetryPlatformTracing        = strings.TrimSpace(os.Getenv(telemetryPlatformTracingVar))
 )
 
 // IsOpenCensusTracingEnabled returns true if the environment variable

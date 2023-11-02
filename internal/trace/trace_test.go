@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"os"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -43,9 +42,12 @@ var (
 )
 
 func TestStartSpan_OpenCensus(t *testing.T) {
-	old := os.Getenv(telemetryPlatformTracing)
-	defer os.Setenv(telemetryPlatformTracing, old)
-	os.Setenv(telemetryPlatformTracing, "any value")
+	old := TelemetryPlatformTracing
+	defer func() {
+		TelemetryPlatformTracing = old
+	}()
+	TelemetryPlatformTracing = "any value"
+
 	te := testutil.NewTestExporter()
 	defer te.Unregister()
 
@@ -95,9 +97,11 @@ func TestStartSpan_OpenCensus(t *testing.T) {
 }
 
 func TestStartSpan_OpenTelemetry(t *testing.T) {
-	old := os.Getenv(telemetryPlatformTracing)
-	defer os.Setenv(telemetryPlatformTracing, old)
-	os.Setenv(telemetryPlatformTracing, "opentelemetry")
+	old := TelemetryPlatformTracing
+	defer func() {
+		TelemetryPlatformTracing = old
+	}()
+	TelemetryPlatformTracing = "opentelemetry"
 
 	exporter := tracetest.NewInMemoryExporter()
 	tp := sdktrace.NewTracerProvider(
