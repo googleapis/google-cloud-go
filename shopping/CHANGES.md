@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.2.1...shopping/v0.2.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **shopping:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.2.0...shopping/v0.2.1) (2023-10-26)
 
 

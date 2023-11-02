@@ -708,6 +708,9 @@ service-configs:
   - input-directory: google/cloud/redis/v1beta1
     service-config: redis_v1beta1.yaml
     import-path: cloud.google.com/go/redis/apiv1beta1
+  - input-directory: google/cloud/redis/cluster/v1
+    service-config: redis_v1.yaml
+    import-path: cloud.google.com/go/redis/cluster/apiv1
   - input-directory: google/cloud/resourcemanager/v2
     service-config: cloudresourcemanager_v2.yaml
     import-path: cloud.google.com/go/resourcemanager/apiv2
