@@ -21,13 +21,11 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"math"
 	"net/url"
 	"os"
 	"reflect"
 	"sort"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 
@@ -788,118 +786,91 @@ type RunTransactionResult struct {
 }
 
 func TestIntegration_BeginLaterPerf(t *testing.T) {
+	runOptions := []bool{true, false} // whether BeginLater transaction option is used
+	var avgRunTimes [2]float64        // In seconds
 	numRepetitions := 10
 
-	runOptions := []bool{true, false} // whether BeginLater transaction option is used
-	var avgRunTimes [2]float64        // In nanoseconds
-
+	res := make(chan RunTransactionResult)
 	for i, runOption := range runOptions {
 		sumRunTime := float64(0)
-		var wg sync.WaitGroup
 
-		runResultChan := make(chan RunTransactionResult)
 		for rep := 0; rep < numRepetitions; rep++ {
-			wg.Add(1)
-			go runTransaction(t, &wg, runResultChan, runOption)
+			go runTransaction(t, res, runOption)
 		}
 		for rep := 0; rep < numRepetitions; rep++ {
-			result := <-runResultChan
-			if result.err != nil {
-				t.Fatal(result.err)
+			runTransactionResult := <-res
+			if runTransactionResult.err != nil {
+				t.Fatal(runTransactionResult.err)
 			}
-			sumRunTime += result.runTime
+			sumRunTime += runTransactionResult.runTime
 		}
 
-		wg.Wait()
 		avgRunTimes[i] = sumRunTime / float64(numRepetitions)
 	}
-	t.Logf("Run times:: with BeginLater: %v, without BeginLater: %v", avgRunTimes[0]/math.Pow(10, 9), avgRunTimes[1]/math.Pow(10, 9))
-	if avgRunTimes[0] > avgRunTimes[1] {
+	improvement := ((avgRunTimes[1] - avgRunTimes[0]) / avgRunTimes[1]) * 100
+	t.Logf("Run times:: with BeginLater: %.3fs, without BeginLater: %.3fs. improvement: %.2f%%", avgRunTimes[0], avgRunTimes[1], improvement)
+	if improvement < 0 {
 		t.Fatal("No perf improvement because of new transaction consistency type.")
 	}
-
 }
 
-func runTransaction(t *testing.T, wgRunTransaction *sync.WaitGroup, runResultChan chan RunTransactionResult, beginLater bool) {
-	defer wgRunTransaction.Done()
-
-	start := time.Now()
-
+func runTransaction(t *testing.T, res chan RunTransactionResult, beginLater bool) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
 	// Populate data
 	now := timeNow.Truncate(time.Millisecond).Unix()
-	numKeys := 50
+	numKeys := 10
 	keys, _, cleanupData := populateData(t, client, numKeys, now, "BeginLaterPerf"+fmt.Sprint(beginLater)+fmt.Sprint(now))
 	defer cleanupData()
 
-	// Create transaction
 	txOpts := []TransactionOption{}
 	if beginLater {
 		txOpts = append(txOpts, BeginLater)
 	}
+
+	start := time.Now()
+	// Create transaction
 	tx, err := client.NewTransaction(ctx, txOpts...)
 	if err != nil {
-		runResultChan <- RunTransactionResult{
-			err:     fmt.Errorf("Failed to create transaction: %v", err),
-			runTime: 0,
+		runTransactionResult := RunTransactionResult{
+			err: fmt.Errorf("Failed to create transaction: %v", err),
 		}
+		res <- runTransactionResult
 		return
 	}
 
-	var wgRunTransactionThread sync.WaitGroup
-	numThreads := 5
-
-	for i := 0; i < numThreads; i++ {
-		wgRunTransactionThread.Add(1)
-		keysPerThread := numKeys / numThreads
-		// Perform operations on transaction in multiple threads
-		errChan := make(chan error)
-		go runTransactionThread(&wgRunTransactionThread, errChan, tx, keys[i*keysPerThread:i*keysPerThread+keysPerThread-1])
-		err := <-errChan
-		if err != nil {
-			runResultChan <- RunTransactionResult{
-				err:     fmt.Errorf("Failed to create transaction: %v", err),
-				runTime: 0,
-			}
-			return
+	// Perform operations on transaction
+	dst := make([]*SQChild, numKeys)
+	if err := tx.GetMulti(keys, dst); err != nil {
+		runTransactionResult := RunTransactionResult{
+			err: fmt.Errorf("GetMulti got: %v, want: nil", err),
 		}
+		res <- runTransactionResult
+		return
+	}
+	if _, err := tx.PutMulti(keys, dst); err != nil {
+		runTransactionResult := RunTransactionResult{
+			err: fmt.Errorf("PutMulti got: %v, want: nil", err),
+		}
+		res <- runTransactionResult
+		return
 	}
 
 	// Commit the transaction
 	if _, err := tx.Commit(); err != nil {
-		runResultChan <- RunTransactionResult{
-			err:     fmt.Errorf("Commit got: %v, want: nil", err),
-			runTime: 0,
+		runTransactionResult := RunTransactionResult{
+			err: fmt.Errorf("Commit got: %v, want: nil", err),
 		}
+		res <- runTransactionResult
 		return
 	}
 
-	wgRunTransactionThread.Wait()
-	runResultChan <- RunTransactionResult{
-		err:     nil,
-		runTime: float64(time.Since(start).Nanoseconds()),
+	runTransactionResult := RunTransactionResult{
+		runTime: time.Since(start).Seconds(),
 	}
-}
-
-func runTransactionThread(wg *sync.WaitGroup, errChan chan error, tx *Transaction, keys []*Key) {
-	defer wg.Done()
-	for i, key := range keys {
-		dst := &SQChild{}
-		if err := tx.Get(key, dst); err != nil {
-			errChan <- fmt.Errorf("[%v] Get got: %v, want: nil", i, err)
-			return
-		}
-
-		dst.I++
-		if _, err := tx.Put(key, dst); err != nil {
-			errChan <- fmt.Errorf("[%v] Put got: %v, want: nil", i, err)
-			return
-		}
-	}
-	errChan <- nil
+	res <- runTransactionResult
 }
 
 func TestIntegration_BeginLater(t *testing.T) {
