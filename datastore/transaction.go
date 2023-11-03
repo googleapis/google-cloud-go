@@ -165,11 +165,11 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 	if s.beginLater {
 		t.state = transactionStateNotStarted
 	} else {
-		txnId, err := t.beginTransaction()
+		txnID, err := t.beginTransaction()
 		if err != nil {
 			return nil, err
 		}
-		t.id = txnId
+		t.id = txnID
 		t.state = transactionStateInProgress
 	}
 
@@ -198,7 +198,7 @@ func (t *Transaction) parseTransactionOptions() (*pb.TransactionOptions, string)
 }
 
 // beginTransaction makes BeginTransaction rpc
-func (t *Transaction) beginTransaction() (txnId []byte, err error) {
+func (t *Transaction) beginTransaction() (txnID []byte, err error) {
 
 	req := &pb.BeginTransactionRequest{
 		ProjectId:  t.client.dataset,
@@ -230,11 +230,11 @@ func (t *Transaction) beginLaterTransaction() (err error) {
 	if t.state != transactionStateNotStarted {
 		return nil
 	}
-	txnId, err := t.beginTransaction()
+	txnID, err := t.beginTransaction()
 	if err != nil {
 		return err
 	}
-	t.id = txnId
+	t.id = txnID
 	t.state = transactionStateInProgress
 	return nil
 }

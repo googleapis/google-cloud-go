@@ -99,7 +99,7 @@ func TestBeginLaterTransactionOption(t *testing.T) {
 	}
 
 	mockKind := "mockKind"
-	mockTxnId := []byte("tid")
+	mockTxnID := []byte("tid")
 	mockKey := NameKey(mockKind, "testName", nil)
 	mockEntity := &pb.Entity{
 		Key: keyToProto(mockKey),
@@ -117,7 +117,7 @@ func TestBeginLaterTransactionOption(t *testing.T) {
 	// Requests and responses to be used in tests
 	txnReadOptions := &pb.ReadOptions{
 		ConsistencyType: &pb.ReadOptions_Transaction{
-			Transaction: mockTxnId,
+			Transaction: mockTxnID,
 		},
 	}
 	newTxnReadOptions := &pb.ReadOptions{
@@ -145,7 +145,7 @@ func TestBeginLaterTransactionOption(t *testing.T) {
 		ReadOptions: newTxnReadOptions,
 	}
 	lookupResWithNewTxn := &pb.LookupResponse{
-		Transaction: mockTxnId,
+		Transaction: mockTxnID,
 		Found:       mockEntityResults,
 	}
 
@@ -172,7 +172,7 @@ func TestBeginLaterTransactionOption(t *testing.T) {
 		ReadOptions: newTxnReadOptions,
 	}
 	runQueryResWithNewTxn := &pb.RunQueryResponse{
-		Transaction: mockTxnId,
+		Transaction: mockTxnID,
 		Batch: &pb.QueryResultBatch{
 			MoreResults:      pb.QueryResultBatch_NO_MORE_RESULTS,
 			EntityResultType: pb.EntityResult_FULL,
@@ -245,14 +245,14 @@ func TestBeginLaterTransactionOption(t *testing.T) {
 				},
 			},
 		},
-		Transaction: mockTxnId,
+		Transaction: mockTxnID,
 	}
 
 	commitReq := &pb.CommitRequest{
 		ProjectId: mockProjectID,
 		Mode:      pb.CommitRequest_TRANSACTIONAL,
 		TransactionSelector: &pb.CommitRequest_Transaction{
-			Transaction: mockTxnId,
+			Transaction: mockTxnID,
 		},
 		Mutations: []*pb.Mutation{
 			{
@@ -268,7 +268,7 @@ func TestBeginLaterTransactionOption(t *testing.T) {
 		ProjectId: mockProjectID,
 	}
 	beginTxnRes := &pb.BeginTransactionResponse{
-		Transaction: mockTxnId,
+		Transaction: mockTxnID,
 	}
 
 	testcases := []struct {
