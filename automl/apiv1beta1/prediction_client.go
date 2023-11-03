@@ -139,28 +139,28 @@ func (c *PredictionClient) Connection() *grpc.ClientConn {
 // returned in the response.
 // Available for following ML problems, and their expected request payloads:
 //
-//	Image Classification - Image in .JPEG, .GIF or .PNG format, image_bytes
-//	up to 30MB.
+//   Image Classification - Image in .JPEG, .GIF or .PNG format, image_bytes
+//   up to 30MB.
 //
-//	Image Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes
-//	up to 30MB.
+//   Image Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes
+//   up to 30MB.
 //
-//	Text Classification - TextSnippet, content up to 60,000 characters,
-//	UTF-8 encoded.
+//   Text Classification - TextSnippet, content up to 60,000 characters,
+//   UTF-8 encoded.
 //
-//	Text Extraction - TextSnippet, content up to 30,000 characters,
-//	UTF-8 NFC encoded.
+//   Text Extraction - TextSnippet, content up to 30,000 characters,
+//   UTF-8 NFC encoded.
 //
-//	Translation - TextSnippet, content up to 25,000 characters, UTF-8
-//	encoded.
+//   Translation - TextSnippet, content up to 25,000 characters, UTF-8
+//   encoded.
 //
-//	Tables - Row, with column values matching the columns of the model,
-//	up to 5MB. Not available for FORECASTING
+//   Tables - Row, with column values matching the columns of the model,
+//   up to 5MB. Not available for FORECASTING
 //
 // prediction_type.
 //
-//	Text Sentiment - TextSnippet, content up 500 characters, UTF-8
-//	encoded.
+//   Text Sentiment - TextSnippet, content up 500 characters, UTF-8
+//   encoded.
 func (c *PredictionClient) Predict(ctx context.Context, req *automlpb.PredictRequest, opts ...gax.CallOption) (*automlpb.PredictResponse, error) {
 	return c.internalClient.Predict(ctx, req, opts...)
 }
@@ -173,15 +173,15 @@ func (c *PredictionClient) Predict(ctx context.Context, req *automlpb.PredictReq
 // the response field.
 // Available for following ML problems:
 //
-//	Image Classification
+//   Image Classification
 //
-//	Image Object Detection
+//   Image Object Detection
 //
-//	Video Classification
+//   Video Classification
 //
-//	Video Object Tracking * Text Extraction
+//   Video Object Tracking * Text Extraction
 //
-//	Tables
+//   Tables
 func (c *PredictionClient) BatchPredict(ctx context.Context, req *automlpb.BatchPredictRequest, opts ...gax.CallOption) (*BatchPredictOperation, error) {
 	return c.internalClient.BatchPredict(ctx, req, opts...)
 }
@@ -411,28 +411,28 @@ func (c *predictionGRPCClient) BatchPredict(ctx context.Context, req *automlpb.B
 // returned in the response.
 // Available for following ML problems, and their expected request payloads:
 //
-//	Image Classification - Image in .JPEG, .GIF or .PNG format, image_bytes
-//	up to 30MB.
+//   Image Classification - Image in .JPEG, .GIF or .PNG format, image_bytes
+//   up to 30MB.
 //
-//	Image Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes
-//	up to 30MB.
+//   Image Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes
+//   up to 30MB.
 //
-//	Text Classification - TextSnippet, content up to 60,000 characters,
-//	UTF-8 encoded.
+//   Text Classification - TextSnippet, content up to 60,000 characters,
+//   UTF-8 encoded.
 //
-//	Text Extraction - TextSnippet, content up to 30,000 characters,
-//	UTF-8 NFC encoded.
+//   Text Extraction - TextSnippet, content up to 30,000 characters,
+//   UTF-8 NFC encoded.
 //
-//	Translation - TextSnippet, content up to 25,000 characters, UTF-8
-//	encoded.
+//   Translation - TextSnippet, content up to 25,000 characters, UTF-8
+//   encoded.
 //
-//	Tables - Row, with column values matching the columns of the model,
-//	up to 5MB. Not available for FORECASTING
+//   Tables - Row, with column values matching the columns of the model,
+//   up to 5MB. Not available for FORECASTING
 //
 // prediction_type.
 //
-//	Text Sentiment - TextSnippet, content up 500 characters, UTF-8
-//	encoded.
+//   Text Sentiment - TextSnippet, content up 500 characters, UTF-8
+//   encoded.
 func (c *predictionRESTClient) Predict(ctx context.Context, req *automlpb.PredictRequest, opts ...gax.CallOption) (*automlpb.PredictResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -506,15 +506,15 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *automlpb.Predic
 // the response field.
 // Available for following ML problems:
 //
-//	Image Classification
+//   Image Classification
 //
-//	Image Object Detection
+//   Image Object Detection
 //
-//	Video Classification
+//   Video Classification
 //
-//	Video Object Tracking * Text Extraction
+//   Video Object Tracking * Text Extraction
 //
-//	Tables
+//   Tables
 func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.BatchPredictRequest, opts ...gax.CallOption) (*BatchPredictOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -584,12 +584,6 @@ func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.B
 	}, nil
 }
 
-// BatchPredictOperation manages a long-running operation from BatchPredict.
-type BatchPredictOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // BatchPredictOperation returns a new BatchPredictOperation from a given name.
 // The name must be that of a previously created BatchPredictOperation, possibly from a different process.
 func (c *predictionGRPCClient) BatchPredictOperation(name string) *BatchPredictOperation {
@@ -606,62 +600,4 @@ func (c *predictionRESTClient) BatchPredictOperation(name string) *BatchPredictO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BatchPredictOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*automlpb.BatchPredictResult, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp automlpb.BatchPredictResult
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BatchPredictOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*automlpb.BatchPredictResult, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp automlpb.BatchPredictResult
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchPredictOperation) Metadata() (*automlpb.OperationMetadata, error) {
-	var meta automlpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BatchPredictOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BatchPredictOperation) Name() string {
-	return op.lro.Name()
 }

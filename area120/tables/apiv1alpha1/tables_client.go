@@ -176,15 +176,15 @@ type internalClient interface {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//	resources, named tables/*
+//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//   resources, named tables/*
 //
-//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//	resources, named tables/*/rows/*
+//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//   resources, named tables/*/rows/*
 //
-//	The API has a collection of
-//	[Workspace][google.area120.tables.v1alpha1.Workspace]
-//	resources, named workspaces/*.
+//   The API has a collection of
+//   [Workspace][google.area120.tables.v1alpha1.Workspace]
+//   resources, named workspaces/*.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -299,15 +299,15 @@ type gRPCClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//	resources, named tables/*
+//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//   resources, named tables/*
 //
-//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//	resources, named tables/*/rows/*
+//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//   resources, named tables/*/rows/*
 //
-//	The API has a collection of
-//	[Workspace][google.area120.tables.v1alpha1.Workspace]
-//	resources, named workspaces/*.
+//   The API has a collection of
+//   [Workspace][google.area120.tables.v1alpha1.Workspace]
+//   resources, named workspaces/*.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -379,15 +379,15 @@ type restClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//	resources, named tables/*
+//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//   resources, named tables/*
 //
-//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//	resources, named tables/*/rows/*
+//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//   resources, named tables/*/rows/*
 //
-//	The API has a collection of
-//	[Workspace][google.area120.tables.v1alpha1.Workspace]
-//	resources, named workspaces/*.
+//   The API has a collection of
+//   [Workspace][google.area120.tables.v1alpha1.Workspace]
+//   resources, named workspaces/*.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1547,145 +1547,4 @@ func (c *restClient) BatchDeleteRows(ctx context.Context, req *tablespb.BatchDel
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
-}
-
-// RowIterator manages a stream of *tablespb.Row.
-type RowIterator struct {
-	items    []*tablespb.Row
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*tablespb.Row, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RowIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RowIterator) Next() (*tablespb.Row, error) {
-	var item *tablespb.Row
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RowIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RowIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TableIterator manages a stream of *tablespb.Table.
-type TableIterator struct {
-	items    []*tablespb.Table
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*tablespb.Table, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TableIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TableIterator) Next() (*tablespb.Table, error) {
-	var item *tablespb.Table
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TableIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TableIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// WorkspaceIterator manages a stream of *tablespb.Workspace.
-type WorkspaceIterator struct {
-	items    []*tablespb.Workspace
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*tablespb.Workspace, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *WorkspaceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *WorkspaceIterator) Next() (*tablespb.Workspace, error) {
-	var item *tablespb.Workspace
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *WorkspaceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *WorkspaceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

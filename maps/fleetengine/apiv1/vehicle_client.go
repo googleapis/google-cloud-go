@@ -185,43 +185,43 @@ func (c *VehicleClient) Connection() *grpc.ClientConn {
 //
 // The following Vehicle fields are required when creating a Vehicle:
 //
-//	vehicleState
+//   vehicleState
 //
-//	supportedTripTypes
+//   supportedTripTypes
 //
-//	maximumCapacity
+//   maximumCapacity
 //
-//	vehicleType
+//   vehicleType
 //
 // The following Vehicle fields are ignored when creating a Vehicle:
 //
-//	name
+//   name
 //
-//	currentTrips
+//   currentTrips
 //
-//	availableCapacity
+//   availableCapacity
 //
-//	current_route_segment
+//   current_route_segment
 //
-//	current_route_segment_end_point
+//   current_route_segment_end_point
 //
-//	current_route_segment_version
+//   current_route_segment_version
 //
-//	current_route_segment_traffic
+//   current_route_segment_traffic
 //
-//	route
+//   route
 //
-//	waypoints
+//   waypoints
 //
-//	waypoints_version
+//   waypoints_version
 //
-//	remaining_distance_meters
+//   remaining_distance_meters
 //
-//	remaining_time_seconds
+//   remaining_time_seconds
 //
-//	eta_to_next_waypoint
+//   eta_to_next_waypoint
 //
-//	navigation_status
+//   navigation_status
 //
 // All other fields are optional and used if provided.
 func (c *VehicleClient) CreateVehicle(ctx context.Context, req *fleetenginepb.CreateVehicleRequest, opts ...gax.CallOption) (*fleetenginepb.Vehicle, error) {
@@ -238,13 +238,13 @@ func (c *VehicleClient) GetVehicle(ctx context.Context, req *fleetenginepb.GetVe
 // When updating a Vehicle, the following fields cannot be updated since
 // they are managed by the server:
 //
-//	currentTrips
+//   currentTrips
 //
-//	availableCapacity
+//   availableCapacity
 //
-//	current_route_segment_version
+//   current_route_segment_version
 //
-//	waypoints_version
+//   waypoints_version
 //
 // The vehicle name also cannot be updated.
 //
@@ -606,51 +606,4 @@ func (c *vehicleGRPCClient) SearchFuzzedVehicles(ctx context.Context, req *fleet
 		return nil, err
 	}
 	return resp, nil
-}
-
-// VehicleIterator manages a stream of *fleetenginepb.Vehicle.
-type VehicleIterator struct {
-	items    []*fleetenginepb.Vehicle
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*fleetenginepb.Vehicle, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *VehicleIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *VehicleIterator) Next() (*fleetenginepb.Vehicle, error) {
-	var item *fleetenginepb.Vehicle
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *VehicleIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *VehicleIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

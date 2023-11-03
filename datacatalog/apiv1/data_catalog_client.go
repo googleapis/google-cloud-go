@@ -1153,11 +1153,11 @@ func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCat
 // Data Catalog automatically creates entry groups with names that start with
 // the @ symbol for the following resources:
 //
-//	BigQuery entries (@bigquery)
+//   BigQuery entries (@bigquery)
 //
-//	Pub/Sub topics (@pubsub)
+//   Pub/Sub topics (@pubsub)
 //
-//	Dataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})
+//   Dataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})
 //
 // You can create your own entry groups for Cloud Storage fileset entries
 // and custom entries together with the corresponding IAM policies.
@@ -1370,11 +1370,11 @@ func (c *Client) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.
 
 // CreateTag creates a tag and assigns it to:
 //
-//	An Entry if the method name is
-//	projects.locations.entryGroups.entries.tags.create.
+//   An Entry if the method name is
+//   projects.locations.entryGroups.entries.tags.create.
 //
-//	Or EntryGroupif the method
-//	name is projects.locations.entryGroups.tags.create.
+//   Or EntryGroupif the method
+//   name is projects.locations.entryGroups.tags.create.
 //
 // Note: The project identified by the parent parameter for the [tag]
 // (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters (at https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters))
@@ -1442,9 +1442,9 @@ func (c *Client) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarEntry
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method sets policies only within Data Catalog and can’t be
 // used to manage policies in BigQuery, Pub/Sub, Dataproc Metastore, and any
@@ -1452,10 +1452,10 @@ func (c *Client) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarEntry
 //
 // To call this method, you must have the following Google IAM permissions:
 //
-//	datacatalog.tagTemplates.setIamPolicy to set policies on tag
-//	templates.
+//   datacatalog.tagTemplates.setIamPolicy to set policies on tag
+//   templates.
 //
-//	datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
+//   datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -1464,26 +1464,26 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 //
 // May return:
 //
-//	ANOT_FOUND error if the resource doesn’t exist or you don’t have the
-//	permission to view it.
+//   ANOT_FOUND error if the resource doesn’t exist or you don’t have the
+//   permission to view it.
 //
-//	An empty policy if the resource exists but doesn’t have a set policy.
+//   An empty policy if the resource exists but doesn’t have a set policy.
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method doesn’t get policies from Google Cloud Platform
 // resources ingested into Data Catalog.
 //
 // To call this method, you must have the following Google IAM permissions:
 //
-//	datacatalog.tagTemplates.getIamPolicy to get policies on tag
-//	templates.
+//   datacatalog.tagTemplates.getIamPolicy to get policies on tag
+//   templates.
 //
-//	datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
+//   datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -1494,9 +1494,9 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method gets policies only within Data Catalog and can’t be
 // used to get policies from BigQuery, Pub/Sub, Dataproc Metastore, and any
@@ -2633,11 +2633,11 @@ func (c *restClient) SearchCatalog(ctx context.Context, req *datacatalogpb.Searc
 // Data Catalog automatically creates entry groups with names that start with
 // the @ symbol for the following resources:
 //
-//	BigQuery entries (@bigquery)
+//   BigQuery entries (@bigquery)
 //
-//	Pub/Sub topics (@pubsub)
+//   Pub/Sub topics (@pubsub)
 //
-//	Dataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})
+//   Dataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})
 //
 // You can create your own entry groups for Cloud Storage fileset entries
 // and custom entries together with the corresponding IAM policies.
@@ -4139,11 +4139,11 @@ func (c *restClient) DeleteTagTemplateField(ctx context.Context, req *datacatalo
 
 // CreateTag creates a tag and assigns it to:
 //
-//	An Entry if the method name is
-//	projects.locations.entryGroups.entries.tags.create.
+//   An Entry if the method name is
+//   projects.locations.entryGroups.entries.tags.create.
 //
-//	Or EntryGroupif the method
-//	name is projects.locations.entryGroups.tags.create.
+//   Or EntryGroupif the method
+//   name is projects.locations.entryGroups.tags.create.
 //
 // Note: The project identified by the parent parameter for the [tag]
 // (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters (at https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters))
@@ -4617,9 +4617,9 @@ func (c *restClient) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarE
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method sets policies only within Data Catalog and can’t be
 // used to manage policies in BigQuery, Pub/Sub, Dataproc Metastore, and any
@@ -4627,10 +4627,10 @@ func (c *restClient) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarE
 //
 // To call this method, you must have the following Google IAM permissions:
 //
-//	datacatalog.tagTemplates.setIamPolicy to set policies on tag
-//	templates.
+//   datacatalog.tagTemplates.setIamPolicy to set policies on tag
+//   templates.
 //
-//	datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
+//   datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
 func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4695,26 +4695,26 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 //
 // May return:
 //
-//	ANOT_FOUND error if the resource doesn’t exist or you don’t have the
-//	permission to view it.
+//   ANOT_FOUND error if the resource doesn’t exist or you don’t have the
+//   permission to view it.
 //
-//	An empty policy if the resource exists but doesn’t have a set policy.
+//   An empty policy if the resource exists but doesn’t have a set policy.
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method doesn’t get policies from Google Cloud Platform
 // resources ingested into Data Catalog.
 //
 // To call this method, you must have the following Google IAM permissions:
 //
-//	datacatalog.tagTemplates.getIamPolicy to get policies on tag
-//	templates.
+//   datacatalog.tagTemplates.getIamPolicy to get policies on tag
+//   templates.
 //
-//	datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
+//   datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
 func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4781,9 +4781,9 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method gets policies only within Data Catalog and can’t be
 // used to get policies from BigQuery, Pub/Sub, Dataproc Metastore, and any
@@ -5152,12 +5152,6 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// ImportEntriesOperation manages a long-running operation from ImportEntries.
-type ImportEntriesOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ImportEntriesOperation returns a new ImportEntriesOperation from a given name.
 // The name must be that of a previously created ImportEntriesOperation, possibly from a different process.
 func (c *gRPCClient) ImportEntriesOperation(name string) *ImportEntriesOperation {
@@ -5176,70 +5170,6 @@ func (c *restClient) ImportEntriesOperation(name string) *ImportEntriesOperation
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportEntriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*datacatalogpb.ImportEntriesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp datacatalogpb.ImportEntriesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportEntriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*datacatalogpb.ImportEntriesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp datacatalogpb.ImportEntriesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportEntriesOperation) Metadata() (*datacatalogpb.ImportEntriesMetadata, error) {
-	var meta datacatalogpb.ImportEntriesMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportEntriesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportEntriesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ReconcileTagsOperation manages a long-running operation from ReconcileTags.
-type ReconcileTagsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ReconcileTagsOperation returns a new ReconcileTagsOperation from a given name.
 // The name must be that of a previously created ReconcileTagsOperation, possibly from a different process.
 func (c *gRPCClient) ReconcileTagsOperation(name string) *ReconcileTagsOperation {
@@ -5256,297 +5186,4 @@ func (c *restClient) ReconcileTagsOperation(name string) *ReconcileTagsOperation
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ReconcileTagsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*datacatalogpb.ReconcileTagsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp datacatalogpb.ReconcileTagsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ReconcileTagsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*datacatalogpb.ReconcileTagsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp datacatalogpb.ReconcileTagsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ReconcileTagsOperation) Metadata() (*datacatalogpb.ReconcileTagsMetadata, error) {
-	var meta datacatalogpb.ReconcileTagsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ReconcileTagsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ReconcileTagsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// EntryGroupIterator manages a stream of *datacatalogpb.EntryGroup.
-type EntryGroupIterator struct {
-	items    []*datacatalogpb.EntryGroup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.EntryGroup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EntryGroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EntryGroupIterator) Next() (*datacatalogpb.EntryGroup, error) {
-	var item *datacatalogpb.EntryGroup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EntryGroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EntryGroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// EntryIterator manages a stream of *datacatalogpb.Entry.
-type EntryIterator struct {
-	items    []*datacatalogpb.Entry
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.Entry, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EntryIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EntryIterator) Next() (*datacatalogpb.Entry, error) {
-	var item *datacatalogpb.Entry
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EntryIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EntryIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SearchCatalogResultIterator manages a stream of *datacatalogpb.SearchCatalogResult.
-type SearchCatalogResultIterator struct {
-	items    []*datacatalogpb.SearchCatalogResult
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.SearchCatalogResult, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SearchCatalogResultIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SearchCatalogResultIterator) Next() (*datacatalogpb.SearchCatalogResult, error) {
-	var item *datacatalogpb.SearchCatalogResult
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SearchCatalogResultIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SearchCatalogResultIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TagIterator manages a stream of *datacatalogpb.Tag.
-type TagIterator struct {
-	items    []*datacatalogpb.Tag
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.Tag, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TagIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TagIterator) Next() (*datacatalogpb.Tag, error) {
-	var item *datacatalogpb.Tag
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TagIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TagIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -422,7 +422,7 @@ type internalClient interface {
 // Client is a client for interacting with Cloud Spanner API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Cloud Spanner API
+// Cloud Spanner API
 //
 // The Cloud Spanner API can be used to manage sessions and execute
 // transactions on data stored in Cloud Spanner databases.
@@ -689,7 +689,7 @@ type gRPCClient struct {
 // NewClient creates a new spanner client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Cloud Spanner API
+// Cloud Spanner API
 //
 // The Cloud Spanner API can be used to manage sessions and execute
 // transactions on data stored in Cloud Spanner databases.
@@ -761,7 +761,7 @@ type restClient struct {
 
 // NewRESTClient creates a new spanner rest client.
 //
-// # Cloud Spanner API
+// Cloud Spanner API
 //
 // The Cloud Spanner API can be used to manage sessions and execute
 // transactions on data stored in Cloud Spanner databases.
@@ -2407,51 +2407,4 @@ func (c *batchWriteRESTClient) SendMsg(m interface{}) error {
 func (c *batchWriteRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return fmt.Errorf("this method is not implemented, use Recv")
-}
-
-// SessionIterator manages a stream of *spannerpb.Session.
-type SessionIterator struct {
-	items    []*spannerpb.Session
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*spannerpb.Session, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SessionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SessionIterator) Next() (*spannerpb.Session, error) {
-	var item *spannerpb.Session
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SessionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SessionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

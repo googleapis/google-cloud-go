@@ -21,9 +21,6 @@
 package alloydbpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	dayofweek "google.golang.org/genproto/googleapis/type/dayofweek"
 	timeofday "google.golang.org/genproto/googleapis/type/timeofday"
@@ -32,6 +29,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -730,9 +729,9 @@ func (Instance_InstanceType) EnumDescriptor() ([]byte, []int) {
 
 // The Availability type of an instance. Potential values:
 //
-//   - ZONAL: The instance serves data from only one zone. Outages in that
+// - ZONAL: The instance serves data from only one zone. Outages in that
 //     zone affect instance availability.
-//   - REGIONAL: The instance can serve data from more than one zone in a
+// - REGIONAL: The instance can serve data from more than one zone in a
 //     region (it is highly available).
 type Instance_AvailabilityType int32
 
@@ -2203,7 +2202,8 @@ type Instance struct {
 	Nodes []*Instance_Node `protobuf:"bytes,20,rep,name=nodes,proto3" json:"nodes,omitempty"`
 	// Configuration for query insights.
 	QueryInsightsConfig *Instance_QueryInsightsInstanceConfig `protobuf:"bytes,21,opt,name=query_insights_config,json=queryInsightsConfig,proto3" json:"query_insights_config,omitempty"`
-	// Read pool specific config.
+	// Read pool instance configuration.
+	// This is required if the value of instanceType is READ_POOL.
 	ReadPoolConfig *Instance_ReadPoolConfig `protobuf:"bytes,14,opt,name=read_pool_config,json=readPoolConfig,proto3" json:"read_pool_config,omitempty"`
 	// Output only. The IP address for the Instance.
 	// This is the connection endpoint for an end-user application.
@@ -3152,8 +3152,8 @@ type Cluster_NetworkConfig struct {
 	// instance IPs for this cluster will be created in the allocated range. The
 	// range name must comply with RFC 1035. Specifically, the name must be 1-63
 	// characters long and match the regular expression
-	// [a-z]([-a-z0-9]*[a-z0-9])?.
-	// Field name is intended to be consistent with CloudSQL.
+	// `[a-z]([-a-z0-9]*[a-z0-9])?`.
+	// Field name is intended to be consistent with Cloud SQL.
 	AllocatedIpRange string `protobuf:"bytes,2,opt,name=allocated_ip_range,json=allocatedIpRange,proto3" json:"allocated_ip_range,omitempty"`
 }
 

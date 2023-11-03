@@ -218,14 +218,14 @@ type internalClient interface {
 // Client is a client for interacting with Secret Manager API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Secret Manager Service
+// Secret Manager Service
 //
 // Manages secrets and operations using those secrets. Implements a REST
 // model with the following objects:
 //
-//	Secret
+//   Secret
 //
-//	SecretVersion
+//   SecretVersion
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -381,14 +381,14 @@ type gRPCClient struct {
 // NewClient creates a new secret manager service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Secret Manager Service
+// Secret Manager Service
 //
 // Manages secrets and operations using those secrets. Implements a REST
 // model with the following objects:
 //
-//	Secret
+//   Secret
 //
-//	SecretVersion
+//   SecretVersion
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -457,14 +457,14 @@ type restClient struct {
 
 // NewRESTClient creates a new secret manager service rest client.
 //
-// # Secret Manager Service
+// Secret Manager Service
 //
 // Manages secrets and operations using those secrets. Implements a REST
 // model with the following objects:
 //
-//	Secret
+//   Secret
 //
-//	SecretVersion
+//   SecretVersion
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1874,98 +1874,4 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		return nil, e
 	}
 	return resp, nil
-}
-
-// SecretIterator manages a stream of *secretmanagerpb.Secret.
-type SecretIterator struct {
-	items    []*secretmanagerpb.Secret
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*secretmanagerpb.Secret, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SecretIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SecretIterator) Next() (*secretmanagerpb.Secret, error) {
-	var item *secretmanagerpb.Secret
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SecretIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SecretIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SecretVersionIterator manages a stream of *secretmanagerpb.SecretVersion.
-type SecretVersionIterator struct {
-	items    []*secretmanagerpb.SecretVersion
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*secretmanagerpb.SecretVersion, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SecretVersionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SecretVersionIterator) Next() (*secretmanagerpb.SecretVersion, error) {
-	var item *secretmanagerpb.SecretVersion
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SecretVersionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SecretVersionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

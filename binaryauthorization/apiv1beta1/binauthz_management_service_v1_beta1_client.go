@@ -253,9 +253,9 @@ type internalBinauthzManagementServiceV1Beta1Client interface {
 //
 // This API implements a REST model with the following objects:
 //
-//	Policy
+//   Policy
 //
-//	Attestor
+//   Attestor
 type BinauthzManagementServiceV1Beta1Client struct {
 	// The internal transport-dependent client.
 	internalClient internalBinauthzManagementServiceV1Beta1Client
@@ -364,9 +364,9 @@ type binauthzManagementServiceV1Beta1GRPCClient struct {
 //
 // This API implements a REST model with the following objects:
 //
-//	Policy
+//   Policy
 //
-//	Attestor
+//   Attestor
 func NewBinauthzManagementServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*BinauthzManagementServiceV1Beta1Client, error) {
 	clientOpts := defaultBinauthzManagementServiceV1Beta1GRPCClientOptions()
 	if newBinauthzManagementServiceV1Beta1ClientHook != nil {
@@ -440,9 +440,9 @@ type binauthzManagementServiceV1Beta1RESTClient struct {
 //
 // This API implements a REST model with the following objects:
 //
-//	Policy
+//   Policy
 //
-//	Attestor
+//   Attestor
 func NewBinauthzManagementServiceV1Beta1RESTClient(ctx context.Context, opts ...option.ClientOption) (*BinauthzManagementServiceV1Beta1Client, error) {
 	clientOpts := append(defaultBinauthzManagementServiceV1Beta1RESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1111,51 +1111,4 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) DeleteAttestor(ctx context.
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
-}
-
-// AttestorIterator manages a stream of *binaryauthorizationpb.Attestor.
-type AttestorIterator struct {
-	items    []*binaryauthorizationpb.Attestor
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*binaryauthorizationpb.Attestor, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AttestorIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AttestorIterator) Next() (*binaryauthorizationpb.Attestor, error) {
-	var item *binaryauthorizationpb.Attestor
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AttestorIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AttestorIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

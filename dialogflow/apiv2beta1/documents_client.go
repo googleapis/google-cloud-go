@@ -342,10 +342,10 @@ func (c *DocumentsClient) GetDocument(ctx context.Context, req *dialogflowpb.Get
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	KnowledgeOperationMetadata
+//   metadata:
+//   KnowledgeOperationMetadata
 //
-//	response: Document
+//   response: Document
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -367,11 +367,11 @@ func (c *DocumentsClient) CreateDocumentOperation(name string) *CreateDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	KnowledgeOperationMetadata
+//   metadata:
+//   KnowledgeOperationMetadata
 //
-//	response:
-//	ImportDocumentsResponse
+//   response:
+//   ImportDocumentsResponse
 func (c *DocumentsClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	return c.internalClient.ImportDocuments(ctx, req, opts...)
 }
@@ -388,11 +388,11 @@ func (c *DocumentsClient) ImportDocumentsOperation(name string) *ImportDocuments
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	KnowledgeOperationMetadata
+//   metadata:
+//   KnowledgeOperationMetadata
 //
-//	response: An Empty
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -412,10 +412,10 @@ func (c *DocumentsClient) DeleteDocumentOperation(name string) *DeleteDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	KnowledgeOperationMetadata
+//   metadata:
+//   KnowledgeOperationMetadata
 //
-//	response: Document
+//   response: Document
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -441,10 +441,10 @@ func (c *DocumentsClient) UpdateDocumentOperation(name string) *UpdateDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	KnowledgeOperationMetadata
+//   metadata:
+//   KnowledgeOperationMetadata
 //
-//	response: Document
+//   response: Document
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -1132,10 +1132,10 @@ func (c *documentsRESTClient) GetDocument(ctx context.Context, req *dialogflowpb
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	KnowledgeOperationMetadata
+//   metadata:
+//   KnowledgeOperationMetadata
 //
-//	response: Document
+//   response: Document
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -1220,11 +1220,11 @@ func (c *documentsRESTClient) CreateDocument(ctx context.Context, req *dialogflo
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	KnowledgeOperationMetadata
+//   metadata:
+//   KnowledgeOperationMetadata
 //
-//	response:
-//	ImportDocumentsResponse
+//   response:
+//   ImportDocumentsResponse
 func (c *documentsRESTClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1300,11 +1300,11 @@ func (c *documentsRESTClient) ImportDocuments(ctx context.Context, req *dialogfl
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	KnowledgeOperationMetadata
+//   metadata:
+//   KnowledgeOperationMetadata
 //
-//	response: An Empty
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -1377,10 +1377,10 @@ func (c *documentsRESTClient) DeleteDocument(ctx context.Context, req *dialogflo
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	KnowledgeOperationMetadata
+//   metadata:
+//   KnowledgeOperationMetadata
 //
-//	response: Document
+//   response: Document
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -1473,10 +1473,10 @@ func (c *documentsRESTClient) UpdateDocument(ctx context.Context, req *dialogflo
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	KnowledgeOperationMetadata
+//   metadata:
+//   KnowledgeOperationMetadata
 //
-//	response: Document
+//   response: Document
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -1895,12 +1895,6 @@ func (c *documentsRESTClient) ListOperations(ctx context.Context, req *longrunni
 	return it
 }
 
-// CreateDocumentOperation manages a long-running operation from CreateDocument.
-type CreateDocumentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateDocumentOperation returns a new CreateDocumentOperation from a given name.
 // The name must be that of a previously created CreateDocumentOperation, possibly from a different process.
 func (c *documentsGRPCClient) CreateDocumentOperation(name string) *CreateDocumentOperation {
@@ -1917,70 +1911,6 @@ func (c *documentsRESTClient) CreateDocumentOperation(name string) *CreateDocume
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDocumentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.Document
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDocumentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.Document
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDocumentOperation) Metadata() (*dialogflowpb.KnowledgeOperationMetadata, error) {
-	var meta dialogflowpb.KnowledgeOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateDocumentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateDocumentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDocumentOperation manages a long-running operation from DeleteDocument.
-type DeleteDocumentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteDocumentOperation returns a new DeleteDocumentOperation from a given name.
@@ -2001,59 +1931,6 @@ func (c *documentsRESTClient) DeleteDocumentOperation(name string) *DeleteDocume
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDocumentOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDocumentOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDocumentOperation) Metadata() (*dialogflowpb.KnowledgeOperationMetadata, error) {
-	var meta dialogflowpb.KnowledgeOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDocumentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDocumentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ImportDocumentsOperation manages a long-running operation from ImportDocuments.
-type ImportDocumentsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ImportDocumentsOperation returns a new ImportDocumentsOperation from a given name.
 // The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
 func (c *documentsGRPCClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
@@ -2070,70 +1947,6 @@ func (c *documentsRESTClient) ImportDocumentsOperation(name string) *ImportDocum
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ImportDocumentsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.ImportDocumentsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ImportDocumentsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.ImportDocumentsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportDocumentsOperation) Metadata() (*dialogflowpb.KnowledgeOperationMetadata, error) {
-	var meta dialogflowpb.KnowledgeOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportDocumentsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportDocumentsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ReloadDocumentOperation manages a long-running operation from ReloadDocument.
-type ReloadDocumentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // ReloadDocumentOperation returns a new ReloadDocumentOperation from a given name.
@@ -2154,70 +1967,6 @@ func (c *documentsRESTClient) ReloadDocumentOperation(name string) *ReloadDocume
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ReloadDocumentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.Document
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ReloadDocumentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.Document
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ReloadDocumentOperation) Metadata() (*dialogflowpb.KnowledgeOperationMetadata, error) {
-	var meta dialogflowpb.KnowledgeOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ReloadDocumentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ReloadDocumentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateDocumentOperation manages a long-running operation from UpdateDocument.
-type UpdateDocumentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateDocumentOperation returns a new UpdateDocumentOperation from a given name.
 // The name must be that of a previously created UpdateDocumentOperation, possibly from a different process.
 func (c *documentsGRPCClient) UpdateDocumentOperation(name string) *UpdateDocumentOperation {
@@ -2234,109 +1983,4 @@ func (c *documentsRESTClient) UpdateDocumentOperation(name string) *UpdateDocume
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateDocumentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.Document
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateDocumentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.Document
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateDocumentOperation) Metadata() (*dialogflowpb.KnowledgeOperationMetadata, error) {
-	var meta dialogflowpb.KnowledgeOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateDocumentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateDocumentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DocumentIterator manages a stream of *dialogflowpb.Document.
-type DocumentIterator struct {
-	items    []*dialogflowpb.Document
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Document, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DocumentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DocumentIterator) Next() (*dialogflowpb.Document, error) {
-	var item *dialogflowpb.Document
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DocumentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DocumentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -505,13 +505,13 @@ func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateC
 //
 // More specifically:
 //
-//	PredictionService will only return product IDs from branch {newBranch}.
+//   PredictionService will only return product IDs from branch {newBranch}.
 //
-//	SearchService will only return product IDs from branch {newBranch}
-//	(if branch is not explicitly set).
+//   SearchService will only return product IDs from branch {newBranch}
+//   (if branch is not explicitly set).
 //
-//	UserEventService will only join events with products from branch
-//	{newBranch}.
+//   UserEventService will only join events with products from branch
+//   {newBranch}.
 func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
 	return c.internalClient.SetDefaultBranch(ctx, req, opts...)
 }
@@ -1240,13 +1240,13 @@ func (c *catalogRESTClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 //
 // More specifically:
 //
-//	PredictionService will only return product IDs from branch {newBranch}.
+//   PredictionService will only return product IDs from branch {newBranch}.
 //
-//	SearchService will only return product IDs from branch {newBranch}
-//	(if branch is not explicitly set).
+//   SearchService will only return product IDs from branch {newBranch}
+//   (if branch is not explicitly set).
 //
-//	UserEventService will only join events with products from branch
-//	{newBranch}.
+//   UserEventService will only join events with products from branch
+//   {newBranch}.
 func (c *catalogRESTClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2066,98 +2066,4 @@ func (c *catalogRESTClient) ListOperations(ctx context.Context, req *longrunning
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// CatalogIterator manages a stream of *retailpb.Catalog.
-type CatalogIterator struct {
-	items    []*retailpb.Catalog
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*retailpb.Catalog, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CatalogIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CatalogIterator) Next() (*retailpb.Catalog, error) {
-	var item *retailpb.Catalog
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CatalogIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CatalogIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

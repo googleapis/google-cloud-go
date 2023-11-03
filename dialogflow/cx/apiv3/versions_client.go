@@ -42,7 +42,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 var newVersionsClientHook clientHook
@@ -335,10 +334,10 @@ func (c *VersionsClient) GetVersion(ctx context.Context, req *cxpb.GetVersionReq
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	CreateVersionOperationMetadata
+//   metadata:
+//   CreateVersionOperationMetadata
 //
-//	response: Version
+//   response: Version
 func (c *VersionsClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
 	return c.internalClient.CreateVersion(ctx, req, opts...)
 }
@@ -365,11 +364,11 @@ func (c *VersionsClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVers
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: An Empty
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *VersionsClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
 	return c.internalClient.LoadVersion(ctx, req, opts...)
 }
@@ -1040,10 +1039,10 @@ func (c *versionsRESTClient) GetVersion(ctx context.Context, req *cxpb.GetVersio
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	CreateVersionOperationMetadata
+//   metadata:
+//   CreateVersionOperationMetadata
 //
-//	response: Version
+//   response: Version
 func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetVersion()
@@ -1236,11 +1235,11 @@ func (c *versionsRESTClient) DeleteVersion(ctx context.Context, req *cxpb.Delete
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: An Empty
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *versionsRESTClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1722,12 +1721,6 @@ func (c *versionsRESTClient) ListOperations(ctx context.Context, req *longrunnin
 	return it
 }
 
-// CreateVersionOperation manages a long-running operation from CreateVersion.
-type CreateVersionOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateVersionOperation returns a new CreateVersionOperation from a given name.
 // The name must be that of a previously created CreateVersionOperation, possibly from a different process.
 func (c *versionsGRPCClient) CreateVersionOperation(name string) *CreateVersionOperation {
@@ -1746,70 +1739,6 @@ func (c *versionsRESTClient) CreateVersionOperation(name string) *CreateVersionO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateVersionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cxpb.Version, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cxpb.Version
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateVersionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cxpb.Version, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cxpb.Version
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateVersionOperation) Metadata() (*cxpb.CreateVersionOperationMetadata, error) {
-	var meta cxpb.CreateVersionOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateVersionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateVersionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// LoadVersionOperation manages a long-running operation from LoadVersion.
-type LoadVersionOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // LoadVersionOperation returns a new LoadVersionOperation from a given name.
 // The name must be that of a previously created LoadVersionOperation, possibly from a different process.
 func (c *versionsGRPCClient) LoadVersionOperation(name string) *LoadVersionOperation {
@@ -1826,98 +1755,4 @@ func (c *versionsRESTClient) LoadVersionOperation(name string) *LoadVersionOpera
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *LoadVersionOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *LoadVersionOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *LoadVersionOperation) Metadata() (*structpb.Struct, error) {
-	var meta structpb.Struct
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *LoadVersionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *LoadVersionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// VersionIterator manages a stream of *cxpb.Version.
-type VersionIterator struct {
-	items    []*cxpb.Version
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*cxpb.Version, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *VersionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *VersionIterator) Next() (*cxpb.Version, error) {
-	var item *cxpb.Version
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *VersionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *VersionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

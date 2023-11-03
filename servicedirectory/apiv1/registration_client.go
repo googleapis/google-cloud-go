@@ -577,18 +577,18 @@ type internalRegistrationClient interface {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//	The API has a collection of
-//	Namespace
-//	resources, named projects/*/locations/*/namespaces/*.
+//   The API has a collection of
+//   Namespace
+//   resources, named projects/*/locations/*/namespaces/*.
 //
-//	Each Namespace has a collection of
-//	Service resources, named
-//	projects/*/locations/*/namespaces/*/services/*.
+//   Each Namespace has a collection of
+//   Service resources, named
+//   projects/*/locations/*/namespaces/*/services/*.
 //
-//	Each Service has a collection of
-//	Endpoint
-//	resources, named
-//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//   Each Service has a collection of
+//   Endpoint
+//   resources, named
+//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 type RegistrationClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegistrationClient
@@ -747,18 +747,18 @@ type registrationGRPCClient struct {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//	The API has a collection of
-//	Namespace
-//	resources, named projects/*/locations/*/namespaces/*.
+//   The API has a collection of
+//   Namespace
+//   resources, named projects/*/locations/*/namespaces/*.
 //
-//	Each Namespace has a collection of
-//	Service resources, named
-//	projects/*/locations/*/namespaces/*/services/*.
+//   Each Namespace has a collection of
+//   Service resources, named
+//   projects/*/locations/*/namespaces/*/services/*.
 //
-//	Each Service has a collection of
-//	Endpoint
-//	resources, named
-//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//   Each Service has a collection of
+//   Endpoint
+//   resources, named
+//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*RegistrationClient, error) {
 	clientOpts := defaultRegistrationGRPCClientOptions()
 	if newRegistrationClientHook != nil {
@@ -831,18 +831,18 @@ type registrationRESTClient struct {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//	The API has a collection of
-//	Namespace
-//	resources, named projects/*/locations/*/namespaces/*.
+//   The API has a collection of
+//   Namespace
+//   resources, named projects/*/locations/*/namespaces/*.
 //
-//	Each Namespace has a collection of
-//	Service resources, named
-//	projects/*/locations/*/namespaces/*/services/*.
+//   Each Namespace has a collection of
+//   Service resources, named
+//   projects/*/locations/*/namespaces/*/services/*.
 //
-//	Each Service has a collection of
-//	Endpoint
-//	resources, named
-//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//   Each Service has a collection of
+//   Endpoint
+//   resources, named
+//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 func NewRegistrationRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegistrationClient, error) {
 	clientOpts := append(defaultRegistrationRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -2720,145 +2720,4 @@ func (c *registrationRESTClient) ListLocations(ctx context.Context, req *locatio
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// EndpointIterator manages a stream of *servicedirectorypb.Endpoint.
-type EndpointIterator struct {
-	items    []*servicedirectorypb.Endpoint
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*servicedirectorypb.Endpoint, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EndpointIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EndpointIterator) Next() (*servicedirectorypb.Endpoint, error) {
-	var item *servicedirectorypb.Endpoint
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EndpointIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EndpointIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NamespaceIterator manages a stream of *servicedirectorypb.Namespace.
-type NamespaceIterator struct {
-	items    []*servicedirectorypb.Namespace
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*servicedirectorypb.Namespace, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NamespaceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NamespaceIterator) Next() (*servicedirectorypb.Namespace, error) {
-	var item *servicedirectorypb.Namespace
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NamespaceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NamespaceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ServiceIterator manages a stream of *servicedirectorypb.Service.
-type ServiceIterator struct {
-	items    []*servicedirectorypb.Service
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*servicedirectorypb.Service, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ServiceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ServiceIterator) Next() (*servicedirectorypb.Service, error) {
-	var item *servicedirectorypb.Service
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ServiceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ServiceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

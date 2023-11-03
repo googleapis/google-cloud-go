@@ -220,12 +220,12 @@ type internalEkmClient interface {
 // EkmClient is a client for interacting with Cloud Key Management Service (KMS) API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Google Cloud Key Management EKM Service
+// Google Cloud Key Management EKM Service
 //
 // Manages external cryptographic keys and operations using those keys.
 // Implements a REST model with the following objects:
 //
-//	EkmConnection
+//   EkmConnection
 type EkmClient struct {
 	// The internal transport-dependent client.
 	internalClient internalEkmClient
@@ -360,12 +360,12 @@ type ekmGRPCClient struct {
 // NewEkmClient creates a new ekm service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Google Cloud Key Management EKM Service
+// Google Cloud Key Management EKM Service
 //
 // Manages external cryptographic keys and operations using those keys.
 // Implements a REST model with the following objects:
 //
-//	EkmConnection
+//   EkmConnection
 func NewEkmClient(ctx context.Context, opts ...option.ClientOption) (*EkmClient, error) {
 	clientOpts := defaultEkmGRPCClientOptions()
 	if newEkmClientHook != nil {
@@ -436,12 +436,12 @@ type ekmRESTClient struct {
 
 // NewEkmRESTClient creates a new ekm service rest client.
 //
-// # Google Cloud Key Management EKM Service
+// Google Cloud Key Management EKM Service
 //
 // Manages external cryptographic keys and operations using those keys.
 // Implements a REST model with the following objects:
 //
-//	EkmConnection
+//   EkmConnection
 func NewEkmRESTClient(ctx context.Context, opts ...option.ClientOption) (*EkmClient, error) {
 	clientOpts := append(defaultEkmRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1619,98 +1619,4 @@ func (c *ekmRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 		return nil, e
 	}
 	return resp, nil
-}
-
-// EkmConnectionIterator manages a stream of *kmspb.EkmConnection.
-type EkmConnectionIterator struct {
-	items    []*kmspb.EkmConnection
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*kmspb.EkmConnection, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EkmConnectionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EkmConnectionIterator) Next() (*kmspb.EkmConnection, error) {
-	var item *kmspb.EkmConnection
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EkmConnectionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EkmConnectionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

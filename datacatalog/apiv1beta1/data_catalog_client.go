@@ -1142,22 +1142,22 @@ func (c *Client) ListTags(ctx context.Context, req *datacatalogpb.ListTagsReques
 // policy.
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // Callers must have following Google IAM permission
 //
-//	datacatalog.tagTemplates.setIamPolicy to set policies on tag
-//	templates.
+//   datacatalog.tagTemplates.setIamPolicy to set policies on tag
+//   templates.
 //
-//	datacatalog.entries.setIamPolicy to set policies on entries.
+//   datacatalog.entries.setIamPolicy to set policies on entries.
 //
-//	datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
+//   datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -1168,22 +1168,22 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 //
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // Callers must have following Google IAM permission
 //
-//	datacatalog.tagTemplates.getIamPolicy to get policies on tag
-//	templates.
+//   datacatalog.tagTemplates.getIamPolicy to get policies on tag
+//   templates.
 //
-//	datacatalog.entries.getIamPolicy to get policies on entries.
+//   datacatalog.entries.getIamPolicy to get policies on entries.
 //
-//	datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
+//   datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -1194,13 +1194,13 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 //
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // A caller is not required to have Google IAM permission to make this
 // request.
@@ -3645,22 +3645,22 @@ func (c *restClient) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRe
 // policy.
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // Callers must have following Google IAM permission
 //
-//	datacatalog.tagTemplates.setIamPolicy to set policies on tag
-//	templates.
+//   datacatalog.tagTemplates.setIamPolicy to set policies on tag
+//   templates.
 //
-//	datacatalog.entries.setIamPolicy to set policies on entries.
+//   datacatalog.entries.setIamPolicy to set policies on entries.
 //
-//	datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
+//   datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
 func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3727,22 +3727,22 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 //
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // Callers must have following Google IAM permission
 //
-//	datacatalog.tagTemplates.getIamPolicy to get policies on tag
-//	templates.
+//   datacatalog.tagTemplates.getIamPolicy to get policies on tag
+//   templates.
 //
-//	datacatalog.entries.getIamPolicy to get policies on entries.
+//   datacatalog.entries.getIamPolicy to get policies on entries.
 //
-//	datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
+//   datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
 func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3809,13 +3809,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 //
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // A caller is not required to have Google IAM permission to make this
 // request.
@@ -3877,192 +3877,4 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		return nil, e
 	}
 	return resp, nil
-}
-
-// EntryGroupIterator manages a stream of *datacatalogpb.EntryGroup.
-type EntryGroupIterator struct {
-	items    []*datacatalogpb.EntryGroup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.EntryGroup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EntryGroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EntryGroupIterator) Next() (*datacatalogpb.EntryGroup, error) {
-	var item *datacatalogpb.EntryGroup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EntryGroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EntryGroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// EntryIterator manages a stream of *datacatalogpb.Entry.
-type EntryIterator struct {
-	items    []*datacatalogpb.Entry
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.Entry, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EntryIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EntryIterator) Next() (*datacatalogpb.Entry, error) {
-	var item *datacatalogpb.Entry
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EntryIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EntryIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SearchCatalogResultIterator manages a stream of *datacatalogpb.SearchCatalogResult.
-type SearchCatalogResultIterator struct {
-	items    []*datacatalogpb.SearchCatalogResult
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.SearchCatalogResult, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SearchCatalogResultIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SearchCatalogResultIterator) Next() (*datacatalogpb.SearchCatalogResult, error) {
-	var item *datacatalogpb.SearchCatalogResult
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SearchCatalogResultIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SearchCatalogResultIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TagIterator manages a stream of *datacatalogpb.Tag.
-type TagIterator struct {
-	items    []*datacatalogpb.Tag
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.Tag, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TagIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TagIterator) Next() (*datacatalogpb.Tag, error) {
-	var item *datacatalogpb.Tag
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TagIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TagIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

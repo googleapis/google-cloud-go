@@ -296,7 +296,7 @@ type internalInstanceAdminClient interface {
 // InstanceAdminClient is a client for interacting with Cloud Spanner Instance Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Cloud Spanner Instance Admin API
+// Cloud Spanner Instance Admin API
 //
 // The Cloud Spanner Instance Admin API can be used to create, delete,
 // modify and list instances. Instances are dedicated Cloud Spanner serving
@@ -372,26 +372,26 @@ func (c *InstanceAdminClient) GetInstanceConfig(ctx context.Context, req *instan
 //
 // Immediately after the request returns:
 //
-//	The instance config is readable via the API, with all requested
-//	attributes. The instance config’s
-//	reconciling
-//	field is set to true. Its state is CREATING.
+//   The instance config is readable via the API, with all requested
+//   attributes. The instance config’s
+//   reconciling
+//   field is set to true. Its state is CREATING.
 //
 // While the operation is pending:
 //
-//	Cancelling the operation renders the instance config immediately
-//	unreadable via the API.
+//   Cancelling the operation renders the instance config immediately
+//   unreadable via the API.
 //
-//	Except for deleting the creating resource, all other attempts to modify
-//	the instance config are rejected.
+//   Except for deleting the creating resource, all other attempts to modify
+//   the instance config are rejected.
 //
 // Upon completion of the returned operation:
 //
-//	Instances can be created using the instance configuration.
+//   Instances can be created using the instance configuration.
 //
-//	The instance config’s
-//	reconciling
-//	field becomes false. Its state becomes READY.
+//   The instance config’s
+//   reconciling
+//   field becomes false. Its state becomes READY.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
@@ -425,32 +425,32 @@ func (c *InstanceAdminClient) CreateInstanceConfigOperation(name string) *Create
 //
 // Immediately after the request returns:
 //
-//	The instance config’s
-//	reconciling
-//	field is set to true.
+//   The instance config’s
+//   reconciling
+//   field is set to true.
 //
 // While the operation is pending:
 //
-//	Cancelling the operation sets its metadata’s
-//	cancel_time.
-//	The operation is guaranteed to succeed at undoing all changes, after
-//	which point it terminates with a CANCELLED status.
+//   Cancelling the operation sets its metadata’s
+//   cancel_time.
+//   The operation is guaranteed to succeed at undoing all changes, after
+//   which point it terminates with a CANCELLED status.
 //
-//	All other attempts to modify the instance config are rejected.
+//   All other attempts to modify the instance config are rejected.
 //
-//	Reading the instance config via the API continues to give the
-//	pre-request values.
+//   Reading the instance config via the API continues to give the
+//   pre-request values.
 //
 // Upon completion of the returned operation:
 //
-//	Creating instances using the instance configuration uses the new
-//	values.
+//   Creating instances using the instance configuration uses the new
+//   values.
 //
-//	The instance config’s new values are readable via the API.
+//   The instance config’s new values are readable via the API.
 //
-//	The instance config’s
-//	reconciling
-//	field becomes false.
+//   The instance config’s
+//   reconciling
+//   field becomes false.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
@@ -520,28 +520,28 @@ func (c *InstanceAdminClient) GetInstance(ctx context.Context, req *instancepb.G
 //
 // Immediately upon completion of this request:
 //
-//	The instance is readable via the API, with all requested attributes
-//	but no allocated resources. Its state is CREATING.
+//   The instance is readable via the API, with all requested attributes
+//   but no allocated resources. Its state is CREATING.
 //
 // Until completion of the returned operation:
 //
-//	Cancelling the operation renders the instance immediately unreadable
-//	via the API.
+//   Cancelling the operation renders the instance immediately unreadable
+//   via the API.
 //
-//	The instance can be deleted.
+//   The instance can be deleted.
 //
-//	All other attempts to modify the instance are rejected.
+//   All other attempts to modify the instance are rejected.
 //
 // Upon completion of the returned operation:
 //
-//	Billing for all successfully-allocated resources begins (some types
-//	may have lower than the requested levels).
+//   Billing for all successfully-allocated resources begins (some types
+//   may have lower than the requested levels).
 //
-//	Databases can be created in the instance.
+//   Databases can be created in the instance.
 //
-//	The instance’s allocated resource levels are readable via the API.
+//   The instance’s allocated resource levels are readable via the API.
 //
-//	The instance’s state becomes READY.
+//   The instance’s state becomes READY.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format <instance_name>/operations/<operation_id> and
@@ -568,31 +568,31 @@ func (c *InstanceAdminClient) CreateInstanceOperation(name string) *CreateInstan
 //
 // Immediately upon completion of this request:
 //
-//	For resource types for which a decrease in the instance’s allocation
-//	has been requested, billing is based on the newly-requested level.
+//   For resource types for which a decrease in the instance’s allocation
+//   has been requested, billing is based on the newly-requested level.
 //
 // Until completion of the returned operation:
 //
-//	Cancelling the operation sets its metadata’s
-//	cancel_time,
-//	and begins restoring resources to their pre-request values. The
-//	operation is guaranteed to succeed at undoing all resource changes,
-//	after which point it terminates with a CANCELLED status.
+//   Cancelling the operation sets its metadata’s
+//   cancel_time,
+//   and begins restoring resources to their pre-request values. The
+//   operation is guaranteed to succeed at undoing all resource changes,
+//   after which point it terminates with a CANCELLED status.
 //
-//	All other attempts to modify the instance are rejected.
+//   All other attempts to modify the instance are rejected.
 //
-//	Reading the instance via the API continues to give the pre-request
-//	resource levels.
+//   Reading the instance via the API continues to give the pre-request
+//   resource levels.
 //
 // Upon completion of the returned operation:
 //
-//	Billing begins for all successfully-allocated resources (some types
-//	may have lower than the requested levels).
+//   Billing begins for all successfully-allocated resources (some types
+//   may have lower than the requested levels).
 //
-//	All newly-reserved resources are available for serving the instance’s
-//	tables.
+//   All newly-reserved resources are available for serving the instance’s
+//   tables.
 //
-//	The instance’s new resource levels are readable via the API.
+//   The instance’s new resource levels are readable via the API.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format <instance_name>/operations/<operation_id> and
@@ -618,13 +618,13 @@ func (c *InstanceAdminClient) UpdateInstanceOperation(name string) *UpdateInstan
 //
 // Immediately upon completion of the request:
 //
-//	Billing ceases for all of the instance’s reserved resources.
+//   Billing ceases for all of the instance’s reserved resources.
 //
 // Soon afterward:
 //
-//	The instance and all of its databases immediately and
-//	irrevocably disappear from the API. All data in the databases
-//	is permanently deleted.
+//   The instance and all of its databases immediately and
+//   irrevocably disappear from the API. All data in the databases
+//   is permanently deleted.
 func (c *InstanceAdminClient) DeleteInstance(ctx context.Context, req *instancepb.DeleteInstanceRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteInstance(ctx, req, opts...)
 }
@@ -682,7 +682,7 @@ type instanceAdminGRPCClient struct {
 // NewInstanceAdminClient creates a new instance admin client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Cloud Spanner Instance Admin API
+// Cloud Spanner Instance Admin API
 //
 // The Cloud Spanner Instance Admin API can be used to create, delete,
 // modify and list instances. Instances are dedicated Cloud Spanner serving
@@ -787,7 +787,7 @@ type instanceAdminRESTClient struct {
 
 // NewInstanceAdminRESTClient creates a new instance admin rest client.
 //
-// # Cloud Spanner Instance Admin API
+// Cloud Spanner Instance Admin API
 //
 // The Cloud Spanner Instance Admin API can be used to create, delete,
 // modify and list instances. Instances are dedicated Cloud Spanner serving
@@ -1362,26 +1362,26 @@ func (c *instanceAdminRESTClient) GetInstanceConfig(ctx context.Context, req *in
 //
 // Immediately after the request returns:
 //
-//	The instance config is readable via the API, with all requested
-//	attributes. The instance config’s
-//	reconciling
-//	field is set to true. Its state is CREATING.
+//   The instance config is readable via the API, with all requested
+//   attributes. The instance config’s
+//   reconciling
+//   field is set to true. Its state is CREATING.
 //
 // While the operation is pending:
 //
-//	Cancelling the operation renders the instance config immediately
-//	unreadable via the API.
+//   Cancelling the operation renders the instance config immediately
+//   unreadable via the API.
 //
-//	Except for deleting the creating resource, all other attempts to modify
-//	the instance config are rejected.
+//   Except for deleting the creating resource, all other attempts to modify
+//   the instance config are rejected.
 //
 // Upon completion of the returned operation:
 //
-//	Instances can be created using the instance configuration.
+//   Instances can be created using the instance configuration.
 //
-//	The instance config’s
-//	reconciling
-//	field becomes false. Its state becomes READY.
+//   The instance config’s
+//   reconciling
+//   field becomes false. Its state becomes READY.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
@@ -1474,32 +1474,32 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 //
 // Immediately after the request returns:
 //
-//	The instance config’s
-//	reconciling
-//	field is set to true.
+//   The instance config’s
+//   reconciling
+//   field is set to true.
 //
 // While the operation is pending:
 //
-//	Cancelling the operation sets its metadata’s
-//	cancel_time.
-//	The operation is guaranteed to succeed at undoing all changes, after
-//	which point it terminates with a CANCELLED status.
+//   Cancelling the operation sets its metadata’s
+//   cancel_time.
+//   The operation is guaranteed to succeed at undoing all changes, after
+//   which point it terminates with a CANCELLED status.
 //
-//	All other attempts to modify the instance config are rejected.
+//   All other attempts to modify the instance config are rejected.
 //
-//	Reading the instance config via the API continues to give the
-//	pre-request values.
+//   Reading the instance config via the API continues to give the
+//   pre-request values.
 //
 // Upon completion of the returned operation:
 //
-//	Creating instances using the instance configuration uses the new
-//	values.
+//   Creating instances using the instance configuration uses the new
+//   values.
 //
-//	The instance config’s new values are readable via the API.
+//   The instance config’s new values are readable via the API.
 //
-//	The instance config’s
-//	reconciling
-//	field becomes false.
+//   The instance config’s
+//   reconciling
+//   field becomes false.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
@@ -1907,28 +1907,28 @@ func (c *instanceAdminRESTClient) GetInstance(ctx context.Context, req *instance
 //
 // Immediately upon completion of this request:
 //
-//	The instance is readable via the API, with all requested attributes
-//	but no allocated resources. Its state is CREATING.
+//   The instance is readable via the API, with all requested attributes
+//   but no allocated resources. Its state is CREATING.
 //
 // Until completion of the returned operation:
 //
-//	Cancelling the operation renders the instance immediately unreadable
-//	via the API.
+//   Cancelling the operation renders the instance immediately unreadable
+//   via the API.
 //
-//	The instance can be deleted.
+//   The instance can be deleted.
 //
-//	All other attempts to modify the instance are rejected.
+//   All other attempts to modify the instance are rejected.
 //
 // Upon completion of the returned operation:
 //
-//	Billing for all successfully-allocated resources begins (some types
-//	may have lower than the requested levels).
+//   Billing for all successfully-allocated resources begins (some types
+//   may have lower than the requested levels).
 //
-//	Databases can be created in the instance.
+//   Databases can be created in the instance.
 //
-//	The instance’s allocated resource levels are readable via the API.
+//   The instance’s allocated resource levels are readable via the API.
 //
-//	The instance’s state becomes READY.
+//   The instance’s state becomes READY.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format <instance_name>/operations/<operation_id> and
@@ -2014,31 +2014,31 @@ func (c *instanceAdminRESTClient) CreateInstance(ctx context.Context, req *insta
 //
 // Immediately upon completion of this request:
 //
-//	For resource types for which a decrease in the instance’s allocation
-//	has been requested, billing is based on the newly-requested level.
+//   For resource types for which a decrease in the instance’s allocation
+//   has been requested, billing is based on the newly-requested level.
 //
 // Until completion of the returned operation:
 //
-//	Cancelling the operation sets its metadata’s
-//	cancel_time,
-//	and begins restoring resources to their pre-request values. The
-//	operation is guaranteed to succeed at undoing all resource changes,
-//	after which point it terminates with a CANCELLED status.
+//   Cancelling the operation sets its metadata’s
+//   cancel_time,
+//   and begins restoring resources to their pre-request values. The
+//   operation is guaranteed to succeed at undoing all resource changes,
+//   after which point it terminates with a CANCELLED status.
 //
-//	All other attempts to modify the instance are rejected.
+//   All other attempts to modify the instance are rejected.
 //
-//	Reading the instance via the API continues to give the pre-request
-//	resource levels.
+//   Reading the instance via the API continues to give the pre-request
+//   resource levels.
 //
 // Upon completion of the returned operation:
 //
-//	Billing begins for all successfully-allocated resources (some types
-//	may have lower than the requested levels).
+//   Billing begins for all successfully-allocated resources (some types
+//   may have lower than the requested levels).
 //
-//	All newly-reserved resources are available for serving the instance’s
-//	tables.
+//   All newly-reserved resources are available for serving the instance’s
+//   tables.
 //
-//	The instance’s new resource levels are readable via the API.
+//   The instance’s new resource levels are readable via the API.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format <instance_name>/operations/<operation_id> and
@@ -2123,13 +2123,13 @@ func (c *instanceAdminRESTClient) UpdateInstance(ctx context.Context, req *insta
 //
 // Immediately upon completion of the request:
 //
-//	Billing ceases for all of the instance’s reserved resources.
+//   Billing ceases for all of the instance’s reserved resources.
 //
 // Soon afterward:
 //
-//	The instance and all of its databases immediately and
-//	irrevocably disappear from the API. All data in the databases
-//	is permanently deleted.
+//   The instance and all of its databases immediately and
+//   irrevocably disappear from the API. All data in the databases
+//   is permanently deleted.
 func (c *instanceAdminRESTClient) DeleteInstance(ctx context.Context, req *instancepb.DeleteInstanceRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2382,12 +2382,6 @@ func (c *instanceAdminRESTClient) TestIamPermissions(ctx context.Context, req *i
 	return resp, nil
 }
 
-// CreateInstanceOperation manages a long-running operation from CreateInstance.
-type CreateInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
@@ -2404,70 +2398,6 @@ func (c *instanceAdminRESTClient) CreateInstanceOperation(name string) *CreateIn
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*instancepb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp instancepb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*instancepb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp instancepb.Instance
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateInstanceOperation) Metadata() (*instancepb.CreateInstanceMetadata, error) {
-	var meta instancepb.CreateInstanceMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateInstanceConfigOperation manages a long-running operation from CreateInstanceConfig.
-type CreateInstanceConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateInstanceConfigOperation returns a new CreateInstanceConfigOperation from a given name.
@@ -2488,70 +2418,6 @@ func (c *instanceAdminRESTClient) CreateInstanceConfigOperation(name string) *Cr
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateInstanceConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*instancepb.InstanceConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp instancepb.InstanceConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateInstanceConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*instancepb.InstanceConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp instancepb.InstanceConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateInstanceConfigOperation) Metadata() (*instancepb.CreateInstanceConfigMetadata, error) {
-	var meta instancepb.CreateInstanceConfigMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateInstanceConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateInstanceConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateInstanceOperation manages a long-running operation from UpdateInstance.
-type UpdateInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateInstanceOperation returns a new UpdateInstanceOperation from a given name.
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
@@ -2570,70 +2436,6 @@ func (c *instanceAdminRESTClient) UpdateInstanceOperation(name string) *UpdateIn
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*instancepb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp instancepb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*instancepb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp instancepb.Instance
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateInstanceOperation) Metadata() (*instancepb.UpdateInstanceMetadata, error) {
-	var meta instancepb.UpdateInstanceMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateInstanceConfigOperation manages a long-running operation from UpdateInstanceConfig.
-type UpdateInstanceConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateInstanceConfigOperation returns a new UpdateInstanceConfigOperation from a given name.
 // The name must be that of a previously created UpdateInstanceConfigOperation, possibly from a different process.
 func (c *instanceAdminGRPCClient) UpdateInstanceConfigOperation(name string) *UpdateInstanceConfigOperation {
@@ -2650,203 +2452,4 @@ func (c *instanceAdminRESTClient) UpdateInstanceConfigOperation(name string) *Up
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateInstanceConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*instancepb.InstanceConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp instancepb.InstanceConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateInstanceConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*instancepb.InstanceConfig, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp instancepb.InstanceConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateInstanceConfigOperation) Metadata() (*instancepb.UpdateInstanceConfigMetadata, error) {
-	var meta instancepb.UpdateInstanceConfigMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateInstanceConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateInstanceConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// InstanceConfigIterator manages a stream of *instancepb.InstanceConfig.
-type InstanceConfigIterator struct {
-	items    []*instancepb.InstanceConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*instancepb.InstanceConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InstanceConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InstanceConfigIterator) Next() (*instancepb.InstanceConfig, error) {
-	var item *instancepb.InstanceConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InstanceConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InstanceConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// InstanceIterator manages a stream of *instancepb.Instance.
-type InstanceIterator struct {
-	items    []*instancepb.Instance
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*instancepb.Instance, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InstanceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InstanceIterator) Next() (*instancepb.Instance, error) {
-	var item *instancepb.Instance
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InstanceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InstanceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

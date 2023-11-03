@@ -575,12 +575,12 @@ func (c *Client) MergeCapacityCommitments(ctx context.Context, req *reservationp
 //
 // Example:
 //
-//	The organization organizationA contains two projects, project1
-//	and project2.
+//   The organization organizationA contains two projects, project1
+//   and project2.
 //
-//	Assignments for all three entities (organizationA, project1, and
-//	project2) could all be created and mapped to the same or different
-//	reservations.
+//   Assignments for all three entities (organizationA, project1, and
+//   project2) could all be created and mapped to the same or different
+//   reservations.
 //
 // “None” assignments represent an absence of the assignment. Projects
 // assigned to None use on-demand pricing. To create a “None” assignment, use
@@ -603,14 +603,14 @@ func (c *Client) CreateAssignment(ctx context.Context, req *reservationpb.Create
 //
 // Example:
 //
-//	Organization organizationA contains two projects, project1 and
-//	project2.
+//   Organization organizationA contains two projects, project1 and
+//   project2.
 //
-//	Reservation res1 exists and was created previously.
+//   Reservation res1 exists and was created previously.
 //
-//	CreateAssignment was used previously to define the following
-//	associations between entities and reservations: <organizationA, res1>
-//	and <project1, res1>
+//   CreateAssignment was used previously to define the following
+//   associations between entities and reservations: <organizationA, res1>
+//   and <project1, res1>
 //
 // In this example, ListAssignments will just return the above two assignments
 // for reservation res1, and no expansion/merge will happen.
@@ -628,14 +628,14 @@ func (c *Client) ListAssignments(ctx context.Context, req *reservationpb.ListAss
 //
 // Example:
 //
-//	Organization organizationA contains two projects, project1 and
-//	project2.
+//   Organization organizationA contains two projects, project1 and
+//   project2.
 //
-//	Reservation res1 exists and was created previously.
+//   Reservation res1 exists and was created previously.
 //
-//	CreateAssignment was used previously to define the following
-//	associations between entities and reservations: <organizationA, res1>
-//	and <project1, res1>
+//   CreateAssignment was used previously to define the following
+//   associations between entities and reservations: <organizationA, res1>
+//   and <project1, res1>
 //
 // In this example, deletion of the <organizationA, res1> assignment won’t
 // affect the other assignment <project1, res1>. After said deletion,
@@ -2262,12 +2262,12 @@ func (c *restClient) MergeCapacityCommitments(ctx context.Context, req *reservat
 //
 // Example:
 //
-//	The organization organizationA contains two projects, project1
-//	and project2.
+//   The organization organizationA contains two projects, project1
+//   and project2.
 //
-//	Assignments for all three entities (organizationA, project1, and
-//	project2) could all be created and mapped to the same or different
-//	reservations.
+//   Assignments for all three entities (organizationA, project1, and
+//   project2) could all be created and mapped to the same or different
+//   reservations.
 //
 // “None” assignments represent an absence of the assignment. Projects
 // assigned to None use on-demand pricing. To create a “None” assignment, use
@@ -2355,14 +2355,14 @@ func (c *restClient) CreateAssignment(ctx context.Context, req *reservationpb.Cr
 //
 // Example:
 //
-//	Organization organizationA contains two projects, project1 and
-//	project2.
+//   Organization organizationA contains two projects, project1 and
+//   project2.
 //
-//	Reservation res1 exists and was created previously.
+//   Reservation res1 exists and was created previously.
 //
-//	CreateAssignment was used previously to define the following
-//	associations between entities and reservations: <organizationA, res1>
-//	and <project1, res1>
+//   CreateAssignment was used previously to define the following
+//   associations between entities and reservations: <organizationA, res1>
+//   and <project1, res1>
 //
 // In this example, ListAssignments will just return the above two assignments
 // for reservation res1, and no expansion/merge will happen.
@@ -2464,14 +2464,14 @@ func (c *restClient) ListAssignments(ctx context.Context, req *reservationpb.Lis
 //
 // Example:
 //
-//	Organization organizationA contains two projects, project1 and
-//	project2.
+//   Organization organizationA contains two projects, project1 and
+//   project2.
 //
-//	Reservation res1 exists and was created previously.
+//   Reservation res1 exists and was created previously.
 //
-//	CreateAssignment was used previously to define the following
-//	associations between entities and reservations: <organizationA, res1>
-//	and <project1, res1>
+//   CreateAssignment was used previously to define the following
+//   associations between entities and reservations: <organizationA, res1>
+//   and <project1, res1>
 //
 // In this example, deletion of the <organizationA, res1> assignment won’t
 // affect the other assignment <project1, res1>. After said deletion,
@@ -3038,145 +3038,4 @@ func (c *restClient) UpdateBiReservation(ctx context.Context, req *reservationpb
 		return nil, e
 	}
 	return resp, nil
-}
-
-// AssignmentIterator manages a stream of *reservationpb.Assignment.
-type AssignmentIterator struct {
-	items    []*reservationpb.Assignment
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*reservationpb.Assignment, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AssignmentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AssignmentIterator) Next() (*reservationpb.Assignment, error) {
-	var item *reservationpb.Assignment
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AssignmentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AssignmentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CapacityCommitmentIterator manages a stream of *reservationpb.CapacityCommitment.
-type CapacityCommitmentIterator struct {
-	items    []*reservationpb.CapacityCommitment
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*reservationpb.CapacityCommitment, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CapacityCommitmentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CapacityCommitmentIterator) Next() (*reservationpb.CapacityCommitment, error) {
-	var item *reservationpb.CapacityCommitment
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CapacityCommitmentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CapacityCommitmentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ReservationIterator manages a stream of *reservationpb.Reservation.
-type ReservationIterator struct {
-	items    []*reservationpb.Reservation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*reservationpb.Reservation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ReservationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ReservationIterator) Next() (*reservationpb.Reservation, error) {
-	var item *reservationpb.Reservation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ReservationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ReservationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

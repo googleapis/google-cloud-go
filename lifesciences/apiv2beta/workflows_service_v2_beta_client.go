@@ -164,7 +164,7 @@ func (c *WorkflowsServiceV2BetaClient) Connection() *grpc.ClientConn {
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam/) permission:
 //
-//	lifesciences.workflows.run
+//   lifesciences.workflows.run
 func (c *WorkflowsServiceV2BetaClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
 	return c.internalClient.RunPipeline(ctx, req, opts...)
 }
@@ -195,7 +195,7 @@ func (c *WorkflowsServiceV2BetaClient) ListLocations(ctx context.Context, req *l
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.cancel
+//   lifesciences.operations.cancel
 func (c *WorkflowsServiceV2BetaClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
@@ -206,7 +206,7 @@ func (c *WorkflowsServiceV2BetaClient) CancelOperation(ctx context.Context, req 
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.get
+//   lifesciences.operations.get
 func (c *WorkflowsServiceV2BetaClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
@@ -215,7 +215,7 @@ func (c *WorkflowsServiceV2BetaClient) GetOperation(ctx context.Context, req *lo
 // request. Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.list
+//   lifesciences.operations.list
 func (c *WorkflowsServiceV2BetaClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -577,7 +577,7 @@ func (c *workflowsServiceV2BetaGRPCClient) ListOperations(ctx context.Context, r
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam/) permission:
 //
-//	lifesciences.workflows.run
+//   lifesciences.workflows.run
 func (c *workflowsServiceV2BetaRESTClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -809,7 +809,7 @@ func (c *workflowsServiceV2BetaRESTClient) ListLocations(ctx context.Context, re
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.cancel
+//   lifesciences.operations.cancel
 func (c *workflowsServiceV2BetaRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -863,7 +863,7 @@ func (c *workflowsServiceV2BetaRESTClient) CancelOperation(ctx context.Context, 
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.get
+//   lifesciences.operations.get
 func (c *workflowsServiceV2BetaRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -927,7 +927,7 @@ func (c *workflowsServiceV2BetaRESTClient) GetOperation(ctx context.Context, req
 // request. Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.list
+//   lifesciences.operations.list
 func (c *workflowsServiceV2BetaRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1019,12 +1019,6 @@ func (c *workflowsServiceV2BetaRESTClient) ListOperations(ctx context.Context, r
 	return it
 }
 
-// RunPipelineOperation manages a long-running operation from RunPipeline.
-type RunPipelineOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // RunPipelineOperation returns a new RunPipelineOperation from a given name.
 // The name must be that of a previously created RunPipelineOperation, possibly from a different process.
 func (c *workflowsServiceV2BetaGRPCClient) RunPipelineOperation(name string) *RunPipelineOperation {
@@ -1041,156 +1035,4 @@ func (c *workflowsServiceV2BetaRESTClient) RunPipelineOperation(name string) *Ru
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RunPipelineOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*lifesciencespb.RunPipelineResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp lifesciencespb.RunPipelineResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RunPipelineOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*lifesciencespb.RunPipelineResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp lifesciencespb.RunPipelineResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RunPipelineOperation) Metadata() (*lifesciencespb.Metadata, error) {
-	var meta lifesciencespb.Metadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RunPipelineOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RunPipelineOperation) Name() string {
-	return op.lro.Name()
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

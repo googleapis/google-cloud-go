@@ -158,9 +158,9 @@ func (c *ApplicationsClient) GetApplication(ctx context.Context, req *appenginep
 // CreateApplication creates an App Engine application for a Google Cloud Platform project.
 // Required fields:
 //
-//	id - The ID of the target Cloud Platform project.
+//   id - The ID of the target Cloud Platform project.
 //
-//	location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
+//   location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
 //
 // For more information about App Engine applications, see Managing Projects, Applications, and Billing (at https://cloud.google.com/appengine/docs/standard/python/console/).
 func (c *ApplicationsClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
@@ -176,11 +176,11 @@ func (c *ApplicationsClient) CreateApplicationOperation(name string) *CreateAppl
 // UpdateApplication updates the specified Application resource.
 // You can update the following fields:
 //
-//	auth_domain - Google authentication domain for controlling user access to the application.
+//   auth_domain - Google authentication domain for controlling user access to the application.
 //
-//	default_cookie_expiration - Cookie expiration policy for the application.
+//   default_cookie_expiration - Cookie expiration policy for the application.
 //
-//	iap - Identity-Aware Proxy properties for the application.
+//   iap - Identity-Aware Proxy properties for the application.
 func (c *ApplicationsClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
 	return c.internalClient.UpdateApplication(ctx, req, opts...)
 }
@@ -520,9 +520,9 @@ func (c *applicationsRESTClient) GetApplication(ctx context.Context, req *appeng
 // CreateApplication creates an App Engine application for a Google Cloud Platform project.
 // Required fields:
 //
-//	id - The ID of the target Cloud Platform project.
+//   id - The ID of the target Cloud Platform project.
 //
-//	location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
+//   location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
 //
 // For more information about App Engine applications, see Managing Projects, Applications, and Billing (at https://cloud.google.com/appengine/docs/standard/python/console/).
 func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
@@ -595,11 +595,11 @@ func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *app
 // UpdateApplication updates the specified Application resource.
 // You can update the following fields:
 //
-//	auth_domain - Google authentication domain for controlling user access to the application.
+//   auth_domain - Google authentication domain for controlling user access to the application.
 //
-//	default_cookie_expiration - Cookie expiration policy for the application.
+//   default_cookie_expiration - Cookie expiration policy for the application.
 //
-//	iap - Identity-Aware Proxy properties for the application.
+//   iap - Identity-Aware Proxy properties for the application.
 func (c *applicationsRESTClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetApplication()
@@ -756,12 +756,6 @@ func (c *applicationsRESTClient) RepairApplication(ctx context.Context, req *app
 	}, nil
 }
 
-// CreateApplicationOperation manages a long-running operation from CreateApplication.
-type CreateApplicationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateApplicationOperation returns a new CreateApplicationOperation from a given name.
 // The name must be that of a previously created CreateApplicationOperation, possibly from a different process.
 func (c *applicationsGRPCClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
@@ -778,70 +772,6 @@ func (c *applicationsRESTClient) CreateApplicationOperation(name string) *Create
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateApplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp appenginepb.Application
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateApplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp appenginepb.Application
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateApplicationOperation) Metadata() (*appenginepb.OperationMetadataV1, error) {
-	var meta appenginepb.OperationMetadataV1
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateApplicationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateApplicationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RepairApplicationOperation manages a long-running operation from RepairApplication.
-type RepairApplicationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // RepairApplicationOperation returns a new RepairApplicationOperation from a given name.
@@ -862,70 +792,6 @@ func (c *applicationsRESTClient) RepairApplicationOperation(name string) *Repair
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RepairApplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp appenginepb.Application
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RepairApplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp appenginepb.Application
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RepairApplicationOperation) Metadata() (*appenginepb.OperationMetadataV1, error) {
-	var meta appenginepb.OperationMetadataV1
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RepairApplicationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RepairApplicationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateApplicationOperation manages a long-running operation from UpdateApplication.
-type UpdateApplicationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateApplicationOperation returns a new UpdateApplicationOperation from a given name.
 // The name must be that of a previously created UpdateApplicationOperation, possibly from a different process.
 func (c *applicationsGRPCClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
@@ -942,62 +808,4 @@ func (c *applicationsRESTClient) UpdateApplicationOperation(name string) *Update
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateApplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp appenginepb.Application
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateApplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp appenginepb.Application
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateApplicationOperation) Metadata() (*appenginepb.OperationMetadataV1, error) {
-	var meta appenginepb.OperationMetadataV1
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateApplicationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateApplicationOperation) Name() string {
-	return op.lro.Name()
 }
