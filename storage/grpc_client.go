@@ -1356,7 +1356,12 @@ func (c *grpcStorageClient) DeleteNotification(ctx context.Context, bucket strin
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
-	req := &storagepb.DeleteNotificationConfigRequest{Name: id}
+	name := id
+	if checkNotificationConfigName(id) == "" {
+		parent := bucketResourceName(globalProjectAlias, bucket)
+		name = fmt.Sprintf("%s/notificationConfigs/%s", parent, id)
+	}
+	req := &storagepb.DeleteNotificationConfigRequest{Name: name}
 	return run(ctx, func(ctx context.Context) error {
 		return c.raw.DeleteNotificationConfig(ctx, req, s.gax...)
 	}, s.retry, s.idempotent)
@@ -1659,7 +1664,6 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// when the backend closes the stream and wants to return an error
 			// status. Closing the stream receives the status as an error.
 			_, err = w.stream.CloseAndRecv()
-			w.stream = nil
 
 			// Drop the stream reference as a new one will need to be created if
 			// we can retry the upload

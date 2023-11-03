@@ -117,6 +117,7 @@ func toProtoNotification(n *Notification) *storagepb.NotificationConfig {
 }
 
 var topicRE = regexp.MustCompile("^//pubsub.googleapis.com/projects/([^/]+)/topics/([^/]+)")
+var configNameRE = regexp.MustCompile("projects/([^/]+)/buckets/([^/]+)/notificationConfigs/([^/]+)")
 
 // parseNotificationTopic extracts the project and topic IDs from from the full
 // resource name returned by the service. If the name is malformed, it returns
@@ -127,6 +128,17 @@ func parseNotificationTopic(nt string) (projectID, topicID string) {
 		return "?", "?"
 	}
 	return matches[1], matches[2]
+}
+
+// checkNotificationConfigName checks if the config name follows the pattern of
+// projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}
+// If the name is malformed, it returns "" for the configName.
+func checkNotificationConfigName(nt string) (configName string) {
+	matches := configNameRE.FindStringSubmatch(nt)
+	if matches == nil {
+		return ""
+	}
+	return nt
 }
 
 func toRawNotification(n *Notification) *raw.Notification {
