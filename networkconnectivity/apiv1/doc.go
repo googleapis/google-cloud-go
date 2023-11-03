@@ -67,22 +67,21 @@
 //	}
 //	defer c.Close()
 //
-//	req := &networkconnectivitypb.ListHubsRequest{
+//	req := &networkconnectivitypb.AcceptHubSpokeRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#ListHubsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#AcceptHubSpokeRequest.
 //	}
-//	it := c.ListHubs(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	op, err := c.AcceptHubSpoke(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

@@ -68,22 +68,21 @@
 //	}
 //	defer c.Close()
 //
-//	req := &clouddmspb.ListMigrationJobsRequest{
+//	req := &clouddmspb.ApplyConversionWorkspaceRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/clouddms/apiv1/clouddmspb#ListMigrationJobsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/clouddms/apiv1/clouddmspb#ApplyConversionWorkspaceRequest.
 //	}
-//	it := c.ListMigrationJobs(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	op, err := c.ApplyConversionWorkspace(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //
