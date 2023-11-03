@@ -2830,6 +2830,11 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				Description:   "",
 				RoutingPolicy: gotProfile.RoutingPolicy,
 				Etag:          gotProfile.Etag,
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
 			},
 		},
 		{
@@ -2864,7 +2869,11 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 
 		// Retry to see if the update has been completed
 		testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
-			got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
+			got, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
+
+			if err != nil {
+				r.Errorf("%s : got: %v, want: nil", test.desc, err)
+			}
 
 			if !proto.Equal(got, test.want) {
 				r.Errorf("%s : got profile : %v, want profile: %v", test.desc, gotProfile, test.want)
