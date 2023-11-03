@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/commerce/v0.1.2...commerce/v0.1.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **commerce:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/commerce/v0.1.1...commerce/v0.1.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **commerce:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/commerce/v0.1.0...commerce/v0.1.1) (2023-10-12)
 
 

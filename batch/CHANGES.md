@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.2...batch/v1.6.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **batch:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.1...batch/v1.6.2) (2023-10-31)
+
+
+### Documentation
+
+* **batch:** Update default max parallel tasks per job ([#8940](https://github.com/googleapis/google-cloud-go/issues/8940)) ([4d40180](https://github.com/googleapis/google-cloud-go/commit/4d40180da0557c2a2e9e2cb8b0509b429676bfc0))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.0...batch/v1.6.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **batch:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.5.1...batch/v1.6.0) (2023-10-17)
 
 

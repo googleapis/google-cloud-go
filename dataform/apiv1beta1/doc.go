@@ -17,6 +17,9 @@
 // Package dataform is an auto-generated package for the
 // Dataform API.
 //
+// Service to develop, version control, and operationalize SQL pipelines in
+// BigQuery.
+//
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation

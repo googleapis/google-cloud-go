@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "BatchDeleteVersions": {
+              "methods": [
+                "BatchDeleteVersions"
+              ]
+            },
             "CreateRepository": {
               "methods": [
                 "CreateRepository"
@@ -205,6 +210,11 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "BatchDeleteVersions": {
+              "methods": [
+                "BatchDeleteVersions"
+              ]
+            },
             "CreateRepository": {
               "methods": [
                 "CreateRepository"
