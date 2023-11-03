@@ -502,8 +502,7 @@ func (q *Query) toRunQueryRequest(req *pb.RunQueryRequest) error {
 	if err != nil {
 		return err
 	}
-
-	req.ReadOptions, err = parseReadOptions(q)
+	err = validateReadOptions(q)
 	if err != nil {
 		return err
 	}
@@ -730,6 +729,8 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 			ProjectId:  c.dataset,
 			DatabaseId: c.databaseID,
 		},
+		trans:    q.trans,
+		eventual: q.eventual,
 	}
 
 	if q.namespace != "" {
@@ -786,7 +787,17 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	}
 
 	// Parse the read options.
-	req.ReadOptions, err = parseReadOptions(aq.query)
+	txn := aq.query.trans
+	if txn != nil && txn.state == transactionStateNotStarted {
+		txn.stateLock.Lock()
+		if txn.state == transactionStateNotStarted {
+			defer txn.stateLock.Unlock()
+		} else {
+			txn.stateLock.Unlock()
+		}
+	}
+
+	req.ReadOptions, err = parseReadOptions(aq.query.eventual, aq.query.trans)
 	if err != nil {
 		return nil, err
 	}
@@ -794,6 +805,11 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	res, err := c.client.RunAggregationQuery(ctx, req)
 	if err != nil {
 		return nil, err
+	}
+
+	if txn != nil && txn.state == transactionStateNotStarted {
+		txn.id = res.Transaction
+		txn.state = transactionStateInProgress
 	}
 
 	ar = make(AggregationResult)
@@ -808,21 +824,27 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	return ar, nil
 }
 
-// parseReadOptions translates Query read options into protobuf format.
-func parseReadOptions(q *Query) (*pb.ReadOptions, error) {
+// validateReadOptions validates Query read options
+func validateReadOptions(q *Query) error {
 	if t := q.trans; t != nil {
-		if t.id == nil {
-			return nil, errExpiredTransaction
+		if t.state == transactionStateExpired {
+			return errExpiredTransaction
 		}
 		if q.eventual {
-			return nil, errors.New("datastore: cannot use EventualConsistency query in a transaction")
+			return errors.New("datastore: cannot use EventualConsistency query in a transaction")
 		}
-		return &pb.ReadOptions{
-			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
-		}, nil
+	}
+	return nil
+}
+
+// parseReadOptions translates query read options into protobuf format.
+func parseReadOptions(eventual bool, t *Transaction) (*pb.ReadOptions, error) {
+
+	if t != nil {
+		return t.parseTransactionReadOptions()
 	}
 
-	if q.eventual {
+	if eventual {
 		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
 	}
 
@@ -858,6 +880,10 @@ type Iterator struct {
 	pageCursor []byte
 	// entityCursor is the compiled cursor of the next result.
 	entityCursor []byte
+
+	trans *Transaction
+
+	eventual bool
 }
 
 // Next returns the key of the next result. When there are no more results,
@@ -924,10 +950,31 @@ func (t *Iterator) nextBatch() error {
 		q.Limit = nil
 	}
 
+	txn := t.trans
+	if txn != nil && txn.state == transactionStateNotStarted {
+		txn.stateLock.Lock()
+		if txn.state == transactionStateNotStarted {
+			defer txn.stateLock.Unlock()
+		} else {
+			txn.stateLock.Unlock()
+		}
+	}
+
+	var err error
+	t.req.ReadOptions, err = parseReadOptions(t.eventual, t.trans)
+	if err != nil {
+		return err
+	}
+
 	// Run the query.
 	resp, err := t.client.client.RunQuery(t.ctx, t.req)
 	if err != nil {
 		return err
+	}
+
+	if txn != nil && txn.state == transactionStateNotStarted {
+		txn.id = resp.Transaction
+		txn.state = transactionStateInProgress
 	}
 
 	// Adjust any offset from skipped results.

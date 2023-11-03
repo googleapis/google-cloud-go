@@ -858,3 +858,75 @@ func TestAggregationQueryIsNil(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestValidateReadOptions(t *testing.T) {
+	for _, test := range []struct {
+		desc    string
+		q       *Query
+		wantErr error
+	}{
+		{
+			desc: "EventualConsistency query in a transaction",
+			q: &Query{
+				eventual: true,
+				trans: &Transaction{
+					id: []byte("test id"),
+				},
+			},
+			wantErr: errors.New("datastore: cannot use EventualConsistency query in a transaction"),
+		},
+		{
+			desc: "Expired transaction in non-eventual query",
+			q: &Query{
+				eventual: false,
+				trans: &Transaction{
+					id:    []byte("test id"),
+					state: transactionStateExpired,
+				},
+			},
+			wantErr: errExpiredTransaction,
+		},
+		{
+			desc: "Expired transaction in eventual query",
+			q: &Query{
+				eventual: true,
+				trans: &Transaction{
+					id:    []byte("test id"),
+					state: transactionStateExpired,
+				},
+			},
+			wantErr: errExpiredTransaction,
+		},
+		{
+			desc: "No transaction in non-eventual query",
+			q: &Query{
+				eventual: false,
+				trans:    nil,
+			},
+			wantErr: nil,
+		},
+		{
+			desc: "No transaction in eventual query",
+			q: &Query{
+				eventual: true,
+				trans:    nil,
+			},
+			wantErr: nil,
+		},
+	} {
+		gotErr := validateReadOptions(test.q)
+		gotErrMsg := ""
+		if gotErr != nil {
+			gotErrMsg = gotErr.Error()
+		}
+
+		wantErrMsg := ""
+		if test.wantErr != nil {
+			wantErrMsg = test.wantErr.Error()
+		}
+
+		if gotErrMsg != wantErrMsg {
+			t.Errorf("%q: got: %v, want: %v", test.desc, gotErr, test.wantErr)
+		}
+	}
+}
