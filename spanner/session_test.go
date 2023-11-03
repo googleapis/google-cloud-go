@@ -455,8 +455,8 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
 	}
 
-	// Mock the session checkout time to be greater than 60 mins
-	single.sh.checkoutTime = time.Now().Add(-time.Hour)
+	// Mock the session lastUseTime to be greater than 60 mins
+	single.sh.lastUseTime = time.Now().Add(-time.Hour)
 	single.sh.mu.Unlock()
 
 	// force run task to clean up unexpected long-running sessions
@@ -526,17 +526,17 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSession
 	sp.mu.Unlock()
 	s1.mu.Lock()
 	s1.eligibleForLongRunning = false
-	s1.checkoutTime = time.Now().Add(-time.Hour)
+	s1.lastUseTime = time.Now().Add(-time.Hour)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
 	s2.eligibleForLongRunning = false
-	s2.checkoutTime = time.Now().Add(-time.Hour)
+	s2.lastUseTime = time.Now().Add(-time.Hour)
 	s2.mu.Unlock()
 
 	s3.mu.Lock()
 	s3.eligibleForLongRunning = true
-	s3.checkoutTime = time.Now().Add(-time.Hour)
+	s3.lastUseTime = time.Now().Add(-time.Hour)
 	s3.mu.Unlock()
 
 	// Sleep for maintainer to run long-running cleanup task
@@ -596,17 +596,17 @@ func TestLongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *
 	sp.mu.Unlock()
 	s1.mu.Lock()
 	s1.eligibleForLongRunning = false
-	s1.checkoutTime = time.Now().Add(-time.Hour)
+	s1.lastUseTime = time.Now().Add(-time.Hour)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
 	s2.eligibleForLongRunning = false
-	s2.checkoutTime = time.Now().Add(-time.Hour)
+	s2.lastUseTime = time.Now().Add(-time.Hour)
 	s2.mu.Unlock()
 
 	s3.mu.Lock()
 	s3.eligibleForLongRunning = true
-	s3.checkoutTime = time.Now().Add(-time.Hour)
+	s3.lastUseTime = time.Now().Add(-time.Hour)
 	s3.mu.Unlock()
 
 	// force run task to clean up unexpected long-running sessions
@@ -666,17 +666,17 @@ func TestLongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsOpen(t *test
 	sp.mu.Unlock()
 	s1.mu.Lock()
 	s1.eligibleForLongRunning = false
-	s1.checkoutTime = time.Now().Add(-time.Hour)
+	s1.lastUseTime = time.Now().Add(-time.Hour)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
 	s2.eligibleForLongRunning = false
-	s2.checkoutTime = time.Now().Add(-time.Hour)
+	s2.lastUseTime = time.Now().Add(-time.Hour)
 	s2.mu.Unlock()
 
 	s3.mu.Lock()
 	s3.eligibleForLongRunning = true
-	s3.checkoutTime = time.Now().Add(-time.Hour)
+	s3.lastUseTime = time.Now().Add(-time.Hour)
 	s3.mu.Unlock()
 
 	// force run task to clean up unexpected long-running sessions
@@ -750,12 +750,12 @@ func TestLongRunningTransactionsCleanup_UtilisationBelowThreshold_VerifyInactive
 	sp.mu.Unlock()
 	s1.mu.Lock()
 	s1.eligibleForLongRunning = false
-	s1.checkoutTime = time.Now().Add(-time.Hour)
+	s1.lastUseTime = time.Now().Add(-time.Hour)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
 	s2.eligibleForLongRunning = false
-	s2.checkoutTime = time.Now().Add(-time.Hour)
+	s2.lastUseTime = time.Now().Add(-time.Hour)
 	s2.mu.Unlock()
 
 	// force run task to clean up unexpected long-running sessions
@@ -816,17 +816,17 @@ func TestLongRunningTransactions_WhenAllExpectedlyLongRunning_VerifyInactiveSess
 	sp.mu.Unlock()
 	s1.mu.Lock()
 	s1.eligibleForLongRunning = true
-	s1.checkoutTime = time.Now().Add(-time.Hour)
+	s1.lastUseTime = time.Now().Add(-time.Hour)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
 	s2.eligibleForLongRunning = true
-	s2.checkoutTime = time.Now().Add(-time.Hour)
+	s2.lastUseTime = time.Now().Add(-time.Hour)
 	s2.mu.Unlock()
 
 	s3.mu.Lock()
 	s3.eligibleForLongRunning = true
-	s3.checkoutTime = time.Now().Add(-time.Hour)
+	s3.lastUseTime = time.Now().Add(-time.Hour)
 	s3.mu.Unlock()
 
 	// force run task to clean up unexpected long-running sessions
@@ -886,17 +886,17 @@ func TestLongRunningTransactions_WhenDurationBelowThreshold_VerifyInactiveSessio
 	sp.mu.Unlock()
 	s1.mu.Lock()
 	s1.eligibleForLongRunning = false
-	s1.checkoutTime = time.Now().Add(-50 * time.Minute)
+	s1.lastUseTime = time.Now().Add(-50 * time.Minute)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
 	s2.eligibleForLongRunning = false
-	s2.checkoutTime = time.Now().Add(-50 * time.Minute)
+	s2.lastUseTime = time.Now().Add(-50 * time.Minute)
 	s2.mu.Unlock()
 
 	s3.mu.Lock()
 	s3.eligibleForLongRunning = true
-	s3.checkoutTime = time.Now().Add(-50 * time.Minute)
+	s3.lastUseTime = time.Now().Add(-50 * time.Minute)
 	s3.mu.Unlock()
 
 	// force run task to clean up unexpected long-running sessions

@@ -108,6 +108,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 // Note that PDML transactions cannot be committed or rolled back.
 func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlRequest) (count int64, err error) {
 	var md metadata.MD
+	sh.updateLastUseTime()
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: sh.getID(),
@@ -122,6 +123,8 @@ func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlReq
 	req.Transaction = &sppb.TransactionSelector{
 		Selector: &sppb.TransactionSelector_Id{Id: res.Id},
 	}
+
+	sh.updateLastUseTime()
 	resultSet, err := sh.getClient().ExecuteSql(ctx, req, gax.WithGRPCOptions(grpc.Header(&md)))
 	if getGFELatencyMetricsFlag() && md != nil && sh.session.pool != nil {
 		err := captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "executePdml_ExecuteSql")
