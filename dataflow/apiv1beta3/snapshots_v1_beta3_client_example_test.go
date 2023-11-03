@@ -57,31 +57,6 @@ func ExampleNewSnapshotsV1Beta3RESTClient() {
 	_ = c
 }
 
-func ExampleSnapshotsV1Beta3Client_GetSnapshot() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataflow.NewSnapshotsV1Beta3Client(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataflowpb.GetSnapshotRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#GetSnapshotRequest.
-	}
-	resp, err := c.GetSnapshot(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleSnapshotsV1Beta3Client_DeleteSnapshot() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -100,6 +75,31 @@ func ExampleSnapshotsV1Beta3Client_DeleteSnapshot() {
 		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#DeleteSnapshotRequest.
 	}
 	resp, err := c.DeleteSnapshot(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleSnapshotsV1Beta3Client_GetSnapshot() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataflow.NewSnapshotsV1Beta3Client(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataflowpb.GetSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#GetSnapshotRequest.
+	}
+	resp, err := c.GetSnapshot(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
