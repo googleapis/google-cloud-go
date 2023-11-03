@@ -25,11 +25,9 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2/apierror"
 	octrace "go.opencensus.io/trace"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	otcodes "go.opentelemetry.io/otel/codes"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/grpc/codes"
@@ -103,15 +101,10 @@ func TestStartSpan_OpenTelemetry(t *testing.T) {
 	}()
 	TelemetryPlatformTracing = "opentelemetry"
 
-	exporter := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithSyncer(exporter),
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-	)
-	defer tp.Shutdown(context.Background())
-	otel.SetTracerProvider(tp)
-
 	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	defer te.Unregister(ctx)
+
 	ctx = StartSpan(ctx, "test-span")
 
 	TracePrintf(ctx, attrMap(), "Add my annotations")
@@ -125,7 +118,7 @@ func TestStartSpan_OpenTelemetry(t *testing.T) {
 	if !IsOpenTelemetryTracingEnabled() {
 		t.Errorf("got false, want true")
 	}
-	spans := exporter.GetSpans()
+	spans := te.Spans()
 	if len(spans) != 1 {
 		t.Fatalf("got %d, want 1", len(spans))
 	}
