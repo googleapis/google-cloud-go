@@ -265,6 +265,65 @@ func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	}
 }
 
+func TestOCStats_SessionPool_NumLongRunningSessionsRemoved(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
+	te := testutil.NewTestExporter(NumLongRunningSessionsRemovedCountView)
+	defer te.Unregister()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: SessionPoolConfig{
+		MinOpened: 1,
+		MaxOpened: 1,
+		InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+			actionOnInactiveTransaction: WarnAndClose,
+			idleTimeThreshold:           3 * time.Millisecond,
+		},
+	}})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(stestutil.MethodStreamingRead,
+		stestutil.SimulatedExecutionTime{
+			MinimumExecutionTime: 5 * time.Millisecond,
+		})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+	iter := client.Single().Read(ctx, "Users", Key{"alice"}, []string{"email"})
+	iter.Next()
+	// Run long-running sessions clean up task manually.
+	client.idleSessions.removeLongRunningSessions()
+
+	// Wait for a while to see all exported metrics.
+	waitErr := &Error{}
+	waitFor(t, func() error {
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) > 0 {
+				return nil
+			}
+		}
+		return waitErr
+	})
+
+	// Wait until we see data from the view.
+	select {
+	case stat := <-te.Stats:
+		if len(stat.Rows) == 0 {
+			t.Fatal("No metrics are exported")
+		}
+		if got, want := stat.View.Measure.Name(), statsPrefix+"num_long_running_sessions_removed"; got != want {
+			t.Fatalf("Incorrect measure: got %v, want %v", got, want)
+		}
+		row := stat.Rows[0]
+		m := getTagMap(row.Tags)
+		checkCommonTags(t, m)
+		data := row.Data.(*view.LastValueData).Value
+		if got, want := fmt.Sprintf("%v", data), "1"; got != want {
+			t.Fatalf("Incorrect data: got %v, want %v", got, want)
+		}
+	case <-time.After(1 * time.Second):
+		t.Fatal("no stats were exported before timeout")
+	}
+}
+
 func TestOCStats_GFE_Latency(t *testing.T) {
 	te := testutil.NewTestExporter([]*view.View{GFELatencyView, GFEHeaderMissingCountView}...)
 	defer te.Unregister()
