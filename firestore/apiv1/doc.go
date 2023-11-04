@@ -56,29 +56,6 @@
 //
 // The following is an example of making an API call with the newly created client.
 //
-//	ctx := context.Background()
-//	// This snippet has been automatically generated and should be regarded as a code template only.
-//	// It will require modifications to work:
-//	// - It may require correct/in-range values for request initialization.
-//	// - It may require specifying regional endpoints when creating the service client as shown in:
-//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := firestore.NewClient(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	defer c.Close()
-//
-//	req := &firestorepb.GetDocumentRequest{
-//		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#GetDocumentRequest.
-//	}
-//	resp, err := c.GetDocument(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	// TODO: Use resp.
-//	_ = resp
-//
 // # Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and

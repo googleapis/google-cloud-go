@@ -71,11 +71,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &deliverypb.CreateDeliveryVehicleRequest{
+//	req := &deliverypb.BatchCreateTasksRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/delivery/apiv1/deliverypb#CreateDeliveryVehicleRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/delivery/apiv1/deliverypb#BatchCreateTasksRequest.
 //	}
-//	resp, err := c.CreateDeliveryVehicle(ctx, req)
+//	resp, err := c.BatchCreateTasks(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
