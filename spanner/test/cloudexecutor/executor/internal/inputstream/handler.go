@@ -51,3 +51,9 @@ type CloudStreamHandler struct {
 func (h *CloudStreamHandler) Execute() error {
 	return nil
 }
+
+// cloudActionHandler is an interface representing an entity responsible for executing a particular
+// kind of SpannerActions.
+type cloudActionHandler interface {
+	ExecuteAction(context.Context) error
+}
