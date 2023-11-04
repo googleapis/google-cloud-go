@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &spannerpb.CreateSessionRequest{
+//	req := &spannerpb.BatchCreateSessionsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#CreateSessionRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#BatchCreateSessionsRequest.
 //	}
-//	resp, err := c.CreateSession(ctx, req)
+//	resp, err := c.BatchCreateSessions(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

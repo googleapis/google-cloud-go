@@ -90,6 +90,8 @@ type sessionHandle struct {
 	session *session
 	// checkoutTime is the time the session was checked out of the pool.
 	checkoutTime time.Time
+	// lastUseTime is the time the session was last used after checked out of the pool.
+	lastUseTime time.Time
 	// trackedSessionHandle is the linked list node which links the session to
 	// the list of tracked session handles. trackedSessionHandle is only set if
 	// TrackSessionHandles has been enabled in the session pool configuration.
@@ -118,6 +120,7 @@ func (sh *sessionHandle) recycle() {
 	sh.session = nil
 	sh.trackedSessionHandle = nil
 	sh.checkoutTime = time.Time{}
+	sh.lastUseTime = time.Time{}
 	sh.stack = nil
 	sh.mu.Unlock()
 	s.recycle()
@@ -187,6 +190,7 @@ func (sh *sessionHandle) destroy() {
 	sh.session = nil
 	sh.trackedSessionHandle = nil
 	sh.checkoutTime = time.Time{}
+	sh.lastUseTime = time.Time{}
 	sh.stack = nil
 	sh.mu.Unlock()
 
@@ -197,6 +201,14 @@ func (sh *sessionHandle) destroy() {
 		p.mu.Unlock()
 	}
 	s.destroy(false)
+}
+
+func (sh *sessionHandle) updateLastUseTime() {
+	sh.mu.Lock()
+	defer sh.mu.Unlock()
+	if sh.session != nil {
+		sh.lastUseTime = time.Now()
+	}
 }
 
 // session wraps a Cloud Spanner session ID through which transactions are
@@ -712,7 +724,7 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 		for element != nil {
 			sh := element.Value.(*sessionHandle)
 			sh.mu.Lock()
-			diff := time.Now().Sub(sh.checkoutTime)
+			diff := time.Now().Sub(sh.lastUseTime)
 			if !sh.eligibleForLongRunning && diff.Seconds() >= p.idleTimeThreshold.Seconds() {
 				if (p.actionOnInactiveTransaction == Warn || p.actionOnInactiveTransaction == WarnAndClose) && !sh.isSessionLeakLogged {
 					if p.actionOnInactiveTransaction == Warn {
@@ -880,7 +892,7 @@ var errGetSessionTimeout = spannerErrorf(codes.Canceled, "timeout / context canc
 // stack if the session pool has been configured to track the call stacks of
 // sessions being checked out of the pool.
 func (p *sessionPool) newSessionHandle(s *session) (sh *sessionHandle) {
-	sh = &sessionHandle{session: s, checkoutTime: time.Now()}
+	sh = &sessionHandle{session: s, checkoutTime: time.Now(), lastUseTime: time.Now()}
 	if p.TrackSessionHandles || p.actionOnInactiveTransaction == Warn || p.actionOnInactiveTransaction == WarnAndClose || p.actionOnInactiveTransaction == Close {
 		p.mu.Lock()
 		sh.trackedSessionHandle = p.trackedSessionHandles.PushBack(sh)

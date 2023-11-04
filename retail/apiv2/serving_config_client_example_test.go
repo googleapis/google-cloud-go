@@ -42,6 +42,31 @@ func ExampleNewServingConfigClient() {
 	_ = c
 }
 
+func ExampleServingConfigClient_AddControl() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewServingConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.AddControlRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#AddControlRequest.
+	}
+	resp, err := c.AddControl(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleServingConfigClient_CreateServingConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -88,31 +113,6 @@ func ExampleServingConfigClient_DeleteServingConfig() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-}
-
-func ExampleServingConfigClient_UpdateServingConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := retail.NewServingConfigClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &retailpb.UpdateServingConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#UpdateServingConfigRequest.
-	}
-	resp, err := c.UpdateServingConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleServingConfigClient_GetServingConfig() {
@@ -171,31 +171,6 @@ func ExampleServingConfigClient_ListServingConfigs() {
 	}
 }
 
-func ExampleServingConfigClient_AddControl() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := retail.NewServingConfigClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &retailpb.AddControlRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#AddControlRequest.
-	}
-	resp, err := c.AddControl(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleServingConfigClient_RemoveControl() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -214,6 +189,31 @@ func ExampleServingConfigClient_RemoveControl() {
 		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#RemoveControlRequest.
 	}
 	resp, err := c.RemoveControl(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleServingConfigClient_UpdateServingConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewServingConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.UpdateServingConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#UpdateServingConfigRequest.
+	}
+	resp, err := c.UpdateServingConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
