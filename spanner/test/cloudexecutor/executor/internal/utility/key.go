@@ -58,8 +58,8 @@ func keyProtoToCloudKey(keyProto *executorpb.ValueList, typeList []*spannerpb.Ty
 
 	var cloudKey spanner.Key
 	for i, part := range keyProto.GetValue() {
-		type_ := typeList[i]
-		key, err := executorKeyValueToCloudValue(part, type_)
+		typePb := typeList[i]
+		key, err := executorKeyValueToCloudValue(part, typePb)
 		if err != nil {
 			return nil, err
 		}
@@ -70,12 +70,12 @@ func keyProtoToCloudKey(keyProto *executorpb.ValueList, typeList []*spannerpb.Ty
 
 // executorKeyValueToCloudValue converts executorpb.Value of the given type to an interface value suitable for
 // Cloud Spanner API.
-func executorKeyValueToCloudValue(part *executorpb.Value, type_ *spannerpb.Type) (any, error) {
+func executorKeyValueToCloudValue(part *executorpb.Value, typePb *spannerpb.Type) (any, error) {
 	switch v := part.ValueType.(type) {
 	// Check the value type
 	case *executorpb.Value_IsNull:
 		// Check the column type if the value is nil.
-		switch type_.GetCode() {
+		switch typePb.GetCode() {
 		case sppb.TypeCode_BOOL:
 			return spanner.NullBool{}, nil
 		case sppb.TypeCode_INT64:
@@ -95,7 +95,7 @@ func executorKeyValueToCloudValue(part *executorpb.Value, type_ *spannerpb.Type)
 		case sppb.TypeCode_JSON:
 			return spanner.NullJSON{}, nil
 		default:
-			return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "Unsupported null key part type: %s", type_.GetCode().String()))
+			return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "Unsupported null key part type: %s", typePb.GetCode().String()))
 		}
 	case *executorpb.Value_IntValue:
 		return v.IntValue, nil
@@ -104,16 +104,16 @@ func executorKeyValueToCloudValue(part *executorpb.Value, type_ *spannerpb.Type)
 	case *executorpb.Value_DoubleValue:
 		return v.DoubleValue, nil
 	case *executorpb.Value_BytesValue:
-		switch type_.GetCode() {
+		switch typePb.GetCode() {
 		case sppb.TypeCode_STRING:
 			return string(v.BytesValue), nil
 		case sppb.TypeCode_BYTES:
 			return v.BytesValue, nil
 		default:
-			return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "Unsupported key part type: %s", type_.GetCode().String()))
+			return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "Unsupported key part type: %s", typePb.GetCode().String()))
 		}
 	case *executorpb.Value_StringValue:
-		switch type_.GetCode() {
+		switch typePb.GetCode() {
 		case sppb.TypeCode_NUMERIC:
 			y, ok := (&big.Rat{}).SetString(v.StringValue)
 			if !ok {
@@ -130,7 +130,7 @@ func executorKeyValueToCloudValue(part *executorpb.Value, type_ *spannerpb.Type)
 		y := epoch.AddDays(int(v.DateDaysValue))
 		return y, nil
 	}
-	return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "Unsupported key part %s with type %s", part, type_))
+	return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "Unsupported key part %s with type %s", part, typePb))
 }
 
 // keyRangeProtoToCloudKeyRange converts executorpb.KeyRange to spanner.KeyRange.
