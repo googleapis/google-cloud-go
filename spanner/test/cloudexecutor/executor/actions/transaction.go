@@ -54,7 +54,6 @@ func (h *StartTxnHandler) ExecuteAction(ctx context.Context) error {
 	h.FlowContext.tableMetadata = metadata
 
 	// TODO(harsha) where do I close the client? defer client.Close()
-	// TODO(harsha): reset the active transactions to nil in addition to calling .close() method
 	client, err := spanner.NewClient(ctx, h.FlowContext.Database, h.Options...)
 	if err != nil {
 		return h.OutcomeSender.FinishWithError(err)
