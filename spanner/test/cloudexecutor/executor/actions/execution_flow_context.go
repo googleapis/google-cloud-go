@@ -171,3 +171,24 @@ func (c *ExecutionFlowContext) finish(ctx context.Context, txnFinishMode executo
 		return false, nil, nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "Unsupported finish mode %s", txnFinishMode.String()))
 	}
 }
+
+// CloseOpenTransactions cleans up all the active transactions if the stubby call is closing.
+func (c *ExecutionFlowContext) CloseOpenTransactions() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.roTxn != nil {
+		log.Println("A read only transaction was active when stubby call closed.")
+		c.roTxn.Close()
+	}
+	if c.rwTxn != nil {
+		log.Println("Abandon a read-write transaction that was active when stubby call closed.")
+		_, _, _, err := c.finish(context.Background(), executorpb.FinishTransactionAction_ABANDON)
+		if err != nil {
+			log.Printf("Failed to abandon a read-write transaction: %v\n", err)
+		}
+	}
+	if c.batchTxn != nil {
+		log.Println("A batch transaction was active when stubby call closed.")
+		c.batchTxn.Close()
+	}
+}
