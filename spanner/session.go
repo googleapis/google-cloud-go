@@ -73,9 +73,6 @@ type InactiveTransactionRemovalOptions struct {
 	// variable that keeps track of the last execution time when inactive transactions
 	// were removed by the maintainer task.
 	lastExecutionTime time.Time
-	// indicates the number of leaked sessions removed from the session pool.
-	// This is valid only when ActionOnInactiveTransaction is WarnAndClose or ActionOnInactiveTransaction is Close.
-	numOfLeakedSessionsRemoved uint64
 }
 
 // sessionHandle is an interface for transactions to access Cloud Spanner
@@ -612,6 +609,10 @@ type sessionPool struct {
 
 	// tagMap is a map of all tags that are associated with the emitted metrics.
 	tagMap *tag.Map
+
+	// indicates the number of leaked sessions removed from the session pool.
+	// This is valid only when ActionOnInactiveTransaction is WarnAndClose or ActionOnInactiveTransaction is Close in InactiveTransactionRemovalOptions.
+	numOfLeakedSessionsRemoved uint64
 }
 
 // newSessionPool creates a new session pool.
@@ -768,7 +769,7 @@ func (p *sessionPool) removeLongRunningSessions() {
 			leakedSessionsRemovedCount++
 		}
 		p.mu.Lock()
-		p.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved += leakedSessionsRemovedCount
+		p.numOfLeakedSessionsRemoved += leakedSessionsRemovedCount
 		p.mu.Unlock()
 	}
 }
