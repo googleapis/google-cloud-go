@@ -69,11 +69,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &dlppb.InspectContentRequest{
+//	req := &dlppb.ActivateJobTriggerRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#InspectContentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ActivateJobTriggerRequest.
 //	}
-//	resp, err := c.InspectContent(ctx, req)
+//	resp, err := c.ActivateJobTrigger(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

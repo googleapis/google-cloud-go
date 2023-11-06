@@ -71,22 +71,21 @@
 //	}
 //	defer c.Close()
 //
-//	req := &idspb.ListEndpointsRequest{
+//	req := &idspb.CreateEndpointRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/ids/apiv1/idspb#ListEndpointsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/ids/apiv1/idspb#CreateEndpointRequest.
 //	}
-//	it := c.ListEndpoints(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	op, err := c.CreateEndpoint(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

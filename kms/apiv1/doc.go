@@ -68,22 +68,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &kmspb.ListEkmConnectionsRequest{
+//	req := &kmspb.CreateEkmConnectionRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListEkmConnectionsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#CreateEkmConnectionRequest.
 //	}
-//	it := c.ListEkmConnections(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	resp, err := c.CreateEkmConnection(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

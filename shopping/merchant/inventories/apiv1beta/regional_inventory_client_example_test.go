@@ -58,7 +58,7 @@ func ExampleNewRegionalInventoryRESTClient() {
 	_ = c
 }
 
-func ExampleRegionalInventoryClient_ListRegionalInventories() {
+func ExampleRegionalInventoryClient_DeleteRegionalInventory() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -71,21 +71,13 @@ func ExampleRegionalInventoryClient_ListRegionalInventories() {
 	}
 	defer c.Close()
 
-	req := &inventoriespb.ListRegionalInventoriesRequest{
+	req := &inventoriespb.DeleteRegionalInventoryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/shopping/merchant/inventories/apiv1beta/inventoriespb#ListRegionalInventoriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/shopping/merchant/inventories/apiv1beta/inventoriespb#DeleteRegionalInventoryRequest.
 	}
-	it := c.ListRegionalInventories(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	err = c.DeleteRegionalInventory(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
 
@@ -114,7 +106,7 @@ func ExampleRegionalInventoryClient_InsertRegionalInventory() {
 	_ = resp
 }
 
-func ExampleRegionalInventoryClient_DeleteRegionalInventory() {
+func ExampleRegionalInventoryClient_ListRegionalInventories() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -127,12 +119,20 @@ func ExampleRegionalInventoryClient_DeleteRegionalInventory() {
 	}
 	defer c.Close()
 
-	req := &inventoriespb.DeleteRegionalInventoryRequest{
+	req := &inventoriespb.ListRegionalInventoriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/shopping/merchant/inventories/apiv1beta/inventoriespb#DeleteRegionalInventoryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/shopping/merchant/inventories/apiv1beta/inventoriespb#ListRegionalInventoriesRequest.
 	}
-	err = c.DeleteRegionalInventory(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListRegionalInventories(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }
