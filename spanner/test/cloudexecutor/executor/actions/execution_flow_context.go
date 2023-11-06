@@ -160,7 +160,8 @@ func (c *ExecutionFlowContext) finish(ctx context.Context, txnFinishMode executo
 			if status.Code(err) == codes.Unknown && strings.Contains(err.Error(), "Transaction outcome unknown") {
 				return false, nil, spanner.ToSpannerError(status.Error(codes.DeadlineExceeded, "Transaction outcome unknown")), nil
 			}
-			return false, nil, nil, err
+			// TODO(harsha): check if this is an internal or spanner error
+			return false, nil, err, nil
 		}
 		return false, &ts, nil, nil
 	} else if txnFinishMode == executorpb.FinishTransactionAction_ABANDON {

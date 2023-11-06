@@ -137,7 +137,7 @@ func (h *FinishTxnHandler) ExecuteAction(ctx context.Context) error {
 		restarted, ts, spanErr, internalErr := h.FlowContext.finish(ctx, txnFinishMode)
 		if internalErr != nil {
 			log.Printf("Unexpected error when finishing read-write transaction: %s", internalErr.Error())
-			return h.OutcomeSender.FinishWithError(spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "Unexpected error when finishing read-write transaction: %s", internalErr.Error())))
+			return h.OutcomeSender.FinishWithError(internalErr)
 		} else if spanErr != nil {
 			outcome.Status = utility.ErrToStatus(spanErr)
 			h.FlowContext.clear()
