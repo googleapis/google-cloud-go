@@ -40,8 +40,9 @@ const (
 
 var (
 	// TODO(chrisdsmith): What is the correct name for the OpenTelemetry tracer?
-	OpenTelemetryTracerName  string = "cloud.google.com/go/internal/trace"
-	TelemetryPlatformTracing        = strings.TrimSpace(os.Getenv(telemetryPlatformTracingVar))
+	openTelemetryTracerName     string = "cloud.google.com/go/internal/trace"
+	openTelemetryTracingEnabled bool   = strings.EqualFold(strings.TrimSpace(
+		os.Getenv(telemetryPlatformTracingVar)), telemetryPlatformTracingOpenTelemetry)
 )
 
 // IsOpenCensusTracingEnabled returns true if the environment variable
@@ -55,7 +56,7 @@ func IsOpenCensusTracingEnabled() bool {
 // GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING is set to the
 // case-insensitive value "opentelemetry".
 func IsOpenTelemetryTracingEnabled() bool {
-	return strings.EqualFold(TelemetryPlatformTracing, telemetryPlatformTracingOpenTelemetry)
+	return openTelemetryTracingEnabled
 }
 
 // StartSpan adds a span to the trace with the given name. If IsOpenCensusTracingEnabled
@@ -68,7 +69,7 @@ func IsOpenTelemetryTracingEnabled() bool {
 // "opencensus" will be required to continue using OpenCensus tracing.
 func StartSpan(ctx context.Context, name string) context.Context {
 	if IsOpenTelemetryTracingEnabled() {
-		ctx, _ = otel.GetTracerProvider().Tracer(OpenTelemetryTracerName).Start(ctx, name)
+		ctx, _ = otel.GetTracerProvider().Tracer(openTelemetryTracerName).Start(ctx, name)
 	} else {
 		ctx, _ = trace.StartSpan(ctx, name)
 	}
