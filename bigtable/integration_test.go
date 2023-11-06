@@ -2765,6 +2765,13 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		t.Fatalf("Creating app profile: %v", err)
 	}
 
+	defer func() {
+		err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
+		if err != nil {
+			t.Fatalf("Delete app profile: %v", err)
+		}
+	}()
+
 	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
 	if err != nil {
 		t.Fatalf("Get app profile: %v", err)
@@ -2852,6 +2859,11 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 						ClusterId: testEnv.Config().Cluster,
 					},
 				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
 			},
 		},
 	} {
@@ -2880,11 +2892,6 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			}
 		})
 
-	}
-
-	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
-	if err != nil {
-		t.Fatalf("Delete app profile: %v", err)
 	}
 }
 
