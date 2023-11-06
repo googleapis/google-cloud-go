@@ -52,7 +52,7 @@ func TestStartSpan_OpenCensus(t *testing.T) {
 	ctx := context.Background()
 	ctx = StartSpan(ctx, "test-span")
 
-	TracePrintf(ctx, attrMap(), "Add my annotations")
+	TracePrintf(ctx, annotationData(), "Add my annotations")
 
 	err := &googleapi.Error{Code: http.StatusBadRequest, Message: "INVALID ARGUMENT"}
 	EndSpan(ctx, err)
@@ -107,7 +107,7 @@ func TestStartSpan_OpenTelemetry(t *testing.T) {
 
 	ctx = StartSpan(ctx, "test-span")
 
-	TracePrintf(ctx, attrMap(), "Add my annotations")
+	TracePrintf(ctx, annotationData(), "Add my annotations")
 
 	err := &googleapi.Error{Code: http.StatusBadRequest, Message: "INVALID ARGUMENT"}
 	EndSpan(ctx, err)
@@ -282,7 +282,7 @@ func TestToStatus_APIError(t *testing.T) {
 	}
 }
 
-func attrMap() map[string]interface{} {
+func annotationData() map[string]interface{} {
 	attrMap := make(map[string]interface{})
 	attrMap["my_string"] = "my string"
 	attrMap["my_bool"] = true
