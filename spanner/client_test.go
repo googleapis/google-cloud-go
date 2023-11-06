@@ -269,8 +269,6 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	if g, w := sh.eligibleForLongRunning, false; g != w {
 		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
 	}
-	p.InactiveTransactionRemovalOptions.mu.Lock()
-	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
 	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
 		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
@@ -1707,8 +1705,8 @@ func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAct
 	if g, w := attempts, 2; g != w {
 		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
 	}
-	p.InactiveTransactionRemovalOptions.mu.Lock()
-	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
@@ -4256,8 +4254,8 @@ func TestClient_WhenLongRunningPartitionedUpdateRequest_TakeNoAction(t *testing.
 		t.Errorf("Row count mismatch\nGot: %v\nWant: %v", g, w)
 	}
 	p := client.idleSessions
-	p.InactiveTransactionRemovalOptions.mu.Lock()
-	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}

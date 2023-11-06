@@ -59,7 +59,6 @@ const (
 
 // InactiveTransactionRemovalOptions has configurations for action on long-running transactions.
 type InactiveTransactionRemovalOptions struct {
-	mu sync.Mutex
 	// actionOnInactiveTransaction is the configuration to choose action for inactive transactions.
 	// It can be one of Warn, Close, WarnAndClose.
 	actionOnInactiveTransaction ActionOnInactiveTransactionKind
@@ -761,14 +760,16 @@ func (p *sessionPool) removeLongRunningSessions() {
 
 	// destroy long-running sessions
 	if p.actionOnInactiveTransaction == WarnAndClose || p.actionOnInactiveTransaction == Close {
+		var leakedSessionsRemovedCount uint64
 		for _, sh := range longRunningSessions {
 			// removes inner session out of the pool to reduce the probability of two processes trying
 			// to use the same session at the same time.
 			sh.destroy()
-			p.InactiveTransactionRemovalOptions.mu.Lock()
-			p.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved++
-			p.InactiveTransactionRemovalOptions.mu.Unlock()
+			leakedSessionsRemovedCount++
 		}
+		p.mu.Lock()
+		p.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved += leakedSessionsRemovedCount
+		p.mu.Unlock()
 	}
 }
 
