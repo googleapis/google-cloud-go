@@ -970,7 +970,7 @@ func toLogEntryInternalImpl(e Entry, l *Logger, parent string, skipLevels int) (
 type structuredLogEntry struct {
 	Message        json.RawMessage                   `json:"message"`
 	Severity       string                            `json:"severity,omitempty"`
-	HTTPRequest    *structuredLogEntryHttpRequest    `json:"httpRequest,omitempty"`
+	HTTPRequest    *structuredLogEntryHTTPRequest    `json:"httpRequest,omitempty"`
 	Timestamp      string                            `json:"timestamp,omitempty"`
 	Labels         map[string]string                 `json:"logging.googleapis.com/labels,omitempty"`
 	InsertID       string                            `json:"logging.googleapis.com/insertId,omitempty"`
@@ -981,12 +981,12 @@ type structuredLogEntry struct {
 	TraceSampled   bool                              `json:"logging.googleapis.com/trace_sampled,omitempty"`
 }
 
-// structuredLogEntryHttpRequest wraps the HTTPRequest proto field in structuredLogEntry for easier JSON marshalling.
-type structuredLogEntryHttpRequest struct {
+// structuredLogEntryHTTPRequest wraps the HTTPRequest proto field in structuredLogEntry for easier JSON marshalling.
+type structuredLogEntryHTTPRequest struct {
 	request *logtypepb.HttpRequest
 }
 
-func (s structuredLogEntryHttpRequest) MarshalJSON() ([]byte, error) {
+func (s structuredLogEntryHTTPRequest) MarshalJSON() ([]byte, error) {
 	return protojson.Marshal(s.request)
 }
 
@@ -1009,9 +1009,9 @@ func (s structuredLogEntrySourceLocation) MarshalJSON() ([]byte, error) {
 }
 
 func serializeEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
-	var httpRequest *structuredLogEntryHttpRequest
+	var httpRequest *structuredLogEntryHTTPRequest
 	if entry.HttpRequest != nil {
-		httpRequest = &structuredLogEntryHttpRequest{entry.HttpRequest}
+		httpRequest = &structuredLogEntryHTTPRequest{entry.HttpRequest}
 	}
 
 	var operation *structuredLogEntryOperation
