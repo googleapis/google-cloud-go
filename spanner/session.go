@@ -772,13 +772,8 @@ func (p *sessionPool) removeLongRunningSessions() {
 
 		// Record the stats for number of long-running sessions removed by the background maintainer task.
 		// This stat would be exported only when ActionOnInactiveTransaction is set to WarnAndClose or Close.
-		if longRunningSessions != nil && len(longRunningSessions) > 0 {
-			p.mu.Lock()
-			p.InactiveTransactionRemovalOptions.mu.Lock()
-			p.recordStat(context.Background(), NumLongRunningSessionsRemovedCount, int64(p.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved))
-			p.InactiveTransactionRemovalOptions.mu.Unlock()
-			p.mu.Unlock()
-		}
+		log.Printf("numOfLeakedSessionsRemoved %v: ", p.numOfLeakedSessionsRemoved)
+		p.recordStat(context.Background(), NumLongRunningSessionsRemovedCount, int64(p.numOfLeakedSessionsRemoved))
 	}
 }
 
