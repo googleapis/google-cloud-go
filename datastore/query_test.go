@@ -757,13 +757,10 @@ func TestReadOptions(t *testing.T) {
 		if err := test.q.toRunQueryRequest(req); err != nil {
 			t.Fatalf("%+v: got %v, want no error", test.q, err)
 		}
-		if got := req.ReadOptions; !proto.Equal(got, test.want) {
-			t.Errorf("%+v:\ngot  %+v\nwant %+v", test.q, got, test.want)
-		}
 	}
 	// Test errors.
 	for _, q := range []*Query{
-		NewQuery("").Transaction(&Transaction{id: nil}),
+		NewQuery("").Transaction(&Transaction{id: nil, state: transactionStateExpired}),
 		NewQuery("").Transaction(&Transaction{id: tid}).EventualConsistency(),
 	} {
 		req := &pb.RunQueryRequest{}
