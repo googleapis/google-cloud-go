@@ -791,6 +791,52 @@
       ]
     },
     {
+      "regionTag": "datalineage_v1_generated_Lineage_ProcessOpenLineageRunEvent_sync",
+      "title": "datalineage ProcessOpenLineageRunEvent Sample",
+      "description": "ProcessOpenLineageRunEvent creates new lineage events together with their parents: process and run.\nUpdates the process and run if they already exist.\nMapped from Open Lineage specification: \nhttps: //github.com/OpenLineage/OpenLineage/blob/main/spec/OpenLineage.json.",
+      "file": "Client/ProcessOpenLineageRunEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ProcessOpenLineageRunEvent",
+        "fullName": "google.cloud.datacatalog.lineage.v1.Client.ProcessOpenLineageRunEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "lineagepb.ProcessOpenLineageRunEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*lineagepb.ProcessOpenLineageRunEventResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.lineage.v1.Client"
+        },
+        "method": {
+          "shortName": "ProcessOpenLineageRunEvent",
+          "fullName": "google.cloud.datacatalog.lineage.v1.Lineage.ProcessOpenLineageRunEvent",
+          "service": {
+            "shortName": "Lineage",
+            "fullName": "google.cloud.datacatalog.lineage.v1.Lineage"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datalineage_v1_generated_Lineage_SearchLinks_sync",
       "title": "datalineage SearchLinks Sample",
       "description": "SearchLinks retrieve a list of links connected to a specific asset.\nLinks represent the data flow between **source** (upstream)\nand **target** (downstream) assets in transformation pipelines.\nLinks are stored in the same project as the Lineage Events that create\nthem.\n\nYou can retrieve links in every project where you have the\n`datalineage.events.get` permission. The project provided in the URL\nis used for Billing and Quota.",
