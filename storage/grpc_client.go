@@ -1583,9 +1583,9 @@ func (w *gRPCWriter) queryProgress() (int64, error) {
 	return persistedSize, err
 }
 
-// uploadBuffer opens a bi-directional Write stream and uploads the buffer at
-// the given offset, and will mark the write as finished if we are done
-// receiving data from the user. The resulting write offset after uploading the
+// uploadBuffer uploads the buffer at the given offset using a bi-directional
+// Write stream. It will open a new stream if necessary (on the first call or
+// after resuming from failure). The resulting write offset after uploading the
 // buffer is returned, as well as well as the final Object if the upload is
 // completed.
 //
@@ -1670,16 +1670,19 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		if err == io.EOF {
 			// err was io.EOF. The client-side of a stream only gets an EOF on Send
 			// when the backend closes the stream and wants to return an error
-			// status. Closing the stream receives the status as an error.
-			err = w.stream.CloseSend()
+			// status.
 
-			// Drop the stream reference as a new one will need to be created
-			w.stream = nil
+			// Receive from the stream Recv() until it returns a non-nil error
+			// to receive the server's status as an error. We may get multiple
+			// messages before the error due to buffering.
+			err = nil
+			for err == nil {
+				_, err = w.stream.Recv()
+			}
 
 			// Retriable errors mean we should start over and attempt to
 			// resend the entire buffer via a new stream.
-			// If not retriable, falling through will return the error received
-			// from closing the stream.
+			// If not retriable, falling through will return the error received.
 			if shouldRetry(err) {
 				// TODO: Add test case for failure modes of querying progress.
 				writeOffset, err = w.determineOffset(start)
@@ -1687,6 +1690,9 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 					return nil, 0, err
 				}
 				sent = int(writeOffset) - int(start)
+
+				// Drop the stream reference as a new one will need to be created.
+				w.stream = nil
 
 				// Continue sending requests, opening a new stream and resending
 				// any bytes not yet persisted as per QueryWriteStatus
@@ -1718,6 +1724,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		// Done sending data (remainingDataFitsInSingleReq should == true if we
 		// reach this code). Receive from the stream to confirm the persisted data.
 		resp, err := w.stream.Recv()
+
 		// Retriable errors mean we should start over and attempt to
 		// resend the entire buffer via a new stream.
 		// If not retriable, falling through will return the error received
@@ -1728,22 +1735,27 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 				return nil, 0, err
 			}
 			sent = int(writeOffset) - int(start)
+
+			// Drop the stream reference as a new one will need to be created.
+			w.stream = nil
+
 			continue
 		}
 		if err != nil {
 			return nil, 0, err
 		}
 
-		// Confirm the persisted data
+		// Confirm the persisted data if we have not finished uploading the object.
 		if !lastWriteOfEntireObject {
 			if resp.GetPersistedSize() != writeOffset {
-				// retry
+				// Retry if not all bytes were persisted.
 				writeOffset = resp.GetPersistedSize()
 				sent = int(writeOffset) - int(start)
 				continue
 			}
 		} else {
-			// If the object is done uploading, close the send stream and check for errors.
+			// If the object is done uploading, close the send stream to receive
+			// from the stream without blocking.
 			err = w.stream.CloseSend()
 			if err != nil {
 				return nil, 0, err
@@ -1751,7 +1763,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 
 			// Stream receives do not block once send is closed, but we may not
 			// receive the response with the object right away; loop until we
-			// receive the object or error out
+			// receive the object or error out.
 			var obj *storagepb.Object
 			for obj == nil {
 				resp, err := w.stream.Recv()
@@ -1760,6 +1772,14 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 				}
 
 				obj = resp.GetResource()
+			}
+
+			// Even though we received the object response, continue reading
+			// until we receive a non-nil error, to ensure the stream does not
+			// leak even if the context isn't cancelled. See:
+			// https://github.com/grpc/grpc-go/commit/365770fcbd7dfb9d921cb44827ede770f33be44f
+			for err == nil {
+				_, err = w.stream.Recv()
 			}
 
 			return obj, writeOffset, nil
