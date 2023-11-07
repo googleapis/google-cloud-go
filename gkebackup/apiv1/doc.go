@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &gkebackuppb.CreateBackupPlanRequest{
+//	req := &gkebackuppb.CreateBackupRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#CreateBackupPlanRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#CreateBackupRequest.
 //	}
-//	op, err := c.CreateBackupPlan(ctx, req)
+//	op, err := c.CreateBackup(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

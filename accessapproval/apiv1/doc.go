@@ -67,22 +67,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &accessapprovalpb.ListApprovalRequestsMessage{
+//	req := &accessapprovalpb.ApproveApprovalRequestMessage{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/accessapproval/apiv1/accessapprovalpb#ListApprovalRequestsMessage.
+//		// See https://pkg.go.dev/cloud.google.com/go/accessapproval/apiv1/accessapprovalpb#ApproveApprovalRequestMessage.
 //	}
-//	it := c.ListApprovalRequests(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	resp, err := c.ApproveApprovalRequest(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

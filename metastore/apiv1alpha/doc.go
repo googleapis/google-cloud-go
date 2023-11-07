@@ -70,22 +70,21 @@
 //	}
 //	defer c.Close()
 //
-//	req := &metastorepb.ListServicesRequest{
+//	req := &metastorepb.AlterMetadataResourceLocationRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#ListServicesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha/metastorepb#AlterMetadataResourceLocationRequest.
 //	}
-//	it := c.ListServices(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	op, err := c.AlterMetadataResourceLocation(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //
