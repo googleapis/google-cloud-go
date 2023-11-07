@@ -230,9 +230,9 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	iter := single.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 	p := client.idleSessions
 	sh := single.sh
-	// simulate session to be checked out for more than 60mins
+	// simulate session to be last used before 60 mins
 	sh.mu.Lock()
-	sh.checkoutTime = time.Now().Add(-time.Hour)
+	sh.lastUseTime = time.Now().Add(-time.Hour)
 	sh.mu.Unlock()
 
 	// force run task to clean up unexpected long-running sessions
@@ -1038,6 +1038,72 @@ func TestClient_ReadOnlyTransaction_ReadOptions(t *testing.T) {
 	}
 }
 
+func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				actionOnInactiveTransaction: WarnAndClose,
+				idleTimeThreshold:           300 * time.Millisecond,
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 200 * time.Millisecond,
+		})
+	server.TestSpanner.PutExecutionTime(MethodStreamingRead,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 200 * time.Millisecond,
+		})
+	ctx := context.Background()
+	p := client.idleSessions
+
+	roTxn := client.ReadOnlyTransaction()
+	defer roTxn.Close()
+	iter := roTxn.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	iter.Next()
+	iter.Stop()
+
+	// Get the session last use time.
+	roTxn.sh.mu.Lock()
+	sessionPrevLastUseTime := roTxn.sh.lastUseTime
+	roTxn.sh.mu.Unlock()
+
+	iter = roTxn.Read(ctx, "FOO", AllKeys(), []string{"BAR"})
+	iter.Next()
+	iter.Stop()
+
+	// Get the latest session last use time
+	roTxn.sh.mu.Lock()
+	sessionLatestLastUseTime := roTxn.sh.lastUseTime
+	sessionCheckoutTime := roTxn.sh.checkoutTime
+	roTxn.sh.mu.Unlock()
+
+	// sessionLatestLastUseTime should not be equal to sessionPrevLastUseTime.
+	// This is because session lastUse time should be updated whenever a new operation is being executed on the transaction.
+	if (sessionLatestLastUseTime.Sub(sessionPrevLastUseTime)).Milliseconds() <= 0 {
+		t.Fatalf("Session lastUseTime times should not be equal")
+	}
+
+	if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
+	}
+	if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
+	}
+	// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
+	// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
+	p.removeLongRunningSessions()
+	if p.numOfLeakedSessionsRemoved > 0 {
+		t.Fatalf("Expected session to not get cleaned by background maintainer")
+	}
+}
+
 func setQueryOptionsEnvVars(opts *sppb.ExecuteSqlRequest_QueryOptions) func() {
 	os.Setenv("SPANNER_OPTIMIZER_VERSION", opts.OptimizerVersion)
 	os.Setenv("SPANNER_OPTIMIZER_STATISTICS_PACKAGE", opts.OptimizerStatisticsPackage)
@@ -1460,10 +1526,10 @@ func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionSh
 			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
 		}
 
-		// Simulate the session to be checked out for more than 60 mins.
+		// Simulate the session to be last used before 60 mins.
 		// The background task cleans up this long-running session.
 		tx.sh.mu.Lock()
-		tx.sh.checkoutTime = time.Now().Add(-time.Hour)
+		tx.sh.lastUseTime = time.Now().Add(-time.Hour)
 		if g, w := tx.sh.eligibleForLongRunning, false; g != w {
 			tx.sh.mu.Unlock()
 			return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
@@ -1486,6 +1552,73 @@ func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionSh
 	}
 	if status.Code(err) != codes.FailedPrecondition || !strings.Contains(err.Error(), msg) {
 		t.Fatalf("error mismatch\nGot: %v\nWant: %v", err, msg)
+	}
+}
+
+func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				actionOnInactiveTransaction: WarnAndClose,
+				idleTimeThreshold:           30 * time.Millisecond,
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 20 * time.Millisecond,
+		})
+	ctx := context.Background()
+	p := client.idleSessions
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		// Execute first operation on the transaction
+		_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+
+		// Get the session last use time.
+		tx.sh.mu.Lock()
+		sessionPrevLastUseTime := tx.sh.lastUseTime
+		tx.sh.mu.Unlock()
+
+		// Execute second operation on the transaction
+		_, err = tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		// Get the latest session last use time
+		tx.sh.mu.Lock()
+		sessionLatestLastUseTime := tx.sh.lastUseTime
+		sessionCheckoutTime := tx.sh.checkoutTime
+		tx.sh.mu.Unlock()
+
+		// sessionLatestLastUseTime should not be equal to sessionPrevLastUseTime.
+		// This is because session lastUse time should be updated whenever a new operation is being executed on the transaction.
+		if (sessionLatestLastUseTime.Sub(sessionPrevLastUseTime)).Milliseconds() <= 0 {
+			t.Fatalf("Session lastUseTime times should not be equal")
+		}
+
+		if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 40 {
+			t.Fatalf("Expected session to be checkedout for more than 40 milliseconds")
+		}
+		if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 40 {
+			t.Fatalf("Expected session to be checkedout for more than 40 milliseconds")
+		}
+		// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
+		// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
+		p.removeLongRunningSessions()
+		if p.numOfLeakedSessionsRemoved > 0 {
+			t.Fatalf("Expected session to not get cleaned by background maintainer")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
@@ -1546,7 +1679,7 @@ func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAct
 		if attempts == 2 {
 			// Simulate the session to be long-running. The background task should not clean up this long-running session.
 			tx.sh.mu.Lock()
-			tx.sh.checkoutTime = time.Now().Add(-time.Hour)
+			tx.sh.lastUseTime = time.Now().Add(-time.Hour)
 			if g, w := tx.sh.eligibleForLongRunning, true; g != w {
 				tx.sh.mu.Unlock()
 				return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)

@@ -69,11 +69,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &documentaipb.ProcessRequest{
+//	req := &documentaipb.BatchProcessRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1/documentaipb#ProcessRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1/documentaipb#BatchProcessRequest.
 //	}
-//	resp, err := c.ProcessDocument(ctx, req)
+//	op, err := c.BatchProcessDocuments(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

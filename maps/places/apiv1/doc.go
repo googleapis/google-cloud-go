@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &placespb.SearchNearbyRequest{
+//	req := &placespb.GetPhotoMediaRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/maps/places/apiv1/placespb#SearchNearbyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/maps/places/apiv1/placespb#GetPhotoMediaRequest.
 //	}
-//	resp, err := c.SearchNearby(ctx, req)
+//	resp, err := c.GetPhotoMedia(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
