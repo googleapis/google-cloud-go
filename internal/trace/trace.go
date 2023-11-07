@@ -19,7 +19,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"sort"
 	"strings"
 
 	"go.opencensus.io/trace"
@@ -39,8 +38,8 @@ const (
 )
 
 var (
-	// TODO(chrisdsmith): What is the correct name for the OpenTelemetry tracer?
-	openTelemetryTracerName     string = "cloud.google.com/go/internal/trace"
+	// TODO(chrisdsmith): Should the name of the OpenTelemetry tracer be public and mutable?
+	openTelemetryTracerName     string = "cloud.google.com/go"
 	openTelemetryTracingEnabled bool   = strings.EqualFold(strings.TrimSpace(
 		os.Getenv(telemetryPlatformTracingVar)), telemetryPlatformTracingOpenTelemetry)
 )
@@ -208,14 +207,7 @@ func ocAttrs(attrMap map[string]interface{}) []trace.Attribute {
 // otAttrs converts a generic map to OpenTelemetry attributes.
 func otAttrs(attrMap map[string]interface{}) []attribute.KeyValue {
 	var attrs []attribute.KeyValue
-	// Sort the input map by its keys for predictable order in tests.
-	keys := make([]string, 0, len(attrMap))
-	for k := range attrMap {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	for _, k := range keys {
-		v := attrMap[k]
+	for k, v := range attrMap {
 		var a attribute.KeyValue
 		switch v := v.(type) {
 		case string:

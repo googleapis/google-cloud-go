@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"sort"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -41,13 +42,12 @@ var (
 
 func TestStartSpan_OpenCensus(t *testing.T) {
 	old := openTelemetryTracingEnabled
-	defer func() {
-		openTelemetryTracingEnabled = old
-	}()
 	openTelemetryTracingEnabled = false
-
 	te := testutil.NewTestExporter()
-	defer te.Unregister()
+	t.Cleanup(func() {
+		openTelemetryTracingEnabled = old
+		te.Unregister()
+	})
 
 	ctx := context.Background()
 	ctx = StartSpan(ctx, "test-span")
@@ -96,14 +96,13 @@ func TestStartSpan_OpenCensus(t *testing.T) {
 
 func TestStartSpan_OpenTelemetry(t *testing.T) {
 	old := openTelemetryTracingEnabled
-	defer func() {
-		openTelemetryTracingEnabled = old
-	}()
 	openTelemetryTracingEnabled = true
-
 	ctx := context.Background()
 	te := testutil.NewOpenTelemetryTestExporter()
-	defer te.Unregister(ctx)
+	t.Cleanup(func() {
+		openTelemetryTracingEnabled = old
+		te.Unregister(ctx)
+	})
 
 	ctx = StartSpan(ctx, "test-span")
 
@@ -132,21 +131,22 @@ func TestStartSpan_OpenTelemetry(t *testing.T) {
 		t.Errorf("got %v, want %v", spans[0].Status.Description, want)
 	}
 
-	want := sdktrace.Event{
-		Name: "Add my annotations",
-		// KeyValues are sorted by key, since this Event was created by TracePrintf.
-		Attributes: []attribute.KeyValue{
-			attribute.Key("my_bool").Bool(true),
-			attribute.Key("my_float").String("0.9"),
-			attribute.Key("my_int").Int(123),
-			attribute.Key("my_int64").Int64(int64(456)),
-			attribute.Key("my_string").String("my string"),
-		},
+	want := []attribute.KeyValue{
+		attribute.Key("my_bool").Bool(true),
+		attribute.Key("my_float").String("0.9"),
+		attribute.Key("my_int").Int(123),
+		attribute.Key("my_int64").Int64(int64(456)),
+		attribute.Key("my_string").String("my string"),
 	}
-	if !cmp.Equal(spans[0].Events[0], want, ignoreEventFields, ignoreValueFields) {
-		t.Errorf("got %v, want %v", spans[0].Events[0], want)
+	got := spans[0].Events[0].Attributes
+	// Sorting is required since the TracePrintf parameter is a map.
+	sort.Slice(got, func(i, j int) bool {
+		return got[i].Key < got[j].Key
+	})
+	if !cmp.Equal(got, want, ignoreEventFields, ignoreValueFields) {
+		t.Errorf("got %v, want %v", got, want)
 	}
-	want = sdktrace.Event{
+	wantEvent := sdktrace.Event{
 		Name: "exception",
 		Attributes: []attribute.KeyValue{
 			// KeyValues are NOT sorted by key, but the sort is deterministic,
@@ -155,7 +155,7 @@ func TestStartSpan_OpenTelemetry(t *testing.T) {
 			attribute.Key("exception.message").String("googleapi: Error 400: INVALID ARGUMENT"),
 		},
 	}
-	if !cmp.Equal(spans[0].Events[1], want, ignoreEventFields, ignoreValueFields) {
+	if !cmp.Equal(spans[0].Events[1], wantEvent, ignoreEventFields, ignoreValueFields) {
 		t.Errorf("got %v, want %v", spans[0].Events[1], want)
 	}
 }
