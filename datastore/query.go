@@ -503,10 +503,11 @@ func (q *Query) toRunQueryRequest(req *pb.RunQueryRequest) error {
 		return err
 	}
 
-	req.ReadOptions, err = parseReadOptions(q)
+	err = validateReadOptions(q)
 	if err != nil {
 		return err
 	}
+	req.ReadOptions = parseReadOptions(q.eventual, q.trans)
 
 	req.QueryType = &pb.RunQueryRequest_Query{Query: dst}
 	return nil
@@ -730,6 +731,8 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 			ProjectId:  c.dataset,
 			DatabaseId: c.databaseID,
 		},
+		trans:    q.trans,
+		eventual: q.eventual,
 	}
 
 	if q.namespace != "" {
@@ -785,11 +788,12 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 		}
 	}
 
-	// Parse the read options.
-	req.ReadOptions, err = parseReadOptions(aq.query)
+	// Validate and parse the read options.
+	err = validateReadOptions(aq.query)
 	if err != nil {
 		return nil, err
 	}
+	req.ReadOptions = parseReadOptions(aq.query.eventual, aq.query.trans)
 
 	res, err := c.client.RunAggregationQuery(ctx, req)
 	if err != nil {
@@ -808,25 +812,31 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	return ar, nil
 }
 
-// parseReadOptions translates Query read options into protobuf format.
-func parseReadOptions(q *Query) (*pb.ReadOptions, error) {
+func validateReadOptions(q *Query) error {
 	if t := q.trans; t != nil {
-		if t.id == nil {
-			return nil, errExpiredTransaction
+		if t.state == transactionStateExpired {
+			return errExpiredTransaction
 		}
 		if q.eventual {
-			return nil, errors.New("datastore: cannot use EventualConsistency query in a transaction")
+			return errors.New("datastore: cannot use EventualConsistency query in a transaction")
 		}
+	}
+	return nil
+}
+
+// parseReadOptions translates Query read options into protobuf format.
+func parseReadOptions(eventual bool, t *Transaction) *pb.ReadOptions {
+	if t != nil {
 		return &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
-		}, nil
+		}
 	}
 
-	if q.eventual {
-		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
+	if eventual {
+		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}
 	}
 
-	return nil, nil
+	return nil
 }
 
 // Iterator is the result of running a query.
@@ -858,6 +868,14 @@ type Iterator struct {
 	pageCursor []byte
 	// entityCursor is the compiled cursor of the next result.
 	entityCursor []byte
+
+	// trans records the transaction in which the query was run
+	// Currently, this value is set but unused
+	trans *Transaction
+
+	// eventual records whether the query was eventual
+	// Currently, this value is set but unused
+	eventual bool
 }
 
 // Next returns the key of the next result. When there are no more results,
