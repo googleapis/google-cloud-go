@@ -2770,6 +2770,13 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		t.Fatalf("Get app profile: %v", err)
 	}
 
+	defer func() {
+		err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
+		if err != nil {
+			t.Fatalf("Delete app profile: %v", err)
+		}
+	}()
+
 	if !proto.Equal(createdProfile, gotProfile) {
 		t.Fatalf("created profile: %s, got profile: %s", createdProfile.Name, gotProfile.Name)
 	}
@@ -2830,6 +2837,11 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				Description:   "",
 				RoutingPolicy: gotProfile.RoutingPolicy,
 				Etag:          gotProfile.Etag,
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
 			},
 		},
 		{
@@ -2845,6 +2857,11 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
 					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
 						ClusterId: testEnv.Config().Cluster,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
 					},
 				},
 			},
@@ -2871,11 +2888,6 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			}
 		})
 
-	}
-
-	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
-	if err != nil {
-		t.Fatalf("Delete app profile: %v", err)
 	}
 }
 
