@@ -65,11 +65,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &gsuiteaddonspb.GetAuthorizationRequest{
+//	req := &gsuiteaddonspb.CreateDeploymentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#GetAuthorizationRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#CreateDeploymentRequest.
 //	}
-//	resp, err := c.GetAuthorization(ctx, req)
+//	resp, err := c.CreateDeployment(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

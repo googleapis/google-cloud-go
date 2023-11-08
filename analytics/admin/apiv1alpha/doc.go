@@ -75,11 +75,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &adminpb.GetAccountRequest{
+//	req := &adminpb.AcknowledgeUserDataCollectionRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetAccountRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#AcknowledgeUserDataCollectionRequest.
 //	}
-//	resp, err := c.GetAccount(ctx, req)
+//	resp, err := c.AcknowledgeUserDataCollection(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -68,11 +68,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &automlpb.PredictRequest{
+//	req := &automlpb.BatchPredictRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1/automlpb#PredictRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1/automlpb#BatchPredictRequest.
 //	}
-//	resp, err := c.Predict(ctx, req)
+//	op, err := c.BatchPredict(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

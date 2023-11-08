@@ -67,11 +67,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &iampb.SetIamPolicyRequest{
+//	req := &iampb.GetIamPolicyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 //	}
-//	resp, err := c.SetIamPolicy(ctx, req)
+//	resp, err := c.GetIamPolicy(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

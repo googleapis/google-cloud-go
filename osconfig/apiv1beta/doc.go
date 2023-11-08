@@ -70,11 +70,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &osconfigpb.ExecutePatchJobRequest{
+//	req := &osconfigpb.CancelPatchJobRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ExecutePatchJobRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#CancelPatchJobRequest.
 //	}
-//	resp, err := c.ExecutePatchJob(ctx, req)
+//	resp, err := c.CancelPatchJob(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

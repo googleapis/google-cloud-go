@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.7.2...binaryauthorization/v1.7.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **binaryauthorization:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.7.1...binaryauthorization/v1.7.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **binaryauthorization:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.7.0...binaryauthorization/v1.7.1) (2023-10-12)
 
 

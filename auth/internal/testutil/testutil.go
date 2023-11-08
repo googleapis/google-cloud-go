@@ -22,7 +22,6 @@ import (
 // run
 func IntegrationTestCheck(t *testing.T) {
 	t.Helper()
-	t.Skip("TODO(codyoss): remove this once we add all secrets")
 	if testing.Short() {
 		t.Skip("skipping integration test")
 	}

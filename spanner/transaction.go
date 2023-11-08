@@ -54,6 +54,7 @@ type txReadEnv interface {
 	// release should be called at the end of every transactional read to deal
 	// with session recycling.
 	release(error)
+	setSessionEligibilityForLongRunning(sh *sessionHandle)
 }
 
 // txReadOnly contains methods for doing transactional reads.
@@ -248,6 +249,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
+			if t.sh != nil {
+				t.sh.updateLastUseTime()
+			}
 			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
 					Session:          t.sh.getID(),
@@ -496,6 +500,8 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
 			req.Transaction = t.getTransactionSelector()
+			t.sh.updateLastUseTime()
+
 			client, err := client.ExecuteStreamingSql(ctx, req)
 			if err != nil {
 				if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -617,6 +623,8 @@ type ReadOnlyTransaction struct {
 	rts time.Time
 	// tb is the read staleness bound specification for transactional reads.
 	tb TimestampBound
+	// isLongRunningTransaction indicates whether the transaction is long-running or not.
+	isLongRunningTransaction bool
 }
 
 // errTxInitTimeout returns error for timeout in waiting for initialization of
@@ -672,6 +680,8 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+		t.setSessionEligibilityForLongRunning(sh)
+		sh.updateLastUseTime()
 		var md metadata.MD
 		res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.BeginTransactionRequest{
 			Session: sh.getID(),
@@ -928,6 +938,16 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 	return t
 }
 
+func (t *ReadOnlyTransaction) setSessionEligibilityForLongRunning(sh *sessionHandle) {
+	if t != nil && sh != nil {
+		sh.mu.Lock()
+		t.mu.Lock()
+		sh.eligibleForLongRunning = t.isLongRunningTransaction
+		t.mu.Unlock()
+		sh.mu.Unlock()
+	}
+}
+
 // ReadWriteTransaction provides a locking read-write transaction.
 //
 // This type of transaction is the only way to write data into Cloud Spanner;
@@ -1009,6 +1029,8 @@ type ReadWriteTransaction struct {
 	state txState
 	// wb is the set of buffered mutations waiting to be committed.
 	wb []*Mutation
+	// isLongRunningTransaction indicates whether the transaction is long-running or not.
+	isLongRunningTransaction bool
 }
 
 // BufferWrite adds a list of mutations to the set of updates that will be
@@ -1060,6 +1082,7 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 		hasInlineBeginTransaction = true
 	}
 
+	sh.updateLastUseTime()
 	var md metadata.MD
 	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
@@ -1124,12 +1147,19 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	if err != nil {
 		return nil, err
 	}
+
 	// Cloud Spanner will return "Session not found" on bad sessions.
 	sid := sh.getID()
 	if sid == "" {
 		// Might happen if transaction is closed in the middle of a API call.
 		return nil, errSessionClosed(sh)
 	}
+
+	// mark transaction and session to be eligible for long-running
+	t.mu.Lock()
+	t.isLongRunningTransaction = true
+	t.mu.Unlock()
+	t.setSessionEligibilityForLongRunning(sh)
 
 	var sppbStmts []*sppb.ExecuteBatchDmlRequest_Statement
 	for _, st := range stmts {
@@ -1149,6 +1179,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		hasInlineBeginTransaction = true
 	}
 
+	sh.updateLastUseTime()
 	var md metadata.MD
 	resp, err := sh.getClient().ExecuteBatchDml(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.ExecuteBatchDmlRequest{
 		Session:        sh.getID(),
@@ -1318,6 +1349,16 @@ func (t *ReadWriteTransaction) release(err error) {
 	}
 }
 
+func (t *ReadWriteTransaction) setSessionEligibilityForLongRunning(sh *sessionHandle) {
+	if t != nil && sh != nil {
+		sh.mu.Lock()
+		t.mu.Lock()
+		sh.eligibleForLongRunning = t.isLongRunningTransaction
+		t.mu.Unlock()
+		sh.mu.Unlock()
+	}
+}
+
 func beginTransaction(ctx context.Context, sid string, client *vkit.Client, opts TransactionOptions) (transactionID, error) {
 	res, err := client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: sid,
@@ -1380,6 +1421,9 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 	}()
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
+		if sh != nil {
+			sh.updateLastUseTime()
+		}
 		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts)
 		if isSessionNotFoundError(err) {
 			sh.destroy()
@@ -1387,6 +1431,8 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
+			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
+			t.setSessionEligibilityForLongRunning(sh)
 			continue
 		} else {
 			err = ToSpannerError(err)
@@ -1458,6 +1504,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	if sid == "" || client == nil {
 		return resp, errSessionClosed(t.sh)
 	}
+	t.sh.updateLastUseTime()
 
 	var md metadata.MD
 	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
@@ -1506,6 +1553,7 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 	if sid == "" || client == nil {
 		return
 	}
+	t.sh.updateLastUseTime()
 	err := client.Rollback(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.RollbackRequest{
 		Session:       sid,
 		TransactionId: t.tx,
@@ -1708,6 +1756,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 					return ToSpannerError(err)
 				}
 			}
+			sh.updateLastUseTime()
 			res, err := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
 				Session: sh.getID(),
 				Transaction: &sppb.CommitRequest_SingleUseTransaction{

@@ -68,22 +68,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &cxpb.ListPagesRequest{
+//	req := &cxpb.CreatePageRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ListPagesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#CreatePageRequest.
 //	}
-//	it := c.ListPages(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	resp, err := c.CreatePage(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //
