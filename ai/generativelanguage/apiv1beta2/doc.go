@@ -77,11 +77,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &generativelanguagepb.GenerateMessageRequest{
+//	req := &generativelanguagepb.CountMessageTokensRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/ai/generativelanguage/apiv1beta2/generativelanguagepb#GenerateMessageRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/ai/generativelanguage/apiv1beta2/generativelanguagepb#CountMessageTokensRequest.
 //	}
-//	resp, err := c.GenerateMessage(ctx, req)
+//	resp, err := c.CountMessageTokens(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

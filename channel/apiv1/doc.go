@@ -69,21 +69,22 @@
 //	}
 //	defer c.Close()
 //
-//	req := &channelpb.RunReportJobRequest{
+//	req := &channelpb.FetchReportResultsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/channel/apiv1/channelpb#RunReportJobRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/channel/apiv1/channelpb#FetchReportResultsRequest.
 //	}
-//	op, err := c.RunReportJob(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
+//	it := c.FetchReportResults(ctx, req)
+//	for {
+//		resp, err := it.Next()
+//		if err == iterator.Done {
+//			break
+//		}
+//		if err != nil {
+//			// TODO: Handle error.
+//		}
+//		// TODO: Use resp.
+//		_ = resp
 //	}
-//
-//	resp, err := op.Wait(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	// TODO: Use resp.
-//	_ = resp
 //
 // # Use of Context
 //

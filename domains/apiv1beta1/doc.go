@@ -69,11 +69,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &domainspb.SearchDomainsRequest{
+//	req := &domainspb.ConfigureContactSettingsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#SearchDomainsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ConfigureContactSettingsRequest.
 //	}
-//	resp, err := c.SearchDomains(ctx, req)
+//	op, err := c.ConfigureContactSettings(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -68,16 +68,14 @@
 //	}
 //	defer c.Close()
 //
-//	req := &dialogflowpb.GetAgentRequest{
+//	req := &dialogflowpb.DeleteAgentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetAgentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#DeleteAgentRequest.
 //	}
-//	resp, err := c.GetAgent(ctx, req)
+//	err = c.DeleteAgent(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
-//	// TODO: Use resp.
-//	_ = resp
 //
 // # Use of Context
 //

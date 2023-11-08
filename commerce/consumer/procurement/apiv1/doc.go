@@ -69,16 +69,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &procurementpb.PlaceOrderRequest{
+//	req := &procurementpb.GetOrderRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/commerce/consumer/procurement/apiv1/procurementpb#PlaceOrderRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/commerce/consumer/procurement/apiv1/procurementpb#GetOrderRequest.
 //	}
-//	op, err := c.PlaceOrder(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.GetOrder(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

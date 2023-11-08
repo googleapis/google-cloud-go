@@ -57,31 +57,6 @@ func ExampleNewQuestionRESTClient() {
 	_ = c
 }
 
-func ExampleQuestionClient_GetQuestion() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataqna.NewQuestionClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataqnapb.GetQuestionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#GetQuestionRequest.
-	}
-	resp, err := c.GetQuestion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleQuestionClient_CreateQuestion() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -125,6 +100,31 @@ func ExampleQuestionClient_ExecuteQuestion() {
 		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#ExecuteQuestionRequest.
 	}
 	resp, err := c.ExecuteQuestion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleQuestionClient_GetQuestion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataqna.NewQuestionClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataqnapb.GetQuestionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#GetQuestionRequest.
+	}
+	resp, err := c.GetQuestion(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

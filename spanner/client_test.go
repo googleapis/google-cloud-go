@@ -269,8 +269,6 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	if g, w := sh.eligibleForLongRunning, false; g != w {
 		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
 	}
-	p.InactiveTransactionRemovalOptions.mu.Lock()
-	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
 	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
 		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
@@ -1047,18 +1045,18 @@ func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeSho
 			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				actionOnInactiveTransaction: WarnAndClose,
-				idleTimeThreshold:           30 * time.Millisecond,
+				idleTimeThreshold:           300 * time.Millisecond,
 			},
 		},
 	})
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
 		SimulatedExecutionTime{
-			MinimumExecutionTime: 20 * time.Millisecond,
+			MinimumExecutionTime: 200 * time.Millisecond,
 		})
 	server.TestSpanner.PutExecutionTime(MethodStreamingRead,
 		SimulatedExecutionTime{
-			MinimumExecutionTime: 20 * time.Millisecond,
+			MinimumExecutionTime: 200 * time.Millisecond,
 		})
 	ctx := context.Background()
 	p := client.idleSessions
@@ -1090,11 +1088,11 @@ func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeSho
 		t.Fatalf("Session lastUseTime times should not be equal")
 	}
 
-	if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 40 {
-		t.Fatalf("Expected session to be checkedout for more than 40 milliseconds")
+	if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 	}
-	if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 40 {
-		t.Fatalf("Expected session to be checkedout for more than 40 milliseconds")
+	if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 	}
 	// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
 	// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
@@ -1563,14 +1561,14 @@ func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeSh
 			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				actionOnInactiveTransaction: WarnAndClose,
-				idleTimeThreshold:           30 * time.Millisecond,
+				idleTimeThreshold:           300 * time.Millisecond,
 			},
 		},
 	})
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
 		SimulatedExecutionTime{
-			MinimumExecutionTime: 20 * time.Millisecond,
+			MinimumExecutionTime: 200 * time.Millisecond,
 		})
 	ctx := context.Background()
 	p := client.idleSessions
@@ -1603,11 +1601,11 @@ func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeSh
 			t.Fatalf("Session lastUseTime times should not be equal")
 		}
 
-		if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 40 {
-			t.Fatalf("Expected session to be checkedout for more than 40 milliseconds")
+		if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 		}
-		if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 40 {
-			t.Fatalf("Expected session to be checkedout for more than 40 milliseconds")
+		if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 		}
 		// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
 		// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
@@ -1707,8 +1705,8 @@ func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAct
 	if g, w := attempts, 2; g != w {
 		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
 	}
-	p.InactiveTransactionRemovalOptions.mu.Lock()
-	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
@@ -4256,8 +4254,8 @@ func TestClient_WhenLongRunningPartitionedUpdateRequest_TakeNoAction(t *testing.
 		t.Errorf("Row count mismatch\nGot: %v\nWant: %v", g, w)
 	}
 	p := client.idleSessions
-	p.InactiveTransactionRemovalOptions.mu.Lock()
-	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}

@@ -60,6 +60,79 @@ func ExampleNewTransitionRouteGroupsRESTClient() {
 	_ = c
 }
 
+func ExampleTransitionRouteGroupsClient_CreateTransitionRouteGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cx.NewTransitionRouteGroupsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.CreateTransitionRouteGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#CreateTransitionRouteGroupRequest.
+	}
+	resp, err := c.CreateTransitionRouteGroup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTransitionRouteGroupsClient_DeleteTransitionRouteGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cx.NewTransitionRouteGroupsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.DeleteTransitionRouteGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#DeleteTransitionRouteGroupRequest.
+	}
+	err = c.DeleteTransitionRouteGroup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleTransitionRouteGroupsClient_GetTransitionRouteGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cx.NewTransitionRouteGroupsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.GetTransitionRouteGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#GetTransitionRouteGroupRequest.
+	}
+	resp, err := c.GetTransitionRouteGroup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleTransitionRouteGroupsClient_ListTransitionRouteGroups() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -91,56 +164,6 @@ func ExampleTransitionRouteGroupsClient_ListTransitionRouteGroups() {
 	}
 }
 
-func ExampleTransitionRouteGroupsClient_GetTransitionRouteGroup() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cx.NewTransitionRouteGroupsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cxpb.GetTransitionRouteGroupRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#GetTransitionRouteGroupRequest.
-	}
-	resp, err := c.GetTransitionRouteGroup(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleTransitionRouteGroupsClient_CreateTransitionRouteGroup() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cx.NewTransitionRouteGroupsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cxpb.CreateTransitionRouteGroupRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#CreateTransitionRouteGroupRequest.
-	}
-	resp, err := c.CreateTransitionRouteGroup(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleTransitionRouteGroupsClient_UpdateTransitionRouteGroup() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -164,29 +187,6 @@ func ExampleTransitionRouteGroupsClient_UpdateTransitionRouteGroup() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleTransitionRouteGroupsClient_DeleteTransitionRouteGroup() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cx.NewTransitionRouteGroupsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cxpb.DeleteTransitionRouteGroupRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#DeleteTransitionRouteGroupRequest.
-	}
-	err = c.DeleteTransitionRouteGroup(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }
 
 func ExampleTransitionRouteGroupsClient_GetLocation() {

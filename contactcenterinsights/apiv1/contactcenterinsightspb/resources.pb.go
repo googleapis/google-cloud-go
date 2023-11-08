@@ -625,7 +625,7 @@ type AnnotatorSelector_SummarizationConfig_SummarizationModel int32
 const (
 	// Unspecified summarization model.
 	AnnotatorSelector_SummarizationConfig_SUMMARIZATION_MODEL_UNSPECIFIED AnnotatorSelector_SummarizationConfig_SummarizationModel = 0
-	// The Insights baseline model.
+	// The CCAI baseline model.
 	AnnotatorSelector_SummarizationConfig_BASELINE_MODEL AnnotatorSelector_SummarizationConfig_SummarizationModel = 1
 )
 
