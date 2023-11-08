@@ -1561,14 +1561,14 @@ func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeSh
 			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				actionOnInactiveTransaction: WarnAndClose,
-				idleTimeThreshold:           30 * time.Millisecond,
+				idleTimeThreshold:           300 * time.Millisecond,
 			},
 		},
 	})
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
 		SimulatedExecutionTime{
-			MinimumExecutionTime: 20 * time.Millisecond,
+			MinimumExecutionTime: 200 * time.Millisecond,
 		})
 	ctx := context.Background()
 	p := client.idleSessions
@@ -1601,11 +1601,11 @@ func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeSh
 			t.Fatalf("Session lastUseTime times should not be equal")
 		}
 
-		if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 40 {
-			t.Fatalf("Expected session to be checkedout for more than 40 milliseconds")
+		if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 		}
-		if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 40 {
-			t.Fatalf("Expected session to be checkedout for more than 40 milliseconds")
+		if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 		}
 		// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
 		// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
