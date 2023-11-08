@@ -289,6 +289,8 @@ func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
 	opts := &pb.ReadOptions{
 		ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
 	}
+
+	// TODO: Use transaction ID returned by get
 	_, err = t.client.get(t.ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
@@ -307,6 +309,8 @@ func (t *Transaction) GetMulti(keys []*Key, dst interface{}) (err error) {
 	opts := &pb.ReadOptions{
 		ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
 	}
+
+	// TODO: Use transaction ID returned by get
 	_, err = t.client.get(t.ctx, keys, dst, opts)
 	if err != nil {
 		return err
