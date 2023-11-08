@@ -207,7 +207,7 @@ type RoutineMetadata struct {
 	// a CREATE FUNCTION statement.
 	Body string
 
-	// Controls features like data masking.  If set to `DATA_MASKING`, the function
+	// For data governance use cases.  If set to "DATA_MASKING", the function
 	// is validated and made available as a masking function. For more information,
 	// see: https://cloud.google.com/bigquery/docs/user-defined-functions#custom-mask
 	DataGovernanceType string
