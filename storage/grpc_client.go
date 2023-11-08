@@ -1604,8 +1604,8 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 
 	toWrite := w.buf[:recvd]
 
-	// Send a request with as many bytes as possible
-	// Loop until all bytes are sent
+	// Send a request with as many bytes as possible.
+	// Loop until all bytes are sent.
 	for {
 		bytesNotYetSent := recvd - sent
 		remainingDataFitsInSingleReq := bytesNotYetSent <= maxPerMessageWriteSize
@@ -1614,7 +1614,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			lastWriteOfEntireObject = true
 		}
 
-		// Send the maximum amount of bytes we can, unless we don't have that many
+		// Send the maximum amount of bytes we can, unless we don't have that many.
 		bytesToSendInCurrReq := maxPerMessageWriteSize
 		if remainingDataFitsInSingleReq {
 			bytesToSendInCurrReq = bytesNotYetSent
@@ -1754,10 +1754,14 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 				continue
 			}
 		} else {
-			// If the object is done uploading, close the send stream to receive
+			// If the object is done uploading, close the send stream to signal
+			// to the server that we are done sending so that we can receive
 			// from the stream without blocking.
 			err = w.stream.CloseSend()
 			if err != nil {
+				// CloseSend() retries the send internally. It never returns an
+				// error in the current implementation, but we check it anyway in
+				// case that it does in the future.
 				return nil, 0, err
 			}
 
@@ -1777,7 +1781,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// Even though we received the object response, continue reading
 			// until we receive a non-nil error, to ensure the stream does not
 			// leak even if the context isn't cancelled. See:
-			// https://github.com/grpc/grpc-go/commit/365770fcbd7dfb9d921cb44827ede770f33be44f
+			// https://pkg.go.dev/google.golang.org/grpc#ClientConn.NewStream
 			for err == nil {
 				_, err = w.stream.Recv()
 			}
