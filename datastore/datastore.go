@@ -393,7 +393,7 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 		}
 	}
 
-	err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
+	_, err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
 	}
@@ -426,22 +426,26 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 		}
 	}
 
-	return c.get(ctx, keys, dst, opts)
+	_, err = c.get(ctx, keys, dst, opts)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) error {
+func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) ([]byte, error) {
 	v := reflect.ValueOf(dst)
 
 	var multiArgType multiArgType
 
 	// If kind is of type slice, return error
 	if kind := v.Kind(); kind != reflect.Slice {
-		return fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
+		return nil, fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
 	}
 
 	// if type is a type which implements PropertyList, return error
 	if argType := v.Type(); argType == typeOfPropertyList {
-		return fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
+		return nil, fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
 	}
 
 	elemType := v.Type().Elem()
@@ -464,11 +468,11 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	dstLen := v.Len()
 
 	if keysLen := len(keys); keysLen != dstLen {
-		return fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
+		return nil, fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
 	}
 
 	if len(keys) == 0 {
-		return nil
+		return nil, nil
 	}
 
 	// Go through keys, validate them, serialize then, and create a dict mapping them to their indices.
@@ -492,7 +496,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		}
 	}
 	if any {
-		return multiErr
+		return nil, multiErr
 	}
 	req := &pb.LookupRequest{
 		ProjectId:   c.dataset,
@@ -502,7 +506,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	}
 	resp, err := c.client.Lookup(ctx, req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	found := resp.Found
 	missing := resp.Missing
@@ -514,7 +518,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		req.Keys = resp.Deferred
 		resp, err = c.client.Lookup(ctx, req)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		found = append(found, resp.Found...)
 		missing = append(missing, resp.Missing...)
@@ -524,7 +528,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range found {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return errors.New("datastore: internal error: server returned an invalid key")
+			return nil, errors.New("datastore: internal error: server returned an invalid key")
 		}
 		filled += len(keyMap[k.String()])
 		for _, index := range keyMap[k.String()] {
@@ -544,7 +548,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range missing {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return errors.New("datastore: internal error: server returned an invalid key")
+			return nil, errors.New("datastore: internal error: server returned an invalid key")
 		}
 		filled += len(keyMap[k.String()])
 		for _, index := range keyMap[k.String()] {
@@ -554,13 +558,13 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	}
 
 	if filled != len(keys) {
-		return errors.New("datastore: internal error: server returned the wrong number of entities")
+		return nil, errors.New("datastore: internal error: server returned the wrong number of entities")
 	}
 
 	if any {
-		return multiErr
+		return nil, multiErr
 	}
-	return nil
+	return resp.Transaction, nil
 }
 
 // Put saves the entity src into the datastore with the given key. src must be
