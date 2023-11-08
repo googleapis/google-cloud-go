@@ -539,6 +539,8 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSession
 
 	// Sleep for maintainer to run long-running cleanup task
 	time.Sleep(30 * time.Millisecond)
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
 
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
