@@ -1679,6 +1679,9 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			for err == nil {
 				_, err = w.stream.Recv()
 			}
+			// Drop the stream reference as a new one will need to be created if
+			// we retry.
+			w.stream = nil
 
 			// Retriable errors mean we should start over and attempt to
 			// resend the entire buffer via a new stream.
@@ -1690,9 +1693,6 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 					return nil, 0, err
 				}
 				sent = int(writeOffset) - int(start)
-
-				// Drop the stream reference as a new one will need to be created.
-				w.stream = nil
 
 				// Continue sending requests, opening a new stream and resending
 				// any bytes not yet persisted as per QueryWriteStatus
