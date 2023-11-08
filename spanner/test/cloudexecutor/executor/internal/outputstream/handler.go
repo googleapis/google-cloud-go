@@ -15,6 +15,7 @@
 package outputstream
 
 import (
+	"fmt"
 	"log"
 
 	"cloud.google.com/go/spanner"
@@ -29,6 +30,9 @@ import (
 
 // if OutcomeSender.rowCount exceed maxRowsPerBatch value, we should send rows back to the client in batch.
 const maxRowsPerBatch = 100
+const maxChangeStreamRecordsPerBatch = 2000
+const partitionTokensString = "["
+const dataChangeRecordsString = "["
 
 // OutcomeSender is a utility class used for sending action outcomes back to the client. For read
 // actions, it buffers rows and sends partial read results in batches.
@@ -56,15 +60,33 @@ type OutcomeSender struct {
 	rowCount int64
 	// modified row count in dml result
 	rowsModified []int64
+	// Current ChangeStreamRecord count in Cloud result.
+	changeStreamRecordCount int64
+	// Change stream records to be returned.
+	changeStreamRecords []*executorpb.ChangeStreamRecord
+	// Change stream related variables.
+	partitionTokensString   string
+	dataChangeRecordsString string
+	changeStreamForQuery    string
+	partitionTokenForQuery  string
+
+	// The timestamp in milliseconds of when the last ChangeStreamRecord received.
+	changeStreamRecordReceivedTimestamp int
+	// The heartbeat interval for the change stream query in milliseconds.
+	changeStreamHeartbeatMilliseconds int
+	// Whether the change stream query is a partitioned change stream query.
+	isPartitionedChangeStreamQuery bool
 }
 
 // NewOutcomeSender returns an OutcomeSender with default fields set.
 func NewOutcomeSender(actionID int32, stream executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer) *OutcomeSender {
 	return &OutcomeSender{
-		actionID:       actionID,
-		stream:         stream,
-		hasReadResult:  false,
-		hasQueryResult: false,
+		actionID:                actionID,
+		stream:                  stream,
+		hasReadResult:           false,
+		hasQueryResult:          false,
+		partitionTokensString:   "[",
+		dataChangeRecordsString: "[",
 	}
 }
 
@@ -184,6 +206,14 @@ func (s *OutcomeSender) flush() error {
 		s.partialOutcome.ReadResult = s.readResult
 	} else if s.hasQueryResult {
 		s.partialOutcome.QueryResult = s.queryResult
+	} else if s.hasChangeStreamRecords {
+		s.partitionTokensString += "]\n"
+		s.dataChangeRecordsString += "]\n"
+		log.Printf("OutcomeSender with action ID %d for change stream %s and partition token %s is sending data change "+
+			"records with the following transaction id/record sequence combinations: %s and partition tokens: %s",
+			s.actionID, s.changeStreamForQuery, s.partitionTokenForQuery, s.dataChangeRecordsString, s.partitionTokensString)
+		s.partitionTokensString = ""
+		s.dataChangeRecordsString = ""
 	}
 	err := s.SendOutcome(s.partialOutcome)
 	s.partialOutcome = nil
@@ -191,6 +221,8 @@ func (s *OutcomeSender) flush() error {
 	s.queryResult = nil
 	s.rowCount = 0
 	s.rowsModified = []int64{}
+	s.changeStreamRecordCount = 0
+	s.changeStreamRecords = []*executorpb.ChangeStreamRecord{}
 	return err
 }
 
@@ -208,4 +240,56 @@ func (s *OutcomeSender) SendOutcome(outcome *executorpb.SpannerActionOutcome) er
 		log.Printf("Sent result %v actionId %d", outcome, s.actionID)
 	}
 	return err
+}
+
+// InitForChangeStreamQuery init the sender for change stream query action.
+func (s *OutcomeSender) InitForChangeStreamQuery(changeStreamHeartbeatMilliseconds int, changeStreamName string, partitionToken *string) {
+	s.hasChangeStreamRecords = true
+	s.changeStreamRecordReceivedTimestamp = 0
+	s.changeStreamHeartbeatMilliseconds = changeStreamHeartbeatMilliseconds
+	s.changeStreamForQuery = changeStreamName
+	if partitionToken != nil {
+		s.isPartitionedChangeStreamQuery = true
+		s.partitionTokenForQuery = *partitionToken
+	}
+}
+
+func (s *OutcomeSender) GetIsPartitionedChangeStreamQuery() bool {
+	return s.isPartitionedChangeStreamQuery
+}
+
+func (s *OutcomeSender) GetChangeStreamRecordReceivedTimestamp() int {
+	return s.changeStreamRecordReceivedTimestamp
+}
+
+func (s *OutcomeSender) UpdateChangeStreamRecordReceivedTimestamp(changeStreamRecordReceivedTimestamp int) {
+	s.changeStreamRecordReceivedTimestamp = changeStreamRecordReceivedTimestamp
+}
+
+func (s *OutcomeSender) GetChangeStreamHeartbeatMilliSeconds() int {
+	return s.changeStreamHeartbeatMilliseconds
+}
+
+// AppendChangeStreamRecord appends change stream record to result.
+func (s *OutcomeSender) AppendChangeStreamRecord(records []*executorpb.ChangeStreamRecord) error {
+	if !s.hasChangeStreamRecords {
+		return spanner.ToSpannerError(status.Error(codes.InvalidArgument, "hasChangeStreamRecords should be true"))
+	}
+	s.buildOutcome()
+	for _, record := range records {
+		if record.GetDataChange() != nil {
+			appendedString := fmt.Sprintf("{%s, %s}, ", record.GetDataChange().GetTransactionId(), record.GetDataChange().GetRecordSequence())
+			s.dataChangeRecordsString += appendedString
+		} else if record.GetChildPartition() != nil {
+			for _, record := range record.GetChildPartition().ChildPartitions {
+				s.partitionTokensString += record.GetToken() + ", "
+			}
+		}
+		s.changeStreamRecords = append(s.changeStreamRecords, record)
+		s.changeStreamRecordCount++
+	}
+	if s.changeStreamRecordCount >= maxChangeStreamRecordsPerBatch {
+		return s.flush()
+	}
+	return nil
 }
