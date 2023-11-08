@@ -72,9 +72,16 @@ func TestRoutineTypeConversions(t *testing.T) {
 		in         interface{}
 		want       interface{}
 	}{
-		{"empty", "ToRoutineMetadata", &bq.Routine{}, &RoutineMetadata{}},
-		{"basic", "ToRoutineMetadata",
-			&bq.Routine{
+		{
+			name:       "empty",
+			conversion: "ToRoutineMetadata",
+			in:         &bq.Routine{},
+			want:       &RoutineMetadata{},
+		},
+		{
+			name:       "basic",
+			conversion: "ToRoutineMetadata",
+			in: &bq.Routine{
 				CreationTime:     aTimeMillis,
 				LastModifiedTime: aTimeMillis,
 				DefinitionBody:   "body",
@@ -89,8 +96,9 @@ func TestRoutineTypeConversions(t *testing.T) {
 						{Name: "field", Type: &bq.StandardSqlDataType{TypeKind: "FLOAT64"}},
 					},
 				},
+				DataGovernanceType: "DATA_MASKING",
 			},
-			&RoutineMetadata{
+			want: &RoutineMetadata{
 				CreationTime:     aTime,
 				LastModifiedTime: aTime,
 				Description:      "desc",
@@ -105,55 +113,73 @@ func TestRoutineTypeConversions(t *testing.T) {
 						{Name: "field", Type: &StandardSQLDataType{TypeKind: "FLOAT64"}},
 					},
 				},
-			}},
-		{"body_and_libs", "FromRoutineMetadataToUpdate",
-			&RoutineMetadataToUpdate{
-				Body:              "body",
-				ImportedLibraries: []string{"foo", "bar"},
-				ReturnType:        &StandardSQLDataType{TypeKind: "FOO"},
+				DataGovernanceType: "DATA_MASKING",
 			},
-			&bq.Routine{
-				DefinitionBody:    "body",
-				ImportedLibraries: []string{"foo", "bar"},
-				ReturnType:        &bq.StandardSqlDataType{TypeKind: "FOO"},
-				ForceSendFields:   []string{"DefinitionBody", "ImportedLibraries", "ReturnType"},
-			}},
-		{"null_fields", "FromRoutineMetadataToUpdate",
-			&RoutineMetadataToUpdate{
+		},
+		{
+			name:       "body_and_libs",
+			conversion: "FromRoutineMetadataToUpdate",
+			in: &RoutineMetadataToUpdate{
+				Body:               "body",
+				ImportedLibraries:  []string{"foo", "bar"},
+				ReturnType:         &StandardSQLDataType{TypeKind: "FOO"},
+				DataGovernanceType: "DATA_MASKING",
+			},
+			want: &bq.Routine{
+				DefinitionBody:     "body",
+				ImportedLibraries:  []string{"foo", "bar"},
+				ReturnType:         &bq.StandardSqlDataType{TypeKind: "FOO"},
+				DataGovernanceType: "DATA_MASKING",
+				ForceSendFields:    []string{"DefinitionBody", "ImportedLibraries", "ReturnType", "DataGovernanceType"},
+			},
+		},
+		{
+			name:       "null_fields",
+			conversion: "FromRoutineMetadataToUpdate",
+			in: &RoutineMetadataToUpdate{
 				Type:              "type",
 				Arguments:         []*RoutineArgument{},
 				ImportedLibraries: []string{},
 			},
-			&bq.Routine{
+			want: &bq.Routine{
 				RoutineType:     "type",
 				ForceSendFields: []string{"RoutineType"},
 				NullFields:      []string{"Arguments", "ImportedLibraries"},
-			}},
-		{"empty", "ToRoutineArgument",
-			&bq.Argument{},
-			&RoutineArgument{}},
-		{"basic", "ToRoutineArgument",
-			&bq.Argument{
+			},
+		},
+		{name: "empty",
+			conversion: "ToRoutineArgument",
+			in:         &bq.Argument{},
+			want:       &RoutineArgument{}},
+		{
+			name:       "basic",
+			conversion: "ToRoutineArgument",
+			in: &bq.Argument{
 				Name:         "foo",
 				ArgumentKind: "bar",
 				Mode:         "baz",
 			},
-			&RoutineArgument{
-				Name: "foo",
-				Kind: "bar",
-				Mode: "baz",
-			}},
-		{"empty", "FromRoutineArgument",
-			&RoutineArgument{},
-			&bq.Argument{},
-		},
-		{"basic", "FromRoutineArgument",
-			&RoutineArgument{
+			want: &RoutineArgument{
 				Name: "foo",
 				Kind: "bar",
 				Mode: "baz",
 			},
-			&bq.Argument{
+		},
+		{
+			name:       "empty",
+			conversion: "FromRoutineArgument",
+			in:         &RoutineArgument{},
+			want:       &bq.Argument{},
+		},
+		{
+			name:       "basic",
+			conversion: "FromRoutineArgument",
+			in: &RoutineArgument{
+				Name: "foo",
+				Kind: "bar",
+				Mode: "baz",
+			},
+			want: &bq.Argument{
 				Name:         "foo",
 				ArgumentKind: "bar",
 				Mode:         "baz",
@@ -162,7 +188,6 @@ func TestRoutineTypeConversions(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%s/%s", test.conversion, test.name), func(t *testing.T) {
-			t.Parallel()
 			testRoutineConversion(t, test.conversion, test.in, test.want)
 		})
 	}
