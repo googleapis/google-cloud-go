@@ -1,6 +1,13 @@
 # Changes
 
 
+## [2.8.4](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.3...recaptchaenterprise/v2.8.4) (2023-11-09)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Added required annotations ([ba23673](https://github.com/googleapis/google-cloud-go/commit/ba23673da7707c31292e4aa29d65b7ac1446d4a6))
+
 ## [2.8.3](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.2...recaptchaenterprise/v2.8.3) (2023-11-01)
 
 
