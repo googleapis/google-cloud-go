@@ -21,12 +21,11 @@
 package schedulerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -146,8 +145,8 @@ type HttpTarget struct {
 	// * `X-CloudScheduler`: This header will be set to true.
 	// * `X-CloudScheduler-JobName`: This header will contain the job name.
 	// * `X-CloudScheduler-ScheduleTime`: For Cloud Scheduler jobs specified in
-	// the unix-cron format, this header will contain the job schedule time in
-	// RFC3339 UTC "Zulu" format.
+	// the unix-cron format, this header will contain the job schedule as an
+	// offset of UTC parsed according to RFC3339.
 	//
 	// The total size of headers must be less than 80KB.
 	Headers map[string]string `protobuf:"bytes,3,rep,name=headers,proto3" json:"headers,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -321,8 +320,8 @@ type AppEngineHttpTarget struct {
 	// * `X-CloudScheduler`: This header will be set to true.
 	// * `X-CloudScheduler-JobName`: This header will contain the job name.
 	// * `X-CloudScheduler-ScheduleTime`: For Cloud Scheduler jobs specified in
-	// the unix-cron format, this header will contain the job schedule time in
-	// RFC3339 UTC "Zulu" format.
+	// the unix-cron format, this header will contain the job schedule as an
+	// offset of UTC parsed according to RFC3339.
 	//
 	// If the job has an
 	// [body][google.cloud.scheduler.v1.AppEngineHttpTarget.body], Cloud Scheduler
