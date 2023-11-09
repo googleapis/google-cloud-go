@@ -32,6 +32,12 @@ func testRoutineConversion(t *testing.T, conversion string, in interface{}, want
 			t.Fatalf("failed input type conversion (bq.Routine): %v", in)
 		}
 		got, err = bqToRoutineMetadata(input)
+	case "FromRoutineMetadata":
+		input, ok := in.(*RoutineMetadata)
+		if !ok {
+			t.Fatalf("failed input type conversion (bq.RoutineMetadata): %v", in)
+		}
+		got, err = input.toBQ()
 	case "FromRoutineMetadataToUpdate":
 		input, ok := in.(*RoutineMetadataToUpdate)
 		if !ok {
@@ -79,6 +85,12 @@ func TestRoutineTypeConversions(t *testing.T) {
 			want:       &RoutineMetadata{},
 		},
 		{
+			name:       "empty",
+			conversion: "FromRoutineMetadata",
+			in:         &RoutineMetadata{},
+			want:       &bq.Routine{},
+		},
+		{
 			name:       "basic",
 			conversion: "ToRoutineMetadata",
 			in: &bq.Routine{
@@ -117,6 +129,44 @@ func TestRoutineTypeConversions(t *testing.T) {
 			},
 		},
 		{
+			name:       "basic",
+			conversion: "FromRoutineMetadata",
+			in: &RoutineMetadata{
+				CreationTime:     aTime,
+				LastModifiedTime: aTime,
+				Description:      "desc",
+				DeterminismLevel: Deterministic,
+				Body:             "body",
+				ETag:             "etag",
+				Type:             "type",
+				Language:         "lang",
+				ReturnType:       &StandardSQLDataType{TypeKind: "INT64"},
+				ReturnTableType: &StandardSQLTableType{
+					Columns: []*StandardSQLField{
+						{Name: "field", Type: &StandardSQLDataType{TypeKind: "FLOAT64"}},
+					},
+				},
+				DataGovernanceType: "DATA_MASKING",
+			},
+			want: &bq.Routine{
+				CreationTime:     aTimeMillis,
+				LastModifiedTime: aTimeMillis,
+				DefinitionBody:   "body",
+				Description:      "desc",
+				Etag:             "etag",
+				DeterminismLevel: "DETERMINISTIC",
+				RoutineType:      "type",
+				Language:         "lang",
+				ReturnType:       &bq.StandardSqlDataType{TypeKind: "INT64"},
+				ReturnTableType: &bq.StandardSqlTableType{
+					Columns: []*bq.StandardSqlField{
+						{Name: "field", Type: &bq.StandardSqlDataType{TypeKind: "FLOAT64"}},
+					},
+				},
+				DataGovernanceType: "DATA_MASKING",
+			},
+		},
+		{
 			name:       "body_and_libs",
 			conversion: "FromRoutineMetadataToUpdate",
 			in: &RoutineMetadataToUpdate{
@@ -147,7 +197,8 @@ func TestRoutineTypeConversions(t *testing.T) {
 				NullFields:      []string{"Arguments", "ImportedLibraries"},
 			},
 		},
-		{name: "empty",
+		{
+			name:       "empty",
 			conversion: "ToRoutineArgument",
 			in:         &bq.Argument{},
 			want:       &RoutineArgument{}},
