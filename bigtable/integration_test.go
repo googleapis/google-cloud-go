@@ -208,7 +208,7 @@ func TestIntegration_PartialReadRows(t *testing.T) {
 	// Do a scan and stop part way through.
 	// Verify that the ReadRows callback doesn't keep running.
 	stopped := false
-	err = table.ReadRows(ctx, InfiniteRange(""), func(r Row) bool {
+	err = table.ReadRows(ctx, RowRange{}, func(r Row) bool {
 		if r.Key() < "h" {
 			return true
 		}
@@ -248,6 +248,39 @@ func TestIntegration_ReadRowList(t *testing.T) {
 		}
 		return true
 	})
+	if err != nil {
+		t.Fatalf("read RowList: %v", err)
+	}
+
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
+	}
+}
+func TestIntegration_ReadRowListReverse(t *testing.T) {
+	ctx := context.Background()
+	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
+
+	// Read a RowList
+	var elt []string
+	rowRange := NewOpenClosedRange("gwashington", "wmckinley")
+	want := "wmckinley-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1"
+	err = table.ReadRows(ctx, rowRange, func(r Row) bool {
+		for _, ris := range r {
+			for _, ri := range ris {
+				elt = append(elt, formatReadItem(ri))
+			}
+		}
+		return true
+	}, ReverseScan())
+
 	if err != nil {
 		t.Fatalf("read RowList: %v", err)
 	}
@@ -424,7 +457,7 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	if !testutil.Equal(r, wantRow) {
 		t.Fatalf("Cell with multiple versions and LatestNFilter(2),\n got %v\nwant %v", r, wantRow)
 	}
-	// Check cell offset / limit
+	// Check cell offset / end
 	r, err = table.ReadRow(ctx, "testrow", RowFilter(CellsPerRowLimitFilter(3)))
 	if err != nil {
 		t.Fatalf("Reading row: %v", err)
@@ -778,7 +811,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 	verifyDirectPathRemoteAddress(testEnv, t)
 	if rc != wantRc {
-		t.Fatalf("Scan with row limit returned %d rows, want %d", rc, wantRc)
+		t.Fatalf("Scan with row end returned %d rows, want %d", rc, wantRc)
 	}
 
 	// Test bulk mutations
@@ -975,7 +1008,7 @@ func TestIntegration_Read(t *testing.T) {
 			want:   "",
 		},
 		{
-			desc:   "read with ColumnFilter + row limit",
+			desc:   "read with ColumnFilter + row end",
 			rr:     RowRange{},
 			filter: ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			limit:  LimitRows(2),
@@ -996,7 +1029,7 @@ func TestIntegration_Read(t *testing.T) {
 			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
-			desc:   "read with ColumnFilter + row limit + strip values",
+			desc:   "read with ColumnFilter + row end + strip values",
 			rr:     RowRange{},
 			filter: ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "j§adams" and "tjefferson"
 			limit:  LimitRows(2),
@@ -1015,7 +1048,7 @@ func TestIntegration_Read(t *testing.T) {
 			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
-			desc:   "read with ValueRangeFilter + row limit",
+			desc:   "read with ValueRangeFilter + row end",
 			rr:     RowRange{},
 			filter: ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
 			limit:  LimitRows(2),
@@ -1128,10 +1161,11 @@ func TestIntegration_FullReadStats(t *testing.T) {
 	}
 
 	for _, test := range []struct {
-		desc   string
-		rr     RowSet
-		filter Filter     // may be nil
-		limit  ReadOption // may be nil
+		desc        string
+		rr          RowSet
+		filter      Filter     // may be nil
+		limit       ReadOption // may be nil
+		reverseScan bool
 
 		// We do the read and grab all the stats.
 		cellsReturnedCount int64
@@ -1251,7 +1285,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			rowsReturnedCount:  0,
 		},
 		{
-			desc:               "read with ColumnFilter + row limit",
+			desc:               "read with ColumnFilter + row end",
 			rr:                 RowRange{},
 			filter:             ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			limit:              LimitRows(2),
@@ -1274,7 +1308,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			rowsReturnedCount:  4,
 		},
 		{
-			desc:               "read with ColumnFilter + row limit + strip values",
+			desc:               "read with ColumnFilter + row end + strip values",
 			rr:                 RowRange{},
 			filter:             ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "j§adams" and "tjefferson"
 			limit:              LimitRows(2),
@@ -1296,7 +1330,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			rowsReturnedCount:  4,
 		},
 		{
-			desc:               "read with ValueRangeFilter + row limit",
+			desc:               "read with ValueRangeFilter + row end",
 			rr:                 RowRange{},
 			filter:             ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
 			limit:              LimitRows(2),
@@ -1358,6 +1392,20 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			cellsReturnedCount: 0,
 			rowsReturnedCount:  0,
 		},
+		{
+			desc:               "reverse read all, unfiltered",
+			rr:                 RowRange{},
+			reverseScan:        true,
+			cellsReturnedCount: 7,
+			rowsReturnedCount:  4,
+		},
+		{
+			desc:               "reverse read with InfiniteRange, unfiltered",
+			rr:                 InfiniteReverseRange("wmckinley"),
+			reverseScan:        true,
+			cellsReturnedCount: 7,
+			rowsReturnedCount:  4,
+		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var opts []ReadOption
@@ -1366,6 +1414,9 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			}
 			if test.limit != nil {
 				opts = append(opts, test.limit)
+			}
+			if test.reverseScan {
+				opts = append(opts, ReverseScan())
 			}
 			// Define a callback for validating request stats.
 			callbackInvoked := false
@@ -1387,7 +1438,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 					// We use lenient checks for CellsSeenCount and RowsSeenCount. Exact checks would be brittle.
 					// Note that the emulator and prod sometimes yield different values:
 					// - Sometimes prod scans fewer cells due to optimizations that allow prod to skip cells.
-					// - Sometimes prod scans more cells due to to filters that must rescan cells.
+					// - Sometimes prod scans more cells due to filters that must rescan cells.
 					// Similar issues apply for RowsSeenCount.
 					if got, want := readStats.CellsSeenCount, readStats.CellsReturnedCount; got < want {
 						t.Errorf("CellsSeenCount should be greater than or equal to CellsReturnedCount. got: %d < want: %d",
@@ -2119,7 +2170,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		time.Sleep(time.Second * 10)
 	}
 	if encryptionKeyVersion == "" {
-		t.Fatalf("Encryption Key not created within alotted time limit")
+		t.Fatalf("Encryption Key not created within alotted time end")
 	}
 
 	// Validate Encryption Info under getTable
@@ -2770,6 +2821,13 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		t.Fatalf("Get app profile: %v", err)
 	}
 
+	defer func() {
+		err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
+		if err != nil {
+			t.Fatalf("Delete app profile: %v", err)
+		}
+	}()
+
 	if !proto.Equal(createdProfile, gotProfile) {
 		t.Fatalf("created profile: %s, got profile: %s", createdProfile.Name, gotProfile.Name)
 	}
@@ -2830,6 +2888,11 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				Description:   "",
 				RoutingPolicy: gotProfile.RoutingPolicy,
 				Etag:          gotProfile.Etag,
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
 			},
 		},
 		{
@@ -2845,6 +2908,11 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
 					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
 						ClusterId: testEnv.Config().Cluster,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority: btapb.AppProfile_PRIORITY_HIGH,
 					},
 				},
 			},
@@ -2871,11 +2939,6 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			}
 		})
 
-	}
-
-	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
-	if err != nil {
-		t.Fatalf("Delete app profile: %v", err)
 	}
 }
 
