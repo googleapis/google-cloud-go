@@ -50,6 +50,7 @@
     "documentai": "1.23.5",
     "domains": "0.9.4",
     "edgecontainer": "1.1.4",
+    "edgenetwork": "0.0.0",
     "essentialcontacts": "1.6.5",
     "eventarc": "1.13.3",
     "filestore": "1.7.4",
