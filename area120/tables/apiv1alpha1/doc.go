@@ -67,11 +67,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &tablespb.GetTableRequest{
+//	req := &tablespb.BatchCreateRowsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#GetTableRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#BatchCreateRowsRequest.
 //	}
-//	resp, err := c.GetTable(ctx, req)
+//	resp, err := c.BatchCreateRows(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

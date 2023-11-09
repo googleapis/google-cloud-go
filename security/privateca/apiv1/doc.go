@@ -70,11 +70,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &privatecapb.CreateCertificateRequest{
+//	req := &privatecapb.ActivateCertificateAuthorityRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/security/privateca/apiv1/privatecapb#CreateCertificateRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/security/privateca/apiv1/privatecapb#ActivateCertificateAuthorityRequest.
 //	}
-//	resp, err := c.CreateCertificate(ctx, req)
+//	op, err := c.ActivateCertificateAuthority(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

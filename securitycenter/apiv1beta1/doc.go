@@ -70,11 +70,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &securitycenterpb.CreateSourceRequest{
+//	req := &securitycenterpb.CreateFindingRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1beta1/securitycenterpb#CreateSourceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1beta1/securitycenterpb#CreateFindingRequest.
 //	}
-//	resp, err := c.CreateSource(ctx, req)
+//	resp, err := c.CreateFinding(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

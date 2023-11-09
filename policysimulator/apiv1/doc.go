@@ -25,8 +25,6 @@
 // and compares those results to determine how your members’ access might
 // change under the proposed policy.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference
@@ -75,11 +73,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &policysimulatorpb.GetReplayRequest{
+//	req := &policysimulatorpb.CreateReplayRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/policysimulator/apiv1/policysimulatorpb#GetReplayRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/policysimulator/apiv1/policysimulatorpb#CreateReplayRequest.
 //	}
-//	resp, err := c.GetReplay(ctx, req)
+//	op, err := c.CreateReplay(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

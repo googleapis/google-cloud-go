@@ -71,11 +71,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &biglakepb.CreateCatalogRequest{
+//	req := &biglakepb.CheckLockRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1alpha1/biglakepb#CreateCatalogRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1alpha1/biglakepb#CheckLockRequest.
 //	}
-//	resp, err := c.CreateCatalog(ctx, req)
+//	resp, err := c.CheckLock(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

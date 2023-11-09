@@ -83,6 +83,29 @@ func ExamplePredictionApiKeyRegistryClient_CreatePredictionApiKeyRegistration() 
 	_ = resp
 }
 
+func ExamplePredictionApiKeyRegistryClient_DeletePredictionApiKeyRegistration() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommendationengine.NewPredictionApiKeyRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommendationenginepb.DeletePredictionApiKeyRegistrationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#DeletePredictionApiKeyRegistrationRequest.
+	}
+	err = c.DeletePredictionApiKeyRegistration(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExamplePredictionApiKeyRegistryClient_ListPredictionApiKeyRegistrations() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -111,28 +134,5 @@ func ExamplePredictionApiKeyRegistryClient_ListPredictionApiKeyRegistrations() {
 		}
 		// TODO: Use resp.
 		_ = resp
-	}
-}
-
-func ExamplePredictionApiKeyRegistryClient_DeletePredictionApiKeyRegistration() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := recommendationengine.NewPredictionApiKeyRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &recommendationenginepb.DeletePredictionApiKeyRegistrationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#DeletePredictionApiKeyRegistrationRequest.
-	}
-	err = c.DeletePredictionApiKeyRegistration(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
 	}
 }

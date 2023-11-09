@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &rapidmigrationassessmentpb.CreateCollectorRequest{
+//	req := &rapidmigrationassessmentpb.CreateAnnotationRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#CreateCollectorRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/rapidmigrationassessment/apiv1/rapidmigrationassessmentpb#CreateAnnotationRequest.
 //	}
-//	op, err := c.CreateCollector(ctx, req)
+//	op, err := c.CreateAnnotation(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

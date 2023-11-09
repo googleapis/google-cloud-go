@@ -287,7 +287,7 @@ type TopicConfigToUpdate struct {
 	// and may change.
 	MessageStoragePolicy *MessageStoragePolicy
 
-	// If set to a positive duration between 10 minutes and 7 days, RetentionDuration is changed.
+	// If set to a positive duration between 10 minutes and 31 days, RetentionDuration is changed.
 	// If set to a negative value, this clears RetentionDuration from the topic.
 	// If nil, the retention duration remains unchanged.
 	RetentionDuration optional.Duration

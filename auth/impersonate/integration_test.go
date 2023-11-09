@@ -25,15 +25,15 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/idtoken"
 	"cloud.google.com/go/auth/impersonate"
 	"cloud.google.com/go/auth/internal/testutil"
 	"cloud.google.com/go/auth/internal/testutil/testgcs"
-	"google.golang.org/api/idtoken"
 )
 
 const (
 	envAppCreds    = "GOOGLE_APPLICATION_CREDENTIALS"
-	envProjectID   = "GOOGLE_CLOUD_PROJECT"
+	envProjectID   = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
 	envReaderCreds = "GCLOUD_TESTS_IMPERSONATE_READER_KEY"
 	envReaderEmail = "GCLOUD_TESTS_IMPERSONATE_READER_EMAIL"
 	envWriterEmail = "GCLOUD_TESTS_IMPERSONATE_WRITER_EMAIL"

@@ -59,7 +59,7 @@ func ExampleNewPolicyTagManagerSerializationRESTClient() {
 	_ = c
 }
 
-func ExamplePolicyTagManagerSerializationClient_ReplaceTaxonomy() {
+func ExamplePolicyTagManagerSerializationClient_ExportTaxonomies() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -72,11 +72,11 @@ func ExamplePolicyTagManagerSerializationClient_ReplaceTaxonomy() {
 	}
 	defer c.Close()
 
-	req := &datacatalogpb.ReplaceTaxonomyRequest{
+	req := &datacatalogpb.ExportTaxonomiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ReplaceTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ExportTaxonomiesRequest.
 	}
-	resp, err := c.ReplaceTaxonomy(ctx, req)
+	resp, err := c.ExportTaxonomies(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -109,7 +109,7 @@ func ExamplePolicyTagManagerSerializationClient_ImportTaxonomies() {
 	_ = resp
 }
 
-func ExamplePolicyTagManagerSerializationClient_ExportTaxonomies() {
+func ExamplePolicyTagManagerSerializationClient_ReplaceTaxonomy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -122,11 +122,11 @@ func ExamplePolicyTagManagerSerializationClient_ExportTaxonomies() {
 	}
 	defer c.Close()
 
-	req := &datacatalogpb.ExportTaxonomiesRequest{
+	req := &datacatalogpb.ReplaceTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ExportTaxonomiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ReplaceTaxonomyRequest.
 	}
-	resp, err := c.ExportTaxonomies(ctx, req)
+	resp, err := c.ReplaceTaxonomy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.50.0",
+    "version": "1.52.0",
     "language": "GO",
     "apis": [
       {
@@ -103,6 +103,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_DatasetService_CreateDatasetVersion_sync",
+      "title": "aiplatform CreateDatasetVersion Sample",
+      "description": "CreateDatasetVersion create a version from a Dataset.",
+      "file": "DatasetClient/CreateDatasetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDatasetVersion",
+        "fullName": "google.cloud.aiplatform.v1.DatasetClient.CreateDatasetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateDatasetVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDatasetVersionOperation",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1.DatasetClient"
+        },
+        "method": {
+          "shortName": "CreateDatasetVersion",
+          "fullName": "google.cloud.aiplatform.v1.DatasetService.CreateDatasetVersion",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_DatasetService_DeleteDataset_sync",
       "title": "aiplatform DeleteDataset Sample",
       "description": "DeleteDataset deletes a Dataset.",
@@ -133,6 +179,52 @@
         "method": {
           "shortName": "DeleteDataset",
           "fullName": "google.cloud.aiplatform.v1.DatasetService.DeleteDataset",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_DatasetService_DeleteDatasetVersion_sync",
+      "title": "aiplatform DeleteDatasetVersion Sample",
+      "description": "DeleteDatasetVersion deletes a Dataset version.",
+      "file": "DatasetClient/DeleteDatasetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDatasetVersion",
+        "fullName": "google.cloud.aiplatform.v1.DatasetClient.DeleteDatasetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteDatasetVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDatasetVersionOperation",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1.DatasetClient"
+        },
+        "method": {
+          "shortName": "DeleteDatasetVersion",
+          "fullName": "google.cloud.aiplatform.v1.DatasetService.DeleteDatasetVersion",
           "service": {
             "shortName": "DatasetService",
             "fullName": "google.cloud.aiplatform.v1.DatasetService"
@@ -362,6 +454,52 @@
         "method": {
           "shortName": "GetDataset",
           "fullName": "google.cloud.aiplatform.v1.DatasetService.GetDataset",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_DatasetService_GetDatasetVersion_sync",
+      "title": "aiplatform GetDatasetVersion Sample",
+      "description": "GetDatasetVersion gets a Dataset version.",
+      "file": "DatasetClient/GetDatasetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDatasetVersion",
+        "fullName": "google.cloud.aiplatform.v1.DatasetClient.GetDatasetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetDatasetVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.DatasetVersion",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1.DatasetClient"
+        },
+        "method": {
+          "shortName": "GetDatasetVersion",
+          "fullName": "google.cloud.aiplatform.v1.DatasetService.GetDatasetVersion",
           "service": {
             "shortName": "DatasetService",
             "fullName": "google.cloud.aiplatform.v1.DatasetService"
@@ -654,6 +792,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_DatasetService_ListDatasetVersions_sync",
+      "title": "aiplatform ListDatasetVersions Sample",
+      "description": "ListDatasetVersions lists DatasetVersions in a Dataset.",
+      "file": "DatasetClient/ListDatasetVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatasetVersions",
+        "fullName": "google.cloud.aiplatform.v1.DatasetClient.ListDatasetVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListDatasetVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatasetVersionIterator",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1.DatasetClient"
+        },
+        "method": {
+          "shortName": "ListDatasetVersions",
+          "fullName": "google.cloud.aiplatform.v1.DatasetService.ListDatasetVersions",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_DatasetService_ListDatasets_sync",
       "title": "aiplatform ListDatasets Sample",
       "description": "ListDatasets lists Datasets in a Location.",
@@ -833,6 +1017,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_DatasetService_RestoreDatasetVersion_sync",
+      "title": "aiplatform RestoreDatasetVersion Sample",
+      "description": "RestoreDatasetVersion restores a dataset version.",
+      "file": "DatasetClient/RestoreDatasetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestoreDatasetVersion",
+        "fullName": "google.cloud.aiplatform.v1.DatasetClient.RestoreDatasetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.RestoreDatasetVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestoreDatasetVersionOperation",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1.DatasetClient"
+        },
+        "method": {
+          "shortName": "RestoreDatasetVersion",
+          "fullName": "google.cloud.aiplatform.v1.DatasetService.RestoreDatasetVersion",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

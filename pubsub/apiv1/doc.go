@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &pubsubpb.CreateSchemaRequest{
+//	req := &pubsubpb.CommitSchemaRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#CreateSchemaRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#CommitSchemaRequest.
 //	}
-//	resp, err := c.CreateSchema(ctx, req)
+//	resp, err := c.CommitSchema(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
