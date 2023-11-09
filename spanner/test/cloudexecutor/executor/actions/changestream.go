@@ -107,10 +107,12 @@ func (h *ChangeStreamActionHandler) ExecuteAction(ctx context.Context) error {
 	changeStreamName := action.GetName()
 	// For initial partition query (no partition token) we simulate precision of the timestamp
 	// in nanoseconds as that's closer inlined with the production client code.
-	startTime := action.GetStartTime().String()
-	endTime := "null"
+	startTime := action.GetStartTime().AsTime().Format(time.RFC3339Nano)
+	startTimeStr := fmt.Sprintf("\"%s\"", startTime)
+	endTimeStr := "null"
 	if action.GetEndTime() != nil {
-		endTime = action.GetEndTime().String()
+		endTime := action.GetEndTime().AsTime().Format(time.RFC3339Nano)
+		endTimeStr = fmt.Sprintf("\"%s\"", endTime)
 	}
 	heartBeat := "null"
 	if action.HeartbeatMilliseconds != nil {
@@ -121,7 +123,7 @@ func (h *ChangeStreamActionHandler) ExecuteAction(ctx context.Context) error {
 		partitionToken = fmt.Sprintf("\"%s\"", action.GetPartitionToken())
 	}
 
-	tvfQuery := fmt.Sprintf("SELECT * FROM READ_%s(%s,%s,%s,%s);", changeStreamName, startTime, endTime, partitionToken, heartBeat)
+	tvfQuery := fmt.Sprintf("SELECT * FROM READ_%s(%s,%s,%s,%s);", changeStreamName, startTimeStr, endTimeStr, partitionToken, heartBeat)
 	log.Printf("Start executing change stream TVF: \n %s", tvfQuery)
 
 	h.OutcomeSender.InitForChangeStreamQuery(int(h.Action.GetHeartbeatMilliseconds()), h.Action.GetName(), h.Action.PartitionToken)

@@ -234,6 +234,13 @@ func (h *CloudStreamHandler) newActionHandler(action *executorpb.SpannerAction, 
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
+	case *executorpb.SpannerAction_ExecuteChangeStreamQuery:
+		return &actions.ChangeStreamActionHandler{
+			Action:        action.GetExecuteChangeStreamQuery(),
+			FlowContext:   h.executionFlowContext,
+			OutcomeSender: outcomeSender,
+			Options:       h.Options,
+		}, nil
 	default:
 		return nil, outcomeSender.FinishWithError(status.Error(codes.Unimplemented, fmt.Sprintf("not implemented yet %T", action.GetAction())))
 	}

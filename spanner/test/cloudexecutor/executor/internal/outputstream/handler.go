@@ -207,6 +207,7 @@ func (s *OutcomeSender) flush() error {
 	} else if s.hasQueryResult {
 		s.partialOutcome.QueryResult = s.queryResult
 	} else if s.hasChangeStreamRecords {
+		s.partialOutcome.ChangeStreamRecords = s.changeStreamRecords
 		s.partitionTokensString += "]\n"
 		s.dataChangeRecordsString += "]\n"
 		log.Printf("OutcomeSender with action ID %d for change stream %s and partition token %s is sending data change "+
