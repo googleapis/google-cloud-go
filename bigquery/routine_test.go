@@ -59,9 +59,8 @@ func testRoutineConversion(t *testing.T, conversion string, in interface{}, want
 	default:
 		t.Fatalf("invalid comparison: %s", conversion)
 	}
-
 	if err != nil {
-		t.Fatalf("failed conversion function for %q", conversion)
+		t.Fatalf("failed conversion function for %q: %v", conversion, err)
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Fatalf("%+v: -got, +want:\n%s", in, diff)
@@ -132,12 +131,9 @@ func TestRoutineTypeConversions(t *testing.T) {
 			name:       "basic",
 			conversion: "FromRoutineMetadata",
 			in: &RoutineMetadata{
-				CreationTime:     aTime,
-				LastModifiedTime: aTime,
 				Description:      "desc",
 				DeterminismLevel: Deterministic,
 				Body:             "body",
-				ETag:             "etag",
 				Type:             "type",
 				Language:         "lang",
 				ReturnType:       &StandardSQLDataType{TypeKind: "INT64"},
@@ -149,11 +145,8 @@ func TestRoutineTypeConversions(t *testing.T) {
 				DataGovernanceType: "DATA_MASKING",
 			},
 			want: &bq.Routine{
-				CreationTime:     aTimeMillis,
-				LastModifiedTime: aTimeMillis,
 				DefinitionBody:   "body",
 				Description:      "desc",
-				Etag:             "etag",
 				DeterminismLevel: "DETERMINISTIC",
 				RoutineType:      "type",
 				Language:         "lang",
