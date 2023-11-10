@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1807,6 +1806,11 @@ type CreateFeatureRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// Required. The resource name of the EntityType or FeatureGroup to create a
+	// Feature. Format for entity_type as parent:
+	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
+	// Format for feature_group as parent:
+	// `projects/{project}/locations/{location}/featureGroups/{feature_group}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Feature to create.
 	Feature *Feature `protobuf:"bytes,2,opt,name=feature,proto3" json:"feature,omitempty"`
@@ -1998,8 +2002,9 @@ type GetFeatureRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the Feature resource.
-	// Format:
+	// Format for entity_type as parent:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
+	// Format for feature_group as parent:
 	// `projects/{project}/locations/{location}/featureGroups/{feature_group}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -2053,8 +2058,9 @@ type ListFeaturesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the Location to list Features.
-	// Format:
+	// Format for entity_type as parent:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
+	// Format for feature_group as parent:
 	// `projects/{project}/locations/{location}/featureGroups/{feature_group}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Lists the Features that match the filter expression. The following
@@ -2085,10 +2091,14 @@ type ListFeaturesRequest struct {
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous
 	// [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1beta1.FeaturestoreService.ListFeatures]
+	// call or
+	// [FeatureRegistryService.ListFeatures][google.cloud.aiplatform.v1beta1.FeatureRegistryService.ListFeatures]
 	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to
 	// [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1beta1.FeaturestoreService.ListFeatures]
+	// or or
+	// [FeatureRegistryService.ListFeatures][google.cloud.aiplatform.v1beta1.FeatureRegistryService.ListFeatures]
 	// must match the call that provided the page token.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// A comma-separated list of fields to order by, sorted in ascending order.
@@ -2102,6 +2112,7 @@ type ListFeaturesRequest struct {
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	// Mask specifying which fields to read.
 	ReadMask *fieldmaskpb.FieldMask `protobuf:"bytes,6,opt,name=read_mask,json=readMask,proto3" json:"read_mask,omitempty"`
+	// Only applicable for Vertex AI Feature Store (Legacy).
 	// If set, return the most recent
 	// [ListFeaturesRequest.latest_stats_count][google.cloud.aiplatform.v1beta1.ListFeaturesRequest.latest_stats_count]
 	// of stats for each Feature in response. Valid value is [0, 10]. If number of
@@ -2500,7 +2511,7 @@ type UpdateFeatureRequest struct {
 	//
 	//   * `description`
 	//   * `labels`
-	//   * `disable_monitoring`
+	//   * `disable_monitoring` (Not supported for FeatureRegistry Feature)
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

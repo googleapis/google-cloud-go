@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.53.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -16526,6 +16526,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PipelineService_BatchDeletePipelineJobs_sync",
+      "title": "aiplatform BatchDeletePipelineJobs Sample",
+      "description": "BatchDeletePipelineJobs batch deletes PipelineJobs\nThe Operation is atomic. If it fails, none of the PipelineJobs are deleted.\nIf it succeeds, all of the PipelineJobs are deleted.",
+      "file": "PipelineClient/BatchDeletePipelineJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeletePipelineJobs",
+        "fullName": "google.cloud.aiplatform.v1beta1.PipelineClient.BatchDeletePipelineJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchDeletePipelineJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchDeletePipelineJobsOperation",
+        "client": {
+          "shortName": "PipelineClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PipelineClient"
+        },
+        "method": {
+          "shortName": "BatchDeletePipelineJobs",
+          "fullName": "google.cloud.aiplatform.v1beta1.PipelineService.BatchDeletePipelineJobs",
+          "service": {
+            "shortName": "PipelineService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PipelineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

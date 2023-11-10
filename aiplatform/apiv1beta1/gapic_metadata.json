@@ -3858,6 +3858,11 @@
         "grpc": {
           "libraryClient": "PipelineClient",
           "rpcs": {
+            "BatchDeletePipelineJobs": {
+              "methods": [
+                "BatchDeletePipelineJobs"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -3963,6 +3968,11 @@
         "rest": {
           "libraryClient": "PipelineClient",
           "rpcs": {
+            "BatchDeletePipelineJobs": {
+              "methods": [
+                "BatchDeletePipelineJobs"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
