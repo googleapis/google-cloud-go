@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.14.2...deploy/v1.15.0) (2023-11-09)
+
+
+### Features
+
+* **deploy:** Add Automation API and Rollback API ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
 ## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.14.1...deploy/v1.14.2) (2023-11-01)
 
 

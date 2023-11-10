@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.11.1...dataplex/v1.11.2) (2023-11-09)
+
+
+### Documentation
+
+* **dataplex:** Updated comments for `DataQualityResult.dimensions` field ([ba23673](https://github.com/googleapis/google-cloud-go/commit/ba23673da7707c31292e4aa29d65b7ac1446d4a6))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.11.0...dataplex/v1.11.1) (2023-11-01)
 
 

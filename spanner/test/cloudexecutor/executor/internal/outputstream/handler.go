@@ -125,8 +125,6 @@ func (s *OutcomeSender) FinishWithTransactionRestarted() error {
 // FinishWithError sends the last outcome with given error status.
 func (s *OutcomeSender) FinishWithError(err error) error {
 	s.buildOutcome()
-	//TODO(harsha:oct10) uncomment below line and comment s.partialOutcome.Status = errToStatus(err)
-	//s.partialOutcome.Status = &status.Status{Code: int32(gstatus.Code(err)), Message: err.Error()}
 	s.partialOutcome.Status = utility.ErrToStatus(err)
 	return s.flush()
 }

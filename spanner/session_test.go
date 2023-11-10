@@ -474,8 +474,6 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 	if g, w := p.numOpened, uint64(0); g != w {
 		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	p.InactiveTransactionRemovalOptions.mu.Lock()
-	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
 	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
 		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
@@ -541,11 +539,11 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSession
 
 	// Sleep for maintainer to run long-running cleanup task
 	time.Sleep(30 * time.Millisecond)
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
 
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
-	sp.InactiveTransactionRemovalOptions.mu.Lock()
-	defer sp.InactiveTransactionRemovalOptions.mu.Unlock()
 	if g, w := sp.numOfLeakedSessionsRemoved, uint64(2); g != w {
 		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
@@ -614,8 +612,6 @@ func TestLongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *
 
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
-	sp.InactiveTransactionRemovalOptions.mu.Lock()
-	defer sp.InactiveTransactionRemovalOptions.mu.Unlock()
 	if g, w := sp.numOfLeakedSessionsRemoved, uint64(2); g != w {
 		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
@@ -702,8 +698,6 @@ func TestLongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsOpen(t *test
 
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
-	sp.InactiveTransactionRemovalOptions.mu.Lock()
-	defer sp.InactiveTransactionRemovalOptions.mu.Unlock()
 	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
@@ -763,8 +757,6 @@ func TestLongRunningTransactionsCleanup_UtilisationBelowThreshold_VerifyInactive
 
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
-	sp.InactiveTransactionRemovalOptions.mu.Lock()
-	defer sp.InactiveTransactionRemovalOptions.mu.Unlock()
 	// 2/3 sessions are used. Hence utilisation < 95%.
 	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
@@ -834,8 +826,6 @@ func TestLongRunningTransactions_WhenAllExpectedlyLongRunning_VerifyInactiveSess
 
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
-	sp.InactiveTransactionRemovalOptions.mu.Lock()
-	defer sp.InactiveTransactionRemovalOptions.mu.Unlock()
 	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
@@ -916,8 +906,6 @@ func TestLongRunningTransactions_WhenDurationBelowThreshold_VerifyInactiveSessio
 
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
-	sp.InactiveTransactionRemovalOptions.mu.Lock()
-	defer sp.InactiveTransactionRemovalOptions.mu.Unlock()
 	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
