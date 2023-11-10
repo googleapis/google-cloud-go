@@ -203,7 +203,16 @@ func TestToOpenTelemetryStatusDescription(t *testing.T) {
 			"some specific grpc error",
 		},
 	} {
-		got := toOpenTelemetryStatusDescription(testcase.input)
+		// Wrap supported types in apierror.APIError as GAPIC clients
+		// do, but fall back to the unwrapped error if not supported.
+		// https://github.com/googleapis/gax-go/blob/v2.12.0/v2/invoke.go#L95
+		var err error
+		err, ok := apierror.FromError(testcase.input)
+		if !ok {
+			err = testcase.input
+		}
+
+		got := toOpenTelemetryStatusDescription(err)
 		if got != testcase.want {
 			t.Errorf("got %s, want %s", got, testcase.want)
 		}
