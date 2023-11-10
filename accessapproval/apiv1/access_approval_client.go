@@ -200,12 +200,12 @@ type internalClient interface {
 // This API allows a customer to manage accesses to cloud resources by
 // Google personnel. It defines the following resource model:
 //
-//   The API has a collection of
-//   ApprovalRequest
-//   resources, named approvalRequests/{approval_request}
+//	The API has a collection of
+//	ApprovalRequest
+//	resources, named approvalRequests/{approval_request}
 //
-//   The API has top-level settings per Project/Folder/Organization, named
-//   accessApprovalSettings
+//	The API has top-level settings per Project/Folder/Organization, named
+//	accessApprovalSettings
 //
 // The service also periodically emails a list of recipients, defined at the
 // Project/Folder/Organization level in the accessApprovalSettings, when there
@@ -358,12 +358,12 @@ type gRPCClient struct {
 // This API allows a customer to manage accesses to cloud resources by
 // Google personnel. It defines the following resource model:
 //
-//   The API has a collection of
-//   ApprovalRequest
-//   resources, named approvalRequests/{approval_request}
+//	The API has a collection of
+//	ApprovalRequest
+//	resources, named approvalRequests/{approval_request}
 //
-//   The API has top-level settings per Project/Folder/Organization, named
-//   accessApprovalSettings
+//	The API has top-level settings per Project/Folder/Organization, named
+//	accessApprovalSettings
 //
 // The service also periodically emails a list of recipients, defined at the
 // Project/Folder/Organization level in the accessApprovalSettings, when there
@@ -460,12 +460,12 @@ type restClient struct {
 // This API allows a customer to manage accesses to cloud resources by
 // Google personnel. It defines the following resource model:
 //
-//   The API has a collection of
-//   ApprovalRequest
-//   resources, named approvalRequests/{approval_request}
+//	The API has a collection of
+//	ApprovalRequest
+//	resources, named approvalRequests/{approval_request}
 //
-//   The API has top-level settings per Project/Folder/Organization, named
-//   accessApprovalSettings
+//	The API has top-level settings per Project/Folder/Organization, named
+//	accessApprovalSettings
 //
 // The service also periodically emails a list of recipients, defined at the
 // Project/Folder/Organization level in the accessApprovalSettings, when there
