@@ -52,6 +52,7 @@ modules:
   - documentai
   - domains
   - edgecontainer
+  - edgenetwork
   - errorreporting
   - essentialcontacts
   - eventarc
@@ -517,6 +518,9 @@ service-configs:
   - input-directory: google/cloud/edgecontainer/v1
     service-config: edgecontainer_v1.yaml
     import-path: cloud.google.com/go/edgecontainer/apiv1
+  - input-directory: google/cloud/edgenetwork/v1
+    service-config: edgenetwork_v1.yaml
+    import-path: cloud.google.com/go/edgenetwork/apiv1
   - input-directory: google/cloud/essentialcontacts/v1
     service-config: essentialcontacts_v1.yaml
     import-path: cloud.google.com/go/essentialcontacts/apiv1
