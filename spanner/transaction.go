@@ -54,6 +54,7 @@ type txReadEnv interface {
 	// release should be called at the end of every transactional read to deal
 	// with session recycling.
 	release(error)
+	setSessionEligibilityForLongRunning(sh *sessionHandle)
 }
 
 // txReadOnly contains methods for doing transactional reads.
@@ -676,10 +677,10 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
 		sh, err = t.sp.take(ctx)
-		sh.eligibleForLongRunning = t.isLongRunningTransaction
 		if err != nil {
 			return err
 		}
+		t.setSessionEligibilityForLongRunning(sh)
 		sh.updateLastUseTime()
 		var md metadata.MD
 		res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.BeginTransactionRequest{
@@ -937,6 +938,16 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 	return t
 }
 
+func (t *ReadOnlyTransaction) setSessionEligibilityForLongRunning(sh *sessionHandle) {
+	if t != nil && sh != nil {
+		sh.mu.Lock()
+		t.mu.Lock()
+		sh.eligibleForLongRunning = t.isLongRunningTransaction
+		t.mu.Unlock()
+		sh.mu.Unlock()
+	}
+}
+
 // ReadWriteTransaction provides a locking read-write transaction.
 //
 // This type of transaction is the only way to write data into Cloud Spanner;
@@ -1136,13 +1147,6 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	if err != nil {
 		return nil, err
 	}
-	// mark transaction and session to be eligible for long-running
-	t.mu.Lock()
-	t.isLongRunningTransaction = true
-	t.mu.Unlock()
-	t.sh.mu.Lock()
-	t.sh.eligibleForLongRunning = true
-	t.sh.mu.Unlock()
 
 	// Cloud Spanner will return "Session not found" on bad sessions.
 	sid := sh.getID()
@@ -1150,6 +1154,12 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		// Might happen if transaction is closed in the middle of a API call.
 		return nil, errSessionClosed(sh)
 	}
+
+	// mark transaction and session to be eligible for long-running
+	t.mu.Lock()
+	t.isLongRunningTransaction = true
+	t.mu.Unlock()
+	t.setSessionEligibilityForLongRunning(sh)
 
 	var sppbStmts []*sppb.ExecuteBatchDmlRequest_Statement
 	for _, st := range stmts {
@@ -1339,6 +1349,16 @@ func (t *ReadWriteTransaction) release(err error) {
 	}
 }
 
+func (t *ReadWriteTransaction) setSessionEligibilityForLongRunning(sh *sessionHandle) {
+	if t != nil && sh != nil {
+		sh.mu.Lock()
+		t.mu.Lock()
+		sh.eligibleForLongRunning = t.isLongRunningTransaction
+		t.mu.Unlock()
+		sh.mu.Unlock()
+	}
+}
+
 func beginTransaction(ctx context.Context, sid string, client *vkit.Client, opts TransactionOptions) (transactionID, error) {
 	res, err := client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: sid,
@@ -1411,14 +1431,8 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-
-			sh.mu.Lock()
-			t.mu.Lock()
-			// for batch update operations, isLongRunningTransaction will be true
-			sh.eligibleForLongRunning = t.isLongRunningTransaction
-			t.mu.Unlock()
-			sh.mu.Unlock()
-
+			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
+			t.setSessionEligibilityForLongRunning(sh)
 			continue
 		} else {
 			err = ToSpannerError(err)

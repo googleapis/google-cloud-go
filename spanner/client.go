@@ -569,18 +569,13 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 			// Session handle hasn't been allocated or has been destroyed.
 			sh, err = c.idleSessions.take(ctx)
-			if t != nil {
-				// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
-				sh.mu.Lock()
-				t.mu.Lock()
-				sh.eligibleForLongRunning = t.isLongRunningTransaction
-				t.mu.Unlock()
-				sh.mu.Unlock()
-			}
 			if err != nil {
 				// If session retrieval fails, just fail the transaction.
 				return err
 			}
+
+			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
+			t.setSessionEligibilityForLongRunning(sh)
 		}
 		if t.shouldExplicitBegin(attempt) {
 			// Make sure we set the current session handle before calling BeginTransaction.
