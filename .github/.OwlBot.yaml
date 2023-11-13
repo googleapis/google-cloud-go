@@ -100,6 +100,7 @@ deep-remove-regex:
   - /documentai/apiv1beta3/
   - /domains/apiv1beta1/
   - /edgecontainer/apiv1/
+  - /edgenetwork/apiv1/
   # - /errorreporting/apiv1beta1/
   - /essentialcontacts/apiv1/
   - /eventarc/apiv1/
@@ -215,6 +216,7 @@ deep-remove-regex:
   - /internal/generated/snippets/documentai/apiv1beta3/
   - /internal/generated/snippets/domains/apiv1beta1/
   - /internal/generated/snippets/edgecontainer/apiv1/
+  - /internal/generated/snippets/edgenetwork/apiv1/
   # - /internal/generated/snippets/errorreporting/apiv1beta1/
   - /internal/generated/snippets/essentialcontacts/apiv1/
   - /internal/generated/snippets/eventarc/apiv1/
@@ -318,7 +320,7 @@ deep-remove-regex:
   - /internal/generated/snippets/serviceusage/apiv1/
   - /internal/generated/snippets/servicemanagement/apiv1/
   - /internal/generated/snippets/shell/apiv1/
-  - /internal/generated/snippets/shopping/merchant/inventories/v1beta/
+  - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
   - /internal/generated/snippets/spanner/admin/database/apiv1/
   - /internal/generated/snippets/spanner/admin/instance/apiv1/
   - /internal/generated/snippets/spanner/apiv1/
@@ -441,7 +443,7 @@ deep-remove-regex:
   - /serviceusage/apiv1/
   - /servicemanagement/apiv1/
   - /shell/apiv1/
-  - /shopping/merchant/inventories/v1beta/
+  - /shopping/merchant/inventories/apiv1beta/
   - /shopping/type/
   - /spanner/admin/database/apiv1/
   - /spanner/admin/instance/apiv1/
@@ -719,6 +721,8 @@ deep-copy-regex:
   - source: /google/cloud/domains/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/edgecontainer/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/edgenetwork/v1/cloud.google.com/go
     dest: /
   # - source: /google/devtools/clouderrorreporting/v1beta1/cloud.google.com/go
   #   dest: /
