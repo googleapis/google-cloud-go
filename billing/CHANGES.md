@@ -1,5 +1,26 @@
 # Changes
 
+## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.3...billing/v1.17.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **billing:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.2...billing/v1.17.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **billing:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.1...billing/v1.17.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **billing:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.0...billing/v1.17.1) (2023-10-04)
 
 

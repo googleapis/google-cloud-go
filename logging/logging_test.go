@@ -1438,7 +1438,7 @@ func TestRedirectOutputFormats(t *testing.T) {
 			},
 			want: `{"httpRequest":{"requestMethod":"POST","requestUrl":"https://example.com/test"},"logging.googleapis.com/insertId":"0000AAA01",` +
 				`"logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},` +
-				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":100},"logging.googleapis.com/spanId":"000000000001",` +
+				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":"100"},"logging.googleapis.com/spanId":"000000000001",` +
 				`"logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true,` +
 				`"message":"this is text payload","severity":"DEBUG","timestamp":"seconds:1000"}`,
 		},
@@ -1474,7 +1474,7 @@ func TestRedirectOutputFormats(t *testing.T) {
 			},
 			want: `{"httpRequest":{"requestMethod":"POST","requestUrl":"https://example.com/test"},"logging.googleapis.com/insertId":"0000AAA01",` +
 				`"logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},` +
-				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":100},"logging.googleapis.com/spanId":"000000000001",` +
+				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":"100"},"logging.googleapis.com/spanId":"000000000001",` +
 				`"logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true,` +
 				`"message":{"Latency":321,"Message":"message part of the payload"},"severity":"DEBUG","timestamp":"seconds:1000"}`,
 		},
@@ -1506,7 +1506,21 @@ func TestRedirectOutputFormats(t *testing.T) {
 					t.Errorf("Expected error: %+v, want: %v\n", tc.in, tc.wantError)
 				}
 				got := strings.TrimSpace(buffer.String())
-				if got != tc.want {
+
+				// Compare structure equivalence of the outputs, not string equivalence, as order doesn't matter.
+				var gotJson, wantJson interface{}
+
+				err = json.Unmarshal([]byte(got), &gotJson)
+				if err != nil {
+					t.Errorf("Error when serializing JSON output: %v", err)
+				}
+
+				err = json.Unmarshal([]byte(tc.want), &wantJson)
+				if err != nil {
+					t.Fatalf("Error unmarshalling JSON input for want: %v", err)
+				}
+
+				if !reflect.DeepEqual(gotJson, wantJson) {
 					t.Errorf("TestRedirectOutputFormats: %+v: got %v, want %v", tc.in, got, tc.want)
 				}
 			}

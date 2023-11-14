@@ -1,5 +1,33 @@
 # Changes
 
+## [2.3.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.2.3...dataproc/v2.3.0) (2023-11-09)
+
+
+### Features
+
+* **dataproc:** Support required_registration_fraction for secondary workers ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [2.2.3](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.2.2...dataproc/v2.2.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **dataproc:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [2.2.2](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.2.1...dataproc/v2.2.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **dataproc:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [2.2.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.2.0...dataproc/v2.2.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **dataproc:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [2.2.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.1.0...dataproc/v2.2.0) (2023-09-20)
 
 

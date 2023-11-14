@@ -57,31 +57,6 @@ func ExampleNewTextRESTClient() {
 	_ = c
 }
 
-func ExampleTextClient_GenerateText() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := generativelanguage.NewTextClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &generativelanguagepb.GenerateTextRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/ai/generativelanguage/apiv1beta2/generativelanguagepb#GenerateTextRequest.
-	}
-	resp, err := c.GenerateText(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleTextClient_EmbedText() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -100,6 +75,31 @@ func ExampleTextClient_EmbedText() {
 		// See https://pkg.go.dev/cloud.google.com/go/ai/generativelanguage/apiv1beta2/generativelanguagepb#EmbedTextRequest.
 	}
 	resp, err := c.EmbedText(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTextClient_GenerateText() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := generativelanguage.NewTextClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &generativelanguagepb.GenerateTextRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/ai/generativelanguage/apiv1beta2/generativelanguagepb#GenerateTextRequest.
+	}
+	resp, err := c.GenerateText(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -69,11 +69,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &datalabelingpb.CreateDatasetRequest{
+//	req := &datalabelingpb.CreateAnnotationSpecSetRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#CreateDatasetRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#CreateAnnotationSpecSetRequest.
 //	}
-//	resp, err := c.CreateDataset(ctx, req)
+//	resp, err := c.CreateAnnotationSpecSet(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

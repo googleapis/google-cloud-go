@@ -65,11 +65,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &pubsublitepb.CreateTopicRequest{
+//	req := &pubsublitepb.CreateReservationRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CreateTopicRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CreateReservationRequest.
 //	}
-//	resp, err := c.CreateTopic(ctx, req)
+//	resp, err := c.CreateReservation(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

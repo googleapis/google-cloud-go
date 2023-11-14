@@ -67,11 +67,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &translatepb.TranslateTextRequest{
+//	req := &translatepb.BatchTranslateDocumentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#TranslateTextRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#BatchTranslateDocumentRequest.
 //	}
-//	resp, err := c.TranslateText(ctx, req)
+//	op, err := c.BatchTranslateDocument(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

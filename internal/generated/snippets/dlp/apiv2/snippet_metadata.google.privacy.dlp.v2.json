@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dlp/apiv2",
-    "version": "1.10.1",
+    "version": "1.11.1",
     "language": "GO",
     "apis": [
       {
@@ -133,6 +133,52 @@
         "method": {
           "shortName": "CreateDeidentifyTemplate",
           "fullName": "google.privacy.dlp.v2.DlpService.CreateDeidentifyTemplate",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_CreateDiscoveryConfig_sync",
+      "title": "dlp CreateDiscoveryConfig Sample",
+      "description": "CreateDiscoveryConfig creates a config for discovery to scan and profile storage.",
+      "file": "Client/CreateDiscoveryConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDiscoveryConfig",
+        "fullName": "google.privacy.dlp.v2.Client.CreateDiscoveryConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.CreateDiscoveryConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.DiscoveryConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "CreateDiscoveryConfig",
+          "fullName": "google.privacy.dlp.v2.DlpService.CreateDiscoveryConfig",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"
@@ -424,6 +470,51 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_DeleteDiscoveryConfig_sync",
+      "title": "dlp DeleteDiscoveryConfig Sample",
+      "description": "DeleteDiscoveryConfig deletes a discovery configuration.",
+      "file": "Client/DeleteDiscoveryConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDiscoveryConfig",
+        "fullName": "google.privacy.dlp.v2.Client.DeleteDiscoveryConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.DeleteDiscoveryConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteDiscoveryConfig",
+          "fullName": "google.privacy.dlp.v2.DlpService.DeleteDiscoveryConfig",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_DeleteDlpJob_sync",
       "title": "dlp DeleteDlpJob Sample",
       "description": "DeleteDlpJob deletes a long-running DlpJob. This method indicates that the client is\nno longer interested in the DlpJob result. The job will be canceled if\npossible.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis to learn more.",
@@ -679,6 +770,52 @@
         "method": {
           "shortName": "GetDeidentifyTemplate",
           "fullName": "google.privacy.dlp.v2.DlpService.GetDeidentifyTemplate",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_GetDiscoveryConfig_sync",
+      "title": "dlp GetDiscoveryConfig Sample",
+      "description": "GetDiscoveryConfig gets a discovery configuration.",
+      "file": "Client/GetDiscoveryConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDiscoveryConfig",
+        "fullName": "google.privacy.dlp.v2.Client.GetDiscoveryConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.GetDiscoveryConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.DiscoveryConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "GetDiscoveryConfig",
+          "fullName": "google.privacy.dlp.v2.DlpService.GetDiscoveryConfig",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"
@@ -1063,6 +1200,52 @@
       ]
     },
     {
+      "regionTag": "dlp_v2_generated_DlpService_ListDiscoveryConfigs_sync",
+      "title": "dlp ListDiscoveryConfigs Sample",
+      "description": "ListDiscoveryConfigs lists discovery configurations.",
+      "file": "Client/ListDiscoveryConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDiscoveryConfigs",
+        "fullName": "google.privacy.dlp.v2.Client.ListDiscoveryConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.ListDiscoveryConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DiscoveryConfigIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "ListDiscoveryConfigs",
+          "fullName": "google.privacy.dlp.v2.DlpService.ListDiscoveryConfigs",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dlp_v2_generated_DlpService_ListDlpJobs_sync",
       "title": "dlp ListDlpJobs Sample",
       "description": "ListDlpJobs lists DlpJobs that match the specified filter in the request.\nSee https: //cloud.google.com/dlp/docs/inspecting-storage and\nhttps: //cloud.google.com/dlp/docs/compute-risk-analysis to learn more.",
@@ -1415,6 +1598,52 @@
         "method": {
           "shortName": "UpdateDeidentifyTemplate",
           "fullName": "google.privacy.dlp.v2.DlpService.UpdateDeidentifyTemplate",
+          "service": {
+            "shortName": "DlpService",
+            "fullName": "google.privacy.dlp.v2.DlpService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dlp_v2_generated_DlpService_UpdateDiscoveryConfig_sync",
+      "title": "dlp UpdateDiscoveryConfig Sample",
+      "description": "UpdateDiscoveryConfig updates a discovery configuration.",
+      "file": "Client/UpdateDiscoveryConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDiscoveryConfig",
+        "fullName": "google.privacy.dlp.v2.Client.UpdateDiscoveryConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dlppb.UpdateDiscoveryConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dlppb.DiscoveryConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.privacy.dlp.v2.Client"
+        },
+        "method": {
+          "shortName": "UpdateDiscoveryConfig",
+          "fullName": "google.privacy.dlp.v2.DlpService.UpdateDiscoveryConfig",
           "service": {
             "shortName": "DlpService",
             "fullName": "google.privacy.dlp.v2.DlpService"

@@ -20,6 +20,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -790,6 +791,10 @@ func TestOpenReaderEmulated(t *testing.T) {
 
 func TestOpenWriterEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		if strings.Contains(project, "grpc") {
+			t.Skip("Implementation in testbench pending: https://github.com/googleapis/storage-testbench/issues/568")
+		}
+
 		// Populate test data.
 		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
