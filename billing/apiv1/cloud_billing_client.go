@@ -401,7 +401,7 @@ func (c *CloudBillingClient) UpdateBillingAccount(ctx context.Context, req *bill
 // typically given to billing account
 // administrators (at https://cloud.google.com/billing/docs/how-to/billing-access).
 // This method will return an error if the parent account has not been
-// provisioned as a reseller account.
+// provisioned for subaccounts.
 func (c *CloudBillingClient) CreateBillingAccount(ctx context.Context, req *billingpb.CreateBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
 	return c.internalClient.CreateBillingAccount(ctx, req, opts...)
 }
@@ -1102,7 +1102,7 @@ func (c *cloudBillingRESTClient) UpdateBillingAccount(ctx context.Context, req *
 // typically given to billing account
 // administrators (at https://cloud.google.com/billing/docs/how-to/billing-access).
 // This method will return an error if the parent account has not been
-// provisioned as a reseller account.
+// provisioned for subaccounts.
 func (c *cloudBillingRESTClient) CreateBillingAccount(ctx context.Context, req *billingpb.CreateBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetBillingAccount()
@@ -1620,98 +1620,4 @@ func (c *cloudBillingRESTClient) TestIamPermissions(ctx context.Context, req *ia
 		return nil, e
 	}
 	return resp, nil
-}
-
-// BillingAccountIterator manages a stream of *billingpb.BillingAccount.
-type BillingAccountIterator struct {
-	items    []*billingpb.BillingAccount
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*billingpb.BillingAccount, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BillingAccountIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BillingAccountIterator) Next() (*billingpb.BillingAccount, error) {
-	var item *billingpb.BillingAccount
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BillingAccountIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BillingAccountIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ProjectBillingInfoIterator manages a stream of *billingpb.ProjectBillingInfo.
-type ProjectBillingInfoIterator struct {
-	items    []*billingpb.ProjectBillingInfo
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*billingpb.ProjectBillingInfo, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProjectBillingInfoIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProjectBillingInfoIterator) Next() (*billingpb.ProjectBillingInfo, error) {
-	var item *billingpb.ProjectBillingInfo
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProjectBillingInfoIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProjectBillingInfoIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

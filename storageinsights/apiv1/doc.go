@@ -67,22 +67,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &storageinsightspb.ListReportConfigsRequest{
+//	req := &storageinsightspb.CreateReportConfigRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#ListReportConfigsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#CreateReportConfigRequest.
 //	}
-//	it := c.ListReportConfigs(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	resp, err := c.CreateReportConfig(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

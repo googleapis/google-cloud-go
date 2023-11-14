@@ -31,6 +31,7 @@ import (
 	itestutil "cloud.google.com/go/internal/testutil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -205,6 +206,71 @@ func TestClient_Single_Read_SessionNotFound(t *testing.T) {
 	}
 	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
 		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+}
+
+func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_RemoveSessionFromPool(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				actionOnInactiveTransaction: WarnAndClose,
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteStreamingSql,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	ctx := context.Background()
+	single := client.Single()
+	iter := single.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	p := client.idleSessions
+	sh := single.sh
+	// simulate session to be last used before 60 mins
+	sh.mu.Lock()
+	sh.lastUseTime = time.Now().Add(-time.Hour)
+	sh.mu.Unlock()
+
+	// force run task to clean up unexpected long-running sessions
+	p.removeLongRunningSessions()
+	rowCount := int64(0)
+	for {
+		// Backend throws SessionNotFoundError. Session gets replaced with new session
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		rowCount++
+	}
+	// New session returns back to pool
+	iter.Stop()
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if g, w := p.idleList.Len(), 1; g != w {
+		t.Fatalf("Idle Sessions in pool, count mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := p.numInUse, uint64(0); g != w {
+		t.Fatalf("Number of sessions currently in use mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := p.numOpened, uint64(1); g != w {
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+
+	sh.mu.Lock()
+	defer sh.mu.Unlock()
+	if g, w := sh.eligibleForLongRunning, false; g != w {
+		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
+	}
+	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
+		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 
@@ -970,6 +1036,72 @@ func TestClient_ReadOnlyTransaction_ReadOptions(t *testing.T) {
 	}
 }
 
+func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				actionOnInactiveTransaction: WarnAndClose,
+				idleTimeThreshold:           300 * time.Millisecond,
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 200 * time.Millisecond,
+		})
+	server.TestSpanner.PutExecutionTime(MethodStreamingRead,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 200 * time.Millisecond,
+		})
+	ctx := context.Background()
+	p := client.idleSessions
+
+	roTxn := client.ReadOnlyTransaction()
+	defer roTxn.Close()
+	iter := roTxn.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	iter.Next()
+	iter.Stop()
+
+	// Get the session last use time.
+	roTxn.sh.mu.Lock()
+	sessionPrevLastUseTime := roTxn.sh.lastUseTime
+	roTxn.sh.mu.Unlock()
+
+	iter = roTxn.Read(ctx, "FOO", AllKeys(), []string{"BAR"})
+	iter.Next()
+	iter.Stop()
+
+	// Get the latest session last use time
+	roTxn.sh.mu.Lock()
+	sessionLatestLastUseTime := roTxn.sh.lastUseTime
+	sessionCheckoutTime := roTxn.sh.checkoutTime
+	roTxn.sh.mu.Unlock()
+
+	// sessionLatestLastUseTime should not be equal to sessionPrevLastUseTime.
+	// This is because session lastUse time should be updated whenever a new operation is being executed on the transaction.
+	if (sessionLatestLastUseTime.Sub(sessionPrevLastUseTime)).Milliseconds() <= 0 {
+		t.Fatalf("Session lastUseTime times should not be equal")
+	}
+
+	if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
+	}
+	if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
+	}
+	// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
+	// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
+	p.removeLongRunningSessions()
+	if p.numOfLeakedSessionsRemoved > 0 {
+		t.Fatalf("Expected session to not get cleaned by background maintainer")
+	}
+}
+
 func setQueryOptionsEnvVars(opts *sppb.ExecuteSqlRequest_QueryOptions) func() {
 	os.Setenv("SPANNER_OPTIMIZER_VERSION", opts.OptimizerVersion)
 	os.Setenv("SPANNER_OPTIMIZER_STATISTICS_PACKAGE", opts.OptimizerStatisticsPackage)
@@ -1368,6 +1500,126 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteUpdate(t *testing.T
 	}
 }
 
+func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionShouldFail(t *testing.T) {
+	t.Parallel()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				actionOnInactiveTransaction: WarnAndClose,
+			},
+		},
+	})
+	defer teardown()
+	ctx := context.Background()
+	p := client.idleSessions
+	msg := "session is already recycled / destroyed"
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		rowCount, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := rowCount, int64(UpdateBarSetFooRowCount); g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
+		}
+
+		// Simulate the session to be last used before 60 mins.
+		// The background task cleans up this long-running session.
+		tx.sh.mu.Lock()
+		tx.sh.lastUseTime = time.Now().Add(-time.Hour)
+		if g, w := tx.sh.eligibleForLongRunning, false; g != w {
+			tx.sh.mu.Unlock()
+			return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		tx.sh.mu.Unlock()
+
+		// force run task to clean up unexpected long-running sessions
+		p.removeLongRunningSessions()
+
+		// The session associated with this transaction tx has been destroyed. So the below call should fail.
+		// Eventually this means the entire transaction should not succeed.
+		_, err = tx.Update(ctx, NewStatement("UPDATE FOO SET BAR='value' WHERE ID=1"))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err == nil {
+		t.Fatalf("Missing expected exception")
+	}
+	if status.Code(err) != codes.FailedPrecondition || !strings.Contains(err.Error(), msg) {
+		t.Fatalf("error mismatch\nGot: %v\nWant: %v", err, msg)
+	}
+}
+
+func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				actionOnInactiveTransaction: WarnAndClose,
+				idleTimeThreshold:           300 * time.Millisecond,
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 200 * time.Millisecond,
+		})
+	ctx := context.Background()
+	p := client.idleSessions
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		// Execute first operation on the transaction
+		_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+
+		// Get the session last use time.
+		tx.sh.mu.Lock()
+		sessionPrevLastUseTime := tx.sh.lastUseTime
+		tx.sh.mu.Unlock()
+
+		// Execute second operation on the transaction
+		_, err = tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		// Get the latest session last use time
+		tx.sh.mu.Lock()
+		sessionLatestLastUseTime := tx.sh.lastUseTime
+		sessionCheckoutTime := tx.sh.checkoutTime
+		tx.sh.mu.Unlock()
+
+		// sessionLatestLastUseTime should not be equal to sessionPrevLastUseTime.
+		// This is because session lastUse time should be updated whenever a new operation is being executed on the transaction.
+		if (sessionLatestLastUseTime.Sub(sessionPrevLastUseTime)).Milliseconds() <= 0 {
+			t.Fatalf("Session lastUseTime times should not be equal")
+		}
+
+		if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
+		}
+		if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
+		}
+		// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
+		// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
+		p.removeLongRunningSessions()
+		if p.numOfLeakedSessionsRemoved > 0 {
+			t.Fatalf("Expected session to not get cleaned by background maintainer")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *testing.T) {
 	t.Parallel()
 
@@ -1398,6 +1650,65 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *test
 	}
 	if g, w := attempts, 2; g != w {
 		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAction(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				actionOnInactiveTransaction: WarnAndClose,
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteBatchDml,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	ctx := context.Background()
+	p := client.idleSessions
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if attempts == 2 {
+			// Simulate the session to be long-running. The background task should not clean up this long-running session.
+			tx.sh.mu.Lock()
+			tx.sh.lastUseTime = time.Now().Add(-time.Hour)
+			if g, w := tx.sh.eligibleForLongRunning, true; g != w {
+				tx.sh.mu.Unlock()
+				return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
+			}
+			tx.sh.mu.Unlock()
+
+			// force run task to clean up unexpected long-running sessions
+			p.removeLongRunningSessions()
+		}
+		rowCounts, err := tx.BatchUpdate(ctx, []Statement{NewStatement(UpdateBarSetFoo)})
+		if err != nil {
+			return err
+		}
+		if g, w := len(rowCounts), 1; g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row counts length mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		if g, w := rowCounts[0], int64(UpdateBarSetFooRowCount); g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
+		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 
@@ -3912,6 +4223,44 @@ func TestClient_PDML_Priority(t *testing.T) {
 	}
 }
 
+func TestClient_WhenLongRunningPartitionedUpdateRequest_TakeNoAction(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                 1,
+			MaxOpened:                 1,
+			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				actionOnInactiveTransaction: WarnAndClose,
+				executionFrequency:          15 * time.Millisecond, // check long-running sessions every 15ms
+			},
+		},
+	})
+	defer teardown()
+	// delay the rpc by 30ms. The background task runs to clean long-running sessions.
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 30 * time.Millisecond,
+		})
+
+	stmt := NewStatement(UpdateBarSetFoo)
+	// This transaction is eligible to be long-running, so the background task should not clean its session.
+	rowCount, err := client.PartitionedUpdate(ctx, stmt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := rowCount, int64(UpdateBarSetFooRowCount); g != w {
+		t.Errorf("Row count mismatch\nGot: %v\nWant: %v", g, w)
+	}
+	p := client.idleSessions
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
+		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+}
+
 func TestClient_Apply_Priority(t *testing.T) {
 	t.Parallel()
 
@@ -4258,5 +4607,296 @@ func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
 	// session pool close does not trigger any request to backend
 	if ctx.Err() != nil {
 		t.Fatalf("context error mismatch\nWant: nil\nGot: %v", ctx.Err())
+	}
+}
+
+func TestClient_CustomRetryAndTimeoutSettings(t *testing.T) {
+	co := &vkit.CallOptions{
+		ExecuteSql: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    500 * time.Millisecond,
+					Max:        64000 * time.Millisecond,
+					Multiplier: 1.5,
+				})
+			}),
+		},
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteSql,
+		SimulatedExecutionTime{MinimumExecutionTime: time.Second},
+	)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
+	defer cancel()
+
+	_, err := client.ReadWriteTransaction(
+		ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+			if err != nil {
+				return err
+			}
+			if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+				return fmt.Errorf("update count mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			return nil
+		})
+	if err == nil {
+		t.Fatal("missing expected error")
+	}
+	se := ToSpannerError(err)
+	if g, w := ErrCode(se), codes.DeadlineExceeded; g != w {
+		t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+	}
+}
+
+func TestClient_BatchWrite(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	mutationGroups := []*MutationGroup{
+		{[]*Mutation{
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+		}},
+	}
+	iter := client.BatchWrite(context.Background(), mutationGroups)
+	responseCount := 0
+	doFunc := func(r *sppb.BatchWriteResponse) error {
+		responseCount++
+		return nil
+	}
+	if err := iter.Do(doFunc); err != nil {
+		t.Fatal(err)
+	}
+	if responseCount != len(mutationGroups) {
+		t.Fatalf("Response count mismatch.\nGot: %v\nWant:%v", responseCount, len(mutationGroups))
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BatchWriteRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_BatchWrite_SessionNotFound(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodBatchWrite,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	mutationGroups := []*MutationGroup{
+		{[]*Mutation{
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+		}},
+	}
+	iter := client.BatchWrite(context.Background(), mutationGroups)
+	responseCount := 0
+	doFunc := func(r *sppb.BatchWriteResponse) error {
+		responseCount++
+		return nil
+	}
+	if err := iter.Do(doFunc); err != nil {
+		t.Fatal(err)
+	}
+	if responseCount != len(mutationGroups) {
+		t.Fatalf("Response count mismatch.\nGot: %v\nWant:%v", responseCount, len(mutationGroups))
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BatchWriteRequest{},
+		&sppb.BatchWriteRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_BatchWrite_Error(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	injectedErr := status.Error(codes.InvalidArgument, "Invalid argument")
+	server.TestSpanner.PutExecutionTime(
+		MethodBatchWrite,
+		SimulatedExecutionTime{Errors: []error{injectedErr}},
+	)
+	mutationGroups := []*MutationGroup{
+		{[]*Mutation{
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+		}},
+	}
+	iter := client.BatchWrite(context.Background(), mutationGroups)
+	responseCount := 0
+	doFunc := func(r *sppb.BatchWriteResponse) error {
+		responseCount++
+		return nil
+	}
+	if err := iter.Do(doFunc); status.Code(err) != status.Code(injectedErr) {
+		t.Fatalf("Error mismatch.\nGot:%v\nExpected:%v\n", err, injectedErr)
+	}
+	if responseCount != 0 {
+		t.Fatalf("Do function unexpectedly called %v times", responseCount)
+	}
+}
+
+func checkBatchWriteForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, want *sppb.RequestOptions) {
+	reqs := drainRequestsFromServer(server)
+	var got *sppb.RequestOptions
+
+	for _, req := range reqs {
+		if request, ok := req.(*sppb.BatchWriteRequest); ok {
+			got = request.RequestOptions
+			break
+		}
+	}
+
+	if got == nil {
+		t.Fatalf("Missing BatchWrite RequestOptions")
+	}
+
+	if diff := itestutil.Diff(got, want, cmpopts.IgnoreUnexported(sppb.RequestOptions{})); diff != "" {
+		t.Fatalf("RequestOptions mismatch. (+Got, -Want):%v", diff)
+	}
+}
+
+func TestClient_BatchWrite_Options(t *testing.T) {
+	t.Parallel()
+
+	testcases := []struct {
+		name               string
+		client             BatchWriteOptions
+		write              BatchWriteOptions
+		wantTransactionTag string
+		wantPriority       sppb.RequestOptions_Priority
+	}{
+		{
+			name:               "Client level",
+			client:             BatchWriteOptions{TransactionTag: "testTransactionTag", Priority: sppb.RequestOptions_PRIORITY_LOW},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "Write level",
+			write:              BatchWriteOptions{TransactionTag: "testTransactionTag", Priority: sppb.RequestOptions_PRIORITY_LOW},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "Write level has precedence over client level",
+			client:             BatchWriteOptions{TransactionTag: "clientTransactionTag", Priority: sppb.RequestOptions_PRIORITY_LOW},
+			write:              BatchWriteOptions{TransactionTag: "writeTransactionTag", Priority: sppb.RequestOptions_PRIORITY_MEDIUM},
+			wantTransactionTag: "writeTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_MEDIUM,
+		},
+	}
+
+	for _, tt := range testcases {
+		t.Run(tt.name, func(t *testing.T) {
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{BatchWriteOptions: tt.client})
+			defer teardown()
+
+			mutationGroups := []*MutationGroup{
+				{[]*Mutation{
+					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+				}},
+			}
+			iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, tt.write)
+			doFunc := func(r *sppb.BatchWriteResponse) error {
+				return nil
+			}
+			if err := iter.Do(doFunc); err != nil {
+				t.Fatal(err)
+			}
+			checkBatchWriteForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{Priority: tt.wantPriority, TransactionTag: tt.wantTransactionTag})
+		})
+	}
+}
+
+func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
+	// This test cannot be parallel, as the TestExporter does not support that.
+	te := itestutil.NewTestExporter()
+	defer te.Unregister()
+	minOpened := uint64(1)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     minOpened,
+			WriteSessions: 0,
+		},
+	})
+	defer teardown()
+
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != minOpened {
+			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
+
+	server.TestSpanner.PutExecutionTime(
+		MethodBatchWrite,
+		SimulatedExecutionTime{Errors: errors},
+	)
+	mutationGroups := []*MutationGroup{
+		{[]*Mutation{
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+		}},
+	}
+	iter := client.BatchWrite(context.Background(), mutationGroups)
+	iter.Do(func(r *sppb.BatchWriteResponse) error {
+		return nil
+	})
+	select {
+	case <-te.Stats:
+	case <-time.After(1 * time.Second):
+		t.Fatal("No stats were exported before timeout")
+	}
+	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
+	// cannot do that.
+	if len(te.Spans) == 0 {
+		t.Fatal("No spans were exported")
+	}
+	s := te.Spans[len(te.Spans)-1].Status
+	if s.Code != int32(code) {
+		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, code)
+	}
+}
+func TestClient_BatchWrite_SpanExported(t *testing.T) {
+	testcases := []struct {
+		name   string
+		code   codes.Code
+		errors []error
+	}{
+		{
+			name:   "Success",
+			code:   codes.OK,
+			errors: []error{},
+		},
+		{
+			name:   "Error",
+			code:   codes.InvalidArgument,
+			errors: []error{status.Error(codes.InvalidArgument, "Invalid argument")},
+		},
+	}
+
+	for _, tt := range testcases {
+		t.Run(tt.name, func(t *testing.T) {
+			checkBatchWriteSpan(t, tt.errors, tt.code)
+		})
 	}
 }

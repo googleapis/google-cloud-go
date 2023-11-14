@@ -70,22 +70,21 @@
 //	}
 //	defer c.Close()
 //
-//	req := &workflowspb.ListWorkflowsRequest{
+//	req := &workflowspb.CreateWorkflowRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1beta/workflowspb#ListWorkflowsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1beta/workflowspb#CreateWorkflowRequest.
 //	}
-//	it := c.ListWorkflows(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	op, err := c.CreateWorkflow(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

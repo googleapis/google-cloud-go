@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -66,8 +66,8 @@ type Key struct {
 	// Output only. A timestamp identifying the time this key was last
 	// updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Output only. A timestamp when this key was deleted. If the resource is not deleted,
-	// this must be empty.
+	// Output only. A timestamp when this key was deleted. If the resource is not
+	// deleted, this must be empty.
 	DeleteTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=delete_time,json=deleteTime,proto3" json:"delete_time,omitempty"`
 	// Annotations is an unstructured key-value map stored with a policy that
 	// may be set by external tools to store and retrieve arbitrary metadata.
@@ -75,10 +75,10 @@ type Key struct {
 	Annotations map[string]string `protobuf:"bytes,8,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Key restrictions.
 	Restrictions *Restrictions `protobuf:"bytes,9,opt,name=restrictions,proto3" json:"restrictions,omitempty"`
-	// Output only. A checksum computed by the server based on the current value of the Key
-	// resource. This may be sent on update and delete requests to ensure the
-	// client has an up-to-date value before proceeding.
-	// See https://google.aip.dev/154.
+	// Output only. A checksum computed by the server based on the current value
+	// of the Key resource. This may be sent on update and delete requests to
+	// ensure the client has an up-to-date value before proceeding. See
+	// https://google.aip.dev/154.
 	Etag string `protobuf:"bytes,11,opt,name=etag,proto3" json:"etag,omitempty"`
 }
 

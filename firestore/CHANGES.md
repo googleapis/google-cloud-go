@@ -1,5 +1,30 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.13.0...firestore/v1.14.0) (2023-10-19)
+
+
+### Features
+
+* **firestore:** SUM and AVG aggregations ([#8293](https://github.com/googleapis/google-cloud-go/issues/8293)) ([011f9ff](https://github.com/googleapis/google-cloud-go/commit/011f9ff083bebad5c30443b3b0fd9df68579a65b))
+
+
+### Bug Fixes
+
+* **firestore:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.12.0...firestore/v1.13.0) (2023-09-18)
+
+
+### Features
+
+* **firestore:** Support for multiple databases ([#5331](https://github.com/googleapis/google-cloud-go/issues/5331)) ([94d4b1b](https://github.com/googleapis/google-cloud-go/commit/94d4b1b58d2c8f3dac18e7efb0be641b6311c775))
+
+
+### Bug Fixes
+
+* **firestore:** Compare full resource path when docs ordered by __name__ ([#8409](https://github.com/googleapis/google-cloud-go/issues/8409)) ([5ef93de](https://github.com/googleapis/google-cloud-go/commit/5ef93de226b854bdf6277b7f906b86755a07d229))
+* **firestore:** Correcting EndBefore with LimitToLast behaviour ([#8370](https://github.com/googleapis/google-cloud-go/issues/8370)) ([350f7ad](https://github.com/googleapis/google-cloud-go/commit/350f7adb2a087811a70f1c05bf71014022aefeb4))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.11.0...firestore/v1.12.0) (2023-08-01)
 
 

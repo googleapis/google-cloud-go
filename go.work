@@ -1,4 +1,4 @@
-go 1.19
+go 1.20
 
 use (
 	.
@@ -19,6 +19,7 @@ use (
 	./asset
 	./assuredworkloads
 	./auth
+	./auth/oauth2adapt
 	./automl
 	./baremetalsolution
 	./batch
@@ -57,6 +58,7 @@ use (
 	./documentai
 	./domains
 	./edgecontainer
+	./edgenetwork
 	./errorreporting
 	./essentialcontacts
 	./eventarc
@@ -123,6 +125,7 @@ use (
 	./run
 	./scheduler
 	./secretmanager
+	./securesourcemanager
 	./security
 	./securitycenter
 	./servicecontrol
@@ -130,6 +133,7 @@ use (
 	./servicemanagement
 	./serviceusage
 	./shell
+	./shopping
 	./spanner
 	./speech
 	./storage

@@ -259,7 +259,9 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 		t.Run("TestLargeInsertWithRetry", func(t *testing.T) {
 			testLargeInsertWithRetry(ctx, t, mwClient, bqClient, dataset)
 		})
-
+		t.Run("DefaultValueHandling", func(t *testing.T) {
+			testDefaultValueHandling(ctx, t, mwClient, bqClient, dataset)
+		})
 	})
 }
 
@@ -935,20 +937,18 @@ func testLargeInsertNoRetry(ctx context.Context, t *testing.T, mwClient *Client,
 			t.Errorf("expected InvalidArgument status, got %v", status)
 		}
 	}
-	// our next append should fail (we don't have retries enabled).
-	if _, err = ms.AppendRows(ctx, [][]byte{b}); err == nil {
-		t.Fatalf("expected second append to fail, got success: %v", err)
-	}
-
-	// The send failure triggers reconnect, so an additional append will succeed.
+	// our next append is small and should succeed.
 	result, err = ms.AppendRows(ctx, [][]byte{b})
 	if err != nil {
-		t.Fatalf("third append expected to succeed, got error: %v", err)
+		t.Fatalf("second append failed: %v", err)
 	}
 	_, err = result.GetResult(ctx)
 	if err != nil {
-		t.Errorf("failure result from third append: %v", err)
+		t.Errorf("failure result from second append: %v", err)
 	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "final",
+		withExactRowCount(1))
 }
 
 func testLargeInsertWithRetry(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -1003,7 +1003,7 @@ func testLargeInsertWithRetry(ctx context.Context, t *testing.T, mwClient *Clien
 		}
 	}
 
-	// The second append will succeed, but internally will show a retry.
+	// The second append will succeed.
 	result, err = ms.AppendRows(ctx, [][]byte{b})
 	if err != nil {
 		t.Fatalf("second append expected to succeed, got error: %v", err)
@@ -1012,8 +1012,8 @@ func testLargeInsertWithRetry(ctx context.Context, t *testing.T, mwClient *Clien
 	if err != nil {
 		t.Errorf("failure result from second append: %v", err)
 	}
-	if attempts, _ := result.TotalAttempts(ctx); attempts != 2 {
-		t.Errorf("expected 2 attempts, got %d", attempts)
+	if attempts, _ := result.TotalAttempts(ctx); attempts != 1 {
+		t.Errorf("expected 1 attempts, got %d", attempts)
 	}
 }
 
@@ -1262,6 +1262,97 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	)
 }
 
+func testDefaultValueHandling(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset, opts ...WriterOption) {
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.DefaultValueSchema}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	m := &testdata.DefaultValuesPartialSchema{
+		// We only populate the id, as remaining fields are used to test default values.
+		Id: proto.String("someval"),
+	}
+	var data []byte
+	var err error
+	if data, err = proto.Marshal(m); err != nil {
+		t.Fatalf("failed to marshal test row data")
+	}
+	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
+
+	// setup a new stream.
+	opts = append(opts, WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)))
+	opts = append(opts, WithSchemaDescriptor(descriptorProto))
+	ms, err := mwClient.NewManagedStream(ctx, opts...)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
+
+	var result *AppendResult
+
+	// Send one row, verify default values were set as expected.
+
+	result, err = ms.AppendRows(ctx, [][]byte{data})
+	if err != nil {
+		t.Errorf("append failed: %v", err)
+	}
+	// Wait for the result to indicate ready, then validate.
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on append: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after first row",
+		withExactRowCount(1),
+		withNonNullCount("id", 1),
+		withNullCount("strcol_withdef", 1),
+		withNullCount("intcol_withdef", 1),
+		withNullCount("otherstr_withdef", 0)) // not part of partial schema
+
+	// Change default MVI to use nulls.
+	// We expect the fields in the partial schema to leverage nulls rather than default values.
+	// The fields outside the partial schema continue to obey default values.
+	result, err = ms.AppendRows(ctx, [][]byte{data}, UpdateDefaultMissingValueInterpretation(storagepb.AppendRowsRequest_DEFAULT_VALUE))
+	if err != nil {
+		t.Errorf("append failed: %v", err)
+	}
+	// Wait for the result to indicate ready, then validate.
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on append: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after second row (default mvi is DEFAULT_VALUE)",
+		withExactRowCount(2),
+		withNullCount("strcol_withdef", 1), // doesn't increment, as it gets default value
+		withNullCount("intcol_withdef", 1)) // doesn't increment, as it gets default value
+
+	// Change per-column MVI to use default value
+	result, err = ms.AppendRows(ctx, [][]byte{data},
+		UpdateMissingValueInterpretations(map[string]storagepb.AppendRowsRequest_MissingValueInterpretation{
+			"strcol_withdef": storagepb.AppendRowsRequest_NULL_VALUE,
+		}))
+	if err != nil {
+		t.Errorf("append failed: %v", err)
+	}
+	// Wait for the result to indicate ready, then validate.
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on append: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after third row (explicit column mvi)",
+		withExactRowCount(3),
+		withNullCount("strcol_withdef", 2),      // increments as it's null for this column
+		withNullCount("intcol_withdef", 1),      // doesn't increment, still default value
+		withNonNullCount("otherstr_withdef", 3), // not part of descriptor, always gets default value
+		withNullCount("otherstr", 3),            // not part of descriptor, always gets null
+		withNullCount("strcol", 3),              // no default value defined, always gets null
+		withNullCount("intcol", 3),              // no default value defined, always gets null
+	)
+}
+
 func TestIntegration_DetectProjectID(t *testing.T) {
 	ctx := context.Background()
 	testCreds := testutil.Credentials(ctx)
@@ -1498,6 +1589,7 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 				WithDestinationTable(TableParentFromParts(testTable.tbl.ProjectID, testTable.tbl.DatasetID, testTable.tbl.TableID)),
 				WithType(DefaultStream),
 				WithSchemaDescriptor(testTable.dp),
+				EnableWriteRetries(true),
 			)
 			if err != nil {
 				t.Fatalf("NewManagedStream %d: %v", k, err)

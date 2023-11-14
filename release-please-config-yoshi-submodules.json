@@ -51,9 +51,6 @@
         "assuredworkloads": {
             "component": "assuredworkloads"
         },
-        "auth": {
-            "component": "auth"
-        },
         "automl": {
             "component": "automl"
         },
@@ -158,6 +155,9 @@
         },
         "edgecontainer": {
             "component": "edgecontainer"
+        },
+        "edgenetwork": {
+            "component": "edgenetwork"
         },
         "essentialcontacts": {
             "component": "essentialcontacts"
@@ -309,6 +309,9 @@
         "secretmanager": {
             "component": "secretmanager"
         },
+        "securesourcemanager": {
+            "component": "securesourcemanager"
+        },
         "security": {
             "component": "security"
         },
@@ -329,6 +332,9 @@
         },
         "shell": {
             "component": "shell"
+        },
+        "shopping": {
+            "component": "shopping"
         },
         "speech": {
             "component": "speech"

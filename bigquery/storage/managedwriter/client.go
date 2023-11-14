@@ -151,6 +151,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		id:             newUUID(writerIDPrefix),
 		c:              c,
 		streamSettings: defaultStreamSettings(),
+		curTemplate:    newVersionedTemplate(),
 	}
 	// apply writer options.
 	for _, opt := range opts {
