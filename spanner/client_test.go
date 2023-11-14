@@ -1044,7 +1044,7 @@ func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeSho
 			MinOpened: 1,
 			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				actionOnInactiveTransaction: WarnAndClose,
+				ActionOnInactiveTransaction: WarnAndClose,
 				idleTimeThreshold:           300 * time.Millisecond,
 			},
 		},
@@ -1560,7 +1560,7 @@ func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeSh
 			MinOpened: 1,
 			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				actionOnInactiveTransaction: WarnAndClose,
+				ActionOnInactiveTransaction: WarnAndClose,
 				idleTimeThreshold:           300 * time.Millisecond,
 			},
 		},
