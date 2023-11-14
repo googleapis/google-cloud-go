@@ -102,8 +102,9 @@ var (
 	ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
 
 	// For testing:
-	now                = time.Now
-	toLogEntryInternal = toLogEntryInternalImpl
+	now                    = time.Now
+	toLogEntryInternal     = toLogEntryInternalImpl
+	detectResourceInternal = detectResource
 
 	// ErrOverflow signals that the number of buffered entries for a Logger
 	// exceeds its BufferLimit.
@@ -147,8 +148,11 @@ type Client struct {
 //	billingAccounts/ACCOUNT_ID
 //	organizations/ORG_ID
 //
-// for backwards compatibility, a string with no '/' is also allowed and is interpreted
+// For backwards compatibility, a string with no '/' is also allowed and is interpreted
 // as a project ID.
+//
+// If an empty string is provided as the parent, the parent will be interpreted as a project
+// ID, and its value will be inferred from the environment.
 //
 // By default NewClient uses WriteScope. To use a different scope, call
 // NewClient using a WithScopes option (see https://godoc.org/google.golang.org/api/option#WithScopes).
@@ -191,6 +195,13 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 
 func makeParent(parent string) (string, error) {
 	if !strings.ContainsRune(parent, '/') {
+		if parent == "" {
+			resource := detectResourceInternal()
+			if resource == nil {
+				return parent, fmt.Errorf("could not determine project ID from environment")
+			}
+			parent = resource.Labels["project_id"]
+		}
 		return "projects/" + parent, nil
 	}
 	prefix := strings.Split(parent, "/")[0]
@@ -300,7 +311,7 @@ func (r *loggerRetryer) Retry(err error) (pause time.Duration, shouldRetry bool)
 // characters: [A-Za-z0-9]; and punctuation characters: forward-slash,
 // underscore, hyphen, and period.
 func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
-	r := detectResource()
+	r := detectResourceInternal()
 	if r == nil {
 		r = monitoredResource(c.parent)
 	}

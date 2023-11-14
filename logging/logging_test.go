@@ -1033,6 +1033,88 @@ func TestNonProjectParent(t *testing.T) {
 	}
 }
 
+func TestNewClientParent(t *testing.T) {
+	ctx := context.Background()
+	initLogs()
+	addr, err := ltesting.NewServer()
+	if err != nil {
+		t.Fatalf("creating fake server: %v", err)
+	}
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("dialing %q: %v", addr, err)
+	}
+
+	tests := []struct {
+		name      string
+		resource  *mrpb.MonitoredResource
+		want      string
+		wantError error
+	}{
+		{
+			name: "Test empty parent properly set up resource detection",
+			resource: &mrpb.MonitoredResource{
+				Labels: map[string]string{"project_id": testProjectID},
+			},
+			want: "projects/" + testProjectID,
+		},
+		{
+			name:      "Test empty parent no resource detected",
+			resource:  nil,
+			wantError: errors.New("could not determine project ID from environment"),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// Check if toLogEntryInternal was called with the right parent
+			toLogEntryInternalMock := func(got logging.Entry, l *logging.Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
+				t.Log("The parent is ", parent)
+				if parent != test.want {
+					t.Errorf("toLogEntryInternal called with wrong parent. got: %s want: %s", parent, test.want)
+				}
+				return &logpb.LogEntry{}, nil
+			}
+
+			detectResourceMock := func() *mrpb.MonitoredResource {
+				return test.resource
+			}
+
+			realToLogEntryInternal := logging.SetToLogEntryInternal(toLogEntryInternalMock)
+			defer func() { logging.SetToLogEntryInternal(realToLogEntryInternal) }()
+
+			realDetectResourceInternal := logging.SetDetectResourceInternal(detectResourceMock)
+			defer func() { logging.SetDetectResourceInternal(realDetectResourceInternal) }()
+
+			cli, err := logging.NewClient(ctx, "", option.WithGRPCConn(conn))
+			if err != nil && test.wantError == nil {
+				t.Fatalf("Unexpected error: %+v: %v", test.resource, err)
+			}
+			if err == nil && test.wantError != nil {
+				t.Fatalf("Error is expected: %+v: %v", test.resource, test.wantError)
+			}
+			if test.wantError != nil {
+				return
+			}
+
+			t.Log("Hello ", test.name)
+
+			cli.Logger(testLogID).LogSync(ctx, logging.Entry{Payload: "hello"})
+		})
+	}
+}
+
+func TestEmptyStringParent(t *testing.T) {
+	ctx := context.Background()
+	initLogs()
+
+	// Hopefully this works for logadmin in integration testing
+	c, a := newClients(ctx, "")
+	defer c.Close()
+	defer a.Close()
+
+}
+
 // waitFor calls f repeatedly with exponential backoff, blocking until it returns true.
 // It returns false after a while (if it times out).
 func waitFor(f func() bool) bool {
