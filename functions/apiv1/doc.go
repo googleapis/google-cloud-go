@@ -68,22 +68,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &functionspb.ListFunctionsRequest{
+//	req := &functionspb.CallFunctionRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#ListFunctionsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#CallFunctionRequest.
 //	}
-//	it := c.ListFunctions(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	resp, err := c.CallFunction(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

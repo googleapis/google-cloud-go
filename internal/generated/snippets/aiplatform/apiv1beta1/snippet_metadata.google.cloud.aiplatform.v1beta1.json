@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.51.2",
+    "version": "1.52.0",
     "language": "GO",
     "apis": [
       {
@@ -4485,7 +4485,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "CreateFeatureRegistryOperation",
+        "resultType": "CreateFeatureOperation",
         "client": {
           "shortName": "FeatureRegistryClient",
           "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient"
@@ -4577,7 +4577,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "DeleteFeatureRegistryOperation",
+        "resultType": "DeleteFeatureOperation",
         "client": {
           "shortName": "FeatureRegistryClient",
           "fullName": "google.cloud.aiplatform.v1beta1.FeatureRegistryClient"

@@ -70,11 +70,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &settingspb.GetServiceAccountRequest{
+//	req := &settingspb.BatchCalculateEffectiveSettingsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#GetServiceAccountRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#BatchCalculateEffectiveSettingsRequest.
 //	}
-//	resp, err := c.GetServiceAccount(ctx, req)
+//	resp, err := c.BatchCalculateEffectiveSettings(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

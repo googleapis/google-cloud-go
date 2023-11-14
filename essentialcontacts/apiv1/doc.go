@@ -65,16 +65,22 @@
 //	}
 //	defer c.Close()
 //
-//	req := &essentialcontactspb.CreateContactRequest{
+//	req := &essentialcontactspb.ComputeContactsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#CreateContactRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#ComputeContactsRequest.
 //	}
-//	resp, err := c.CreateContact(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
+//	it := c.ComputeContacts(ctx, req)
+//	for {
+//		resp, err := it.Next()
+//		if err == iterator.Done {
+//			break
+//		}
+//		if err != nil {
+//			// TODO: Handle error.
+//		}
+//		// TODO: Use resp.
+//		_ = resp
 //	}
-//	// TODO: Use resp.
-//	_ = resp
 //
 // # Use of Context
 //

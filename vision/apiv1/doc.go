@@ -69,16 +69,14 @@
 //	}
 //	defer c.Close()
 //
-//	req := &visionpb.CreateProductSetRequest{
+//	req := &visionpb.AddProductToProductSetRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#CreateProductSetRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#AddProductToProductSetRequest.
 //	}
-//	resp, err := c.CreateProductSet(ctx, req)
+//	err = c.AddProductToProductSet(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
-//	// TODO: Use resp.
-//	_ = resp
 //
 // # Use of Context
 //
