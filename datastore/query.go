@@ -811,13 +811,14 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 }
 
 func validateReadOptions(eventual bool, t *Transaction) error {
-	if t != nil {
-		if t.id == nil {
-			return errExpiredTransaction
-		}
-		if eventual {
-			return errors.New("datastore: cannot use EventualConsistency query in a transaction")
-		}
+	if t == nil {
+		return nil
+	}
+	if t.id == nil {
+		return errExpiredTransaction
+	}
+	if eventual {
+		return errors.New("datastore: cannot use EventualConsistency query in a transaction")
 	}
 	return nil
 }
