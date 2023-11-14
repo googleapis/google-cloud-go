@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -46,9 +45,6 @@ import (
 
 	// Install RLS load balancer policy, which is needed for gRPC RLS.
 	_ "google.golang.org/grpc/balancer/rls"
-
-	// Register the pprof endpoints under the web server root at /debug/pprof
-	_ "net/http/pprof"
 )
 
 const (
@@ -237,12 +233,6 @@ func main() {
 	log.SetOutput(os.Stderr)
 	parseFlags()
 
-	go func() {
-		if err := http.ListenAndServe("localhost:8080", nil); err != nil {
-			log.Fatalf("error starting http server: %v", err)
-		}
-	}()
-
 	start := time.Now()
 	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
 	defer cancel()
@@ -302,6 +292,7 @@ func main() {
 	if serverMode {
 		// Server mode blocks forever servicing probe requests
 		runInServerMode(ctx, opts)
+		log.Fatalln("server mode exited unexpectedly")
 	}
 
 	err := runSamples(ctx, opts, w)
@@ -536,9 +527,14 @@ func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) erro
 // Timeouts must be properly set at the probe level to ensure requests aren't
 // being serviced concurrently
 func runInServerMode(ctx context.Context, opts *benchmarkOptions) {
+	// serverutils.Serve processes one request at a time sequentially; so we
+	// always output the results of a sample before beginning another.
+	// Therefore, this channel contains a maximum of 4 results (for w1r3) at once.
 	results = make(chan benchmarkResult, 4)
 
 	serverutils.Serve(func(request *epb.ProbeRequest, reply *epb.ProbeReply) {
+		// Set the ctx so that we stop processing this sample if we reach the
+		// timeout set in the prober's configuration.
 		timeLimit := time.Millisecond * time.Duration(request.GetTimeLimit())
 		ctx, cancel := context.WithTimeout(ctx, timeLimit)
 		defer cancel()
@@ -556,6 +552,7 @@ func runInServerMode(ctx context.Context, opts *benchmarkOptions) {
 		}
 		if err := benchmark.run(ctx); err != nil {
 			reply.ErrorMessage = proto.String(fmt.Errorf("run failed: %v", err).Error())
+			benchmark.cleanup()
 			return
 		}
 		if err := benchmark.cleanup(); err != nil {
@@ -563,7 +560,7 @@ func runInServerMode(ctx context.Context, opts *benchmarkOptions) {
 			return
 		}
 
-		numResults := 4 // w1r3 will output 1 result per read/write
+		numResults := 4 // w1r3 will output 1 result per read/write (1 write, 3 reads)
 
 		if opts.workload == 6 {
 			numResults = 2 // workload 6 only outputs 2 results (1 directory read, 1 write)
