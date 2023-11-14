@@ -1806,7 +1806,7 @@ func (c *Conditions) isMetagenerationValid() bool {
 func applyConds(method string, gen int64, conds *Conditions, call interface{}) error {
 	cval := reflect.ValueOf(call)
 	if gen >= 0 {
-		if !setConditionField(cval, "Generation", gen) {
+		if !setGeneration(cval, gen) {
 			return fmt.Errorf("storage: %s: generation not supported", method)
 		}
 	}
@@ -1818,25 +1818,25 @@ func applyConds(method string, gen int64, conds *Conditions, call interface{}) e
 	}
 	switch {
 	case conds.GenerationMatch != 0:
-		if !setConditionField(cval, "IfGenerationMatch", conds.GenerationMatch) {
+		if !setIfGenerationMatch(cval, conds.GenerationMatch) {
 			return fmt.Errorf("storage: %s: ifGenerationMatch not supported", method)
 		}
 	case conds.GenerationNotMatch != 0:
-		if !setConditionField(cval, "IfGenerationNotMatch", conds.GenerationNotMatch) {
+		if !setIfGenerationNotMatch(cval, conds.GenerationNotMatch) {
 			return fmt.Errorf("storage: %s: ifGenerationNotMatch not supported", method)
 		}
 	case conds.DoesNotExist:
-		if !setConditionField(cval, "IfGenerationMatch", int64(0)) {
+		if !setIfGenerationMatch(cval, int64(0)) {
 			return fmt.Errorf("storage: %s: DoesNotExist not supported", method)
 		}
 	}
 	switch {
 	case conds.MetagenerationMatch != 0:
-		if !setConditionField(cval, "IfMetagenerationMatch", conds.MetagenerationMatch) {
+		if !setIfMetagenerationMatch(cval, conds.MetagenerationMatch) {
 			return fmt.Errorf("storage: %s: ifMetagenerationMatch not supported", method)
 		}
 	case conds.MetagenerationNotMatch != 0:
-		if !setConditionField(cval, "IfMetagenerationNotMatch", conds.MetagenerationNotMatch) {
+		if !setIfMetagenerationNotMatch(cval, conds.MetagenerationNotMatch) {
 			return fmt.Errorf("storage: %s: ifMetagenerationNotMatch not supported", method)
 		}
 	}
@@ -1897,16 +1897,45 @@ func applySourceCondsProto(gen int64, conds *Conditions, call *storagepb.Rewrite
 	return nil
 }
 
-// setConditionField sets a field on a *raw.WhateverCall.
+// setGeneration sets Generation on a *raw.WhateverCall.
 // We can't use anonymous interfaces because the return type is
 // different, since the field setters are builders.
-func setConditionField(call reflect.Value, name string, value interface{}) bool {
-	m := call.MethodByName(name)
-	if !m.IsValid() {
-		return false
+// We also make sure to supply a compile-time constant to MethodByName;
+// otherwise, the Go Linker will disable dead code elimination, leading
+// to larger binaries for all packages that import storage.
+func setGeneration(cval reflect.Value, value interface{}) bool {
+	return setCondition(cval.MethodByName("Generation"), value)
+}
+
+// setIfGenerationMatch sets IfGenerationMatch on a *raw.WhateverCall.
+// See also setGeneration.
+func setIfGenerationMatch(cval reflect.Value, value interface{}) bool {
+	return setCondition(cval.MethodByName("IfGenerationMatch"), value)
+}
+
+// setIfGenerationNotMatch sets IfGenerationNotMatch on a *raw.WhateverCall.
+// See also setGeneration.
+func setIfGenerationNotMatch(cval reflect.Value, value interface{}) bool {
+	return setCondition(cval.MethodByName("IfGenerationNotMatch"), value)
+}
+
+// setIfMetagenerationMatch sets IfMetagenerationMatch on a *raw.WhateverCall.
+// See also setGeneration.
+func setIfMetagenerationMatch(cval reflect.Value, value interface{}) bool {
+	return setCondition(cval.MethodByName("IfMetagenerationMatch"), value)
+}
+
+// setIfMetagenerationNotMatch sets IfMetagenerationNotMatch on a *raw.WhateverCall.
+// See also setGeneration.
+func setIfMetagenerationNotMatch(cval reflect.Value, value interface{}) bool {
+	return setCondition(cval.MethodByName("IfMetagenerationNotMatch"), value)
+}
+
+func setCondition(setter reflect.Value, value interface{}) bool {
+	if setter.IsValid() {
+		setter.Call([]reflect.Value{reflect.ValueOf(value)})
 	}
-	m.Call([]reflect.Value{reflect.ValueOf(value)})
-	return true
+	return setter.IsValid()
 }
 
 // Retryer returns an object handle that is configured with custom retry
