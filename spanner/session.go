@@ -59,7 +59,6 @@ const (
 
 // InactiveTransactionRemovalOptions has configurations for action on long-running transactions.
 type InactiveTransactionRemovalOptions struct {
-	mu sync.Mutex
 	// ActionOnInactiveTransaction is the configuration to choose action for inactive transactions.
 	// It can be one of Warn, Close, WarnAndClose.
 	ActionOnInactiveTransaction ActionOnInactiveTransactionKind
