@@ -455,11 +455,11 @@ func (c *AgentsClient) DeleteAgent(ctx context.Context, req *cxpb.DeleteAgentReq
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response:
-//   ExportAgentResponse
+//	response:
+//	ExportAgentResponse
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	return c.internalClient.ExportAgent(ctx, req, opts...)
 }
@@ -479,11 +479,11 @@ func (c *AgentsClient) ExportAgentOperation(name string) *ExportAgentOperation {
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: You should always train flows prior to sending them queries. See the
 // training
@@ -1437,11 +1437,11 @@ func (c *agentsRESTClient) DeleteAgent(ctx context.Context, req *cxpb.DeleteAgen
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response:
-//   ExportAgentResponse
+//	response:
+//	ExportAgentResponse
 func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1520,11 +1520,11 @@ func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgen
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata: An empty Struct
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//	metadata: An empty Struct
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: You should always train flows prior to sending them queries. See the
 // training
