@@ -12,6 +12,7 @@ need to specify a few command line flags.
 go test -test.run="TestIntegration_*" -v \
     -it.use-prod \
     -it.project="your-project-id" \
+    -it.project2="your-second-project-id" \
     -it.cluster="your-test-cluster" \
     -it.instance="your-test-instance"
 ```

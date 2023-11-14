@@ -113,7 +113,11 @@ func (ac *AdminClient) Close() error {
 }
 
 func (ac *AdminClient) instancePrefix() string {
-	return fmt.Sprintf("projects/%s/instances/%s", ac.project, ac.instance)
+	return instancePrefix(ac.project, ac.instance)
+}
+
+func instancePrefix(project, instance string) string {
+	return fmt.Sprintf("projects/%s/instances/%s", project, instance)
 }
 
 func (ac *AdminClient) backupPath(cluster, instance, backup string) string {
@@ -1895,6 +1899,26 @@ func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, tab
 	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
 }
 
+func (ac *AdminClient) CopyBackup(ctx context.Context, destProject, destInstance, destCluster, destBackup,
+	sourceCluster, sourceBackup string, expireTime time.Time) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	sourceBackupPath := ac.backupPath(sourceCluster, ac.instance, sourceBackup)
+	destPrefix := instancePrefix(destProject, destInstance)
+	req := &btapb.CopyBackupRequest{
+		Parent:       destPrefix + "/clusters/" + destCluster,
+		BackupId:     destBackup,
+		SourceBackup: sourceBackupPath,
+		ExpireTime:   timestamppb.New(expireTime),
+	}
+
+	op, err := ac.tClient.CopyBackup(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Backup{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
 // CreateBackup creates a new backup in the specified cluster from the
 // specified source table with the user-provided expire time.
 func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time) error {
@@ -1991,6 +2015,7 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 	bi := BackupInfo{
 		Name:           name,
 		SourceTable:    tableID,
+		SourceBackup:   backup.SourceBackup,
 		SizeBytes:      backup.SizeBytes,
 		StartTime:      startTime,
 		EndTime:        endTime,
@@ -2030,6 +2055,7 @@ func (it *BackupIterator) Next() (*BackupInfo, error) {
 type BackupInfo struct {
 	Name           string
 	SourceTable    string
+	SourceBackup   string
 	SizeBytes      int64
 	StartTime      time.Time
 	EndTime        time.Time

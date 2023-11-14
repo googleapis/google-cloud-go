@@ -2939,6 +2939,189 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	}
 }
 
+func createInstance(testEnv IntegrationEnv, iAdminClient *InstanceAdminClient, ctx context.Context) (string, string, error) {
+	diffInstanceId := uid.NewSpace(prefixOfInstanceResources, &uid.Options{Short: true})
+	diffInstance := diffInstanceId.New()
+	diffCluster := testEnv.Config().Cluster + "-d"
+	conf := &InstanceConf{
+		InstanceId:   diffInstance,
+		ClusterId:    diffCluster,
+		DisplayName:  "different test sourceInstance",
+		Zone:         instanceToCreateZone2,
+		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
+	}
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		return "", "", fmt.Errorf("CreateInstance: %v", err)
+	}
+	return diffInstance, diffCluster, nil
+}
+
+func TestIntegration_AdminCopyBackup(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support backups")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Create source clients
+	srcAdminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer srcAdminClient.Close()
+	srcIAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer srcIAdminClient.Close()
+
+	// Create table
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	defer deleteTable(ctx, t, srcAdminClient, tblConf.TableID)
+	if err := srcAdminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+
+	// Create source backup
+	copyBackupUID := uid.NewSpace(prefixOfInstanceResources, &uid.Options{})
+	backupUID := uid.NewSpace(prefixOfInstanceResources, &uid.Options{})
+	srcBackupName := backupUID.New()
+	srcCluster := testEnv.Config().Cluster
+	defer srcAdminClient.DeleteBackup(ctx, srcCluster, srcBackupName)
+	if err = srcAdminClient.CreateBackup(ctx, tblConf.TableID, srcCluster, srcBackupName, time.Now().Add(100*time.Hour)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+	wantSourceBackup := srcAdminClient.instancePrefix() + "/clusters/" + srcCluster + "/backups/" + srcBackupName
+
+	destProj1 := testEnv.Config().Project
+	destProj1Inst1 := testEnv.Config().Instance // 1st instance in 1st destination project
+	destProj1Inst1Cl1 := srcCluster             // 1st cluster in 1st instance in 1st destination project
+	destIAdminClient1 := srcIAdminClient
+
+	// Create a 2nd cluster in 1st destination project
+	clusterUID := uid.NewSpace("c-", &uid.Options{Short: true})
+	destProj1Inst1Cl2 := clusterUID.New()
+	defer destIAdminClient1.DeleteCluster(ctx, destProj1Inst1, destProj1Inst1Cl2)
+	err = destIAdminClient1.CreateCluster(ctx, &ClusterConfig{
+		InstanceID:  destProj1Inst1,
+		ClusterID:   destProj1Inst1Cl2,
+		Zone:        instanceToCreateZone2,
+		NumNodes:    1,
+		StorageType: SSD,
+	})
+	if err != nil {
+		t.Fatalf("CreateCluster: %v", err)
+	}
+
+	// Create a 2nd instance in 1st destination project
+	destProj1Inst2, destProj1Inst2Cl1, err := createInstance(testEnv, destIAdminClient1, ctx)
+	if err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer destIAdminClient1.DeleteInstance(ctx, destProj1Inst2)
+
+	// Create admin client for 2nd project in test environment
+	destProj2 := testEnv.Config().Project2
+	ctx, options, err := testEnv.AdminClientOptions()
+	if err != nil {
+		t.Fatalf("AdminClientOptions: %v", err)
+	}
+	destIAdminClient2, err := NewInstanceAdminClient(ctx, destProj2, options...)
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer destIAdminClient2.Close()
+
+	// Create instance in 2nd project
+	destProj2Inst1, destProj2Inst1Cl1, err := createInstance(testEnv, destIAdminClient2, ctx)
+	if err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer destIAdminClient2.DeleteInstance(ctx, destProj2Inst1)
+
+	for _, testcase := range []struct {
+		desc         string
+		destProject  string
+		destInstance string
+		destCluster  string
+	}{
+		{
+			desc:         "Copy backup to same project, same instance, same cluster",
+			destProject:  destProj1,
+			destInstance: destProj1Inst1,
+			destCluster:  destProj1Inst1Cl1,
+		},
+		{
+			desc:         "Copy backup to same project, same instance, different cluster",
+			destProject:  destProj1,
+			destInstance: destProj1Inst1,
+			destCluster:  destProj1Inst1Cl2,
+		},
+		{
+			desc:         "Copy backup to same project, different instance",
+			destProject:  destProj1,
+			destInstance: destProj1Inst2,
+			destCluster:  destProj1Inst2Cl1,
+		},
+		{
+			desc:         "Copy backup to different project",
+			destProject:  destProj2,
+			destInstance: destProj2Inst1,
+			destCluster:  destProj2Inst1Cl1,
+		},
+	} {
+		// Create destination client
+		destCtx, destOpts, err := testEnv.AdminClientOptions()
+		if err != nil {
+			t.Fatalf("%v: AdminClientOptions: %v", testcase.desc, err)
+		}
+
+		desc := testcase.desc
+		destProject := testcase.destProject
+		destInstance := testcase.destInstance
+		destCluster := testcase.destCluster
+
+		destAdminClient, err := NewAdminClient(destCtx, destProject, destInstance, destOpts...)
+		if err != nil {
+			t.Fatalf("%v: NewAdminClient: %v", desc, err)
+		}
+		defer destAdminClient.Close()
+
+		// Copy Backup
+		destBackupName := copyBackupUID.New()
+		defer destAdminClient.DeleteBackup(destCtx, destCluster, destBackupName)
+		err = srcAdminClient.CopyBackup(destCtx, destProject, destInstance, destCluster,
+			destBackupName, srcCluster, srcBackupName, time.Now().Add(24*time.Hour))
+		if err != nil {
+			t.Fatalf("%v: CopyBackup: %v", desc, err)
+		}
+
+		// Verify source backup field in backup info
+		gotBackupInfo, err := destAdminClient.BackupInfo(ctx, destCluster, destBackupName)
+		if err != nil {
+			t.Fatalf("%v: BackupInfo: %v", desc, err)
+		}
+		if gotBackupInfo.SourceBackup != wantSourceBackup {
+			t.Fatalf("%v: SourceBackup: got: %v, want: %v", desc, gotBackupInfo.SourceBackup, wantSourceBackup)
+		}
+	}
+}
+
 func TestIntegration_AdminBackup(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -2981,23 +3164,13 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
 	}
 	defer iAdminClient.Close()
-	prefix := "bt-it"
-	diffInstanceId := uid.NewSpace(prefix, &uid.Options{Short: true})
-	diffInstance := diffInstanceId.New()
-	diffCluster := sourceCluster + "-d"
-	conf := &InstanceConf{
-		InstanceId:   diffInstance,
-		ClusterId:    diffCluster,
-		DisplayName:  "different test sourceInstance",
-		Zone:         instanceToCreateZone2,
-		InstanceType: DEVELOPMENT,
-		Labels:       map[string]string{"test-label-key": "test-label-value"},
-	}
-	defer iAdminClient.DeleteInstance(ctx, diffInstance)
+
 	// Create different instance to restore table.
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+	diffInstance, diffCluster, err := createInstance(testEnv, iAdminClient, ctx)
+	if err != nil {
 		t.Fatalf("CreateInstance: %v", err)
 	}
+	defer iAdminClient.DeleteInstance(ctx, diffInstance)
 
 	list := func(cluster string) ([]*BackupInfo, error) {
 		infos := []*BackupInfo(nil)
