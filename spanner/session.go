@@ -59,7 +59,6 @@ const (
 
 // InactiveTransactionRemovalOptions has configurations for action on long-running transactions.
 type InactiveTransactionRemovalOptions struct {
-	mu sync.Mutex
 	// actionOnInactiveTransaction is the configuration to choose action for inactive transactions.
 	// It can be one of Warn, Close, WarnAndClose.
 	actionOnInactiveTransaction ActionOnInactiveTransactionKind
@@ -74,9 +73,6 @@ type InactiveTransactionRemovalOptions struct {
 	// variable that keeps track of the last execution time when inactive transactions
 	// were removed by the maintainer task.
 	lastExecutionTime time.Time
-	// indicates the number of leaked sessions removed from the session pool.
-	// This is valid only when ActionOnInactiveTransaction is WarnAndClose or ActionOnInactiveTransaction is Close.
-	numOfLeakedSessionsRemoved uint64
 }
 
 // sessionHandle is an interface for transactions to access Cloud Spanner
@@ -613,6 +609,10 @@ type sessionPool struct {
 
 	// tagMap is a map of all tags that are associated with the emitted metrics.
 	tagMap *tag.Map
+
+	// indicates the number of leaked sessions removed from the session pool.
+	// This is valid only when ActionOnInactiveTransaction is WarnAndClose or ActionOnInactiveTransaction is Close in InactiveTransactionRemovalOptions.
+	numOfLeakedSessionsRemoved uint64
 }
 
 // newSessionPool creates a new session pool.
@@ -761,19 +761,22 @@ func (p *sessionPool) removeLongRunningSessions() {
 
 	// destroy long-running sessions
 	if p.actionOnInactiveTransaction == WarnAndClose || p.actionOnInactiveTransaction == Close {
+		var leakedSessionsRemovedCount uint64
 		for _, sh := range longRunningSessions {
 			// removes inner session out of the pool to reduce the probability of two processes trying
 			// to use the same session at the same time.
 			sh.destroy()
-			p.InactiveTransactionRemovalOptions.mu.Lock()
-			p.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved++
-			p.InactiveTransactionRemovalOptions.mu.Unlock()
+			leakedSessionsRemovedCount++
 		}
-
+    
+		p.mu.Lock()
+		p.numOfLeakedSessionsRemoved += leakedSessionsRemovedCount
+    
 		// Record the stats for number of long-running sessions removed by the background maintainer task.
 		// This stat would be exported only when ActionOnInactiveTransaction is set to WarnAndClose or Close.
 		log.Printf("numOfLeakedSessionsRemoved %v: ", p.numOfLeakedSessionsRemoved)
 		p.recordStat(context.Background(), NumLongRunningSessionsRemovedCount, int64(p.numOfLeakedSessionsRemoved))
+		p.mu.Unlock()
 	}
 }
 
