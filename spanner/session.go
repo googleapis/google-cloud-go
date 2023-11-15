@@ -505,7 +505,7 @@ var DefaultSessionPoolConfig = SessionPoolConfig{
 	HealthCheckWorkers:  10,
 	HealthCheckInterval: healthCheckIntervalMins * time.Minute,
 	InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-		ActionOnInactiveTransaction: Warn, // Make default to Warn from NoAction later
+		ActionOnInactiveTransaction: Warn,
 		executionFrequency:          2 * time.Minute,
 		idleTimeThreshold:           60 * time.Minute,
 		usedSessionsRatioThreshold:  0.95,
