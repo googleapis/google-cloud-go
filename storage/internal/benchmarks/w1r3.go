@@ -153,7 +153,7 @@ func (r *w1r3) run(ctx context.Context) error {
 	client := getClient(ctx, r.readResults[0].params.api)
 
 	var span trace.Span
-	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "w1r3")
+	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "w1r3 - bidi min")
 	span.SetAttributes(attribute.KeyValue{"workload", attribute.StringValue("w1r3")},
 		attribute.KeyValue{"api", attribute.StringValue(string(r.opts.api))},
 		attribute.KeyValue{"object_size", attribute.Int64Value(r.opts.objectSize)})
