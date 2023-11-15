@@ -768,10 +768,9 @@ func (p *sessionPool) removeLongRunningSessions() {
 			sh.destroy()
 			leakedSessionsRemovedCount++
 		}
-    
+
 		p.mu.Lock()
 		p.numOfLeakedSessionsRemoved += leakedSessionsRemovedCount
-    
 		// Record the stats for number of long-running sessions removed by the background maintainer task.
 		// This stat would be exported only when ActionOnInactiveTransaction is set to WarnAndClose or Close.
 		log.Printf("numOfLeakedSessionsRemoved %v: ", p.numOfLeakedSessionsRemoved)
