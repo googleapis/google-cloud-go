@@ -1,5 +1,12 @@
 # Changes
 
+## [1.53.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.52.0...spanner/v1.53.0) (2023-11-15)
+
+
+### Features
+
+* **spanner:** Enable long running transaction clean up ([#8969](https://github.com/googleapis/google-cloud-go/issues/8969)) ([5d181bb](https://github.com/googleapis/google-cloud-go/commit/5d181bb3a6fea55b8d9d596213516129006bdae2))
+
 ## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.51.0...spanner/v1.52.0) (2023-11-14)
 
 
