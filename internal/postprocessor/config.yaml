@@ -27,6 +27,7 @@ modules:
   - channel
   - cloudbuild
   - clouddms
+  - cloudprofiler
   - cloudtasks
   - commerce
   - compute
@@ -436,6 +437,9 @@ service-configs:
   - input-directory: google/cloud/clouddms/v1
     service-config: datamigration_v1.yaml
     import-path: cloud.google.com/go/clouddms/apiv1
+  - input-directory: google/devtools/cloudprofiler/v2
+    service-config: cloudprofiler_v2.yaml
+    import-path: cloud.google.com/go/cloudprofiler/apiv2
   - input-directory: google/cloud/commerce/consumer/procurement/v1
     service-config: cloudcommerceconsumerprocurement_v1.yaml
     import-path: cloud.google.com/go/commerce/consumer/procurement/apiv1
