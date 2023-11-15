@@ -1629,8 +1629,8 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			},
 			WriteOffset: writeOffset,
 			FinishWrite: lastWriteOfEntireObject,
-			Flush:       remainingDataFitsInSingleReq,
-			StateLookup: remainingDataFitsInSingleReq,
+			Flush:       remainingDataFitsInSingleReq && !lastWriteOfEntireObject,
+			StateLookup: remainingDataFitsInSingleReq && !lastWriteOfEntireObject,
 		}
 
 		// Open a new stream if necessary and set the first_message field on
@@ -1724,31 +1724,31 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		}
 
 		// Done sending data (remainingDataFitsInSingleReq should == true if we
-		// reach this code). Receive from the stream to confirm the persisted data.
-		resp, err := w.stream.Recv()
+		// reach this code). Receive from the stream to confirm the persisted data
+		// or get the final object.
+		if !lastWriteOfEntireObject {
+			resp, err := w.stream.Recv()
 
-		// Retriable errors mean we should start over and attempt to
-		// resend the entire buffer via a new stream.
-		// If not retriable, falling through will return the error received
-		// from closing the stream.
-		if shouldRetry(err) {
-			writeOffset, err = w.determineOffset(start)
+			// Retriable errors mean we should start over and attempt to
+			// resend the entire buffer via a new stream.
+			// If not retriable, falling through will return the error received
+			// from closing the stream.
+			if shouldRetry(err) {
+				writeOffset, err = w.determineOffset(start)
+				if err != nil {
+					return nil, 0, err
+				}
+				sent = int(writeOffset) - int(start)
+
+				// Drop the stream reference as a new one will need to be created.
+				w.stream = nil
+
+				continue
+			}
 			if err != nil {
 				return nil, 0, err
 			}
-			sent = int(writeOffset) - int(start)
 
-			// Drop the stream reference as a new one will need to be created.
-			w.stream = nil
-
-			continue
-		}
-		if err != nil {
-			return nil, 0, err
-		}
-
-		// Confirm the persisted data if we have not finished uploading the object.
-		if !lastWriteOfEntireObject {
 			if resp.GetPersistedSize() != writeOffset {
 				// Retry if not all bytes were persisted.
 				writeOffset = resp.GetPersistedSize()
