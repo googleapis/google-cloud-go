@@ -1539,7 +1539,8 @@ type gRPCWriter struct {
 	chunkSize  int
 
 	// The gRPC client-stream used for sending buffers.
-	stream storagepb.Storage_WriteObjectClient
+	//stream storagepb.Storage_WriteObjectClient
+	stream storagepb.Storage_BidiWriteObjectClient
 
 	// The Resumable Upload ID started by a gRPC-based Writer.
 	upid string
@@ -1583,6 +1584,17 @@ func (w *gRPCWriter) queryProgress() (int64, error) {
 	return persistedSize, err
 }
 
+func bidiCloseAndRecv(x storagepb.Storage_BidiWriteObjectClient) (*storagepb.BidiWriteObjectResponse, error) {
+	if err := x.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(storagepb.BidiWriteObjectResponse)
+	if err := x.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // uploadBuffer opens a Write stream and uploads the buffer at the given offset (if
 // uploading a chunk for a resumable uploadBuffer), and will mark the write as
 // finished if we are done receiving data from the user. The resulting write
@@ -1614,8 +1626,8 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 
 		// Prepare chunk section for upload.
 		data := toWrite[sent : sent+limit]
-		req := &storagepb.WriteObjectRequest{
-			Data: &storagepb.WriteObjectRequest_ChecksummedData{
+		req := &storagepb.BidiWriteObjectRequest{
+			Data: &storagepb.BidiWriteObjectRequest_ChecksummedData{
 				ChecksummedData: &storagepb.ChecksummedData{
 					Content: data,
 				},
@@ -1630,19 +1642,19 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		if w.stream == nil {
 			hds := []string{"x-goog-request-params", fmt.Sprintf("bucket=projects/_/buckets/%s", url.QueryEscape(w.bucket))}
 			ctx := gax.InsertMetadataIntoOutgoingContext(w.ctx, hds...)
-			w.stream, err = w.c.raw.WriteObject(ctx)
+			w.stream, err = w.c.raw.BidiWriteObject(ctx)
 			if err != nil {
 				return nil, 0, false, err
 			}
 
 			if w.upid != "" {
-				req.FirstMessage = &storagepb.WriteObjectRequest_UploadId{UploadId: w.upid}
+				req.FirstMessage = &storagepb.BidiWriteObjectRequest_UploadId{UploadId: w.upid}
 			} else {
 				spec, err := w.writeObjectSpec()
 				if err != nil {
 					return nil, 0, false, err
 				}
-				req.FirstMessage = &storagepb.WriteObjectRequest_WriteObjectSpec{
+				req.FirstMessage = &storagepb.BidiWriteObjectRequest_WriteObjectSpec{
 					WriteObjectSpec: spec,
 				}
 				req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(w.encryptionKey)
@@ -1660,7 +1672,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// err was io.EOF. The client-side of a stream only gets an EOF on Send
 			// when the backend closes the stream and wants to return an error
 			// status. Closing the stream receives the status as an error.
-			_, err = w.stream.CloseAndRecv()
+			_, err = bidiCloseAndRecv(w.stream)
 
 			// Retriable errors mean we should start over and attempt to
 			// resend the entire buffer via a new stream.
@@ -1741,9 +1753,9 @@ func (w *gRPCWriter) determineOffset(offset int64) (int64, error) {
 // indicated that writing was finished, the Object will be finalized and
 // returned. If not, then the Object will be nil, and the boolean returned will
 // be false.
-func (w *gRPCWriter) commit() (*storagepb.WriteObjectResponse, bool, error) {
+func (w *gRPCWriter) commit() (*storagepb.BidiWriteObjectResponse, bool, error) {
 	finalized := true
-	resp, err := w.stream.CloseAndRecv()
+	resp, err := bidiCloseAndRecv(w.stream)
 	if err == io.EOF {
 		// Closing a stream for a resumable upload finish_write = false results
 		// in an EOF which can be ignored, as we aren't done uploading yet.
