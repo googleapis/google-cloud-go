@@ -1723,9 +1723,10 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			return nil, writeOffset, nil
 		}
 
-		// Done sending data (remainingDataFitsInSingleReq should == true if we
-		// reach this code). Receive from the stream to confirm the persisted data
-		// or get the final object.
+		// Done sending the data in the buffer (remainingDataFitsInSingleReq
+		// should == true if we reach this code).
+		// If we are done sending the whole object, close the stream and get the final
+		// object. Otherwise, receive from the stream to confirm the persisted data.
 		if !lastWriteOfEntireObject {
 			resp, err := w.stream.Recv()
 
