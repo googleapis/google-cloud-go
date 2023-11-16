@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.54.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.53.0...aiplatform/v1.54.0) (2023-11-16)
+
+
+### Features
+
+* **aiplatform:** Add ComputeTokens and CountTokens API ([f2b5cbb](https://github.com/googleapis/google-cloud-go/commit/f2b5cbb35da5a4eca937a1441b6a0f1b147e072b))
+* **aiplatform:** Add ComputeTokens API ([#8999](https://github.com/googleapis/google-cloud-go/issues/8999)) ([f2b5cbb](https://github.com/googleapis/google-cloud-go/commit/f2b5cbb35da5a4eca937a1441b6a0f1b147e072b))
+* **aiplatform:** Add deployment_timeout to UploadModel ModelContainerSpec ([f2b5cbb](https://github.com/googleapis/google-cloud-go/commit/f2b5cbb35da5a4eca937a1441b6a0f1b147e072b))
+* **aiplatform:** Add deployment_timeout to UploadModel ModelContainerSpec ([f2b5cbb](https://github.com/googleapis/google-cloud-go/commit/f2b5cbb35da5a4eca937a1441b6a0f1b147e072b))
+* **aiplatform:** Add protected_artifact_location_id to CustomJob ([f2b5cbb](https://github.com/googleapis/google-cloud-go/commit/f2b5cbb35da5a4eca937a1441b6a0f1b147e072b))
+* **aiplatform:** Add protected_artifact_location_id to CustomJob ([f2b5cbb](https://github.com/googleapis/google-cloud-go/commit/f2b5cbb35da5a4eca937a1441b6a0f1b147e072b))
+
 ## [1.53.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.52.0...aiplatform/v1.53.0) (2023-11-09)
 
 
