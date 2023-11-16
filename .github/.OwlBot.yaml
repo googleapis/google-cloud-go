@@ -740,8 +740,8 @@ deep-copy-regex:
     dest: /
   - source: /google/firestore/v1/cloud.google.com/go
     dest: /
-  # - source: /google/firestore/admin/v1/cloud.google.com/go
-  #   dest: /
+  - source: /google/firestore/admin/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/functions/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/functions/v2/cloud.google.com/go
