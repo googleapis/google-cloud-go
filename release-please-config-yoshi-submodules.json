@@ -354,6 +354,9 @@
         "talent": {
             "component": "talent"
         },
+        "telcoautomation": {
+            "component": "telcoautomation"
+        },
         "texttospeech": {
             "component": "texttospeech"
         },

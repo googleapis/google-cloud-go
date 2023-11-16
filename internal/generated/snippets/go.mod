@@ -457,3 +457,5 @@ replace cloud.google.com/go/securesourcemanager => ../../../securesourcemanager
 replace cloud.google.com/go/edgenetwork => ../../../edgenetwork
 
 replace cloud.google.com/go/cloudprofiler => ../../../cloudprofiler
+
+replace cloud.google.com/go/telcoautomation => ../../../telcoautomation

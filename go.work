@@ -143,6 +143,7 @@ use (
 	./storagetransfer
 	./support
 	./talent
+	./telcoautomation
 	./texttospeech
 	./tpu
 	./trace
