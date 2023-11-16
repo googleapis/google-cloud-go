@@ -2,7 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/profiler.svg)](https://pkg.go.dev/cloud.google.com/go/profiler)
 
-Go Client Library for Cloud Profiler.
+The Go Agent for Cloud Profiler.
 
 ## Install
 
