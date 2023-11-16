@@ -148,6 +148,7 @@ require (
 	cloud.google.com/go/recaptchaenterprise v1.3.1
 	cloud.google.com/go/securesourcemanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/shopping v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/telcoautomation v0.0.0-00010101000000-000000000000
 	google.golang.org/genproto/googleapis/api v0.0.0-20231106174013-bbf56f31fb17
 )
 
