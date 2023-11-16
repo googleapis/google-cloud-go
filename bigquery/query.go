@@ -374,7 +374,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 	if q.QueryConfig.DryRun {
 		return nil, errors.New("bigquery: cannot evaluate Query.Read() for dry-run queries")
 	}
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Query.Run")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Query.Read")
 	defer func() { trace.EndSpan(ctx, err) }()
 	queryRequest, err := q.probeFastPath()
 	if err != nil {
