@@ -9,6 +9,7 @@ require (
 	github.com/golang/protobuf v1.5.3
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/gax-go/v2 v2.12.0
+	go.einride.tech/aip v0.65.0
 	go.opencensus.io v0.24.0
 	golang.org/x/oauth2 v0.13.0
 	golang.org/x/sync v0.4.0
