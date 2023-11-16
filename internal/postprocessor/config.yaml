@@ -937,7 +937,7 @@ service-configs:
     import-path: cloud.google.com/go/containeranalysis/apiv1beta1
   - input-directory: google/firestore/admin/v1
     service-config: firestore_v1.yaml
-    import-path: ""
+    import-path: cloud.google.com/go/firestore/apiv1/admin
   - input-directory: google/firestore/v1
     service-config: firestore_v1.yaml
     import-path: cloud.google.com/go/firestore/apiv1
