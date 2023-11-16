@@ -127,6 +127,7 @@ modules:
   - storagetransfer
   - support
   - talent
+  - telcoautomation
   - texttospeech
   - tpu
   - trace
@@ -818,6 +819,9 @@ service-configs:
   - input-directory: google/cloud/tasks/v2beta3
     service-config: cloudtasks_v2beta3.yaml
     import-path: cloud.google.com/go/cloudtasks/apiv2beta3
+  - input-directory: google/cloud/telcoautomation/v1
+    service-config: telcoautomation_v1.yaml
+    import-path: cloud.google.com/go/telcoautomation/apiv1
   - input-directory: google/cloud/texttospeech/v1
     service-config: texttospeech_v1.yaml
     import-path: cloud.google.com/go/texttospeech/apiv1
