@@ -1899,26 +1899,6 @@ func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, tab
 	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
 }
 
-func (ac *AdminClient) CopyBackup(ctx context.Context, destProject, destInstance, destCluster, destBackup,
-	sourceCluster, sourceBackup string, expireTime time.Time) error {
-	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	sourceBackupPath := ac.backupPath(sourceCluster, ac.instance, sourceBackup)
-	destPrefix := instancePrefix(destProject, destInstance)
-	req := &btapb.CopyBackupRequest{
-		Parent:       destPrefix + "/clusters/" + destCluster,
-		BackupId:     destBackup,
-		SourceBackup: sourceBackupPath,
-		ExpireTime:   timestamppb.New(expireTime),
-	}
-
-	op, err := ac.tClient.CopyBackup(ctx, req)
-	if err != nil {
-		return err
-	}
-	resp := btapb.Backup{}
-	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
-}
-
 // CreateBackup creates a new backup in the specified cluster from the
 // specified source table with the user-provided expire time.
 func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time) error {
@@ -1937,6 +1917,27 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 	}
 
 	op, err := ac.tClient.CreateBackup(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Backup{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
+// CopyBackup copies the specified source backup with the user-provided expire time.
+func (ac *AdminClient) CopyBackup(ctx context.Context, destProject, destInstance, destCluster, destBackup,
+	sourceCluster, sourceBackup string, expireTime time.Time) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	sourceBackupPath := ac.backupPath(sourceCluster, ac.instance, sourceBackup)
+	destPrefix := instancePrefix(destProject, destInstance)
+	req := &btapb.CopyBackupRequest{
+		Parent:       destPrefix + "/clusters/" + destCluster,
+		BackupId:     destBackup,
+		SourceBackup: sourceBackupPath,
+		ExpireTime:   timestamppb.New(expireTime),
+	}
+
+	op, err := ac.tClient.CopyBackup(ctx, req)
 	if err != nil {
 		return err
 	}
