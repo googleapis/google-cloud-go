@@ -334,6 +334,7 @@ deep-remove-regex:
   - /internal/generated/snippets/support/apiv2/
   - /internal/generated/snippets/talent/apiv4/
   - /internal/generated/snippets/talent/apiv4beta1/
+  - /internal/generated/snippets/telcoautomation/apiv1/
   - /internal/generated/snippets/texttospeech/apiv1/
   - /internal/generated/snippets/tpu/apiv1/
   - /internal/generated/snippets/trace/apiv1/
@@ -459,6 +460,7 @@ deep-remove-regex:
   - /support/apiv2/
   - /talent/apiv4/
   - /talent/apiv4beta1/
+  - /telcoautomation/apiv1/
   - /texttospeech/apiv1/
   - /tpu/apiv1/
   - /trace/apiv1/
@@ -969,6 +971,8 @@ deep-copy-regex:
   - source: /google/cloud/talent/v4/cloud.google.com/go
     dest: /
   - source: /google/cloud/talent/v4beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/telcoautomation/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/texttospeech/v1/cloud.google.com/go
     dest: /
