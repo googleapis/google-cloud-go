@@ -108,7 +108,7 @@ deep-remove-regex:
   - /eventarc/publishing/apiv1/
   - /filestore/apiv1/
   - /firestore/apiv1/
-  # - /firestore/apiv1/admin/
+  - /firestore/apiv1/admin/
   - /functions/apiv1/
   - /functions/apiv2/
   - /functions/apiv2beta/
@@ -225,7 +225,7 @@ deep-remove-regex:
   - /internal/generated/snippets/eventarc/publishing/apiv1/
   - /internal/generated/snippets/filestore/apiv1/
   - /internal/generated/snippets/firestore/apiv1/
-  # - /internal/generated/snippets/firestore/apiv1/admin/
+  - /internal/generated/snippets/firestore/apiv1/admin/
   - /internal/generated/snippets/functions/apiv1/
   - /internal/generated/snippets/functions/apiv2/
   - /internal/generated/snippets/functions/apiv2beta/
@@ -516,8 +516,6 @@ deep-preserve-regex:
   - /dataproc/apiv1/longrunning.go
   - /longrunning/autogen/from_conn.go
   - /containeranalysis/apiv1beta1/grafeas/.*
-  # Remove this once this is generated with owlbot
-  - /firestore/apiv1/admin/.*
   # Must preserve these even though they aren't generated anymore
   - /vmmigration/apiv1/iam_policy_client.go
   - /datastream/apiv1/iam_policy_client.go
