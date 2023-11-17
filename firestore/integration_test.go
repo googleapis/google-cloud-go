@@ -2317,40 +2317,35 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 		t.Fatalf("Create: %v", err)
 	}
 
+	doc := BWDoc{A: 5}
 	testcases := []struct {
 		desc           string
 		ref            *DocumentRef
-		doc            BWDoc
-		wantFailure    bool
 		wantStatusCode codes.Code
 	}{
 		{
-			desc: "Successful",
-			ref:  iColl.Doc(fmt.Sprintf("bw_create_%d", time.Now().Unix())),
-			doc:  BWDoc{A: 5},
+			desc:           "Successful",
+			ref:            iColl.Doc(fmt.Sprintf("bw_create_%d", time.Now().Unix())),
+			wantStatusCode: codes.OK,
 		},
 		{
 			desc:           "Already exists error",
 			ref:            docRef,
-			doc:            BWDoc{A: 5},
-			wantFailure:    true,
 			wantStatusCode: codes.AlreadyExists,
 		},
 	}
 	for _, testcase := range testcases {
 		bw := c.BulkWriter(ctx)
 
-		bwJob, err := bw.Create(testcase.ref, testcase.doc)
+		bwJob, err := bw.Create(testcase.ref, doc)
 		if err != nil {
 			t.Errorf("%v Create %v", testcase.desc, err)
-			return
+			continue
 		}
 		bw.Flush()
 
 		_, gotErr := bwJob.Results()
-		gotFailure := gotErr != nil
-		if gotFailure != testcase.wantFailure ||
-			(status.Code(gotErr) != testcase.wantStatusCode) {
+		if status.Code(gotErr) != testcase.wantStatusCode {
 			t.Errorf("%q: Mismatch in error got: %v, want: %q", testcase.desc, status.Code(gotErr), testcase.wantStatusCode)
 		}
 	}
