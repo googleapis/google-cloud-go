@@ -42,7 +42,11 @@ var newPredictionClientHook clientHook
 type PredictionCallOptions struct {
 	Predict                []gax.CallOption
 	RawPredict             []gax.CallOption
+	DirectPredict          []gax.CallOption
+	DirectRawPredict       []gax.CallOption
+	StreamingPredict       []gax.CallOption
 	ServerStreamingPredict []gax.CallOption
+	StreamingRawPredict    []gax.CallOption
 	Explain                []gax.CallOption
 	GetLocation            []gax.CallOption
 	ListLocations          []gax.CallOption
@@ -72,7 +76,11 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 	return &PredictionCallOptions{
 		Predict:                []gax.CallOption{},
 		RawPredict:             []gax.CallOption{},
+		DirectPredict:          []gax.CallOption{},
+		DirectRawPredict:       []gax.CallOption{},
+		StreamingPredict:       []gax.CallOption{},
 		ServerStreamingPredict: []gax.CallOption{},
+		StreamingRawPredict:    []gax.CallOption{},
 		Explain:                []gax.CallOption{},
 		GetLocation:            []gax.CallOption{},
 		ListLocations:          []gax.CallOption{},
@@ -94,7 +102,11 @@ type internalPredictionClient interface {
 	Connection() *grpc.ClientConn
 	Predict(context.Context, *aiplatformpb.PredictRequest, ...gax.CallOption) (*aiplatformpb.PredictResponse, error)
 	RawPredict(context.Context, *aiplatformpb.RawPredictRequest, ...gax.CallOption) (*httpbodypb.HttpBody, error)
+	DirectPredict(context.Context, *aiplatformpb.DirectPredictRequest, ...gax.CallOption) (*aiplatformpb.DirectPredictResponse, error)
+	DirectRawPredict(context.Context, *aiplatformpb.DirectRawPredictRequest, ...gax.CallOption) (*aiplatformpb.DirectRawPredictResponse, error)
+	StreamingPredict(context.Context, ...gax.CallOption) (aiplatformpb.PredictionService_StreamingPredictClient, error)
 	ServerStreamingPredict(context.Context, *aiplatformpb.StreamingPredictRequest, ...gax.CallOption) (aiplatformpb.PredictionService_ServerStreamingPredictClient, error)
+	StreamingRawPredict(context.Context, ...gax.CallOption) (aiplatformpb.PredictionService_StreamingRawPredictClient, error)
 	Explain(context.Context, *aiplatformpb.ExplainRequest, ...gax.CallOption) (*aiplatformpb.ExplainResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
@@ -152,21 +164,43 @@ func (c *PredictionClient) Predict(ctx context.Context, req *aiplatformpb.Predic
 //
 // The response includes the following HTTP headers:
 //
-//	X-Vertex-AI-Endpoint-Id: ID of the
-//	Endpoint that served this
-//	prediction.
+//   X-Vertex-AI-Endpoint-Id: ID of the
+//   Endpoint that served this
+//   prediction.
 //
-//	X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
-//	DeployedModel that served this
-//	prediction.
+//   X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
+//   DeployedModel that served this
+//   prediction.
 func (c *PredictionClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	return c.internalClient.RawPredict(ctx, req, opts...)
+}
+
+// DirectPredict perform an unary online prediction request for Vertex first-party products
+// and frameworks.
+func (c *PredictionClient) DirectPredict(ctx context.Context, req *aiplatformpb.DirectPredictRequest, opts ...gax.CallOption) (*aiplatformpb.DirectPredictResponse, error) {
+	return c.internalClient.DirectPredict(ctx, req, opts...)
+}
+
+// DirectRawPredict perform an online prediction request through gRPC.
+func (c *PredictionClient) DirectRawPredict(ctx context.Context, req *aiplatformpb.DirectRawPredictRequest, opts ...gax.CallOption) (*aiplatformpb.DirectRawPredictResponse, error) {
+	return c.internalClient.DirectRawPredict(ctx, req, opts...)
+}
+
+// StreamingPredict perform a streaming online prediction request for Vertex first-party
+// products and frameworks.
+func (c *PredictionClient) StreamingPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamingPredictClient, error) {
+	return c.internalClient.StreamingPredict(ctx, opts...)
 }
 
 // ServerStreamingPredict perform a server-side streaming online prediction request for Vertex
 // LLM streaming.
 func (c *PredictionClient) ServerStreamingPredict(ctx context.Context, req *aiplatformpb.StreamingPredictRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_ServerStreamingPredictClient, error) {
 	return c.internalClient.ServerStreamingPredict(ctx, req, opts...)
+}
+
+// StreamingRawPredict perform a streaming online prediction request through gRPC.
+func (c *PredictionClient) StreamingRawPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamingRawPredictClient, error) {
+	return c.internalClient.StreamingRawPredict(ctx, opts...)
 }
 
 // Explain perform an online explanation.
@@ -362,6 +396,57 @@ func (c *predictionGRPCClient) RawPredict(ctx context.Context, req *aiplatformpb
 	return resp, nil
 }
 
+func (c *predictionGRPCClient) DirectPredict(ctx context.Context, req *aiplatformpb.DirectPredictRequest, opts ...gax.CallOption) (*aiplatformpb.DirectPredictResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DirectPredict[0:len((*c.CallOptions).DirectPredict):len((*c.CallOptions).DirectPredict)], opts...)
+	var resp *aiplatformpb.DirectPredictResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.predictionClient.DirectPredict(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) DirectRawPredict(ctx context.Context, req *aiplatformpb.DirectRawPredictRequest, opts ...gax.CallOption) (*aiplatformpb.DirectRawPredictResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DirectRawPredict[0:len((*c.CallOptions).DirectRawPredict):len((*c.CallOptions).DirectRawPredict)], opts...)
+	var resp *aiplatformpb.DirectRawPredictResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.predictionClient.DirectRawPredict(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) StreamingPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamingPredictClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp aiplatformpb.PredictionService_StreamingPredictClient
+	opts = append((*c.CallOptions).StreamingPredict[0:len((*c.CallOptions).StreamingPredict):len((*c.CallOptions).StreamingPredict)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.predictionClient.StreamingPredict(ctx, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *predictionGRPCClient) ServerStreamingPredict(ctx context.Context, req *aiplatformpb.StreamingPredictRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_ServerStreamingPredictClient, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
 
@@ -372,6 +457,21 @@ func (c *predictionGRPCClient) ServerStreamingPredict(ctx context.Context, req *
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.predictionClient.ServerStreamingPredict(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) StreamingRawPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamingRawPredictClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp aiplatformpb.PredictionService_StreamingRawPredictClient
+	opts = append((*c.CallOptions).StreamingRawPredict[0:len((*c.CallOptions).StreamingRawPredict):len((*c.CallOptions).StreamingRawPredict)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.predictionClient.StreamingRawPredict(ctx, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
