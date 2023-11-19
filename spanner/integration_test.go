@@ -5013,7 +5013,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 	}
 }
 
-func TestIntegration_WithDirectedReadOptions(t *testing.T) {
+func TestIntegration_WithDirectedReadOptions_ReadOnlyTransaction(t *testing.T) {
 	t.Parallel()
 	// DirectedReadOptions for PG is supported, however we test only for Google SQL.
 	skipUnsupportedPGTest(t)
@@ -5034,7 +5034,7 @@ func TestIntegration_WithDirectedReadOptions(t *testing.T) {
 						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
 					},
 				},
-				AutoFailover: true,
+				AutoFailoverDisabled: true,
 			},
 		},
 	}
@@ -5084,6 +5084,65 @@ func TestIntegration_WithDirectedReadOptions(t *testing.T) {
 
 	if !testEqual(got, want) {
 		t.Errorf("got unexpected result in DirectedReadOptions test: %v, want %v", got, want)
+	}
+}
+
+// TODO(sriharshach): This test currently fails since the backend flag is still not enabled.
+func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction(t *testing.T) {
+	t.Parallel()
+	// DirectedReadOptions for PG is supported, however we test only for Google SQL.
+	skipUnsupportedPGTest(t)
+
+	ctxTimeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	directedReadOptions := &sppb.DirectedReadOptions{
+		Replicas: &sppb.DirectedReadOptions_IncludeReplicas_{
+			IncludeReplicas: &sppb.DirectedReadOptions_IncludeReplicas{
+				ReplicaSelections: []*sppb.DirectedReadOptions_ReplicaSelection{
+					{
+						Location: "us-west1",
+						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
+					},
+				},
+				AutoFailoverDisabled: true,
+			},
+		},
+	}
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	// Try to write four rows through the Apply API.
+	for i, w := range writes {
+		var err error
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) (err error) {
+		_, err = readAll(tx.ReadWithOptions(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}, &ReadOptions{DirectedReadOptions: directedReadOptions}))
+		return err
+	})
+	if err == nil {
+		t.Fatal("expected err, got nil")
+	}
+	if msg, ok := matchError(err, codes.InvalidArgument, "Directed reads can only be performed in a read-only transaction"); !ok {
+		t.Fatal(msg)
 	}
 }
 

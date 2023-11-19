@@ -277,11 +277,6 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		md.Append(requestsCompressionHeader, gzip.Name)
 	}
 
-	err = validateDirectedReadOptions(config.DirectedReadOptions)
-	if err != nil {
-		return nil, err
-	}
-
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 

@@ -64,10 +64,6 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 		defer sh.recycle()
 	}
 
-	if options.DirectedReadOptions != nil {
-		return 0, errCannotSetDirectedReadOptions()
-	}
-
 	// Create the parameters and the SQL request, but without a transaction.
 	// The transaction reference will be added by the executePdml method.
 	params, paramTypes, err := statement.convertParams()
@@ -75,12 +71,13 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 		return 0, ToSpannerError(err)
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:        sh.getID(),
-		Sql:            statement.SQL,
-		Params:         params,
-		ParamTypes:     paramTypes,
-		QueryOptions:   options.Options,
-		RequestOptions: createRequestOptions(options.Priority, options.RequestTag, ""),
+		Session:             sh.getID(),
+		Sql:                 statement.SQL,
+		Params:              params,
+		ParamTypes:          paramTypes,
+		QueryOptions:        options.Options,
+		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, ""),
+		DirectedReadOptions: options.DirectedReadOptions,
 	}
 
 	// Make a retryer for Aborted and certain Internal errors.

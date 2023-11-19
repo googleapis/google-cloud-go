@@ -1055,7 +1055,7 @@ func TestClient_DirectedReadOptions(t *testing.T) {
 						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
 					},
 				},
-				AutoFailover: true,
+				AutoFailoverDisabled: true,
 			},
 		},
 	}
@@ -1134,18 +1134,24 @@ func TestClient_DirectedReadOptions(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DirectedReadOptions: directedReadOptions})
+	directedReadOptionsForRW := &sppb.DirectedReadOptions{
+		Replicas: &sppb.DirectedReadOptions_ExcludeReplicas_{
+			ExcludeReplicas: &sppb.DirectedReadOptions_ExcludeReplicas{
+				ReplicaSelections: []*sppb.DirectedReadOptions_ReplicaSelection{
+					{
+						Location: "us-west1",
+						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
+					},
+				},
+			},
+		},
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DirectedReadOptions: directedReadOptionsForRW})
 	defer teardown()
-	errCannotSetDirectedReadOptions := "DirectedReadOptions cannot be set for ReadWriteTransaction or Partitioned DML requests"
 
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
 		iter := txn.ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, &ReadOptions{DirectedReadOptions: directedReadOptions})
-		if iter.err == nil {
-			t.Fatalf("Expected exception while setting DirectedReadOptions in a ReadWriteTransaction")
-		}
-		if msg, ok := matchError(iter.err, codes.InvalidArgument, errCannotSetDirectedReadOptions); !ok {
-			t.Fatal(msg)
-		}
+		testReadOptions(t, iter, server.TestSpanner, ReadOptions{DirectedReadOptions: directedReadOptions})
 		return nil
 	})
 	if err != nil {
@@ -1154,25 +1160,15 @@ func TestClient_DirectedReadOptions(t *testing.T) {
 
 	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
 		iter := txn.QueryWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), QueryOptions{DirectedReadOptions: directedReadOptions})
-		if iter.err == nil {
-			t.Fatalf("Expected exception while setting DirectedReadOptions in a ReadWriteTransaction")
-		}
-		if msg, ok := matchError(iter.err, codes.InvalidArgument, errCannotSetDirectedReadOptions); !ok {
-			t.Fatal(msg)
-		}
+		testQueryOptions(t, iter, server.TestSpanner, QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{}, DirectedReadOptions: directedReadOptions})
 		return nil
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, err = client.PartitionedUpdateWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), QueryOptions{DirectedReadOptions: directedReadOptions})
-	if err == nil {
-		t.Fatalf("Expected exception while setting DirectedReadOptions for Partitioned DML requests")
-	}
-	if msg, ok := matchError(err, codes.InvalidArgument, errCannotSetDirectedReadOptions); !ok {
-		t.Fatal(msg)
-	}
+	client.PartitionedUpdateWithOptions(ctx, NewStatement(UpdateBarSetFoo), QueryOptions{DirectedReadOptions: directedReadOptions})
+	checkReqsForQueryOptions(t, server.TestSpanner, QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{}, DirectedReadOptions: directedReadOptions})
 }
 
 func setQueryOptionsEnvVars(opts *sppb.ExecuteSqlRequest_QueryOptions) func() {
