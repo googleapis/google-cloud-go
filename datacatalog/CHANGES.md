@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.3...datacatalog/v1.19.0) (2023-11-09)
+
+
+### Features
+
+* **datacatalog/lineage:** Add open lineage support ([#8974](https://github.com/googleapis/google-cloud-go/issues/8974)) ([1a16cbf](https://github.com/googleapis/google-cloud-go/commit/1a16cbf260bb673e07a05e1014868b236e510499))
+
 ## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.2...datacatalog/v1.18.3) (2023-11-01)
 
 

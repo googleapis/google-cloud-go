@@ -67,22 +67,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &advisorynotificationspb.ListNotificationsRequest{
+//	req := &advisorynotificationspb.GetNotificationRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb#ListNotificationsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb#GetNotificationRequest.
 //	}
-//	it := c.ListNotifications(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	resp, err := c.GetNotification(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

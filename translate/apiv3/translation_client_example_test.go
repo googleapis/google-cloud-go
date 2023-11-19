@@ -58,7 +58,7 @@ func ExampleNewTranslationRESTClient() {
 	_ = c
 }
 
-func ExampleTranslationClient_TranslateText() {
+func ExampleTranslationClient_BatchTranslateDocument() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -71,86 +71,16 @@ func ExampleTranslationClient_TranslateText() {
 	}
 	defer c.Close()
 
-	req := &translatepb.TranslateTextRequest{
+	req := &translatepb.BatchTranslateDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#TranslateTextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#BatchTranslateDocumentRequest.
 	}
-	resp, err := c.TranslateText(ctx, req)
+	op, err := c.BatchTranslateDocument(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
-}
 
-func ExampleTranslationClient_DetectLanguage() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := translate.NewTranslationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &translatepb.DetectLanguageRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#DetectLanguageRequest.
-	}
-	resp, err := c.DetectLanguage(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleTranslationClient_GetSupportedLanguages() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := translate.NewTranslationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &translatepb.GetSupportedLanguagesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#GetSupportedLanguagesRequest.
-	}
-	resp, err := c.GetSupportedLanguages(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleTranslationClient_TranslateDocument() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := translate.NewTranslationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &translatepb.TranslateDocumentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#TranslateDocumentRequest.
-	}
-	resp, err := c.TranslateDocument(ctx, req)
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -176,36 +106,6 @@ func ExampleTranslationClient_BatchTranslateText() {
 		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#BatchTranslateTextRequest.
 	}
 	op, err := c.BatchTranslateText(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleTranslationClient_BatchTranslateDocument() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := translate.NewTranslationClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &translatepb.BatchTranslateDocumentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#BatchTranslateDocumentRequest.
-	}
-	op, err := c.BatchTranslateDocument(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -248,6 +148,111 @@ func ExampleTranslationClient_CreateGlossary() {
 	_ = resp
 }
 
+func ExampleTranslationClient_DeleteGlossary() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := translate.NewTranslationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &translatepb.DeleteGlossaryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#DeleteGlossaryRequest.
+	}
+	op, err := c.DeleteGlossary(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTranslationClient_DetectLanguage() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := translate.NewTranslationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &translatepb.DetectLanguageRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#DetectLanguageRequest.
+	}
+	resp, err := c.DetectLanguage(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTranslationClient_GetGlossary() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := translate.NewTranslationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &translatepb.GetGlossaryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#GetGlossaryRequest.
+	}
+	resp, err := c.GetGlossary(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTranslationClient_GetSupportedLanguages() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := translate.NewTranslationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &translatepb.GetSupportedLanguagesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#GetSupportedLanguagesRequest.
+	}
+	resp, err := c.GetSupportedLanguages(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleTranslationClient_ListGlossaries() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -279,7 +284,7 @@ func ExampleTranslationClient_ListGlossaries() {
 	}
 }
 
-func ExampleTranslationClient_GetGlossary() {
+func ExampleTranslationClient_TranslateDocument() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -292,11 +297,11 @@ func ExampleTranslationClient_GetGlossary() {
 	}
 	defer c.Close()
 
-	req := &translatepb.GetGlossaryRequest{
+	req := &translatepb.TranslateDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#GetGlossaryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#TranslateDocumentRequest.
 	}
-	resp, err := c.GetGlossary(ctx, req)
+	resp, err := c.TranslateDocument(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -304,7 +309,7 @@ func ExampleTranslationClient_GetGlossary() {
 	_ = resp
 }
 
-func ExampleTranslationClient_DeleteGlossary() {
+func ExampleTranslationClient_TranslateText() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -317,16 +322,11 @@ func ExampleTranslationClient_DeleteGlossary() {
 	}
 	defer c.Close()
 
-	req := &translatepb.DeleteGlossaryRequest{
+	req := &translatepb.TranslateTextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#DeleteGlossaryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#TranslateTextRequest.
 	}
-	op, err := c.DeleteGlossary(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
+	resp, err := c.TranslateText(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

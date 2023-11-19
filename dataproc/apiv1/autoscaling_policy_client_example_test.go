@@ -85,7 +85,7 @@ func ExampleAutoscalingPolicyClient_CreateAutoscalingPolicy() {
 	_ = resp
 }
 
-func ExampleAutoscalingPolicyClient_UpdateAutoscalingPolicy() {
+func ExampleAutoscalingPolicyClient_DeleteAutoscalingPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -98,16 +98,14 @@ func ExampleAutoscalingPolicyClient_UpdateAutoscalingPolicy() {
 	}
 	defer c.Close()
 
-	req := &dataprocpb.UpdateAutoscalingPolicyRequest{
+	req := &dataprocpb.DeleteAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#UpdateAutoscalingPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#DeleteAutoscalingPolicyRequest.
 	}
-	resp, err := c.UpdateAutoscalingPolicy(ctx, req)
+	err = c.DeleteAutoscalingPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleAutoscalingPolicyClient_GetAutoscalingPolicy() {
@@ -166,7 +164,7 @@ func ExampleAutoscalingPolicyClient_ListAutoscalingPolicies() {
 	}
 }
 
-func ExampleAutoscalingPolicyClient_DeleteAutoscalingPolicy() {
+func ExampleAutoscalingPolicyClient_UpdateAutoscalingPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -179,14 +177,16 @@ func ExampleAutoscalingPolicyClient_DeleteAutoscalingPolicy() {
 	}
 	defer c.Close()
 
-	req := &dataprocpb.DeleteAutoscalingPolicyRequest{
+	req := &dataprocpb.UpdateAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#DeleteAutoscalingPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#UpdateAutoscalingPolicyRequest.
 	}
-	err = c.DeleteAutoscalingPolicy(ctx, req)
+	resp, err := c.UpdateAutoscalingPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleAutoscalingPolicyClient_GetIamPolicy() {

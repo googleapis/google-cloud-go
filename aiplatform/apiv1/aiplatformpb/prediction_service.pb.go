@@ -620,6 +620,126 @@ func (x *ExplainResponse) GetPredictions() []*structpb.Value {
 	return nil
 }
 
+// Request message for [PredictionService.CountTokens][].
+type CountTokensRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. The name of the Endpoint requested to perform token counting.
+	// Format:
+	// `projects/{project}/locations/{location}/endpoints/{endpoint}`
+	Endpoint string `protobuf:"bytes,1,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
+	// Required. The instances that are the input to token counting call.
+	// Schema is identical to the prediction schema of the underlying model.
+	Instances []*structpb.Value `protobuf:"bytes,2,rep,name=instances,proto3" json:"instances,omitempty"`
+}
+
+func (x *CountTokensRequest) Reset() {
+	*x = CountTokensRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CountTokensRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CountTokensRequest) ProtoMessage() {}
+
+func (x *CountTokensRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CountTokensRequest.ProtoReflect.Descriptor instead.
+func (*CountTokensRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_prediction_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *CountTokensRequest) GetEndpoint() string {
+	if x != nil {
+		return x.Endpoint
+	}
+	return ""
+}
+
+func (x *CountTokensRequest) GetInstances() []*structpb.Value {
+	if x != nil {
+		return x.Instances
+	}
+	return nil
+}
+
+// Response message for [PredictionService.CountTokens][].
+type CountTokensResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The total number of tokens counted across all instances from the request.
+	TotalTokens int32 `protobuf:"varint,1,opt,name=total_tokens,json=totalTokens,proto3" json:"total_tokens,omitempty"`
+	// The total number of billable characters counted across all instances from
+	// the request.
+	TotalBillableCharacters int32 `protobuf:"varint,2,opt,name=total_billable_characters,json=totalBillableCharacters,proto3" json:"total_billable_characters,omitempty"`
+}
+
+func (x *CountTokensResponse) Reset() {
+	*x = CountTokensResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CountTokensResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CountTokensResponse) ProtoMessage() {}
+
+func (x *CountTokensResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CountTokensResponse.ProtoReflect.Descriptor instead.
+func (*CountTokensResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_prediction_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *CountTokensResponse) GetTotalTokens() int32 {
+	if x != nil {
+		return x.TotalTokens
+	}
+	return 0
+}
+
+func (x *CountTokensResponse) GetTotalBillableCharacters() int32 {
+	if x != nil {
+		return x.TotalBillableCharacters
+	}
+	return 0
+}
+
 var File_google_cloud_aiplatform_v1_prediction_service_proto protoreflect.FileDescriptor
 
 var file_google_cloud_aiplatform_v1_prediction_service_proto_rawDesc = []byte{
@@ -746,7 +866,24 @@ var file_google_cloud_aiplatform_v1_prediction_service_proto_rawDesc = []byte{
 	0x64, 0x12, 0x38, 0x0a, 0x0b, 0x70, 0x72, 0x65, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73,
 	0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x52, 0x0b,
-	0x70, 0x72, 0x65, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x32, 0x8f, 0x09, 0x0a, 0x11,
+	0x70, 0x72, 0x65, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x97, 0x01, 0x0a, 0x12,
+	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x46, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x2a, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x24, 0x0a, 0x22, 0x61, 0x69,
+	0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61,
+	0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x45, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74,
+	0x52, 0x08, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x39, 0x0a, 0x09, 0x69, 0x6e,
+	0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
+	0x56, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x09, 0x69, 0x6e, 0x73, 0x74,
+	0x61, 0x6e, 0x63, 0x65, 0x73, 0x22, 0x74, 0x0a, 0x13, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f,
+	0x6b, 0x65, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x21, 0x0a, 0x0c,
+	0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x0b, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x73, 0x12,
+	0x3a, 0x0a, 0x19, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x62, 0x69, 0x6c, 0x6c, 0x61, 0x62, 0x6c,
+	0x65, 0x5f, 0x63, 0x68, 0x61, 0x72, 0x61, 0x63, 0x74, 0x65, 0x72, 0x73, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x17, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x42, 0x69, 0x6c, 0x6c, 0x61, 0x62, 0x6c,
+	0x65, 0x43, 0x68, 0x61, 0x72, 0x61, 0x63, 0x74, 0x65, 0x72, 0x73, 0x32, 0x8f, 0x09, 0x0a, 0x11,
 	0x50, 0x72, 0x65, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
 	0x65, 0x12, 0x94, 0x02, 0x0a, 0x07, 0x50, 0x72, 0x65, 0x64, 0x69, 0x63, 0x74, 0x12, 0x2a, 0x2e,
 	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70,
@@ -848,7 +985,7 @@ func file_google_cloud_aiplatform_v1_prediction_service_proto_rawDescGZIP() []by
 	return file_google_cloud_aiplatform_v1_prediction_service_proto_rawDescData
 }
 
-var file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_cloud_aiplatform_v1_prediction_service_proto_goTypes = []interface{}{
 	(*PredictRequest)(nil),           // 0: google.cloud.aiplatform.v1.PredictRequest
 	(*PredictResponse)(nil),          // 1: google.cloud.aiplatform.v1.PredictResponse
@@ -857,40 +994,43 @@ var file_google_cloud_aiplatform_v1_prediction_service_proto_goTypes = []interfa
 	(*StreamingPredictResponse)(nil), // 4: google.cloud.aiplatform.v1.StreamingPredictResponse
 	(*ExplainRequest)(nil),           // 5: google.cloud.aiplatform.v1.ExplainRequest
 	(*ExplainResponse)(nil),          // 6: google.cloud.aiplatform.v1.ExplainResponse
-	(*structpb.Value)(nil),           // 7: google.protobuf.Value
-	(*httpbody.HttpBody)(nil),        // 8: google.api.HttpBody
-	(*Tensor)(nil),                   // 9: google.cloud.aiplatform.v1.Tensor
-	(*ExplanationSpecOverride)(nil),  // 10: google.cloud.aiplatform.v1.ExplanationSpecOverride
-	(*Explanation)(nil),              // 11: google.cloud.aiplatform.v1.Explanation
+	(*CountTokensRequest)(nil),       // 7: google.cloud.aiplatform.v1.CountTokensRequest
+	(*CountTokensResponse)(nil),      // 8: google.cloud.aiplatform.v1.CountTokensResponse
+	(*structpb.Value)(nil),           // 9: google.protobuf.Value
+	(*httpbody.HttpBody)(nil),        // 10: google.api.HttpBody
+	(*Tensor)(nil),                   // 11: google.cloud.aiplatform.v1.Tensor
+	(*ExplanationSpecOverride)(nil),  // 12: google.cloud.aiplatform.v1.ExplanationSpecOverride
+	(*Explanation)(nil),              // 13: google.cloud.aiplatform.v1.Explanation
 }
 var file_google_cloud_aiplatform_v1_prediction_service_proto_depIdxs = []int32{
-	7,  // 0: google.cloud.aiplatform.v1.PredictRequest.instances:type_name -> google.protobuf.Value
-	7,  // 1: google.cloud.aiplatform.v1.PredictRequest.parameters:type_name -> google.protobuf.Value
-	7,  // 2: google.cloud.aiplatform.v1.PredictResponse.predictions:type_name -> google.protobuf.Value
-	7,  // 3: google.cloud.aiplatform.v1.PredictResponse.metadata:type_name -> google.protobuf.Value
-	8,  // 4: google.cloud.aiplatform.v1.RawPredictRequest.http_body:type_name -> google.api.HttpBody
-	9,  // 5: google.cloud.aiplatform.v1.StreamingPredictRequest.inputs:type_name -> google.cloud.aiplatform.v1.Tensor
-	9,  // 6: google.cloud.aiplatform.v1.StreamingPredictRequest.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
-	9,  // 7: google.cloud.aiplatform.v1.StreamingPredictResponse.outputs:type_name -> google.cloud.aiplatform.v1.Tensor
-	9,  // 8: google.cloud.aiplatform.v1.StreamingPredictResponse.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
-	7,  // 9: google.cloud.aiplatform.v1.ExplainRequest.instances:type_name -> google.protobuf.Value
-	7,  // 10: google.cloud.aiplatform.v1.ExplainRequest.parameters:type_name -> google.protobuf.Value
-	10, // 11: google.cloud.aiplatform.v1.ExplainRequest.explanation_spec_override:type_name -> google.cloud.aiplatform.v1.ExplanationSpecOverride
-	11, // 12: google.cloud.aiplatform.v1.ExplainResponse.explanations:type_name -> google.cloud.aiplatform.v1.Explanation
-	7,  // 13: google.cloud.aiplatform.v1.ExplainResponse.predictions:type_name -> google.protobuf.Value
-	0,  // 14: google.cloud.aiplatform.v1.PredictionService.Predict:input_type -> google.cloud.aiplatform.v1.PredictRequest
-	2,  // 15: google.cloud.aiplatform.v1.PredictionService.RawPredict:input_type -> google.cloud.aiplatform.v1.RawPredictRequest
-	3,  // 16: google.cloud.aiplatform.v1.PredictionService.ServerStreamingPredict:input_type -> google.cloud.aiplatform.v1.StreamingPredictRequest
-	5,  // 17: google.cloud.aiplatform.v1.PredictionService.Explain:input_type -> google.cloud.aiplatform.v1.ExplainRequest
-	1,  // 18: google.cloud.aiplatform.v1.PredictionService.Predict:output_type -> google.cloud.aiplatform.v1.PredictResponse
-	8,  // 19: google.cloud.aiplatform.v1.PredictionService.RawPredict:output_type -> google.api.HttpBody
-	4,  // 20: google.cloud.aiplatform.v1.PredictionService.ServerStreamingPredict:output_type -> google.cloud.aiplatform.v1.StreamingPredictResponse
-	6,  // 21: google.cloud.aiplatform.v1.PredictionService.Explain:output_type -> google.cloud.aiplatform.v1.ExplainResponse
-	18, // [18:22] is the sub-list for method output_type
-	14, // [14:18] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	9,  // 0: google.cloud.aiplatform.v1.PredictRequest.instances:type_name -> google.protobuf.Value
+	9,  // 1: google.cloud.aiplatform.v1.PredictRequest.parameters:type_name -> google.protobuf.Value
+	9,  // 2: google.cloud.aiplatform.v1.PredictResponse.predictions:type_name -> google.protobuf.Value
+	9,  // 3: google.cloud.aiplatform.v1.PredictResponse.metadata:type_name -> google.protobuf.Value
+	10, // 4: google.cloud.aiplatform.v1.RawPredictRequest.http_body:type_name -> google.api.HttpBody
+	11, // 5: google.cloud.aiplatform.v1.StreamingPredictRequest.inputs:type_name -> google.cloud.aiplatform.v1.Tensor
+	11, // 6: google.cloud.aiplatform.v1.StreamingPredictRequest.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
+	11, // 7: google.cloud.aiplatform.v1.StreamingPredictResponse.outputs:type_name -> google.cloud.aiplatform.v1.Tensor
+	11, // 8: google.cloud.aiplatform.v1.StreamingPredictResponse.parameters:type_name -> google.cloud.aiplatform.v1.Tensor
+	9,  // 9: google.cloud.aiplatform.v1.ExplainRequest.instances:type_name -> google.protobuf.Value
+	9,  // 10: google.cloud.aiplatform.v1.ExplainRequest.parameters:type_name -> google.protobuf.Value
+	12, // 11: google.cloud.aiplatform.v1.ExplainRequest.explanation_spec_override:type_name -> google.cloud.aiplatform.v1.ExplanationSpecOverride
+	13, // 12: google.cloud.aiplatform.v1.ExplainResponse.explanations:type_name -> google.cloud.aiplatform.v1.Explanation
+	9,  // 13: google.cloud.aiplatform.v1.ExplainResponse.predictions:type_name -> google.protobuf.Value
+	9,  // 14: google.cloud.aiplatform.v1.CountTokensRequest.instances:type_name -> google.protobuf.Value
+	0,  // 15: google.cloud.aiplatform.v1.PredictionService.Predict:input_type -> google.cloud.aiplatform.v1.PredictRequest
+	2,  // 16: google.cloud.aiplatform.v1.PredictionService.RawPredict:input_type -> google.cloud.aiplatform.v1.RawPredictRequest
+	3,  // 17: google.cloud.aiplatform.v1.PredictionService.ServerStreamingPredict:input_type -> google.cloud.aiplatform.v1.StreamingPredictRequest
+	5,  // 18: google.cloud.aiplatform.v1.PredictionService.Explain:input_type -> google.cloud.aiplatform.v1.ExplainRequest
+	1,  // 19: google.cloud.aiplatform.v1.PredictionService.Predict:output_type -> google.cloud.aiplatform.v1.PredictResponse
+	10, // 20: google.cloud.aiplatform.v1.PredictionService.RawPredict:output_type -> google.api.HttpBody
+	4,  // 21: google.cloud.aiplatform.v1.PredictionService.ServerStreamingPredict:output_type -> google.cloud.aiplatform.v1.StreamingPredictResponse
+	6,  // 22: google.cloud.aiplatform.v1.PredictionService.Explain:output_type -> google.cloud.aiplatform.v1.ExplainResponse
+	19, // [19:23] is the sub-list for method output_type
+	15, // [15:19] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1_prediction_service_proto_init() }
@@ -985,6 +1125,30 @@ func file_google_cloud_aiplatform_v1_prediction_service_proto_init() {
 				return nil
 			}
 		}
+		file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CountTokensRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_aiplatform_v1_prediction_service_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CountTokensResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -992,7 +1156,7 @@ func file_google_cloud_aiplatform_v1_prediction_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1_prediction_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

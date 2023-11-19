@@ -439,6 +439,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		return nil, err
 	}
 	sh = &sessionHandle{session: s}
+	sh.updateLastUseTime()
 
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.BeginTransactionRequest{
@@ -580,18 +581,13 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 			// Session handle hasn't been allocated or has been destroyed.
 			sh, err = c.idleSessions.take(ctx)
-			if t != nil {
-				// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
-				sh.mu.Lock()
-				t.mu.Lock()
-				sh.eligibleForLongRunning = t.isLongRunningTransaction
-				t.mu.Unlock()
-				sh.mu.Unlock()
-			}
 			if err != nil {
 				// If session retrieval fails, just fail the transaction.
 				return err
 			}
+
+			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
+			t.setSessionEligibilityForLongRunning(sh)
 		}
 		if t.shouldExplicitBegin(attempt) {
 			// Make sure we set the current session handle before calling BeginTransaction.
@@ -866,6 +862,7 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 
 	rpc := func(ct context.Context) (sppb.Spanner_BatchWriteClient, error) {
 		var md metadata.MD
+		sh.updateLastUseTime()
 		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
 			Session:        sh.getID(),
 			MutationGroups: mgsPb,

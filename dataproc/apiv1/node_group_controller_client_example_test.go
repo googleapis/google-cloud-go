@@ -90,6 +90,31 @@ func ExampleNodeGroupControllerClient_CreateNodeGroup() {
 	_ = resp
 }
 
+func ExampleNodeGroupControllerClient_GetNodeGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataproc.NewNodeGroupControllerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataprocpb.GetNodeGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#GetNodeGroupRequest.
+	}
+	resp, err := c.GetNodeGroup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleNodeGroupControllerClient_ResizeNodeGroup() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -113,31 +138,6 @@ func ExampleNodeGroupControllerClient_ResizeNodeGroup() {
 	}
 
 	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleNodeGroupControllerClient_GetNodeGroup() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataproc.NewNodeGroupControllerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataprocpb.GetNodeGroupRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#GetNodeGroupRequest.
-	}
-	resp, err := c.GetNodeGroup(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

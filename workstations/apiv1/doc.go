@@ -70,11 +70,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &workstationspb.GetWorkstationClusterRequest{
+//	req := &workstationspb.CreateWorkstationRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#GetWorkstationClusterRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/workstations/apiv1/workstationspb#CreateWorkstationRequest.
 //	}
-//	resp, err := c.GetWorkstationCluster(ctx, req)
+//	op, err := c.CreateWorkstation(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

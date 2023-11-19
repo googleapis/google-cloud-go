@@ -71,22 +71,21 @@
 //	}
 //	defer c.Close()
 //
-//	req := &netapppb.ListStoragePoolsRequest{
+//	req := &netapppb.CreateActiveDirectoryRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/netapp/apiv1/netapppb#ListStoragePoolsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/netapp/apiv1/netapppb#CreateActiveDirectoryRequest.
 //	}
-//	it := c.ListStoragePools(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	op, err := c.CreateActiveDirectory(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //
