@@ -27,6 +27,7 @@ modules:
   - channel
   - cloudbuild
   - clouddms
+  - cloudprofiler
   - cloudtasks
   - commerce
   - compute
@@ -52,6 +53,7 @@ modules:
   - documentai
   - domains
   - edgecontainer
+  - edgenetwork
   - errorreporting
   - essentialcontacts
   - eventarc
@@ -125,6 +127,7 @@ modules:
   - storagetransfer
   - support
   - talent
+  - telcoautomation
   - texttospeech
   - tpu
   - trace
@@ -435,6 +438,9 @@ service-configs:
   - input-directory: google/cloud/clouddms/v1
     service-config: datamigration_v1.yaml
     import-path: cloud.google.com/go/clouddms/apiv1
+  - input-directory: google/devtools/cloudprofiler/v2
+    service-config: cloudprofiler_v2.yaml
+    import-path: cloud.google.com/go/cloudprofiler/apiv2
   - input-directory: google/cloud/commerce/consumer/procurement/v1
     service-config: cloudcommerceconsumerprocurement_v1.yaml
     import-path: cloud.google.com/go/commerce/consumer/procurement/apiv1
@@ -517,6 +523,9 @@ service-configs:
   - input-directory: google/cloud/edgecontainer/v1
     service-config: edgecontainer_v1.yaml
     import-path: cloud.google.com/go/edgecontainer/apiv1
+  - input-directory: google/cloud/edgenetwork/v1
+    service-config: edgenetwork_v1.yaml
+    import-path: cloud.google.com/go/edgenetwork/apiv1
   - input-directory: google/cloud/essentialcontacts/v1
     service-config: essentialcontacts_v1.yaml
     import-path: cloud.google.com/go/essentialcontacts/apiv1
@@ -810,6 +819,9 @@ service-configs:
   - input-directory: google/cloud/tasks/v2beta3
     service-config: cloudtasks_v2beta3.yaml
     import-path: cloud.google.com/go/cloudtasks/apiv2beta3
+  - input-directory: google/cloud/telcoautomation/v1
+    service-config: telcoautomation_v1.yaml
+    import-path: cloud.google.com/go/telcoautomation/apiv1
   - input-directory: google/cloud/texttospeech/v1
     service-config: texttospeech_v1.yaml
     import-path: cloud.google.com/go/texttospeech/apiv1
@@ -925,7 +937,7 @@ service-configs:
     import-path: cloud.google.com/go/containeranalysis/apiv1beta1
   - input-directory: google/firestore/admin/v1
     service-config: firestore_v1.yaml
-    import-path: ""
+    import-path: cloud.google.com/go/firestore/apiv1/admin
   - input-directory: google/firestore/v1
     service-config: firestore_v1.yaml
     import-path: cloud.google.com/go/firestore/apiv1

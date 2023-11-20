@@ -74,7 +74,7 @@
 //		// TODO: Fill request struct fields.
 //		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/httpbody#HttpBody.
 //	}
-//	resp, err := c.GetResource(ctx, req)
+//	resp, err := c.DeleteResource(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -70,21 +70,13 @@
 //	}
 //	defer c.Close()
 //
-//	req := &dataformpb.ListRepositoriesRequest{
+//	req := &dataformpb.CancelWorkflowInvocationRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ListRepositoriesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CancelWorkflowInvocationRequest.
 //	}
-//	it := c.ListRepositories(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	err = c.CancelWorkflowInvocation(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
 //
 // # Use of Context

@@ -65,11 +65,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &livestreampb.CreateChannelRequest{
+//	req := &livestreampb.CreateAssetRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#CreateChannelRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#CreateAssetRequest.
 //	}
-//	op, err := c.CreateChannel(ctx, req)
+//	op, err := c.CreateAsset(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

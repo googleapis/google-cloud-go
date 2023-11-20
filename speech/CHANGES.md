@@ -1,5 +1,19 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.20.1...speech/v1.21.0) (2023-11-09)
+
+
+### Features
+
+* **speech:** Support MP3, TranscriptNormalization and SpeakerLabels in STT V1 API ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.20.0...speech/v1.20.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **speech:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.19.2...speech/v1.20.0) (2023-10-31)
 
 
