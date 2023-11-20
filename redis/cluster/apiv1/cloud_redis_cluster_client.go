@@ -148,36 +148,36 @@ type internalCloudRedisClusterClient interface {
 // CloudRedisClusterClient is a client for interacting with Google Cloud Memorystore for Redis API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Configures and manages Cloud Memorystore for Redis clusters
+// Configures and manages Cloud Memorystore for Redis clusters
 //
-// # Google Cloud Memorystore for Redis Cluster
+// Google Cloud Memorystore for Redis Cluster
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // clusters:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Redis clusters, named: /clusters/*
+//   Each location has a collection of Redis clusters, named: /clusters/*
 //
-//	As such, Redis clusters are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/clusters/{instance_id}
+//   As such, Redis clusters are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/clusters/{instance_id}
 //
 // Note that location_id must be a GCP region; for example:
 //
-//	projects/redpepper-1290/locations/us-central1/clusters/my-redis
+//   projects/redpepper-1290/locations/us-central1/clusters/my-redis
 //
 // We use API version selector for Flex APIs
 //
-//	The versioning strategy is release-based versioning
+//   The versioning strategy is release-based versioning
 //
-//	Our backend CLH only deals with the superset version (called v1main)
+//   Our backend CLH only deals with the superset version (called v1main)
 //
-//	Existing backend for Redis Gen1 and MRR is not touched.
+//   Existing backend for Redis Gen1 and MRR is not touched.
 //
-//	More details in go/redis-flex-api-versioning
+//   More details in go/redis-flex-api-versioning
 type CloudRedisClusterClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudRedisClusterClient
@@ -219,7 +219,7 @@ func (c *CloudRedisClusterClient) Connection() *grpc.ClientConn {
 //
 // The location should have the following format:
 //
-//	projects/{project_id}/locations/{location_id}
+//   projects/{project_id}/locations/{location_id}
 //
 // If location_id is specified as - (wildcard), then all regions
 // available to the project are queried, and the results are aggregated.
@@ -336,36 +336,36 @@ type cloudRedisClusterGRPCClient struct {
 // NewCloudRedisClusterClient creates a new cloud redis cluster client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Configures and manages Cloud Memorystore for Redis clusters
+// Configures and manages Cloud Memorystore for Redis clusters
 //
-// # Google Cloud Memorystore for Redis Cluster
+// Google Cloud Memorystore for Redis Cluster
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // clusters:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Redis clusters, named: /clusters/*
+//   Each location has a collection of Redis clusters, named: /clusters/*
 //
-//	As such, Redis clusters are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/clusters/{instance_id}
+//   As such, Redis clusters are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/clusters/{instance_id}
 //
 // Note that location_id must be a GCP region; for example:
 //
-//	projects/redpepper-1290/locations/us-central1/clusters/my-redis
+//   projects/redpepper-1290/locations/us-central1/clusters/my-redis
 //
 // We use API version selector for Flex APIs
 //
-//	The versioning strategy is release-based versioning
+//   The versioning strategy is release-based versioning
 //
-//	Our backend CLH only deals with the superset version (called v1main)
+//   Our backend CLH only deals with the superset version (called v1main)
 //
-//	Existing backend for Redis Gen1 and MRR is not touched.
+//   Existing backend for Redis Gen1 and MRR is not touched.
 //
-//	More details in go/redis-flex-api-versioning
+//   More details in go/redis-flex-api-versioning
 func NewCloudRedisClusterClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClusterClient, error) {
 	clientOpts := defaultCloudRedisClusterGRPCClientOptions()
 	if newCloudRedisClusterClientHook != nil {
@@ -452,36 +452,36 @@ type cloudRedisClusterRESTClient struct {
 
 // NewCloudRedisClusterRESTClient creates a new cloud redis cluster rest client.
 //
-// # Configures and manages Cloud Memorystore for Redis clusters
+// Configures and manages Cloud Memorystore for Redis clusters
 //
-// # Google Cloud Memorystore for Redis Cluster
+// Google Cloud Memorystore for Redis Cluster
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // clusters:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Redis clusters, named: /clusters/*
+//   Each location has a collection of Redis clusters, named: /clusters/*
 //
-//	As such, Redis clusters are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/clusters/{instance_id}
+//   As such, Redis clusters are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/clusters/{instance_id}
 //
 // Note that location_id must be a GCP region; for example:
 //
-//	projects/redpepper-1290/locations/us-central1/clusters/my-redis
+//   projects/redpepper-1290/locations/us-central1/clusters/my-redis
 //
 // We use API version selector for Flex APIs
 //
-//	The versioning strategy is release-based versioning
+//   The versioning strategy is release-based versioning
 //
-//	Our backend CLH only deals with the superset version (called v1main)
+//   Our backend CLH only deals with the superset version (called v1main)
 //
-//	Existing backend for Redis Gen1 and MRR is not touched.
+//   Existing backend for Redis Gen1 and MRR is not touched.
 //
-//	More details in go/redis-flex-api-versioning
+//   More details in go/redis-flex-api-versioning
 func NewCloudRedisClusterRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClusterClient, error) {
 	clientOpts := append(defaultCloudRedisClusterRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -827,7 +827,7 @@ func (c *cloudRedisClusterGRPCClient) ListOperations(ctx context.Context, req *l
 //
 // The location should have the following format:
 //
-//	projects/{project_id}/locations/{location_id}
+//   projects/{project_id}/locations/{location_id}
 //
 // If location_id is specified as - (wildcard), then all regions
 // available to the project are queried, and the results are aggregated.
