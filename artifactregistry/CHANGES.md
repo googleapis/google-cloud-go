@@ -1,5 +1,19 @@
 # Changes
 
+## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.5...artifactregistry/v1.14.6) (2023-11-01)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.14.5](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.4...artifactregistry/v1.14.5) (2023-10-31)
+
+
+### Documentation
+
+* **artifactregistry:** Use code font for resource name references ([ffb0dda](https://github.com/googleapis/google-cloud-go/commit/ffb0ddabf3d9822ba8120cabaf25515fd32e9615))
+
 ## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.3...artifactregistry/v1.14.4) (2023-10-26)
 
 

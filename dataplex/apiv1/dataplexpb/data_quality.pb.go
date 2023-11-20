@@ -246,6 +246,9 @@ type DataQualityResult struct {
 	// Overall data quality result -- `true` if all rules passed.
 	Passed bool `protobuf:"varint,5,opt,name=passed,proto3" json:"passed,omitempty"`
 	// A list of results at the dimension level.
+	//
+	// A dimension will have a corresponding `DataQualityDimensionResult` if and
+	// only if there is at least one rule with the 'dimension' field set to it.
 	Dimensions []*DataQualityDimensionResult `protobuf:"bytes,2,rep,name=dimensions,proto3" json:"dimensions,omitempty"`
 	// A list of all the rules in a job, and their results.
 	Rules []*DataQualityRuleResult `protobuf:"bytes,3,rep,name=rules,proto3" json:"rules,omitempty"`

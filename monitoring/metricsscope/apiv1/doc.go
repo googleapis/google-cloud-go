@@ -72,11 +72,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &metricsscopepb.GetMetricsScopeRequest{
+//	req := &metricsscopepb.CreateMonitoredProjectRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb#GetMetricsScopeRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb#CreateMonitoredProjectRequest.
 //	}
-//	resp, err := c.GetMetricsScope(ctx, req)
+//	op, err := c.CreateMonitoredProject(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

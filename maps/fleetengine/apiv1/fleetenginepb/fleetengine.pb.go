@@ -869,7 +869,7 @@ type VehicleLocation struct {
 	RawLocation *latlng.LatLng `protobuf:"bytes,16,opt,name=raw_location,json=rawLocation,proto3" json:"raw_location,omitempty"`
 	// Timestamp associated with the raw location.
 	RawLocationTime *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=raw_location_time,json=rawLocationTime,proto3" json:"raw_location_time,omitempty"`
-	// Source of the raw location.
+	// Source of the raw location. Defaults to `GPS`.
 	RawLocationSensor LocationSensor `protobuf:"varint,28,opt,name=raw_location_sensor,json=rawLocationSensor,proto3,enum=maps.fleetengine.v1.LocationSensor" json:"raw_location_sensor,omitempty"`
 	// Accuracy of `raw_location` as a radius, in meters.
 	RawLocationAccuracy *wrapperspb.DoubleValue `protobuf:"bytes,25,opt,name=raw_location_accuracy,json=rawLocationAccuracy,proto3" json:"raw_location_accuracy,omitempty"`
@@ -877,7 +877,8 @@ type VehicleLocation struct {
 	SupplementalLocation *latlng.LatLng `protobuf:"bytes,18,opt,name=supplemental_location,json=supplementalLocation,proto3" json:"supplemental_location,omitempty"`
 	// Timestamp associated with the supplemental location.
 	SupplementalLocationTime *timestamppb.Timestamp `protobuf:"bytes,19,opt,name=supplemental_location_time,json=supplementalLocationTime,proto3" json:"supplemental_location_time,omitempty"`
-	// Source of the supplemental location.
+	// Source of the supplemental location. Defaults to
+	// `CUSTOMER_SUPPLIED_LOCATION`.
 	SupplementalLocationSensor LocationSensor `protobuf:"varint,20,opt,name=supplemental_location_sensor,json=supplementalLocationSensor,proto3,enum=maps.fleetengine.v1.LocationSensor" json:"supplemental_location_sensor,omitempty"`
 	// Accuracy of `supplemental_location` as a radius, in meters.
 	SupplementalLocationAccuracy *wrapperspb.DoubleValue `protobuf:"bytes,21,opt,name=supplemental_location_accuracy,json=supplementalLocationAccuracy,proto3" json:"supplemental_location_accuracy,omitempty"`

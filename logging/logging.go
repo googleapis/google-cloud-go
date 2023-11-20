@@ -54,6 +54,7 @@ import (
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -967,65 +968,70 @@ func toLogEntryInternalImpl(e Entry, l *Logger, parent string, skipLevels int) (
 // entry represents the fields of a logging.Entry that can be parsed by Logging agent.
 // See the mappings at https://cloud.google.com/logging/docs/structured-logging#special-payload-fields
 type structuredLogEntry struct {
-	// JsonMessage    map[string]interface{}        `json:"message,omitempty"`
-	// TextMessage    string                        `json:"message,omitempty"`
-	Message        json.RawMessage               `json:"message"`
-	Severity       string                        `json:"severity,omitempty"`
-	HTTPRequest    *logtypepb.HttpRequest        `json:"httpRequest,omitempty"`
-	Timestamp      string                        `json:"timestamp,omitempty"`
-	Labels         map[string]string             `json:"logging.googleapis.com/labels,omitempty"`
-	InsertID       string                        `json:"logging.googleapis.com/insertId,omitempty"`
-	Operation      *logpb.LogEntryOperation      `json:"logging.googleapis.com/operation,omitempty"`
-	SourceLocation *logpb.LogEntrySourceLocation `json:"logging.googleapis.com/sourceLocation,omitempty"`
-	SpanID         string                        `json:"logging.googleapis.com/spanId,omitempty"`
-	Trace          string                        `json:"logging.googleapis.com/trace,omitempty"`
-	TraceSampled   bool                          `json:"logging.googleapis.com/trace_sampled,omitempty"`
+	Message        json.RawMessage                   `json:"message"`
+	Severity       string                            `json:"severity,omitempty"`
+	HTTPRequest    *structuredLogEntryHTTPRequest    `json:"httpRequest,omitempty"`
+	Timestamp      string                            `json:"timestamp,omitempty"`
+	Labels         map[string]string                 `json:"logging.googleapis.com/labels,omitempty"`
+	InsertID       string                            `json:"logging.googleapis.com/insertId,omitempty"`
+	Operation      *structuredLogEntryOperation      `json:"logging.googleapis.com/operation,omitempty"`
+	SourceLocation *structuredLogEntrySourceLocation `json:"logging.googleapis.com/sourceLocation,omitempty"`
+	SpanID         string                            `json:"logging.googleapis.com/spanId,omitempty"`
+	Trace          string                            `json:"logging.googleapis.com/trace,omitempty"`
+	TraceSampled   bool                              `json:"logging.googleapis.com/trace_sampled,omitempty"`
 }
 
-func convertSnakeToMixedCase(snakeStr string) string {
-	words := strings.Split(snakeStr, "_")
-	mixedStr := words[0]
-	for _, word := range words[1:] {
-		mixedStr += strings.Title(word)
-	}
-	return mixedStr
+// structuredLogEntryHTTPRequest wraps the HTTPRequest proto field in structuredLogEntry for easier JSON marshalling.
+type structuredLogEntryHTTPRequest struct {
+	request *logtypepb.HttpRequest
 }
 
-func (s structuredLogEntry) MarshalJSON() ([]byte, error) {
-	// extract structuredLogEntry into json map
-	type Alias structuredLogEntry
-	var mapData map[string]interface{}
-	data, err := json.Marshal(Alias(s))
-	if err == nil {
-		err = json.Unmarshal(data, &mapData)
-	}
-	if err == nil {
-		// ensure all inner dicts use mixed case instead of snake case
-		innerDicts := [3]string{"httpRequest", "logging.googleapis.com/operation", "logging.googleapis.com/sourceLocation"}
-		for _, field := range innerDicts {
-			if fieldData, ok := mapData[field]; ok {
-				formattedFieldData := make(map[string]interface{})
-				for k, v := range fieldData.(map[string]interface{}) {
-					formattedFieldData[convertSnakeToMixedCase(k)] = v
-				}
-				mapData[field] = formattedFieldData
-			}
-		}
-		// serialize json map into raw bytes
-		return json.Marshal(mapData)
-	}
-	return data, err
+func (s structuredLogEntryHTTPRequest) MarshalJSON() ([]byte, error) {
+	return protojson.Marshal(s.request)
+}
+
+// structuredLogEntryOperation wraps the Operation proto field in structuredLogEntry for easier JSON marshalling.
+type structuredLogEntryOperation struct {
+	operation *logpb.LogEntryOperation
+}
+
+func (s structuredLogEntryOperation) MarshalJSON() ([]byte, error) {
+	return protojson.Marshal(s.operation)
+}
+
+// structuredLogEntrySourceLocation wraps the SourceLocation proto field in structuredLogEntry for easier JSON marshalling.
+type structuredLogEntrySourceLocation struct {
+	sourceLocation *logpb.LogEntrySourceLocation
+}
+
+func (s structuredLogEntrySourceLocation) MarshalJSON() ([]byte, error) {
+	return protojson.Marshal(s.sourceLocation)
 }
 
 func serializeEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
+	var httpRequest *structuredLogEntryHTTPRequest
+	if entry.HttpRequest != nil {
+		httpRequest = &structuredLogEntryHTTPRequest{entry.HttpRequest}
+	}
+
+	var operation *structuredLogEntryOperation
+	if entry.Operation != nil {
+		operation = &structuredLogEntryOperation{entry.Operation}
+	}
+
+	var sourceLocation *structuredLogEntrySourceLocation
+	if entry.SourceLocation != nil {
+		sourceLocation = &structuredLogEntrySourceLocation{entry.SourceLocation}
+	}
+
 	jsonifiedEntry := structuredLogEntry{
 		Severity:       entry.Severity.String(),
-		HTTPRequest:    entry.HttpRequest,
+		HTTPRequest:    httpRequest,
 		Timestamp:      entry.Timestamp.String(),
 		Labels:         entry.Labels,
 		InsertID:       entry.InsertId,
-		Operation:      entry.Operation,
-		SourceLocation: entry.SourceLocation,
+		Operation:      operation,
+		SourceLocation: sourceLocation,
 		SpanID:         entry.SpanId,
 		Trace:          entry.Trace,
 		TraceSampled:   entry.TraceSampled,

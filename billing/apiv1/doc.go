@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &billingpb.GetBillingAccountRequest{
+//	req := &billingpb.CreateBillingAccountRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#GetBillingAccountRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#CreateBillingAccountRequest.
 //	}
-//	resp, err := c.GetBillingAccount(ctx, req)
+//	resp, err := c.CreateBillingAccount(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -68,16 +68,14 @@
 //	}
 //	defer c.Close()
 //
-//	req := &containerpb.ListClustersRequest{
+//	req := &containerpb.CancelOperationRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/container/apiv1/containerpb#ListClustersRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/container/apiv1/containerpb#CancelOperationRequest.
 //	}
-//	resp, err := c.ListClusters(ctx, req)
+//	err = c.CancelOperation(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
-//	// TODO: Use resp.
-//	_ = resp
 //
 // # Use of Context
 //
