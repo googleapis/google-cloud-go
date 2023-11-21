@@ -22,9 +22,6 @@ package recaptchaenterprisepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -755,14 +754,13 @@ type AnnotateAssessmentRequest struct {
 	// be left empty to provide reasons that apply to an event without concluding
 	// whether the event is legitimate or fraudulent.
 	Annotation AnnotateAssessmentRequest_Annotation `protobuf:"varint,2,opt,name=annotation,proto3,enum=google.cloud.recaptchaenterprise.v1beta1.AnnotateAssessmentRequest_Annotation" json:"annotation,omitempty"`
-	// Optional. Optional reasons for the annotation that will be assigned to the
-	// Event.
+	// Optional. Reasons for the annotation that are assigned to the event.
 	Reasons []AnnotateAssessmentRequest_Reason `protobuf:"varint,3,rep,packed,name=reasons,proto3,enum=google.cloud.recaptchaenterprise.v1beta1.AnnotateAssessmentRequest_Reason" json:"reasons,omitempty"`
-	// Optional. Optional unique stable hashed user identifier to apply to the
-	// assessment. This is an alternative to setting the hashed_account_id in
-	// CreateAssessment, for example when the account identifier is not yet known
-	// in the initial request. It is recommended that the identifier is hashed
-	// using hmac-sha256 with stable secret.
+	// Optional. Unique stable hashed user identifier to apply to the assessment.
+	// This is an alternative to setting the `hashed_account_id` in
+	// `CreateAssessment`, for example, when the account identifier is not yet
+	// known in the initial request. It is recommended that the identifier is
+	// hashed using hmac-sha256 with stable secret.
 	HashedAccountId []byte `protobuf:"bytes,4,opt,name=hashed_account_id,json=hashedAccountId,proto3" json:"hashed_account_id,omitempty"`
 	// Optional. If the assessment is part of a payment transaction, provide
 	// details on payment lifecycle events that occur in the transaction.
@@ -1177,7 +1175,6 @@ func (x *Event) GetTransactionData() *TransactionData {
 }
 
 // Transaction data associated with a payment protected by reCAPTCHA Enterprise.
-// All fields are optional.
 type TransactionData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
