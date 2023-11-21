@@ -21,12 +21,9 @@
 package securitycenterpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -39,6 +36,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3424,12 +3423,12 @@ type SimulateSecurityHealthAnalyticsCustomModuleRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The relative resource name of the organization, project, or
-	// folder. See:
-	// https://cloud.google.com/apis/design/resource_names#relative_resource_name
-	// An example is:
-	// "organizations/{organization_id}".
+	// folder. For more information about relative resource names, see [Relative
+	// Resource
+	// Name](https://cloud.google.com/apis/design/resource_names#relative_resource_name)
+	// Example: `organizations/{organization_id}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The user specified custom configuration to test.
+	// Required. The custom configuration that you need to test.
 	CustomConfig *CustomConfig `protobuf:"bytes,2,opt,name=custom_config,json=customConfig,proto3" json:"custom_config,omitempty"`
 	// Required. Resource data to simulate custom module against.
 	Resource *SimulateSecurityHealthAnalyticsCustomModuleRequest_SimulatedResource `protobuf:"bytes,3,opt,name=resource,proto3" json:"resource,omitempty"`
@@ -3488,8 +3487,8 @@ func (x *SimulateSecurityHealthAnalyticsCustomModuleRequest) GetResource() *Simu
 	return nil
 }
 
-// Response message for simulating a SecurityHealthAnalyticsCustomModule against
-// a given resource.
+// Response message for simulating a `SecurityHealthAnalyticsCustomModule`
+// against a given resource.
 type SimulateSecurityHealthAnalyticsCustomModuleResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4597,18 +4596,19 @@ func (x *ListFindingsResponse_ListFindingsResult_Resource) GetFolders() []*Folde
 	return nil
 }
 
-// Manually constructed resource. If the custom module only evaluates against
-// the resource data, the iam_policy_data field can be omitted, and vice
-// versa.
+// Manually constructed resource name. If the custom module evaluates against
+// only the resource data, you can omit the `iam_policy_data` field. If it
+// evaluates only the `iam_policy_data` field, you can omit the resource data.
 type SimulateSecurityHealthAnalyticsCustomModuleRequest_SimulatedResource struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The type of the resource, e.g. `compute.googleapis.com/Disk`.
+	// Required. The type of the resource, for example,
+	// `compute.googleapis.com/Disk`.
 	ResourceType string `protobuf:"bytes,1,opt,name=resource_type,json=resourceType,proto3" json:"resource_type,omitempty"`
-	// Optional. A representation of the GCP resource. Should match the GCP
-	// resource JSON format.
+	// Optional. A representation of the Google Cloud resource. Should match the
+	// Google Cloud resource JSON format.
 	ResourceData *structpb.Struct `protobuf:"bytes,2,opt,name=resource_data,json=resourceData,proto3" json:"resource_data,omitempty"`
 	// Optional. A representation of the IAM policy.
 	IamPolicyData *iampb.Policy `protobuf:"bytes,3,opt,name=iam_policy_data,json=iamPolicyData,proto3" json:"iam_policy_data,omitempty"`
