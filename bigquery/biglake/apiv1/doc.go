@@ -21,65 +21,66 @@
 // managed, and highly available metastore for open-source data that can be
 // used for querying Apache Iceberg tables in BigQuery.
 //
-// General documentation
+// # General documentation
 //
 // For information that is relevant for all client libraries please reference
 // https://pkg.go.dev/cloud.google.com/go#pkg-overview. Some information on this
 // page includes:
 //
-//  - [Authentication and Authorization]
-//  - [Timeouts and Cancellation]
-//  - [Testing against Client Libraries]
-//  - [Debugging Client Libraries]
-//  - [Inspecting errors]
+//   - [Authentication and Authorization]
+//   - [Timeouts and Cancellation]
+//   - [Testing against Client Libraries]
+//   - [Debugging Client Libraries]
+//   - [Inspecting errors]
 //
-// Example usage
+// # Example usage
 //
 // To get started with this package, create a client.
-//  ctx := context.Background()
-//  // This snippet has been automatically generated and should be regarded as a code template only.
-//  // It will require modifications to work:
-//  // - It may require correct/in-range values for request initialization.
-//  // - It may require specifying regional endpoints when creating the service client as shown in:
-//  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//  c, err := biglake.NewMetastoreClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
+//
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := biglake.NewMetastoreClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
 //
 // The client will use your default application credentials. Clients should be reused instead of created as needed.
 // The methods of Client are safe for concurrent use by multiple goroutines.
 // The returned client must be Closed when it is done being used.
 //
-// Using the Client
+// # Using the Client
 //
 // The following is an example of making an API call with the newly created client.
 //
-//  ctx := context.Background()
-//  // This snippet has been automatically generated and should be regarded as a code template only.
-//  // It will require modifications to work:
-//  // - It may require correct/in-range values for request initialization.
-//  // - It may require specifying regional endpoints when creating the service client as shown in:
-//  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//  c, err := biglake.NewMetastoreClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := biglake.NewMetastoreClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
 //
-//  req := &biglakepb.CreateCatalogRequest{
-//  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#CreateCatalogRequest.
-//  }
-//  resp, err := c.CreateCatalog(ctx, req)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  // TODO: Use resp.
-//  _ = resp
+//	req := &biglakepb.CreateCatalogRequest{
+//		// TODO: Fill request struct fields.
+//		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#CreateCatalogRequest.
+//	}
+//	resp, err := c.CreateCatalog(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
-// Use of Context
+// # Use of Context
 //
 // The ctx passed to NewMetastoreClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
