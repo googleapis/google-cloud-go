@@ -817,9 +817,6 @@ func (f PropertyPathFilter) toProto() (*pb.StructuredQuery_Filter, error) {
 		return nil, err
 	}
 	if uop, ok := unaryOpFor(f.Value); ok {
-		// if f.Operator != "==" {
-		// 	return nil, fmt.Errorf("firestore: must use '==' when comparing %v", f.Value)
-		// }
 		ref, err := fref(f.Path)
 		if err != nil {
 			return nil, err
