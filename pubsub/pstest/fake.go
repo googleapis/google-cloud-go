@@ -1142,6 +1142,7 @@ func (s *subscription) deliver() {
 	s.maintainMessages(now)
 	// Try to deliver each remaining message.
 	curIndex := 0
+	filterMsgs(s.msgs, s.filter)
 	for id, m := range orderMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
