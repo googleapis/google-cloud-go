@@ -868,7 +868,7 @@ func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, dea
 		at = 10 * time.Second
 	}
 	ps.State = pb.Subscription_ACTIVE
-	return &subscription{
+	sub := &subscription{
 		topic:           t,
 		deadLetterTopic: deadLetterTopic,
 		mu:              mu,
@@ -878,6 +878,14 @@ func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, dea
 		done:            make(chan struct{}),
 		timeNowFunc:     timeNowFunc,
 	}
+	if ps.Filter != "" {
+		filter, err := parseFilter(ps.Filter)
+		if err != nil {
+			panic(fmt.Sprintf("pstest: bad filter: %v", err))
+		}
+		sub.filter = &filter
+	}
+	return sub
 }
 
 func (s *subscription) start(wg *sync.WaitGroup) {
