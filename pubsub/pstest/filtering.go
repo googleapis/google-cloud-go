@@ -25,6 +25,11 @@ const (
 	hasPrefixStr  = "hasPrefix"
 )
 
+func ValidateFilter(filter string) error {
+	_, err := parseFilter(filter)
+	return err
+}
+
 // parseFilter validates a filter string and returns a Filter.
 func parseFilter(filter string) (filtering.Filter, error) {
 	request := request{filter}
