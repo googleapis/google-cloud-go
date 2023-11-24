@@ -36,6 +36,8 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	octrace "go.opencensus.io/trace"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
@@ -610,6 +612,10 @@ type sessionPool struct {
 	// tagMap is a map of all tags that are associated with the emitted metrics.
 	tagMap *tag.Map
 
+	otTagMap []attribute.KeyValue
+
+	otMetricRegister metric.Registration
+
 	// indicates the number of leaked sessions removed from the session pool.
 	// This is valid only when ActionOnInactiveTransaction is WarnAndClose or ActionOnInactiveTransaction is Close in InactiveTransactionRemovalOptions.
 	numOfLeakedSessionsRemoved uint64
@@ -673,6 +679,13 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	}
 	pool.tagMap = tag.FromContext(ctx)
 
+	pool.otTagMap = []attribute.KeyValue{
+		TagKeyClientIDOT.String(sc.id),
+		TagKeyDatabaseOT.String(database),
+		TagKeyInstanceOT.String(instance),
+		TagKeyLibVersionOT.String(internal.Version),
+	}
+
 	// On GCE VM, within the same region an healthcheck ping takes on average
 	// 10ms to finish, given a 5 minutes interval and 10 healthcheck workers, a
 	// healthChecker can effectively mantain
@@ -690,6 +703,8 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		}
 	}
 	pool.recordStat(context.Background(), MaxAllowedSessionsCount, int64(config.MaxOpened))
+	captureSessionPoolOTMetrics(pool)
+
 	close(pool.hc.ready)
 	return pool, nil
 }
@@ -705,6 +720,10 @@ func (p *sessionPool) recordStat(ctx context.Context, m *stats.Int64Measure, n i
 		logf(p.sc.logger, "Failed to tag metrics, error: %v", err)
 	}
 	recordStat(ctx, m, n)
+}
+
+func (p *sessionPool) recordOTStat(ctx context.Context, m metric.Int64UpDownCounter, val int64) {
+	m.Add(ctx, val, metric.WithAttributes(p.otTagMap...))
 }
 
 func (p *sessionPool) getRatioOfSessionsInUseLocked() float64 {
@@ -862,6 +881,9 @@ func (p *sessionPool) close(ctx context.Context) {
 		return
 	}
 	p.valid = false
+	if p.otMetricRegister != nil {
+		p.otMetricRegister.Unregister()
+	}
 	p.mu.Unlock()
 	p.hc.close()
 	// destroy all the sessions
@@ -1057,6 +1079,7 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 		case <-ctx.Done():
 			trace.TracePrintf(ctx, nil, "Context done waiting for session")
 			p.recordStat(ctx, GetSessionTimeoutsCount, 1)
+			p.recordOTStat(ctx, GetSessionTimeoutsCountOT, 1)
 			p.mu.Lock()
 			p.numWaiters--
 			p.mu.Unlock()
@@ -1146,6 +1169,7 @@ func (p *sessionPool) incNumInUseLocked(ctx context.Context) {
 	p.numInUse++
 	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions)
 	p.recordStat(ctx, AcquiredSessionsCount, 1)
+	p.recordOTStat(ctx, AcquiredSessionsCountOT, 1)
 	if p.numInUse > p.maxNumInUse {
 		p.maxNumInUse = p.numInUse
 		p.recordStat(ctx, MaxInUseSessionsCount, int64(p.maxNumInUse))
@@ -1156,6 +1180,7 @@ func (p *sessionPool) decNumInUseLocked(ctx context.Context) {
 	p.numInUse--
 	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions)
 	p.recordStat(ctx, ReleasedSessionsCount, 1)
+	p.recordOTStat(ctx, ReleasedSessionsCountOT, 1)
 }
 
 func (p *sessionPool) incNumSessionsLocked(ctx context.Context) {
