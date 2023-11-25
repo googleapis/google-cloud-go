@@ -68,22 +68,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &orgpolicypb.ListConstraintsRequest{
+//	req := &orgpolicypb.CreatePolicyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#ListConstraintsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#CreatePolicyRequest.
 //	}
-//	it := c.ListConstraints(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	resp, err := c.CreatePolicy(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

@@ -71,11 +71,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &runpb.GetExecutionRequest{
+//	req := &runpb.CancelExecutionRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#GetExecutionRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#CancelExecutionRequest.
 //	}
-//	resp, err := c.GetExecution(ctx, req)
+//	op, err := c.CancelExecution(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

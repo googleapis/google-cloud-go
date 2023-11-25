@@ -1438,6 +1438,11 @@
               "methods": [
                 "StreamingDetectIntent"
               ]
+            },
+            "SubmitAnswerFeedback": {
+              "methods": [
+                "SubmitAnswerFeedback"
+              ]
             }
           }
         },
@@ -1487,6 +1492,11 @@
             "StreamingDetectIntent": {
               "methods": [
                 "StreamingDetectIntent"
+              ]
+            },
+            "SubmitAnswerFeedback": {
+              "methods": [
+                "SubmitAnswerFeedback"
               ]
             }
           }

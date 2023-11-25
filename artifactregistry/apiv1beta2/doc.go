@@ -70,11 +70,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &artifactregistrypb.ImportAptArtifactsRequest{
+//	req := &artifactregistrypb.CreateRepositoryRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1beta2/artifactregistrypb#ImportAptArtifactsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1beta2/artifactregistrypb#CreateRepositoryRequest.
 //	}
-//	op, err := c.ImportAptArtifacts(ctx, req)
+//	op, err := c.CreateRepository(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

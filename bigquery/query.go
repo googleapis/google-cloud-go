@@ -393,11 +393,14 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 	}
 
 	// construct a minimal job for backing the row iterator.
-	minimalJob := &Job{
-		c:         q.client,
-		jobID:     resp.JobReference.JobId,
-		location:  resp.JobReference.Location,
-		projectID: resp.JobReference.ProjectId,
+	var minimalJob *Job
+	if resp.JobReference != nil {
+		minimalJob = &Job{
+			c:         q.client,
+			jobID:     resp.JobReference.JobId,
+			location:  resp.JobReference.Location,
+			projectID: resp.JobReference.ProjectId,
+		}
 	}
 
 	if resp.JobComplete {
@@ -483,6 +486,9 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 			ProjectId: q.QueryConfig.DefaultProjectID,
 			DatasetId: q.QueryConfig.DefaultDatasetID,
 		}
+	}
+	if q.client.enableQueryPreview {
+		qRequest.JobCreationMode = "JOB_CREATION_OPTIONAL"
 	}
 	return qRequest, nil
 }

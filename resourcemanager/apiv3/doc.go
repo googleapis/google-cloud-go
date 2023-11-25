@@ -68,11 +68,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &resourcemanagerpb.GetFolderRequest{
+//	req := &resourcemanagerpb.CreateFolderRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#GetFolderRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#CreateFolderRequest.
 //	}
-//	resp, err := c.GetFolder(ctx, req)
+//	op, err := c.CreateFolder(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

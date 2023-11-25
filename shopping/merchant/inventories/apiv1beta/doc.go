@@ -69,21 +69,13 @@
 //	}
 //	defer c.Close()
 //
-//	req := &inventoriespb.ListLocalInventoriesRequest{
+//	req := &inventoriespb.DeleteLocalInventoryRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/shopping/merchant/inventories/apiv1beta/inventoriespb#ListLocalInventoriesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/shopping/merchant/inventories/apiv1beta/inventoriespb#DeleteLocalInventoryRequest.
 //	}
-//	it := c.ListLocalInventories(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	err = c.DeleteLocalInventory(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
 //
 // # Use of Context

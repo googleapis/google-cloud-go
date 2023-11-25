@@ -1909,6 +1909,30 @@ func TestColumnNameAndIndex(t *testing.T) {
 	}
 }
 
+// Test helpers for getting column type and value.
+func TestColumnTypeAndValue(t *testing.T) {
+	// Test Row.ColumnType()
+	for i, col := range row.fields {
+		if ct := row.ColumnType(i); ct != col.Type {
+			t.Errorf("row.ColumnType(%v) returns %q, want %q", i, ct, col.Type)
+		}
+	}
+	// Test Row.ColumnValue()
+	for i, val := range row.vals {
+		if cv := row.ColumnValue(i); cv != val {
+			t.Errorf("row.ColumnValue(%v) returns %q, want %q", i, cv, val)
+		}
+	}
+	// Test Row.ColumnType on empty Row.
+	if ct := (&Row{}).ColumnType(0); ct != nil {
+		t.Errorf("empty_row.ColumnType(%v) returns %v, want %v", 0, ct, nil)
+	}
+	// Test Row.ColumnValue on empty Row.
+	if cv := (&Row{}).ColumnValue(0); cv != nil {
+		t.Errorf("empty_row.ColumnValue(%v) returns %v, want %v", 0, cv, nil)
+	}
+}
+
 func TestNewRow(t *testing.T) {
 	for _, test := range []struct {
 		names   []string

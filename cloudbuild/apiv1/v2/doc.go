@@ -67,11 +67,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &cloudbuildpb.CreateBuildRequest{
+//	req := &cloudbuildpb.ApproveBuildRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#CreateBuildRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#ApproveBuildRequest.
 //	}
-//	op, err := c.CreateBuild(ctx, req)
+//	op, err := c.ApproveBuild(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

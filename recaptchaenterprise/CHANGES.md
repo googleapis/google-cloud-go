@@ -1,6 +1,27 @@
 # Changes
 
 
+## [2.8.4](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.3...recaptchaenterprise/v2.8.4) (2023-11-09)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Added required annotations ([ba23673](https://github.com/googleapis/google-cloud-go/commit/ba23673da7707c31292e4aa29d65b7ac1446d4a6))
+
+## [2.8.3](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.2...recaptchaenterprise/v2.8.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [2.8.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.1...recaptchaenterprise/v2.8.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [2.8.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.0...recaptchaenterprise/v2.8.1) (2023-10-12)
 
 
