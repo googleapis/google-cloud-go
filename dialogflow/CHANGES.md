@@ -1,5 +1,13 @@
 # Changes
 
+## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.44.3...dialogflow/v1.45.0) (2023-11-27)
+
+
+### Features
+
+* **dialogflow/cx:** Add agent answer feedback capability ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+* **dialogflow/cx:** Add agent answer feedback capability ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
 ## [1.44.3](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.44.2...dialogflow/v1.44.3) (2023-11-01)
 
 

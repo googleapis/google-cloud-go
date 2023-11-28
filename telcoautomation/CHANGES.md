@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.1.0...telcoautomation/v0.1.1) (2023-11-27)
+
+
+### Documentation
+
+* **telcoautomation:** Replace &lt;&gt; with {} in api documentation ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
 ## 0.1.0 (2023-11-16)
 
 
