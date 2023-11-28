@@ -151,6 +151,15 @@ type TableMetadata struct {
 	// TableConstraints contains table primary and foreign keys constraints.
 	// Present only if the table has primary or foreign keys.
 	TableConstraints *TableConstraints
+
+	// The tags associated with this table. Tag
+	// keys are globally unique. See additional information on tags
+	// (https://cloud.google.com/iam/docs/tags-access-control#definitions).
+	// An object containing a list of "key": value pairs. The key is the
+	// namespaced friendly name of the tag key, e.g. "12345/environment"
+	// where 12345 is parent id. The value is the friendly short name of the
+	// tag value, e.g. "production".
+	ResourceTags map[string]string
 }
 
 // TableConstraints defines the primary key and foreign key of a table.
@@ -907,6 +916,12 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 			ForeignKeys: bqToForeignKeys(t.TableConstraints, c),
 		}
 	}
+	if t.ResourceTags != nil {
+		md.ResourceTags = make(map[string]string)
+		for k, v := range t.ResourceTags {
+			md.ResourceTags[k] = v
+		}
+	}
 	return md, nil
 }
 
@@ -1081,6 +1096,13 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 			t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "ForeignKeys")
 		}
 	}
+	if tm.ResourceTags != nil {
+		t.ResourceTags = make(map[string]string)
+		for k, v := range tm.ResourceTags {
+			t.ResourceTags[k] = v
+		}
+		forceSend("ResourceTags")
+	}
 	labels, forces, nulls := tm.update()
 	t.Labels = labels
 	t.ForceSendFields = append(t.ForceSendFields, forces...)
@@ -1161,6 +1183,15 @@ type TableMetadataToUpdate struct {
 	// TableConstraints allows modification of table constraints
 	// such as primary and foreign keys.
 	TableConstraints *TableConstraints
+
+	// The tags associated with this table. Tag
+	// keys are globally unique. See additional information on tags
+	// (https://cloud.google.com/iam/docs/tags-access-control#definitions).
+	// An object containing a list of "key": value pairs. The key is the
+	// namespaced friendly name of the tag key, e.g. "12345/environment"
+	// where 12345 is parent id. The value is the friendly short name of the
+	// tag value, e.g. "production".
+	ResourceTags map[string]string
 
 	labelUpdater
 }

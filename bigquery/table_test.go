@@ -95,6 +95,10 @@ func TestBQToTableMetadata(t *testing.T) {
 						},
 					},
 				},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 			&TableMetadata{
 				Description:        "desc",
@@ -154,6 +158,10 @@ func TestBQToTableMetadata(t *testing.T) {
 							},
 						},
 					},
+				},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
 				},
 			},
 		},
@@ -509,6 +517,21 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 						},
 					},
 				},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
+			},
+			want: &bq.Table{
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
+				ForceSendFields: []string{"ResourceTags"},
 			},
 		},
 	} {
