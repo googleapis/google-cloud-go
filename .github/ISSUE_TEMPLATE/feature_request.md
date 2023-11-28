@@ -8,7 +8,8 @@ assignees: ''
 ---
 
 **Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+A clear and concise description of what the problem is. Ex. It would be easier to do Y if the libraries
+did X [...]
 
 **Describe the solution you'd like**
 A clear and concise description of what you want to happen. What should the API be? How would you use it?
