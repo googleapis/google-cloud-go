@@ -148,6 +148,12 @@ type FieldSchema struct {
 	//   - '': empty string. Default to case-sensitive behavior.
 	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	Collation string
+
+	// The subtype of the RANGE, if the type of this field is RANGE.
+	// If the type is RANGE, this field is required.
+	// Possible values for the field element type of a RANGE include:
+	// DATE, DATETIME, or TIMESTAMP.
+	RangeElementType FieldType
 }
 
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
@@ -161,6 +167,12 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 		Scale:                  fs.Scale,
 		DefaultValueExpression: fs.DefaultValueExpression,
 		Collation:              string(fs.Collation),
+	}
+
+	if fs.RangeElementType != "" {
+		tfs.RangeElementType = &bq.TableFieldSchemaRangeElementType{
+			Type: string(fs.RangeElementType),
+		}
 	}
 
 	if fs.Repeated {
@@ -222,6 +234,9 @@ func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 		DefaultValueExpression: tfs.DefaultValueExpression,
 		Collation:              tfs.Collation,
 	}
+	if tfs.RangeElementType != nil {
+		fs.RangeElementType = FieldType(tfs.RangeElementType.Type)
+	}
 
 	for _, f := range tfs.Fields {
 		fs.Schema = append(fs.Schema, bqToFieldSchema(f))
@@ -277,6 +292,8 @@ const (
 	IntervalFieldType FieldType = "INTERVAL"
 	// JSONFieldType is a representation of a json object.
 	JSONFieldType FieldType = "JSON"
+	// RangeFieldType represents a continuous range of values.
+	RangeFieldType FieldType = "RANGE"
 )
 
 var (
@@ -297,6 +314,7 @@ var (
 		BigNumericFieldType: true,
 		IntervalFieldType:   true,
 		JSONFieldType:       true,
+		RangeFieldType:      true,
 	}
 	// The API will accept alias names for the types based on the Standard SQL type names.
 	fieldAliases = map[FieldType]FieldType{

@@ -418,6 +418,27 @@ func TestSchemaConversion(t *testing.T) {
 				},
 			},
 		},
+		{
+			// RANGE
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					func() *bq.TableFieldSchema {
+						f := bqTableFieldSchema("desc", "rt", "RANGE", "", nil)
+						f.RangeElementType = &bq.TableFieldSchemaRangeElementType{
+							Type: "DATE",
+						}
+						return f
+					}(),
+				},
+			},
+			schema: Schema{
+				func() *FieldSchema {
+					f := fieldSchema("desc", "rt", "RANGE", false, false, nil)
+					f.RangeElementType = DateFieldType
+					return f
+				}(),
+			},
+		},
 	}
 	for _, tc := range testCases {
 		bqSchema := tc.schema.toBQ()
