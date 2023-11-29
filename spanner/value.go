@@ -21,7 +21,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"math"
 	"math/big"
@@ -35,6 +34,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
+	jsoniter "github.com/json-iterator/go"
 	"google.golang.org/grpc/codes"
 )
 
@@ -113,6 +113,10 @@ var (
 	commitTimestamp = time.Unix(0, 0).In(time.FixedZone("CommitTimestamp placeholder", 0xDB))
 
 	jsonNullBytes = []byte("null")
+
+	jsonProvider = jsoniter.Config{EscapeHTML: true,
+		UseNumber: true,
+	}.Froze()
 )
 
 // Encoder is the interface implemented by a custom type that can be encoded to
@@ -287,7 +291,7 @@ func (n *NullString) UnmarshalJSON(payload []byte) error {
 		return nil
 	}
 	var s *string
-	if err := json.Unmarshal(payload, &s); err != nil {
+	if err := jsonProvider.Unmarshal(payload, &s); err != nil {
 		return err
 	}
 	if s != nil {
@@ -791,7 +795,7 @@ func (n NullJSON) String() string {
 	if !n.Valid {
 		return nullString
 	}
-	b, err := json.Marshal(n.Value)
+	b, err := jsonProvider.Marshal(n.Value)
 	if err != nil {
 		return fmt.Sprintf("error: %v", err)
 	}
@@ -801,7 +805,7 @@ func (n NullJSON) String() string {
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullJSON.
 func (n NullJSON) MarshalJSON() ([]byte, error) {
 	if n.Valid {
-		return json.Marshal(n.Value)
+		return jsonProvider.Marshal(n.Value)
 	}
 	return jsonNullBytes, nil
 }
@@ -816,7 +820,7 @@ func (n *NullJSON) UnmarshalJSON(payload []byte) error {
 		return nil
 	}
 	var v interface{}
-	err := json.Unmarshal(payload, &v)
+	err := jsonProvider.Unmarshal(payload, &v)
 	if err != nil {
 		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %w", string(payload), err)
 	}
@@ -903,7 +907,7 @@ func (n PGJsonB) String() string {
 	if !n.Valid {
 		return nullString
 	}
-	b, err := json.Marshal(n.Value)
+	b, err := jsonProvider.Marshal(n.Value)
 	if err != nil {
 		return fmt.Sprintf("error: %v", err)
 	}
@@ -913,7 +917,7 @@ func (n PGJsonB) String() string {
 // MarshalJSON implements json.Marshaler.MarshalJSON for PGJsonB.
 func (n PGJsonB) MarshalJSON() ([]byte, error) {
 	if n.Valid {
-		return json.Marshal(n.Value)
+		return jsonProvider.Marshal(n.Value)
 	}
 	return jsonNullBytes, nil
 }
@@ -928,7 +932,7 @@ func (n *PGJsonB) UnmarshalJSON(payload []byte) error {
 		return nil
 	}
 	var v interface{}
-	err := json.Unmarshal(payload, &v)
+	err := jsonProvider.Unmarshal(payload, &v)
 	if err != nil {
 		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %w", string(payload), err)
 	}
@@ -1545,7 +1549,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 			}
 			x := v.GetStringValue()
 			var y interface{}
-			err := json.Unmarshal([]byte(x), &y)
+			err := jsonProvider.Unmarshal([]byte(x), &y)
 			if err != nil {
 				return err
 			}
@@ -1704,7 +1708,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		}
 		x := v.GetStringValue()
 		var y interface{}
-		err := json.Unmarshal([]byte(x), &y)
+		err := jsonProvider.Unmarshal([]byte(x), &y)
 		if err != nil {
 			return err
 		}
@@ -2365,7 +2369,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		}
 		x := v.GetStringValue()
 		var y interface{}
-		err := json.Unmarshal([]byte(x), &y)
+		err := jsonProvider.Unmarshal([]byte(x), &y)
 		if err != nil {
 			return err
 		}
@@ -2380,7 +2384,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		}
 		x := v.GetStringValue()
 		var y interface{}
-		err := json.Unmarshal([]byte(x), &y)
+		err := jsonProvider.Unmarshal([]byte(x), &y)
 		if err != nil {
 			return err
 		}
@@ -2978,7 +2982,7 @@ func decodeNullJSONArrayToNullJSON(pb *proto3.ListValue) (*NullJSON, error) {
 	}
 	s := fmt.Sprintf("[%s]", strings.Join(strs, ","))
 	var y interface{}
-	err := json.Unmarshal([]byte(s), &y)
+	err := jsonProvider.Unmarshal([]byte(s), &y)
 	if err != nil {
 		return nil, err
 	}
@@ -3593,7 +3597,7 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		pt = listType(pgNumericType())
 	case NullJSON:
 		if v.Valid {
-			b, err := json.Marshal(v.Value)
+			b, err := jsonProvider.Marshal(v.Value)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -3610,7 +3614,7 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		pt = listType(jsonType())
 	case PGJsonB:
 		if v.Valid {
-			b, err := json.Marshal(v.Value)
+			b, err := jsonProvider.Marshal(v.Value)
 			if err != nil {
 				return nil, nil, err
 			}

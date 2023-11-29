@@ -1390,8 +1390,11 @@ func TestDecodeValue(t *testing.T) {
 	type CustomPGNumeric PGNumeric
 
 	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
-	var unmarshalledJSONStruct interface{}
-	json.Unmarshal([]byte(jsonStr), &unmarshalledJSONStruct)
+	unmarshalledJSONStruct := map[string]interface{}{
+		"Name": "Alice",
+		"Body": "Hello",
+		"Time": json.Number("1294706395881547000"),
+	}
 	invalidJSONStr := `{wrong_json_string}`
 	emptyArrayJSONStr := `[]`
 	var unmarshalledEmptyJSONArray interface{}
@@ -1399,9 +1402,15 @@ func TestDecodeValue(t *testing.T) {
 	nullValueJSONStr := `{"Key":null}`
 	var unmarshalledStructWithNull interface{}
 	json.Unmarshal([]byte(nullValueJSONStr), &unmarshalledStructWithNull)
-	arrayJSONStr := `[{"Name":"Alice","Body":"Hello","Time":1294706395881547000},null,true]`
-	var unmarshalledJSONArray interface{}
-	json.Unmarshal([]byte(arrayJSONStr), &unmarshalledJSONArray)
+	unmarshalledJSONArray := []interface{}{
+		map[string]interface{}{
+			"Name": "Alice",
+			"Body": "Hello",
+			"Time": json.Number("1294706395881547000"),
+		},
+		nil,
+		true,
+	}
 
 	// Pointer values.
 	sValue := "abc"
