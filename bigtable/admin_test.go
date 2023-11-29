@@ -142,8 +142,7 @@ func TestTableAdmin_CopyBackup_ErrorFromClient(t *testing.T) {
 	c := setupTableClient(t, mock)
 
 	currTime := time.Now()
-	err := c.CopyBackup(context.Background(), "dest-project", "dest-instance", "dest-cluster", "dest-backup",
-		"source-cluster", "source-backup", currTime)
+	err := c.CopyBackup(context.Background(), "source-cluster", "source-backup", "dest-project", "dest-instance", "dest-cluster", "dest-backup", currTime)
 	if err == nil {
 		t.Errorf("CopyBackup got: nil, want: non-nil error")
 	}

@@ -1925,8 +1925,8 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 }
 
 // CopyBackup copies the specified source backup with the user-provided expire time.
-func (ac *AdminClient) CopyBackup(ctx context.Context, destProject, destInstance, destCluster, destBackup,
-	sourceCluster, sourceBackup string, expireTime time.Time) error {
+func (ac *AdminClient) CopyBackup(ctx context.Context, sourceCluster, sourceBackup,
+	destProject, destInstance, destCluster, destBackup string, expireTime time.Time) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	sourceBackupPath := ac.backupPath(sourceCluster, ac.instance, sourceBackup)
 	destPrefix := instancePrefix(destProject, destInstance)

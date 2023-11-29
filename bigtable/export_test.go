@@ -54,7 +54,7 @@ func init() {
 	flag.StringVar(&c.AdminEndpoint, "it.admin-endpoint", "", "Admin api host and port")
 	flag.StringVar(&c.DataEndpoint, "it.data-endpoint", "", "Data api host and port")
 	flag.StringVar(&c.Project, "it.project", "", "Project to use for integration test")
-	flag.StringVar(&c.Project2, "it.project2", "", "Second project to use for integration test")
+	flag.StringVar(&c.Project2, "it.project2", "", "Optional secondary project to use for copy backup integration test")
 	flag.StringVar(&c.Instance, "it.instance", "", "Bigtable instance to use")
 	flag.StringVar(&c.Cluster, "it.cluster", "", "Bigtable cluster to use")
 	flag.StringVar(&c.Table, "it.table", "", "Bigtable table to create")
@@ -114,7 +114,7 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 		c.Project = os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID")
 	}
 	if c.Project2 == "" {
-		c.Project2 = os.Getenv("GCLOUD_TESTS_GOLANG_BIGTABLE_PROJECT_ID")
+		c.Project2 = os.Getenv("GCLOUD_TESTS_GOLANG_SECONDARY_BIGTABLE_PROJECT_ID")
 	}
 	if c.Instance == "" {
 		c.Instance = os.Getenv("GCLOUD_TESTS_BIGTABLE_INSTANCE")

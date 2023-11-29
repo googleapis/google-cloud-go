@@ -133,7 +133,7 @@ project's service account.
 - `GCLOUD_TESTS_GOLANG_FIRESTORE_KEY`: The path to the JSON key file of the
 Firestore project's service account.
 - `GCLOUD_TESTS_API_KEY`: API key for using the Translate API created above.
-- `GCLOUD_TESTS_GOLANG_BIGTABLE_PROJECT_ID`: Developers Console project's ID (e.g. doorway-cliff-677) for the Bigtable project. Bigtable project can be same as Firestore project or any project other than the general project.
+- `GCLOUD_TESTS_GOLANG_SECONDARY_BIGTABLE_PROJECT_ID`: Developers Console project's ID (e.g. doorway-cliff-677) for Bigtable optional secondary project. This can be same as Firestore project or any project other than the general project.
 
 As part of the setup that follows, the following variables will be configured:
 
@@ -222,7 +222,7 @@ For instance, in `.zshrc`:
 export GCLOUD_TESTS_GOLANG_PROJECT_ID=your-project
 
 # Developers Console project's ID (e.g. bamboo-shift-455) for the Bigtable project.
-export GCLOUD_TESTS_GOLANG_BIGTABLE_PROJECT_ID=your-bigtable-project
+export GCLOUD_TESTS_GOLANG_SECONDARY_BIGTABLE_PROJECT_ID=your-bigtable-optional-secondary-project
 
 # The path to the JSON key file of the general project's service account.
 export GCLOUD_TESTS_GOLANG_KEY=~/directory/your-project-abcd1234.json

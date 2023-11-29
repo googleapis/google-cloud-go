@@ -3098,31 +3098,13 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	}
 	defer destIAdminClient1.DeleteInstance(ctx, destProj1Inst2)
 
-	// Create admin client for 2nd project in test environment
-	destProj2 := testEnv.Config().Project2
-	ctx, options, err := testEnv.AdminClientOptions()
-	if err != nil {
-		t.Fatalf("AdminClientOptions: %v", err)
-	}
-	destIAdminClient2, err := NewInstanceAdminClient(ctx, destProj2, options...)
-	if err != nil {
-		t.Fatalf("NewInstanceAdminClient: %v", err)
-	}
-	defer destIAdminClient2.Close()
-
-	// Create instance in 2nd project
-	destProj2Inst1, destProj2Inst1Cl1, err := createInstance(ctx, testEnv, destIAdminClient2)
-	if err != nil {
-		t.Fatalf("CreateInstance: %v", err)
-	}
-	defer destIAdminClient2.DeleteInstance(ctx, destProj2Inst1)
-
-	for _, testcase := range []struct {
+	type testcase struct {
 		desc         string
 		destProject  string
 		destInstance string
 		destCluster  string
-	}{
+	}
+	testcases := []testcase{
 		{
 			desc:         "Copy backup to same project, same instance, same cluster",
 			destProject:  destProj1,
@@ -3141,13 +3123,38 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 			destInstance: destProj1Inst2,
 			destCluster:  destProj1Inst2Cl1,
 		},
-		{
+	}
+
+	if testEnv.Config().Project2 != "" {
+		// Create admin client for 2nd project in test environment
+		destProj2 := testEnv.Config().Project2
+		ctx, options, err := testEnv.AdminClientOptions()
+		if err != nil {
+			t.Fatalf("AdminClientOptions: %v", err)
+		}
+		destIAdminClient2, err := NewInstanceAdminClient(ctx, destProj2, options...)
+		if err != nil {
+			t.Fatalf("NewInstanceAdminClient: %v", err)
+		}
+		defer destIAdminClient2.Close()
+
+		// Create instance in 2nd project
+		destProj2Inst1, destProj2Inst1Cl1, err := createInstance(ctx, testEnv, destIAdminClient2)
+		if err != nil {
+			t.Fatalf("CreateInstance: %v", err)
+		}
+		defer destIAdminClient2.DeleteInstance(ctx, destProj2Inst1)
+		testcases = append(testcases, testcase{
 			desc:         "Copy backup to different project",
 			destProject:  destProj2,
 			destInstance: destProj2Inst1,
 			destCluster:  destProj2Inst1Cl1,
-		},
-	} {
+		})
+	} else {
+		t.Logf("Secondary project not set, skipping copy backup to different project testing")
+	}
+
+	for _, testcase := range testcases {
 		// Create destination client
 		destCtx, destOpts, err := testEnv.AdminClientOptions()
 		if err != nil {
@@ -3168,8 +3175,8 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 		// Copy Backup
 		destBackupName := copyBackupUID.New()
 		defer destAdminClient.DeleteBackup(destCtx, destCluster, destBackupName)
-		err = srcAdminClient.CopyBackup(destCtx, destProject, destInstance, destCluster,
-			destBackupName, srcCluster, srcBackupName, time.Now().Add(24*time.Hour))
+		err = srcAdminClient.CopyBackup(destCtx, srcCluster, srcBackupName, destProject, destInstance, destCluster,
+			destBackupName, time.Now().Add(24*time.Hour))
 		if err != nil {
 			t.Fatalf("%v: CopyBackup: %v", desc, err)
 		}
