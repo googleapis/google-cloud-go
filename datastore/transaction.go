@@ -312,10 +312,7 @@ func (t *Transaction) GetMulti(keys []*Key, dst interface{}) (err error) {
 
 	// TODO: Use transaction ID returned by get
 	_, err = t.client.get(t.ctx, keys, dst, opts)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // Put is the transaction-specific version of the package function Put.
