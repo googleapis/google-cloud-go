@@ -21,13 +21,12 @@
 package cxpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -442,13 +441,13 @@ func (x *SpeechWordInfo) GetConfidence() float32 {
 // as soon as it starts playing back the audio from the previous response. The
 // playback is modeled into two phases:
 //
-//   - No barge-in phase: which goes first and during which speech detection
-//     should not be carried out.
+// * No barge-in phase: which goes first and during which speech detection
+//   should not be carried out.
 //
-//   - Barge-in phase: which follows the no barge-in phase and during which
-//     the API starts speech detection and may inform the client that an utterance
-//     has been detected. Note that no-speech event is not expected in this
-//     phase.
+// * Barge-in phase: which follows the no barge-in phase and during which
+//   the API starts speech detection and may inform the client that an utterance
+//   has been detected. Note that no-speech event is not expected in this
+//   phase.
 //
 // The client provides this configuration in terms of the durations of those
 // two phases. The durations are measured in terms of the audio length from the
@@ -544,8 +543,8 @@ type InputAudioConfig struct {
 	PhraseHints []string `protobuf:"bytes,4,rep,name=phrase_hints,json=phraseHints,proto3" json:"phrase_hints,omitempty"`
 	// Optional. Which Speech model to select for the given request. Select the
 	// model best suited to your domain to get best results. If a model is not
-	// explicitly specified, then we auto-select a model based on the parameters
-	// in the InputAudioConfig.
+	// explicitly specified, then Dialogflow auto-selects a model based on other
+	// parameters in the InputAudioConfig and Agent settings.
 	// If enhanced speech model is enabled for the agent and an enhanced
 	// version of the specified model for the language does not exist, then the
 	// speech is recognized using the standard version of the specified model.
@@ -558,7 +557,12 @@ type InputAudioConfig struct {
 	//
 	// - phone_call (best for Agent Assist and telephony)
 	// - latest_short (best for Dialogflow non-telephony)
-	// - command_and_search (best for very short utterances and commands)
+	// - command_and_search
+	//
+	// Leave this field unspecified to use
+	// [Agent Speech
+	// settings](https://cloud.google.com/dialogflow/cx/docs/concept/agent#settings-speech)
+	// for model selection.
 	Model string `protobuf:"bytes,7,opt,name=model,proto3" json:"model,omitempty"`
 	// Optional. Which variant of the [Speech
 	// model][google.cloud.dialogflow.cx.v3beta1.InputAudioConfig.model] to use.
