@@ -434,7 +434,9 @@ func TestSchemaConversion(t *testing.T) {
 			schema: Schema{
 				func() *FieldSchema {
 					f := fieldSchema("desc", "rt", "RANGE", false, false, nil)
-					f.RangeElementType = DateFieldType
+					f.RangeElementType = &RangeElementType{
+						Type: DateFieldType,
+					}
 					return f
 				}(),
 			},

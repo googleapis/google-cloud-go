@@ -58,7 +58,13 @@ func TestIntegration_TableValidSchema(t *testing.T) {
 	ctx := context.Background()
 	table := dataset.Table("t_bad")
 	schema := Schema{
-		{Name: "range_dt", Type: RangeFieldType, RangeElementType: DateTimeFieldType},
+		{
+			Name: "range_dt",
+			Type: RangeFieldType,
+			RangeElementType: &RangeElementType{
+				Type: DateTimeFieldType,
+			},
+		},
 		{Name: "rec", Type: RecordFieldType, Schema: Schema{
 			{Name: "inner", Type: IntegerFieldType},
 		}},

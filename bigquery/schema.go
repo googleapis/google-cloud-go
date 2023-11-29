@@ -153,7 +153,7 @@ type FieldSchema struct {
 	// If the type is RANGE, this field is required.
 	// Possible values for the field element type of a RANGE include:
 	// DATE, DATETIME, or TIMESTAMP.
-	RangeElementType FieldType
+	RangeElementType *RangeElementType
 }
 
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
@@ -167,12 +167,7 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 		Scale:                  fs.Scale,
 		DefaultValueExpression: fs.DefaultValueExpression,
 		Collation:              string(fs.Collation),
-	}
-
-	if fs.RangeElementType != "" {
-		tfs.RangeElementType = &bq.TableFieldSchemaRangeElementType{
-			Type: string(fs.RangeElementType),
-		}
+		RangeElementType:       fs.RangeElementType.toBQ(),
 	}
 
 	if fs.Repeated {
@@ -186,6 +181,29 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 	}
 
 	return tfs
+}
+
+// RangeElementType describes information about the range type.
+type RangeElementType struct {
+	Type FieldType
+}
+
+func (rt *RangeElementType) toBQ() *bq.TableFieldSchemaRangeElementType {
+	if rt == nil {
+		return nil
+	}
+	return &bq.TableFieldSchemaRangeElementType{
+		Type: string(rt.Type),
+	}
+}
+
+func bqToRangeElementType(bq *bq.TableFieldSchemaRangeElementType) *RangeElementType {
+	if bq == nil {
+		return nil
+	}
+	return &RangeElementType{
+		Type: FieldType(bq.Type),
+	}
 }
 
 // PolicyTagList represents the annotations on a schema column for enforcing column-level security.
@@ -233,9 +251,7 @@ func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 		Scale:                  tfs.Scale,
 		DefaultValueExpression: tfs.DefaultValueExpression,
 		Collation:              tfs.Collation,
-	}
-	if tfs.RangeElementType != nil {
-		fs.RangeElementType = FieldType(tfs.RangeElementType.Type)
+		RangeElementType:       bqToRangeElementType(tfs.RangeElementType),
 	}
 
 	for _, f := range tfs.Fields {
