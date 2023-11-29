@@ -2022,9 +2022,11 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		Time int64
 	}
 	msg := Message{"Alice", "Hello", 1294706395881547000}
-	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
-	var unmarshalledJSONstruct interface{}
-	json.Unmarshal([]byte(jsonStr), &unmarshalledJSONstruct)
+	unmarshalledJSONstruct := map[string]interface{}{
+		"Name": "Alice",
+		"Body": "Hello",
+		"Time": json.Number("1294706395881547000"),
+	}
 
 	tests := []struct {
 		col  string
