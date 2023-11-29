@@ -149,10 +149,8 @@ type FieldSchema struct {
 	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	Collation string
 
-	// The subtype of the RANGE, if the type of this field is RANGE.
+	// Information about the range.
 	// If the type is RANGE, this field is required.
-	// Possible values for the field element type of a RANGE include:
-	// DATE, DATETIME, or TIMESTAMP.
 	RangeElementType *RangeElementType
 }
 
@@ -185,6 +183,9 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 
 // RangeElementType describes information about the range type.
 type RangeElementType struct {
+	// The subtype of the RANGE, if the type of this field is RANGE.
+	// Possible values for the field element type of a RANGE include:
+	// DATE, DATETIME, or TIMESTAMP.
 	Type FieldType
 }
 
