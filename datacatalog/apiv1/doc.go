@@ -68,22 +68,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &datacatalogpb.SearchCatalogRequest{
+//	req := &datacatalogpb.CreateEntryRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#SearchCatalogRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#CreateEntryRequest.
 //	}
-//	it := c.SearchCatalog(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	resp, err := c.CreateEntry(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

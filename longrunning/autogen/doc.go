@@ -65,21 +65,13 @@
 //	}
 //	defer c.Close()
 //
-//	req := &longrunningpb.ListOperationsRequest{
+//	req := &longrunningpb.CancelOperationRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 //	}
-//	it := c.ListOperations(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	err = c.CancelOperation(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
 //
 // # Use of Context

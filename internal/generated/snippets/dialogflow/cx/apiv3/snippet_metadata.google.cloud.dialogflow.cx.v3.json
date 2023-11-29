@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/cx/apiv3",
-    "version": "1.44.2",
+    "version": "1.45.0",
     "language": "GO",
     "apis": [
       {
@@ -6054,6 +6054,52 @@
         {
           "start": 18,
           "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3_generated_Sessions_SubmitAnswerFeedback_sync",
+      "title": "dialogflow SubmitAnswerFeedback Sample",
+      "description": "SubmitAnswerFeedback updates the feedback received from the user for a single turn of the bot\nresponse.",
+      "file": "SessionsClient/SubmitAnswerFeedback/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SubmitAnswerFeedback",
+        "fullName": "google.cloud.dialogflow.cx.v3.SessionsClient.SubmitAnswerFeedback",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.SubmitAnswerFeedbackRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cxpb.AnswerFeedback",
+        "client": {
+          "shortName": "SessionsClient",
+          "fullName": "google.cloud.dialogflow.cx.v3.SessionsClient"
+        },
+        "method": {
+          "shortName": "SubmitAnswerFeedback",
+          "fullName": "google.cloud.dialogflow.cx.v3.Sessions.SubmitAnswerFeedback",
+          "service": {
+            "shortName": "Sessions",
+            "fullName": "google.cloud.dialogflow.cx.v3.Sessions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

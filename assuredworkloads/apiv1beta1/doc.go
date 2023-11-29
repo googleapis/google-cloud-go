@@ -67,16 +67,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &assuredworkloadspb.CreateWorkloadRequest{
+//	req := &assuredworkloadspb.AnalyzeWorkloadMoveRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb#CreateWorkloadRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb#AnalyzeWorkloadMoveRequest.
 //	}
-//	op, err := c.CreateWorkload(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.AnalyzeWorkloadMove(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

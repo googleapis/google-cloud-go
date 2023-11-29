@@ -68,22 +68,21 @@
 //	}
 //	defer c.Close()
 //
-//	req := &vmmigrationpb.ListSourcesRequest{
+//	req := &vmmigrationpb.AddGroupMigrationRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/vmmigration/apiv1/vmmigrationpb#ListSourcesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/vmmigration/apiv1/vmmigrationpb#AddGroupMigrationRequest.
 //	}
-//	it := c.ListSources(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	op, err := c.AddGroupMigration(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

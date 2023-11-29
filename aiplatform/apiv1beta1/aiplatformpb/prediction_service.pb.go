@@ -579,7 +579,7 @@ type ExplainResponse struct {
 	// explained.
 	Explanations []*Explanation `protobuf:"bytes,1,rep,name=explanations,proto3" json:"explanations,omitempty"`
 	// This field stores the results of the explanations run in parallel with
-	// the default explanation strategy/method.
+	// The default explanation strategy/method.
 	ConcurrentExplanations map[string]*ExplainResponse_ConcurrentExplanation `protobuf:"bytes,4,rep,name=concurrent_explanations,json=concurrentExplanations,proto3" json:"concurrent_explanations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// ID of the Endpoint's DeployedModel that served this explanation.
 	DeployedModelId string `protobuf:"bytes,2,opt,name=deployed_model_id,json=deployedModelId,proto3" json:"deployed_model_id,omitempty"`
