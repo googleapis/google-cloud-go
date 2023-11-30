@@ -1,5 +1,19 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.12.0...contactcenterinsights/v1.12.1) (2023-11-27)
+
+
+### Documentation
+
+* **contactcenterinsights:** Update IngestConversations and BulkAnalyzeConversations comments ([#9028](https://github.com/googleapis/google-cloud-go/issues/9028)) ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.11.3...contactcenterinsights/v1.12.0) (2023-11-09)
+
+
+### Features
+
+* **contactcenterinsights:** Launch BulkDelete API, and bulk audio import via the IngestConversations API ([#8964](https://github.com/googleapis/google-cloud-go/issues/8964)) ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
 ## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.11.2...contactcenterinsights/v1.11.3) (2023-11-01)
 
 
