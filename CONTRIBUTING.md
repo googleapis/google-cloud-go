@@ -66,7 +66,7 @@ To run the integrations tests, creation and configuration of three projects in
 the Google Developers Console is required: one specifically for Firestore
 integration tests, one specifically for Bigtable integration tests, and another 
 for all other integration tests. We'll refer to these projects as 
-"general project", "Bigtable project" and "Firestore project".
+"Firestore project", "Bigtable project" and "general project".
 
 Note: You can skip setting up Bigtable project if you do not plan working on or running a few Bigtable
 tests that require a secondary project
