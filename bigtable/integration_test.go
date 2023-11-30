@@ -3012,7 +3012,7 @@ func createInstance(ctx context.Context, testEnv IntegrationEnv, iAdminClient *I
 		DisplayName:  "different test sourceInstance",
 		Zone:         instanceToCreateZone2,
 		InstanceType: DEVELOPMENT,
-		Labels:       map[string]string{"test-label-key": "test-label-value"},
+		Labels:       map[string]string{"test-label-key-diff": "test-label-value-diff"},
 	}
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
 		return "", "", fmt.Errorf("CreateInstance: %v", err)
@@ -3151,7 +3151,7 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 			destCluster:  destProj2Inst1Cl1,
 		})
 	} else {
-		t.Logf("Secondary project not set, skipping copy backup to different project testing")
+		t.Logf("WARNING: Secondary project not set, skipping copy backup to different project testing")
 	}
 
 	for _, testcase := range testcases {

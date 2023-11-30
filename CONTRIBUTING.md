@@ -68,7 +68,10 @@ integration tests, one specifically for Bigtable integration tests, and another
 for all other integration tests. We'll refer to these projects as 
 "general project", "Bigtable project" and "Firestore project".
 
-After creating Firestore and general project, you must [create a service account](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount)
+Note: You can skip setting up Bigtable project if you do not plan working on or running a few Bigtable
+tests that require a secondary project
+
+After creating each project, you must [create a service account](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount)
 for each project. Ensure the project-level **Owner**
 [IAM role](https://console.cloud.google.com/iam-admin/iam/project) role is added to
 each service account. During the creation of the service account, you should
