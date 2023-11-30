@@ -62,6 +62,7 @@ deep-remove-regex:
   - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /clouddms/apiv1/
+  - /cloudprofiler/apiv2/
   - /cloudtasks/apiv2/
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
@@ -107,7 +108,7 @@ deep-remove-regex:
   - /eventarc/publishing/apiv1/
   - /filestore/apiv1/
   - /firestore/apiv1/
-  # - /firestore/apiv1/admin/
+  - /firestore/apiv1/admin/
   - /functions/apiv1/
   - /functions/apiv2/
   - /functions/apiv2beta/
@@ -179,6 +180,7 @@ deep-remove-regex:
   - /internal/generated/snippets/cloudbuild/apiv1/v2/
   - /internal/generated/snippets/cloudbuild/apiv2/
   - /internal/generated/snippets/clouddms/apiv1/
+  - /internal/generated/snippets/cloudprofiler/apiv2/
   - /internal/generated/snippets/cloudtasks/apiv2/
   - /internal/generated/snippets/cloudtasks/apiv2beta2/
   - /internal/generated/snippets/cloudtasks/apiv2beta3/
@@ -223,7 +225,7 @@ deep-remove-regex:
   - /internal/generated/snippets/eventarc/publishing/apiv1/
   - /internal/generated/snippets/filestore/apiv1/
   - /internal/generated/snippets/firestore/apiv1/
-  # - /internal/generated/snippets/firestore/apiv1/admin/
+  - /internal/generated/snippets/firestore/apiv1/admin/
   - /internal/generated/snippets/functions/apiv1/
   - /internal/generated/snippets/functions/apiv2/
   - /internal/generated/snippets/functions/apiv2beta/
@@ -332,6 +334,7 @@ deep-remove-regex:
   - /internal/generated/snippets/support/apiv2/
   - /internal/generated/snippets/talent/apiv4/
   - /internal/generated/snippets/talent/apiv4beta1/
+  - /internal/generated/snippets/telcoautomation/apiv1/
   - /internal/generated/snippets/texttospeech/apiv1/
   - /internal/generated/snippets/tpu/apiv1/
   - /internal/generated/snippets/trace/apiv1/
@@ -457,6 +460,7 @@ deep-remove-regex:
   - /support/apiv2/
   - /talent/apiv4/
   - /talent/apiv4beta1/
+  - /telcoautomation/apiv1/
   - /texttospeech/apiv1/
   - /tpu/apiv1/
   - /trace/apiv1/
@@ -512,8 +516,6 @@ deep-preserve-regex:
   - /dataproc/apiv1/longrunning.go
   - /longrunning/autogen/from_conn.go
   - /containeranalysis/apiv1beta1/grafeas/.*
-  # Remove this once this is generated with owlbot
-  - /firestore/apiv1/admin/.*
   # Must preserve these even though they aren't generated anymore
   - /vmmigration/apiv1/iam_policy_client.go
   - /datastream/apiv1/iam_policy_client.go
@@ -644,6 +646,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/clouddms/v1/cloud.google.com/go
     dest: /
+  - source: /google/devtools/cloudprofiler/v2/cloud.google.com/go
+    dest: /
   - source: /google/cloud/tasks/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/tasks/v2beta2/cloud.google.com/go
@@ -736,8 +740,8 @@ deep-copy-regex:
     dest: /
   - source: /google/firestore/v1/cloud.google.com/go
     dest: /
-  # - source: /google/firestore/admin/v1/cloud.google.com/go
-  #   dest: /
+  - source: /google/firestore/admin/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/functions/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/functions/v2/cloud.google.com/go
@@ -965,6 +969,8 @@ deep-copy-regex:
   - source: /google/cloud/talent/v4/cloud.google.com/go
     dest: /
   - source: /google/cloud/talent/v4beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/telcoautomation/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/texttospeech/v1/cloud.google.com/go
     dest: /

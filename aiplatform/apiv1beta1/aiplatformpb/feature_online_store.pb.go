@@ -319,7 +319,7 @@ func (x *FeatureOnlineStore_Bigtable) GetAutoScaling() *FeatureOnlineStore_Bigta
 	return nil
 }
 
-// Optimized storage type to replace lightning
+// Optimized storage type
 type FeatureOnlineStore_Optimized struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
