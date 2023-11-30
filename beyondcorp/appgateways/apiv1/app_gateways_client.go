@@ -120,8 +120,8 @@ type internalClient interface {
 //
 // The AppGatewaysService exposes the following resources:
 //
-//   AppGateways, named as follows:
-//   projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
+//	AppGateways, named as follows:
+//	projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
 //
 // The AppGatewaysService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppGateways.
@@ -289,8 +289,8 @@ type gRPCClient struct {
 //
 // The AppGatewaysService exposes the following resources:
 //
-//   AppGateways, named as follows:
-//   projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
+//	AppGateways, named as follows:
+//	projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
 //
 // The AppGatewaysService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppGateways.
