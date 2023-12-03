@@ -621,6 +621,9 @@ func TestNewBucket(t *testing.T) {
 			RetentionPeriod: 3,
 			EffectiveTime:   aTime.Format(time.RFC3339),
 		},
+		ObjectRetention: &raw.BucketObjectRetention{
+			Mode: "Enabled",
+		},
 		IamConfiguration: &raw.BucketIamConfiguration{
 			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
 				Enabled:    true,
@@ -686,6 +689,7 @@ func TestNewBucket(t *testing.T) {
 			EffectiveTime:   aTime,
 			RetentionPeriod: 3 * time.Second,
 		},
+		ObjectRetentionMode:      "Enabled",
 		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true, LockedTime: aTime},
 		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true, LockedTime: aTime},
 		CORS: []CORS{
@@ -709,12 +713,14 @@ func TestNewBucket(t *testing.T) {
 			TerminalStorageClass:           "NEARLINE",
 			TerminalStorageClassUpdateTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
 		},
+		objectRetentionEnabled: false,
 	}
 	got, err := newBucket(rb)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
+	opt := cmp.AllowUnexported(BucketAttrs{})
+	if diff := cmp.Diff(got, want, opt); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
@@ -817,7 +823,8 @@ func TestNewBucketFromProto(t *testing.T) {
 		},
 	}
 	got := newBucketFromProto(pb)
-	if diff := testutil.Diff(got, want); diff != "" {
+	opt := cmp.AllowUnexported(BucketAttrs{})
+	if diff := cmp.Diff(got, want, opt); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }

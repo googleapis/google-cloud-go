@@ -181,6 +181,9 @@ func (c *httpStorageClient) CreateBucket(ctx context.Context, project, bucket st
 	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
 		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
 	}
+	if attrs != nil {
+		req.EnableObjectRetention(attrs.objectRetentionEnabled)
+	}
 	var battrs *BucketAttrs
 	err := run(ctx, func(ctx context.Context) error {
 		b, err := req.Context(ctx).Do()
@@ -496,6 +499,16 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 		// we don't append to nullFields here.
 		forceSendFields = append(forceSendFields, "Acl")
 	}
+	if uattrs.Retention != nil {
+		// For ObjectRetention it's an error to send empty fields.
+		// Instead we send a null as the user's intention is to remove.
+		if uattrs.Retention.Mode == "" && uattrs.Retention.RetainUntil.IsZero() {
+			nullFields = append(nullFields, "Retention")
+		} else {
+			attrs.Retention = uattrs.Retention
+			forceSendFields = append(forceSendFields, "Retention")
+		}
+	}
 	rawObj := attrs.toRawObject(bucket)
 	rawObj.ForceSendFields = forceSendFields
 	rawObj.NullFields = nullFields
@@ -512,6 +525,11 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	if err := setEncryptionHeaders(call.Header(), encryptionKey, false); err != nil {
 		return nil, err
 	}
+
+	if uattrs.OverrideUnlockedRetention {
+		call.OverrideUnlockedRetention(uattrs.OverrideUnlockedRetention)
+	}
+
 	var obj *raw.Object
 	var err error
 	err = run(ctx, func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }, s.retry, s.idempotent)

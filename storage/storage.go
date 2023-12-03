@@ -973,8 +973,9 @@ func (o *ObjectHandle) ObjectName() string {
 
 // ObjectAttrsToUpdate is used to update the attributes of an object.
 // Only fields set to non-nil values will be updated.
-// For all fields except CustomTime, set the field to its zero value to delete
-// it. CustomTime cannot be deleted or changed to an earlier time once set.
+// For all fields except CustomTime and Retention, set the field to its zero
+// value to delete it. CustomTime cannot be deleted or changed to an earlier
+// time once set. Retention follows specidal
 //
 // For example, to change ContentType and delete ContentEncoding and
 // Metadata, use
@@ -999,6 +1000,15 @@ type ObjectAttrsToUpdate struct {
 	// If not empty, applies a predefined set of access controls. ACL must be nil.
 	// See https://cloud.google.com/storage/docs/json_api/v1/objects/patch.
 	PredefinedACL string
+
+	// Retention contains the retention configuration for this object.
+	Retention *ObjectRetention
+
+	// OverrideUnlockedRetention provides an option for overriding an Unlocked
+	// Retention policy. This must be set to true in order to change a policy
+	// from Unlocked to Locked, to set it to null, or to reduce its
+	// retainUntilTime attribute.
+	OverrideUnlockedRetention bool
 }
 
 // Delete deletes the single specified object.
@@ -1109,6 +1119,7 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 		Acl:                     toRawObjectACL(o.ACL),
 		Metadata:                o.Metadata,
 		CustomTime:              ct,
+		Retention:               o.Retention.toRawObjectRetention(),
 	}
 }
 
@@ -1344,6 +1355,41 @@ type ObjectAttrs struct {
 	// For non-composite objects, the value will be zero.
 	// This field is read-only.
 	ComponentCount int64
+
+	// Retention contains the retention configuration for this object.
+	Retention *ObjectRetention
+}
+
+// ObjectRetention contains the retention configuration for this object.
+type ObjectRetention struct {
+	// Mode is the retention policy's mode on this object. Valid values are
+	// "Locked" and "Unlocked".
+	// Locked retention policies cannot be changed. Unlocked policies require an
+	// override to change.
+	Mode string
+
+	// RetainUntil is the time this object will be retained until.
+	RetainUntil time.Time
+}
+
+func (r *ObjectRetention) toRawObjectRetention() *raw.ObjectRetention {
+	if r == nil {
+		return nil
+	}
+	return &raw.ObjectRetention{
+		Mode:            r.Mode,
+		RetainUntilTime: r.RetainUntil.Format(time.RFC3339),
+	}
+}
+
+func toObjectRetention(r *raw.ObjectRetention) *ObjectRetention {
+	if r == nil {
+		return nil
+	}
+	return &ObjectRetention{
+		Mode:        r.Mode,
+		RetainUntil: convertTime(r.RetainUntilTime),
+	}
 }
 
 // convertTime converts a time in RFC3339 format to time.Time.
@@ -1415,6 +1461,7 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		Etag:                    o.Etag,
 		CustomTime:              convertTime(o.CustomTime),
 		ComponentCount:          o.ComponentCount,
+		Retention:               toObjectRetention(o.Retention),
 	}
 }
 

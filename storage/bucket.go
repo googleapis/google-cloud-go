@@ -462,6 +462,27 @@ type BucketAttrs struct {
 	// allows for the automatic selection of the best storage class
 	// based on object access patterns.
 	Autoclass *Autoclass
+
+	// ObjectRetentionMode reports whether individual objects in the bucket can
+	// be configured with a retention policy. An empty value means that object
+	// retention is disabled. Object retention is not enabled default.
+	// This field is read-only. Object retention can be enabled only on bucket
+	// creation; call EnableObjectRetention() on the attrs to do so. Setting
+	// this field will have no effect.
+	ObjectRetentionMode string
+
+	// objectRetentionEnabled will set Object Retention on bucket creation if
+	// true.
+	objectRetentionEnabled bool
+}
+
+// EnableObjectRetention allows configuration of retention policies on
+// individual objects in the bucket. ObjectRetention is not enabled by
+// default.
+// This must be called before creating a bucket. If it is called after the
+// bucket is created, it will have no effect.
+func (b *BucketAttrs) EnableObjectRetention() {
+	b.objectRetentionEnabled = true
 }
 
 // BucketPolicyOnly is an alias for UniformBucketLevelAccess.
@@ -757,6 +778,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &BucketAttrs{
 		Name:                     b.Name,
 		Location:                 b.Location,
@@ -771,6 +793,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		RequesterPays:            b.Billing != nil && b.Billing.RequesterPays,
 		Lifecycle:                toLifecycle(b.Lifecycle),
 		RetentionPolicy:          rp,
+		ObjectRetentionMode:      toBucketObjectRetention(b.ObjectRetention),
 		CORS:                     toCORS(b.Cors),
 		Encryption:               toBucketEncryption(b.Encryption),
 		Logging:                  toBucketLogging(b.Logging),
@@ -864,6 +887,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Billing:               bb,
 		Lifecycle:             toRawLifecycle(b.Lifecycle),
 		RetentionPolicy:       b.RetentionPolicy.toRawRetentionPolicy(),
+		ObjectRetention:       toRawBucketObjectRetention(b.ObjectRetentionMode),
 		Cors:                  toRawCORS(b.CORS),
 		Encryption:            b.Encryption.toRawBucketEncryption(),
 		Logging:               b.Logging.toRawBucketLogging(),
@@ -1445,6 +1469,22 @@ func toRetentionPolicyFromProto(rp *storagepb.Bucket_RetentionPolicy) *Retention
 		EffectiveTime:   rp.GetEffectiveTime().AsTime(),
 		IsLocked:        rp.GetIsLocked(),
 	}
+}
+
+func toRawBucketObjectRetention(retentionMode string) *raw.BucketObjectRetention {
+	if retentionMode == "" {
+		return nil
+	}
+	return &raw.BucketObjectRetention{
+		Mode: retentionMode,
+	}
+}
+
+func toBucketObjectRetention(or *raw.BucketObjectRetention) string {
+	if or == nil {
+		return ""
+	}
+	return or.Mode
 }
 
 func toRawCORS(c []CORS) []*raw.BucketCors {
