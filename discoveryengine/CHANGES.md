@@ -1,6 +1,35 @@
 # Changelog
 
 
+## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.2.2...discoveryengine/v1.2.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.2.1...discoveryengine/v1.2.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.2.0...discoveryengine/v1.2.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.1.0...discoveryengine/v1.2.0) (2023-09-11)
+
+
+### Features
+
+* **discoveryengine:** Support conversational / multi-turn search ([15be57b](https://github.com/googleapis/google-cloud-go/commit/15be57b9264a793494cedc3966034fa20f56d7c5))
+* **discoveryengine:** Supported bring your own embedding feature ([fbfaf21](https://github.com/googleapis/google-cloud-go/commit/fbfaf21c15ae8a07ab39c6036cf0cee700b5627c))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.0.0...discoveryengine/v1.1.0) (2023-07-31)
 
 

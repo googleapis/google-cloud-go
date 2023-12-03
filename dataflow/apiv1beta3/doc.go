@@ -69,11 +69,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &dataflowpb.GetSnapshotRequest{
+//	req := &dataflowpb.DeleteSnapshotRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#GetSnapshotRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#DeleteSnapshotRequest.
 //	}
-//	resp, err := c.GetSnapshot(ctx, req)
+//	resp, err := c.DeleteSnapshot(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

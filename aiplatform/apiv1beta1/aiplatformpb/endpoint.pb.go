@@ -275,7 +275,7 @@ type DeployedModel struct {
 	// Immutable. The ID of the DeployedModel. If not provided upon deployment,
 	// Vertex AI will generate a value for this ID.
 	//
-	// This value should be 1-10 characters, and valid characters are /[0-9]/.
+	// This value should be 1-10 characters, and valid characters are `/[0-9]/`.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Required. The resource name of the Model that this is the deployment of.
 	// Note that the Model may be in a different location than the DeployedModel's

@@ -69,11 +69,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &optimizationpb.OptimizeToursRequest{
+//	req := &optimizationpb.BatchOptimizeToursRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/optimization/apiv1/optimizationpb#OptimizeToursRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/optimization/apiv1/optimizationpb#BatchOptimizeToursRequest.
 //	}
-//	resp, err := c.OptimizeTours(ctx, req)
+//	op, err := c.BatchOptimizeTours(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

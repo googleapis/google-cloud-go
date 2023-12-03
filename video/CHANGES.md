@@ -1,5 +1,34 @@
 # Changes
 
+
+## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.2...video/v1.20.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **video:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.20.2](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.1...video/v1.20.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **video:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.0...video/v1.20.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **video:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.19.0...video/v1.20.0) (2023-09-12)
+
+
+### Features
+
+* **video/stitcher:** Refactor RPCs to use LRO ([#8561](https://github.com/googleapis/google-cloud-go/issues/8561)) ([aaebe09](https://github.com/googleapis/google-cloud-go/commit/aaebe097413bd38a969476253e951b7f5274cbbf))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.18.0...video/v1.19.0) (2023-07-24)
 
 

@@ -913,6 +913,120 @@
         }
       }
     },
+    "Generators": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GeneratorsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGenerator": {
+              "methods": [
+                "CreateGenerator"
+              ]
+            },
+            "DeleteGenerator": {
+              "methods": [
+                "DeleteGenerator"
+              ]
+            },
+            "GetGenerator": {
+              "methods": [
+                "GetGenerator"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGenerators": {
+              "methods": [
+                "ListGenerators"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateGenerator": {
+              "methods": [
+                "UpdateGenerator"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GeneratorsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGenerator": {
+              "methods": [
+                "CreateGenerator"
+              ]
+            },
+            "DeleteGenerator": {
+              "methods": [
+                "DeleteGenerator"
+              ]
+            },
+            "GetGenerator": {
+              "methods": [
+                "GetGenerator"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGenerators": {
+              "methods": [
+                "ListGenerators"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateGenerator": {
+              "methods": [
+                "UpdateGenerator"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Intents": {
       "clients": {
         "grpc": {
@@ -933,6 +1047,11 @@
                 "DeleteIntent"
               ]
             },
+            "ExportIntents": {
+              "methods": [
+                "ExportIntents"
+              ]
+            },
             "GetIntent": {
               "methods": [
                 "GetIntent"
@@ -946,6 +1065,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportIntents": {
+              "methods": [
+                "ImportIntents"
               ]
             },
             "ListIntents": {
@@ -988,6 +1112,11 @@
                 "DeleteIntent"
               ]
             },
+            "ExportIntents": {
+              "methods": [
+                "ExportIntents"
+              ]
+            },
             "GetIntent": {
               "methods": [
                 "GetIntent"
@@ -1001,6 +1130,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportIntents": {
+              "methods": [
+                "ImportIntents"
               ]
             },
             "ListIntents": {
@@ -1418,6 +1552,11 @@
               "methods": [
                 "StreamingDetectIntent"
               ]
+            },
+            "SubmitAnswerFeedback": {
+              "methods": [
+                "SubmitAnswerFeedback"
+              ]
             }
           }
         },
@@ -1467,6 +1606,11 @@
             "StreamingDetectIntent": {
               "methods": [
                 "StreamingDetectIntent"
+              ]
+            },
+            "SubmitAnswerFeedback": {
+              "methods": [
+                "SubmitAnswerFeedback"
               ]
             }
           }

@@ -174,6 +174,22 @@ func (r *Row) ColumnNames() []string {
 	return n
 }
 
+// ColumnType returns the Cloud Spanner Type of column i, or nil for invalid column.
+func (r *Row) ColumnType(i int) *sppb.Type {
+	if i < 0 || i >= len(r.fields) {
+		return nil
+	}
+	return r.fields[i].Type
+}
+
+// ColumnValue returns the Cloud Spanner Value of column i, or nil for invalid column.
+func (r *Row) ColumnValue(i int) *proto3.Value {
+	if i < 0 || i >= len(r.vals) {
+		return nil
+	}
+	return r.vals[i]
+}
+
 // errColIdxOutOfRange returns error for requested column index is out of the
 // range of the target Row's columns.
 func errColIdxOutOfRange(i int, r *Row) error {

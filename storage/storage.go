@@ -123,7 +123,7 @@ type Client struct {
 	useGRPC bool
 }
 
-// NewClient creates a new Google Cloud Storage client.
+// NewClient creates a new Google Cloud Storage client using the HTTP transport.
 // The default scope is ScopeFullControl. To use a different scope, like
 // ScopeReadOnly, use option.WithScopes.
 //
@@ -133,12 +133,6 @@ type Client struct {
 // You may configure the client by passing in options from the [google.golang.org/api/option]
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	// Use the experimental gRPC client if the env var is set.
-	// This is an experimental API and not intended for public use.
-	if withGRPC := os.Getenv("STORAGE_USE_GRPC"); withGRPC != "" {
-		return newGRPCClient(ctx, opts...)
-	}
-
 	var creds *google.Credentials
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
@@ -220,11 +214,20 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}, nil
 }
 
-// newGRPCClient creates a new Storage client that initializes a gRPC-based
-// client. Calls that have not been implemented in gRPC will panic.
+// NewGRPCClient creates a new Storage client using the gRPC transport and API.
+// Client methods which have not been implemented in gRPC will return an error.
+// In particular, methods for Cloud Pub/Sub notifications are not supported.
 //
-// This is an experimental API and not intended for public use.
-func newGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+// The storage gRPC API is still in preview and not yet publicly available.
+// If you would like to use the API, please first contact your GCP account rep to
+// request access. The API may be subject to breaking changes.
+//
+// Clients should be reused instead of created as needed. The methods of Client
+// are safe for concurrent use by multiple goroutines.
+//
+// You may configure the client by passing in options from the [google.golang.org/api/option]
+// package.
+func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	opts = append(defaultGRPCOptions(), opts...)
 	tc, err := newGRPCStorageClient(ctx, withClientOptions(opts...))
 	if err != nil {
@@ -1803,7 +1806,7 @@ func (c *Conditions) isMetagenerationValid() bool {
 func applyConds(method string, gen int64, conds *Conditions, call interface{}) error {
 	cval := reflect.ValueOf(call)
 	if gen >= 0 {
-		if !setConditionField(cval, "Generation", gen) {
+		if !setGeneration(cval, gen) {
 			return fmt.Errorf("storage: %s: generation not supported", method)
 		}
 	}
@@ -1815,25 +1818,25 @@ func applyConds(method string, gen int64, conds *Conditions, call interface{}) e
 	}
 	switch {
 	case conds.GenerationMatch != 0:
-		if !setConditionField(cval, "IfGenerationMatch", conds.GenerationMatch) {
+		if !setIfGenerationMatch(cval, conds.GenerationMatch) {
 			return fmt.Errorf("storage: %s: ifGenerationMatch not supported", method)
 		}
 	case conds.GenerationNotMatch != 0:
-		if !setConditionField(cval, "IfGenerationNotMatch", conds.GenerationNotMatch) {
+		if !setIfGenerationNotMatch(cval, conds.GenerationNotMatch) {
 			return fmt.Errorf("storage: %s: ifGenerationNotMatch not supported", method)
 		}
 	case conds.DoesNotExist:
-		if !setConditionField(cval, "IfGenerationMatch", int64(0)) {
+		if !setIfGenerationMatch(cval, int64(0)) {
 			return fmt.Errorf("storage: %s: DoesNotExist not supported", method)
 		}
 	}
 	switch {
 	case conds.MetagenerationMatch != 0:
-		if !setConditionField(cval, "IfMetagenerationMatch", conds.MetagenerationMatch) {
+		if !setIfMetagenerationMatch(cval, conds.MetagenerationMatch) {
 			return fmt.Errorf("storage: %s: ifMetagenerationMatch not supported", method)
 		}
 	case conds.MetagenerationNotMatch != 0:
-		if !setConditionField(cval, "IfMetagenerationNotMatch", conds.MetagenerationNotMatch) {
+		if !setIfMetagenerationNotMatch(cval, conds.MetagenerationNotMatch) {
 			return fmt.Errorf("storage: %s: ifMetagenerationNotMatch not supported", method)
 		}
 	}
@@ -1894,16 +1897,45 @@ func applySourceCondsProto(gen int64, conds *Conditions, call *storagepb.Rewrite
 	return nil
 }
 
-// setConditionField sets a field on a *raw.WhateverCall.
+// setGeneration sets Generation on a *raw.WhateverCall.
 // We can't use anonymous interfaces because the return type is
 // different, since the field setters are builders.
-func setConditionField(call reflect.Value, name string, value interface{}) bool {
-	m := call.MethodByName(name)
-	if !m.IsValid() {
-		return false
+// We also make sure to supply a compile-time constant to MethodByName;
+// otherwise, the Go Linker will disable dead code elimination, leading
+// to larger binaries for all packages that import storage.
+func setGeneration(cval reflect.Value, value interface{}) bool {
+	return setCondition(cval.MethodByName("Generation"), value)
+}
+
+// setIfGenerationMatch sets IfGenerationMatch on a *raw.WhateverCall.
+// See also setGeneration.
+func setIfGenerationMatch(cval reflect.Value, value interface{}) bool {
+	return setCondition(cval.MethodByName("IfGenerationMatch"), value)
+}
+
+// setIfGenerationNotMatch sets IfGenerationNotMatch on a *raw.WhateverCall.
+// See also setGeneration.
+func setIfGenerationNotMatch(cval reflect.Value, value interface{}) bool {
+	return setCondition(cval.MethodByName("IfGenerationNotMatch"), value)
+}
+
+// setIfMetagenerationMatch sets IfMetagenerationMatch on a *raw.WhateverCall.
+// See also setGeneration.
+func setIfMetagenerationMatch(cval reflect.Value, value interface{}) bool {
+	return setCondition(cval.MethodByName("IfMetagenerationMatch"), value)
+}
+
+// setIfMetagenerationNotMatch sets IfMetagenerationNotMatch on a *raw.WhateverCall.
+// See also setGeneration.
+func setIfMetagenerationNotMatch(cval reflect.Value, value interface{}) bool {
+	return setCondition(cval.MethodByName("IfMetagenerationNotMatch"), value)
+}
+
+func setCondition(setter reflect.Value, value interface{}) bool {
+	if setter.IsValid() {
+		setter.Call([]reflect.Value{reflect.ValueOf(value)})
 	}
-	m.Call([]reflect.Value{reflect.ValueOf(value)})
-	return true
+	return setter.IsValid()
 }
 
 // Retryer returns an object handle that is configured with custom retry
@@ -2187,8 +2219,6 @@ func toProjectResource(project string) string {
 
 // setConditionProtoField uses protobuf reflection to set named condition field
 // to the given condition value if supported on the protobuf message.
-//
-// This is an experimental API and not intended for public use.
 func setConditionProtoField(m protoreflect.Message, f string, v int64) bool {
 	fields := m.Descriptor().Fields()
 	if rf := fields.ByName(protoreflect.Name(f)); rf != nil {
@@ -2201,8 +2231,6 @@ func setConditionProtoField(m protoreflect.Message, f string, v int64) bool {
 
 // applyCondsProto validates and attempts to set the conditions on a protobuf
 // message using protobuf reflection.
-//
-// This is an experimental API and not intended for public use.
 func applyCondsProto(method string, gen int64, conds *Conditions, msg proto.Message) error {
 	rmsg := msg.ProtoReflect()
 

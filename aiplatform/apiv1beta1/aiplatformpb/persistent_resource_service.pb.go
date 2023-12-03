@@ -59,7 +59,7 @@ type CreatePersistentResourceRequest struct {
 	// component of the PersistentResource's resource name.
 	//
 	// The maximum length is 63 characters, and valid characters
-	// are /^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$/.
+	// are `/^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$/`.
 	PersistentResourceId string `protobuf:"bytes,3,opt,name=persistent_resource_id,json=persistentResourceId,proto3" json:"persistent_resource_id,omitempty"`
 }
 

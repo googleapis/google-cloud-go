@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &storagetransferpb.GetGoogleServiceAccountRequest{
+//	req := &storagetransferpb.CreateAgentPoolRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#GetGoogleServiceAccountRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#CreateAgentPoolRequest.
 //	}
-//	resp, err := c.GetGoogleServiceAccount(ctx, req)
+//	resp, err := c.CreateAgentPool(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
