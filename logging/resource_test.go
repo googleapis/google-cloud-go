@@ -141,7 +141,7 @@ func TestResourceDetection(t *testing.T) {
 		{
 			name:     "detect GKE resource",
 			envVars:  map[string]string{"HOSTNAME": podName},
-			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/zone": qualifiedZoneName, "instance/attributes/cluster-name": clusterName},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/region": qualifiedRegionName, "instance/attributes/cluster-name": clusterName},
 			fsPaths:  map[string]string{"/var/run/secrets/kubernetes.io/serviceaccount/namespace": namespaceName},
 			want: &mrpb.MonitoredResource{
 				Type: "k8s_container",
@@ -158,7 +158,7 @@ func TestResourceDetection(t *testing.T) {
 		{
 			name:     "detect GKE resource with custom container and namespace config",
 			envVars:  map[string]string{"HOSTNAME": podName, "CONTAINER_NAME": containerName, "NAMESPACE_NAME": namespaceName},
-			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/zone": qualifiedZoneName, "instance/attributes/cluster-name": clusterName},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/region": qualifiedRegionName, "instance/attributes/cluster-name": clusterName},
 			want: &mrpb.MonitoredResource{
 				Type: "k8s_container",
 				Labels: map[string]string{
