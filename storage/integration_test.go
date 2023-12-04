@@ -4004,14 +4004,14 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 		}
 
 		// Reduce retain until time of Unlocked object without
-		// override_unlocked_retention=True returns 400
+		// override_unlocked_retention=True returns 403
 		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: retentionUnlocked})
 		if err == nil || extractErrCode(err) != http.StatusForbidden {
 			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
 		}
 
 		// Remove retention of Unlocked object without
-		// override_unlocked_retention=True returns 400
+		// override_unlocked_retention=True returns 403
 		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{}})
 		if err == nil || extractErrCode(err) != http.StatusForbidden {
 			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
