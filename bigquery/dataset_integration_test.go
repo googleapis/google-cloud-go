@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -23,6 +24,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/api/googleapi"
 )
 
 func TestIntegration_DatasetCreate(t *testing.T) {
@@ -46,6 +48,50 @@ func TestIntegration_DatasetCreate(t *testing.T) {
 	if got, want := gmd.Location, wmd.Location; got != want {
 		t.Errorf("location: got %q, want %q", got, want)
 	}
+	if err := ds.Delete(ctx); err != nil {
+		t.Fatalf("deleting dataset %v: %v", ds, err)
+	}
+}
+
+func TestIntegration_DatasetCreateIfNotExists(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	datasetID := datasetIDs.New()
+	ds := client.Dataset(datasetID)
+	wmd := &DatasetMetadata{Name: "not_exists", Location: "EU"}
+	_, err := ds.Metadata(ctx)
+	if err == nil {
+		t.Fatalf("should fail to get non existent dataset metadata")
+	}
+	if !errors.Is(err, ErrDatasetNotFound) {
+		t.Fatalf("metadata err: got: %q, want %q", err, ErrTableNotFound)
+	}
+	// Make sure we still get the googleapi error to avoid breaking changes
+	var e *googleapi.Error
+	if !errors.As(err, &e) {
+		t.Fatalf("googleapi err: not an googleapi.Error instance")
+	}
+
+	err = ds.CreateIfNotExists(ctx, wmd)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gmd, err := ds.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := gmd.Name, wmd.Name; got != want {
+		t.Errorf("name: got %q, want %q", got, want)
+	}
+
+	// We can call again with no errors
+	err = ds.CreateIfNotExists(ctx, wmd)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if err := ds.Delete(ctx); err != nil {
 		t.Fatalf("deleting dataset %v: %v", ds, err)
 	}

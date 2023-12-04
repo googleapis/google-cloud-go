@@ -18,12 +18,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	bq "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 )
 
@@ -157,6 +159,31 @@ type DatasetMetadataToUpdate struct {
 	labelUpdater
 }
 
+// ErrDatasetNotFound is returned when trying to fetch a dataset metadata and it doesn't exists.
+var ErrDatasetNotFound = errors.New("dataset not found")
+
+type datasetNotFoundErr struct {
+	reason error
+}
+
+func (e datasetNotFoundErr) Unwrap() error {
+	return e.reason
+}
+
+func (e datasetNotFoundErr) Is(err error) bool {
+	if err == e.reason {
+		return true
+	}
+	if err == ErrDatasetNotFound {
+		return true
+	}
+	return false
+}
+
+func (e datasetNotFoundErr) Error() string {
+	return fmt.Sprintf("%s: %v", ErrDatasetNotFound.Error(), e.reason)
+}
+
 // Dataset creates a handle to a BigQuery dataset in the client's project.
 func (c *Client) Dataset(id string) *Dataset {
 	return c.DatasetInProject(c.projectID, id)
@@ -209,6 +236,19 @@ func (d *Dataset) Create(ctx context.Context, md *DatasetMetadata) (err error) {
 	setClientHeader(call.Header())
 	_, err = call.Do()
 	return err
+}
+
+// CreateIfNotExists creates a dataset in the BigQuery service only if the given
+// dataset doesn't exists. See Dataset.Create method for more guidance.
+func (d *Dataset) CreateIfNotExists(ctx context.Context, md *DatasetMetadata) (err error) {
+	_, err = d.Metadata(ctx)
+	if err == nil {
+		return nil
+	}
+	if errors.Is(err, ErrDatasetNotFound) {
+		return d.Create(ctx, md)
+	}
+	return fmt.Errorf("bigquery: couldn't retrieve dataset metadata: %w", err)
 }
 
 func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
@@ -301,6 +341,11 @@ func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error)
 		trace.EndSpan(sCtx, err)
 		return err
 	}); err != nil {
+		if e, ok := err.(*googleapi.Error); ok {
+			if e.Code == http.StatusNotFound {
+				return nil, datasetNotFoundErr{reason: err}
+			}
+		}
 		return nil, err
 	}
 	return bqToDatasetMetadata(ds, d.c)
