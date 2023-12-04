@@ -168,7 +168,7 @@ func detectKubernetesResource() *mrpb.MonitoredResource {
 	if projectID == "" {
 		return nil
 	}
-	zone := detectedResource.metadataZone()
+	region := detectedResource.metadataRegion()
 	clusterName := detectedResource.attrs.Metadata("instance/attributes/cluster-name")
 	namespaceName := detectedResource.attrs.ReadAll("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
 	if namespaceName == "" {
@@ -184,7 +184,7 @@ func detectKubernetesResource() *mrpb.MonitoredResource {
 		Type: "k8s_container",
 		Labels: map[string]string{
 			"cluster_name":   clusterName,
-			"location":       zone,
+			"location":       region,
 			"project_id":     projectID,
 			"pod_name":       podName,
 			"namespace_name": namespaceName,

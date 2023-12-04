@@ -147,7 +147,7 @@ func TestResourceDetection(t *testing.T) {
 				Type: "k8s_container",
 				Labels: map[string]string{
 					"cluster_name":   clusterName,
-					"location":       zoneID,
+					"location":       regionID,
 					"project_id":     projectID,
 					"pod_name":       podName,
 					"namespace_name": namespaceName,
@@ -163,7 +163,7 @@ func TestResourceDetection(t *testing.T) {
 				Type: "k8s_container",
 				Labels: map[string]string{
 					"cluster_name":   clusterName,
-					"location":       zoneID,
+					"location":       regionID,
 					"project_id":     projectID,
 					"pod_name":       podName,
 					"namespace_name": namespaceName,
