@@ -1635,6 +1635,7 @@ var attrToFieldMap = map[string]string{
 	"Etag":                    "etag",
 	"CustomTime":              "customTime",
 	"ComponentCount":          "componentCount",
+	"Retention":               "retention",
 }
 
 // attrToProtoFieldMap maps the field names of ObjectAttrs to the underlying field
@@ -1669,6 +1670,7 @@ var attrToProtoFieldMap = map[string]string{
 	"ComponentCount":          "component_count",
 	// MediaLink was explicitly excluded from the proto as it is an HTTP-ism.
 	// "MediaLink":               "mediaLink",
+	// TODO: add object retention - b/308194853
 }
 
 // SetAttrSelection makes the query populate only specific attributes of
