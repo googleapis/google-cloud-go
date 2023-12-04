@@ -3889,7 +3889,7 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 }
 
 func TestIntegration_BucketObjectRetention(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("not yet available in gRPC"), "no reads in test")
+	ctx := skipJSONReads(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		for _, test := range []struct {
 			desc                string
@@ -3947,7 +3947,7 @@ func TestIntegration_BucketObjectRetention(t *testing.T) {
 }
 
 func TestIntegration_ObjectRetention(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("not yet available in gRPC"), "no reads in test")
+	ctx := skipJSONReads(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -4053,19 +4053,19 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
 		}
 
-		// Reduce retain until time of Locked object returns 412
+		// Reduce retain until time of Locked object returns 403
 		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: retentionLocked})
 		if err == nil || extractErrCode(err) != http.StatusForbidden {
 			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusForbidden, err)
 		}
 
-		// Remove retention of Locked object returns 412
+		// Remove retention of Locked object returns 403
 		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{}})
 		if err == nil || extractErrCode(err) != http.StatusForbidden {
 			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusForbidden, err)
 		}
 
-		// Patch mode from Locked to Unlocked returns 412
+		// Patch mode from Locked to Unlocked returns 403
 		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: retentionUnlocked})
 		if err == nil || extractErrCode(err) != http.StatusForbidden {
 			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusForbidden, err)

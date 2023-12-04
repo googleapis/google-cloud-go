@@ -469,6 +469,7 @@ type BucketAttrs struct {
 	// This field is read-only. Object retention can be enabled only on bucket
 	// creation; call EnableObjectRetention() on the attrs to do so. Setting
 	// this field will have no effect.
+	// ObjectRetention cannot be configured or reported through the gRPC API.
 	ObjectRetentionMode string
 
 	// objectRetentionEnabled will set Object Retention on bucket creation if
@@ -481,6 +482,7 @@ type BucketAttrs struct {
 // default.
 // This must be called before creating a bucket. If it is called after the
 // bucket is created, it will have no effect.
+// ObjectRetention cannot be configured through the gRPC API.
 func (b *BucketAttrs) EnableObjectRetention() {
 	b.objectRetentionEnabled = true
 }

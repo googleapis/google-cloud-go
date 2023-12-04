@@ -1357,6 +1357,7 @@ type ObjectAttrs struct {
 	ComponentCount int64
 
 	// Retention contains the retention configuration for this object.
+	// ObjectRetention cannot be configured or reported through the gRPC API.
 	Retention *ObjectRetention
 }
 

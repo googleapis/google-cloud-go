@@ -162,6 +162,8 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 		b.Location = "US"
 	}
 
+	// TO-DO: implement ObjectRetention once available - see b/308194853
+
 	req := &storagepb.CreateBucketRequest{
 		Parent:   fmt.Sprintf("projects/%s", globalProjectAlias),
 		Bucket:   b,
@@ -571,6 +573,8 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 			}
 		}
 	}
+
+	// TO-DO: implement ObjectRetention once available - see b/308194853
 
 	req.UpdateMask = fieldMask
 
