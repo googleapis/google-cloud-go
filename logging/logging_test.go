@@ -1033,7 +1033,7 @@ func TestNonProjectParent(t *testing.T) {
 	}
 }
 
-func TestEmptyStringParent(t *testing.T) {
+func TestDetectProjectIdParent(t *testing.T) {
 	ctx := context.Background()
 	initLogs()
 	addr, err := ltesting.NewServer()
@@ -1052,14 +1052,14 @@ func TestEmptyStringParent(t *testing.T) {
 		wantError error
 	}{
 		{
-			name: "Test empty parent properly set up resource detection",
+			name: "Test DetectProjectId parent properly set up resource detection",
 			resource: &mrpb.MonitoredResource{
 				Labels: map[string]string{"project_id": testProjectID},
 			},
 			want: "projects/" + testProjectID,
 		},
 		{
-			name:      "Test empty parent no resource detected",
+			name:      "Test DetectProjectId parent no resource detected",
 			resource:  nil,
 			wantError: errors.New("could not determine project ID from environment"),
 		},
@@ -1085,7 +1085,7 @@ func TestEmptyStringParent(t *testing.T) {
 			realDetectResourceInternal := logging.SetDetectResourceInternal(detectResourceMock)
 			defer func() { logging.SetDetectResourceInternal(realDetectResourceInternal) }()
 
-			cli, err := logging.NewClient(ctx, "", option.WithGRPCConn(conn))
+			cli, err := logging.NewClient(ctx, logging.DetectProjectID, option.WithGRPCConn(conn))
 			if err != nil && test.wantError == nil {
 				t.Fatalf("Unexpected error: %+v: %v", test.resource, err)
 			}

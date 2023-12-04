@@ -94,6 +94,15 @@ const (
 
 	// Part of the error message when the payload contains invalid UTF-8 characters.
 	utfErrorString = "string field contains invalid UTF-8"
+
+	// DetectProjectID is a sentinel value that instructs NewClient to detect the
+	// project ID. It is given in place of the projectID argument. NewClient will
+	// use the project ID from the given credentials or the default credentials
+	// (https://developers.google.com/accounts/docs/application-default-credentials)
+	// if no credentials were provided. When providing credentials, not all
+	// options will allow NewClient to extract the project ID. Specifically a JWT
+	// does not have the project ID encoded.
+	DetectProjectID = "*detect-project-id*"
 )
 
 var (
@@ -151,7 +160,7 @@ type Client struct {
 // For backwards compatibility, a string with no '/' is also allowed and is interpreted
 // as a project ID.
 //
-// If an empty string is provided as the parent, the parent will be interpreted as a project
+// If logging.DetectProjectId is provided as the parent, the parent will be interpreted as a project
 // ID, and its value will be inferred from the environment.
 //
 // By default NewClient uses WriteScope. To use a different scope, call
@@ -195,7 +204,7 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 
 func makeParent(parent string) (string, error) {
 	if !strings.ContainsRune(parent, '/') {
-		if parent == "" {
+		if parent == DetectProjectID {
 			resource := detectResourceInternal()
 			if resource == nil {
 				return parent, fmt.Errorf("could not determine project ID from environment")
