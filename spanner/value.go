@@ -187,10 +187,7 @@ func (n NullInt64) String() string {
 
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullInt64.
 func (n NullInt64) MarshalJSON() ([]byte, error) {
-	if n.Valid {
-		return []byte(fmt.Sprintf("%v", n.Int64)), nil
-	}
-	return jsonNullBytes, nil
+	return nulljson(n.Valid, n.Int64)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullInt64.
@@ -270,10 +267,7 @@ func (n NullString) String() string {
 
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullString.
 func (n NullString) MarshalJSON() ([]byte, error) {
-	if n.Valid {
-		return []byte(fmt.Sprintf("%q", n.StringVal)), nil
-	}
-	return jsonNullBytes, nil
+	return nulljson(n.Valid, n.StringVal)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullString.
@@ -358,10 +352,7 @@ func (n NullFloat64) String() string {
 
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullFloat64.
 func (n NullFloat64) MarshalJSON() ([]byte, error) {
-	if n.Valid {
-		return []byte(fmt.Sprintf("%v", n.Float64)), nil
-	}
-	return jsonNullBytes, nil
+	return nulljson(n.Valid, n.Float64)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullFloat64.
@@ -441,10 +432,7 @@ func (n NullBool) String() string {
 
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullBool.
 func (n NullBool) MarshalJSON() ([]byte, error) {
-	if n.Valid {
-		return []byte(fmt.Sprintf("%v", n.Bool)), nil
-	}
-	return jsonNullBytes, nil
+	return nulljson(n.Valid, n.Bool)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullBool.
@@ -524,10 +512,7 @@ func (n NullTime) String() string {
 
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullTime.
 func (n NullTime) MarshalJSON() ([]byte, error) {
-	if n.Valid {
-		return []byte(fmt.Sprintf("%q", n.String())), nil
-	}
-	return jsonNullBytes, nil
+	return nulljson(n.Valid, n.Time)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullTime.
@@ -612,10 +597,7 @@ func (n NullDate) String() string {
 
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullDate.
 func (n NullDate) MarshalJSON() ([]byte, error) {
-	if n.Valid {
-		return []byte(fmt.Sprintf("%q", n.String())), nil
-	}
-	return jsonNullBytes, nil
+	return nulljson(n.Valid, n.Date)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullDate.
@@ -701,7 +683,7 @@ func (n NullNumeric) String() string {
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullNumeric.
 func (n NullNumeric) MarshalJSON() ([]byte, error) {
 	if n.Valid {
-		return []byte(fmt.Sprintf("%q", NumericString(&n.Numeric))), nil
+		return json.Marshal(NumericString(&n.Numeric))
 	}
 	return jsonNullBytes, nil
 }
@@ -800,10 +782,7 @@ func (n NullJSON) String() string {
 
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullJSON.
 func (n NullJSON) MarshalJSON() ([]byte, error) {
-	if n.Valid {
-		return json.Marshal(n.Value)
-	}
-	return jsonNullBytes, nil
+	return nulljson(n.Valid, n.Value)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullJSON.
@@ -851,10 +830,7 @@ func (n PGNumeric) String() string {
 
 // MarshalJSON implements json.Marshaler.MarshalJSON for PGNumeric.
 func (n PGNumeric) MarshalJSON() ([]byte, error) {
-	if n.Valid {
-		return []byte(fmt.Sprintf("%q", n.Numeric)), nil
-	}
-	return jsonNullBytes, nil
+	return nulljson(n.Valid, n.Numeric)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for PGNumeric.
@@ -912,10 +888,7 @@ func (n PGJsonB) String() string {
 
 // MarshalJSON implements json.Marshaler.MarshalJSON for PGJsonB.
 func (n PGJsonB) MarshalJSON() ([]byte, error) {
-	if n.Valid {
-		return json.Marshal(n.Value)
-	}
-	return jsonNullBytes, nil
+	return nulljson(n.Valid, n.Value)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for PGJsonB.
@@ -935,6 +908,13 @@ func (n *PGJsonB) UnmarshalJSON(payload []byte) error {
 	n.Value = v
 	n.Valid = true
 	return nil
+}
+
+func nulljson(valid bool, v interface{}) ([]byte, error) {
+	if !valid {
+		return jsonNullBytes, nil
+	}
+	return json.Marshal(v)
 }
 
 // GenericColumnValue represents the generic encoded value and type of the
