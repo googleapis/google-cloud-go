@@ -2872,10 +2872,10 @@ type SearchBlueprintRevisionsRequest struct {
 	// Required. Supported queries:
 	// 1. ""                       : Lists all revisions across all blueprints.
 	// 2. "latest=true"            : Lists latest revisions across all blueprints.
-	// 3. "name=<name>"            : Lists all revisions of blueprint with name
-	// <name>.
-	// 4. "name=<name> latest=true": Lists latest revision of blueprint with name
-	// <name>
+	// 3. "name={name}"            : Lists all revisions of blueprint with name
+	// {name}.
+	// 4. "name={name} latest=true": Lists latest revision of blueprint with name
+	// {name}
 	Query string `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	// Optional. The maximum number of blueprints revisions to return per page.
 	// max page size = 100, default page size = 20.
@@ -3792,10 +3792,10 @@ type SearchDeploymentRevisionsRequest struct {
 	// 1. ""                       : Lists all revisions across all deployments.
 	// 2. "latest=true"            : Lists latest revisions across all
 	// deployments.
-	// 3. "name=<name>"            : Lists all revisions of deployment with name
-	// <name>.
-	// 4. "name=<name> latest=true": Lists latest revision of deployment with name
-	// <name>
+	// 3. "name={name}"            : Lists all revisions of deployment with name
+	// {name}.
+	// 4. "name={name} latest=true": Lists latest revision of deployment with name
+	// {name}
 	Query string `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	// Optional. The maximum number of deployment revisions to return per page.
 	// max page size = 100, default page size = 20.
