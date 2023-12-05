@@ -619,6 +619,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/cloudprofiler/apiv2": {
+    "api_shortname": "cloudprofiler",
+    "distribution_name": "cloud.google.com/go/cloudprofiler/apiv2",
+    "description": "Cloud Profiler API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/cloudprofiler/latest/apiv2",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/cloudtasks/apiv2": {
     "api_shortname": "cloudtasks",
     "distribution_name": "cloud.google.com/go/cloudtasks/apiv2",
@@ -972,7 +982,7 @@
   "cloud.google.com/go/dlp/apiv2": {
     "api_shortname": "dlp",
     "distribution_name": "cloud.google.com/go/dlp/apiv2",
-    "description": "Cloud Data Loss Prevention (DLP) API",
+    "description": "Cloud Data Loss Prevention (DLP)",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/dlp/latest/apiv2",
@@ -1017,6 +1027,16 @@
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/edgecontainer/latest/apiv1",
     "release_level": "stable",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/edgenetwork/apiv1": {
+    "api_shortname": "edgenetwork",
+    "distribution_name": "cloud.google.com/go/edgenetwork/apiv1",
+    "description": "Distributed Cloud Edge Network API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/edgenetwork/latest/apiv1",
+    "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/errorreporting": {
@@ -1096,6 +1116,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest/apiv1",
+    "release_level": "stable",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/firestore/apiv1/admin": {
+    "api_shortname": "firestore",
+    "distribution_name": "cloud.google.com/go/firestore/apiv1/admin",
+    "description": "Cloud Firestore API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest/apiv1/admin",
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
@@ -1879,6 +1909,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/redis/cluster/apiv1": {
+    "api_shortname": "redis",
+    "distribution_name": "cloud.google.com/go/redis/cluster/apiv1",
+    "description": "Google Cloud Memorystore for Redis API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/redis/latest/cluster/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/resourcemanager/apiv2": {
     "api_shortname": "cloudresourcemanager",
     "distribution_name": "cloud.google.com/go/resourcemanager/apiv2",
@@ -2266,6 +2306,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/talent/latest/apiv4beta1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/telcoautomation/apiv1": {
+    "api_shortname": "telcoautomation",
+    "distribution_name": "cloud.google.com/go/telcoautomation/apiv1",
+    "description": "Telco Automation API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/telcoautomation/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },

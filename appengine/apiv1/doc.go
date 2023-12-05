@@ -67,11 +67,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &appenginepb.GetApplicationRequest{
+//	req := &appenginepb.CreateApplicationRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetApplicationRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#CreateApplicationRequest.
 //	}
-//	resp, err := c.GetApplication(ctx, req)
+//	op, err := c.CreateApplication(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

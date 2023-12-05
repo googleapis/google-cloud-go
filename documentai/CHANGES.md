@@ -1,6 +1,25 @@
 # Changes
 
 
+## [1.23.6](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.5...documentai/v1.23.6) (2023-11-27)
+
+
+### Documentation
+
+* **documentai:** Update comment for ProcessOptions.page_range ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+
+## [1.23.5](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.4...documentai/v1.23.5) (2023-11-01)
+
+
+### Bug Fixes
+
+* **documentai:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+
+### Documentation
+
+* **documentai:** Updated comments ([24e410e](https://github.com/googleapis/google-cloud-go/commit/24e410efbb6add2d33ecfb6ad98b67dc8894e578))
+
 ## [1.23.4](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.3...documentai/v1.23.4) (2023-10-26)
 
 

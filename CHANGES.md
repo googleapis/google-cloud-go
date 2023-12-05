@@ -1,5 +1,26 @@
 # Changes
 
+## [0.111.0](https://github.com/googleapis/google-cloud-go/compare/v0.110.10...v0.111.0) (2023-11-29)
+
+
+### Features
+
+* **internal/trace:** Add OpenTelemetry support ([#8655](https://github.com/googleapis/google-cloud-go/issues/8655)) ([7a46b54](https://github.com/googleapis/google-cloud-go/commit/7a46b5428f239871993d66be2c7c667121f60a6f)), refs [#2205](https://github.com/googleapis/google-cloud-go/issues/2205)
+
+
+### Bug Fixes
+
+* **all:** Bump google.golang.org/api to v0.149.0 ([#8959](https://github.com/googleapis/google-cloud-go/issues/8959)) ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [0.110.10](https://github.com/googleapis/google-cloud-go/compare/v0.110.9...v0.110.10) (2023-10-31)
+
+
+### Bug Fixes
+
+* **all:** Update grpc-go to v1.56.3 ([#8916](https://github.com/googleapis/google-cloud-go/issues/8916)) ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **all:** Update grpc-go to v1.59.0 ([#8922](https://github.com/googleapis/google-cloud-go/issues/8922)) ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+* **internal/godocfx:** Fix links to other packages in summary ([#8756](https://github.com/googleapis/google-cloud-go/issues/8756)) ([6220a9a](https://github.com/googleapis/google-cloud-go/commit/6220a9afeb89df3080e9e663e97648939fd4e15f))
+
 ## [0.110.9](https://github.com/googleapis/google-cloud-go/compare/v0.110.8...v0.110.9) (2023-10-19)
 
 

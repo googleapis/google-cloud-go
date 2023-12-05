@@ -65,22 +65,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &recommenderpb.ListInsightsRequest{
+//	req := &recommenderpb.GetInsightRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#ListInsightsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetInsightRequest.
 //	}
-//	it := c.ListInsights(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	resp, err := c.GetInsight(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

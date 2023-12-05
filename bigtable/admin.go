@@ -113,7 +113,11 @@ func (ac *AdminClient) Close() error {
 }
 
 func (ac *AdminClient) instancePrefix() string {
-	return fmt.Sprintf("projects/%s/instances/%s", ac.project, ac.instance)
+	return instancePrefix(ac.project, ac.instance)
+}
+
+func instancePrefix(project, instance string) string {
+	return fmt.Sprintf("projects/%s/instances/%s", project, instance)
 }
 
 func (ac *AdminClient) backupPath(cluster, instance, backup string) string {
@@ -1920,6 +1924,27 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
 }
 
+// CopyBackup copies the specified source backup with the user-provided expire time.
+func (ac *AdminClient) CopyBackup(ctx context.Context, sourceCluster, sourceBackup,
+	destProject, destInstance, destCluster, destBackup string, expireTime time.Time) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	sourceBackupPath := ac.backupPath(sourceCluster, ac.instance, sourceBackup)
+	destPrefix := instancePrefix(destProject, destInstance)
+	req := &btapb.CopyBackupRequest{
+		Parent:       destPrefix + "/clusters/" + destCluster,
+		BackupId:     destBackup,
+		SourceBackup: sourceBackupPath,
+		ExpireTime:   timestamppb.New(expireTime),
+	}
+
+	op, err := ac.tClient.CopyBackup(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Backup{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
 // Backups returns a BackupIterator for iterating over the backups in a cluster.
 // To list backups across all of the clusters in the instance specify "-" as the cluster.
 func (ac *AdminClient) Backups(ctx context.Context, cluster string) *BackupIterator {
@@ -1991,6 +2016,7 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 	bi := BackupInfo{
 		Name:           name,
 		SourceTable:    tableID,
+		SourceBackup:   backup.SourceBackup,
 		SizeBytes:      backup.SizeBytes,
 		StartTime:      startTime,
 		EndTime:        endTime,
@@ -2030,6 +2056,7 @@ func (it *BackupIterator) Next() (*BackupInfo, error) {
 type BackupInfo struct {
 	Name           string
 	SourceTable    string
+	SourceBackup   string
 	SizeBytes      int64
 	StartTime      time.Time
 	EndTime        time.Time

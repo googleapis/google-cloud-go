@@ -1,5 +1,27 @@
 # Changes
 
+## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.45.0...dialogflow/v1.46.0) (2023-11-29)
+
+
+### Features
+
+* **dialogflow/cx:** Added Generator API ([#9055](https://github.com/googleapis/google-cloud-go/issues/9055)) ([c844d8e](https://github.com/googleapis/google-cloud-go/commit/c844d8e294c188a2e9ac35dd4df081862da30510))
+
+## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.44.3...dialogflow/v1.45.0) (2023-11-27)
+
+
+### Features
+
+* **dialogflow/cx:** Add agent answer feedback capability ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+* **dialogflow/cx:** Add agent answer feedback capability ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
+## [1.44.3](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.44.2...dialogflow/v1.44.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **dialogflow:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.44.2](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.44.1...dialogflow/v1.44.2) (2023-10-26)
 
 

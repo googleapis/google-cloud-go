@@ -67,11 +67,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &eventarcpb.GetTriggerRequest{
+//	req := &eventarcpb.CreateChannelRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#GetTriggerRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#CreateChannelRequest.
 //	}
-//	resp, err := c.GetTrigger(ctx, req)
+//	op, err := c.CreateChannel(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
