@@ -429,10 +429,7 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 
 	// TODO: Use transaction ID returned by get
 	_, err = c.get(ctx, keys, dst, opts)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) ([]byte, error) {
