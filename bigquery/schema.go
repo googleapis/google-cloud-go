@@ -198,12 +198,12 @@ func (rt *RangeElementType) toBQ() *bq.TableFieldSchemaRangeElementType {
 	}
 }
 
-func bqToRangeElementType(bq *bq.TableFieldSchemaRangeElementType) *RangeElementType {
-	if bq == nil {
+func bqToRangeElementType(rt *bq.TableFieldSchemaRangeElementType) *RangeElementType {
+	if rt == nil {
 		return nil
 	}
 	return &RangeElementType{
-		Type: FieldType(bq.Type),
+		Type: FieldType(rt.Type),
 	}
 }
 
