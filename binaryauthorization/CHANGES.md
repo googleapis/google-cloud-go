@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.7.3...binaryauthorization/v1.8.0) (2023-11-29)
+
+
+### Features
+
+* **binaryauthorization:** Add container_name, container_type fields to Continuous Validation Logs ([#9047](https://github.com/googleapis/google-cloud-go/issues/9047)) ([d0f9ff0](https://github.com/googleapis/google-cloud-go/commit/d0f9ff0515eae660f100fd27e258580af4601374))
+
 ## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.7.2...binaryauthorization/v1.7.3) (2023-11-01)
 
 
