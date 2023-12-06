@@ -5017,6 +5017,7 @@ func TestIntegration_WithDirectedReadOptions_ReadOnlyTransaction(t *testing.T) {
 	t.Parallel()
 	// DirectedReadOptions for PG is supported, however we test only for Google SQL.
 	skipUnsupportedPGTest(t)
+	skipEmulatorTest(t)
 
 	ctxTimeout := 5 * time.Minute
 	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
@@ -5092,6 +5093,7 @@ func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction(t *testing.T) 
 	t.Parallel()
 	// DirectedReadOptions for PG is supported, however we test only for Google SQL.
 	skipUnsupportedPGTest(t)
+	skipEmulatorTest(t)
 
 	ctxTimeout := 5 * time.Minute
 	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
