@@ -81,6 +81,9 @@
         "clouddms": {
             "component": "clouddms"
         },
+        "cloudprofiler": {
+            "component": "cloudprofiler"
+        },
         "cloudtasks": {
             "component": "cloudtasks"
         },
@@ -350,6 +353,9 @@
         },
         "talent": {
             "component": "talent"
+        },
+        "telcoautomation": {
+            "component": "telcoautomation"
         },
         "texttospeech": {
             "component": "texttospeech"
