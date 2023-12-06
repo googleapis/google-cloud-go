@@ -113,6 +113,7 @@ modules:
   - securesourcemanager
   - security
   - securitycenter
+  - securitycentermanagement
   - servicecontrol
   - servicedirectory
   - serviceusage
@@ -771,6 +772,9 @@ service-configs:
   - input-directory: google/cloud/securitycenter/v1p1beta1
     service-config: securitycenter_v1p1beta1.yaml
     import-path: cloud.google.com/go/securitycenter/apiv1p1beta1
+  - input-directory: google/cloud/securitycenter/v1
+    service-config: securitycentermanagement_v1.yaml
+    import-path: cloud.google.com/go/securitycentermanagement/apiv1
   - input-directory: google/cloud/servicedirectory/v1
     service-config: servicedirectory_v1.yaml
     import-path: cloud.google.com/go/servicedirectory/apiv1
