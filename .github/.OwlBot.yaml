@@ -451,6 +451,7 @@ deep-remove-regex:
   - /spanner/admin/database/apiv1/
   - /spanner/admin/instance/apiv1/
   - /spanner/apiv1/
+  - /spanner/executor/apiv1/
   - /speech/apiv1/
   - /speech/apiv1p1beta1/
   - /speech/apiv2/
@@ -951,6 +952,8 @@ deep-copy-regex:
   - source: /google/spanner/admin/instance/v1/cloud.google.com/go
     dest: /
   - source: /google/spanner/v1/cloud.google.com/go
+    dest: /
+  - source: /google/spanner/executor/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/speech/v1/cloud.google.com/go
     dest: /
