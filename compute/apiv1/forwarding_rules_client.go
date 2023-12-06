@@ -324,9 +324,6 @@ func (c *forwardingRulesRESTClient) AggregatedList(ctx context.Context, req *com
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
-		if req != nil && req.ServiceProjectNumber != nil {
-			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
-		}
 
 		baseUrl.RawQuery = params.Encode()
 
