@@ -2231,12 +2231,10 @@ func TestIntegration_BucketACL(t *testing.T) {
 		}
 
 		var bACL []ACLRule
-		ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
-		defer cancel()
 
 		// Retry to account for propagation delay in metadata update.
 		err = retry(ctx, func() error {
-			bACL, err = bkt.ACL().List(ctxWithTimeout)
+			bACL, err = bkt.ACL().List(ctx)
 			return err
 		}, func() error {
 			if !containsACLRule(bACL, testACLRule(rule2)) {
