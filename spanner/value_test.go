@@ -2894,31 +2894,31 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 			for _, tc := range test.cases {
 				switch v := tc.got.(type) {
 				case NullString:
-					err := json.Unmarshal(tc.input, &v)
+					err := jsonProvider.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullInt64:
-					err := json.Unmarshal(tc.input, &v)
+					err := jsonProvider.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullFloat64:
-					err := json.Unmarshal(tc.input, &v)
+					err := jsonProvider.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullBool:
-					err := json.Unmarshal(tc.input, &v)
+					err := jsonProvider.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullTime:
-					err := json.Unmarshal(tc.input, &v)
+					err := jsonProvider.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullDate:
-					err := json.Unmarshal(tc.input, &v)
+					err := jsonProvider.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullNumeric:
-					err := json.Unmarshal(tc.input, &v)
+					err := jsonProvider.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullJSON:
-					err := json.Unmarshal(tc.input, &v)
+					err := jsonProvider.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case PGNumeric:
-					err := json.Unmarshal(tc.input, &v)
+					err := jsonProvider.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				default:
 					t.Fatalf("Unknown type: %T", v)
