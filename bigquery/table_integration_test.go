@@ -703,10 +703,10 @@ func TestIntegration_TableResourceTags(t *testing.T) {
 	ctx := context.Background()
 	table := dataset.Table(tableIDs.New())
 	resourceTags := map[string]string{
-		"foo": "bar",
+		"shollyman-testing/test_tag_key": "COFFEE",
 	}
 	err := table.Create(context.Background(), &TableMetadata{
-		Schema:           schema,
+		Schema:       schema,
 		ResourceTags: resourceTags,
 	})
 	if err != nil {
@@ -717,14 +717,41 @@ func TestIntegration_TableResourceTags(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	
 
+	var found bool
+	for k, v := range md.ResourceTags {
+		t.Logf("key %q val %q", k, v)
+		if k == "shollyman-testing/test_tag_key" && v == "COFFEE" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("tag key/value not found")
+	}
+
+	updatedTags := map[string]string{
+		"shollyman-testing/test_tag_key": "COFFEE",
+	}
 	// Update table DefaultCollation to case-sensitive
-	md, err = table.Update(ctx, TableMetadataToUpdate{
-	}, "")
+	updated, err := table.Update(ctx, TableMetadataToUpdate{
+		ResourceTags: updatedTags,
+	}, md.ETag)
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	found = false
+	for k, v := range updated.ResourceTags {
+		if k == "shollyman-testing/test_tag_key" && v == "COFFEE" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("tag key/value not found")
+	}
+
 }
 
 func TestIntegration_TableConstraintsPK(t *testing.T) {
