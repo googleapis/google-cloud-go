@@ -11,13 +11,15 @@ The available flags are as follows:
  * `-q`: Enables quiet mode with no logging. In the event of an error while in
  quiet mode, all logs that were surpressed are dumped with the error. Defaults
  to `false` (i.e. "verbose").
- * `-format=[plain|github]`: The `stdout` output format. Default is `plain`.
+ * `-format=[plain|github|commit]`: The `stdout` output format. Default is `plain`.
  * `-gh-var=[variable name]`: The variabe name to set output for in `github`
  format mode. Defaults to `submodules`.
  * `-base=[ref name]`: The base ref to compare `HEAD` to. Default is
  `origin/main`.
  * `-path-filter=[path filter]`: The path filter to diff for.
  * `-content-pattern=[regex]`: A regex to match on diff contents.
+ * `-commit-message=[commit message]`: Message to use in the nested commit block
+ * `-commit-scope=[conventional commit scope]`: Scope to use for the commit e.g. `fix`
 
 Example usages from this repo root:
 

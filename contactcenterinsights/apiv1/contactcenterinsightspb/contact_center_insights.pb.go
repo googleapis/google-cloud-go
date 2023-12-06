@@ -105,7 +105,7 @@ func (ConversationView) EnumDescriptor() ([]byte, []int) {
 type IngestConversationsRequest_GcsSource_BucketObjectType int32
 
 const (
-	// The object type is unspecified and will default to TRANSCRIPT.
+	// The object type is unspecified and will default to `TRANSCRIPT`.
 	IngestConversationsRequest_GcsSource_BUCKET_OBJECT_TYPE_UNSPECIFIED IngestConversationsRequest_GcsSource_BucketObjectType = 0
 	// The object is a transcript.
 	IngestConversationsRequest_GcsSource_TRANSCRIPT IngestConversationsRequest_GcsSource_BucketObjectType = 1
@@ -556,11 +556,11 @@ type UploadConversationRequest struct {
 	// This value should be 4-64 characters and must match the regular
 	// expression `^[a-z0-9-]{4,64}$`. Valid characters are `[a-z][0-9]-`
 	ConversationId string `protobuf:"bytes,3,opt,name=conversation_id,json=conversationId,proto3" json:"conversation_id,omitempty"`
-	// Optional. DLP settings for transcript redaction. Optional, will default to
-	// the config specified in Settings.
+	// Optional. DLP settings for transcript redaction. Will default to the config
+	// specified in Settings.
 	RedactionConfig *RedactionConfig `protobuf:"bytes,4,opt,name=redaction_config,json=redactionConfig,proto3" json:"redaction_config,omitempty"`
-	// Optional. Default Speech-to-Text configuration. Optional, will default to
-	// the config specified in Settings.
+	// Optional. Speech-to-Text configuration. Will default to the config
+	// specified in Settings.
 	SpeechConfig *SpeechConfig `protobuf:"bytes,11,opt,name=speech_config,json=speechConfig,proto3" json:"speech_config,omitempty"`
 }
 
@@ -1854,14 +1854,13 @@ type BulkDeleteConversationsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent resource to create analyses in.
+	// Required. The parent resource to delete conversations from.
 	// Format:
 	// projects/{project}/locations/{location}
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Filter used to select the subset of conversations to analyze.
+	// Filter used to select the subset of conversations to delete.
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
-	// Maximum number of conversations to delete. The default is 1000. It can be
-	// changed by setting the `max_delete_count` field.
+	// Maximum number of conversations to delete.
 	MaxDeleteCount int32 `protobuf:"varint,3,opt,name=max_delete_count,json=maxDeleteCount,proto3" json:"max_delete_count,omitempty"`
 	// If set to true, all of this conversation's analyses will also be deleted.
 	// Otherwise, the request will only succeed if the conversation has no
@@ -2006,7 +2005,7 @@ func (x *BulkDeleteConversationsMetadata) GetPartialErrors() []*status.Status {
 	return nil
 }
 
-// The response for a bulk analyze conversations operation.
+// The response for a bulk delete conversations operation.
 type BulkDeleteConversationsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

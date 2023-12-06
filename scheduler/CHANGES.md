@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.5](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.10.4...scheduler/v1.10.5) (2023-11-09)
+
+
+### Documentation
+
+* **scheduler:** Correct timezone/offset information for Cloud Scheduler headers ([ba23673](https://github.com/googleapis/google-cloud-go/commit/ba23673da7707c31292e4aa29d65b7ac1446d4a6))
+
 ## [1.10.4](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.10.3...scheduler/v1.10.4) (2023-11-01)
 
 

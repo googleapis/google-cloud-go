@@ -2,6 +2,13 @@
 
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.3...alloydb/v1.7.0) (2023-11-09)
+
+
+### Features
+
+* **alloydb:** Add new field in `GenerateClientCertificate` v1 API to allow AlloyDB connectors request client certs with metadata exchange support ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
 ## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.2...alloydb/v1.6.3) (2023-11-01)
 
 
