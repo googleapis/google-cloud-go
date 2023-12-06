@@ -22,9 +22,6 @@ package dlppb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -39,6 +36,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -19212,11 +19211,9 @@ func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiId
 }
 
 // A KMapEstimationHistogramBucket message with the following values:
-//
-//	min_anonymity: 3
-//	max_anonymity: 5
-//	frequency: 42
-//
+//   min_anonymity: 3
+//   max_anonymity: 5
+//   frequency: 42
 // means that there are 42 records whose quasi-identifier values correspond
 // to 3, 4 or 5 people in the overlying population. An important particular
 // case is when min_anonymity = max_anonymity = 1: the frequency field then
@@ -19375,11 +19372,9 @@ func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenc
 
 // A DeltaPresenceEstimationHistogramBucket message with the following
 // values:
-//
-//	min_probability: 0.1
-//	max_probability: 0.2
-//	frequency: 42
-//
+//   min_probability: 0.1
+//   max_probability: 0.2
+//   frequency: 42
 // means that there are 42 records for which δ is in [0.1, 0.2). An
 // important particular case is when min_probability = max_probability = 1:
 // then, every individual who shares this quasi-identifier combination is in

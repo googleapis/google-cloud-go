@@ -42,15 +42,20 @@ var newPublicAdvertisedPrefixesClientHook clientHook
 
 // PublicAdvertisedPrefixesCallOptions contains the retry settings for each method of PublicAdvertisedPrefixesClient.
 type PublicAdvertisedPrefixesCallOptions struct {
-	Delete []gax.CallOption
-	Get    []gax.CallOption
-	Insert []gax.CallOption
-	List   []gax.CallOption
-	Patch  []gax.CallOption
+	Announce []gax.CallOption
+	Delete   []gax.CallOption
+	Get      []gax.CallOption
+	Insert   []gax.CallOption
+	List     []gax.CallOption
+	Patch    []gax.CallOption
+	Withdraw []gax.CallOption
 }
 
 func defaultPublicAdvertisedPrefixesRESTCallOptions() *PublicAdvertisedPrefixesCallOptions {
 	return &PublicAdvertisedPrefixesCallOptions{
+		Announce: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Delete: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -84,6 +89,9 @@ func defaultPublicAdvertisedPrefixesRESTCallOptions() *PublicAdvertisedPrefixesC
 		Patch: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		Withdraw: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -92,11 +100,13 @@ type internalPublicAdvertisedPrefixesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	Announce(context.Context, *computepb.AnnouncePublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 	Delete(context.Context, *computepb.DeletePublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*computepb.PublicAdvertisedPrefix, error)
 	Insert(context.Context, *computepb.InsertPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListPublicAdvertisedPrefixesRequest, ...gax.CallOption) *PublicAdvertisedPrefixIterator
 	Patch(context.Context, *computepb.PatchPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
+	Withdraw(context.Context, *computepb.WithdrawPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // PublicAdvertisedPrefixesClient is a client for interacting with Google Compute Engine API.
@@ -134,6 +144,11 @@ func (c *PublicAdvertisedPrefixesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
+// Announce announces the specified PublicAdvertisedPrefix
+func (c *PublicAdvertisedPrefixesClient) Announce(ctx context.Context, req *computepb.AnnouncePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Announce(ctx, req, opts...)
+}
+
 // Delete deletes the specified PublicAdvertisedPrefix
 func (c *PublicAdvertisedPrefixesClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
@@ -157,6 +172,11 @@ func (c *PublicAdvertisedPrefixesClient) List(ctx context.Context, req *computep
 // Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 func (c *PublicAdvertisedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
+}
+
+// Withdraw withdraws the specified PublicAdvertisedPrefix
+func (c *PublicAdvertisedPrefixesClient) Withdraw(ctx context.Context, req *computepb.WithdrawPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Withdraw(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -242,6 +262,75 @@ func (c *publicAdvertisedPrefixesRESTClient) Close() error {
 // Deprecated: This method always returns nil.
 func (c *publicAdvertisedPrefixesRESTClient) Connection() *grpc.ClientConn {
 	return nil
+}
+
+// Announce announces the specified PublicAdvertisedPrefix
+func (c *publicAdvertisedPrefixesRESTClient) Announce(ctx context.Context, req *computepb.AnnouncePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes/%v/announce", req.GetProject(), req.GetPublicAdvertisedPrefix())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "public_advertised_prefix", url.QueryEscape(req.GetPublicAdvertisedPrefix()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Announce[0:len((*c.CallOptions).Announce):len((*c.CallOptions).Announce)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
 }
 
 // Delete deletes the specified PublicAdvertisedPrefix
@@ -577,6 +666,75 @@ func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *com
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// Withdraw withdraws the specified PublicAdvertisedPrefix
+func (c *publicAdvertisedPrefixesRESTClient) Withdraw(ctx context.Context, req *computepb.WithdrawPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes/%v/withdraw", req.GetProject(), req.GetPublicAdvertisedPrefix())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "public_advertised_prefix", url.QueryEscape(req.GetPublicAdvertisedPrefix()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Withdraw[0:len((*c.CallOptions).Withdraw):len((*c.CallOptions).Withdraw)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}
