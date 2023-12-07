@@ -14,7 +14,7 @@ const projectID = "your-project"
 const model = "some-model"
 const location = "some-location"
 
-func ExampleGenerateContent() {
+func ExampleGenerativeModel_GenerateContent() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, projectID, location)
 	if err != nil {
@@ -32,7 +32,7 @@ func ExampleGenerateContent() {
 	printResponse(resp)
 }
 
-func ExampleGenerateContentStream() {
+func ExampleGenerativeModel_GenerateContentStream() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, projectID, location)
 	if err != nil {
