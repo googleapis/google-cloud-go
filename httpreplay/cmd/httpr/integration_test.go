@@ -195,7 +195,14 @@ func pickPort() (string, error) {
 }
 
 func proxyTransport(pport, cport string) (*http.Transport, error) {
-	caCert, err := getBody(fmt.Sprintf("http://localhost:%s/authority.cer", cport))
+	var caCert []byte
+	var err error
+	// GET localhost authority.cer can be flaky; retry 10 times before marking as failing.
+	testutil.Retry(t, 10, 1*time.Second, func(r *testutil.R) {
+		if caCert, err = getBody(fmt.Sprintf("http://localhost:%s/authority.cer", cport)); err != nil {
+			r.Errorf("proxyTransport Retry: %w", err)
+		}
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -228,19 +235,7 @@ func getBucketInfo(ctx context.Context, hc *http.Client) (string, error) {
 }
 
 func getBody(url string) ([]byte, error) {
-	var res http.Response
-	var err error
-	serverUp := false
-	for i := 0; i < 10; i++ {
-		if res, err = http.Get(url); err == nil {
-			serverUp = true
-			break
-		}
-		time.Sleep(time.Second)
-	}
-	if !serverUp {
-		return nil, fmt.Errorf("exceeded retries, last err: %w", err)
-	}
+	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
