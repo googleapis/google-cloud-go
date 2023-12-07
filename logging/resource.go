@@ -168,8 +168,8 @@ func detectKubernetesResource() *mrpb.MonitoredResource {
 	if projectID == "" {
 		return nil
 	}
-	zone := detectedResource.metadataZone()
 	clusterName := detectedResource.attrs.Metadata("instance/attributes/cluster-name")
+	clusterLocation := detectedResource.attrs.Metadata("instance/attributes/cluster-location")
 	namespaceName := detectedResource.attrs.ReadAll("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
 	if namespaceName == "" {
 		// if automountServiceAccountToken is disabled allow to customize
@@ -184,7 +184,7 @@ func detectKubernetesResource() *mrpb.MonitoredResource {
 		Type: "k8s_container",
 		Labels: map[string]string{
 			"cluster_name":   clusterName,
-			"location":       zone,
+			"location":       clusterLocation,
 			"project_id":     projectID,
 			"pod_name":       podName,
 			"namespace_name": namespaceName,

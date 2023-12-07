@@ -139,9 +139,9 @@ func TestResourceDetection(t *testing.T) {
 			},
 		},
 		{
-			name:     "detect GKE resource",
+			name:     "detect GKE resource for a zonal cluster",
 			envVars:  map[string]string{"HOSTNAME": podName},
-			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/zone": qualifiedZoneName, "instance/attributes/cluster-name": clusterName},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/attributes/cluster-location": zoneID, "instance/attributes/cluster-name": clusterName},
 			fsPaths:  map[string]string{"/var/run/secrets/kubernetes.io/serviceaccount/namespace": namespaceName},
 			want: &mrpb.MonitoredResource{
 				Type: "k8s_container",
@@ -156,9 +156,26 @@ func TestResourceDetection(t *testing.T) {
 			},
 		},
 		{
+			name:     "detect GKE resource for a regional cluster",
+			envVars:  map[string]string{"HOSTNAME": podName},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/attributes/cluster-location": regionID, "instance/attributes/cluster-name": clusterName},
+			fsPaths:  map[string]string{"/var/run/secrets/kubernetes.io/serviceaccount/namespace": namespaceName},
+			want: &mrpb.MonitoredResource{
+				Type: "k8s_container",
+				Labels: map[string]string{
+					"cluster_name":   clusterName,
+					"location":       regionID,
+					"project_id":     projectID,
+					"pod_name":       podName,
+					"namespace_name": namespaceName,
+					"container_name": "",
+				},
+			},
+		},
+		{
 			name:     "detect GKE resource with custom container and namespace config",
 			envVars:  map[string]string{"HOSTNAME": podName, "CONTAINER_NAME": containerName, "NAMESPACE_NAME": namespaceName},
-			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/zone": qualifiedZoneName, "instance/attributes/cluster-name": clusterName},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/attributes/cluster-location": zoneID, "instance/attributes/cluster-name": clusterName},
 			want: &mrpb.MonitoredResource{
 				Type: "k8s_container",
 				Labels: map[string]string{
