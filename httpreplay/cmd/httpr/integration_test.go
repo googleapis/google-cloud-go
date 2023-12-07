@@ -228,7 +228,19 @@ func getBucketInfo(ctx context.Context, hc *http.Client) (string, error) {
 }
 
 func getBody(url string) ([]byte, error) {
-	res, err := http.Get(url)
+	var res http.Response
+	var err error
+	serverUp := false
+	for i := 0; i < 10; i++ {
+		if res, err = http.Get(url); err == nil {
+			serverUp = true
+			break
+		}
+		time.Sleep(time.Second)
+	}
+	if !serverUp {
+		return nil, fmt.Errorf("exceeded retries, last err: %w", err)
+	}
 	if err != nil {
 		return nil, err
 	}
