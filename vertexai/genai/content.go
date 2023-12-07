@@ -23,8 +23,10 @@ import (
 	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
 )
 
+// HarmCategory doc TBD.
 type HarmCategory int32
 
+// Constants for HarmCategory.
 const (
 	HarmCategoryHateSpeech       = HarmCategory(pb.HarmCategory_HARM_CATEGORY_HATE_SPEECH)
 	HarmCategoryDangerousContent = HarmCategory(pb.HarmCategory_HARM_CATEGORY_DANGEROUS_CONTENT)
@@ -32,8 +34,10 @@ const (
 	HarmCategorySexuallyExplicit = HarmCategory(pb.HarmCategory_HARM_CATEGORY_SEXUALLY_EXPLICIT)
 )
 
+// HarmBlockThreshold doc TBD.
 type HarmBlockThreshold int32
 
+// Constants for HarmBlock.
 const (
 	HarmBlockLowAndAbove    = HarmBlockThreshold(pb.SafetySetting_BLOCK_LOW_AND_ABOVE)
 	HarmBlockMediumAndAbove = HarmBlockThreshold(pb.SafetySetting_BLOCK_MEDIUM_AND_ABOVE)
@@ -41,8 +45,10 @@ const (
 	HarmBlockNone           = HarmBlockThreshold(pb.SafetySetting_BLOCK_NONE)
 )
 
+// HarmProbability doc TBD.
 type HarmProbability int32
 
+// Constants for HarmProbability.
 const (
 	HarmProbabilityNegligible = HarmProbability(pb.SafetyRating_NEGLIGIBLE)
 	HarmProbabilityLow        = HarmProbability(pb.SafetyRating_LOW)
@@ -50,8 +56,10 @@ const (
 	HarmProbabilityHigh       = HarmProbability(pb.SafetyRating_HIGH)
 )
 
+// FinishReason doc TBD.
 type FinishReason int32
 
+// Constants for FinishReason.
 const (
 	FinishReasonUnspecified = FinishReason(pb.Candidate_FINISH_REASON_UNSPECIFIED)
 	FinishReasonStop        = FinishReason(pb.Candidate_STOP)
@@ -77,6 +85,7 @@ func (f FinishReason) String() string {
 	return fmt.Sprintf("FinishReason(%d)", f)
 }
 
+// MarshalJSON implements [encoding/json.Marshaler].
 func (f FinishReason) MarshalJSON() ([]byte, error) {
 	return []byte(strconv.Quote(f.String())), nil
 }
@@ -86,6 +95,7 @@ const (
 	roleModel = "model"
 )
 
+// Content doc TBD.
 type Content struct {
 	Role  string
 	Parts []Part
@@ -105,7 +115,7 @@ func protoToContent(c *pb.Content) *Content {
 	}
 }
 
-// A part is either a Text, a Blob, or a FileData.
+// A Part is either a Text, a Blob, or a FileData.
 type Part interface {
 	proto() *pb.Part
 }
@@ -129,6 +139,7 @@ func protoToPart(p *pb.Part) Part {
 	}
 }
 
+// Text doc TBD.
 type Text string
 
 func (t Text) proto() *pb.Part {
@@ -137,6 +148,7 @@ func (t Text) proto() *pb.Part {
 	}
 }
 
+// Blob doc TBD.
 type Blob struct {
 	MIMEType string
 	Data     []byte
@@ -153,6 +165,7 @@ func (b Blob) proto() *pb.Part {
 	}
 }
 
+// FileData doc TBD.
 type FileData struct {
 	MIMEType string
 	FileURI  string
@@ -180,6 +193,7 @@ func ImageData(format string, data []byte) Blob {
 	}
 }
 
+// GenerationConfig doc TBD.
 type GenerationConfig struct {
 	Temperature      float32
 	TopP             float32 // if non-zero, use nucleus sampling
@@ -205,6 +219,7 @@ func (c *GenerationConfig) proto() *pb.GenerationConfig {
 	}
 }
 
+// SafetySetting doc TBD.
 type SafetySetting struct {
 	Category  HarmCategory
 	Threshold HarmBlockThreshold
@@ -217,6 +232,7 @@ func (s *SafetySetting) proto() *pb.SafetySetting {
 	}
 }
 
+// SafetyRating doc TBD.
 type SafetyRating struct {
 	Category    HarmCategory
 	Probability HarmProbability
@@ -231,6 +247,7 @@ func protoToSafetyRating(r *pb.SafetyRating) *SafetyRating {
 	}
 }
 
+// CitationMetadata doc TBD.
 type CitationMetadata struct {
 	Citations []*Citation
 }
@@ -244,6 +261,7 @@ func protoToCitationMetadata(cm *pb.CitationMetadata) *CitationMetadata {
 	}
 }
 
+// Citation doc TBD.
 type Citation struct {
 	StartIndex, EndIndex int32
 	URI                  string
@@ -270,6 +288,7 @@ func protoToCitation(c *pb.Citation) *Citation {
 	return r
 }
 
+// Candidate doc TBD.
 type Candidate struct {
 	Index        int32
 	Content      *Content

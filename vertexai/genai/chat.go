@@ -18,15 +18,18 @@ import (
 	"context"
 )
 
+// A ChatSession provides interactive chat.
 type ChatSession struct {
 	m       *GenerativeModel
 	History []*Content
 }
 
+// StartChat starts a chat session.
 func (m *GenerativeModel) StartChat() *ChatSession {
 	return &ChatSession{m: m}
 }
 
+// SendMessage sends a request to the model as part of a chat session.
 func (cs *ChatSession) SendMessage(ctx context.Context, parts ...Part) (*GenerateContentResponse, error) {
 	// Call the underlying client with the entire history plus the argument Content.
 	cs.History = append(cs.History, newUserContent(parts))
@@ -41,6 +44,7 @@ func (cs *ChatSession) SendMessage(ctx context.Context, parts ...Part) (*Generat
 	return resp, nil
 }
 
+// SendMessageStream is like SendMessage, but with a streaming request.
 func (cs *ChatSession) SendMessageStream(ctx context.Context, parts ...Part) *GenerateContentResponseIterator {
 	cs.History = append(cs.History, newUserContent(parts))
 	req := cs.m.newRequest(cs.History...)

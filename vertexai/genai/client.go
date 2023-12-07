@@ -54,6 +54,7 @@ func NewClient(ctx context.Context, projectID, location string, opts ...option.C
 	}, nil
 }
 
+// Close closes the client.
 func (c *Client) Close() error {
 	return c.c.Close()
 }
@@ -88,16 +89,17 @@ func (c *Client) GenerativeModel(name string) *GenerativeModel {
 	}
 }
 
+// Name returns the name of the model.
 func (m *GenerativeModel) Name() string {
 	return m.name
 }
 
-// Use GenerateContent for a single request and response.
+// GenerateContent produces a single request and response.
 func (m *GenerativeModel) GenerateContent(ctx context.Context, parts ...Part) (*GenerateContentResponse, error) {
 	return m.generateContent(ctx, m.newRequest(newUserContent(parts)))
 }
 
-// Streaming version returns an iterator, following the pattern of the other Go clients.
+// GenerateContentStream returns an iterator that enumerates responses.
 func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Part) *GenerateContentResponseIterator {
 	streamClient, err := m.c.c.StreamGenerateContent(ctx, m.newRequest(newUserContent(parts)))
 	return &GenerateContentResponseIterator{
@@ -137,6 +139,7 @@ func newUserContent(parts []Part) *Content {
 	return &Content{Role: roleUser, Parts: parts}
 }
 
+// GenerateContentResponseIterator is an iterator over GnerateContentResponse.
 type GenerateContentResponseIterator struct {
 	sc     pb.PredictionService_StreamGenerateContentClient
 	err    error
@@ -144,6 +147,7 @@ type GenerateContentResponseIterator struct {
 	cs     *ChatSession
 }
 
+// Next returns the next response.
 func (iter *GenerateContentResponseIterator) Next() (*GenerateContentResponse, error) {
 	if iter.err != nil {
 		return nil, iter.err
@@ -170,6 +174,7 @@ func (iter *GenerateContentResponseIterator) Next() (*GenerateContentResponse, e
 	return gcp, nil
 }
 
+// GenerateContentResponse is the response from a GenerateContent or GenerateContentStream call.
 type GenerateContentResponse struct {
 	Candidates     []*Candidate
 	PromptFeedback *PromptFeedback
@@ -193,6 +198,7 @@ func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse
 	return &GenerateContentResponse{Candidates: cands}, nil
 }
 
+// PromptFeedback is feedback about a prompt.
 type PromptFeedback struct {
 	BlockReason        BlockedReason
 	BlockReasonMessage string
@@ -210,8 +216,10 @@ func protoToPromptFeedback(p *pb.GenerateContentResponse_PromptFeedback) *Prompt
 	}
 }
 
+// BlockedReason doc TBD.
 type BlockedReason int32
 
+// Constants for BlockedReason.
 const (
 	BlockedReasonSafety = BlockedReason(pb.GenerateContentResponse_PromptFeedback_SAFETY)
 	BlockedReasonOther  = BlockedReason(pb.GenerateContentResponse_PromptFeedback_OTHER)
