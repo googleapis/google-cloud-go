@@ -129,6 +129,7 @@ use (
 	./securesourcemanager
 	./security
 	./securitycenter
+	./securitycentermanagement
 	./servicecontrol
 	./servicedirectory
 	./servicemanagement
