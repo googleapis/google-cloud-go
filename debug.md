@@ -1,4 +1,4 @@
-# Logging, debugging and telemetry
+# Logging, Debugging and Telemetry
 
 Logging, debugging and telemetry all capture data that can be used for
 troubleshooting. Logging records specific events and transactions. Debugging
@@ -181,11 +181,9 @@ following sections.
 
 ### Tracing (experimental)
 
-All clients contain experimental support for the propagation of both OpenCensus
-and OpenTelemetry trace context to their receiving endpoints. However, apart
-from spans created during context propagation, the generated clients do not
-create spans. Only the following hand-written clients create spans for select
-operations:
+Apart from spans created by underlying libraries such as gRPC, Google Cloud Go
+generated clients do not create spans. Only the spans created by following
+hand-written clients are in scope for the discussion in this section:
 
 * [cloud.google.com/go/bigquery](https://pkg.go.dev/cloud.google.com/go/bigquery)
 * [cloud.google.com/go/bigtable](https://pkg.go.dev/cloud.google.com/go/bigtable)
@@ -206,7 +204,7 @@ OpenTelemetry support via an environment variable, as described below.
 patched. We recommend that you begin migrating to OpenCensus tracing to
 OpenTelemetry, the successor project.
 
-Using the [OpenTelemetry-Go - OpenCensus Bridge](https://github.com/open-telemetry/opentelemetry-go/tree/main/bridge/opencensus), you can immediately begin exporting your traces with OpenTelemetry, even while
+Using the [OpenTelemetry-Go - OpenCensus Bridge](https://pkg.go.dev/go.opentelemetry.io/otel/bridge/opencensus), you can immediately begin exporting your traces with OpenTelemetry, even while
 dependencies of your application remain instrumented with OpenCensus. If you do
 not use the bridge, you will need to migrate your entire application and all of
 its instrumented dependencies at once.  For simple applications, this may be
@@ -229,10 +227,16 @@ export GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING=opencensus
 On December 2nd, 2024, one year after the release of OpenTelemetry support, the
 experimental and deprecated support for OpenCensus tracing will be removed.
 
+Please note that all Google Cloud Go clients currently provide experimental
+support for the propagation of both OpenCensus and OpenTelemetry trace context
+to their receiving endpoints. The experimental support for OpenCensus trace
+context propagation will be removed at the same time as the experimental
+OpenCensus tracing support.
+
 Please refer to the following resources:
 
 * [Sunsetting OpenCensus](https://opentelemetry.io/blog/2023/sunsetting-opencensus/)
-* [OpenTelemetry-Go - OpenCensus Bridge](https://github.com/open-telemetry/opentelemetry-go/tree/main/bridge/opencensus)
+* [OpenTelemetry-Go - OpenCensus Bridge](https://pkg.go.dev/go.opentelemetry.io/otel/bridge/opencensus)
 
 #### OpenTelemetry
 
@@ -254,6 +258,69 @@ Please refer to the following resources:
 * [Cloud Trace - Go and OpenTelemetry](https://cloud.google.com/trace/docs/setup/go-ot)
 * On GCE, [use Ops Agent and OpenTelemetry](https://cloud.google.com/trace/docs/otlp)
 
+##### Configuring the OpenTelemetry-Go - OpenCensus Bridge
+
+To configure the OpenCensus bridge with OpenTelemetry and Cloud Trace:
+
+```go
+import (
+    "context"
+    "log"
+    "os"
+    texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
+    octrace "go.opencensus.io/trace"
+    "go.opentelemetry.io/contrib/detectors/gcp"
+    "go.opentelemetry.io/otel"
+    "go.opentelemetry.io/otel/bridge/opencensus"
+    "go.opentelemetry.io/otel/sdk/resource"
+    sdktrace "go.opentelemetry.io/otel/sdk/trace"
+    semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
+)
+
+func main() {
+    // Create exporter.
+    ctx := context.Background()
+    projectID := os.Getenv("GOOGLE_CLOUD_PROJECT")
+    exporter, err := texporter.New(texporter.WithProjectID(projectID))
+    if err != nil {
+        log.Fatalf("texporter.New: %v", err)
+    }
+    // Identify your application using resource detection
+    res, err := resource.New(ctx,
+        // Use the GCP resource detector to detect information about the GCP platform
+        resource.WithDetectors(gcp.NewDetector()),
+        // Keep the default detectors
+        resource.WithTelemetrySDK(),
+        // Add your own custom attributes to identify your application
+        resource.WithAttributes(
+            semconv.ServiceNameKey.String("my-application"),
+        ),
+    )
+    if err != nil {
+        log.Fatalf("resource.New: %v", err)
+    }
+    // Create trace provider with the exporter.
+    //
+    // By default it uses AlwaysSample() which samples all traces.
+    // In a production environment or high QPS setup please use
+    // probabilistic sampling.
+    // Example:
+    //   tp := sdktrace.NewTracerProvider(sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.0001)), ...)
+    tp := sdktrace.NewTracerProvider(
+        sdktrace.WithBatcher(exporter),
+        sdktrace.WithResource(res),
+    )
+    defer tp.Shutdown(ctx) // flushes any pending spans, and closes connections.
+    otel.SetTracerProvider(tp)
+    tracer := otel.GetTracerProvider().Tracer("example.com/trace")
+    // Configure the OpenCensus tracer to use the bridge.
+    octrace.DefaultTracer = opencensus.NewTracer(tracer)
+    // Use otel tracer to create spans...
+}
+
+```
+
+
 ##### Configuring context propagation
 
 In order to pass options to OpenTelemetry trace context propagation, follow the
@@ -264,18 +331,18 @@ appropriate example for the client's underlying transport.
 ```go
 ctx := context.Background()
 trans, err := htransport.NewTransport(ctx,
-        http.DefaultTransport,
-        option.WithScopes(storage.ScopeFullControl),
+    http.DefaultTransport,
+    option.WithScopes(storage.ScopeFullControl),
 )
 if err != nil {
-        log.Fatal(err)
+    log.Fatal(err)
 }
 // An example of passing options to the otelhttp.Transport.
 otelOpts := otelhttp.WithFilter(func(r *http.Request) bool {
-	return r.URL.Path != "/ping"
+    return r.URL.Path != "/ping"
 })
 hc := &http.Client{
-	Transport: otelhttp.NewTransport(trans, otelOpts),
+    Transport: otelhttp.NewTransport(trans, otelOpts),
 }
 client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
 ```
@@ -295,7 +362,7 @@ dialOpts := grpc.WithStatsHandler(otelgrpc.NewClientHandler(otelOpts))
 ctx := context.Background()
 c, err := datastore.NewClient(ctx, projectID, option.WithGRPCDialOption(dialOpts))
 if err != nil {
-	log.Fatal(err)
+    log.Fatal(err)
 }
 defer c.Close()
 ```
