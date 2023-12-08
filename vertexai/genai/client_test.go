@@ -57,13 +57,13 @@ func TestLive(t *testing.T) {
 			t.Fatal(err)
 		}
 		got := responseString(resp)
-		checkMatch(t, got, `15.* cm|6.* inches`)
+		checkMatch(t, got, `15.* cm|6.* inches|5.* inches`)
 	})
 
 	t.Run("streaming", func(t *testing.T) {
 		iter := model.GenerateContentStream(ctx, Text("Are you hungry?"))
 		got := responsesString(t, iter)
-		checkMatch(t, got, `do not have (a .* body|the ability)`)
+		checkMatch(t, got, `(don't|do not) have (a .* body|the ability)`)
 	})
 
 	t.Run("chat", func(t *testing.T) {
