@@ -20,11 +20,14 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 
+	"cloud.google.com/go/civil"
 	aiplatform "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1"
 	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	date "google.golang.org/genproto/googleapis/type/date"
 )
 
 // A Client is a Google Vertex AI client.
@@ -129,9 +132,9 @@ func (m *GenerativeModel) newRequest(contents ...*Content) *pb.GenerateContentRe
 	return &pb.GenerateContentRequest{
 		//Endpoint: m.fullName,
 		Model:            m.fullName,
-		Contents:         mapSlice(contents, (*Content).proto),
-		SafetySettings:   mapSlice(m.SafetySettings, (*SafetySetting).proto),
-		GenerationConfig: m.GenerationConfig.proto(),
+		Contents:         mapSlice(contents, (*Content).toProto),
+		SafetySettings:   mapSlice(m.SafetySettings, (*SafetySetting).toProto),
+		GenerationConfig: m.GenerationConfig.toProto(),
 	}
 }
 
@@ -183,11 +186,11 @@ type GenerateContentResponse struct {
 func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse, error) {
 	// Assume a non-nil PromptFeedback is an error.
 	// TODO: confirm.
-	pf := protoToPromptFeedback(resp.PromptFeedback)
+	pf := (PromptFeedback{}).fromProto(resp.PromptFeedback)
 	if pf != nil {
 		return nil, &BlockedError{PromptFeedback: pf}
 	}
-	cands := mapSlice(resp.Candidates, protoToCandidate)
+	cands := mapSlice(resp.Candidates, (Candidate{}).fromProto)
 	// If any candidate is blocked, error.
 	// TODO: is this too harsh?
 	for _, c := range cands {
@@ -197,33 +200,6 @@ func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse
 	}
 	return &GenerateContentResponse{Candidates: cands}, nil
 }
-
-// PromptFeedback is feedback about a prompt.
-type PromptFeedback struct {
-	BlockReason        BlockedReason
-	BlockReasonMessage string
-	SafetyRatings      []*SafetyRating
-}
-
-func protoToPromptFeedback(p *pb.GenerateContentResponse_PromptFeedback) *PromptFeedback {
-	if p == nil {
-		return nil
-	}
-	return &PromptFeedback{
-		BlockReason:        BlockedReason(p.BlockReason),
-		SafetyRatings:      mapSlice(p.SafetyRatings, protoToSafetyRating),
-		BlockReasonMessage: p.BlockReasonMessage,
-	}
-}
-
-// BlockedReason doc TBD.
-type BlockedReason int32
-
-// Constants for BlockedReason.
-const (
-	BlockedReasonSafety = BlockedReason(pb.GenerateContentResponse_PromptFeedback_SAFETY)
-	BlockedReasonOther  = BlockedReason(pb.GenerateContentResponse_PromptFeedback_OTHER)
-)
 
 // A BlockedError indicates that the model's response was blocked.
 // There can be two underlying causes: the prompt or a candidate response.
@@ -249,17 +225,6 @@ func (e *BlockedError) Error() string {
 		fmt.Fprintf(&b, "prompt: %v (%s)", e.PromptFeedback.BlockReason, e.PromptFeedback.BlockReasonMessage)
 	}
 	return b.String()
-}
-
-func mapSlice[From, To any](from []From, f func(From) To) []To {
-	if from == nil {
-		return nil
-	}
-	to := make([]To, len(from))
-	for i, e := range from {
-		to[i] = f(e)
-	}
-	return to
 }
 
 // joinResponses  merges the two responses, which should be the result of a streaming call.
@@ -340,4 +305,23 @@ func mergeTexts(in []Part) []Part {
 		}
 	}
 	return out
+}
+
+func civilDateToProto(d civil.Date) *date.Date {
+	return &date.Date{
+		Year:  int32(d.Year),
+		Month: int32(d.Month),
+		Day:   int32(d.Day),
+	}
+}
+
+func civilDateFromProto(p *date.Date) civil.Date {
+	if p == nil {
+		return civil.Date{}
+	}
+	return civil.Date{
+		Year:  int(p.Year),
+		Month: time.Month(p.Month),
+		Day:   int(p.Day),
+	}
 }

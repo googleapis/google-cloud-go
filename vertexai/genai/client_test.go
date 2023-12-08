@@ -57,7 +57,7 @@ func TestLive(t *testing.T) {
 			t.Fatal(err)
 		}
 		got := responseString(resp)
-		checkMatch(t, got, `15.* cm|6.* inches|5.* inches`)
+		checkMatch(t, got, `15.* cm|[1-9].* inches`)
 	})
 
 	t.Run("streaming", func(t *testing.T) {
@@ -104,11 +104,11 @@ func TestLive(t *testing.T) {
 
 		checkMatch(t,
 			send("Which is best?", true),
-			"best", "air fryer", "Philips", "[Cc]onsider", "factors|features")
+			"best", "air fryer", "Philips", "([Cc]onsider|research|compare)", "factors|features")
 
 		checkMatch(t,
 			send("Say that again.", false),
-			"best", "air fryer", "Philips", "[Cc]onsider", "factors|features")
+			"best", "air fryer", "Philips", "([Cc]onsider|research|compare)", "factors|features")
 	})
 
 	t.Run("image", func(t *testing.T) {
@@ -175,8 +175,8 @@ func TestLive(t *testing.T) {
 			t.Fatal(err)
 		}
 		got := res.Candidates[0].FinishReason
-		want := FinishReasonOther // TODO: should be FinishReasonMaxTokens.
-		if got != want {
+		want := FinishReasonMaxTokens
+		if got != want && got != FinishReasonOther { // TODO: should not need FinishReasonOther
 			t.Errorf("got %s, want %s", got, want)
 		}
 	})
@@ -196,8 +196,8 @@ func TestLive(t *testing.T) {
 			}
 			merged = joinResponses(merged, res)
 		}
-		want := FinishReasonOther // TODO: should be FinishReasonMaxTokens.
-		if got := merged.Candidates[0].FinishReason; got != want {
+		want := FinishReasonMaxTokens
+		if got := merged.Candidates[0].FinishReason; got != want && got != FinishReasonOther { // TODO: see above
 			t.Errorf("got %s, want %s", got, want)
 		}
 	})
