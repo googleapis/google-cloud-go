@@ -215,6 +215,73 @@ func (Content) fromProto(p *pb.Content) *Content {
 	}
 }
 
+// CountTokensRequest is request message for
+// [PredictionService.CountTokens][google.cloud.aiplatform.v1beta1.PredictionService.CountTokens].
+type CountTokensRequest struct {
+	// Required. The name of the Endpoint requested to perform token counting.
+	// Format:
+	// `projects/{project}/locations/{location}/endpoints/{endpoint}`
+	Endpoint string
+	// Required. The name of the publisher model requested to serve the
+	// prediction. Format:
+	// `projects/{project}/locations/{location}/publishers/*/models/*`
+	Model string
+	// Required. Input content.
+	Contents []*Content
+}
+
+func (w *CountTokensRequest) toProto() *pb.CountTokensRequest {
+	if w == nil {
+		return nil
+	}
+	return &pb.CountTokensRequest{
+		Endpoint: w.Endpoint,
+		Model:    w.Model,
+		Contents: mapSlice(w.Contents, (*Content).toProto),
+	}
+}
+
+func (CountTokensRequest) fromProto(p *pb.CountTokensRequest) *CountTokensRequest {
+	if p == nil {
+		return nil
+	}
+	return &CountTokensRequest{
+		Endpoint: p.Endpoint,
+		Model:    p.Model,
+		Contents: mapSlice(p.Contents, (Content{}).fromProto),
+	}
+}
+
+// CountTokensResponse is response message for
+// [PredictionService.CountTokens][google.cloud.aiplatform.v1beta1.PredictionService.CountTokens].
+type CountTokensResponse struct {
+	// The total number of tokens counted across all instances from the request.
+	TotalTokens int32
+	// The total number of billable characters counted across all instances from
+	// the request.
+	TotalBillableCharacters int32
+}
+
+func (w *CountTokensResponse) toProto() *pb.CountTokensResponse {
+	if w == nil {
+		return nil
+	}
+	return &pb.CountTokensResponse{
+		TotalTokens:             w.TotalTokens,
+		TotalBillableCharacters: w.TotalBillableCharacters,
+	}
+}
+
+func (CountTokensResponse) fromProto(p *pb.CountTokensResponse) *CountTokensResponse {
+	if p == nil {
+		return nil
+	}
+	return &CountTokensResponse{
+		TotalTokens:             p.TotalTokens,
+		TotalBillableCharacters: p.TotalBillableCharacters,
+	}
+}
+
 // FileData is URI based data.
 type FileData struct {
 	// Required. The IANA standard MIME type of the source data.
