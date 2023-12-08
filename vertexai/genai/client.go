@@ -99,12 +99,12 @@ func (m *GenerativeModel) Name() string {
 
 // GenerateContent produces a single request and response.
 func (m *GenerativeModel) GenerateContent(ctx context.Context, parts ...Part) (*GenerateContentResponse, error) {
-	return m.generateContent(ctx, m.newRequest(newUserContent(parts)))
+	return m.generateContent(ctx, m.newGenerateContentRequest(newUserContent(parts)))
 }
 
 // GenerateContentStream returns an iterator that enumerates responses.
 func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Part) *GenerateContentResponseIterator {
-	streamClient, err := m.c.c.StreamGenerateContent(ctx, m.newRequest(newUserContent(parts)))
+	streamClient, err := m.c.c.StreamGenerateContent(ctx, m.newGenerateContentRequest(newUserContent(parts)))
 	return &GenerateContentResponseIterator{
 		sc:  streamClient,
 		err: err,
@@ -128,9 +128,8 @@ func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateC
 	}
 }
 
-func (m *GenerativeModel) newRequest(contents ...*Content) *pb.GenerateContentRequest {
+func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
 	return &pb.GenerateContentRequest{
-		//Endpoint: m.fullName,
 		Model:            m.fullName,
 		Contents:         mapSlice(contents, (*Content).toProto),
 		SafetySettings:   mapSlice(m.SafetySettings, (*SafetySetting).toProto),
@@ -199,6 +198,24 @@ func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse
 		}
 	}
 	return &GenerateContentResponse{Candidates: cands}, nil
+}
+
+// CountTokens counts the number of tokens in the content.
+func (m *GenerativeModel) CountTokens(ctx context.Context, parts ...Part) (*CountTokensResponse, error) {
+	req := m.newCountTokensRequest(newUserContent(parts))
+	res, err := m.c.c.CountTokens(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return (CountTokensResponse{}).fromProto(res), nil
+}
+
+func (m *GenerativeModel) newCountTokensRequest(contents ...*Content) *pb.CountTokensRequest {
+	return &pb.CountTokensRequest{
+		Endpoint: m.fullName,
+		Model:    m.fullName,
+		Contents: mapSlice(contents, (*Content).toProto),
+	}
 }
 
 // A BlockedError indicates that the model's response was blocked.
