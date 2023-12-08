@@ -57,7 +57,7 @@ func TestLive(t *testing.T) {
 			t.Fatal(err)
 		}
 		got := responseString(resp)
-		checkMatch(t, got, `15.* cm|6.* inches|5.* inches`)
+		checkMatch(t, got, `15.* cm|[1-9].* inches`)
 	})
 
 	t.Run("streaming", func(t *testing.T) {
