@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.1.1...vertexai/v0.2.0) (2023-12-08)
+
+
+### Features
+
+* **vertexai:** Add CountTokens ([#9109](https://github.com/googleapis/google-cloud-go/issues/9109)) ([1372adf](https://github.com/googleapis/google-cloud-go/commit/1372adfe412d4ebcac4db5989e8a7bc290979c62))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.1.0...vertexai/v0.1.1) (2023-12-08)
 
 
