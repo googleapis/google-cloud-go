@@ -15,8 +15,6 @@
 // Package genai is a client for the generative VertexAI model.
 package genai
 
-//go:generate stringer -type FinishReason
-
 import (
 	"context"
 	"fmt"
