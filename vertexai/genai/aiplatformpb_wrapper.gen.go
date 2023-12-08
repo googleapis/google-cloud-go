@@ -21,6 +21,48 @@ import (
 	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
 )
 
+// Blob contains raw media bytes.
+//
+// Text should not be sent as raw bytes, use the 'text' field.
+type Blob struct {
+	// Required. The IANA standard MIME type of the source data.
+	MIMEType string
+	// Required. Raw bytes for media formats.
+	Data []byte
+}
+
+func (w *Blob) toProto() *pb.Blob {
+	if w == nil {
+		return nil
+	}
+	return &pb.Blob{
+		MimeType: w.MIMEType,
+		Data:     w.Data,
+	}
+}
+
+func (Blob) fromProto(p *pb.Blob) *Blob {
+	if p == nil {
+		return nil
+	}
+	return &Blob{
+		MIMEType: p.MimeType,
+		Data:     p.Data,
+	}
+}
+
+// BlockedReason is blocked reason enumeration.
+type BlockedReason int32
+
+const (
+	// BlockedReasonUnspecified means unspecified blocked reason.
+	BlockedReasonUnspecified BlockedReason = 0
+	// BlockedReasonSafety means candidates blocked due to safety.
+	BlockedReasonSafety BlockedReason = 1
+	// BlockedReasonOther means candidates blocked due to other reason.
+	BlockedReasonOther BlockedReason = 2
+)
+
 // Candidate is a response candidate generated from the model.
 type Candidate struct {
 	// Output only. Index of the candidate.
@@ -69,6 +111,110 @@ func (Candidate) fromProto(p *pb.Candidate) *Candidate {
 	}
 }
 
+// Citation contains source attributions for content.
+type Citation struct {
+	// Output only. Start index into the content.
+	StartIndex int32
+	// Output only. End index into the content.
+	EndIndex int32
+	// Output only. Url reference of the attribution.
+	URI string
+	// Output only. Title of the attribution.
+	Title string
+	// Output only. License of the attribution.
+	License string
+	// Output only. Publication date of the attribution.
+	PublicationDate civil.Date
+}
+
+func (w *Citation) toProto() *pb.Citation {
+	if w == nil {
+		return nil
+	}
+	return &pb.Citation{
+		StartIndex:      w.StartIndex,
+		EndIndex:        w.EndIndex,
+		Uri:             w.URI,
+		Title:           w.Title,
+		License:         w.License,
+		PublicationDate: civilDateToProto(w.PublicationDate),
+	}
+}
+
+func (Citation) fromProto(p *pb.Citation) *Citation {
+	if p == nil {
+		return nil
+	}
+	return &Citation{
+		StartIndex:      p.StartIndex,
+		EndIndex:        p.EndIndex,
+		URI:             p.Uri,
+		Title:           p.Title,
+		License:         p.License,
+		PublicationDate: civilDateFromProto(p.PublicationDate),
+	}
+}
+
+// CitationMetadata is a collection of source attributions for a piece of content.
+type CitationMetadata struct {
+	// Output only. List of citations.
+	Citations []*Citation
+}
+
+func (w *CitationMetadata) toProto() *pb.CitationMetadata {
+	if w == nil {
+		return nil
+	}
+	return &pb.CitationMetadata{
+		Citations: mapSlice(w.Citations, (*Citation).toProto),
+	}
+}
+
+func (CitationMetadata) fromProto(p *pb.CitationMetadata) *CitationMetadata {
+	if p == nil {
+		return nil
+	}
+	return &CitationMetadata{
+		Citations: mapSlice(p.Citations, (Citation{}).fromProto),
+	}
+}
+
+// Content is the base structured datatype containing multi-part content of a message.
+//
+// A `Content` includes a `role` field designating the producer of the `Content`
+// and a `parts` field containing multi-part data that contains the content of
+// the message turn.
+type Content struct {
+	// Optional. The producer of the content. Must be either 'user' or 'model'.
+	//
+	// Useful to set for multi-turn conversations, otherwise can be left blank
+	// or unset.
+	Role string
+	// Required. Ordered `Parts` that constitute a single message. Parts may have
+	// different IANA MIME types.
+	Parts []Part
+}
+
+func (w *Content) toProto() *pb.Content {
+	if w == nil {
+		return nil
+	}
+	return &pb.Content{
+		Role:  w.Role,
+		Parts: mapSlice(w.Parts, partToProto),
+	}
+}
+
+func (Content) fromProto(p *pb.Content) *Content {
+	if p == nil {
+		return nil
+	}
+	return &Content{
+		Role:  p.Role,
+		Parts: mapSlice(p.Parts, partFromProto),
+	}
+}
+
 // FileData is URI based data.
 type FileData struct {
 	// Required. The IANA standard MIME type of the source data.
@@ -97,20 +243,26 @@ func (FileData) fromProto(p *pb.FileData) *FileData {
 	}
 }
 
-// HarmCategory specifies harm categories that will block the content.
-type HarmCategory int32
+// FinishReason is the reason why the model stopped generating tokens.
+// If empty, the model has not stopped generating the tokens.
+type FinishReason int32
 
 const (
-	// HarmCategoryUnspecified means the harm category is unspecified.
-	HarmCategoryUnspecified HarmCategory = 0
-	// HarmCategoryHateSpeech means the harm category is hate speech.
-	HarmCategoryHateSpeech HarmCategory = 1
-	// HarmCategoryDangerousContent means the harm category is dangerous content.
-	HarmCategoryDangerousContent HarmCategory = 2
-	// HarmCategoryHarassment means the harm category is harassment.
-	HarmCategoryHarassment HarmCategory = 3
-	// HarmCategorySexuallyExplicit means the harm category is sexually explicit content.
-	HarmCategorySexuallyExplicit HarmCategory = 4
+	// FinishReasonUnspecified means the finish reason is unspecified.
+	FinishReasonUnspecified FinishReason = 0
+	// FinishReasonStop means natural stop point of the model or provided stop sequence.
+	FinishReasonStop FinishReason = 1
+	// FinishReasonMaxTokens means the maximum number of tokens as specified in the request was reached.
+	FinishReasonMaxTokens FinishReason = 2
+	// FinishReasonSafety means the token generation was stopped as the response was flagged for safety
+	// reasons. NOTE: When streaming the Candidate.content will be empty if
+	// content filters blocked the output.
+	FinishReasonSafety FinishReason = 3
+	// FinishReasonRecitation means the token generation was stopped as the response was flagged for
+	// unauthorized citations.
+	FinishReasonRecitation FinishReason = 4
+	// FinishReasonOther means all other reasons that stopped the token generation
+	FinishReasonOther FinishReason = 5
 )
 
 // GenerationConfig is generation config.
@@ -157,38 +309,52 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 	}
 }
 
-// FinishReason is the reason why the model stopped generating tokens.
-// If empty, the model has not stopped generating the tokens.
-type FinishReason int32
+// HarmBlockThreshold specifies probability based thresholds levels for blocking.
+type HarmBlockThreshold int32
 
 const (
-	// FinishReasonUnspecified means the finish reason is unspecified.
-	FinishReasonUnspecified FinishReason = 0
-	// FinishReasonStop means natural stop point of the model or provided stop sequence.
-	FinishReasonStop FinishReason = 1
-	// FinishReasonMaxTokens means the maximum number of tokens as specified in the request was reached.
-	FinishReasonMaxTokens FinishReason = 2
-	// FinishReasonSafety means the token generation was stopped as the response was flagged for safety
-	// reasons. NOTE: When streaming the Candidate.content will be empty if
-	// content filters blocked the output.
-	FinishReasonSafety FinishReason = 3
-	// FinishReasonRecitation means the token generation was stopped as the response was flagged for
-	// unauthorized citations.
-	FinishReasonRecitation FinishReason = 4
-	// FinishReasonOther means all other reasons that stopped the token generation
-	FinishReasonOther FinishReason = 5
+	// HarmBlockUnspecified means unspecified harm block threshold.
+	HarmBlockUnspecified HarmBlockThreshold = 0
+	// HarmBlockLowAndAbove means block low threshold and above (i.e. block more).
+	HarmBlockLowAndAbove HarmBlockThreshold = 1
+	// HarmBlockMediumAndAbove means block medium threshold and above.
+	HarmBlockMediumAndAbove HarmBlockThreshold = 2
+	// HarmBlockOnlyHigh means block only high threshold (i.e. block less).
+	HarmBlockOnlyHigh HarmBlockThreshold = 3
+	// HarmBlockNone means block none.
+	HarmBlockNone HarmBlockThreshold = 4
 )
 
-// BlockedReason is blocked reason enumeration.
-type BlockedReason int32
+// HarmCategory specifies harm categories that will block the content.
+type HarmCategory int32
 
 const (
-	// BlockedReasonUnspecified means unspecified blocked reason.
-	BlockedReasonUnspecified BlockedReason = 0
-	// BlockedReasonSafety means candidates blocked due to safety.
-	BlockedReasonSafety BlockedReason = 1
-	// BlockedReasonOther means candidates blocked due to other reason.
-	BlockedReasonOther BlockedReason = 2
+	// HarmCategoryUnspecified means the harm category is unspecified.
+	HarmCategoryUnspecified HarmCategory = 0
+	// HarmCategoryHateSpeech means the harm category is hate speech.
+	HarmCategoryHateSpeech HarmCategory = 1
+	// HarmCategoryDangerousContent means the harm category is dangerous content.
+	HarmCategoryDangerousContent HarmCategory = 2
+	// HarmCategoryHarassment means the harm category is harassment.
+	HarmCategoryHarassment HarmCategory = 3
+	// HarmCategorySexuallyExplicit means the harm category is sexually explicit content.
+	HarmCategorySexuallyExplicit HarmCategory = 4
+)
+
+// HarmProbability specifies harm probability levels in the content.
+type HarmProbability int32
+
+const (
+	// HarmProbabilityUnspecified means harm probability unspecified.
+	HarmProbabilityUnspecified HarmProbability = 0
+	// HarmProbabilityNegligible means negligible level of harm.
+	HarmProbabilityNegligible HarmProbability = 1
+	// HarmProbabilityLow means low level of harm.
+	HarmProbabilityLow HarmProbability = 2
+	// HarmProbabilityMedium means medium level of harm.
+	HarmProbabilityMedium HarmProbability = 3
+	// HarmProbabilityHigh means high level of harm.
+	HarmProbabilityHigh HarmProbability = 4
 )
 
 // PromptFeedback contains content filter results for a prompt sent in the request.
@@ -223,79 +389,36 @@ func (PromptFeedback) fromProto(p *pb.GenerateContentResponse_PromptFeedback) *P
 	}
 }
 
-// HarmProbablity specifies harm probability levels in the content.
-type HarmProbablity int32
-
-const (
-	// HarmProbabilityUnspecified means harm probability unspecified.
-	HarmProbabilityUnspecified HarmProbablity = 0
-	// HarmProbablityNegligible means negligible level of harm.
-	HarmProbablityNegligible HarmProbablity = 1
-	// HarmProbablityLow means low level of harm.
-	HarmProbablityLow HarmProbablity = 2
-	// HarmProbablityMedium means medium level of harm.
-	HarmProbablityMedium HarmProbablity = 3
-	// HarmProbablityHigh means high level of harm.
-	HarmProbablityHigh HarmProbablity = 4
-)
-
-// Content is the base structured datatype containing multi-part content of a message.
-//
-// A `Content` includes a `role` field designating the producer of the `Content`
-// and a `parts` field containing multi-part data that contains the content of
-// the message turn.
-type Content struct {
-	// Optional. The producer of the content. Must be either 'user' or 'model'.
-	//
-	// Useful to set for multi-turn conversations, otherwise can be left blank
-	// or unset.
-	Role string
-	// Required. Ordered `Parts` that constitute a single message. Parts may have
-	// different IANA MIME types.
-	Parts []Part
+// SafetyRating is the safety rating corresponding to the generated content.
+type SafetyRating struct {
+	// Output only. Harm category.
+	Category HarmCategory
+	// Output only. Harm probability levels in the content.
+	Probability HarmProbability
+	// Output only. Indicates whether the content was filtered out because of this
+	// rating.
+	Blocked bool
 }
 
-func (w *Content) toProto() *pb.Content {
+func (w *SafetyRating) toProto() *pb.SafetyRating {
 	if w == nil {
 		return nil
 	}
-	return &pb.Content{
-		Role:  w.Role,
-		Parts: mapSlice(w.Parts, partToProto),
+	return &pb.SafetyRating{
+		Category:    pb.HarmCategory(w.Category),
+		Probability: pb.SafetyRating_HarmProbability(w.Probability),
+		Blocked:     w.Blocked,
 	}
 }
 
-func (Content) fromProto(p *pb.Content) *Content {
+func (SafetyRating) fromProto(p *pb.SafetyRating) *SafetyRating {
 	if p == nil {
 		return nil
 	}
-	return &Content{
-		Role:  p.Role,
-		Parts: mapSlice(p.Parts, partFromProto),
-	}
-}
-
-// CitationMetadata is a collection of source attributions for a piece of content.
-type CitationMetadata struct {
-	// Output only. List of citations.
-	Citations []*Citation
-}
-
-func (w *CitationMetadata) toProto() *pb.CitationMetadata {
-	if w == nil {
-		return nil
-	}
-	return &pb.CitationMetadata{
-		Citations: mapSlice(w.Citations, (*Citation).toProto),
-	}
-}
-
-func (CitationMetadata) fromProto(p *pb.CitationMetadata) *CitationMetadata {
-	if p == nil {
-		return nil
-	}
-	return &CitationMetadata{
-		Citations: mapSlice(p.Citations, (Citation{}).fromProto),
+	return &SafetyRating{
+		Category:    HarmCategory(p.Category),
+		Probability: HarmProbability(p.Probability),
+		Blocked:     p.Blocked,
 	}
 }
 
@@ -326,126 +449,3 @@ func (SafetySetting) fromProto(p *pb.SafetySetting) *SafetySetting {
 		Threshold: HarmBlockThreshold(p.Threshold),
 	}
 }
-
-// Citation contains source attributions for content.
-type Citation struct {
-	// Output only. Start index into the content.
-	StartIndex int32
-	// Output only. End index into the content.
-	EndIndex int32
-	// Output only. Url reference of the attribution.
-	URI string
-	// Output only. Title of the attribution.
-	Title string
-	// Output only. License of the attribution.
-	License string
-	// Output only. Publication date of the attribution.
-	PublicationDate civil.Date
-}
-
-func (w *Citation) toProto() *pb.Citation {
-	if w == nil {
-		return nil
-	}
-	return &pb.Citation{
-		StartIndex:      w.StartIndex,
-		EndIndex:        w.EndIndex,
-		Uri:             w.URI,
-		Title:           w.Title,
-		License:         w.License,
-		PublicationDate: civilDateToProto(w.PublicationDate),
-	}
-}
-
-func (Citation) fromProto(p *pb.Citation) *Citation {
-	if p == nil {
-		return nil
-	}
-	return &Citation{
-		StartIndex:      p.StartIndex,
-		EndIndex:        p.EndIndex,
-		URI:             p.Uri,
-		Title:           p.Title,
-		License:         p.License,
-		PublicationDate: civilDateFromProto(p.PublicationDate),
-	}
-}
-
-// SafetyRating is the safety rating corresponding to the generated content.
-type SafetyRating struct {
-	// Output only. Harm category.
-	Category HarmCategory
-	// Output only. Harm probability levels in the content.
-	Probability HarmProbablity
-	// Output only. Indicates whether the content was filtered out because of this
-	// rating.
-	Blocked bool
-}
-
-func (w *SafetyRating) toProto() *pb.SafetyRating {
-	if w == nil {
-		return nil
-	}
-	return &pb.SafetyRating{
-		Category:    pb.HarmCategory(w.Category),
-		Probability: pb.SafetyRating_HarmProbability(w.Probability),
-		Blocked:     w.Blocked,
-	}
-}
-
-func (SafetyRating) fromProto(p *pb.SafetyRating) *SafetyRating {
-	if p == nil {
-		return nil
-	}
-	return &SafetyRating{
-		Category:    HarmCategory(p.Category),
-		Probability: HarmProbablity(p.Probability),
-		Blocked:     p.Blocked,
-	}
-}
-
-// Blob contains raw media bytes.
-//
-// Text should not be sent as raw bytes, use the 'text' field.
-type Blob struct {
-	// Required. The IANA standard MIME type of the source data.
-	MIMEType string
-	// Required. Raw bytes for media formats.
-	Data []byte
-}
-
-func (w *Blob) toProto() *pb.Blob {
-	if w == nil {
-		return nil
-	}
-	return &pb.Blob{
-		MimeType: w.MIMEType,
-		Data:     w.Data,
-	}
-}
-
-func (Blob) fromProto(p *pb.Blob) *Blob {
-	if p == nil {
-		return nil
-	}
-	return &Blob{
-		MIMEType: p.MimeType,
-		Data:     p.Data,
-	}
-}
-
-// HarmBlockThreshold specifies probability based thresholds levels for blocking.
-type HarmBlockThreshold int32
-
-const (
-	// HarmBlockUnspecified means unspecified harm block threshold.
-	HarmBlockUnspecified HarmBlockThreshold = 0
-	// HarmBlockLowAndAbove means block low threshold and above (i.e. block more).
-	HarmBlockLowAndAbove HarmBlockThreshold = 1
-	// HarmBlockMediumAndAbove means block medium threshold and above.
-	HarmBlockMediumAndAbove HarmBlockThreshold = 2
-	// HarmBlockOnlyHigh means block only high threshold (i.e. block less).
-	HarmBlockOnlyHigh HarmBlockThreshold = 3
-	// HarmBlockNone means block none.
-	HarmBlockNone HarmBlockThreshold = 4
-)
