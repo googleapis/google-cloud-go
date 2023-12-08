@@ -297,6 +297,9 @@ func joinCitationMetadata(dest, src *CitationMetadata) *CitationMetadata {
 	if dest == nil {
 		return src
 	}
+	if src == nil {
+		return dest
+	}
 	dest.Citations = append(dest.Citations, src.Citations...)
 	return dest
 }
