@@ -19,4 +19,4 @@ Package vertexai provides a client for interacting with Vertex AI APIS.
 
 See subpackages like [genai] for the currently supported functionality.
 */
-package spanner // import "cloud.google.com/go/vertexai"
+package vertexai // import "cloud.google.com/go/vertexai"
