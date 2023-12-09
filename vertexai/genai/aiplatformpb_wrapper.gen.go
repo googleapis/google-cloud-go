@@ -19,6 +19,7 @@ package genai
 import (
 	"cloud.google.com/go/civil"
 	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
+	"cloud.google.com/go/vertexai/internal/support"
 )
 
 // Blob contains raw media bytes.
@@ -89,11 +90,11 @@ func (w *Candidate) toProto() *pb.Candidate {
 	}
 	return &pb.Candidate{
 		Index:            w.Index,
-		Content:          (*w.Content).toProto(),
+		Content:          w.Content.toProto(),
 		FinishReason:     pb.Candidate_FinishReason(w.FinishReason),
-		SafetyRatings:    mapSlice(w.SafetyRatings, (*SafetyRating).toProto),
-		FinishMessage:    zeroToNil(w.FinishMessage),
-		CitationMetadata: (*w.CitationMetadata).toProto(),
+		SafetyRatings:    support.TransformSlice(w.SafetyRatings, (*SafetyRating).toProto),
+		FinishMessage:    support.ZeroToNil(w.FinishMessage),
+		CitationMetadata: w.CitationMetadata.toProto(),
 	}
 }
 
@@ -105,8 +106,8 @@ func (Candidate) fromProto(p *pb.Candidate) *Candidate {
 		Index:            p.Index,
 		Content:          (Content{}).fromProto(p.Content),
 		FinishReason:     FinishReason(p.FinishReason),
-		SafetyRatings:    mapSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
-		FinishMessage:    nilToZero(p.FinishMessage),
+		SafetyRatings:    support.TransformSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
+		FinishMessage:    support.NilToZero(p.FinishMessage),
 		CitationMetadata: (CitationMetadata{}).fromProto(p.CitationMetadata),
 	}
 }
@@ -137,7 +138,7 @@ func (w *Citation) toProto() *pb.Citation {
 		Uri:             w.URI,
 		Title:           w.Title,
 		License:         w.License,
-		PublicationDate: civilDateToProto(w.PublicationDate),
+		PublicationDate: support.CivilDateToProto(w.PublicationDate),
 	}
 }
 
@@ -151,7 +152,7 @@ func (Citation) fromProto(p *pb.Citation) *Citation {
 		URI:             p.Uri,
 		Title:           p.Title,
 		License:         p.License,
-		PublicationDate: civilDateFromProto(p.PublicationDate),
+		PublicationDate: support.CivilDateFromProto(p.PublicationDate),
 	}
 }
 
@@ -166,7 +167,7 @@ func (w *CitationMetadata) toProto() *pb.CitationMetadata {
 		return nil
 	}
 	return &pb.CitationMetadata{
-		Citations: mapSlice(w.Citations, (*Citation).toProto),
+		Citations: support.TransformSlice(w.Citations, (*Citation).toProto),
 	}
 }
 
@@ -175,7 +176,7 @@ func (CitationMetadata) fromProto(p *pb.CitationMetadata) *CitationMetadata {
 		return nil
 	}
 	return &CitationMetadata{
-		Citations: mapSlice(p.Citations, (Citation{}).fromProto),
+		Citations: support.TransformSlice(p.Citations, (Citation{}).fromProto),
 	}
 }
 
@@ -201,7 +202,7 @@ func (w *Content) toProto() *pb.Content {
 	}
 	return &pb.Content{
 		Role:  w.Role,
-		Parts: mapSlice(w.Parts, partToProto),
+		Parts: support.TransformSlice(w.Parts, partToProto),
 	}
 }
 
@@ -211,44 +212,7 @@ func (Content) fromProto(p *pb.Content) *Content {
 	}
 	return &Content{
 		Role:  p.Role,
-		Parts: mapSlice(p.Parts, partFromProto),
-	}
-}
-
-// CountTokensRequest is request message for
-// [PredictionService.CountTokens][google.cloud.aiplatform.v1beta1.PredictionService.CountTokens].
-type CountTokensRequest struct {
-	// Required. The name of the Endpoint requested to perform token counting.
-	// Format:
-	// `projects/{project}/locations/{location}/endpoints/{endpoint}`
-	Endpoint string
-	// Required. The name of the publisher model requested to serve the
-	// prediction. Format:
-	// `projects/{project}/locations/{location}/publishers/*/models/*`
-	Model string
-	// Required. Input content.
-	Contents []*Content
-}
-
-func (w *CountTokensRequest) toProto() *pb.CountTokensRequest {
-	if w == nil {
-		return nil
-	}
-	return &pb.CountTokensRequest{
-		Endpoint: w.Endpoint,
-		Model:    w.Model,
-		Contents: mapSlice(w.Contents, (*Content).toProto),
-	}
-}
-
-func (CountTokensRequest) fromProto(p *pb.CountTokensRequest) *CountTokensRequest {
-	if p == nil {
-		return nil
-	}
-	return &CountTokensRequest{
-		Endpoint: p.Endpoint,
-		Model:    p.Model,
-		Contents: mapSlice(p.Contents, (Content{}).fromProto),
+		Parts: support.TransformSlice(p.Parts, partFromProto),
 	}
 }
 
@@ -332,6 +296,121 @@ const (
 	FinishReasonOther FinishReason = 5
 )
 
+// FunctionCall is a predicted [FunctionCall] returned from the model that contains a string
+// representing the [FunctionDeclaration.name] and a structured JSON object
+// containing the parameters and their values.
+type FunctionCall struct {
+	// Required. The name of the function to call.
+	// Matches [FunctionDeclaration.name].
+	Name string
+	// Optional. Required. The function parameters and values in JSON object
+	// format. See [FunctionDeclaration.parameters] for parameter details.
+	Args map[string]any
+}
+
+func (w *FunctionCall) toProto() *pb.FunctionCall {
+	if w == nil {
+		return nil
+	}
+	return &pb.FunctionCall{
+		Name: w.Name,
+		Args: support.MapToStructPB(w.Args),
+	}
+}
+
+func (FunctionCall) fromProto(p *pb.FunctionCall) *FunctionCall {
+	if p == nil {
+		return nil
+	}
+	return &FunctionCall{
+		Name: p.Name,
+		Args: support.MapFromStructPB(p.Args),
+	}
+}
+
+// FunctionDeclaration is structured representation of a function declaration as defined by the
+// [OpenAPI 3.0 specification](https://spec.openapis.org/oas/v3.0.3). Included
+// in this declaration are the function name and parameters. This
+// FunctionDeclaration is a representation of a block of code that can be used
+// as a `Tool` by the model and executed by the client.
+type FunctionDeclaration struct {
+	// Required. The name of the function to call.
+	// Must start with a letter or an underscore.
+	// Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum
+	// length of 64.
+	Name string
+	// Optional. Description and purpose of the function.
+	// Model uses it to decide how and whether to call the function.
+	Description string
+	// Optional. Describes the parameters to this function in JSON Schema Object
+	// format. Reflects the Open API 3.03 Parameter Object. string Key: the name
+	// of the parameter. Parameter names are case sensitive. Schema Value: the
+	// Schema defining the type used for the parameter. For function with no
+	// parameters, this can be left unset. Example with 1 required and 1 optional
+	// parameter: type: OBJECT properties:
+	//  param1:
+	//    type: STRING
+	//  param2:
+	//    type: INTEGER
+	// required:
+	//  - param1
+	Parameters *Schema
+}
+
+func (w *FunctionDeclaration) toProto() *pb.FunctionDeclaration {
+	if w == nil {
+		return nil
+	}
+	return &pb.FunctionDeclaration{
+		Name:        w.Name,
+		Description: w.Description,
+		Parameters:  w.Parameters.toProto(),
+	}
+}
+
+func (FunctionDeclaration) fromProto(p *pb.FunctionDeclaration) *FunctionDeclaration {
+	if p == nil {
+		return nil
+	}
+	return &FunctionDeclaration{
+		Name:        p.Name,
+		Description: p.Description,
+		Parameters:  (Schema{}).fromProto(p.Parameters),
+	}
+}
+
+// FunctionResponse is the result output from a [FunctionCall] that contains a string representing
+// the [FunctionDeclaration.name] and a structured JSON object containing any
+// output from the function is used as context to the model. This should contain
+// the result of a [FunctionCall] made based on model prediction.
+type FunctionResponse struct {
+	// Required. The name of the function to call.
+	// Matches [FunctionDeclaration.name] and [FunctionCall.name].
+	Name string
+	// Required. The function response in JSON object format.
+	Response map[string]any
+}
+
+func (w *FunctionResponse) toProto() *pb.FunctionResponse {
+	if w == nil {
+		return nil
+	}
+	return &pb.FunctionResponse{
+		Name:     w.Name,
+		Response: support.MapToStructPB(w.Response),
+	}
+}
+
+func (FunctionResponse) fromProto(p *pb.FunctionResponse) *FunctionResponse {
+	if p == nil {
+		return nil
+	}
+	return &FunctionResponse{
+		Name:     p.Name,
+		Response: support.MapFromStructPB(p.Response),
+	}
+}
+
 // GenerationConfig is generation config.
 type GenerationConfig struct {
 	// Optional. Controls the randomness of predictions.
@@ -353,11 +432,11 @@ func (w *GenerationConfig) toProto() *pb.GenerationConfig {
 		return nil
 	}
 	return &pb.GenerationConfig{
-		Temperature:     zeroToNil(w.Temperature),
-		TopP:            zeroToNil(w.TopP),
-		TopK:            zeroToNil(w.TopK),
-		CandidateCount:  zeroToNil(w.CandidateCount),
-		MaxOutputTokens: zeroToNil(w.MaxOutputTokens),
+		Temperature:     support.ZeroToNil(w.Temperature),
+		TopP:            support.ZeroToNil(w.TopP),
+		TopK:            support.ZeroToNil(w.TopK),
+		CandidateCount:  support.ZeroToNil(w.CandidateCount),
+		MaxOutputTokens: support.ZeroToNil(w.MaxOutputTokens),
 		StopSequences:   w.StopSequences,
 	}
 }
@@ -367,11 +446,11 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 		return nil
 	}
 	return &GenerationConfig{
-		Temperature:     nilToZero(p.Temperature),
-		TopP:            nilToZero(p.TopP),
-		TopK:            nilToZero(p.TopK),
-		CandidateCount:  nilToZero(p.CandidateCount),
-		MaxOutputTokens: nilToZero(p.MaxOutputTokens),
+		Temperature:     support.NilToZero(p.Temperature),
+		TopP:            support.NilToZero(p.TopP),
+		TopK:            support.NilToZero(p.TopK),
+		CandidateCount:  support.NilToZero(p.CandidateCount),
+		MaxOutputTokens: support.NilToZero(p.MaxOutputTokens),
 		StopSequences:   p.StopSequences,
 	}
 }
@@ -440,7 +519,7 @@ func (w *PromptFeedback) toProto() *pb.GenerateContentResponse_PromptFeedback {
 	}
 	return &pb.GenerateContentResponse_PromptFeedback{
 		BlockReason:        pb.GenerateContentResponse_PromptFeedback_BlockedReason(w.BlockReason),
-		SafetyRatings:      mapSlice(w.SafetyRatings, (*SafetyRating).toProto),
+		SafetyRatings:      support.TransformSlice(w.SafetyRatings, (*SafetyRating).toProto),
 		BlockReasonMessage: w.BlockReasonMessage,
 	}
 }
@@ -451,7 +530,7 @@ func (PromptFeedback) fromProto(p *pb.GenerateContentResponse_PromptFeedback) *P
 	}
 	return &PromptFeedback{
 		BlockReason:        BlockedReason(p.BlockReason),
-		SafetyRatings:      mapSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
+		SafetyRatings:      support.TransformSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
 		BlockReasonMessage: p.BlockReasonMessage,
 	}
 }
@@ -516,3 +595,119 @@ func (SafetySetting) fromProto(p *pb.SafetySetting) *SafetySetting {
 		Threshold: HarmBlockThreshold(p.Threshold),
 	}
 }
+
+// Schema is used to define the format of input/output data. Represents a select
+// subset of an [OpenAPI 3.0 schema
+// object](https://spec.openapis.org/oas/v3.0.3#schema). More fields may be
+// added in the future as needed.
+type Schema struct {
+	// Optional. The type of the data.
+	Type Type
+	// Optional. The format of the data.
+	// Supported formats:
+	//  for NUMBER type: float, double
+	//  for INTEGER type: int32, int64
+	Format string
+	// Optional. The description of the data.
+	Description string
+	// Optional. Indicates if the value may be null.
+	Nullable bool
+	// Optional. Schema of the elements of Type.ARRAY.
+	Items *Schema
+	// Optional. Possible values of the element of Type.STRING with enum format.
+	// For example we can define an Enum Direction as :
+	// {type:STRING, format:enum, enum:["EAST", NORTH", "SOUTH", "WEST"]}
+	Enum []string
+	// Optional. Properties of Type.OBJECT.
+	Properties map[string]*Schema
+	// Optional. Required properties of Type.OBJECT.
+	Required []string
+}
+
+func (w *Schema) toProto() *pb.Schema {
+	if w == nil {
+		return nil
+	}
+	return &pb.Schema{
+		Type:        pb.Type(w.Type),
+		Format:      w.Format,
+		Description: w.Description,
+		Nullable:    w.Nullable,
+		Items:       w.Items.toProto(),
+		Enum:        w.Enum,
+		Properties:  support.TransformMapValues(w.Properties, (*Schema).toProto),
+		Required:    w.Required,
+	}
+}
+
+func (Schema) fromProto(p *pb.Schema) *Schema {
+	if p == nil {
+		return nil
+	}
+	return &Schema{
+		Type:        Type(p.Type),
+		Format:      p.Format,
+		Description: p.Description,
+		Nullable:    p.Nullable,
+		Items:       (Schema{}).fromProto(p.Items),
+		Enum:        p.Enum,
+		Properties:  support.TransformMapValues(p.Properties, (Schema{}).fromProto),
+		Required:    p.Required,
+	}
+}
+
+// Tool details that the model may use to generate response.
+//
+// A `Tool` is a piece of code that enables the system to interact with
+// external systems to perform an action, or set of actions, outside of
+// knowledge and scope of the model.
+type Tool struct {
+	// Optional. One or more function declarations to be passed to the model along
+	// with the current user query. Model may decide to call a subset of these
+	// functions by populating [FunctionCall][content.part.function_call] in the
+	// response. User should provide a
+	// [FunctionResponse][content.part.function_response] for each function call
+	// in the next turn. Based on the function responses, Model will generate the
+	// final response back to the user. Maximum 64 function declarations can be
+	// provided.
+	FunctionDeclarations []*FunctionDeclaration
+}
+
+func (w *Tool) toProto() *pb.Tool {
+	if w == nil {
+		return nil
+	}
+	return &pb.Tool{
+		FunctionDeclarations: support.TransformSlice(w.FunctionDeclarations, (*FunctionDeclaration).toProto),
+	}
+}
+
+func (Tool) fromProto(p *pb.Tool) *Tool {
+	if p == nil {
+		return nil
+	}
+	return &Tool{
+		FunctionDeclarations: support.TransformSlice(p.FunctionDeclarations, (FunctionDeclaration{}).fromProto),
+	}
+}
+
+// Type contains the list of OpenAPI data types as defined by
+// https://swagger.io/docs/specification/data-models/data-types/
+type Type int32
+
+const (
+	// TypeUnspecified means not specified, should not be used.
+	TypeUnspecified Type = 0
+	// TypeString means openAPI string type
+	TypeString Type = 1
+	// TypeNumber means openAPI number type
+	TypeNumber Type = 2
+	// TypeInteger means openAPI integer type
+	TypeInteger Type = 3
+	// TypeBoolean means openAPI boolean type
+	TypeBoolean Type = 4
+	// TypeArray means openAPI array type
+	TypeArray Type = 5
+	// TypeObject means openAPI object type
+	TypeObject Type = 6
+)

@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/civil"
 	aiplatform "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1"
 	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
+	"cloud.google.com/go/vertexai/internal/support"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -75,6 +76,7 @@ type GenerativeModel struct {
 
 	GenerationConfig
 	SafetySettings []*SafetySetting
+	Tools          []*Tool
 }
 
 const defaultMaxOutputTokens = 2048
@@ -131,8 +133,9 @@ func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateC
 func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
 	return &pb.GenerateContentRequest{
 		Model:            m.fullName,
-		Contents:         mapSlice(contents, (*Content).toProto),
-		SafetySettings:   mapSlice(m.SafetySettings, (*SafetySetting).toProto),
+		Contents:         support.TransformSlice(contents, (*Content).toProto),
+		SafetySettings:   support.TransformSlice(m.SafetySettings, (*SafetySetting).toProto),
+		Tools:            support.TransformSlice(m.Tools, (*Tool).toProto),
 		GenerationConfig: m.GenerationConfig.toProto(),
 	}
 }
@@ -189,7 +192,7 @@ func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse
 	if pf != nil {
 		return nil, &BlockedError{PromptFeedback: pf}
 	}
-	cands := mapSlice(resp.Candidates, (Candidate{}).fromProto)
+	cands := support.TransformSlice(resp.Candidates, (Candidate{}).fromProto)
 	// If any candidate is blocked, error.
 	// TODO: is this too harsh?
 	for _, c := range cands {
@@ -214,7 +217,7 @@ func (m *GenerativeModel) newCountTokensRequest(contents ...*Content) *pb.CountT
 	return &pb.CountTokensRequest{
 		Endpoint: m.fullName,
 		Model:    m.fullName,
-		Contents: mapSlice(contents, (*Content).toProto),
+		Contents: support.TransformSlice(contents, (*Content).toProto),
 	}
 }
 
