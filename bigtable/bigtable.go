@@ -44,7 +44,7 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const prodAddr     = "bigtable.googleapis.com:443"
+const prodAddr = "bigtable.googleapis.com:443"
 const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
 
 // Client is a client for reading and writing data to tables in an instance.
