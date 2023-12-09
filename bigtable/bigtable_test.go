@@ -17,6 +17,7 @@ limitations under the License.
 package bigtable
 
 import (
+	"bytes"
 	"context"
 	"reflect"
 	"testing"
@@ -26,6 +27,7 @@ import (
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestPrefix(t *testing.T) {
@@ -85,6 +87,7 @@ func TestNewClosedOpenRange(t *testing.T) {
 		}
 	}
 }
+
 func TestNewOpenClosedRange(t *testing.T) {
 	start := "b"
 	limit := "b\x01"
@@ -119,6 +122,7 @@ func TestNewOpenClosedRange(t *testing.T) {
 		}
 	}
 }
+
 func TestNewClosedRange(t *testing.T) {
 	start := "b"
 	limit := "b"
@@ -373,7 +377,6 @@ func requestCallback(callback func()) func(ctx context.Context, desc *grpc.Strea
 }
 
 func TestRowRangeProto(t *testing.T) {
-
 	for _, test := range []struct {
 		desc  string
 		rr    RowRange
@@ -502,7 +505,6 @@ func TestRowRangeRetainRowsBefore(t *testing.T) {
 }
 
 func TestRowRangeString(t *testing.T) {
-
 	for _, test := range []struct {
 		desc string
 		rr   RowRange
@@ -747,4 +749,71 @@ func TestHeaderPopulatedWithAppProfile(t *testing.T) {
 	if got, want := requestParamsHeaderValue[0], "table_name=projects%2Fmy-project%2Finstances%2Fmy-instance%2Ftables%2Fmy-table&app_profile_id=my-app-profile"; got != want {
 		t.Errorf("Incorrect value in resourcePrefixHeader. Got %s, want %s", got, want)
 	}
+}
+
+// TestMutationOps verifies that getting the backing protos from a mutation is
+// a clone (and the expected values)
+func TestMutationOps(t *testing.T) {
+	m := NewMutation()
+	m.Set("a", "a", ServerTime, []byte("a"))
+	m.DeleteCellsInColumn("b", "b")
+
+	start := time.Now()
+	end := start.Add(time.Second)
+	m.DeleteTimestampRange("c", "c", Time(start), Time(end))
+
+	m.DeleteCellsInFamily("d")
+	m.DeleteRow()
+
+	clone := m.Ops()
+
+	if got, want := len(clone), len(m.ops); got != want {
+		t.Fatalf("Cloned ops are different lengths. Got %d, want %d", got, want)
+	}
+
+	for i := range clone {
+		got, want := clone[i], m.ops[i]
+		if want.GetSetCell() == nil && !proto.Equal(got, want) {
+			t.Fatalf("Operations at pos %d don't match. Got %v, want %v", i, got, want)
+		}
+
+		// We remove SetCell.Data by default so need to compare by field.
+		if wantC := want.GetSetCell(); wantC != nil {
+			gotC := got.GetSetCell()
+			match := gotC.FamilyName == wantC.FamilyName && bytes.Equal(gotC.ColumnQualifier, wantC.ColumnQualifier) && gotC.TimestampMicros == wantC.TimestampMicros
+			if !match {
+				t.Fatalf("Operations at pos %d don't match. Got %v, want %v", i, got, want)
+			}
+		}
+
+		if got == want {
+			t.Fatalf("Operations at pos %d have the same address, expected cloned values: %v", i, got)
+		}
+	}
+}
+
+func BenchmarkMutationOps(b *testing.B) {
+	m := NewMutation()
+	m.Set("a", "a", ServerTime, bytes.Repeat([]byte("a"), 4096))
+	m.DeleteCellsInColumn("b", "b")
+
+	start := time.Now()
+	end := start.Add(time.Second)
+	m.DeleteTimestampRange("c", "c", Time(start), Time(end))
+
+	m.DeleteCellsInFamily("d")
+	m.DeleteRow()
+
+	b.ResetTimer()
+	b.Run("ops", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = m.Ops()
+		}
+	})
+
+	b.Run("opsvalues", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = m.OpsValues()
+		}
+	})
 }

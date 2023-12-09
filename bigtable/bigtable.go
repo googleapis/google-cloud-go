@@ -44,8 +44,10 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const prodAddr = "bigtable.googleapis.com:443"
-const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
+const (
+	prodAddr     = "bigtable.googleapis.com:443"
+	mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
+)
 
 // Client is a client for reading and writing data to tables in an instance.
 //
@@ -697,9 +699,12 @@ func makeFullReadStats(reqStats *btpb.RequestStats) FullReadStats {
 			CellsReturnedCount: readStats.CellsReturnedCount,
 			CellsSeenCount:     readStats.CellsSeenCount,
 			RowsReturnedCount:  readStats.RowsReturnedCount,
-			RowsSeenCount:      readStats.RowsSeenCount},
+			RowsSeenCount:      readStats.RowsSeenCount,
+		},
 		RequestLatencyStats: RequestLatencyStats{
-			FrontendServerLatency: latencyStats.FrontendServerLatency.AsDuration()}}
+			FrontendServerLatency: latencyStats.FrontendServerLatency.AsDuration(),
+		},
+	}
 }
 
 // FullReadStatsFunc describes a callback that receives a FullReadStats for evaluation.
@@ -944,6 +949,50 @@ func (m *Mutation) DeleteCellsInFamily(family string) {
 // DeleteRow deletes the entire row.
 func (m *Mutation) DeleteRow() {
 	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromRow_{DeleteFromRow: &btpb.Mutation_DeleteFromRow{}}})
+}
+
+// Ops returns a copy of the backing protobufs that the mutation would apply so
+// far - but without the values written for Set operations
+//
+// Each operation is cloned - it's not possible to mutate these values and
+// change what gets applied. Values are omitted from the cloned operations as
+// an optimization.
+//
+// Use m.OpsValues() if you need them.
+func (m *Mutation) Ops() []*btpb.Mutation {
+	ops := make([]*btpb.Mutation, len(m.ops))
+	for i := range m.ops {
+		// Data is only given via m.Set()
+		sc := m.ops[i].GetSetCell()
+		if sc == nil {
+			ops[i] = proto.Clone(m.ops[i]).(*btpb.Mutation)
+			continue
+		}
+
+		ops[i] = &btpb.Mutation{
+			Mutation: &btpb.Mutation_SetCell_{
+				SetCell: &btpb.Mutation_SetCell{
+					FamilyName:      sc.FamilyName,
+					ColumnQualifier: sc.ColumnQualifier,
+					TimestampMicros: sc.TimestampMicros,
+					Value:           nil,
+				},
+			},
+		}
+
+	}
+	return ops
+}
+
+// OpsValues behaves the same as Ops, but deep clones all of the backing protobufs.
+//
+// This will double allocate byte slices that have been given to m.Set() so far.
+func (m *Mutation) OpsValues() []*btpb.Mutation {
+	ops := make([]*btpb.Mutation, len(m.ops))
+	for i := range m.ops {
+		ops[i] = proto.Clone(m.ops[i]).(*btpb.Mutation)
+	}
+	return ops
 }
 
 // entryErr is a container that combines an entry with the error that was returned for it.
