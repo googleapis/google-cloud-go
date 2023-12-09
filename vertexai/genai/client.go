@@ -210,6 +210,7 @@ func (m *GenerativeModel) CountTokens(ctx context.Context, parts ...Part) (*Coun
 	if err != nil {
 		return nil, err
 	}
+
 	return (CountTokensResponse{}).fromProto(res), nil
 }
 
