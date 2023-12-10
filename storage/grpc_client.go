@@ -152,7 +152,7 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 	return resp.EmailAddress, err
 }
 
-func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
+func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, _ *bool, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
 	b.Project = toProjectResource(project)

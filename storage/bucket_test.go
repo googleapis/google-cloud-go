@@ -713,14 +713,12 @@ func TestNewBucket(t *testing.T) {
 			TerminalStorageClass:           "NEARLINE",
 			TerminalStorageClassUpdateTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
 		},
-		objectRetentionEnabled: false,
 	}
 	got, err := newBucket(rb)
 	if err != nil {
 		t.Fatal(err)
 	}
-	opt := cmp.AllowUnexported(BucketAttrs{})
-	if diff := cmp.Diff(got, want, opt); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
@@ -823,8 +821,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		},
 	}
 	got := newBucketFromProto(pb)
-	opt := cmp.AllowUnexported(BucketAttrs{})
-	if diff := cmp.Diff(got, want, opt); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }

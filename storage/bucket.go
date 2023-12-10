@@ -41,13 +41,14 @@ import (
 // BucketHandle provides operations on a Google Cloud Storage bucket.
 // Use Client.Bucket to get a handle.
 type BucketHandle struct {
-	c                *Client
-	name             string
-	acl              ACLHandle
-	defaultObjectACL ACLHandle
-	conds            *BucketConditions
-	userProject      string // project for Requester Pays buckets
-	retry            *retryConfig
+	c                     *Client
+	name                  string
+	acl                   ACLHandle
+	defaultObjectACL      ACLHandle
+	conds                 *BucketConditions
+	userProject           string // project for Requester Pays buckets
+	retry                 *retryConfig
+	enableObjectRetention *bool
 }
 
 // Bucket returns a BucketHandle, which provides operations on the named bucket.
@@ -85,7 +86,8 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	o := makeStorageOpts(true, b.retry, b.userProject)
-	if _, err := b.c.tc.CreateBucket(ctx, projectID, b.name, attrs, o...); err != nil {
+
+	if _, err := b.c.tc.CreateBucket(ctx, projectID, b.name, attrs, b.enableObjectRetention, o...); err != nil {
 		return err
 	}
 	return nil
@@ -467,24 +469,9 @@ type BucketAttrs struct {
 	// be configured with a retention policy. An empty value means that object
 	// retention is disabled. Object retention is not enabled default.
 	// This field is read-only. Object retention can be enabled only on bucket
-	// creation; call EnableObjectRetention() on the attrs to do so. Setting
-	// this field will have no effect.
+	// creation on a bucket handle with SetObjectRetention set to true.
 	// ObjectRetention cannot be configured or reported through the gRPC API.
 	ObjectRetentionMode string
-
-	// objectRetentionEnabled will set Object Retention on bucket creation if
-	// true.
-	objectRetentionEnabled bool
-}
-
-// EnableObjectRetention allows configuration of retention policies on
-// individual objects in the bucket. ObjectRetention is not enabled by
-// default.
-// This must be called before creating a bucket. If it is called after the
-// bucket is created, it will have no effect.
-// ObjectRetention cannot be configured through the gRPC API.
-func (b *BucketAttrs) EnableObjectRetention() {
-	b.objectRetentionEnabled = true
 }
 
 // BucketPolicyOnly is an alias for UniformBucketLevelAccess.
@@ -1372,6 +1359,17 @@ func (b *BucketHandle) UserProject(projectID string) *BucketHandle {
 func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
 	o := makeStorageOpts(true, b.retry, b.userProject)
 	return b.c.tc.LockBucketRetentionPolicy(ctx, b.name, b.conds, o...)
+}
+
+// SetObjectRetention returns a new BucketHandle that allows enabling object
+// retention on bucket creation. To enable object retention, you must use this
+// handle with ObjectRetentionMode set on the BucketAttrs to create the bucket.
+// ObjectRetention is not enabled by default.
+// ObjectRetention cannot be configured through the gRPC API.
+func (b *BucketHandle) SetObjectRetention(enable bool) *BucketHandle {
+	b2 := *b
+	b2.enableObjectRetention = &enable
+	return &b2
 }
 
 // applyBucketConds modifies the provided call using the conditions in conds.

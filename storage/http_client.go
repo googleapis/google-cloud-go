@@ -159,7 +159,7 @@ func (c *httpStorageClient) GetServiceAccount(ctx context.Context, project strin
 	return res.EmailAddress, nil
 }
 
-func (c *httpStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
+func (c *httpStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, enableObjectRetention *bool, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	var bkt *raw.Bucket
 	if attrs != nil {
@@ -181,8 +181,8 @@ func (c *httpStorageClient) CreateBucket(ctx context.Context, project, bucket st
 	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
 		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
 	}
-	if attrs != nil {
-		req.EnableObjectRetention(attrs.objectRetentionEnabled)
+	if enableObjectRetention != nil {
+		req.EnableObjectRetention(*enableObjectRetention)
 	}
 	var battrs *BucketAttrs
 	err := run(ctx, func(ctx context.Context) error {

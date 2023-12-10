@@ -3891,10 +3891,12 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 func TestIntegration_BucketObjectRetention(t *testing.T) {
 	ctx := skipJSONReads(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		setTrue, setFalse := true, false
+
 		for _, test := range []struct {
 			desc                string
 			objectRetentionMode string
-			callEnable          bool
+			enable              *bool
 			wantRetentionMode   string
 		}{
 			{
@@ -3909,23 +3911,28 @@ func TestIntegration_BucketObjectRetention(t *testing.T) {
 			{
 				desc:                "ObjectRetentionMode is ignored",
 				objectRetentionMode: "disabled",
-				callEnable:          true,
+				enable:              &setTrue,
 				wantRetentionMode:   "Enabled",
 			},
 			{
 				desc:              "Empty ObjectRetentionMode",
-				callEnable:        true,
+				enable:            &setTrue,
 				wantRetentionMode: "Enabled",
+			},
+			{
+				desc:              "Empty ObjectRetentionMode set to false",
+				enable:            &setFalse,
+				wantRetentionMode: "",
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				b := client.Bucket(prefix + uidSpace.New())
+				if test.enable != nil {
+					b = b.SetObjectRetention(*test.enable)
+				}
 
 				attrs := &BucketAttrs{
 					ObjectRetentionMode: test.objectRetentionMode,
-				}
-				if test.callEnable {
-					attrs.EnableObjectRetention()
 				}
 
 				err := b.Create(ctx, testutil.ProjID(), attrs)
@@ -3951,12 +3958,9 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
-		b := client.Bucket(prefix + uidSpace.New())
+		b := client.Bucket(prefix + uidSpace.New()).SetObjectRetention(true)
 
-		bAttrs := &BucketAttrs{}
-		bAttrs.EnableObjectRetention()
-
-		if err := b.Create(ctx, testutil.ProjID(), bAttrs); err != nil {
+		if err := b.Create(ctx, testutil.ProjID(), nil); err != nil {
 			t.Fatalf("error creating bucket: %v", err)
 		}
 		t.Cleanup(func() { b.Delete(ctx) })
