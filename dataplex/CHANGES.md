@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.12.0...dataplex/v1.13.0) (2023-12-07)
+
+
+### Features
+
+* **dataplex:** Add data quality score to DataQualityResult ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.11.2...dataplex/v1.12.0) (2023-11-27)
 
 
