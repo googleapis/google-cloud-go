@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -54,7 +53,9 @@ const (
 	Model_AUTOMATIC_RESOURCES Model_DeploymentResourcesType = 2
 	// Resources that can be shared by multiple
 	// [DeployedModels][google.cloud.aiplatform.v1.DeployedModel]. A
-	// pre-configured [DeploymentResourcePool][] is required.
+	// pre-configured
+	// [DeploymentResourcePool][google.cloud.aiplatform.v1.DeploymentResourcePool]
+	// is required.
 	Model_SHARED_RESOURCES Model_DeploymentResourcesType = 3
 )
 

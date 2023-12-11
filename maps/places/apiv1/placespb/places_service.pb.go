@@ -22,9 +22,6 @@ package placespb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	grpc "google.golang.org/grpc"
@@ -32,6 +29,8 @@ import (
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -103,7 +102,7 @@ const (
 	// Ranks results by distance.
 	SearchTextRequest_DISTANCE SearchTextRequest_RankPreference = 1
 	// Ranks results by relevance. Sort order determined by normal ranking
-	// stack. See SortRefinement::RELEVANCE.
+	// stack.
 	SearchTextRequest_RELEVANCE SearchTextRequest_RankPreference = 2
 )
 
@@ -149,6 +148,8 @@ func (SearchTextRequest_RankPreference) EnumDescriptor() ([]byte, []int) {
 }
 
 // Request proto for Search Nearby.
+//
+//
 type SearchNearbyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -168,13 +169,17 @@ type SearchNearbyRequest struct {
 	// affect results based on applicable law.
 	//
 	// For more information, see
-	// http://www.unicode.org/reports/tr35/#unicode_region_subtag.
+	// https://www.unicode.org/cldr/charts/latest/supplemental/territory_language_information.html.
 	//
 	//
 	// Note that 3-digit region codes are not currently supported.
 	RegionCode string `protobuf:"bytes,2,opt,name=region_code,json=regionCode,proto3" json:"region_code,omitempty"`
 	// Included Place type (eg, "restaurant" or "gas_station") from
-	// https://developers.google.com/places/supported_types.
+	// https://developers.google.com/maps/documentation/places/web-service/place-types.
+	//
+	// Up to 50 types from [Table
+	// A](https://developers.google.com/maps/documentation/places/web-service/place-types#table-a)
+	// may be specified.
 	//
 	// If there are any conflicting types, i.e. a type appears in both
 	// included_types and excluded_types, an INVALID_ARGUMENT error is
@@ -183,11 +188,15 @@ type SearchNearbyRequest struct {
 	// If a Place type is specified with multiple type restrictions, only places
 	// that satisfy all of the restrictions are returned. For example, if we
 	// have {included_types = ["restaurant"], excluded_primary_types =
-	// ["restaurant"]}, the returned places are POIs that provide "restaurant"
+	// ["restaurant"]}, the returned places provide "restaurant"
 	// related services but do not operate primarily as "restaurants".
 	IncludedTypes []string `protobuf:"bytes,3,rep,name=included_types,json=includedTypes,proto3" json:"included_types,omitempty"`
 	// Excluded Place type (eg, "restaurant" or "gas_station") from
-	// https://developers.google.com/places/supported_types.
+	// https://developers.google.com/maps/documentation/places/web-service/place-types.
+	//
+	// Up to 50 types from [Table
+	// A](https://developers.google.com/maps/documentation/places/web-service/place-types#table-a)
+	// may be specified.
 	//
 	// If the client provides both included_types (e.g. restaurant) and
 	// excluded_types (e.g. cafe), then the response should include places that
@@ -200,11 +209,17 @@ type SearchNearbyRequest struct {
 	// If a Place type is specified with multiple type restrictions, only places
 	// that satisfy all of the restrictions are returned. For example, if we
 	// have {included_types = ["restaurant"], excluded_primary_types =
-	// ["restaurant"]}, the returned places are POIs that provide "restaurant"
+	// ["restaurant"]}, the returned places provide "restaurant"
 	// related services but do not operate primarily as "restaurants".
 	ExcludedTypes []string `protobuf:"bytes,4,rep,name=excluded_types,json=excludedTypes,proto3" json:"excluded_types,omitempty"`
 	// Included primary Place type (e.g. "restaurant" or "gas_station") from
-	// https://developers.google.com/places/supported_types.
+	// https://developers.google.com/maps/documentation/places/web-service/place-types.
+	// A place can only have a single primary type from the supported types table
+	// associated with it.
+	//
+	// Up to 50 types from [Table
+	// A](https://developers.google.com/maps/documentation/places/web-service/place-types#table-a)
+	// may be specified.
 	//
 	// If there are any conflicting primary types, i.e. a type appears in both
 	// included_primary_types and excluded_primary_types, an INVALID_ARGUMENT
@@ -213,11 +228,15 @@ type SearchNearbyRequest struct {
 	// If a Place type is specified with multiple type restrictions, only places
 	// that satisfy all of the restrictions are returned. For example, if we
 	// have {included_types = ["restaurant"], excluded_primary_types =
-	// ["restaurant"]}, the returned places are POIs that provide "restaurant"
+	// ["restaurant"]}, the returned places provide "restaurant"
 	// related services but do not operate primarily as "restaurants".
 	IncludedPrimaryTypes []string `protobuf:"bytes,5,rep,name=included_primary_types,json=includedPrimaryTypes,proto3" json:"included_primary_types,omitempty"`
 	// Excluded primary Place type (e.g. "restaurant" or "gas_station") from
-	// https://developers.google.com/places/supported_types.
+	// https://developers.google.com/maps/documentation/places/web-service/place-types.
+	//
+	// Up to 50 types from [Table
+	// A](https://developers.google.com/maps/documentation/places/web-service/place-types#table-a)
+	// may be specified.
 	//
 	// If there are any conflicting primary types, i.e. a type appears in both
 	// included_primary_types and excluded_primary_types, an INVALID_ARGUMENT
@@ -226,10 +245,10 @@ type SearchNearbyRequest struct {
 	// If a Place type is specified with multiple type restrictions, only places
 	// that satisfy all of the restrictions are returned. For example, if we
 	// have {included_types = ["restaurant"], excluded_primary_types =
-	// ["restaurant"]}, the returned places are POIs that provide "restaurant"
+	// ["restaurant"]}, the returned places provide "restaurant"
 	// related services but do not operate primarily as "restaurants".
 	ExcludedPrimaryTypes []string `protobuf:"bytes,6,rep,name=excluded_primary_types,json=excludedPrimaryTypes,proto3" json:"excluded_primary_types,omitempty"`
-	// Maximum number of results to return. It must be between 1 and 20,
+	// Maximum number of results to return. It must be between 1 and 20 (default),
 	// inclusively. If the number is unset, it falls back to the upper limit. If
 	// the number is set to negative or exceeds the upper limit, an
 	// INVALID_ARGUMENT error is returned.
@@ -336,12 +355,14 @@ func (x *SearchNearbyRequest) GetRankPreference() SearchNearbyRequest_RankPrefer
 }
 
 // Response proto for Search Nearby.
+//
+//
 type SearchNearbyResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// A list of interesting places that meets user's requirements like places
+	// A list of places that meets user's requirements like places
 	// types, number of places and specific location restriction.
 	Places []*Place `protobuf:"bytes,1,rep,name=places,proto3" json:"places,omitempty"`
 }
@@ -386,6 +407,8 @@ func (x *SearchNearbyResponse) GetPlaces() []*Place {
 }
 
 // Request proto for SearchText.
+//
+//
 type SearchTextRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -407,7 +430,7 @@ type SearchTextRequest struct {
 	// affect results based on applicable law.
 	//
 	// For more information, see
-	// http://www.unicode.org/reports/tr35/#unicode_region_subtag.
+	// https://www.unicode.org/cldr/charts/latest/supplemental/territory_language_information.html.
 	//
 	//
 	// Note that 3-digit region codes are not currently supported.
@@ -415,23 +438,22 @@ type SearchTextRequest struct {
 	// How results will be ranked in the response.
 	RankPreference SearchTextRequest_RankPreference `protobuf:"varint,4,opt,name=rank_preference,json=rankPreference,proto3,enum=google.maps.places.v1.SearchTextRequest_RankPreference" json:"rank_preference,omitempty"`
 	// The requested place type. Full list of types supported:
-	// https://developers.google.com/places/supported_types. Only support one
-	// included type.
+	// https://developers.google.com/maps/documentation/places/web-service/place-types.
+	// Only support one included type.
 	IncludedType string `protobuf:"bytes,6,opt,name=included_type,json=includedType,proto3" json:"included_type,omitempty"`
-	// Used to restrict the search to places that are open at a specific time.
-	// open_now marks if a business is currently open.
+	// Used to restrict the search to places that are currently open.  The default
+	// is false.
 	OpenNow bool `protobuf:"varint,7,opt,name=open_now,json=openNow,proto3" json:"open_now,omitempty"`
 	// Filter out results whose average user rating is strictly less than this
-	// limit. A valid value must be an float between 0 and 5 (inclusively) at a
-	// 0.5 cadence i.e. [0, 0.5, 1.0, ... , 5.0] inclusively. This is to keep
-	// parity with LocalRefinement_UserRating. The input rating will round up to
-	// the nearest 0.5(ceiling). For instance, a rating of 0.6 will eliminate all
-	// results with a less than 1.0 rating.
+	// limit. A valid value must be a float between 0 and 5 (inclusively) at a
+	// 0.5 cadence i.e. [0, 0.5, 1.0, ... , 5.0] inclusively. The input rating
+	// will round up to the nearest 0.5(ceiling). For instance, a rating of 0.6
+	// will eliminate all results with a less than 1.0 rating.
 	MinRating float64 `protobuf:"fixed64,9,opt,name=min_rating,json=minRating,proto3" json:"min_rating,omitempty"`
 	// Maximum number of results to return. It must be between 1 and 20,
-	// inclusively. If the number is unset, it falls back to the upper limit. If
-	// the number is set to negative or exceeds the upper limit, an
-	// INVALID_ARGUMENT error is returned.
+	// inclusively. The default is 20.  If the number is unset, it falls back to
+	// the upper limit. If the number is set to negative or exceeds the upper
+	// limit, an INVALID_ARGUMENT error is returned.
 	MaxResultCount int32 `protobuf:"varint,10,opt,name=max_result_count,json=maxResultCount,proto3" json:"max_result_count,omitempty"`
 	// Used to restrict the search to places that are marked as certain price
 	// levels. Users can choose any combinations of price levels. Default to
@@ -567,6 +589,7 @@ func (x *SearchTextRequest) GetLocationRestriction() *SearchTextRequest_Location
 }
 
 // Response proto for SearchText.
+//
 type SearchTextResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -621,9 +644,13 @@ type GetPhotoMediaRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of a photo. It is returned in Place's
-	// photos.name field. Format:
-	// places/<place_id>/photos/<photo_reference>/media.
+	// Required. The resource name of a photo media in the format:
+	// `places/{place_id}/photos/{photo_reference}/media`.
+	//
+	// The resource name of a photo as returned in a Place object's `photos.name`
+	// field comes with the format
+	// `places/{place_id}/photos/{photo_reference}`. You need to append `/media`
+	// at the end of the photo resource to get the photo media resource name.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Specifies the maximum desired width, in pixels, of the image. If
 	// the image is smaller than the values specified, the original image will be
@@ -652,7 +679,7 @@ type GetPhotoMediaRequest struct {
 	// Optional. If set, skip the default HTTP redirect behavior and render a text
 	// format (for example, in JSON format for HTTP use case) response. If not
 	// set, an HTTP redirect will be issued to redirect the call to the image
-	// midea. This option is ignored for non-HTTP requests.
+	// media. This option is ignored for non-HTTP requests.
 	SkipHttpRedirect bool `protobuf:"varint,4,opt,name=skip_http_redirect,json=skipHttpRedirect,proto3" json:"skip_http_redirect,omitempty"`
 }
 
@@ -722,8 +749,8 @@ type PhotoMedia struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The resource name of a photo. It is returned in Place's photos.name field.
-	// Format: places/<place_id>/photos/<photo_reference>/media.
+	// The resource name of a photo media in the format:
+	// `places/{place_id}/photos/{photo_reference}/media`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// A short-lived uri that can be used to render the photo.
 	PhotoUri string `protobuf:"bytes,2,opt,name=photo_uri,json=photoUri,proto3" json:"photo_uri,omitempty"`
@@ -781,8 +808,9 @@ type GetPlaceRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. A place_id returned in a Place (with "places/" prefix), or
-	// equivalently the name in the same Place. Format: places/<place_id>.
+	// Required. A place ID returned in a Place (with "places/" prefix), or
+	// equivalently the name in the same Place. Format:
+	// `places/{place_id}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Place details will be displayed with the preferred language if
 	// available.
@@ -795,7 +823,7 @@ type GetPlaceRequest struct {
 	// details, like region-specific place name, if available. The parameter can
 	// affect results based on applicable law.
 	// For more information, see
-	// http://www.unicode.org/reports/tr35/#unicode_region_subtag.
+	// https://www.unicode.org/cldr/charts/latest/supplemental/territory_language_information.html.
 	//
 	//
 	// Note that 3-digit region codes are not currently supported.
@@ -996,6 +1024,11 @@ type isSearchTextRequest_LocationBias_Type interface {
 
 type SearchTextRequest_LocationBias_Rectangle struct {
 	// A rectangle box defined by northeast and southwest corner.
+	// `rectangle.high()` must be the northeast point of the rectangle
+	// viewport. `rectangle.low()` must be the southwest point of the
+	// rectangle viewport. `rectangle.low().latitude()` cannot be greater than
+	// `rectangle.high().latitude()`. This will result in an empty latitude
+	// range. A rectangle viewport cannot be wider than 180 degrees.
 	Rectangle *viewport.Viewport `protobuf:"bytes,1,opt,name=rectangle,proto3,oneof"`
 }
 
@@ -1072,6 +1105,11 @@ type isSearchTextRequest_LocationRestriction_Type interface {
 
 type SearchTextRequest_LocationRestriction_Rectangle struct {
 	// A rectangle box defined by northeast and southwest corner.
+	// `rectangle.high()` must be the northeast point of the rectangle
+	// viewport. `rectangle.low()` must be the southwest point of the
+	// rectangle viewport. `rectangle.low().latitude()` cannot be greater than
+	// `rectangle.high().latitude()`. This will result in an empty latitude
+	// range. A rectangle viewport cannot be wider than 180 degrees.
 	Rectangle *viewport.Viewport `protobuf:"bytes,1,opt,name=rectangle,proto3,oneof"`
 }
 
@@ -1538,7 +1576,7 @@ type PlacesClient interface {
 	SearchText(ctx context.Context, in *SearchTextRequest, opts ...grpc.CallOption) (*SearchTextResponse, error)
 	// Get a photo media with a photo reference string.
 	GetPhotoMedia(ctx context.Context, in *GetPhotoMediaRequest, opts ...grpc.CallOption) (*PhotoMedia, error)
-	// Get a Place with a place id (in a name) string.
+	// Get place details with a place id (in a name) string.
 	GetPlace(ctx context.Context, in *GetPlaceRequest, opts ...grpc.CallOption) (*Place, error)
 }
 
@@ -1594,7 +1632,7 @@ type PlacesServer interface {
 	SearchText(context.Context, *SearchTextRequest) (*SearchTextResponse, error)
 	// Get a photo media with a photo reference string.
 	GetPhotoMedia(context.Context, *GetPhotoMediaRequest) (*PhotoMedia, error)
-	// Get a Place with a place id (in a name) string.
+	// Get place details with a place id (in a name) string.
 	GetPlace(context.Context, *GetPlaceRequest) (*Place, error)
 }
 
