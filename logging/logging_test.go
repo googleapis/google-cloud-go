@@ -282,17 +282,17 @@ func TestToLogEntry(t *testing.T) {
 	tests := []struct {
 		name      string
 		in        logging.Entry
-		want      logpb.LogEntry
+		want      *logpb.LogEntry
 		wantError error
 	}{
 		{
 			name: "BlankLogEntry",
 			in:   logging.Entry{},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "Already set Trace",
 			in:   logging.Entry{Trace: "t1"},
-			want: logpb.LogEntry{Trace: "t1"},
+			want: &logpb.LogEntry{Trace: "t1"},
 		}, {
 			name: "No X-Trace-Context header",
 			in: logging.Entry{
@@ -300,7 +300,7 @@ func TestToLogEntry(t *testing.T) {
 					Request: &http.Request{URL: u, Header: http.Header{"foo": {"bar"}}},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "X-Trace-Context header with all fields",
 			in: logging.Entry{
@@ -312,7 +312,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -328,7 +328,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -343,7 +343,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -358,7 +358,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "X-Trace-Context header with blank span",
 			in: logging.Entry{
@@ -369,7 +369,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
 			},
 		}, {
@@ -382,7 +382,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
 			},
 		}, {
@@ -395,7 +395,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "Invalid X-Trace-Context header but already set TraceID",
 			in: logging.Entry{
@@ -407,13 +407,13 @@ func TestToLogEntry(t *testing.T) {
 				},
 				Trace: "t4",
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace: "t4",
 			},
 		}, {
 			name: "Already set TraceID and SpanID",
 			in:   logging.Entry{Trace: "t1", SpanID: "007"},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:  "t1",
 				SpanId: "007",
 			},
@@ -436,7 +436,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:  "projects/P/traces/105445aa7843bc8bf206b12000100012",
 				SpanId: "000000000000004a",
 			},
@@ -452,7 +452,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100012",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -470,7 +470,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:  "projects/P/traces/105445aa7843bc8bf206b1200010aaaa",
 				SpanId: "0000000000000aaa",
 			},
@@ -485,7 +485,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header short trace field",
@@ -497,7 +497,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header long trace field",
@@ -509,7 +509,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header invalid trace field",
@@ -521,7 +521,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header trace field all 0s",
@@ -533,7 +533,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header short span field",
@@ -545,7 +545,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header long span field",
@@ -557,7 +557,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header invalid span field",
@@ -569,7 +569,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header span field all 0s",
@@ -581,7 +581,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 	}
 	for _, test := range tests {
