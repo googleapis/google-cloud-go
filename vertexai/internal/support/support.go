@@ -50,9 +50,9 @@ func TransformMapValues[K comparable, VFrom, VTo any](from map[K]VFrom, f func(V
 	return to
 }
 
-// ZeroToNil returns nil if x is the zero value for T,
+// AddrOrNil returns nil if x is the zero value for T,
 // or &x otherwise.
-func ZeroToNil[T comparable](x T) *T {
+func AddrOrNil[T comparable](x T) *T {
 	var z T
 	if x == z {
 		return nil
@@ -60,9 +60,9 @@ func ZeroToNil[T comparable](x T) *T {
 	return &x
 }
 
-// NilToZero returns the zero value for T if x is nil,
+// DerefOrZero returns the zero value for T if x is nil,
 // or *x otherwise.
-func NilToZero[T any](x *T) T {
+func DerefOrZero[T any](x *T) T {
 	if x == nil {
 		var z T
 		return z
