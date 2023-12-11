@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.2.0...vertexai/v0.3.0) (2023-12-11)
+
+
+### Features
+
+* **vertexai:** Add function support ([#9113](https://github.com/googleapis/google-cloud-go/issues/9113)) ([d15779e](https://github.com/googleapis/google-cloud-go/commit/d15779e00dc577dfe3075915fc56d4120c03c72c))
+* **vertexai:** Add string methods ([#9121](https://github.com/googleapis/google-cloud-go/issues/9121)) ([27f31ed](https://github.com/googleapis/google-cloud-go/commit/27f31edf5f4c932a37a80667dc7b9b4d44d246a9))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.1.1...vertexai/v0.2.0) (2023-12-08)
 
 
