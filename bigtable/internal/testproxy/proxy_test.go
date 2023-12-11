@@ -321,9 +321,9 @@ func TestReadRows(t *testing.T) {
 		t.Errorf("testproxy test: ReadRows() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	rowKeys := []string{string(resp.Rows[0].Key), string(resp.Rows[1].Key)}
-	if !reflect.DeepEqual(rowKeys, []string{"row1", "row2"}) {
-		t.Errorf("testproxy test: SampleRowKeys() returned wrong row keys; got: %v", rowKeys)
+	got := []string{string(resp.Rows[0].Key), string(resp.Rows[1].Key)};
+	if want := []string{"row1", "row2"};  !reflect.DeepEqual(got, want) {
+		t.Errorf("testproxy test ReadRows() = %v, want %v", got, want)
 	}
 }
 
@@ -346,9 +346,9 @@ func TestReadRowsReverse(t *testing.T) {
 		t.Errorf("testproxy test: ReadRows() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	rowKeys := []string{string(resp.Rows[0].Key), string(resp.Rows[1].Key)}
-	if !reflect.DeepEqual(rowKeys, []string{"row2", "row1"}) {
-		t.Errorf("testproxy test: SampleRowKeys() returned wrong row keys; got: %v", rowKeys)
+	got := []string{string(resp.Rows[0].Key), string(resp.Rows[1].Key)};
+	if want := []string{"row2", "row1"};  !reflect.DeepEqual(got, want) {
+		t.Errorf("testproxy test ReadRows() = %v, want %v", got, want)
 	}
 }
 
