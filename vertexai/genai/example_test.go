@@ -69,6 +69,24 @@ func ExampleGenerativeModel_GenerateContentStream() {
 	}
 }
 
+func ExampleGenerativeModel_CountTokens() {
+	ctx := context.Background()
+	client, err := genai.NewClient(ctx, projectID, location)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	model := client.GenerativeModel(model)
+
+	resp, err := model.CountTokens(ctx, genai.Text("What kind of fish is this?"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Num tokens:", resp.TotalTokens)
+}
+
 func ExampleChatSession() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, projectID, location)
