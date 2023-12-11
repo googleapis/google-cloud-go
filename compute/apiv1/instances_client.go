@@ -75,6 +75,7 @@ type InstancesCallOptions struct {
 	SetMinCpuPlatform                  []gax.CallOption
 	SetName                            []gax.CallOption
 	SetScheduling                      []gax.CallOption
+	SetSecurityPolicy                  []gax.CallOption
 	SetServiceAccount                  []gax.CallOption
 	SetShieldedInstanceIntegrityPolicy []gax.CallOption
 	SetTags                            []gax.CallOption
@@ -279,6 +280,9 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 		SetScheduling: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		SetSecurityPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		SetServiceAccount: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -361,6 +365,7 @@ type internalInstancesClient interface {
 	SetMinCpuPlatform(context.Context, *computepb.SetMinCpuPlatformInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetName(context.Context, *computepb.SetNameInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetScheduling(context.Context, *computepb.SetSchedulingInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetSecurityPolicy(context.Context, *computepb.SetSecurityPolicyInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetServiceAccount(context.Context, *computepb.SetServiceAccountInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetShieldedInstanceIntegrityPolicy(context.Context, *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetTags(context.Context, *computepb.SetTagsInstanceRequest, ...gax.CallOption) (*Operation, error)
@@ -570,6 +575,11 @@ func (c *InstancesClient) SetName(ctx context.Context, req *computepb.SetNameIns
 // SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy.
 func (c *InstancesClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetScheduling(ctx, req, opts...)
+}
+
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified instance. For more information, see Google Cloud Armor Overview
+func (c *InstancesClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
 }
 
 // SetServiceAccount sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
@@ -921,6 +931,9 @@ func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -3023,6 +3036,83 @@ func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SetScheduling[0:len((*c.CallOptions).SetScheduling):len((*c.CallOptions).SetScheduling)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified instance. For more information, see Google Cloud Armor Overview
+func (c *instancesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetInstancesSetSecurityPolicyRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setSecurityPolicy", req.GetProject(), req.GetZone(), req.GetInstance())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetSecurityPolicy[0:len((*c.CallOptions).SetSecurityPolicy):len((*c.CallOptions).SetSecurityPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

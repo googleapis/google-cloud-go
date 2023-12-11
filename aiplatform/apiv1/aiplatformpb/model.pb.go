@@ -54,7 +54,9 @@ const (
 	Model_AUTOMATIC_RESOURCES Model_DeploymentResourcesType = 2
 	// Resources that can be shared by multiple
 	// [DeployedModels][google.cloud.aiplatform.v1.DeployedModel]. A
-	// pre-configured [DeploymentResourcePool][] is required.
+	// pre-configured
+	// [DeploymentResourcePool][google.cloud.aiplatform.v1.DeploymentResourcePool]
+	// is required.
 	Model_SHARED_RESOURCES Model_DeploymentResourcesType = 3
 )
 

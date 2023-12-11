@@ -57,6 +57,7 @@ type PredictionCallOptions struct {
 	StreamingRawPredict    []gax.CallOption
 	Explain                []gax.CallOption
 	CountTokens            []gax.CallOption
+	StreamGenerateContent  []gax.CallOption
 	GetLocation            []gax.CallOption
 	ListLocations          []gax.CallOption
 	GetIamPolicy           []gax.CallOption
@@ -95,17 +96,18 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 		Explain: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
-		CountTokens:        []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		CountTokens:           []gax.CallOption{},
+		StreamGenerateContent: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		GetIamPolicy:          []gax.CallOption{},
+		SetIamPolicy:          []gax.CallOption{},
+		TestIamPermissions:    []gax.CallOption{},
+		CancelOperation:       []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
+		WaitOperation:         []gax.CallOption{},
 	}
 }
 
@@ -123,17 +125,18 @@ func defaultPredictionRESTCallOptions() *PredictionCallOptions {
 		Explain: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
-		CountTokens:        []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		CountTokens:           []gax.CallOption{},
+		StreamGenerateContent: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		GetIamPolicy:          []gax.CallOption{},
+		SetIamPolicy:          []gax.CallOption{},
+		TestIamPermissions:    []gax.CallOption{},
+		CancelOperation:       []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
+		WaitOperation:         []gax.CallOption{},
 	}
 }
 
@@ -151,6 +154,7 @@ type internalPredictionClient interface {
 	StreamingRawPredict(context.Context, ...gax.CallOption) (aiplatformpb.PredictionService_StreamingRawPredictClient, error)
 	Explain(context.Context, *aiplatformpb.ExplainRequest, ...gax.CallOption) (*aiplatformpb.ExplainResponse, error)
 	CountTokens(context.Context, *aiplatformpb.CountTokensRequest, ...gax.CallOption) (*aiplatformpb.CountTokensResponse, error)
+	StreamGenerateContent(context.Context, *aiplatformpb.GenerateContentRequest, ...gax.CallOption) (aiplatformpb.PredictionService_StreamGenerateContentClient, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -268,6 +272,11 @@ func (c *PredictionClient) Explain(ctx context.Context, req *aiplatformpb.Explai
 // CountTokens perform a token counting.
 func (c *PredictionClient) CountTokens(ctx context.Context, req *aiplatformpb.CountTokensRequest, opts ...gax.CallOption) (*aiplatformpb.CountTokensResponse, error) {
 	return c.internalClient.CountTokens(ctx, req, opts...)
+}
+
+// StreamGenerateContent generate content with multimodal inputs with streaming support.
+func (c *PredictionClient) StreamGenerateContent(ctx context.Context, req *aiplatformpb.GenerateContentRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamGenerateContentClient, error) {
+	return c.internalClient.StreamGenerateContent(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -628,6 +637,24 @@ func (c *predictionGRPCClient) CountTokens(ctx context.Context, req *aiplatformp
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.predictionClient.CountTokens(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) StreamGenerateContent(ctx context.Context, req *aiplatformpb.GenerateContentRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamGenerateContentClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "model", url.QueryEscape(req.GetModel()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StreamGenerateContent[0:len((*c.CallOptions).StreamGenerateContent):len((*c.CallOptions).StreamGenerateContent)], opts...)
+	var resp aiplatformpb.PredictionService_StreamGenerateContentClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.predictionClient.StreamGenerateContent(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1366,6 +1393,107 @@ func (c *predictionRESTClient) CountTokens(ctx context.Context, req *aiplatformp
 		return nil, e
 	}
 	return resp, nil
+}
+
+// StreamGenerateContent generate content with multimodal inputs with streaming support.
+func (c *predictionRESTClient) StreamGenerateContent(ctx context.Context, req *aiplatformpb.GenerateContentRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamGenerateContentClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:streamGenerateContent", req.GetModel())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "model", url.QueryEscape(req.GetModel()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	var streamClient *streamGenerateContentRESTClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		streamClient = &streamGenerateContentRESTClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&aiplatformpb.GenerateContentResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// streamGenerateContentRESTClient is the stream client used to consume the server stream created by
+// the REST implementation of StreamGenerateContent.
+type streamGenerateContentRESTClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *streamGenerateContentRESTClient) Recv() (*aiplatformpb.GenerateContentResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*aiplatformpb.GenerateContentResponse)
+	return res, nil
+}
+
+func (c *streamGenerateContentRESTClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *streamGenerateContentRESTClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *streamGenerateContentRESTClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented for a server-stream")
+}
+
+func (c *streamGenerateContentRESTClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *streamGenerateContentRESTClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented for a server-stream")
+}
+
+func (c *streamGenerateContentRESTClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented, use Recv")
 }
 
 // GetLocation gets information about a location.
