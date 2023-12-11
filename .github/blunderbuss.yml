@@ -29,7 +29,7 @@ assign_issues_by:
   - 'api: logging'
   - 'api: clouderrorreporting'
   to:
-  - googleapis/api-logging
+  - googleapis/api-logging-go-reviewers
 - labels:
   - 'api: cloudprofiler'
   to:

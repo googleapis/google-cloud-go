@@ -4,6 +4,8 @@ docker:
 deep-remove-regex:
   - /accessapproval/apiv1/
   - /accesscontextmanager/apiv1/
+  - /ai/generativelanguage/apiv1/
+  - /ai/generativelanguage/apiv1beta/
   - /ai/generativelanguage/apiv1beta2/
   - /aiplatform/apiv1/
   - /aiplatform/apiv1beta1/
@@ -96,6 +98,7 @@ deep-remove-regex:
   - /dialogflow/cx/apiv3beta1/
   - /discoveryengine/apiv1/
   - /discoveryengine/apiv1beta/
+  - /discoveryengine/apiv1alpha/
   - /dlp/apiv2/
   - /documentai/apiv1/
   - /documentai/apiv1beta3/
@@ -125,6 +128,8 @@ deep-remove-regex:
   # START snippets
   - /internal/generated/snippets/accessapproval/apiv1/
   - /internal/generated/snippets/accesscontextmanager/apiv1/
+  - /internal/generated/snippets/ai/generativelanguage/apiv1/
+  - /internal/generated/snippets/ai/generativelanguage/apiv1beta/
   - /internal/generated/snippets/ai/generativelanguage/apiv1beta2/
   - /internal/generated/snippets/aiplatform/apiv1/
   - /internal/generated/snippets/aiplatform/apiv1beta1/
@@ -213,6 +218,7 @@ deep-remove-regex:
   - /internal/generated/snippets/dialogflow/cx/apiv3beta1/
   - /internal/generated/snippets/discoveryengine/apiv1/
   - /internal/generated/snippets/discoveryengine/apiv1beta/
+  - /internal/generated/snippets/discoveryengine/apiv1alpha/
   - /internal/generated/snippets/dlp/apiv2/
   - /internal/generated/snippets/documentai/apiv1/
   - /internal/generated/snippets/documentai/apiv1beta3/
@@ -316,6 +322,7 @@ deep-remove-regex:
   - /internal/generated/snippets/securitycenter/apiv1beta1/
   - /internal/generated/snippets/securitycenter/apiv1p1beta1/
   - /internal/generated/snippets/securitycenter/settings/apiv1beta1/
+  - /internal/generated/snippets/securitycentermanagement/apiv1/
   - /internal/generated/snippets/servicecontrol/apiv1/
   - /internal/generated/snippets/servicedirectory/apiv1/
   - /internal/generated/snippets/servicedirectory/apiv1beta1/
@@ -440,6 +447,7 @@ deep-remove-regex:
   - /securitycenter/apiv1beta1/
   - /securitycenter/apiv1p1beta1/
   - /securitycenter/settings/apiv1beta1/
+  - /securitycentermanagement/apiv1/
   - /servicecontrol/apiv1/
   - /servicedirectory/apiv1/
   - /servicedirectory/apiv1beta1/
@@ -451,6 +459,7 @@ deep-remove-regex:
   - /spanner/admin/database/apiv1/
   - /spanner/admin/instance/apiv1/
   - /spanner/apiv1/
+  - /spanner/executor/apiv1/
   - /speech/apiv1/
   - /speech/apiv1p1beta1/
   - /speech/apiv2/
@@ -529,6 +538,10 @@ deep-copy-regex:
   - source: /google/cloud/accessapproval/v1/cloud.google.com/go
     dest: /
   - source: /google/identity/accesscontextmanager/v1/cloud.google.com/go
+    dest: /
+  - source: /google/ai/generativelanguage/v1/cloud.google.com/go
+    dest: /
+  - source: /google/ai/generativelanguage/v1beta/cloud.google.com/go
     dest: /
   - source: /google/ai/generativelanguage/v1beta2/cloud.google.com/go
     dest: /
@@ -715,6 +728,8 @@ deep-copy-regex:
   - source: /google/cloud/discoveryengine/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/discoveryengine/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/discoveryengine/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/privacy/dlp/v2/cloud.google.com/go
     dest: /
@@ -930,6 +945,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/securitycenter/settings/v1beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/securitycentermanagement/v1/cloud.google.com/go
+    dest: /
   - source: /google/api/servicecontrol/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/servicedirectory/v1/cloud.google.com/go
@@ -951,6 +968,8 @@ deep-copy-regex:
   - source: /google/spanner/admin/instance/v1/cloud.google.com/go
     dest: /
   - source: /google/spanner/v1/cloud.google.com/go
+    dest: /
+  - source: /google/spanner/executor/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/speech/v1/cloud.google.com/go
     dest: /
