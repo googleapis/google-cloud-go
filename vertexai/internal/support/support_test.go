@@ -12,31 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package genai
+package support
 
-func mapSlice[From, To any](from []From, f func(From) To) []To {
-	if from == nil {
-		return nil
-	}
-	to := make([]To, len(from))
-	for i, e := range from {
-		to[i] = f(e)
-	}
-	return to
-}
+import (
+	"reflect"
+	"strconv"
+	"testing"
+)
 
-func zeroToNil[T comparable](x T) *T {
-	var z T
-	if x == z {
-		return nil
+func TestTransformMapValues(t *testing.T) {
+	var from map[string]int
+	got := TransformMapValues(from, strconv.Itoa)
+	if got != nil {
+		t.Fatalf("got %v, want nil", got)
 	}
-	return &x
-}
-
-func nilToZero[T any](x *T) T {
-	if x == nil {
-		var z T
-		return z
+	from = map[string]int{"one": 1, "two": 2}
+	got = TransformMapValues(from, strconv.Itoa)
+	want := map[string]string{"one": "1", "two": "2"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, want %v", got, want)
 	}
-	return *x
 }
