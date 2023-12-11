@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package support provides support functions for protowrap.
+// Package support provides support functions for protoveneer.
 package support
 
 import (

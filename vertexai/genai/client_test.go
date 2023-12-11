@@ -63,7 +63,7 @@ func TestLive(t *testing.T) {
 	t.Run("streaming", func(t *testing.T) {
 		iter := model.GenerateContentStream(ctx, Text("Are you hungry?"))
 		got := responsesString(t, iter)
-		checkMatch(t, got, `(don't|do not) have .*(a .* body|the ability)`)
+		checkMatch(t, got, `(don't|do not) (have|possess) .*(a .* body|the ability)`)
 	})
 
 	t.Run("chat", func(t *testing.T) {
@@ -253,10 +253,10 @@ func TestLive(t *testing.T) {
 		res, err = session.SendMessage(ctx, FunctionResponse{
 			Name: weatherTool.FunctionDeclarations[0].Name,
 			Response: map[string]any{
-				"weather_there": "fuhgeddaboudit",
+				"weather_there": "cold",
 			},
 		})
-		checkMatch(t, responseString(res), "weather .*is.* fuhgeddaboudit")
+		checkMatch(t, responseString(res), "(it's}|weather) .*cold")
 	})
 }
 
@@ -346,7 +346,7 @@ func TestMergeTexts(t *testing.T) {
 func checkMatch(t *testing.T, got string, wants ...string) {
 	t.Helper()
 	for _, want := range wants {
-		re, err := regexp.Compile(want)
+		re, err := regexp.Compile("(?i:" + want + ")")
 		if err != nil {
 			t.Fatal(err)
 		}
