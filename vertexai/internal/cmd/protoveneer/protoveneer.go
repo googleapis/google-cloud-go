@@ -49,7 +49,6 @@ package main
 
 import (
 	"bytes"
-	"cmp"
 	"context"
 	"errors"
 	"flag"
@@ -63,7 +62,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"slices"
+	"sort"
 	"strings"
 	"text/template"
 	"time"
@@ -196,8 +195,8 @@ func generate(conf *config, pkg *ast.Package, fset *token.FileSet) (src []byte, 
 	}
 
 	// Sort for determinism.
-	slices.SortFunc(toWrite, func(t1, t2 *typeInfo) int {
-		return cmp.Compare(t1.veneerName, t2.veneerName)
+	sort.Slice(toWrite, func(i, j int) bool {
+		return toWrite[i].veneerName < toWrite[j].veneerName
 	})
 
 	// Process and configure all the types we care about.

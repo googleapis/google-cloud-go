@@ -17,10 +17,11 @@
 package basic
 
 import (
+	"fmt"
+
 	"cloud.google.com/go/civil"
 	pb "example.com/basic"
 	"example.com/protoveneer/support"
-	"fmt"
 )
 
 // Blob contains raw media bytes.
