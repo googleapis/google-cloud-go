@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:generate go run ../internal/cmd/protoveneer config.yaml ../internal/aiplatform/apiv1beta1/aiplatformpb
+
 // Package genai is a client for the generative VertexAI model.
 package genai
 
@@ -20,15 +22,12 @@ import (
 	"fmt"
 	"io"
 	"strings"
-	"time"
 
-	"cloud.google.com/go/civil"
 	aiplatform "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1"
 	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/vertexai/internal/support"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	date "google.golang.org/genproto/googleapis/type/date"
 )
 
 // A Client is a Google Vertex AI client.
@@ -326,23 +325,4 @@ func mergeTexts(in []Part) []Part {
 		}
 	}
 	return out
-}
-
-func civilDateToProto(d civil.Date) *date.Date {
-	return &date.Date{
-		Year:  int32(d.Year),
-		Month: int32(d.Month),
-		Day:   int32(d.Day),
-	}
-}
-
-func civilDateFromProto(p *date.Date) civil.Date {
-	if p == nil {
-		return civil.Date{}
-	}
-	return civil.Date{
-		Year:  int(p.Year),
-		Month: time.Month(p.Month),
-		Day:   int(p.Day),
-	}
 }
