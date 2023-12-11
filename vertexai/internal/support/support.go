@@ -91,7 +91,7 @@ func CivilDateFromProto(p *date.Date) civil.Date {
 	}
 }
 
-// MapToStructPB c
+// MapToStructPB converts a map into a structpb.Struct.
 func MapToStructPB(m map[string]any) *structpb.Struct {
 	if m == nil {
 		return nil
@@ -103,7 +103,7 @@ func MapToStructPB(m map[string]any) *structpb.Struct {
 	return s
 }
 
-// MapFromStructPB converts a structpb Struct to a map.
+// MapFromStructPB converts a structpb.Struct to a map.
 func MapFromStructPB(p *structpb.Struct) map[string]any {
 	if p == nil {
 		return nil
