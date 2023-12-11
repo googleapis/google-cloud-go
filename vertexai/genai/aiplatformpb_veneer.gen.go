@@ -17,10 +17,11 @@
 package genai
 
 import (
+	"fmt"
+
 	"cloud.google.com/go/civil"
 	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/vertexai/internal/support"
-	"fmt"
 )
 
 // Blob contains raw media bytes.
