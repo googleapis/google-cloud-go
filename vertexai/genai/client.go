@@ -270,7 +270,7 @@ func joinCandidateLists(dest, src []*Candidate) []*Candidate {
 			d.Content = joinContent(d.Content, s.Content)
 			// Take the last of these.
 			d.FinishReason = s.FinishReason
-			// d.FinishMessage = s.FinishMessage
+			d.FinishMessage = s.FinishMessage
 			d.SafetyRatings = s.SafetyRatings
 			d.CitationMetadata = joinCitationMetadata(d.CitationMetadata, s.CitationMetadata)
 		}
