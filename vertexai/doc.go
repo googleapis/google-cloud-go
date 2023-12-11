@@ -15,8 +15,9 @@ limitations under the License.
 */
 
 /*
-Package vertexai provides a client for interacting with Vertex AI APIS.
+Package vertexai provides a client for interacting with Vertex AI APIs.
 
-See subpackages like [genai] for the currently supported functionality.
+See [cloud.google.com/go/vertexai/genai] for the currently supported
+functionality.
 */
 package vertexai // import "cloud.google.com/go/vertexai"
