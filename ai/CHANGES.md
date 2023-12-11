@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.1.4...ai/v0.2.0) (2023-12-11)
+
+
+### Features
+
+* **ai/generativelanguage:** Add v1beta, adds GenerativeService and RetrievalService ([29effe6](https://github.com/googleapis/google-cloud-go/commit/29effe600e16f24a127a1422ec04263c4f7a600a))
+* **ai:** New clients ([#9126](https://github.com/googleapis/google-cloud-go/issues/9126)) ([c09249e](https://github.com/googleapis/google-cloud-go/commit/c09249e16b01da2b441337416115af7931892aaa))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/ai/v0.1.3...ai/v0.1.4) (2023-11-01)
 
 
@@ -36,4 +44,3 @@
 * **ai/generativelanguage:** Start generating apiv1beta2 ([#8229](https://github.com/googleapis/google-cloud-go/issues/8229)) ([837f325](https://github.com/googleapis/google-cloud-go/commit/837f32596518d8154f43da1c70f57d1515e2ea8c))
 
 ## Changes
-
