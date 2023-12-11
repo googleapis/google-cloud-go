@@ -129,6 +129,7 @@ use (
 	./securesourcemanager
 	./security
 	./securitycenter
+	./securitycentermanagement
 	./servicecontrol
 	./servicedirectory
 	./servicemanagement
@@ -148,6 +149,7 @@ use (
 	./tpu
 	./trace
 	./translate
+	./vertexai
 	./video
 	./videointelligence
 	./vision
