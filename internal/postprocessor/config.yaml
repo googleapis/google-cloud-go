@@ -267,6 +267,12 @@ manual-clients:
     library-type: GAPIC_MANUAL
 
 service-configs:
+  - input-directory: google/ai/generativelanguage/v1
+    service-config: generativelanguage_v1.yaml
+    import-path: cloud.google.com/go/ai/generativelanguage/apiv1
+  - input-directory: google/ai/generativelanguage/v1beta
+    service-config: generativelanguage_v1beta.yaml
+    import-path: cloud.google.com/go/ai/generativelanguage/apiv1beta
   - input-directory: google/ai/generativelanguage/v1beta2
     service-config: generativelanguage_v1beta2.yaml
     import-path: cloud.google.com/go/ai/generativelanguage/apiv1beta2
