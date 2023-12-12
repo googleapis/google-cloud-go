@@ -601,13 +601,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	}
 
 	if err != nil {
-		log.Printf("error from Table.ReadRows: %v\n", err)
-		if st, ok := stat.FromError(err); ok {
-			res.Status = &statpb.Status{
-				Code:    st.Proto().Code,
-				Message: st.Message(),
-			}
-		}
+		res.Status = statusFromError(err)
 		return res, nil
 	}
 

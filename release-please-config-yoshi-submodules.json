@@ -321,6 +321,9 @@
         "securitycenter": {
             "component": "securitycenter"
         },
+        "securitycentermanagement": {
+            "component": "securitycentermanagement"
+        },
         "servicecontrol": {
             "component": "servicecontrol"
         },
@@ -354,6 +357,9 @@
         "talent": {
             "component": "talent"
         },
+        "telcoautomation": {
+            "component": "telcoautomation"
+        },
         "texttospeech": {
             "component": "texttospeech"
         },
@@ -365,6 +371,9 @@
         },
         "translate": {
             "component": "translate"
+        },
+        "vertexai": {
+            "component": "vertexai"
         },
         "video": {
             "component": "video"

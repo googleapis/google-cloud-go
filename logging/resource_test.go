@@ -124,7 +124,7 @@ func TestResourceDetection(t *testing.T) {
 			},
 		},
 		{
-			name:     "detect Cloud Run resource",
+			name:     "detect Cloud Run service resource",
 			envVars:  map[string]string{"K_CONFIGURATION": crConfig, "K_SERVICE": serviceName, "K_REVISION": version},
 			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/region": qualifiedRegionName},
 			want: &mrpb.MonitoredResource{
@@ -139,9 +139,22 @@ func TestResourceDetection(t *testing.T) {
 			},
 		},
 		{
-			name:     "detect GKE resource",
+			name:     "detect Cloud Run job resource",
+			envVars:  map[string]string{"CLOUD_RUN_JOB": serviceName, "CLOUD_RUN_EXECUTION": crConfig, "CLOUD_RUN_TASK_INDEX": version, "CLOUD_RUN_TASK_ATTEMPT": instanceID},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/region": qualifiedRegionName},
+			want: &mrpb.MonitoredResource{
+				Type: "cloud_run_job",
+				Labels: map[string]string{
+					"project_id": projectID,
+					"location":   regionID,
+					"job_name":   serviceName,
+				},
+			},
+		},
+		{
+			name:     "detect GKE resource for a zonal cluster",
 			envVars:  map[string]string{"HOSTNAME": podName},
-			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/zone": qualifiedZoneName, "instance/attributes/cluster-name": clusterName},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/attributes/cluster-location": zoneID, "instance/attributes/cluster-name": clusterName},
 			fsPaths:  map[string]string{"/var/run/secrets/kubernetes.io/serviceaccount/namespace": namespaceName},
 			want: &mrpb.MonitoredResource{
 				Type: "k8s_container",
@@ -156,9 +169,26 @@ func TestResourceDetection(t *testing.T) {
 			},
 		},
 		{
+			name:     "detect GKE resource for a regional cluster",
+			envVars:  map[string]string{"HOSTNAME": podName},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/attributes/cluster-location": regionID, "instance/attributes/cluster-name": clusterName},
+			fsPaths:  map[string]string{"/var/run/secrets/kubernetes.io/serviceaccount/namespace": namespaceName},
+			want: &mrpb.MonitoredResource{
+				Type: "k8s_container",
+				Labels: map[string]string{
+					"cluster_name":   clusterName,
+					"location":       regionID,
+					"project_id":     projectID,
+					"pod_name":       podName,
+					"namespace_name": namespaceName,
+					"container_name": "",
+				},
+			},
+		},
+		{
 			name:     "detect GKE resource with custom container and namespace config",
 			envVars:  map[string]string{"HOSTNAME": podName, "CONTAINER_NAME": containerName, "NAMESPACE_NAME": namespaceName},
-			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/zone": qualifiedZoneName, "instance/attributes/cluster-name": clusterName},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/attributes/cluster-location": zoneID, "instance/attributes/cluster-name": clusterName},
 			want: &mrpb.MonitoredResource{
 				Type: "k8s_container",
 				Labels: map[string]string{
@@ -210,22 +240,6 @@ func TestResourceDetection(t *testing.T) {
 					"project_id":    projectID,
 					"region":        regionID,
 					"function_name": "",
-				},
-			},
-		},
-		{
-			name:     "detect Cloud Run resource by product name",
-			envVars:  map[string]string{},
-			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/region": qualifiedRegionName},
-			fsPaths:  map[string]string{"/sys/class/dmi/id/product_name": "Google Cloud Run"},
-			want: &mrpb.MonitoredResource{
-				Type: "cloud_run_revision",
-				Labels: map[string]string{
-					"project_id":         projectID,
-					"location":           regionID,
-					"service_name":       "",
-					"revision_name":      "",
-					"configuration_name": "",
 				},
 			},
 		},

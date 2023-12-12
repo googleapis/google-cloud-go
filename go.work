@@ -129,6 +129,7 @@ use (
 	./securesourcemanager
 	./security
 	./securitycenter
+	./securitycentermanagement
 	./servicecontrol
 	./servicedirectory
 	./servicemanagement
@@ -143,10 +144,12 @@ use (
 	./storagetransfer
 	./support
 	./talent
+	./telcoautomation
 	./texttospeech
 	./tpu
 	./trace
 	./translate
+	./vertexai
 	./video
 	./videointelligence
 	./vision

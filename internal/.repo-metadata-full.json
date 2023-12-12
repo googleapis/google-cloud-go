@@ -29,6 +29,26 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/ai/generativelanguage/apiv1": {
+    "api_shortname": "generativelanguage",
+    "distribution_name": "cloud.google.com/go/ai/generativelanguage/apiv1",
+    "description": "Generative Language API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/ai/latest/generativelanguage/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/ai/generativelanguage/apiv1beta": {
+    "api_shortname": "generativelanguage",
+    "distribution_name": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+    "description": "Generative Language API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/ai/latest/generativelanguage/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/ai/generativelanguage/apiv1beta2": {
     "api_shortname": "generativelanguage",
     "distribution_name": "cloud.google.com/go/ai/generativelanguage/apiv1beta2",
@@ -969,6 +989,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/discoveryengine/apiv1alpha": {
+    "api_shortname": "discoveryengine",
+    "distribution_name": "cloud.google.com/go/discoveryengine/apiv1alpha",
+    "description": "Discovery Engine API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/discoveryengine/latest/apiv1alpha",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/discoveryengine/apiv1beta": {
     "api_shortname": "discoveryengine",
     "distribution_name": "cloud.google.com/go/discoveryengine/apiv1beta",
@@ -1116,6 +1146,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest/apiv1",
+    "release_level": "stable",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/firestore/apiv1/admin": {
+    "api_shortname": "firestore",
+    "distribution_name": "cloud.google.com/go/firestore/apiv1/admin",
+    "description": "Cloud Firestore API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest/apiv1/admin",
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
@@ -2089,6 +2129,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/securitycentermanagement/apiv1": {
+    "api_shortname": "securitycentermanagement",
+    "distribution_name": "cloud.google.com/go/securitycentermanagement/apiv1",
+    "description": "Security Center Management API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/securitycentermanagement/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/servicecontrol/apiv1": {
     "api_shortname": "servicecontrol",
     "distribution_name": "cloud.google.com/go/servicecontrol/apiv1",
@@ -2199,6 +2249,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/spanner/executor/apiv1": {
+    "api_shortname": "spanner-cloud-executor",
+    "distribution_name": "cloud.google.com/go/spanner/executor/apiv1",
+    "description": "Cloud Spanner Executor test API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest/executor/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/speech/apiv1": {
     "api_shortname": "speech",
     "distribution_name": "cloud.google.com/go/speech/apiv1",
@@ -2296,6 +2356,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/talent/latest/apiv4beta1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/telcoautomation/apiv1": {
+    "api_shortname": "telcoautomation",
+    "distribution_name": "cloud.google.com/go/telcoautomation/apiv1",
+    "description": "Telco Automation API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/telcoautomation/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },

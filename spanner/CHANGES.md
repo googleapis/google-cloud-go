@@ -1,5 +1,13 @@
 # Changes
 
+## [1.53.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.53.0...spanner/v1.53.1) (2023-12-01)
+
+
+### Bug Fixes
+
+* **spanner:** Handle nil error when cleaning up long running session ([#9052](https://github.com/googleapis/google-cloud-go/issues/9052)) ([a93bc26](https://github.com/googleapis/google-cloud-go/commit/a93bc2696bf9ae60aae93af0e8c4911b58514d31))
+* **spanner:** MarshalJSON function caused errors for certain values ([#9063](https://github.com/googleapis/google-cloud-go/issues/9063)) ([afe7c98](https://github.com/googleapis/google-cloud-go/commit/afe7c98036c198995075530d4228f1f4ae3f1222))
+
 ## [1.53.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.52.0...spanner/v1.53.0) (2023-11-15)
 
 
@@ -859,3 +867,4 @@
 
 This is the first tag to carve out spanner as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+
