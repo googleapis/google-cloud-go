@@ -23,8 +23,8 @@ import (
 	"io"
 	"strings"
 
-	aiplatform "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1"
-	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
+	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/vertexai/internal/support"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"

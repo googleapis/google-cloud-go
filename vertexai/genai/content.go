@@ -17,7 +17,7 @@ package genai
 import (
 	"fmt"
 
-	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
+	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 )
 
 const (
