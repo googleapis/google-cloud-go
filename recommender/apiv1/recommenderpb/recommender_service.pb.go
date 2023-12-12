@@ -22,9 +22,6 @@ package recommenderpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -83,6 +82,8 @@ type ListInsightsRequest struct {
 	//
 	// * `severity`
 	//
+	// * `targetResources`
+	//
 	// Examples:
 	//
 	// * `stateInfo.state = ACTIVE OR stateInfo.state = DISMISSED`
@@ -91,7 +92,12 @@ type ListInsightsRequest struct {
 	//
 	// * `severity = CRITICAL OR severity = HIGH`
 	//
+	// * `targetResources :
+	// //compute.googleapis.com/projects/1234/zones/us-central1-a/instances/instance-1`
+	//
 	// * `stateInfo.state = ACTIVE AND (severity = CRITICAL OR severity = HIGH)`
+	//
+	// The max allowed filter length is 500 characters.
 	//
 	// (These expressions are based on the filter language described at
 	// https://google.aip.dev/160)
@@ -376,6 +382,8 @@ type ListRecommendationsRequest struct {
 	//
 	// * `priority`
 	//
+	// * `targetResources`
+	//
 	// Examples:
 	//
 	// * `stateInfo.state = ACTIVE OR stateInfo.state = DISMISSED`
@@ -384,7 +392,12 @@ type ListRecommendationsRequest struct {
 	//
 	// * `priority = P1 OR priority = P2`
 	//
+	// * `targetResources :
+	// //compute.googleapis.com/projects/1234/zones/us-central1-a/instances/instance-1`
+	//
 	// * `stateInfo.state = ACTIVE AND (priority = P1 OR priority = P2)`
+	//
+	// The max allowed filter length is 500 characters.
 	//
 	// (These expressions are based on the filter language described at
 	// https://google.aip.dev/160)
@@ -565,7 +578,7 @@ type MarkRecommendationDismissedRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Name of the recommendation.
+	// Required. Name of the recommendation.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Fingerprint of the Recommendation. Provides optimistic locking.
 	Etag string `protobuf:"bytes,2,opt,name=etag,proto3" json:"etag,omitempty"`
