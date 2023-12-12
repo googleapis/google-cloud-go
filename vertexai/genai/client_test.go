@@ -378,7 +378,7 @@ func contentString(c *Content) string {
 		}
 		fmt.Fprintf(&b, "%v", part)
 	}
-	return b.String()
+	return strings.ReplaceAll(b.String(), "\n", " ")
 }
 
 func responsesString(t *testing.T, iter *GenerateContentResponseIterator) string {

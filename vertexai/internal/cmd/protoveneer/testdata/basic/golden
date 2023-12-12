@@ -168,8 +168,8 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 		return nil
 	}
 	return &pb.GenerationConfig{
-		Temperature:    support.ZeroToNil(v.Temperature),
-		CandidateCount: support.ZeroToNil(v.CandidateCount),
+		Temperature:    support.AddrOrNil(v.Temperature),
+		CandidateCount: support.AddrOrNil(v.CandidateCount),
 		StopSequences:  v.StopSequences,
 		HarmCat:        pb.HarmCategory(v.HarmCat),
 		FinishReason:   pb.Candidate_FinishReason(v.FinishReason),
@@ -182,8 +182,8 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 		return nil
 	}
 	return &GenerationConfig{
-		Temperature:    support.NilToZero(p.Temperature),
-		CandidateCount: support.NilToZero(p.CandidateCount),
+		Temperature:    support.DerefOrZero(p.Temperature),
+		CandidateCount: support.DerefOrZero(p.CandidateCount),
 		StopSequences:  p.StopSequences,
 		HarmCat:        HarmCategory(p.HarmCat),
 		FinishReason:   FinishReason(p.FinishReason),

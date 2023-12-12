@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate go run ../internal/cmd/protoveneer config.yaml ../internal/aiplatform/apiv1beta1/aiplatformpb
+//go:generate go run ../internal/cmd/protoveneer config.yaml ../../aiplatform/apiv1beta1/aiplatformpb
 
 // Package genai is a client for the generative VertexAI model.
 package genai
@@ -270,7 +270,7 @@ func joinCandidateLists(dest, src []*Candidate) []*Candidate {
 			d.Content = joinContent(d.Content, s.Content)
 			// Take the last of these.
 			d.FinishReason = s.FinishReason
-			// d.FinishMessage = s.FinishMessage
+			d.FinishMessage = s.FinishMessage
 			d.SafetyRatings = s.SafetyRatings
 			d.CitationMetadata = joinCitationMetadata(d.CitationMetadata, s.CitationMetadata)
 		}
