@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -115,6 +116,8 @@ var (
 	jsonNullBytes = []byte("null")
 
 	jsonProvider jsoniter.API
+
+	once sync.Once
 )
 
 // Encoder is the interface implemented by a custom type that can be encoded to

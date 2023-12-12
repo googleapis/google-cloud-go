@@ -270,12 +270,14 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.BatchTimeout == 0 {
 		config.BatchTimeout = time.Minute
 	}
-	jsonProvider = jsoniter.Config{
-		EscapeHTML:  true,
-		SortMapKeys: true, // Sort map keys to ensure deterministic output, to be consistent with encoding.
-		UseNumber:   config.UseNumber,
-	}.Froze()
-
+	once.Do(func() {
+		// Initialize json provider.
+		jsonProvider = jsoniter.Config{
+			EscapeHTML:  true,
+			SortMapKeys: true, // Sort map keys to ensure deterministic output, to be consistent with encoding.
+			UseNumber:   config.UseNumber,
+		}.Froze()
+	})
 	md := metadata.Pairs(resourcePrefixHeader, database)
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
