@@ -20,7 +20,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/civil"
-	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
+	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/vertexai/internal/support"
 )
 

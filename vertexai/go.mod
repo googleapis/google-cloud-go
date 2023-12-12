@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	cloud.google.com/go v0.110.10
+	cloud.google.com/go/aiplatform v1.57.0
 	cloud.google.com/go/iam v1.1.5
 	cloud.google.com/go/longrunning v0.5.4
 	github.com/google/go-cmp v0.6.0
