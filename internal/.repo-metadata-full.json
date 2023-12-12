@@ -205,7 +205,7 @@
     "description": "Google Meet API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/apps/meet/apiv2beta",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apps/latest/meet/apiv2beta",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
