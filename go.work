@@ -14,6 +14,7 @@ use (
 	./apigeeregistry
 	./apikeys
 	./appengine
+	./apps
 	./area120
 	./artifactregistry
 	./asset
