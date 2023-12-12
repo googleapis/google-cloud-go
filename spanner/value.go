@@ -114,9 +114,7 @@ var (
 
 	jsonNullBytes = []byte("null")
 
-	jsonProvider = jsoniter.Config{EscapeHTML: true,
-		UseNumber: true,
-	}.Froze()
+	jsonProvider jsoniter.API
 )
 
 // Encoder is the interface implemented by a custom type that can be encoded to

@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/googleapis/gax-go/v2"
+	jsoniter "github.com/json-iterator/go"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -186,6 +187,10 @@ type ClientConfig struct {
 
 	// BatchTimeout specifies the timeout for a batch of sessions managed sessionClient.
 	BatchTimeout time.Duration
+
+	// UseNumber causes the Decoder to unmarshal a number into an interface{} as a
+	// Number instead of as a float64.
+	UseNumber bool
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -265,6 +270,11 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.BatchTimeout == 0 {
 		config.BatchTimeout = time.Minute
 	}
+	jsonProvider = jsoniter.Config{
+		EscapeHTML:  true,
+		SortMapKeys: true, // Sort map keys to ensure deterministic output, to be consistent with encoding.
+		UseNumber:   config.UseNumber,
+	}.Froze()
 
 	md := metadata.Pairs(resourcePrefixHeader, database)
 	if config.Compression == gzip.Name {
