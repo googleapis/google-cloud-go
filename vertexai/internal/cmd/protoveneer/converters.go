@@ -38,8 +38,8 @@ func (identityConverter) genTransformTo() string    { return "" }
 // A derefConverter converts between T in the veneer and *T in the proto.
 type derefConverter struct{}
 
-func (derefConverter) genFrom(arg string) string { return fmt.Sprintf("support.NilToZero(%s)", arg) }
-func (derefConverter) genTo(arg string) string   { return fmt.Sprintf("support.ZeroToNil(%s)", arg) }
+func (derefConverter) genFrom(arg string) string { return fmt.Sprintf("support.DerefOrZero(%s)", arg) }
+func (derefConverter) genTo(arg string) string   { return fmt.Sprintf("support.AddrOrNil(%s)", arg) }
 func (derefConverter) genTransformFrom() string  { panic("can't handle deref slices") }
 func (derefConverter) genTransformTo() string    { panic("can't handle deref slices") }
 

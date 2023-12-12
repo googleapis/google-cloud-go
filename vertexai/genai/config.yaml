@@ -72,12 +72,8 @@ types:
         MaxOutputTokens:
           type: int32
 
-    SafetySetting:
-
     SafetyRating:
       docVerb: 'is the'
-
-    CitationMetadata:
 
     Citation:
       docVerb: contains

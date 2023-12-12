@@ -108,7 +108,7 @@ func (v *Candidate) toProto() *pb.Candidate {
 		Content:          v.Content.toProto(),
 		FinishReason:     pb.Candidate_FinishReason(v.FinishReason),
 		SafetyRatings:    support.TransformSlice(v.SafetyRatings, (*SafetyRating).toProto),
-		FinishMessage:    support.ZeroToNil(v.FinishMessage),
+		FinishMessage:    support.AddrOrNil(v.FinishMessage),
 		CitationMetadata: v.CitationMetadata.toProto(),
 	}
 }
@@ -122,7 +122,7 @@ func (Candidate) fromProto(p *pb.Candidate) *Candidate {
 		Content:          (Content{}).fromProto(p.Content),
 		FinishReason:     FinishReason(p.FinishReason),
 		SafetyRatings:    support.TransformSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
-		FinishMessage:    support.NilToZero(p.FinishMessage),
+		FinishMessage:    support.DerefOrZero(p.FinishMessage),
 		CitationMetadata: (CitationMetadata{}).fromProto(p.CitationMetadata),
 	}
 }
@@ -463,11 +463,11 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 		return nil
 	}
 	return &pb.GenerationConfig{
-		Temperature:     support.ZeroToNil(v.Temperature),
-		TopP:            support.ZeroToNil(v.TopP),
-		TopK:            support.ZeroToNil(v.TopK),
-		CandidateCount:  support.ZeroToNil(v.CandidateCount),
-		MaxOutputTokens: support.ZeroToNil(v.MaxOutputTokens),
+		Temperature:     support.AddrOrNil(v.Temperature),
+		TopP:            support.AddrOrNil(v.TopP),
+		TopK:            support.AddrOrNil(v.TopK),
+		CandidateCount:  support.AddrOrNil(v.CandidateCount),
+		MaxOutputTokens: support.AddrOrNil(v.MaxOutputTokens),
 		StopSequences:   v.StopSequences,
 	}
 }
@@ -477,11 +477,11 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 		return nil
 	}
 	return &GenerationConfig{
-		Temperature:     support.NilToZero(p.Temperature),
-		TopP:            support.NilToZero(p.TopP),
-		TopK:            support.NilToZero(p.TopK),
-		CandidateCount:  support.NilToZero(p.CandidateCount),
-		MaxOutputTokens: support.NilToZero(p.MaxOutputTokens),
+		Temperature:     support.DerefOrZero(p.Temperature),
+		TopP:            support.DerefOrZero(p.TopP),
+		TopK:            support.DerefOrZero(p.TopK),
+		CandidateCount:  support.DerefOrZero(p.CandidateCount),
+		MaxOutputTokens: support.DerefOrZero(p.MaxOutputTokens),
 		StopSequences:   p.StopSequences,
 	}
 }
