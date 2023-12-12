@@ -11,6 +11,7 @@ modules:
   - apigeeregistry
   - apikeys
   - appengine
+  - apps
   - area120
   - artifactregistry
   - asset
@@ -291,6 +292,9 @@ service-configs:
   - input-directory: google/appengine/v1
     service-config: appengine_v1.yaml
     import-path: cloud.google.com/go/appengine/apiv1
+  - input-directory: google/apps/meet/v2beta
+    service-config: meet_v2beta.yaml
+    import-path: cloud.google.com/go/apps/meet/apiv2beta
   - input-directory: google/area120/tables/v1alpha1
     service-config: area120tables_v1alpha1.yaml
     import-path: cloud.google.com/go/area120/tables/apiv1alpha1

@@ -22,6 +22,7 @@ deep-remove-regex:
   - /apigeeregistry/apiv1/
   - /apikeys/apiv2/
   - /appengine/apiv1/
+  - /apps/meet/apiv2beta/
   - /area120/tables/apiv1alpha1/
   - /artifactregistry/apiv1/
   - /artifactregistry/apiv1beta2/
@@ -143,6 +144,7 @@ deep-remove-regex:
   - /internal/generated/snippets/apigeeregistry/apiv1/
   - /internal/generated/snippets/apikeys/apiv2/
   - /internal/generated/snippets/appengine/apiv1/
+  - /internal/generated/snippets/apps/meet/apiv2beta/
   - /internal/generated/snippets/area120/tables/apiv1alpha1/
   - /internal/generated/snippets/artifactregistry/apiv1/
   - /internal/generated/snippets/artifactregistry/apiv1beta2/
@@ -582,6 +584,8 @@ deep-copy-regex:
   - source: /google/api/apikeys/v2/cloud.google.com/go
     dest: /
   - source: /google/appengine/v1/cloud.google.com/go
+    dest: /
+  - source: /google/apps/meet/v2beta/cloud.google.com/go
     dest: /
   - source: /google/area120/tables/v1alpha1/cloud.google.com/go
     dest: /
