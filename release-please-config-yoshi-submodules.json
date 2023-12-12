@@ -321,6 +321,9 @@
         "securitycenter": {
             "component": "securitycenter"
         },
+        "securitycentermanagement": {
+            "component": "securitycentermanagement"
+        },
         "servicecontrol": {
             "component": "servicecontrol"
         },
@@ -368,6 +371,9 @@
         },
         "translate": {
             "component": "translate"
+        },
+        "vertexai": {
+            "component": "vertexai"
         },
         "video": {
             "component": "video"
