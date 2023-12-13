@@ -123,7 +123,6 @@
     "tpu": "1.6.4",
     "trace": "1.10.4",
     "translate": "1.9.3",
-    "vertexai": "0.1.0",
     "video": "1.20.3",
     "videointelligence": "1.11.4",
     "vision": "2.7.5",
