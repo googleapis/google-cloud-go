@@ -27,6 +27,7 @@ import (
 	"runtime"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -160,7 +161,9 @@ func createIndexes(ctx context.Context, dbPath string) {
 	indexNames = make([]string, len(indexFields))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
 
+	var wg sync.WaitGroup
 	for i, fields := range indexFields {
+		wg.Add(1)
 		var adminPbIndexFields []*adminpb.Index_IndexField
 		for _, field := range fields {
 			adminPbIndexFields = append(adminPbIndexFields, &adminpb.Index_IndexField{
@@ -181,13 +184,23 @@ func createIndexes(ctx context.Context, dbPath string) {
 		if createErr != nil {
 			log.Fatalf("CreateIndex: %v", createErr)
 		}
-
-		createdIndex, waitErr := op.Wait(ctx)
-		if waitErr != nil {
-			log.Fatalf("Wait: %v", waitErr)
+		if i == 0 {
+			// Seed first index to prevent FirestoreMetadataWrite.BootstrapDatabase Concurrent access error
+			handleCreateIndexResp(ctx, &wg, i, op)
+		} else {
+			go handleCreateIndexResp(ctx, &wg, i, op)
 		}
-		indexNames[i] = createdIndex.Name
 	}
+	wg.Wait()
+}
+
+func handleCreateIndexResp(ctx context.Context, wg *sync.WaitGroup, i int, op *apiv1.CreateIndexOperation) {
+	defer wg.Done()
+	createdIndex, waitErr := op.Wait(ctx)
+	if waitErr != nil {
+		log.Fatalf("Wait: %v", waitErr)
+	}
+	indexNames[i] = createdIndex.Name
 }
 
 // deleteIndexes deletes composite indexes created in createIndexes function

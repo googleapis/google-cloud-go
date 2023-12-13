@@ -1,5 +1,12 @@
 # Changes
 
+## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.46.0...dialogflow/v1.47.0) (2023-12-07)
+
+
+### Features
+
+* **dialogflow/cx:** Added Generator API ([#9062](https://github.com/googleapis/google-cloud-go/issues/9062)) ([e371f8f](https://github.com/googleapis/google-cloud-go/commit/e371f8f00ee60be27379fe363603b8cf6b43929c))
+
 ## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.45.0...dialogflow/v1.46.0) (2023-11-29)
 
 
