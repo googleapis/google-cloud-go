@@ -25,6 +25,7 @@ import (
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
 	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	"cloud.google.com/go/vertexai/internal"
 	"cloud.google.com/go/vertexai/internal/support"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -50,6 +51,7 @@ func NewClient(ctx context.Context, projectID, location string, opts ...option.C
 	if err != nil {
 		return nil, err
 	}
+	c.SetGoogleClientInfo("gccl", internal.Version)
 	return &Client{
 		c:         c,
 		projectID: projectID,
