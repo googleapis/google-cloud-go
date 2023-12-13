@@ -1,5 +1,12 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.4...billing/v1.18.0) (2023-12-07)
+
+
+### Features
+
+* **billing:** Added the MoveBillingAccount method, which allows changing which organization a billing account belongs to ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
+
 ## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.3...billing/v1.17.4) (2023-11-01)
 
 

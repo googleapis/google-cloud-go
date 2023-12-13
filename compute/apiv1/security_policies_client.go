@@ -458,6 +458,9 @@ func (c *securityPoliciesRESTClient) AggregatedList(ctx context.Context, req *co
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -980,6 +983,9 @@ func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
+	if req != nil && req.UpdateMask != nil {
+		params.Add("updateMask", fmt.Sprintf("%v", req.GetUpdateMask()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1055,6 +1061,9 @@ func (c *securityPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 	params := url.Values{}
 	if req != nil && req.Priority != nil {
 		params.Add("priority", fmt.Sprintf("%v", req.GetPriority()))
+	}
+	if req != nil && req.UpdateMask != nil {
+		params.Add("updateMask", fmt.Sprintf("%v", req.GetUpdateMask()))
 	}
 	if req != nil && req.ValidateOnly != nil {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))

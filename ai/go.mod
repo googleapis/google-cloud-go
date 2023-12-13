@@ -3,6 +3,7 @@ module cloud.google.com/go/ai
 go 1.19
 
 require (
+	cloud.google.com/go/longrunning v0.5.2
 	github.com/googleapis/gax-go/v2 v2.12.0
 	google.golang.org/api v0.149.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20231016165738-49dd2c1f3d0b
@@ -11,6 +12,7 @@ require (
 )
 
 require (
+	cloud.google.com/go v0.110.8 // indirect
 	cloud.google.com/go/compute v1.23.1 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect

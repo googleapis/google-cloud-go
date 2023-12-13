@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.2.3...discoveryengine/v1.3.0) (2023-12-07)
+
+
+### Features
+
+* **discoveryengine:** New clients ([#9089](https://github.com/googleapis/google-cloud-go/issues/9089)) ([fab7e82](https://github.com/googleapis/google-cloud-go/commit/fab7e8247851c3c1a907aaecbd6b04d56dd201c7))
+
 ## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.2.2...discoveryengine/v1.2.3) (2023-11-01)
 
 

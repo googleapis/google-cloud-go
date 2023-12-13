@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.23.6](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.5...documentai/v1.23.6) (2023-11-27)
+
+
+### Documentation
+
+* **documentai:** Update comment for ProcessOptions.page_range ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+
 ## [1.23.5](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.4...documentai/v1.23.5) (2023-11-01)
 
 
