@@ -28,7 +28,9 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
+	"unsafe"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/fields"
@@ -119,6 +121,19 @@ var (
 
 	once sync.Once
 )
+
+// UseNumber specifies whether number values inside a Cloud Spanner JSON value
+// should be decoded as a Number or a float64.
+// Decoding to a Number guarantees that the precision used by Cloud Spanner is preserved.
+// Decoding to a float64 can cause loss of precision.
+// The default JSON decode function in Go uses float64, This is therefore also the default used by this client library.
+// Change this value to true to prevent loss of precision.
+func UseNumberWithJSONDecoderEncoder() {
+	atomic.LoadPointer((*unsafe.Pointer)(unsafe.Pointer(&jsonProvider)))
+	once.Do(func() {
+		jsonProvider = jsoniter.ConfigCompatibleWithStandardLibrary
+	})
+}
 
 // Encoder is the interface implemented by a custom type that can be encoded to
 // a supported type by Spanner. A code example:
