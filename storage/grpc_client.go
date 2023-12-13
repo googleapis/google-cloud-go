@@ -155,7 +155,7 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, enableObjectRetention *bool, opts ...storageOption) (*BucketAttrs, error) {
 	if enableObjectRetention != nil {
 		// TO-DO: implement ObjectRetention once available - see b/308194853
-		return nil, fmt.Errorf("storage: %w, object retention not supported in gRPC", errors.ErrUnsupported)
+		return nil, errors.New("storage: object retention is not supported in gRPC")
 	}
 
 	s := callSettings(c.settings, opts...)
@@ -516,7 +516,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, params *updateObje
 	uattrs := params.uattrs
 	if params.overrideRetention != nil || uattrs.Retention != nil {
 		// TO-DO: implement ObjectRetention once available - see b/308194853
-		return nil, fmt.Errorf("storage: %w, object retention not supported in gRPC", errors.ErrUnsupported)
+		return nil, errors.New("storage: object retention is not supported in gRPC")
 	}
 	s := callSettings(c.settings, opts...)
 	o := uattrs.toProtoObject(bucketResourceName(globalProjectAlias, params.bucket), params.object)
@@ -1063,7 +1063,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 
 			if params.attrs.Retention != nil {
 				// TO-DO: remove once ObjectRetention is available - see b/308194853
-				err = fmt.Errorf("storage: %w, object retention cannot be set in gRPC", errors.ErrUnsupported)
+				err = errors.New("storage: object retention is not supported in gRPC")
 				errorf(err)
 				pr.CloseWithError(err)
 				return
