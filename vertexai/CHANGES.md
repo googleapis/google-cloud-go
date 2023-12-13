@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.5.0...vertexai/v0.5.1) (2023-12-13)
+
+
+### Bug Fixes
+
+* **vertexai:** Passthrough user opts ([#9163](https://github.com/googleapis/google-cloud-go/issues/9163)) ([c24e93c](https://github.com/googleapis/google-cloud-go/commit/c24e93c06851d3917d75a9b2362af993071961c0)), refs [#9160](https://github.com/googleapis/google-cloud-go/issues/9160)
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.4.0...vertexai/v0.5.0) (2023-12-13)
 
 
