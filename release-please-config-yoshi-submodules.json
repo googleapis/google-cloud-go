@@ -375,9 +375,6 @@
         "translate": {
             "component": "translate"
         },
-        "vertexai": {
-            "component": "vertexai"
-        },
         "video": {
             "component": "video"
         },

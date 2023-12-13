@@ -180,28 +180,21 @@ func (iter *GenerateContentResponseIterator) Next() (*GenerateContentResponse, e
 	return gcp, nil
 }
 
-// GenerateContentResponse is the response from a GenerateContent or GenerateContentStream call.
-type GenerateContentResponse struct {
-	Candidates     []*Candidate
-	PromptFeedback *PromptFeedback
-}
-
 func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse, error) {
+	gcp := (GenerateContentResponse{}).fromProto(resp)
 	// Assume a non-nil PromptFeedback is an error.
 	// TODO: confirm.
-	pf := (PromptFeedback{}).fromProto(resp.PromptFeedback)
-	if pf != nil {
-		return nil, &BlockedError{PromptFeedback: pf}
+	if gcp.PromptFeedback != nil {
+		return nil, &BlockedError{PromptFeedback: gcp.PromptFeedback}
 	}
-	cands := support.TransformSlice(resp.Candidates, (Candidate{}).fromProto)
 	// If any candidate is blocked, error.
 	// TODO: is this too harsh?
-	for _, c := range cands {
+	for _, c := range gcp.Candidates {
 		if c.FinishReason == FinishReasonSafety {
 			return nil, &BlockedError{Candidate: c}
 		}
 	}
-	return &GenerateContentResponse{Candidates: cands}, nil
+	return gcp, nil
 }
 
 // CountTokens counts the number of tokens in the content.
