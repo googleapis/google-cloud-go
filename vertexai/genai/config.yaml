@@ -101,42 +101,13 @@ types:
         Example:
           omit: true
 
+    CitationMetadata:
+    FunctionDeclaration:
+    SafetySetting:
 
+# Omit everything that is not explicitly configured.
 omitTypes:
-  - Attribution
-  - BigQuery*
-  - BlurBaselineConfig
-  - Context
-  - DataItem
-  - Direct*
-  - EnvVar
-  - Event*
-  - Example*
-  - Execution*
-  - ExplainResponse*
-  - Feature*
-  - GenerateContentResponse
-  - GenerateContentResponse_UsageMetadata
-  - MetadataSchema*
-  - Neighbor
-  - Part
-  - Part_*
-  - Presets*
-  - Sampled*
-  - SmoothGrad*
-  - Tensor*
-  - Unimplemented*
-  - Value*
-  - VideoMetadata
-  - '*Annotation*'
-  - '*Array'
-  - '*Attribution'
-  - '*Destination'
-  - '*Explanation*'
-  - '*Operation*'
-  - '*Predict*'
-  - '*Request'
-  - '*Source'
+  - '*'
 
 
 converters:
