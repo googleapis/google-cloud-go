@@ -434,7 +434,8 @@ func (c *httpStorageClient) GetObject(ctx context.Context, bucket, object string
 	return newObject(obj), nil
 }
 
-func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
+func (c *httpStorageClient) UpdateObject(ctx context.Context, params *updateObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
+	uattrs := params.uattrs
 	s := callSettings(c.settings, opts...)
 
 	var attrs ObjectAttrs
@@ -509,11 +510,11 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 			forceSendFields = append(forceSendFields, "Retention")
 		}
 	}
-	rawObj := attrs.toRawObject(bucket)
+	rawObj := attrs.toRawObject(params.bucket)
 	rawObj.ForceSendFields = forceSendFields
 	rawObj.NullFields = nullFields
-	call := c.raw.Objects.Patch(bucket, object, rawObj).Projection("full")
-	if err := applyConds("Update", gen, conds, call); err != nil {
+	call := c.raw.Objects.Patch(params.bucket, params.object, rawObj).Projection("full")
+	if err := applyConds("Update", params.gen, params.conds, call); err != nil {
 		return nil, err
 	}
 	if s.userProject != "" {
@@ -522,12 +523,12 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	if uattrs.PredefinedACL != "" {
 		call.PredefinedAcl(uattrs.PredefinedACL)
 	}
-	if err := setEncryptionHeaders(call.Header(), encryptionKey, false); err != nil {
+	if err := setEncryptionHeaders(call.Header(), params.encryptionKey, false); err != nil {
 		return nil, err
 	}
 
-	if uattrs.OverrideUnlockedRetention {
-		call.OverrideUnlockedRetention(uattrs.OverrideUnlockedRetention)
+	if params.overrideRetention != nil {
+		call.OverrideUnlockedRetention(*params.overrideRetention)
 	}
 
 	var obj *raw.Object

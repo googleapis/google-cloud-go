@@ -879,16 +879,17 @@ func signedURLV2(bucket, name string, opts *SignedURLOptions) (string, error) {
 // ObjectHandle provides operations on an object in a Google Cloud Storage bucket.
 // Use BucketHandle.Object to get a handle.
 type ObjectHandle struct {
-	c              *Client
-	bucket         string
-	object         string
-	acl            ACLHandle
-	gen            int64 // a negative value indicates latest
-	conds          *Conditions
-	encryptionKey  []byte // AES-256 key
-	userProject    string // for requester-pays buckets
-	readCompressed bool   // Accept-Encoding: gzip
-	retry          *retryConfig
+	c                 *Client
+	bucket            string
+	object            string
+	acl               ACLHandle
+	gen               int64 // a negative value indicates latest
+	conds             *Conditions
+	encryptionKey     []byte // AES-256 key
+	userProject       string // for requester-pays buckets
+	readCompressed    bool   // Accept-Encoding: gzip
+	retry             *retryConfig
+	overrideRetention *bool
 }
 
 // ACL provides access to the object's access control list.
@@ -958,7 +959,15 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	}
 	isIdempotent := o.conds != nil && o.conds.MetagenerationMatch != 0
 	opts := makeStorageOpts(isIdempotent, o.retry, o.userProject)
-	return o.c.tc.UpdateObject(ctx, o.bucket, o.object, &uattrs, o.gen, o.encryptionKey, o.conds, opts...)
+	return o.c.tc.UpdateObject(ctx,
+		&updateObjectParams{
+			bucket:            o.bucket,
+			object:            o.object,
+			uattrs:            &uattrs,
+			gen:               o.gen,
+			encryptionKey:     o.encryptionKey,
+			conds:             o.conds,
+			overrideRetention: o.overrideRetention}, opts...)
 }
 
 // BucketName returns the name of the bucket.
@@ -975,15 +984,17 @@ func (o *ObjectHandle) ObjectName() string {
 // Only fields set to non-nil values will be updated.
 // For all fields except CustomTime and Retention, set the field to its zero
 // value to delete it. CustomTime cannot be deleted or changed to an earlier
-// time once set. Retention follows specidal
+// time once set. Retention can be deleted (only if the Mode is Unlocked) by
+// setting it to an empty value (not nil).
 //
-// For example, to change ContentType and delete ContentEncoding and
-// Metadata, use
+// For example, to change ContentType and delete ContentEncoding, Metadata and
+// Retention, use:
 //
 //	ObjectAttrsToUpdate{
 //	    ContentType: "text/html",
 //	    ContentEncoding: "",
 //	    Metadata: map[string]string{},
+//		Retention: &ObjectRetention{},
 //	}
 type ObjectAttrsToUpdate struct {
 	EventBasedHold     optional.Bool
@@ -1002,13 +1013,10 @@ type ObjectAttrsToUpdate struct {
 	PredefinedACL string
 
 	// Retention contains the retention configuration for this object.
+	// Operations other than setting the retention for the first time or
+	// extending the RetainUntil time on the object retention must be done
+	// on an ObjectHandle with OverrideUnlockedRetention set to true.
 	Retention *ObjectRetention
-
-	// OverrideUnlockedRetention provides an option for overriding an Unlocked
-	// Retention policy. This must be set to true in order to change a policy
-	// from Unlocked to Locked, to set it to null, or to reduce its
-	// retainUntilTime attribute.
-	OverrideUnlockedRetention bool
 }
 
 // Delete deletes the single specified object.
@@ -1027,6 +1035,17 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 func (o *ObjectHandle) ReadCompressed(compressed bool) *ObjectHandle {
 	o2 := *o
 	o2.readCompressed = compressed
+	return &o2
+}
+
+// OverrideUnlockedRetention provides an option for overriding an Unlocked
+// Retention policy. This must be set to true in order to change a policy
+// from Unlocked to Locked, to set it to null, or to reduce its
+// RetainUntil attribute. It is not required for setting the ObjectRetention for
+// the first time nor for extending the RetainUntil time.
+func (o *ObjectHandle) OverrideUnlockedRetention(override bool) *ObjectHandle {
+	o2 := *o
+	o2.overrideRetention = &override
 	return &o2
 }
 

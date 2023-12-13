@@ -355,7 +355,8 @@ func TestUpdateObjectEmulated(t *testing.T) {
 			CustomTime:         ct.Add(10 * time.Hour),
 		}
 
-		got, err := client.UpdateObject(context.Background(), bucket, o.Name, want, defaultGen, nil, &Conditions{MetagenerationMatch: 1})
+		params := &updateObjectParams{bucket: bucket, object: o.Name, uattrs: want, gen: defaultGen, conds: &Conditions{MetagenerationMatch: 1}}
+		got, err := client.UpdateObject(context.Background(), params)
 		if err != nil {
 			t.Fatalf("client.UpdateObject: %v", err)
 		}
@@ -1194,7 +1195,7 @@ func TestObjectConditionsEmulated(t *testing.T) {
 						return fmt.Errorf("creating object: %w", err)
 					}
 					uattrs := &ObjectAttrsToUpdate{CustomTime: time.Now()}
-					_, err = client.UpdateObject(ctx, bucket, objName, uattrs, gen, nil, nil)
+					_, err = client.UpdateObject(ctx, &updateObjectParams{bucket: bucket, object: objName, uattrs: uattrs, gen: gen})
 					return err
 				},
 			},
@@ -1210,7 +1211,7 @@ func TestObjectConditionsEmulated(t *testing.T) {
 						GenerationMatch:     gen,
 						MetagenerationMatch: metaGen,
 					}
-					_, err = client.UpdateObject(ctx, bucket, objName, uattrs, gen, nil, conds)
+					_, err = client.UpdateObject(ctx, &updateObjectParams{bucket: bucket, object: objName, uattrs: uattrs, gen: gen, conds: conds})
 					return err
 				},
 			},

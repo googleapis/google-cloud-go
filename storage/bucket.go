@@ -467,9 +467,10 @@ type BucketAttrs struct {
 
 	// ObjectRetentionMode reports whether individual objects in the bucket can
 	// be configured with a retention policy. An empty value means that object
-	// retention is disabled. Object retention is not enabled default.
-	// This field is read-only. Object retention can be enabled only on bucket
-	// creation on a bucket handle with SetObjectRetention set to true.
+	// retention is disabled.
+	// This field is read-only. Object retention can be enabled only by creating
+	// a bucket with SetObjectRetention set to true on the BucketHandle. It
+	// cannot be modified.
 	// ObjectRetention cannot be configured or reported through the gRPC API.
 	ObjectRetentionMode string
 }
@@ -876,7 +877,6 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Billing:               bb,
 		Lifecycle:             toRawLifecycle(b.Lifecycle),
 		RetentionPolicy:       b.RetentionPolicy.toRawRetentionPolicy(),
-		ObjectRetention:       toRawBucketObjectRetention(b.ObjectRetentionMode),
 		Cors:                  toRawCORS(b.CORS),
 		Encryption:            b.Encryption.toRawBucketEncryption(),
 		Logging:               b.Logging.toRawBucketLogging(),
@@ -1362,8 +1362,8 @@ func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
 }
 
 // SetObjectRetention returns a new BucketHandle that allows enabling object
-// retention on bucket creation. To enable object retention, you must use this
-// handle with ObjectRetentionMode set on the BucketAttrs to create the bucket.
+// retention on bucket creation. To enable object retention, you must use the
+// returned handle to create the bucket.
 // ObjectRetention is not enabled by default.
 // ObjectRetention cannot be configured through the gRPC API.
 func (b *BucketHandle) SetObjectRetention(enable bool) *BucketHandle {
@@ -1468,15 +1468,6 @@ func toRetentionPolicyFromProto(rp *storagepb.Bucket_RetentionPolicy) *Retention
 		RetentionPeriod: rp.GetRetentionDuration().AsDuration(),
 		EffectiveTime:   rp.GetEffectiveTime().AsTime(),
 		IsLocked:        rp.GetIsLocked(),
-	}
-}
-
-func toRawBucketObjectRetention(retentionMode string) *raw.BucketObjectRetention {
-	if retentionMode == "" {
-		return nil
-	}
-	return &raw.BucketObjectRetention{
-		Mode: retentionMode,
 	}
 }
 

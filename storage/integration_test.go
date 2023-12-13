@@ -3894,33 +3894,21 @@ func TestIntegration_BucketObjectRetention(t *testing.T) {
 		setTrue, setFalse := true, false
 
 		for _, test := range []struct {
-			desc                string
-			objectRetentionMode string
-			enable              *bool
-			wantRetentionMode   string
+			desc              string
+			enable            *bool
+			wantRetentionMode string
 		}{
 			{
 				desc:              "ObjectRetentionMode is not enabled by default",
 				wantRetentionMode: "",
 			},
 			{
-				desc:                "Setting just ObjectRetentionMode should not work",
-				objectRetentionMode: "Enabled",
-				wantRetentionMode:   "",
-			},
-			{
-				desc:                "ObjectRetentionMode is ignored",
-				objectRetentionMode: "disabled",
-				enable:              &setTrue,
-				wantRetentionMode:   "Enabled",
-			},
-			{
-				desc:              "Empty ObjectRetentionMode",
+				desc:              "Enable retention",
 				enable:            &setTrue,
 				wantRetentionMode: "Enabled",
 			},
 			{
-				desc:              "Empty ObjectRetentionMode set to false",
+				desc:              "Set object retention to false",
 				enable:            &setFalse,
 				wantRetentionMode: "",
 			},
@@ -3931,17 +3919,13 @@ func TestIntegration_BucketObjectRetention(t *testing.T) {
 					b = b.SetObjectRetention(*test.enable)
 				}
 
-				attrs := &BucketAttrs{
-					ObjectRetentionMode: test.objectRetentionMode,
-				}
-
-				err := b.Create(ctx, testutil.ProjID(), attrs)
+				err := b.Create(ctx, testutil.ProjID(), nil)
 				if err != nil {
 					t.Fatalf("error creating bucket: %v", err)
 				}
 				t.Cleanup(func() { b.Delete(ctx) })
 
-				attrs, err = b.Attrs(ctx)
+				attrs, err := b.Attrs(ctx)
 				if err != nil {
 					t.Fatalf("b.Attrs: %v", err)
 				}
@@ -3963,30 +3947,28 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 		if err := b.Create(ctx, testutil.ProjID(), nil); err != nil {
 			t.Fatalf("error creating bucket: %v", err)
 		}
-		t.Cleanup(func() { b.Delete(ctx) })
+		t.Cleanup(func() { h.mustDeleteBucket(b) })
 
-		// Create an object with future retain until time
 		retentionUnlocked := &ObjectRetention{
 			Mode:        "Unlocked",
-			RetainUntil: time.Now().Add(time.Minute * 20).Truncate(time.Second),
-		}
-		retentionLocked := &ObjectRetention{
-			Mode:        "Locked",
 			RetainUntil: time.Now().Add(time.Minute * 20).Truncate(time.Second),
 		}
 		retentionUnlockedExtended := &ObjectRetention{
 			Mode:        "Unlocked",
 			RetainUntil: time.Now().Add(time.Hour).Truncate(time.Second),
 		}
-		retentionLockedExtended := &ObjectRetention{
-			Mode:        "Locked",
-			RetainUntil: time.Now().Add(time.Hour).Truncate(time.Second),
-		}
 
+		// Create an object with future retain until time
 		o := b.Object("retention-on-create" + uidSpaceObjects.New())
 		w := o.NewWriter(ctx)
 		w.Retention = retentionUnlocked
 		h.mustWrite(w, []byte("contents"))
+		t.Cleanup(func() {
+			if _, err := o.OverrideUnlockedRetention(true).Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{}}); err != nil {
+				t.Fatalf("failed to remove retention from object: %v", err)
+			}
+			h.mustDeleteObject(o)
+		})
 
 		if got, want := w.Attrs().Retention, retentionUnlocked; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
 			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
@@ -4022,9 +4004,8 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 		}
 
 		// Reduce retain until time of Unlocked object with override_unlocked_retention=True
-		attrs, err = o.Update(ctx, ObjectAttrsToUpdate{
-			Retention:                 retentionUnlocked,
-			OverrideUnlockedRetention: true,
+		attrs, err = o.OverrideUnlockedRetention(true).Update(ctx, ObjectAttrsToUpdate{
+			Retention: retentionUnlocked,
 		})
 		if err != nil {
 			t.Fatalf("failed to add retention to object: %v", err)
@@ -4034,52 +4015,11 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
 		}
 
-		// Update mode from Unlocked to Locked
-		attrs, err = o.Update(ctx, ObjectAttrsToUpdate{
-			Retention:                 retentionLocked,
-			OverrideUnlockedRetention: true,
-		})
-		if err != nil {
-			t.Fatalf("failed to add retention to object: %v", err)
-		}
-
-		if got, want := attrs.Retention, retentionLocked; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
-			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
-		}
-
-		// Extend retain until time of Locked object
-		attrs, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: retentionLockedExtended})
-		if err != nil {
-			t.Fatalf("failed to add retention to object: %v", err)
-		}
-
-		if got, want := attrs.Retention, retentionLockedExtended; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
-			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
-		}
-
-		// Reduce retain until time of Locked object returns 403
-		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: retentionLocked})
-		if err == nil || extractErrCode(err) != http.StatusForbidden {
-			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusForbidden, err)
-		}
-
-		// Remove retention of Locked object returns 403
-		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{}})
-		if err == nil || extractErrCode(err) != http.StatusForbidden {
-			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusForbidden, err)
-		}
-
-		// Patch mode from Locked to Unlocked returns 403
-		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: retentionUnlocked})
-		if err == nil || extractErrCode(err) != http.StatusForbidden {
-			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusForbidden, err)
-		}
-
 		// Create a new object
 		objectWithRetentionOnUpdate := b.Object("retention-on-update" + uidSpaceObjects.New())
 		w = objectWithRetentionOnUpdate.NewWriter(ctx)
 		h.mustWrite(w, []byte("contents"))
-		t.Cleanup(func() {})
+
 		// Retention should not be set
 		if got := w.Attrs().Retention; got != nil {
 			t.Errorf("expected no ObjectRetention, got: %+v", got)
@@ -4088,18 +4028,18 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 		// Update object with only one of (retain until time, retention mode) returns 400
 		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{Mode: "Locked"}})
 		if err == nil || extractErrCode(err) != http.StatusBadRequest {
-			t.Fatalf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
 		}
 
 		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{RetainUntil: time.Now().Add(time.Second)}})
 		if err == nil || extractErrCode(err) != http.StatusBadRequest {
-			t.Fatalf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
 		}
 
 		// Update object with future retain until time
 		attrs, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: retentionUnlocked})
 		if err != nil {
-			t.Fatalf("o.Update: %v", err)
+			t.Errorf("o.Update: %v", err)
 		}
 
 		if got, want := attrs.Retention, retentionUnlocked; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
@@ -4109,24 +4049,23 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 		// Update/Patch object with retain until time in the past returns 400
 		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{RetainUntil: time.Now().Add(-time.Second)}})
 		if err == nil || extractErrCode(err) != http.StatusBadRequest {
-			t.Fatalf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
 		}
 
 		// Update object with only one of (retain until time, retention mode) returns 400
 		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{Mode: "Locked"}})
 		if err == nil || extractErrCode(err) != http.StatusBadRequest {
-			t.Fatalf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
 		}
 
 		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{RetainUntil: time.Now().Add(time.Second)}})
 		if err == nil || extractErrCode(err) != http.StatusBadRequest {
-			t.Fatalf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
 		}
 
 		// Remove retention of Unlocked object with override_unlocked_retention=True
-		attrs, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{
-			Retention:                 &ObjectRetention{},
-			OverrideUnlockedRetention: true,
+		attrs, err = objectWithRetentionOnUpdate.OverrideUnlockedRetention(true).Update(ctx, ObjectAttrsToUpdate{
+			Retention: &ObjectRetention{},
 		})
 		if err != nil {
 			t.Fatalf("failed to remove retention from object: %v", err)
