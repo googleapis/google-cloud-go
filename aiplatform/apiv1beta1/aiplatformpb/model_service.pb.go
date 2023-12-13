@@ -67,10 +67,10 @@ type UploadModelRequest struct {
 	// Optional. The user-provided custom service account to use to do the model
 	// upload. If empty, [Vertex AI Service
 	// Agent](https://cloud.google.com/vertex-ai/docs/general/access-control#service-agents)
-	// will be used. Users uploading the Model must have the
-	// `iam.serviceAccounts.actAs` permission on this service account. Also, this
-	// account must belong to the project specified in the `parent` field and have
-	// all necessary read permissions.
+	// will be used to access resources needed to upload the model. This account
+	// must belong to the target project where the model is uploaded to, i.e., the
+	// project specified in the `parent` field of this request and have necessary
+	// read permissions (to Google Cloud Storage, Artifact Registry, etc.).
 	ServiceAccount string `protobuf:"bytes,6,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 }
 

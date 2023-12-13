@@ -14,6 +14,7 @@ use (
 	./apigeeregistry
 	./apikeys
 	./appengine
+	./apps
 	./area120
 	./artifactregistry
 	./asset
@@ -129,6 +130,7 @@ use (
 	./securesourcemanager
 	./security
 	./securitycenter
+	./securitycentermanagement
 	./servicecontrol
 	./servicedirectory
 	./servicemanagement
@@ -148,6 +150,7 @@ use (
 	./tpu
 	./trace
 	./translate
+	./vertexai
 	./video
 	./videointelligence
 	./vision

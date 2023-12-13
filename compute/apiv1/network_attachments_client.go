@@ -49,6 +49,7 @@ type NetworkAttachmentsCallOptions struct {
 	GetIamPolicy       []gax.CallOption
 	Insert             []gax.CallOption
 	List               []gax.CallOption
+	Patch              []gax.CallOption
 	SetIamPolicy       []gax.CallOption
 	TestIamPermissions []gax.CallOption
 }
@@ -109,6 +110,9 @@ func defaultNetworkAttachmentsRESTCallOptions() *NetworkAttachmentsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		SetIamPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -129,6 +133,7 @@ type internalNetworkAttachmentsClient interface {
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyNetworkAttachmentRequest, ...gax.CallOption) (*computepb.Policy, error)
 	Insert(context.Context, *computepb.InsertNetworkAttachmentRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListNetworkAttachmentsRequest, ...gax.CallOption) *NetworkAttachmentIterator
+	Patch(context.Context, *computepb.PatchNetworkAttachmentRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyNetworkAttachmentRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsNetworkAttachmentRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
@@ -196,6 +201,11 @@ func (c *NetworkAttachmentsClient) Insert(ctx context.Context, req *computepb.In
 // List lists the NetworkAttachments for a project in the given scope.
 func (c *NetworkAttachmentsClient) List(ctx context.Context, req *computepb.ListNetworkAttachmentsRequest, opts ...gax.CallOption) *NetworkAttachmentIterator {
 	return c.internalClient.List(ctx, req, opts...)
+}
+
+// Patch patches the specified NetworkAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+func (c *NetworkAttachmentsClient) Patch(ctx context.Context, req *computepb.PatchNetworkAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
@@ -332,6 +342,9 @@ func (c *networkAttachmentsRESTClient) AggregatedList(ctx context.Context, req *
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -759,6 +772,83 @@ func (c *networkAttachmentsRESTClient) List(ctx context.Context, req *computepb.
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// Patch patches the specified NetworkAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+func (c *networkAttachmentsRESTClient) Patch(ctx context.Context, req *computepb.PatchNetworkAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetNetworkAttachmentResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v", req.GetProject(), req.GetRegion(), req.GetNetworkAttachment())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "network_attachment", url.QueryEscape(req.GetNetworkAttachment()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
