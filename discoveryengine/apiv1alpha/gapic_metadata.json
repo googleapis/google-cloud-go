@@ -617,10 +617,10 @@
         }
       }
     },
-    "SiteSearchEngineService": {
+    "SearchTuningService": {
       "clients": {
         "grpc": {
-          "libraryClient": "SiteSearchEngineClient",
+          "libraryClient": "SearchTuningClient",
           "rpcs": {
             "GetOperation": {
               "methods": [
@@ -632,9 +632,108 @@
                 "ListOperations"
               ]
             },
+            "TrainCustomModel": {
+              "methods": [
+                "TrainCustomModel"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SearchTuningClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "TrainCustomModel": {
+              "methods": [
+                "TrainCustomModel"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SiteSearchEngineService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SiteSearchEngineClient",
+          "rpcs": {
+            "BatchCreateTargetSites": {
+              "methods": [
+                "BatchCreateTargetSites"
+              ]
+            },
+            "BatchVerifyTargetSites": {
+              "methods": [
+                "BatchVerifyTargetSites"
+              ]
+            },
+            "CreateTargetSite": {
+              "methods": [
+                "CreateTargetSite"
+              ]
+            },
+            "DeleteTargetSite": {
+              "methods": [
+                "DeleteTargetSite"
+              ]
+            },
+            "DisableAdvancedSiteSearch": {
+              "methods": [
+                "DisableAdvancedSiteSearch"
+              ]
+            },
+            "EnableAdvancedSiteSearch": {
+              "methods": [
+                "EnableAdvancedSiteSearch"
+              ]
+            },
+            "FetchDomainVerificationStatus": {
+              "methods": [
+                "FetchDomainVerificationStatus"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSiteSearchEngine": {
+              "methods": [
+                "GetSiteSearchEngine"
+              ]
+            },
+            "GetTargetSite": {
+              "methods": [
+                "GetTargetSite"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTargetSites": {
+              "methods": [
+                "ListTargetSites"
+              ]
+            },
             "RecrawlUris": {
               "methods": [
                 "RecrawlUris"
+              ]
+            },
+            "UpdateTargetSite": {
+              "methods": [
+                "UpdateTargetSite"
               ]
             }
           }
@@ -642,9 +741,54 @@
         "rest": {
           "libraryClient": "SiteSearchEngineClient",
           "rpcs": {
+            "BatchCreateTargetSites": {
+              "methods": [
+                "BatchCreateTargetSites"
+              ]
+            },
+            "BatchVerifyTargetSites": {
+              "methods": [
+                "BatchVerifyTargetSites"
+              ]
+            },
+            "CreateTargetSite": {
+              "methods": [
+                "CreateTargetSite"
+              ]
+            },
+            "DeleteTargetSite": {
+              "methods": [
+                "DeleteTargetSite"
+              ]
+            },
+            "DisableAdvancedSiteSearch": {
+              "methods": [
+                "DisableAdvancedSiteSearch"
+              ]
+            },
+            "EnableAdvancedSiteSearch": {
+              "methods": [
+                "EnableAdvancedSiteSearch"
+              ]
+            },
+            "FetchDomainVerificationStatus": {
+              "methods": [
+                "FetchDomainVerificationStatus"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetSiteSearchEngine": {
+              "methods": [
+                "GetSiteSearchEngine"
+              ]
+            },
+            "GetTargetSite": {
+              "methods": [
+                "GetTargetSite"
               ]
             },
             "ListOperations": {
@@ -652,9 +796,19 @@
                 "ListOperations"
               ]
             },
+            "ListTargetSites": {
+              "methods": [
+                "ListTargetSites"
+              ]
+            },
             "RecrawlUris": {
               "methods": [
                 "RecrawlUris"
+              ]
+            },
+            "UpdateTargetSite": {
+              "methods": [
+                "UpdateTargetSite"
               ]
             }
           }

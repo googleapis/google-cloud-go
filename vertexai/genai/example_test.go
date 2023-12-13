@@ -24,9 +24,14 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+// Your GCP project
 const projectID = "your-project"
+
+// A GCP location like "us-central1"
+const location = "some-gcp-location"
+
+// A model name like "gemini-pro"
 const model = "some-model"
-const location = "some-location"
 
 func ExampleGenerativeModel_GenerateContent() {
 	ctx := context.Background()

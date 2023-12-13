@@ -250,7 +250,7 @@ func (c *EngineClient) PauseEngine(ctx context.Context, req *discoveryenginepb.P
 }
 
 // ResumeEngine resumes the training of an existing engine. Only applicable if
-// solution_type is
+// SolutionType is
 // SOLUTION_TYPE_RECOMMENDATION.
 func (c *EngineClient) ResumeEngine(ctx context.Context, req *discoveryenginepb.ResumeEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
 	return c.internalClient.ResumeEngine(ctx, req, opts...)
@@ -1128,7 +1128,7 @@ func (c *engineRESTClient) PauseEngine(ctx context.Context, req *discoveryengine
 }
 
 // ResumeEngine resumes the training of an existing engine. Only applicable if
-// solution_type is
+// SolutionType is
 // SOLUTION_TYPE_RECOMMENDATION.
 func (c *engineRESTClient) ResumeEngine(ctx context.Context, req *discoveryenginepb.ResumeEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
