@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.3.0...vertexai/v0.4.0) (2023-12-13)
+
+
+### Features
+
+* **vertexai:** Add UsageMetadata ([#9155](https://github.com/googleapis/google-cloud-go/issues/9155)) ([27498e0](https://github.com/googleapis/google-cloud-go/commit/27498e05155ec8e93eb4e9b261b7aed4556a6bac))
+* **vertexai:** Update README with more details and links ([#9146](https://github.com/googleapis/google-cloud-go/issues/9146)) ([6dfbc78](https://github.com/googleapis/google-cloud-go/commit/6dfbc780548f7fe797a8618cb42f6b0ca12638c4))
+
 ## 0.1.0 (2023-12-11)
 
 
