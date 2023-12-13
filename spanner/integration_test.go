@@ -45,6 +45,7 @@ import (
 	v1 "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/stretchr/testify/require"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
@@ -2178,6 +2179,8 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			c, err = createClient(ctx, dbPath, ClientConfig{UseNumber: true, SessionPoolConfig: DefaultSessionPoolConfig})
 			require.NoError(t, err)
 			defer c.Close()
+			enableJsonProviderNumberConfig(true)
+			defer enableJsonProviderNumberConfig(false)
 		}
 		// Write rows into table first using DML.
 		statements := make([]Statement, 0)
@@ -5543,4 +5546,13 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 	if m[tagKeyLibVersion] != internal.Version {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
+}
+
+// helper method to enable json provider with useNumber flag, only for testing.
+func enableJsonProviderNumberConfig(useNumber bool) {
+	jsonProvider = jsoniter.Config{
+		EscapeHTML:  true,
+		SortMapKeys: true, // Sort map keys to ensure deterministic output, to be consistent with encoding.
+		UseNumber:   useNumber,
+	}.Froze()
 }
