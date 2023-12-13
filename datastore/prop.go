@@ -189,7 +189,6 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 		}
 		return validateChildType(t.Elem(), fieldName, flatten, true, prevTypes)
 	case reflect.Struct:
-		fmt.Printf("In validateChildType\n")
 		if t == typeOfTime || t == typeOfGeoPoint {
 			return nil
 		}

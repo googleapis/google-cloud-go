@@ -593,7 +593,6 @@ func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) (re
 
 	mutations, err := putMutations(keys, src)
 	if err != nil {
-		fmt.Printf("Error from putMutations\n")
 		return nil, err
 	}
 
@@ -683,7 +682,6 @@ func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 		}
 		p, err := saveEntity(k, elem.Interface())
 		if err != nil {
-			fmt.Printf("Error from saveEntity\n")
 			multiErr[i] = err
 			hasErr = true
 		}

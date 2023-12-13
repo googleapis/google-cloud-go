@@ -40,7 +40,6 @@ func saveEntity(key *Key, src interface{}) (*pb.Entity, error) {
 	if e, ok := src.(PropertyLoadSaver); ok {
 		props, err = e.Save()
 	} else {
-		fmt.Printf("Not of type PropertyLoadSaver\n")
 		props, err = SaveStruct(src)
 	}
 	if err != nil {
@@ -373,7 +372,6 @@ func propertiesToProto(key *Key, props []Property) (*pb.Entity, error) {
 
 		val, err := interfaceToProto(p.Value, p.NoIndex)
 		if err != nil {
-			fmt.Printf("Error from interfaceToProto in propertiesToProto\n")
 			return nil, fmt.Errorf("datastore: %v for a Property with Name %q", err, p.Name)
 		}
 		if !p.NoIndex {
