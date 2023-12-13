@@ -447,7 +447,7 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 	default:
 		return fmt.Errorf("unknown type: %+v: protoName=%s", ti.spec, ti.protoName)
 	}
-	processDoc(ti.decl, tconf)
+	processDoc(ti.decl, ti.protoName, tconf)
 	if ti.values != nil {
 		ti.valueNames = processEnumValues(ti.values, tconf)
 	}
@@ -533,14 +533,15 @@ func processEnumValues(d *ast.GenDecl, tc *typeConfig) []string {
 	for _, s := range d.Specs {
 		vs := s.(*ast.ValueSpec)
 		id := vs.Names[0]
-		vn := veneerValueName(id.Name, tc)
-		valueNames = append(valueNames, vn)
-		id.Name = vn
+		protoName := id.Name
+		veneerName := veneerValueName(id.Name, tc)
+		valueNames = append(valueNames, veneerName)
+		id.Name = veneerName
 
 		if tc != nil {
 			vs.Type.(*ast.Ident).Name = tc.Name
 		}
-		modifyCommentGroup(vs.Doc, id.Name, "means")
+		modifyCommentGroup(vs.Doc, protoName, veneerName, "means", "")
 	}
 	return valueNames
 }
@@ -564,9 +565,11 @@ func veneerValueName(protoValueName string, tc *typeConfig) string {
 	return tc.VeneerPrefix + snakeToCamelCase(name)
 }
 
-func processDoc(gd *ast.GenDecl, tc *typeConfig) {
+func processDoc(gd *ast.GenDecl, protoName string, tc *typeConfig) {
+	doc := ""
 	verb := ""
 	if tc != nil {
+		doc = tc.Doc
 		verb = tc.DocVerb
 	}
 
@@ -583,10 +586,10 @@ func processDoc(gd *ast.GenDecl, tc *typeConfig) {
 	if tc != nil && name != tc.Name {
 		panic(fmt.Errorf("GenDecl name is %q, config name is %q", name, tc.Name))
 	}
-	modifyCommentGroup(gd.Doc, name, verb)
+	modifyCommentGroup(gd.Doc, protoName, name, verb, doc)
 }
 
-func modifyCommentGroup(cg *ast.CommentGroup, name, verb string) {
+func modifyCommentGroup(cg *ast.CommentGroup, protoName, veneerName, verb, doc string) {
 	if cg == nil {
 		return
 	}
@@ -594,25 +597,41 @@ func modifyCommentGroup(cg *ast.CommentGroup, name, verb string) {
 		return
 	}
 	c := cg.List[0]
-	if len(c.Text) < 4 {
-		return
+	c.Text = "// " + adjustDoc(strings.TrimPrefix(c.Text, "// "), protoName, veneerName, verb, doc)
+}
+
+// adjustDoc takes a doc string with initial comment characters and whitespace removed, and returns
+// a replacement that uses the given veneer name, verb and new doc string.
+func adjustDoc(origDoc, protoName, veneerName, verb, newDoc string) string {
+	// if newDoc is non-empty, completely replace the existing doc.
+	if newDoc != "" {
+		return veneerName + " " + newDoc
 	}
-	// If the comment starts with the type name, do nothing.
-	if strings.HasPrefix(c.Text, "// "+name) {
-		return
+	// If the doc string starts with the proto name, just replace it with the
+	// veneer name. We can't do anything about the verb because we don't know
+	// where it is in the original doc string. (I guess we could assume it's the
+	// next word, but that might not always work.)
+	if strings.HasPrefix(origDoc, protoName+" ") {
+		return veneerName + origDoc[len(protoName):]
 	}
+
 	// Lowercase the first letter of the given doc if it's not part of an acronym.
-	// TODO: Use runes throughout, not bytes.
-	var text string
-	if len(c.Text) > 4 && unicode.IsUpper(rune(c.Text[3])) && unicode.IsUpper(rune(c.Text[4])) {
-		text = c.Text[3:]
-	} else {
-		text = string(unicode.ToLower(rune(c.Text[3]))) + c.Text[4:]
+	runes := []rune(origDoc)
+	// It shouldn't be possible for the original doc string to be empty,
+	// but check just in case to avoid panics.
+	if len(runes) == 0 {
+		return origDoc
 	}
+	// Heuristic: an acronym begins with two consecutive uppercase letters.
+	if unicode.IsUpper(runes[0]) && (len(runes) == 1 || !unicode.IsUpper(runes[1])) {
+		runes[0] = unicode.ToLower(runes[0])
+		origDoc = string(runes)
+	}
+
 	if verb == "" {
 		verb = "is"
 	}
-	c.Text = fmt.Sprintf("// %s %s %s", name, verb, text)
+	return fmt.Sprintf("%s %s %s", veneerName, verb, origDoc)
 }
 
 ////////////////////////////////////////////////////////////////

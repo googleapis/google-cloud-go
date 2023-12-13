@@ -54,7 +54,10 @@ type typeConfig struct {
 	Fields map[string]fieldConfig
 	// Custom conversion functions: "tofunc, fromfunc"
 	ConvertToFrom string `yaml:"convertToFrom"`
+	// Doc string for the type, omitting the initial type name.
+	Doc string
 	// Verb to place after type name in doc. Default: "is".
+	// Ignored if Doc is non-empty.
 	DocVerb string `yaml:"docVerb"`
 }
 
