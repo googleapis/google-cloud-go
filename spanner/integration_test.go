@@ -2179,8 +2179,8 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			c, err = createClient(ctx, dbPath, ClientConfig{UseNumber: true, SessionPoolConfig: DefaultSessionPoolConfig})
 			require.NoError(t, err)
 			defer c.Close()
-			enableJsonProviderNumberConfig(true)
-			defer enableJsonProviderNumberConfig(false)
+			enableJSONProviderNumberConfig(true)
+			defer enableJSONProviderNumberConfig(false)
 		}
 		// Write rows into table first using DML.
 		statements := make([]Statement, 0)
@@ -5549,7 +5549,7 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 }
 
 // helper method to enable json provider with useNumber flag, only for testing.
-func enableJsonProviderNumberConfig(useNumber bool) {
+func enableJSONProviderNumberConfig(useNumber bool) {
 	jsonProvider = jsoniter.Config{
 		EscapeHTML:  true,
 		SortMapKeys: true, // Sort map keys to ensure deterministic output, to be consistent with encoding.
