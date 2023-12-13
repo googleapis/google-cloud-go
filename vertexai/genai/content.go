@@ -17,7 +17,7 @@ package genai
 import (
 	"fmt"
 
-	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
+	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 )
 
 const (
@@ -51,6 +51,12 @@ func partFromProto(p *pb.Part) Part {
 			MIMEType: d.FileData.MimeType,
 			FileURI:  d.FileData.FileUri,
 		}
+	case *pb.Part_FunctionCall:
+		return *(FunctionCall{}).fromProto(d.FunctionCall)
+
+	case *pb.Part_FunctionResponse:
+		panic("FunctionResponse unimplemented")
+
 	default:
 		panic(fmt.Errorf("unknown Part.Data type %T", p.Data))
 	}
@@ -77,6 +83,22 @@ func (f FileData) toPart() *pb.Part {
 	return &pb.Part{
 		Data: &pb.Part_FileData{
 			FileData: f.toProto(),
+		},
+	}
+}
+
+func (f FunctionCall) toPart() *pb.Part {
+	return &pb.Part{
+		Data: &pb.Part_FunctionCall{
+			FunctionCall: f.toProto(),
+		},
+	}
+}
+
+func (f FunctionResponse) toPart() *pb.Part {
+	return &pb.Part{
+		Data: &pb.Part_FunctionResponse{
+			FunctionResponse: f.toProto(),
 		},
 	}
 }
