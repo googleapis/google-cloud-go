@@ -47,6 +47,12 @@
 // However, the types of the individual oneof cases can be generated.
 package main
 
+// TODO:
+// - have omitFields on a TypeConfig, like omitTypes
+// - Instead of parseCustomConverter, accept a list. Users can use the inline form
+//   to be compact.
+// - Check that a configured field is actually in the type.
+
 import (
 	"bytes"
 	"context"
@@ -169,6 +175,7 @@ func generate(conf *config, pkg *ast.Package, fset *token.FileSet) (src []byte, 
 
 	// Consult the config to determine which types to omit.
 	// If a type isn't matched by a glob in the OmitTypes list, it is output.
+	// If a type is matched, but it also has a config, it is still output.
 	var toWrite []*typeInfo
 	for name, ti := range typeInfos {
 		if !ast.IsExported(name) {
@@ -180,10 +187,8 @@ func generate(conf *config, pkg *ast.Package, fset *token.FileSet) (src []byte, 
 		if err != nil {
 			return nil, err
 		}
-		if !omit {
+		if !omit || conf.Types[name] != nil {
 			toWrite = append(toWrite, ti)
-		} else if conf.Types[name] != nil {
-			return nil, fmt.Errorf("type %s is both omitted and configured", name)
 		}
 	}
 
@@ -215,7 +220,10 @@ func generate(conf *config, pkg *ast.Package, fset *token.FileSet) (src []byte, 
 	// Use the converters map to give every field a converter.
 	for _, ti := range toWrite {
 		for _, f := range ti.fields {
-			f.converter = makeConverter(f.af.Type, f.protoType, converters)
+			f.converter, err = makeConverter(f.af.Type, f.protoType, converters)
+			if err != nil {
+				return nil, fmt.Errorf("%s.%s: %w", ti.protoName, f.protoName, err)
+			}
 		}
 	}
 
@@ -285,9 +293,9 @@ func parseCustomConverter(name, value string) (converter, error) {
 // makeConverter constructs a converter for the given type. Not every type is in the map: this
 // function puts together converters for types like pointers, slices and maps, as well as
 // named types.
-func makeConverter(veneerType, protoType ast.Expr, converters map[string]converter) converter {
+func makeConverter(veneerType, protoType ast.Expr, converters map[string]converter) (converter, error) {
 	if c, ok := converters[typeString(veneerType)]; ok {
-		return c
+		return c, nil
 	}
 	// If there is no converter for this type, look for a converter for a part of the type.
 	switch t := veneerType.(type) {
@@ -295,22 +303,28 @@ func makeConverter(veneerType, protoType ast.Expr, converters map[string]convert
 		// Handle the case where the veneer type is the dereference of the proto type.
 		if se, ok := protoType.(*ast.StarExpr); ok {
 			if identName(se.X) != t.Name {
-				log.Fatalf("veneer type %s does not match derefed proto type %s", t.Name, identName(se.X))
+				return nil, fmt.Errorf("veneer type %s does not match dereferenced proto type %s", t.Name, identName(se.X))
 			}
-			return derefConverter{}
+			return derefConverter{}, nil
 		}
-		return identityConverter{}
+		return identityConverter{}, nil
 	case *ast.StarExpr:
 		return makeConverter(t.X, protoType.(*ast.StarExpr).X, converters)
 	case *ast.ArrayType:
-		eltc := makeConverter(t.Elt, protoType.(*ast.ArrayType).Elt, converters)
-		return sliceConverter{eltc}
+		eltc, err := makeConverter(t.Elt, protoType.(*ast.ArrayType).Elt, converters)
+		if err != nil {
+			return nil, err
+		}
+		return sliceConverter{eltc}, nil
 	case *ast.MapType:
 		// Assume the key types are the same.
-		vc := makeConverter(t.Value, protoType.(*ast.MapType).Value, converters)
-		return mapConverter{vc}
+		vc, err := makeConverter(t.Value, protoType.(*ast.MapType).Value, converters)
+		if err != nil {
+			return nil, err
+		}
+		return mapConverter{vc}, nil
 	default:
-		return identityConverter{}
+		return identityConverter{}, nil
 	}
 }
 
@@ -398,6 +412,24 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 	ti.spec.Name.Name = ti.veneerName
 	switch t := ti.spec.Type.(type) {
 	case *ast.StructType:
+		// Check that all configured fields are present.
+		exportedFields := map[string]bool{}
+		for _, f := range t.Fields.List {
+			if len(f.Names) > 1 {
+				return fmt.Errorf("%s: multiple names in one field spec not supported: %v", ti.protoName, f.Names)
+			}
+			if f.Names[0].IsExported() {
+				exportedFields[f.Names[0].Name] = true
+			}
+		}
+		if tconf != nil {
+			for name := range tconf.Fields {
+				if !exportedFields[name] {
+					return fmt.Errorf("%s: configured field %s is not present", ti.protoName, name)
+				}
+			}
+		}
+		// Process the fields.
 		fs := t.Fields.List
 		t.Fields.List = t.Fields.List[:0]
 		for _, f := range fs {
@@ -424,9 +456,6 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 
 // processField processes a struct field.
 func processField(af *ast.Field, tc *typeConfig, typeInfos map[string]*typeInfo) (*fieldInfo, error) {
-	if len(af.Names) > 1 {
-		return nil, fmt.Errorf("multiple names in one field spec not supported: %v", af.Names)
-	}
 	id := af.Names[0]
 	if !id.IsExported() {
 		return nil, nil
@@ -784,7 +813,11 @@ func identName(x any) string {
 func snakeToCamelCase(s string) string {
 	words := strings.Split(s, "_")
 	for i, w := range words {
-		words[i] = fmt.Sprintf("%c%s", unicode.ToUpper(rune(w[0])), strings.ToLower(w[1:]))
+		if len(w) == 0 {
+			words[i] = w
+		} else {
+			words[i] = fmt.Sprintf("%c%s", unicode.ToUpper(rune(w[0])), strings.ToLower(w[1:]))
+		}
 	}
 	return strings.Join(words, "")
 }
