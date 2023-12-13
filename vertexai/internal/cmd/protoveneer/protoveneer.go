@@ -47,6 +47,12 @@
 // However, the types of the individual oneof cases can be generated.
 package main
 
+// TODO:
+// - have omitFields on a TypeConfig, like omitTypes
+// - Instead of parseCustomConverter, accept a list. Users can use the inline form
+//   to be compact.
+// - Check that a configured field is actually in the type.
+
 import (
 	"bytes"
 	"context"
@@ -169,6 +175,7 @@ func generate(conf *config, pkg *ast.Package, fset *token.FileSet) (src []byte, 
 
 	// Consult the config to determine which types to omit.
 	// If a type isn't matched by a glob in the OmitTypes list, it is output.
+	// If a type is matched, but it also has a config, it is still output.
 	var toWrite []*typeInfo
 	for name, ti := range typeInfos {
 		if !ast.IsExported(name) {
@@ -180,10 +187,8 @@ func generate(conf *config, pkg *ast.Package, fset *token.FileSet) (src []byte, 
 		if err != nil {
 			return nil, err
 		}
-		if !omit {
+		if !omit || conf.Types[name] != nil {
 			toWrite = append(toWrite, ti)
-		} else if conf.Types[name] != nil {
-			return nil, fmt.Errorf("type %s is both omitted and configured", name)
 		}
 	}
 
@@ -215,7 +220,10 @@ func generate(conf *config, pkg *ast.Package, fset *token.FileSet) (src []byte, 
 	// Use the converters map to give every field a converter.
 	for _, ti := range toWrite {
 		for _, f := range ti.fields {
-			f.converter = makeConverter(f.af.Type, f.protoType, converters)
+			f.converter, err = makeConverter(f.af.Type, f.protoType, converters)
+			if err != nil {
+				return nil, fmt.Errorf("%s.%s: %w", ti.protoName, f.protoName, err)
+			}
 		}
 	}
 
@@ -285,9 +293,9 @@ func parseCustomConverter(name, value string) (converter, error) {
 // makeConverter constructs a converter for the given type. Not every type is in the map: this
 // function puts together converters for types like pointers, slices and maps, as well as
 // named types.
-func makeConverter(veneerType, protoType ast.Expr, converters map[string]converter) converter {
+func makeConverter(veneerType, protoType ast.Expr, converters map[string]converter) (converter, error) {
 	if c, ok := converters[typeString(veneerType)]; ok {
-		return c
+		return c, nil
 	}
 	// If there is no converter for this type, look for a converter for a part of the type.
 	switch t := veneerType.(type) {
@@ -295,22 +303,28 @@ func makeConverter(veneerType, protoType ast.Expr, converters map[string]convert
 		// Handle the case where the veneer type is the dereference of the proto type.
 		if se, ok := protoType.(*ast.StarExpr); ok {
 			if identName(se.X) != t.Name {
-				log.Fatalf("veneer type %s does not match derefed proto type %s", t.Name, identName(se.X))
+				return nil, fmt.Errorf("veneer type %s does not match dereferenced proto type %s", t.Name, identName(se.X))
 			}
-			return derefConverter{}
+			return derefConverter{}, nil
 		}
-		return identityConverter{}
+		return identityConverter{}, nil
 	case *ast.StarExpr:
 		return makeConverter(t.X, protoType.(*ast.StarExpr).X, converters)
 	case *ast.ArrayType:
-		eltc := makeConverter(t.Elt, protoType.(*ast.ArrayType).Elt, converters)
-		return sliceConverter{eltc}
+		eltc, err := makeConverter(t.Elt, protoType.(*ast.ArrayType).Elt, converters)
+		if err != nil {
+			return nil, err
+		}
+		return sliceConverter{eltc}, nil
 	case *ast.MapType:
 		// Assume the key types are the same.
-		vc := makeConverter(t.Value, protoType.(*ast.MapType).Value, converters)
-		return mapConverter{vc}
+		vc, err := makeConverter(t.Value, protoType.(*ast.MapType).Value, converters)
+		if err != nil {
+			return nil, err
+		}
+		return mapConverter{vc}, nil
 	default:
-		return identityConverter{}
+		return identityConverter{}, nil
 	}
 }
 
@@ -398,6 +412,24 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 	ti.spec.Name.Name = ti.veneerName
 	switch t := ti.spec.Type.(type) {
 	case *ast.StructType:
+		// Check that all configured fields are present.
+		exportedFields := map[string]bool{}
+		for _, f := range t.Fields.List {
+			if len(f.Names) > 1 {
+				return fmt.Errorf("%s: multiple names in one field spec not supported: %v", ti.protoName, f.Names)
+			}
+			if f.Names[0].IsExported() {
+				exportedFields[f.Names[0].Name] = true
+			}
+		}
+		if tconf != nil {
+			for name := range tconf.Fields {
+				if !exportedFields[name] {
+					return fmt.Errorf("%s: configured field %s is not present", ti.protoName, name)
+				}
+			}
+		}
+		// Process the fields.
 		fs := t.Fields.List
 		t.Fields.List = t.Fields.List[:0]
 		for _, f := range fs {
@@ -415,7 +447,7 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 	default:
 		return fmt.Errorf("unknown type: %+v: protoName=%s", ti.spec, ti.protoName)
 	}
-	processDoc(ti.decl, tconf)
+	processDoc(ti.decl, ti.protoName, tconf)
 	if ti.values != nil {
 		ti.valueNames = processEnumValues(ti.values, tconf)
 	}
@@ -424,9 +456,6 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 
 // processField processes a struct field.
 func processField(af *ast.Field, tc *typeConfig, typeInfos map[string]*typeInfo) (*fieldInfo, error) {
-	if len(af.Names) > 1 {
-		return nil, fmt.Errorf("multiple names in one field spec not supported: %v", af.Names)
-	}
 	id := af.Names[0]
 	if !id.IsExported() {
 		return nil, nil
@@ -504,14 +533,15 @@ func processEnumValues(d *ast.GenDecl, tc *typeConfig) []string {
 	for _, s := range d.Specs {
 		vs := s.(*ast.ValueSpec)
 		id := vs.Names[0]
-		vn := veneerValueName(id.Name, tc)
-		valueNames = append(valueNames, vn)
-		id.Name = vn
+		protoName := id.Name
+		veneerName := veneerValueName(id.Name, tc)
+		valueNames = append(valueNames, veneerName)
+		id.Name = veneerName
 
 		if tc != nil {
 			vs.Type.(*ast.Ident).Name = tc.Name
 		}
-		modifyCommentGroup(vs.Doc, id.Name, "means")
+		modifyCommentGroup(vs.Doc, protoName, veneerName, "means", "")
 	}
 	return valueNames
 }
@@ -535,9 +565,11 @@ func veneerValueName(protoValueName string, tc *typeConfig) string {
 	return tc.VeneerPrefix + snakeToCamelCase(name)
 }
 
-func processDoc(gd *ast.GenDecl, tc *typeConfig) {
+func processDoc(gd *ast.GenDecl, protoName string, tc *typeConfig) {
+	doc := ""
 	verb := ""
 	if tc != nil {
+		doc = tc.Doc
 		verb = tc.DocVerb
 	}
 
@@ -554,10 +586,10 @@ func processDoc(gd *ast.GenDecl, tc *typeConfig) {
 	if tc != nil && name != tc.Name {
 		panic(fmt.Errorf("GenDecl name is %q, config name is %q", name, tc.Name))
 	}
-	modifyCommentGroup(gd.Doc, name, verb)
+	modifyCommentGroup(gd.Doc, protoName, name, verb, doc)
 }
 
-func modifyCommentGroup(cg *ast.CommentGroup, name, verb string) {
+func modifyCommentGroup(cg *ast.CommentGroup, protoName, veneerName, verb, doc string) {
 	if cg == nil {
 		return
 	}
@@ -565,25 +597,41 @@ func modifyCommentGroup(cg *ast.CommentGroup, name, verb string) {
 		return
 	}
 	c := cg.List[0]
-	if len(c.Text) < 4 {
-		return
+	c.Text = "// " + adjustDoc(strings.TrimPrefix(c.Text, "// "), protoName, veneerName, verb, doc)
+}
+
+// adjustDoc takes a doc string with initial comment characters and whitespace removed, and returns
+// a replacement that uses the given veneer name, verb and new doc string.
+func adjustDoc(origDoc, protoName, veneerName, verb, newDoc string) string {
+	// if newDoc is non-empty, completely replace the existing doc.
+	if newDoc != "" {
+		return veneerName + " " + newDoc
 	}
-	// If the comment starts with the type name, do nothing.
-	if strings.HasPrefix(c.Text, "// "+name) {
-		return
+	// If the doc string starts with the proto name, just replace it with the
+	// veneer name. We can't do anything about the verb because we don't know
+	// where it is in the original doc string. (I guess we could assume it's the
+	// next word, but that might not always work.)
+	if strings.HasPrefix(origDoc, protoName+" ") {
+		return veneerName + origDoc[len(protoName):]
 	}
+
 	// Lowercase the first letter of the given doc if it's not part of an acronym.
-	// TODO: Use runes throughout, not bytes.
-	var text string
-	if len(c.Text) > 4 && unicode.IsUpper(rune(c.Text[3])) && unicode.IsUpper(rune(c.Text[4])) {
-		text = c.Text[3:]
-	} else {
-		text = string(unicode.ToLower(rune(c.Text[3]))) + c.Text[4:]
+	runes := []rune(origDoc)
+	// It shouldn't be possible for the original doc string to be empty,
+	// but check just in case to avoid panics.
+	if len(runes) == 0 {
+		return origDoc
 	}
+	// Heuristic: an acronym begins with two consecutive uppercase letters.
+	if unicode.IsUpper(runes[0]) && (len(runes) == 1 || !unicode.IsUpper(runes[1])) {
+		runes[0] = unicode.ToLower(runes[0])
+		origDoc = string(runes)
+	}
+
 	if verb == "" {
 		verb = "is"
 	}
-	c.Text = fmt.Sprintf("// %s %s %s", name, verb, text)
+	return fmt.Sprintf("%s %s %s", veneerName, verb, origDoc)
 }
 
 ////////////////////////////////////////////////////////////////
@@ -784,7 +832,11 @@ func identName(x any) string {
 func snakeToCamelCase(s string) string {
 	words := strings.Split(s, "_")
 	for i, w := range words {
-		words[i] = fmt.Sprintf("%c%s", unicode.ToUpper(rune(w[0])), strings.ToLower(w[1:]))
+		if len(w) == 0 {
+			words[i] = w
+		} else {
+			words[i] = fmt.Sprintf("%c%s", unicode.ToUpper(rune(w[0])), strings.ToLower(w[1:]))
+		}
 	}
 	return strings.Join(words, "")
 }

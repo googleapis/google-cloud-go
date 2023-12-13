@@ -87,9 +87,15 @@ types:
           type: string
 
 
+    GenerateContentResponse:
+      doc: 'is the response from a GenerateContent or GenerateContentStream call.'
+
     GenerateContentResponse_PromptFeedback:
       name: PromptFeedback
       docVerb: contains
+
+    GenerateContentResponse_UsageMetadata:
+      name: UsageMetadata
 
     CountTokensResponse:
 
@@ -101,42 +107,13 @@ types:
         Example:
           omit: true
 
+    CitationMetadata:
+    FunctionDeclaration:
+    SafetySetting:
 
+# Omit everything that is not explicitly configured.
 omitTypes:
-  - Attribution
-  - BigQuery*
-  - BlurBaselineConfig
-  - Context
-  - DataItem
-  - Direct*
-  - EnvVar
-  - Event*
-  - Example*
-  - Execution*
-  - ExplainResponse*
-  - Feature*
-  - GenerateContentResponse
-  - GenerateContentResponse_UsageMetadata
-  - MetadataSchema*
-  - Neighbor
-  - Part
-  - Part_*
-  - Presets*
-  - Sampled*
-  - SmoothGrad*
-  - Tensor*
-  - Unimplemented*
-  - Value*
-  - VideoMetadata
-  - '*Annotation*'
-  - '*Array'
-  - '*Attribution'
-  - '*Destination'
-  - '*Explanation*'
-  - '*Operation*'
-  - '*Predict*'
-  - '*Request'
-  - '*Source'
+  - '*'
 
 
 converters:
