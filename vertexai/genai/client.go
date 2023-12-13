@@ -47,7 +47,8 @@ type Client struct {
 // package.
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
 	apiEndpoint := fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)
-	c, err := aiplatform.NewPredictionClient(ctx, option.WithEndpoint(apiEndpoint))
+	opts = append(opts, option.WithEndpoint(apiEndpoint))
+	c, err := aiplatform.NewPredictionClient(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
