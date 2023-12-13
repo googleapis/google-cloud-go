@@ -21,11 +21,8 @@
 package discoveryenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1361,7 +1360,7 @@ type EngineServiceClient interface {
 	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1alpha.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	PauseEngine(ctx context.Context, in *PauseEngineRequest, opts ...grpc.CallOption) (*Engine, error)
 	// Resumes the training of an existing engine. Only applicable if
-	// [solution_type][] is
+	// [SolutionType][google.cloud.discoveryengine.v1alpha.SolutionType] is
 	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1alpha.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	ResumeEngine(ctx context.Context, in *ResumeEngineRequest, opts ...grpc.CallOption) (*Engine, error)
 	// Tunes an existing engine. Only applicable if [solution_type][] is
@@ -1467,7 +1466,7 @@ type EngineServiceServer interface {
 	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1alpha.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	PauseEngine(context.Context, *PauseEngineRequest) (*Engine, error)
 	// Resumes the training of an existing engine. Only applicable if
-	// [solution_type][] is
+	// [SolutionType][google.cloud.discoveryengine.v1alpha.SolutionType] is
 	// [SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1alpha.SolutionType.SOLUTION_TYPE_RECOMMENDATION].
 	ResumeEngine(context.Context, *ResumeEngineRequest) (*Engine, error)
 	// Tunes an existing engine. Only applicable if [solution_type][] is
