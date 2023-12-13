@@ -994,7 +994,7 @@ func (o *ObjectHandle) ObjectName() string {
 //	    ContentType: "text/html",
 //	    ContentEncoding: "",
 //	    Metadata: map[string]string{},
-//		Retention: &ObjectRetention{},
+//	    Retention: &ObjectRetention{},
 //	}
 type ObjectAttrsToUpdate struct {
 	EventBasedHold     optional.Bool

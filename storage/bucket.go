@@ -470,7 +470,7 @@ type BucketAttrs struct {
 	// retention is disabled.
 	// This field is read-only. Object retention can be enabled only by creating
 	// a bucket with SetObjectRetention set to true on the BucketHandle. It
-	// cannot be modified.
+	// cannot be modified once the bucket is created.
 	// ObjectRetention cannot be configured or reported through the gRPC API.
 	ObjectRetentionMode string
 }
@@ -1361,9 +1361,9 @@ func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
 	return b.c.tc.LockBucketRetentionPolicy(ctx, b.name, b.conds, o...)
 }
 
-// SetObjectRetention returns a new BucketHandle that allows enabling object
-// retention on bucket creation. To enable object retention, you must use the
-// returned handle to create the bucket.
+// SetObjectRetention returns a new BucketHandle that will enable object retention
+// on bucket creation. To enable object retention, you must use the returned
+// handle to create the bucket. This has no effect on an already existing bucket.
 // ObjectRetention is not enabled by default.
 // ObjectRetention cannot be configured through the gRPC API.
 func (b *BucketHandle) SetObjectRetention(enable bool) *BucketHandle {
