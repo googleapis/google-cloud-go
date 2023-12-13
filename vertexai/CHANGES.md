@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.4.0...vertexai/v0.5.0) (2023-12-13)
+
+
+### Features
+
+* **vertexai:** Fix README link and add example comments ([#9157](https://github.com/googleapis/google-cloud-go/issues/9157)) ([25f04f2](https://github.com/googleapis/google-cloud-go/commit/25f04f2adf24bebacefd686a378aad986f3a192c))
+
+
+### Bug Fixes
+
+* **vertexai:** Set internal headers ([#9151](https://github.com/googleapis/google-cloud-go/issues/9151)) ([eb5a007](https://github.com/googleapis/google-cloud-go/commit/eb5a007d1ddaece1438fa02cc465a501bad05d4b))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.3.0...vertexai/v0.4.0) (2023-12-13)
 
 
