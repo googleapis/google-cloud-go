@@ -87,9 +87,15 @@ types:
           type: string
 
 
+    GenerateContentResponse:
+      doc: 'is the response from a GenerateContent or GenerateContentStream call.'
+
     GenerateContentResponse_PromptFeedback:
       name: PromptFeedback
       docVerb: contains
+
+    GenerateContentResponse_UsageMetadata:
+      name: UsageMetadata
 
     CountTokensResponse:
 
