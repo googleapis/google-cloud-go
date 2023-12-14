@@ -722,7 +722,6 @@ func TestIntegration_TableResourceTags(t *testing.T) {
 
 	var found bool
 	for k, v := range md.ResourceTags {
-		t.Logf("key %q val %q", k, v)
 		if k == testKey && v == "COFFEE" {
 			found = true
 			break
