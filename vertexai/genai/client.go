@@ -46,8 +46,10 @@ type Client struct {
 // You may configure the client by passing in options from the [google.golang.org/api/option]
 // package.
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
-	apiEndpoint := fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)
-	c, err := aiplatform.NewPredictionClient(ctx, option.WithEndpoint(apiEndpoint))
+	opts = append([]option.ClientOption{
+		option.WithEndpoint(fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)),
+	}, opts...)
+	c, err := aiplatform.NewPredictionClient(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
