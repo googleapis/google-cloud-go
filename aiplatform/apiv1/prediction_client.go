@@ -48,6 +48,7 @@ type PredictionCallOptions struct {
 	ServerStreamingPredict []gax.CallOption
 	StreamingRawPredict    []gax.CallOption
 	Explain                []gax.CallOption
+	StreamGenerateContent  []gax.CallOption
 	GetLocation            []gax.CallOption
 	ListLocations          []gax.CallOption
 	GetIamPolicy           []gax.CallOption
@@ -82,6 +83,7 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 		ServerStreamingPredict: []gax.CallOption{},
 		StreamingRawPredict:    []gax.CallOption{},
 		Explain:                []gax.CallOption{},
+		StreamGenerateContent:  []gax.CallOption{},
 		GetLocation:            []gax.CallOption{},
 		ListLocations:          []gax.CallOption{},
 		GetIamPolicy:           []gax.CallOption{},
@@ -108,6 +110,7 @@ type internalPredictionClient interface {
 	ServerStreamingPredict(context.Context, *aiplatformpb.StreamingPredictRequest, ...gax.CallOption) (aiplatformpb.PredictionService_ServerStreamingPredictClient, error)
 	StreamingRawPredict(context.Context, ...gax.CallOption) (aiplatformpb.PredictionService_StreamingRawPredictClient, error)
 	Explain(context.Context, *aiplatformpb.ExplainRequest, ...gax.CallOption) (*aiplatformpb.ExplainResponse, error)
+	StreamGenerateContent(context.Context, *aiplatformpb.GenerateContentRequest, ...gax.CallOption) (aiplatformpb.PredictionService_StreamGenerateContentClient, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -216,6 +219,11 @@ func (c *PredictionClient) StreamingRawPredict(ctx context.Context, opts ...gax.
 // populated.
 func (c *PredictionClient) Explain(ctx context.Context, req *aiplatformpb.ExplainRequest, opts ...gax.CallOption) (*aiplatformpb.ExplainResponse, error) {
 	return c.internalClient.Explain(ctx, req, opts...)
+}
+
+// StreamGenerateContent generate content with multimodal inputs with streaming support.
+func (c *PredictionClient) StreamGenerateContent(ctx context.Context, req *aiplatformpb.GenerateContentRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamGenerateContentClient, error) {
+	return c.internalClient.StreamGenerateContent(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -490,6 +498,24 @@ func (c *predictionGRPCClient) Explain(ctx context.Context, req *aiplatformpb.Ex
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.predictionClient.Explain(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) StreamGenerateContent(ctx context.Context, req *aiplatformpb.GenerateContentRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamGenerateContentClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "model", url.QueryEscape(req.GetModel()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).StreamGenerateContent[0:len((*c.CallOptions).StreamGenerateContent):len((*c.CallOptions).StreamGenerateContent)], opts...)
+	var resp aiplatformpb.PredictionService_StreamGenerateContentClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.predictionClient.StreamGenerateContent(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

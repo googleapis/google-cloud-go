@@ -621,6 +621,9 @@ func TestNewBucket(t *testing.T) {
 			RetentionPeriod: 3,
 			EffectiveTime:   aTime.Format(time.RFC3339),
 		},
+		ObjectRetention: &raw.BucketObjectRetention{
+			Mode: "Enabled",
+		},
 		IamConfiguration: &raw.BucketIamConfiguration{
 			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
 				Enabled:    true,
@@ -686,6 +689,7 @@ func TestNewBucket(t *testing.T) {
 			EffectiveTime:   aTime,
 			RetentionPeriod: 3 * time.Second,
 		},
+		ObjectRetentionMode:      "Enabled",
 		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true, LockedTime: aTime},
 		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true, LockedTime: aTime},
 		CORS: []CORS{
@@ -714,7 +718,7 @@ func TestNewBucket(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
@@ -817,7 +821,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		},
 	}
 	got := newBucketFromProto(pb)
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
