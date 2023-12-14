@@ -21,12 +21,13 @@
 package generativelanguagepb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -510,9 +511,10 @@ func (*CustomMetadata_NumericValue) isCustomMetadata_Value() {}
 // User provided filter to limit retrieval based on `Chunk` or `Document` level
 // metadata values.
 // Example (genre = drama OR genre = action):
-//   key = "document.custom_metadata.genre"
-//   conditions = [{string_value = "drama", operation = EQUAL},
-//                 {string_value = "action", operation = EQUAL}]
+//
+//	key = "document.custom_metadata.genre"
+//	conditions = [{string_value = "drama", operation = EQUAL},
+//	              {string_value = "action", operation = EQUAL}]
 type MetadataFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
