@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.2.0...ai/v0.3.0) (2023-12-13)
+
+
+### Features
+
+* **ai:** Expose ability to set headers ([#9154](https://github.com/googleapis/google-cloud-go/issues/9154)) ([40f2d6a](https://github.com/googleapis/google-cloud-go/commit/40f2d6aadffb43f4661badf83274c84f9908f7c1))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.1.4...ai/v0.2.0) (2023-12-11)
 
 

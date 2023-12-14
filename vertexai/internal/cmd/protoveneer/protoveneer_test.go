@@ -95,3 +95,52 @@ func TestCamelToUpperSnakeCase(t *testing.T) {
 		}
 	}
 }
+
+func TestAdjustDoc(t *testing.T) {
+	const protoName = "PName"
+	const veneerName = "VName"
+	for i, test := range []struct {
+		origDoc string
+		verb    string
+		newDoc  string
+		want    string
+	}{
+		{
+			origDoc: "",
+			verb:    "foo",
+			newDoc:  "",
+			want:    "",
+		},
+		{
+			origDoc: "",
+			verb:    "",
+			newDoc:  "is new doc.",
+			want:    "VName is new doc.",
+		},
+		{
+			origDoc: "The harm category is dangerous content.",
+			verb:    "means",
+			want:    "VName means the harm category is dangerous content.",
+		},
+		{
+			origDoc: "URI for the file.",
+			verb:    "is the",
+			want:    "VName is the URI for the file.",
+		},
+		{
+			origDoc: "PName is a thing.",
+			newDoc:  "contains something else.",
+			want:    "VName contains something else.",
+		},
+		{
+			origDoc: "PName is a thing.",
+			verb:    "ignored",
+			want:    "VName is a thing.",
+		},
+	} {
+		got := adjustDoc(test.origDoc, protoName, veneerName, test.verb, test.newDoc)
+		if got != test.want {
+			t.Errorf("#%d: got %q, want %q", i, got, test.want)
+		}
+	}
+}

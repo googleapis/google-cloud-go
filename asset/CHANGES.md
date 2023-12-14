@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.15.3...asset/v1.16.0) (2023-12-13)
+
+
+### Features
+
+* **asset:** Added messages ExportAssetsResponse, BatchGetAssetsHistoryResponse ([3d9f556](https://github.com/googleapis/google-cloud-go/commit/3d9f55678654fe678d44f3f4a08bf26c3830b653))
+
 ## [1.15.3](https://github.com/googleapis/google-cloud-go/compare/asset/v1.15.2...asset/v1.15.3) (2023-11-01)
 
 
