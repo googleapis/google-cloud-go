@@ -700,28 +700,30 @@ func TestIntegration_TableResourceTags(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
+
+	testKey := "shollyman-testing/test_tag_key"
+
 	ctx := context.Background()
 	table := dataset.Table(tableIDs.New())
 	resourceTags := map[string]string{
-		"shollyman-testing/test_tag_key": "COFFEE",
+		testKey: "COFFEE",
 	}
-	err := table.Create(context.Background(), &TableMetadata{
+	if err := table.Create(context.Background(), &TableMetadata{
 		Schema:       schema,
 		ResourceTags: resourceTags,
-	})
-	if err != nil {
-		t.Fatal(err)
+	}); err != nil {
+		t.Fatalf("table.Create: %v", err)
 	}
 	defer table.Delete(ctx)
 	md, err := table.Metadata(ctx)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("table.Metadata: %v", err)
 	}
 
 	var found bool
 	for k, v := range md.ResourceTags {
 		t.Logf("key %q val %q", k, v)
-		if k == "shollyman-testing/test_tag_key" && v == "COFFEE" {
+		if k == testKey && v == "COFFEE" {
 			found = true
 			break
 		}
@@ -731,19 +733,19 @@ func TestIntegration_TableResourceTags(t *testing.T) {
 	}
 
 	updatedTags := map[string]string{
-		"shollyman-testing/test_tag_key": "COFFEE",
+		testKey: "COFFEE",
 	}
 	// Update table DefaultCollation to case-sensitive
 	updated, err := table.Update(ctx, TableMetadataToUpdate{
 		ResourceTags: updatedTags,
 	}, md.ETag)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("table.Update: %v", err)
 	}
 
 	found = false
 	for k, v := range updated.ResourceTags {
-		if k == "shollyman-testing/test_tag_key" && v == "COFFEE" {
+		if k == testKey && v == "COFFEE" {
 			found = true
 			break
 		}
