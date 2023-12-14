@@ -422,7 +422,7 @@ type internalClient interface {
 // Client is a client for interacting with Cloud Spanner API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Cloud Spanner API
+// # Cloud Spanner API
 //
 // The Cloud Spanner API can be used to manage sessions and execute
 // transactions on data stored in Cloud Spanner databases.
@@ -689,7 +689,7 @@ type gRPCClient struct {
 // NewClient creates a new spanner client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Cloud Spanner API
+// # Cloud Spanner API
 //
 // The Cloud Spanner API can be used to manage sessions and execute
 // transactions on data stored in Cloud Spanner databases.
@@ -761,7 +761,7 @@ type restClient struct {
 
 // NewRESTClient creates a new spanner rest client.
 //
-// Cloud Spanner API
+// # Cloud Spanner API
 //
 // The Cloud Spanner API can be used to manage sessions and execute
 // transactions on data stored in Cloud Spanner databases.
