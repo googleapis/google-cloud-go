@@ -3075,7 +3075,6 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
-				h := testHelper{t}
 				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 				t.Cleanup(cancel)
 
@@ -3163,22 +3162,28 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 				checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
 
 				// Copy
-				_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
+				copyObj := bucket.Object("copy")
+				_, err = copyObj.CopierFrom(bucket.Object(objectName)).Run(ctx)
 				checkforErrors("copy", err)
 				// Delete "copy" object, if created
 				if err == nil {
 					t.Cleanup(func() {
-						h.mustDeleteObject(bucket.Object("copy"))
+						if err := deleteObjectIfExists(copyObj, WithErrorFunc(retryOnTransient400and403)); err != nil {
+							t.Error(err)
+						}
 					})
 				}
 
 				// Compose
-				_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
+				composeObj := bucket.Object("compose")
+				_, err = composeObj.ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
 				checkforErrors("compose", err)
 				// Delete "compose" object, if created
 				if err == nil {
 					t.Cleanup(func() {
-						h.mustDeleteObject(bucket.Object("compose"))
+						if err := deleteObjectIfExists(composeObj, WithErrorFunc(retryOnTransient400and403)); err != nil {
+							t.Error(err)
+						}
 					})
 				}
 
@@ -5499,6 +5504,27 @@ func (h testHelper) mustRead(obj *ObjectHandle) []byte {
 		h.t.Fatalf("read: %v", err)
 	}
 	return data
+}
+
+// deleteObjectIfExists deletes an object with a RetryAlways policy (unless another
+// policy is supplied in the options). It will not return an error if the object
+// is already deleted/doesn't exist. It will time out after 15 seconds.
+func deleteObjectIfExists(o *ObjectHandle, retryOpts ...RetryOption) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	defer cancel()
+	retryOpts = append([]RetryOption{WithPolicy(RetryAlways)}, retryOpts...)
+
+	if err := o.Retryer(retryOpts...).Delete(ctx); err != nil {
+		var apiErr *apierror.APIError
+		if ok := errors.As(err, &apiErr); ok {
+			// Object may already be deleted with retry; if so, return no error.
+			if apiErr.HTTPCode() == 404 || apiErr.GRPCStatus().Code() == codes.NotFound {
+				return nil
+			}
+		}
+		return fmt.Errorf("delete object %s from bucket %s: %v", o.ObjectName(), o.BucketName(), err)
+	}
+	return nil
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
