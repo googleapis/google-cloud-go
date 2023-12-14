@@ -28,9 +28,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"time"
-	"unsafe"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/fields"
@@ -117,21 +115,22 @@ var (
 
 	jsonNullBytes = []byte("null")
 
-	jsonProvider jsoniter.API
+	jsonProvider = jsoniter.ConfigCompatibleWithStandardLibrary
 
 	once sync.Once
 )
 
-// UseNumber specifies whether number values inside a Cloud Spanner JSON value
-// should be decoded as a Number or a float64.
-// Decoding to a Number guarantees that the precision used by Cloud Spanner is preserved.
-// Decoding to a float64 can cause loss of precision.
-// The default JSON decode function in Go uses float64, This is therefore also the default used by this client library.
-// Change this value to true to prevent loss of precision.
+// UseNumberWithJSONDecoderEncoder specifies whether Cloud Spanner JSON numbers are decoded
+// as Number (preserving precision) or float64 (risking loss).
+// Defaults to float64, call this method for lossless precision.
+// NOTE: This change affects all clients created by this library, both existing and future ones.
 func UseNumberWithJSONDecoderEncoder() {
-	atomic.LoadPointer((*unsafe.Pointer)(unsafe.Pointer(&jsonProvider)))
 	once.Do(func() {
-		jsonProvider = jsoniter.ConfigCompatibleWithStandardLibrary
+		jsonProvider = jsoniter.Config{
+			EscapeHTML:  true,
+			SortMapKeys: true, // Sort map keys to ensure deterministic output, to be consistent with encoding.
+			UseNumber:   true,
+		}.Froze()
 	})
 }
 

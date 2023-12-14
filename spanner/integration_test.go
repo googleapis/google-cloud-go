@@ -2000,6 +2000,8 @@ func TestIntegration_BasicTypes(t *testing.T) {
 					JSONArray	ARRAY<JSON>
 				) PRIMARY KEY (RowID)`,
 	}
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
 
 	t1, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
 	// Boundaries
@@ -2167,20 +2169,10 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		}...)
 	}
 
-	var dbPath string
 	for idx := 0; idx < 2; idx++ {
-		var c *Client
-		if idx == 0 {
-			var cleanup func()
-			c, dbPath, cleanup = prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
-			defer cleanup()
-		} else {
-			var err error
-			c, err = createClient(ctx, dbPath, ClientConfig{UseNumber: true, SessionPoolConfig: DefaultSessionPoolConfig})
-			require.NoError(t, err)
-			defer c.Close()
-			enableJSONProviderNumberConfig(true)
-			defer enableJSONProviderNumberConfig(false)
+		if idx == 1 {
+			UseNumberWithJSONDecoderEncoder()
+			defer testSetJSONProviderNumberConfig(false)
 		}
 		// Write rows into table first using DML.
 		statements := make([]Statement, 0)
@@ -2192,7 +2184,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			stmt.Params["value"] = test.val
 			statements = append(statements, stmt)
 		}
-		_, err := c.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 			rowCounts, err := tx.BatchUpdate(ctx, statements)
 			if err != nil {
 				return err
@@ -2211,7 +2203,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			t.Fatalf("failed to insert values using DML: %v", err)
 		}
 		// Delete all the rows so we can insert them using mutations as well.
-		_, err = c.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
 		if err != nil {
 			t.Fatalf("failed to delete all rows: %v", err)
 		}
@@ -2221,12 +2213,12 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		for i, test := range tests {
 			muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))
 		}
-		if _, err := c.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
+		if _, err := client.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
 			t.Fatal(err)
 		}
 
 		for i, test := range tests {
-			row, err := c.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
+			row, err := client.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
 			if err != nil {
 				t.Fatalf("Unable to fetch row %v: %v", i, err)
 			}
@@ -2258,10 +2250,9 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			}
 		}
 		// cleanup
-		_, err = c.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
 		require.NoError(t, err)
 	}
-
 }
 
 // Test decoding Cloud Spanner STRUCT type.
@@ -5549,7 +5540,7 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 }
 
 // helper method to enable json provider with useNumber flag, only for testing.
-func enableJSONProviderNumberConfig(useNumber bool) {
+func testSetJSONProviderNumberConfig(useNumber bool) {
 	jsonProvider = jsoniter.Config{
 		EscapeHTML:  true,
 		SortMapKeys: true, // Sort map keys to ensure deterministic output, to be consistent with encoding.
