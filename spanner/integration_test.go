@@ -45,7 +45,6 @@ import (
 	v1 "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
-	jsoniter "github.com/json-iterator/go"
 	"github.com/stretchr/testify/require"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
@@ -2169,10 +2168,10 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		}...)
 	}
 
-	for idx := 0; idx < 2; idx++ {
-		if idx == 1 {
-			UseNumberWithJSONDecoderEncoder()
-			defer testSetJSONProviderNumberConfig(false)
+	for _, withNumberConfigOption := range []bool{false, true} {
+		if withNumberConfigOption {
+			UseNumberWithJSONDecoderEncoder(withNumberConfigOption)
+			defer UseNumberWithJSONDecoderEncoder(!withNumberConfigOption)
 		}
 		// Write rows into table first using DML.
 		statements := make([]Statement, 0)
@@ -2224,7 +2223,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			}
 			verifyDirectPathRemoteAddress(t)
 			want := test.wantWithDefaultConfig
-			if idx == 1 {
+			if withNumberConfigOption {
 				want = test.wantWithNumber
 			}
 			if want == nil {
@@ -2232,7 +2231,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			}
 			gotp := reflect.New(reflect.TypeOf(want))
 			if err := row.Column(0, gotp.Interface()); err != nil {
-				t.Errorf("%d-%d: col:%v val:%#v, %v", idx, i, test.col, test.val, err)
+				t.Errorf("%v-%d: col:%v val:%#v, %v", withNumberConfigOption, i, test.col, test.val, err)
 				continue
 			}
 			got := reflect.Indirect(gotp).Interface()
@@ -2245,7 +2244,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 
 			// Check non-NaN cases.
 			if !testEqual(got, want) {
-				t.Errorf("%d-%d: col:%v val:%#v, got %#v, want %#v", idx, i, test.col, test.val, got, want)
+				t.Errorf("%v-%d: col:%v val:%#v, got %#v, want %#v", withNumberConfigOption, i, test.col, test.val, got, want)
 				continue
 			}
 		}
@@ -5537,13 +5536,4 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 	if m[tagKeyLibVersion] != internal.Version {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
-}
-
-// helper method to enable json provider with useNumber flag, only for testing.
-func testSetJSONProviderNumberConfig(useNumber bool) {
-	jsonProvider = jsoniter.Config{
-		EscapeHTML:  true,
-		SortMapKeys: true, // Sort map keys to ensure deterministic output, to be consistent with encoding.
-		UseNumber:   useNumber,
-	}.Froze()
 }

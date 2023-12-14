@@ -27,7 +27,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -116,22 +115,20 @@ var (
 	jsonNullBytes = []byte("null")
 
 	jsonProvider = jsoniter.ConfigCompatibleWithStandardLibrary
-
-	once sync.Once
 )
 
 // UseNumberWithJSONDecoderEncoder specifies whether Cloud Spanner JSON numbers are decoded
 // as Number (preserving precision) or float64 (risking loss).
-// Defaults to float64, call this method for lossless precision.
-// NOTE: This change affects all clients created by this library, both existing and future ones.
-func UseNumberWithJSONDecoderEncoder() {
-	once.Do(func() {
-		jsonProvider = jsoniter.Config{
-			EscapeHTML:  true,
-			SortMapKeys: true, // Sort map keys to ensure deterministic output, to be consistent with encoding.
-			UseNumber:   true,
-		}.Froze()
-	})
+// Defaults to the same behavior as the standard Go library, which means decoding to float64.
+// Call this method to enable lossless precision.
+// NOTE 1: Calling this method affects the behavior of all clients created by this library, both existing and future instances.
+// NOTE 2: This method sets a global variable that is used by the client to encode/decode JSON numbers. Access to the global variable is not synchronized. You should only call this method when there are no goroutines encoding/decoding Cloud Spanner JSON values. It is recommended to only call this method during the initialization of your application, and preferably before you create any Cloud Spanner clients, and/or in tests when there are no queries being executed.
+func UseNumberWithJSONDecoderEncoder(useNumber bool) {
+	jsonProvider = jsoniter.Config{
+		EscapeHTML:  true,
+		SortMapKeys: true, // Sort map keys to ensure deterministic output, to be consistent with encoding.
+		UseNumber:   useNumber,
+	}.Froze()
 }
 
 // Encoder is the interface implemented by a custom type that can be encoded to
