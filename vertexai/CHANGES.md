@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.5.1...vertexai/v0.5.2) (2023-12-14)
+
+
+### Bug Fixes
+
+* **vertexai:** Bump deps to fix build error ([#9168](https://github.com/googleapis/google-cloud-go/issues/9168)) ([d361c59](https://github.com/googleapis/google-cloud-go/commit/d361c59953ec815bc3fbd0fdba04069c68e5cd99)), refs [#9167](https://github.com/googleapis/google-cloud-go/issues/9167)
+
 ## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.5.0...vertexai/v0.5.1) (2023-12-13)
 
 
