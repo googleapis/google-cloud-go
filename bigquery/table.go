@@ -799,8 +799,8 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	}
 	if tm.ResourceTags != nil {
 		t.ResourceTags = make(map[string]string)
-		for k, v := range tm.ResourceTags{
-			t.ResourceTags[k]=v
+		for k, v := range tm.ResourceTags {
+			t.ResourceTags[k] = v
 		}
 	}
 	return t, nil

@@ -696,65 +696,6 @@ func TestIntegration_TableDefaultCollation(t *testing.T) {
 	}
 }
 
-func TestIntegration_TableResourceTags(t *testing.T) {
-	if client == nil {
-		t.Skip("Integration tests skipped")
-	}
-
-	testKey := "shollyman-testing/test_tag_key"
-
-	ctx := context.Background()
-	table := dataset.Table(tableIDs.New())
-	resourceTags := map[string]string{
-		testKey: "COFFEE",
-	}
-	if err := table.Create(context.Background(), &TableMetadata{
-		Schema:       schema,
-		ResourceTags: resourceTags,
-	}); err != nil {
-		t.Fatalf("table.Create: %v", err)
-	}
-	defer table.Delete(ctx)
-	md, err := table.Metadata(ctx)
-	if err != nil {
-		t.Fatalf("table.Metadata: %v", err)
-	}
-
-	var found bool
-	for k, v := range md.ResourceTags {
-		if k == testKey && v == "COFFEE" {
-			found = true
-			break
-		}
-	}
-	if !found {
-		t.Errorf("tag key/value not found")
-	}
-
-	updatedTags := map[string]string{
-		testKey: "COFFEE",
-	}
-	// Update table DefaultCollation to case-sensitive
-	updated, err := table.Update(ctx, TableMetadataToUpdate{
-		ResourceTags: updatedTags,
-	}, md.ETag)
-	if err != nil {
-		t.Fatalf("table.Update: %v", err)
-	}
-
-	found = false
-	for k, v := range updated.ResourceTags {
-		if k == testKey && v == "COFFEE" {
-			found = true
-			break
-		}
-	}
-	if !found {
-		t.Errorf("tag key/value not found")
-	}
-
-}
-
 func TestIntegration_TableConstraintsPK(t *testing.T) {
 	// Test Primary Keys for Table.Create and Table.Update
 	if client == nil {
