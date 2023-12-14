@@ -774,29 +774,29 @@ func (c *Client) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req *as
 // policies) under a scope. This RPC supports custom constraints and the
 // following 10 canned constraints:
 //
-//	storage.uniformBucketLevelAccess
+//   storage.uniformBucketLevelAccess
 //
-//	iam.disableServiceAccountKeyCreation
+//   iam.disableServiceAccountKeyCreation
 //
-//	iam.allowedPolicyMemberDomains
+//   iam.allowedPolicyMemberDomains
 //
-//	compute.vmExternalIpAccess
+//   compute.vmExternalIpAccess
 //
-//	appengine.enforceServiceAccountActAsCheck
+//   appengine.enforceServiceAccountActAsCheck
 //
-//	gcp.resourceLocations
+//   gcp.resourceLocations
 //
-//	compute.trustedImageProjects
+//   compute.trustedImageProjects
 //
-//	compute.skipDefaultNetworkCreation
+//   compute.skipDefaultNetworkCreation
 //
-//	compute.requireOsLogin
+//   compute.requireOsLogin
 //
-//	compute.disableNestedVirtualization
+//   compute.disableNestedVirtualization
 //
 // This RPC only returns either resources of types supported by searchable
 // asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types),
+// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types),
 // or IAM policies.
 func (c *Client) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	return c.internalClient.AnalyzeOrgPolicyGovernedAssets(ctx, req, opts...)
@@ -3320,29 +3320,29 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 // policies) under a scope. This RPC supports custom constraints and the
 // following 10 canned constraints:
 //
-//	storage.uniformBucketLevelAccess
+//   storage.uniformBucketLevelAccess
 //
-//	iam.disableServiceAccountKeyCreation
+//   iam.disableServiceAccountKeyCreation
 //
-//	iam.allowedPolicyMemberDomains
+//   iam.allowedPolicyMemberDomains
 //
-//	compute.vmExternalIpAccess
+//   compute.vmExternalIpAccess
 //
-//	appengine.enforceServiceAccountActAsCheck
+//   appengine.enforceServiceAccountActAsCheck
 //
-//	gcp.resourceLocations
+//   gcp.resourceLocations
 //
-//	compute.trustedImageProjects
+//   compute.trustedImageProjects
 //
-//	compute.skipDefaultNetworkCreation
+//   compute.skipDefaultNetworkCreation
 //
-//	compute.requireOsLogin
+//   compute.requireOsLogin
 //
-//	compute.disableNestedVirtualization
+//   compute.disableNestedVirtualization
 //
 // This RPC only returns either resources of types supported by searchable
 // asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types),
+// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types),
 // or IAM policies.
 func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	it := &AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator{}
