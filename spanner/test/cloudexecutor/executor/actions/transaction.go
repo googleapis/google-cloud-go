@@ -58,7 +58,7 @@ func (h *StartTxnHandler) ExecuteAction(ctx context.Context) error {
 	if err != nil {
 		return h.OutcomeSender.FinishWithError(err)
 	}
-	h.FlowContext.dbClient = client
+	h.FlowContext.DbClient = client
 	if h.FlowContext.isTransactionActiveLocked() {
 		return h.OutcomeSender.FinishWithError(spanner.ToSpannerError(status.Error(codes.InvalidArgument, "already in a transaction")))
 	}

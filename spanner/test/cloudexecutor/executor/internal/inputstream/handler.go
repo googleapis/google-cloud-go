@@ -70,6 +70,10 @@ func (h *CloudStreamHandler) Execute() error {
 		req, err := h.Stream.Recv()
 		if err == io.EOF {
 			log.Println("Client called Done, half-closed the stream")
+			if h.executionFlowContext != nil && h.executionFlowContext.DbClient != nil {
+				log.Println("Closing the client object in execution flow context")
+				h.executionFlowContext.DbClient.Close()
+			}
 			break
 		}
 		if err != nil {

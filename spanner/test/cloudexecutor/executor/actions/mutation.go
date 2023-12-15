@@ -46,7 +46,7 @@ func (h *WriteActionHandler) ExecuteAction(ctx context.Context) error {
 		return h.OutcomeSender.FinishWithError(err)
 	}
 
-	_, err = h.FlowContext.dbClient.Apply(ctx, m)
+	_, err = h.FlowContext.DbClient.Apply(ctx, m)
 	if err != nil {
 		return h.OutcomeSender.FinishWithError(err)
 	}
