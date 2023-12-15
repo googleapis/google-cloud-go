@@ -90,10 +90,6 @@ const defaultMaxOutputTokens = 2048
 // GenerativeModel creates a new instance of the named model.
 func (c *Client) GenerativeModel(name string) *GenerativeModel {
 	return &GenerativeModel{
-		GenerationConfig: GenerationConfig{
-			MaxOutputTokens: defaultMaxOutputTokens,
-			TopK:            3,
-		},
 		c:        c,
 		name:     name,
 		fullName: fmt.Sprintf("projects/%s/locations/%s/publishers/google/models/%s", c.projectID, c.location, name),

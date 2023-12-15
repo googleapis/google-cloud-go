@@ -59,17 +59,6 @@ types:
     FunctionResponse:
 
     GenerationConfig:
-      fields:
-        Temperature:
-          type: float32
-        TopP:
-          type: float32
-        TopK:
-          type: float32
-        CandidateCount:
-          type: int32
-        MaxOutputTokens:
-          type: int32
 
     SafetyRating:
       docVerb: 'is the'
