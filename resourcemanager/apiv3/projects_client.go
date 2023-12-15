@@ -432,35 +432,35 @@ func (c *ProjectsClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPoli
 //
 // The following constraints apply when using setIamPolicy():
 //
-//	Project does not support allUsers and allAuthenticatedUsers as
-//	members in a Binding of a Policy.
+//   Project does not support allUsers and allAuthenticatedUsers as
+//   members in a Binding of a Policy.
 //
-//	The owner role can be granted to a user, serviceAccount, or a group
-//	that is part of an organization. For example,
-//	group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
-//	the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
-//	organization.
+//   The owner role can be granted to a user, serviceAccount, or a group
+//   that is part of an organization. For example,
+//   group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
+//   the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
+//   organization.
 //
-//	Service accounts can be made owners of a project directly
-//	without any restrictions. However, to be added as an owner, a user must be
-//	invited using the Cloud Platform console and must accept the invitation.
+//   Service accounts can be made owners of a project directly
+//   without any restrictions. However, to be added as an owner, a user must be
+//   invited using the Cloud Platform console and must accept the invitation.
 //
-//	A user cannot be granted the owner role using setIamPolicy(). The user
-//	must be granted the owner role using the Cloud Platform Console and must
-//	explicitly accept the invitation.
+//   A user cannot be granted the owner role using setIamPolicy(). The user
+//   must be granted the owner role using the Cloud Platform Console and must
+//   explicitly accept the invitation.
 //
-//	Invitations to grant the owner role cannot be sent using
-//	setIamPolicy();
-//	they must be sent only using the Cloud Platform Console.
+//   Invitations to grant the owner role cannot be sent using
+//   setIamPolicy();
+//   they must be sent only using the Cloud Platform Console.
 //
-//	If the project is not part of an organization, there must be at least
-//	one owner who has accepted the Terms of Service (ToS) agreement in the
-//	policy. Calling setIamPolicy() to remove the last ToS-accepted owner
-//	from the policy will fail. This restriction also applies to legacy
-//	projects that no longer have owners who have accepted the ToS. Edits to
-//	IAM policies will be rejected until the lack of a ToS-accepting owner is
-//	rectified. If the project is part of an organization, you can remove all
-//	owners, potentially making the organization inaccessible.
+//   If the project is not part of an organization, there must be at least
+//   one owner who has accepted the Terms of Service (ToS) agreement in the
+//   policy. Calling setIamPolicy() to remove the last ToS-accepted owner
+//   from the policy will fail. This restriction also applies to legacy
+//   projects that no longer have owners who have accepted the ToS. Edits to
+//   IAM policies will be rejected until the lack of a ToS-accepting owner is
+//   rectified. If the project is part of an organization, you can remove all
+//   owners, potentially making the organization inaccessible.
 func (c *ProjectsClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -1678,35 +1678,35 @@ func (c *projectsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 //
 // The following constraints apply when using setIamPolicy():
 //
-//	Project does not support allUsers and allAuthenticatedUsers as
-//	members in a Binding of a Policy.
+//   Project does not support allUsers and allAuthenticatedUsers as
+//   members in a Binding of a Policy.
 //
-//	The owner role can be granted to a user, serviceAccount, or a group
-//	that is part of an organization. For example,
-//	group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
-//	the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
-//	organization.
+//   The owner role can be granted to a user, serviceAccount, or a group
+//   that is part of an organization. For example,
+//   group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
+//   the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
+//   organization.
 //
-//	Service accounts can be made owners of a project directly
-//	without any restrictions. However, to be added as an owner, a user must be
-//	invited using the Cloud Platform console and must accept the invitation.
+//   Service accounts can be made owners of a project directly
+//   without any restrictions. However, to be added as an owner, a user must be
+//   invited using the Cloud Platform console and must accept the invitation.
 //
-//	A user cannot be granted the owner role using setIamPolicy(). The user
-//	must be granted the owner role using the Cloud Platform Console and must
-//	explicitly accept the invitation.
+//   A user cannot be granted the owner role using setIamPolicy(). The user
+//   must be granted the owner role using the Cloud Platform Console and must
+//   explicitly accept the invitation.
 //
-//	Invitations to grant the owner role cannot be sent using
-//	setIamPolicy();
-//	they must be sent only using the Cloud Platform Console.
+//   Invitations to grant the owner role cannot be sent using
+//   setIamPolicy();
+//   they must be sent only using the Cloud Platform Console.
 //
-//	If the project is not part of an organization, there must be at least
-//	one owner who has accepted the Terms of Service (ToS) agreement in the
-//	policy. Calling setIamPolicy() to remove the last ToS-accepted owner
-//	from the policy will fail. This restriction also applies to legacy
-//	projects that no longer have owners who have accepted the ToS. Edits to
-//	IAM policies will be rejected until the lack of a ToS-accepting owner is
-//	rectified. If the project is part of an organization, you can remove all
-//	owners, potentially making the organization inaccessible.
+//   If the project is not part of an organization, there must be at least
+//   one owner who has accepted the Terms of Service (ToS) agreement in the
+//   policy. Calling setIamPolicy() to remove the last ToS-accepted owner
+//   from the policy will fail. This restriction also applies to legacy
+//   projects that no longer have owners who have accepted the ToS. Edits to
+//   IAM policies will be rejected until the lack of a ToS-accepting owner is
+//   rectified. If the project is part of an organization, you can remove all
+//   owners, potentially making the organization inaccessible.
 func (c *projectsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
