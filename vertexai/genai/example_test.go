@@ -42,7 +42,7 @@ func ExampleGenerativeModel_GenerateContent() {
 	defer client.Close()
 
 	model := client.GenerativeModel(model)
-	model.Temperature = 0.9
+	model.SetTemperature(0.9)
 	resp, err := model.GenerateContent(ctx, genai.Text("What is the average size of a swallow?"))
 	if err != nil {
 		log.Fatal(err)
