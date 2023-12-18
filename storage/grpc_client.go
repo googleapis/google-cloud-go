@@ -152,7 +152,12 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 	return resp.EmailAddress, err
 }
 
-func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
+func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, enableObjectRetention *bool, opts ...storageOption) (*BucketAttrs, error) {
+	if enableObjectRetention != nil {
+		// TO-DO: implement ObjectRetention once available - see b/308194853
+		return nil, status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
+	}
+
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
 	b.Project = toProjectResource(project)
@@ -507,25 +512,30 @@ func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string
 	return attrs, err
 }
 
-func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
+func (c *grpcStorageClient) UpdateObject(ctx context.Context, params *updateObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
+	uattrs := params.uattrs
+	if params.overrideRetention != nil || uattrs.Retention != nil {
+		// TO-DO: implement ObjectRetention once available - see b/308194853
+		return nil, status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
+	}
 	s := callSettings(c.settings, opts...)
-	o := uattrs.toProtoObject(bucketResourceName(globalProjectAlias, bucket), object)
+	o := uattrs.toProtoObject(bucketResourceName(globalProjectAlias, params.bucket), params.object)
 	// For Update, generation is passed via the object message rather than a field on the request.
-	if gen >= 0 {
-		o.Generation = gen
+	if params.gen >= 0 {
+		o.Generation = params.gen
 	}
 	req := &storagepb.UpdateObjectRequest{
 		Object:        o,
 		PredefinedAcl: uattrs.PredefinedACL,
 	}
-	if err := applyCondsProto("grpcStorageClient.UpdateObject", defaultGen, conds, req); err != nil {
+	if err := applyCondsProto("grpcStorageClient.UpdateObject", defaultGen, params.conds, req); err != nil {
 		return nil, err
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
-	if encryptionKey != nil {
-		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(encryptionKey)
+	if params.encryptionKey != nil {
+		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(params.encryptionKey)
 	}
 
 	fieldMask := &fieldmaskpb.FieldMask{Paths: nil}
@@ -739,7 +749,8 @@ func (c *grpcStorageClient) DeleteObjectACL(ctx context.Context, bucket, object 
 	}
 	uattrs := &ObjectAttrsToUpdate{ACL: acl}
 	// Call UpdateObject with the specified metageneration.
-	if _, err = c.UpdateObject(ctx, bucket, object, uattrs, defaultGen, nil, &Conditions{MetagenerationMatch: attrs.Metageneration}, opts...); err != nil {
+	params := &updateObjectParams{bucket: bucket, object: object, uattrs: uattrs, gen: defaultGen, conds: &Conditions{MetagenerationMatch: attrs.Metageneration}}
+	if _, err = c.UpdateObject(ctx, params, opts...); err != nil {
 		return err
 	}
 	return nil
@@ -769,7 +780,8 @@ func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object 
 	acl = append(attrs.ACL, aclRule)
 	uattrs := &ObjectAttrsToUpdate{ACL: acl}
 	// Call UpdateObject with the specified metageneration.
-	if _, err = c.UpdateObject(ctx, bucket, object, uattrs, defaultGen, nil, &Conditions{MetagenerationMatch: attrs.Metageneration}, opts...); err != nil {
+	params := &updateObjectParams{bucket: bucket, object: object, uattrs: uattrs, gen: defaultGen, conds: &Conditions{MetagenerationMatch: attrs.Metageneration}}
+	if _, err = c.UpdateObject(ctx, params, opts...); err != nil {
 		return err
 	}
 	return nil
@@ -1049,6 +1061,13 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 				return
 			}
 
+			if params.attrs.Retention != nil {
+				// TO-DO: remove once ObjectRetention is available - see b/308194853
+				err = status.Errorf(codes.Unimplemented, "storage: object retention is not supported in gRPC")
+				errorf(err)
+				pr.CloseWithError(err)
+				return
+			}
 			// The chunk buffer is full, but there is no end in sight. This
 			// means that either:
 			// 1. A resumable upload will need to be used to send

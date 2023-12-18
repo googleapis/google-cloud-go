@@ -6,10 +6,11 @@
   "datastore": "1.15.0",
   "errorreporting": "0.3.0",
   "firestore": "1.14.0",
-  "logging": "1.8.1",
+  "logging": "1.9.0",
   "profiler": "0.4.0",
   "pubsub": "1.33.0",
   "pubsublite": "1.8.1",
-  "spanner": "1.53.1",
-  "storage": "1.35.1"
+  "spanner": "1.54.0",
+  "storage": "1.36.0",
+  "vertexai": "0.6.0"
 }

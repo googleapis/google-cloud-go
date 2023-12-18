@@ -17,7 +17,8 @@
 // Package asset is an auto-generated package for the
 // Cloud Asset API.
 //
-// The cloud asset API manages the history and inventory of cloud resources.
+// The Cloud Asset API manages the history and inventory of Google Cloud
+// resources.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
