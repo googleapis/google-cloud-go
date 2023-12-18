@@ -1543,7 +1543,6 @@ func isEqualResultSetStats(got *ResultSetStats, want *ResultSetStats) error {
 			return fmt.Errorf("Stats.QueryPlan.PlanInfo: got: %+v, want: %+v", got.QueryPlan, want.QueryPlan)
 		}
 
-		// Compare query stats maps except 'total_execution_time' key
 		if !testutil.Equal(got.QueryStats, want.QueryStats, cmp.FilterPath(ignoreStatsFields, cmp.Ignore())) {
 			return fmt.Errorf("Stats.QueryPlan.QueryStats: got: %+v, want: %+v", got.QueryStats, want.QueryStats)
 		}
