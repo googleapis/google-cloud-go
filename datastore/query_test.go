@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
+	"strings"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -856,5 +857,62 @@ func TestAggregationQueryIsNil(t *testing.T) {
 	_, err = client.RunAggregationQuery(context.Background(), aq3)
 	if err == nil {
 		t.Fatal(err)
+	}
+}
+
+func TestQueryModeApply(t *testing.T) {
+	pbNormal := pb.QueryMode(QueryModeNormal)
+	for _, testcase := range []struct {
+		desc         string
+		existingMode *pb.QueryMode
+		newMode      QueryMode
+		wantErrMsg   string
+	}{
+		{
+			desc:         "Multiple modes",
+			existingMode: &pbNormal,
+			newMode:      QueryModeExplain,
+			wantErrMsg:   "only one mode can be specified",
+		},
+		{
+			desc:         "Single mode",
+			existingMode: nil,
+			newMode:      QueryModeExplain,
+		},
+	} {
+		gotErr := testcase.newMode.apply(&runQuerySettings{mode: testcase.existingMode})
+		if (gotErr == nil && testcase.wantErrMsg != "") ||
+			(gotErr != nil && !strings.Contains(gotErr.Error(), testcase.wantErrMsg)) {
+			t.Errorf("%v: apply got: %v want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
+		}
+	}
+}
+
+func TestNewRunQuerySettings(t *testing.T) {
+	for _, testcase := range []struct {
+		desc       string
+		opts       []RunOption
+		wantErrMsg string
+	}{
+		{
+			desc:       "nil RunOption",
+			opts:       []RunOption{QueryModeNormal, nil},
+			wantErrMsg: "cannot be nil",
+		},
+		{
+			desc: "success RunOption",
+			opts: []RunOption{QueryModeNormal},
+		},
+		{
+			desc:       "multiple modes",
+			opts:       []RunOption{QueryModeNormal, QueryModeExplainAnalyze},
+			wantErrMsg: "only one mode can be specified",
+		},
+	} {
+		_, gotErr := newRunQuerySettings(testcase.opts)
+		if (gotErr == nil && testcase.wantErrMsg != "") ||
+			(gotErr != nil && !strings.Contains(gotErr.Error(), testcase.wantErrMsg)) {
+			t.Errorf("%v: newRunQuerySettings got: %v want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
+		}
 	}
 }

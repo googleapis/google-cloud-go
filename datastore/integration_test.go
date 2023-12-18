@@ -24,6 +24,7 @@ import (
 	"net/url"
 	"os"
 	"reflect"
+	"slices"
 	"sort"
 	"strings"
 	"testing"
@@ -32,6 +33,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/rpcreplay"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
@@ -990,6 +992,106 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 
 }
 
+func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	_, _, now, parent, cleanup := createTestEntities(t, ctx, client, "RunAggregationQueryWithOptions", 3)
+	defer cleanup()
+
+	aggQuery := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).NewAggregationQuery().
+		WithSum("I", "i_sum").WithAvg("I", "i_avg").WithCount("count")
+	wantAggResult := map[string]interface{}{
+		"i_sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 6}},
+		"i_avg": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 2}},
+		"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 3}},
+	}
+	testCases := []struct {
+		desc        string
+		wantFailure bool
+		wantErrMsg  string
+		wantRes     AggregationWithOptionsResult
+		opts        []RunOption
+	}{
+		{
+			desc: "No mode",
+			wantRes: AggregationWithOptionsResult{
+				Result: wantAggResult,
+			},
+		},
+		{
+			desc: "Normal mode",
+			wantRes: AggregationWithOptionsResult{
+				Result: wantAggResult,
+			},
+			opts: []RunOption{QueryModeNormal},
+		},
+		{
+			desc: "Explain mode",
+			wantRes: AggregationWithOptionsResult{
+				Stats: &ResultSetStats{
+					QueryPlan: &QueryPlan{
+						PlanInfo: map[string]interface{}{
+							"indexes_used": []interface{}{
+								map[string]interface{}{
+									"properties":  "(T ASC, I ASC, __name__ ASC)",
+									"query_scope": "Includes Ancestors",
+								},
+							},
+						},
+					},
+				},
+			},
+			opts: []RunOption{QueryModeExplain},
+		},
+		{
+			desc: "ExplainAnalyze mode",
+			wantRes: AggregationWithOptionsResult{
+				Result: wantAggResult,
+				Stats: &ResultSetStats{
+					QueryPlan: &QueryPlan{
+						PlanInfo: map[string]interface{}{
+							"indexes_used": []interface{}{
+								map[string]interface{}{
+									"properties":  "(T ASC, I ASC, __name__ ASC)",
+									"query_scope": "Includes Ancestors",
+								},
+							},
+						},
+					},
+					QueryStats: map[string]interface{}{
+						"bytes_returned":        "74",
+						"documents_scanned":     "0",
+						"index_entries_scanned": "3",
+						"results_returned":      "1",
+						"total_execution_time":  "14.29 msecs",
+					},
+				},
+			},
+			opts: []RunOption{QueryModeExplainAnalyze},
+		},
+	}
+
+	for _, testcase := range testCases {
+		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+			gotRes, gotErr := client.RunAggregationQueryWithOptions(ctx, aggQuery, testcase.opts...)
+			if gotErr != nil {
+				r.Errorf("err: got %v, want: nil", gotErr)
+			}
+
+			if gotErr == nil && !reflect.DeepEqual(gotRes.Result, testcase.wantRes.Result) {
+				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testcase.desc, gotRes, testcase.wantRes)
+				return
+			}
+
+			if err := isEqualResultSetStats(gotRes.Stats, testcase.wantRes.Stats); err != nil {
+				r.Errorf("%q: Mismatch in stats %+v", testcase.desc, err)
+			}
+		})
+	}
+}
+
 type ckey struct{}
 
 func TestIntegration_LargeQuery(t *testing.T) {
@@ -1289,6 +1391,164 @@ func TestIntegration_GetAllWithFieldMismatch(t *testing.T) {
 	if _, ok := err.(*ErrFieldMismatch); !ok {
 		t.Errorf("client.GetAll: got err=%v, want ErrFieldMismatch", err)
 	}
+}
+
+func createTestEntities(t *testing.T, ctx context.Context, client *Client, partialNameKey string, count int) ([]*Key, []SQChild, int64, *Key, func()) {
+	parent := NameKey("SQParent", keyPrefix+partialNameKey+suffix, nil)
+	now := timeNow.Truncate(time.Millisecond).Unix()
+
+	entities := []SQChild{}
+	for i := 0; i < count; i++ {
+		entities = append(entities, SQChild{I: i + 1, T: now, U: now, V: 1.5, W: "str"})
+	}
+
+	keys := make([]*Key, len(entities))
+	for i := range keys {
+		keys[i] = IncompleteKey("SQChild", parent)
+	}
+
+	// Create entities
+	keys, err := client.PutMulti(ctx, keys, entities)
+	if err != nil {
+		t.Fatalf("client.PutMulti: %v", err)
+	}
+	return keys, entities, now, parent, func() {
+		err := client.DeleteMulti(ctx, keys)
+		if err != nil {
+			t.Errorf("client.DeleteMulti: %v", err)
+		}
+	}
+}
+
+func TestIntegration_RunAndGetAllWithOptions(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	keys, entities, now, parent, cleanup := createTestEntities(t, ctx, client, "GetAllWithOptions", 3)
+	defer cleanup()
+	query := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Order("I")
+	for _, testcase := range []struct {
+		desc         string
+		wantKeys     []*Key
+		wantStats    *ResultSetStats
+		wantEntities []SQChild
+		opts         []RunOption
+	}{
+		{
+			desc:         "No mode",
+			wantKeys:     keys,
+			wantEntities: entities,
+		},
+		{
+			desc:         "Normal query mode",
+			opts:         []RunOption{QueryModeNormal},
+			wantKeys:     keys,
+			wantEntities: entities,
+		},
+		{
+			desc: "Explain query mode",
+			opts: []RunOption{QueryModeExplain},
+			wantStats: &ResultSetStats{
+				QueryPlan: &QueryPlan{
+					PlanInfo: map[string]interface{}{
+						"indexes_used": []interface{}{
+							map[string]interface{}{
+								"properties":  "(T ASC, I ASC, __name__ ASC)",
+								"query_scope": "Includes Ancestors",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc:     "ExplainAnalyze query mode",
+			opts:     []RunOption{QueryModeExplainAnalyze},
+			wantKeys: keys,
+			wantStats: &ResultSetStats{
+				QueryPlan: &QueryPlan{
+					PlanInfo: map[string]interface{}{
+						"indexes_used": []interface{}{
+							map[string]interface{}{
+								"properties":  "(T ASC, I ASC, __name__ ASC)",
+								"query_scope": "Includes Ancestors",
+							},
+						},
+					},
+				},
+				QueryStats: map[string]interface{}{
+					"bytes_returned":        "552",
+					"documents_scanned":     "3",
+					"index_entries_scanned": "3",
+					"results_returned":      "3",
+					"total_execution_time":  "14.29 msecs",
+				},
+			},
+			wantEntities: entities,
+		},
+	} {
+		// Test GetAllWithOptions
+		var gotSQChildsFromGetAll []SQChild
+		gotRes, gotErr := client.GetAllWithOptions(ctx, query, &gotSQChildsFromGetAll, testcase.opts...)
+		if gotErr != nil {
+			t.Errorf("%v err: got: %+v, want: nil", testcase.desc, gotErr)
+		}
+		if !testutil.Equal(gotSQChildsFromGetAll, testcase.wantEntities) {
+			t.Errorf("%v entities: got: %+v, want: %+v", testcase.desc, gotSQChildsFromGetAll, testcase.wantEntities)
+		}
+		if !testutil.Equal(gotRes.Keys, testcase.wantKeys) {
+			t.Errorf("%v keys: got: %+v, want: %+v", testcase.desc, gotRes.Keys, testcase.wantKeys)
+		}
+		if err := isEqualResultSetStats(gotRes.Stats, testcase.wantStats); err != nil {
+			t.Errorf("%v %+v", testcase.desc, err)
+		}
+
+		// Test Run()
+		var gotSQChildsFromRun []SQChild
+		iter := client.Run(ctx, query, testcase.opts...)
+		for {
+			var gotSQChild SQChild
+			_, err := iter.Next(&gotSQChild)
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Errorf("%v iter.Next: %v", testcase.desc, err)
+			}
+			gotSQChildsFromRun = append(gotSQChildsFromRun, gotSQChild)
+		}
+		if !testutil.Equal(gotSQChildsFromRun, testcase.wantEntities) {
+			t.Errorf("%v entities: got: %+v, want: %+v", testcase.desc, gotSQChildsFromRun, testcase.wantEntities)
+		}
+		if err := isEqualResultSetStats(iter.Stats, testcase.wantStats); err != nil {
+			t.Errorf("%v %+v", testcase.desc, err)
+		}
+	}
+}
+
+func ignoreStatsFields(p cmp.Path) bool {
+	step, ok := p[len(p)-1].(cmp.MapIndex)
+	// Ignore these fields while comparing stats as these can differ per run
+	fields := []string{"bytes_returned", "total_execution_time"}
+	return ok && slices.Contains(fields, step.Key().String())
+}
+
+func isEqualResultSetStats(got *ResultSetStats, want *ResultSetStats) error {
+	if (got != nil && want == nil) || (got == nil && want != nil) {
+		return fmt.Errorf("Stats: got: %+v, want: %+v", got, want)
+	}
+	if got != nil {
+		if !testutil.Equal(got.QueryPlan, want.QueryPlan) {
+			return fmt.Errorf("Stats.QueryPlan.PlanInfo: got: %+v, want: %+v", got.QueryPlan, want.QueryPlan)
+		}
+
+		// Compare query stats maps except 'total_execution_time' key
+		if !testutil.Equal(got.QueryStats, want.QueryStats, cmp.FilterPath(ignoreStatsFields, cmp.Ignore())) {
+			return fmt.Errorf("Stats.QueryPlan.QueryStats: got: %+v, want: %+v", got.QueryStats, want.QueryStats)
+		}
+	}
+	return nil
 }
 
 func TestIntegration_KindlessQueries(t *testing.T) {
