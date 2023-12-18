@@ -303,7 +303,6 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
-		internaloption.EnableDirectPath(true),
 		internaloption.AllowNonDefaultServiceAccount(true),
 	}
 	if compression == "gzip" {
