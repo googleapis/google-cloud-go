@@ -21,14 +21,15 @@
 package monitoringpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -228,7 +229,6 @@ func (AlertPolicy_Condition_EvaluationMissingData) EnumDescriptor() ([]byte, []i
 // considered to be "unhealthy" and the ways to notify people or services about
 // this state. For an overview of alert policies, see
 // [Introduction to Alerting](https://cloud.google.com/monitoring/alerts/).
-//
 type AlertPolicy struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
