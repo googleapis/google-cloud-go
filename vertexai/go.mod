@@ -5,11 +5,9 @@ go 1.20
 require (
 	cloud.google.com/go v0.111.0
 	cloud.google.com/go/aiplatform v1.58.0
-	github.com/google/go-cmp v0.6.0
 	google.golang.org/api v0.152.0
 	google.golang.org/genproto v0.0.0-20231120223509-83a465c0220f
 	google.golang.org/protobuf v1.31.0
-	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (

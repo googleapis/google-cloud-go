@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.5.2...vertexai/v0.6.0) (2023-12-17)
+
+
+### Features
+
+* **vertexai:** Use pointers for GenerationConfig fields ([#9182](https://github.com/googleapis/google-cloud-go/issues/9182)) ([91990c1](https://github.com/googleapis/google-cloud-go/commit/91990c1746945c7f0548df972acf1498b165beb9))
+
 ## [0.5.2](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.5.1...vertexai/v0.5.2) (2023-12-14)
 
 

@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate go run ../internal/cmd/protoveneer config.yaml ../../aiplatform/apiv1beta1/aiplatformpb
+// To get the protoveneer tool:
+//    go install golang.org/x/exp/protoveneer/cmd/protoveneer@latest
+
+//go:generate protoveneer config.yaml ../../aiplatform/apiv1beta1/aiplatformpb
 
 // Package genai is a client for the generative VertexAI model.
 package genai
@@ -87,10 +90,6 @@ const defaultMaxOutputTokens = 2048
 // GenerativeModel creates a new instance of the named model.
 func (c *Client) GenerativeModel(name string) *GenerativeModel {
 	return &GenerativeModel{
-		GenerationConfig: GenerationConfig{
-			MaxOutputTokens: defaultMaxOutputTokens,
-			TopK:            3,
-		},
 		c:        c,
 		name:     name,
 		fullName: fmt.Sprintf("projects/%s/locations/%s/publishers/google/models/%s", c.projectID, c.location, name),

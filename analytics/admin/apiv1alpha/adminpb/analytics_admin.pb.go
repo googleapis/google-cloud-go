@@ -11927,7 +11927,7 @@ var file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = []byte{
 	0x6d, 0x69, 0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63,
 	0x6f, 0x6d, 0x2f, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76,
 	0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x32,
-	0xf1, 0xe8, 0x01, 0x0a, 0x15, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x41, 0x64,
+	0xfb, 0xee, 0x01, 0x0a, 0x15, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x41, 0x64,
 	0x6d, 0x69, 0x6e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x93, 0x01, 0x0a, 0x0a, 0x47,
 	0x65, 0x74, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x31, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x2e, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x61, 0x64, 0x6d,
@@ -13744,61 +13744,110 @@ var file_google_analytics_admin_v1alpha_analytics_admin_proto_rawDesc = []byte{
 	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x30, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x2a, 0x3a, 0x01, 0x2a, 0x22,
 	0x25, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x2f, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72,
 	0x74, 0x69, 0x65, 0x73, 0x3a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x53, 0x75, 0x62, 0x70, 0x72,
-	0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x12, 0xc2, 0x01, 0x0a, 0x1c, 0x44, 0x65, 0x6c, 0x65, 0x74,
+	0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x12, 0x97, 0x02, 0x0a, 0x1c, 0x43, 0x72, 0x65, 0x61, 0x74,
 	0x65, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e,
 	0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x43, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
 	0x2e, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e,
-	0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x53,
+	0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x53,
 	0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46,
-	0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45,
-	0x6d, 0x70, 0x74, 0x79, 0x22, 0x45, 0xda, 0x41, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x82, 0xd3, 0xe4,
-	0x93, 0x02, 0x38, 0x2a, 0x36, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x2f, 0x7b, 0x6e,
-	0x61, 0x6d, 0x65, 0x3d, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x69, 0x65, 0x73, 0x2f, 0x2a,
-	0x2f, 0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e,
-	0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x73, 0x2f, 0x2a, 0x7d, 0x12, 0x97, 0x02, 0x0a, 0x1c,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74,
-	0x79, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x43, 0x2e, 0x67,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x36, 0x2e, 0x67,
 	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e,
-	0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x2e, 0x43, 0x72,
-	0x65, 0x61, 0x74, 0x65, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x36, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x61, 0x6e, 0x61, 0x6c, 0x79,
-	0x74, 0x69, 0x63, 0x73, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70,
-	0x68, 0x61, 0x2e, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0x7a, 0xda, 0x41, 0x1f, 0x70, 0x61,
-	0x72, 0x65, 0x6e, 0x74, 0x2c, 0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79,
-	0x5f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x82, 0xd3, 0xe4,
-	0x93, 0x02, 0x52, 0x3a, 0x18, 0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79,
-	0x5f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0x36, 0x2f,
-	0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x2f, 0x7b, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x3d,
-	0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x69, 0x65, 0x73, 0x2f, 0x2a, 0x7d, 0x2f, 0x73, 0x75,
+	0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x2e, 0x53, 0x75,
 	0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69,
-	0x6c, 0x74, 0x65, 0x72, 0x73, 0x1a, 0xfc, 0x01, 0xca, 0x41, 0x1d, 0x61, 0x6e, 0x61, 0x6c, 0x79,
-	0x74, 0x69, 0x63, 0x73, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0xd2, 0x41, 0xd8, 0x01, 0x68, 0x74, 0x74, 0x70,
+	0x6c, 0x74, 0x65, 0x72, 0x22, 0x7a, 0xda, 0x41, 0x1f, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x2c,
+	0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x5f, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x52, 0x3a, 0x18,
+	0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x5f, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0x36, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70,
+	0x68, 0x61, 0x2f, 0x7b, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x3d, 0x70, 0x72, 0x6f, 0x70, 0x65,
+	0x72, 0x74, 0x69, 0x65, 0x73, 0x2f, 0x2a, 0x7d, 0x2f, 0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70,
+	0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x73,
+	0x12, 0xdc, 0x01, 0x0a, 0x19, 0x47, 0x65, 0x74, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65,
+	0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x40,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63,
+	0x73, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x2e,
+	0x47, 0x65, 0x74, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x36, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74,
+	0x69, 0x63, 0x73, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68,
+	0x61, 0x2e, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0x45, 0xda, 0x41, 0x04, 0x6e, 0x61, 0x6d,
+	0x65, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x38, 0x12, 0x36, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68,
+	0x61, 0x2f, 0x7b, 0x6e, 0x61, 0x6d, 0x65, 0x3d, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x69,
+	0x65, 0x73, 0x2f, 0x2a, 0x2f, 0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x73, 0x2f, 0x2a, 0x7d, 0x12,
+	0xef, 0x01, 0x0a, 0x1b, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65,
+	0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x73, 0x12,
+	0x42, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69,
+	0x63, 0x73, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61,
+	0x2e, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x43, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x61, 0x6e, 0x61,
+	0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x61,
+	0x6c, 0x70, 0x68, 0x61, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70,
+	0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x73,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x47, 0xda, 0x41, 0x06, 0x70, 0x61, 0x72,
+	0x65, 0x6e, 0x74, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x38, 0x12, 0x36, 0x2f, 0x76, 0x31, 0x61, 0x6c,
+	0x70, 0x68, 0x61, 0x2f, 0x7b, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x3d, 0x70, 0x72, 0x6f, 0x70,
+	0x65, 0x72, 0x74, 0x69, 0x65, 0x73, 0x2f, 0x2a, 0x7d, 0x2f, 0x73, 0x75, 0x62, 0x70, 0x72, 0x6f,
+	0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72,
+	0x73, 0x12, 0xb6, 0x02, 0x0a, 0x1c, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x75, 0x62, 0x70,
+	0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x12, 0x43, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x61, 0x6e, 0x61, 0x6c,
+	0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x61, 0x6c,
+	0x70, 0x68, 0x61, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f,
+	0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x36, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e,
+	0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x2e, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70,
+	0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22,
+	0x98, 0x01, 0xda, 0x41, 0x24, 0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79,
+	0x5f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x2c, 0x75, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x5f, 0x6d, 0x61, 0x73, 0x6b, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x6b, 0x3a,
+	0x18, 0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x5f, 0x65, 0x76, 0x65,
+	0x6e, 0x74, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x32, 0x4f, 0x2f, 0x76, 0x31, 0x61, 0x6c,
+	0x70, 0x68, 0x61, 0x2f, 0x7b, 0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79,
+	0x5f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x2e, 0x6e, 0x61,
+	0x6d, 0x65, 0x3d, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x69, 0x65, 0x73, 0x2f, 0x2a, 0x2f,
+	0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x73, 0x2f, 0x2a, 0x7d, 0x12, 0xc2, 0x01, 0x0a, 0x1c, 0x44,
+	0x65, 0x6c, 0x65, 0x74, 0x65, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x43, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x61,
+	0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x2e, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x53, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
+	0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x45, 0xda, 0x41, 0x04, 0x6e, 0x61, 0x6d,
+	0x65, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x38, 0x2a, 0x36, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68,
+	0x61, 0x2f, 0x7b, 0x6e, 0x61, 0x6d, 0x65, 0x3d, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x69,
+	0x65, 0x73, 0x2f, 0x2a, 0x2f, 0x73, 0x75, 0x62, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x73, 0x2f, 0x2a, 0x7d, 0x1a,
+	0xfc, 0x01, 0xca, 0x41, 0x1d, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x61, 0x64,
+	0x6d, 0x69, 0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63,
+	0x6f, 0x6d, 0xd2, 0x41, 0xd8, 0x01, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77,
+	0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e,
+	0x65, 0x64, 0x69, 0x74, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
+	0x61, 0x75, 0x74, 0x68, 0x2f, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x6d,
+	0x61, 0x6e, 0x61, 0x67, 0x65, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x73, 0x2c, 0x68, 0x74, 0x74, 0x70,
 	0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70,
 	0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x61, 0x6e, 0x61, 0x6c,
-	0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x65, 0x64, 0x69, 0x74, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73,
-	0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69,
-	0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x61, 0x6e, 0x61, 0x6c, 0x79,
-	0x74, 0x69, 0x63, 0x73, 0x2e, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x2e, 0x75, 0x73, 0x65, 0x72,
-	0x73, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74,
-	0x68, 0x2f, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x6d, 0x61, 0x6e, 0x61,
-	0x67, 0x65, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x73, 0x2e, 0x72, 0x65, 0x61, 0x64, 0x6f, 0x6e, 0x6c,
-	0x79, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74,
-	0x68, 0x2f, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x72, 0x65, 0x61, 0x64,
-	0x6f, 0x6e, 0x6c, 0x79, 0x42, 0x7b, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x61, 0x64, 0x6d,
-	0x69, 0x6e, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x42, 0x13, 0x41, 0x6e, 0x61, 0x6c,
-	0x79, 0x74, 0x69, 0x63, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
-	0x01, 0x5a, 0x3e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73,
-	0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68,
-	0x61, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x70, 0x62, 0x3b, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x70,
-	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x2e, 0x75, 0x73, 0x65,
+	0x72, 0x73, 0x2e, 0x72, 0x65, 0x61, 0x64, 0x6f, 0x6e, 0x6c, 0x79, 0x2c, 0x68, 0x74, 0x74, 0x70,
+	0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70,
+	0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x61, 0x6e, 0x61, 0x6c,
+	0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x72, 0x65, 0x61, 0x64, 0x6f, 0x6e, 0x6c, 0x79, 0x42, 0x7b,
+	0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x61, 0x6e, 0x61,
+	0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x76, 0x31, 0x61,
+	0x6c, 0x70, 0x68, 0x61, 0x42, 0x13, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x41,
+	0x64, 0x6d, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x63, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f,
+	0x2f, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e,
+	0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x2f, 0x61, 0x64, 0x6d, 0x69,
+	0x6e, 0x70, 0x62, 0x3b, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -14276,138 +14325,144 @@ var file_google_analytics_admin_v1alpha_analytics_admin_proto_depIdxs = []int32{
 	159, // 241: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateRollupPropertySourceLink:input_type -> google.analytics.admin.v1alpha.CreateRollupPropertySourceLinkRequest
 	160, // 242: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteRollupPropertySourceLink:input_type -> google.analytics.admin.v1alpha.DeleteRollupPropertySourceLinkRequest
 	161, // 243: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubproperty:input_type -> google.analytics.admin.v1alpha.CreateSubpropertyRequest
-	168, // 244: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSubpropertyEventFilter:input_type -> google.analytics.admin.v1alpha.DeleteSubpropertyEventFilterRequest
-	163, // 245: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubpropertyEventFilter:input_type -> google.analytics.admin.v1alpha.CreateSubpropertyEventFilterRequest
-	178, // 246: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAccount:output_type -> google.analytics.admin.v1alpha.Account
-	4,   // 247: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccounts:output_type -> google.analytics.admin.v1alpha.ListAccountsResponse
-	212, // 248: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccount:output_type -> google.protobuf.Empty
-	178, // 249: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAccount:output_type -> google.analytics.admin.v1alpha.Account
-	8,   // 250: google.analytics.admin.v1alpha.AnalyticsAdminService.ProvisionAccountTicket:output_type -> google.analytics.admin.v1alpha.ProvisionAccountTicketResponse
-	27,  // 251: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccountSummaries:output_type -> google.analytics.admin.v1alpha.ListAccountSummariesResponse
-	180, // 252: google.analytics.admin.v1alpha.AnalyticsAdminService.GetProperty:output_type -> google.analytics.admin.v1alpha.Property
-	11,  // 253: google.analytics.admin.v1alpha.AnalyticsAdminService.ListProperties:output_type -> google.analytics.admin.v1alpha.ListPropertiesResponse
-	180, // 254: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateProperty:output_type -> google.analytics.admin.v1alpha.Property
-	180, // 255: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteProperty:output_type -> google.analytics.admin.v1alpha.Property
-	180, // 256: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateProperty:output_type -> google.analytics.admin.v1alpha.Property
-	181, // 257: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateFirebaseLink:output_type -> google.analytics.admin.v1alpha.FirebaseLink
-	212, // 258: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteFirebaseLink:output_type -> google.protobuf.Empty
-	18,  // 259: google.analytics.admin.v1alpha.AnalyticsAdminService.ListFirebaseLinks:output_type -> google.analytics.admin.v1alpha.ListFirebaseLinksResponse
-	213, // 260: google.analytics.admin.v1alpha.AnalyticsAdminService.GetGlobalSiteTag:output_type -> google.analytics.admin.v1alpha.GlobalSiteTag
-	182, // 261: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateGoogleAdsLink:output_type -> google.analytics.admin.v1alpha.GoogleAdsLink
-	182, // 262: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateGoogleAdsLink:output_type -> google.analytics.admin.v1alpha.GoogleAdsLink
-	212, // 263: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteGoogleAdsLink:output_type -> google.protobuf.Empty
-	24,  // 264: google.analytics.admin.v1alpha.AnalyticsAdminService.ListGoogleAdsLinks:output_type -> google.analytics.admin.v1alpha.ListGoogleAdsLinksResponse
-	214, // 265: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataSharingSettings:output_type -> google.analytics.admin.v1alpha.DataSharingSettings
-	188, // 266: google.analytics.admin.v1alpha.AnalyticsAdminService.GetMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
-	37,  // 267: google.analytics.admin.v1alpha.AnalyticsAdminService.ListMeasurementProtocolSecrets:output_type -> google.analytics.admin.v1alpha.ListMeasurementProtocolSecretsResponse
-	188, // 268: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
-	212, // 269: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteMeasurementProtocolSecret:output_type -> google.protobuf.Empty
-	188, // 270: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
-	29,  // 271: google.analytics.admin.v1alpha.AnalyticsAdminService.AcknowledgeUserDataCollection:output_type -> google.analytics.admin.v1alpha.AcknowledgeUserDataCollectionResponse
-	189, // 272: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
-	189, // 273: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
-	212, // 274: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSKAdNetworkConversionValueSchema:output_type -> google.protobuf.Empty
-	189, // 275: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
-	43,  // 276: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSKAdNetworkConversionValueSchemas:output_type -> google.analytics.admin.v1alpha.ListSKAdNetworkConversionValueSchemasResponse
-	31,  // 277: google.analytics.admin.v1alpha.AnalyticsAdminService.SearchChangeHistoryEvents:output_type -> google.analytics.admin.v1alpha.SearchChangeHistoryEventsResponse
-	190, // 278: google.analytics.admin.v1alpha.AnalyticsAdminService.GetGoogleSignalsSettings:output_type -> google.analytics.admin.v1alpha.GoogleSignalsSettings
-	190, // 279: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateGoogleSignalsSettings:output_type -> google.analytics.admin.v1alpha.GoogleSignalsSettings
-	191, // 280: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
-	191, // 281: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
-	191, // 282: google.analytics.admin.v1alpha.AnalyticsAdminService.GetConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
-	212, // 283: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteConversionEvent:output_type -> google.protobuf.Empty
-	51,  // 284: google.analytics.admin.v1alpha.AnalyticsAdminService.ListConversionEvents:output_type -> google.analytics.admin.v1alpha.ListConversionEventsResponse
-	192, // 285: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
-	54,  // 286: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDisplayVideo360AdvertiserLinks:output_type -> google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinksResponse
-	192, // 287: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
-	212, // 288: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDisplayVideo360AdvertiserLink:output_type -> google.protobuf.Empty
-	192, // 289: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
-	193, // 290: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
-	60,  // 291: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDisplayVideo360AdvertiserLinkProposals:output_type -> google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinkProposalsResponse
-	193, // 292: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
-	212, // 293: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDisplayVideo360AdvertiserLinkProposal:output_type -> google.protobuf.Empty
-	64,  // 294: google.analytics.admin.v1alpha.AnalyticsAdminService.ApproveDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.ApproveDisplayVideo360AdvertiserLinkProposalResponse
-	193, // 295: google.analytics.admin.v1alpha.AnalyticsAdminService.CancelDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
-	195, // 296: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
-	195, // 297: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
-	75,  // 298: google.analytics.admin.v1alpha.AnalyticsAdminService.ListCustomDimensions:output_type -> google.analytics.admin.v1alpha.ListCustomDimensionsResponse
-	212, // 299: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveCustomDimension:output_type -> google.protobuf.Empty
-	195, // 300: google.analytics.admin.v1alpha.AnalyticsAdminService.GetCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
-	196, // 301: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
-	196, // 302: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
-	81,  // 303: google.analytics.admin.v1alpha.AnalyticsAdminService.ListCustomMetrics:output_type -> google.analytics.admin.v1alpha.ListCustomMetricsResponse
-	212, // 304: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveCustomMetric:output_type -> google.protobuf.Empty
-	196, // 305: google.analytics.admin.v1alpha.AnalyticsAdminService.GetCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
-	197, // 306: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataRetentionSettings:output_type -> google.analytics.admin.v1alpha.DataRetentionSettings
-	197, // 307: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataRetentionSettings:output_type -> google.analytics.admin.v1alpha.DataRetentionSettings
-	198, // 308: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
-	212, // 309: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDataStream:output_type -> google.protobuf.Empty
-	198, // 310: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
-	90,  // 311: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDataStreams:output_type -> google.analytics.admin.v1alpha.ListDataStreamsResponse
-	198, // 312: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
-	199, // 313: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAudience:output_type -> google.analytics.admin.v1alpha.Audience
-	94,  // 314: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAudiences:output_type -> google.analytics.admin.v1alpha.ListAudiencesResponse
-	199, // 315: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAudience:output_type -> google.analytics.admin.v1alpha.Audience
-	199, // 316: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAudience:output_type -> google.analytics.admin.v1alpha.Audience
-	212, // 317: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveAudience:output_type -> google.protobuf.Empty
-	194, // 318: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
-	68,  // 319: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSearchAds360Links:output_type -> google.analytics.admin.v1alpha.ListSearchAds360LinksResponse
-	194, // 320: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
-	212, // 321: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSearchAds360Link:output_type -> google.protobuf.Empty
-	194, // 322: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
-	200, // 323: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAttributionSettings:output_type -> google.analytics.admin.v1alpha.AttributionSettings
-	200, // 324: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAttributionSettings:output_type -> google.analytics.admin.v1alpha.AttributionSettings
-	1,   // 325: google.analytics.admin.v1alpha.AnalyticsAdminService.RunAccessReport:output_type -> google.analytics.admin.v1alpha.RunAccessReportResponse
-	201, // 326: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
-	201, // 327: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
-	201, // 328: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
-	212, // 329: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccessBinding:output_type -> google.protobuf.Empty
-	104, // 330: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccessBindings:output_type -> google.analytics.admin.v1alpha.ListAccessBindingsResponse
-	107, // 331: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchCreateAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchCreateAccessBindingsResponse
-	102, // 332: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchGetAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchGetAccessBindingsResponse
-	110, // 333: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchUpdateAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchUpdateAccessBindingsResponse
-	212, // 334: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchDeleteAccessBindings:output_type -> google.protobuf.Empty
-	202, // 335: google.analytics.admin.v1alpha.AnalyticsAdminService.GetExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
-	118, // 336: google.analytics.admin.v1alpha.AnalyticsAdminService.ListExpandedDataSets:output_type -> google.analytics.admin.v1alpha.ListExpandedDataSetsResponse
-	202, // 337: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
-	202, // 338: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
-	212, // 339: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteExpandedDataSet:output_type -> google.protobuf.Empty
-	203, // 340: google.analytics.admin.v1alpha.AnalyticsAdminService.GetChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
-	124, // 341: google.analytics.admin.v1alpha.AnalyticsAdminService.ListChannelGroups:output_type -> google.analytics.admin.v1alpha.ListChannelGroupsResponse
-	203, // 342: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
-	203, // 343: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
-	212, // 344: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteChannelGroup:output_type -> google.protobuf.Empty
-	126, // 345: google.analytics.admin.v1alpha.AnalyticsAdminService.SetAutomatedGa4ConfigurationOptOut:output_type -> google.analytics.admin.v1alpha.SetAutomatedGa4ConfigurationOptOutResponse
-	128, // 346: google.analytics.admin.v1alpha.AnalyticsAdminService.FetchAutomatedGa4ConfigurationOptOut:output_type -> google.analytics.admin.v1alpha.FetchAutomatedGa4ConfigurationOptOutResponse
-	204, // 347: google.analytics.admin.v1alpha.AnalyticsAdminService.GetBigQueryLink:output_type -> google.analytics.admin.v1alpha.BigQueryLink
-	131, // 348: google.analytics.admin.v1alpha.AnalyticsAdminService.ListBigQueryLinks:output_type -> google.analytics.admin.v1alpha.ListBigQueryLinksResponse
-	205, // 349: google.analytics.admin.v1alpha.AnalyticsAdminService.GetEnhancedMeasurementSettings:output_type -> google.analytics.admin.v1alpha.EnhancedMeasurementSettings
-	205, // 350: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEnhancedMeasurementSettings:output_type -> google.analytics.admin.v1alpha.EnhancedMeasurementSettings
-	137, // 351: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateConnectedSiteTag:output_type -> google.analytics.admin.v1alpha.CreateConnectedSiteTagResponse
-	212, // 352: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteConnectedSiteTag:output_type -> google.protobuf.Empty
-	140, // 353: google.analytics.admin.v1alpha.AnalyticsAdminService.ListConnectedSiteTags:output_type -> google.analytics.admin.v1alpha.ListConnectedSiteTagsResponse
-	147, // 354: google.analytics.admin.v1alpha.AnalyticsAdminService.FetchConnectedGa4Property:output_type -> google.analytics.admin.v1alpha.FetchConnectedGa4PropertyResponse
-	208, // 355: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAdSenseLink:output_type -> google.analytics.admin.v1alpha.AdSenseLink
-	208, // 356: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAdSenseLink:output_type -> google.analytics.admin.v1alpha.AdSenseLink
-	212, // 357: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAdSenseLink:output_type -> google.protobuf.Empty
-	145, // 358: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAdSenseLinks:output_type -> google.analytics.admin.v1alpha.ListAdSenseLinksResponse
-	209, // 359: google.analytics.admin.v1alpha.AnalyticsAdminService.GetEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
-	153, // 360: google.analytics.admin.v1alpha.AnalyticsAdminService.ListEventCreateRules:output_type -> google.analytics.admin.v1alpha.ListEventCreateRulesResponse
-	209, // 361: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
-	209, // 362: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
-	212, // 363: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteEventCreateRule:output_type -> google.protobuf.Empty
-	206, // 364: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataRedactionSettings:output_type -> google.analytics.admin.v1alpha.DataRedactionSettings
-	206, // 365: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataRedactionSettings:output_type -> google.analytics.admin.v1alpha.DataRedactionSettings
-	155, // 366: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateRollupProperty:output_type -> google.analytics.admin.v1alpha.CreateRollupPropertyResponse
-	210, // 367: google.analytics.admin.v1alpha.AnalyticsAdminService.GetRollupPropertySourceLink:output_type -> google.analytics.admin.v1alpha.RollupPropertySourceLink
-	158, // 368: google.analytics.admin.v1alpha.AnalyticsAdminService.ListRollupPropertySourceLinks:output_type -> google.analytics.admin.v1alpha.ListRollupPropertySourceLinksResponse
-	210, // 369: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateRollupPropertySourceLink:output_type -> google.analytics.admin.v1alpha.RollupPropertySourceLink
-	212, // 370: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteRollupPropertySourceLink:output_type -> google.protobuf.Empty
-	162, // 371: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubproperty:output_type -> google.analytics.admin.v1alpha.CreateSubpropertyResponse
-	212, // 372: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSubpropertyEventFilter:output_type -> google.protobuf.Empty
-	211, // 373: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubpropertyEventFilter:output_type -> google.analytics.admin.v1alpha.SubpropertyEventFilter
-	246, // [246:374] is the sub-list for method output_type
-	118, // [118:246] is the sub-list for method input_type
+	163, // 244: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubpropertyEventFilter:input_type -> google.analytics.admin.v1alpha.CreateSubpropertyEventFilterRequest
+	164, // 245: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSubpropertyEventFilter:input_type -> google.analytics.admin.v1alpha.GetSubpropertyEventFilterRequest
+	165, // 246: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSubpropertyEventFilters:input_type -> google.analytics.admin.v1alpha.ListSubpropertyEventFiltersRequest
+	167, // 247: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertyEventFilter:input_type -> google.analytics.admin.v1alpha.UpdateSubpropertyEventFilterRequest
+	168, // 248: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSubpropertyEventFilter:input_type -> google.analytics.admin.v1alpha.DeleteSubpropertyEventFilterRequest
+	178, // 249: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAccount:output_type -> google.analytics.admin.v1alpha.Account
+	4,   // 250: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccounts:output_type -> google.analytics.admin.v1alpha.ListAccountsResponse
+	212, // 251: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccount:output_type -> google.protobuf.Empty
+	178, // 252: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAccount:output_type -> google.analytics.admin.v1alpha.Account
+	8,   // 253: google.analytics.admin.v1alpha.AnalyticsAdminService.ProvisionAccountTicket:output_type -> google.analytics.admin.v1alpha.ProvisionAccountTicketResponse
+	27,  // 254: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccountSummaries:output_type -> google.analytics.admin.v1alpha.ListAccountSummariesResponse
+	180, // 255: google.analytics.admin.v1alpha.AnalyticsAdminService.GetProperty:output_type -> google.analytics.admin.v1alpha.Property
+	11,  // 256: google.analytics.admin.v1alpha.AnalyticsAdminService.ListProperties:output_type -> google.analytics.admin.v1alpha.ListPropertiesResponse
+	180, // 257: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateProperty:output_type -> google.analytics.admin.v1alpha.Property
+	180, // 258: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteProperty:output_type -> google.analytics.admin.v1alpha.Property
+	180, // 259: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateProperty:output_type -> google.analytics.admin.v1alpha.Property
+	181, // 260: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateFirebaseLink:output_type -> google.analytics.admin.v1alpha.FirebaseLink
+	212, // 261: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteFirebaseLink:output_type -> google.protobuf.Empty
+	18,  // 262: google.analytics.admin.v1alpha.AnalyticsAdminService.ListFirebaseLinks:output_type -> google.analytics.admin.v1alpha.ListFirebaseLinksResponse
+	213, // 263: google.analytics.admin.v1alpha.AnalyticsAdminService.GetGlobalSiteTag:output_type -> google.analytics.admin.v1alpha.GlobalSiteTag
+	182, // 264: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateGoogleAdsLink:output_type -> google.analytics.admin.v1alpha.GoogleAdsLink
+	182, // 265: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateGoogleAdsLink:output_type -> google.analytics.admin.v1alpha.GoogleAdsLink
+	212, // 266: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteGoogleAdsLink:output_type -> google.protobuf.Empty
+	24,  // 267: google.analytics.admin.v1alpha.AnalyticsAdminService.ListGoogleAdsLinks:output_type -> google.analytics.admin.v1alpha.ListGoogleAdsLinksResponse
+	214, // 268: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataSharingSettings:output_type -> google.analytics.admin.v1alpha.DataSharingSettings
+	188, // 269: google.analytics.admin.v1alpha.AnalyticsAdminService.GetMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
+	37,  // 270: google.analytics.admin.v1alpha.AnalyticsAdminService.ListMeasurementProtocolSecrets:output_type -> google.analytics.admin.v1alpha.ListMeasurementProtocolSecretsResponse
+	188, // 271: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
+	212, // 272: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteMeasurementProtocolSecret:output_type -> google.protobuf.Empty
+	188, // 273: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateMeasurementProtocolSecret:output_type -> google.analytics.admin.v1alpha.MeasurementProtocolSecret
+	29,  // 274: google.analytics.admin.v1alpha.AnalyticsAdminService.AcknowledgeUserDataCollection:output_type -> google.analytics.admin.v1alpha.AcknowledgeUserDataCollectionResponse
+	189, // 275: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
+	189, // 276: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
+	212, // 277: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSKAdNetworkConversionValueSchema:output_type -> google.protobuf.Empty
+	189, // 278: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSKAdNetworkConversionValueSchema:output_type -> google.analytics.admin.v1alpha.SKAdNetworkConversionValueSchema
+	43,  // 279: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSKAdNetworkConversionValueSchemas:output_type -> google.analytics.admin.v1alpha.ListSKAdNetworkConversionValueSchemasResponse
+	31,  // 280: google.analytics.admin.v1alpha.AnalyticsAdminService.SearchChangeHistoryEvents:output_type -> google.analytics.admin.v1alpha.SearchChangeHistoryEventsResponse
+	190, // 281: google.analytics.admin.v1alpha.AnalyticsAdminService.GetGoogleSignalsSettings:output_type -> google.analytics.admin.v1alpha.GoogleSignalsSettings
+	190, // 282: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateGoogleSignalsSettings:output_type -> google.analytics.admin.v1alpha.GoogleSignalsSettings
+	191, // 283: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
+	191, // 284: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
+	191, // 285: google.analytics.admin.v1alpha.AnalyticsAdminService.GetConversionEvent:output_type -> google.analytics.admin.v1alpha.ConversionEvent
+	212, // 286: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteConversionEvent:output_type -> google.protobuf.Empty
+	51,  // 287: google.analytics.admin.v1alpha.AnalyticsAdminService.ListConversionEvents:output_type -> google.analytics.admin.v1alpha.ListConversionEventsResponse
+	192, // 288: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
+	54,  // 289: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDisplayVideo360AdvertiserLinks:output_type -> google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinksResponse
+	192, // 290: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
+	212, // 291: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDisplayVideo360AdvertiserLink:output_type -> google.protobuf.Empty
+	192, // 292: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDisplayVideo360AdvertiserLink:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLink
+	193, // 293: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
+	60,  // 294: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDisplayVideo360AdvertiserLinkProposals:output_type -> google.analytics.admin.v1alpha.ListDisplayVideo360AdvertiserLinkProposalsResponse
+	193, // 295: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
+	212, // 296: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDisplayVideo360AdvertiserLinkProposal:output_type -> google.protobuf.Empty
+	64,  // 297: google.analytics.admin.v1alpha.AnalyticsAdminService.ApproveDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.ApproveDisplayVideo360AdvertiserLinkProposalResponse
+	193, // 298: google.analytics.admin.v1alpha.AnalyticsAdminService.CancelDisplayVideo360AdvertiserLinkProposal:output_type -> google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal
+	195, // 299: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
+	195, // 300: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
+	75,  // 301: google.analytics.admin.v1alpha.AnalyticsAdminService.ListCustomDimensions:output_type -> google.analytics.admin.v1alpha.ListCustomDimensionsResponse
+	212, // 302: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveCustomDimension:output_type -> google.protobuf.Empty
+	195, // 303: google.analytics.admin.v1alpha.AnalyticsAdminService.GetCustomDimension:output_type -> google.analytics.admin.v1alpha.CustomDimension
+	196, // 304: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
+	196, // 305: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
+	81,  // 306: google.analytics.admin.v1alpha.AnalyticsAdminService.ListCustomMetrics:output_type -> google.analytics.admin.v1alpha.ListCustomMetricsResponse
+	212, // 307: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveCustomMetric:output_type -> google.protobuf.Empty
+	196, // 308: google.analytics.admin.v1alpha.AnalyticsAdminService.GetCustomMetric:output_type -> google.analytics.admin.v1alpha.CustomMetric
+	197, // 309: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataRetentionSettings:output_type -> google.analytics.admin.v1alpha.DataRetentionSettings
+	197, // 310: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataRetentionSettings:output_type -> google.analytics.admin.v1alpha.DataRetentionSettings
+	198, // 311: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
+	212, // 312: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDataStream:output_type -> google.protobuf.Empty
+	198, // 313: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
+	90,  // 314: google.analytics.admin.v1alpha.AnalyticsAdminService.ListDataStreams:output_type -> google.analytics.admin.v1alpha.ListDataStreamsResponse
+	198, // 315: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataStream:output_type -> google.analytics.admin.v1alpha.DataStream
+	199, // 316: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAudience:output_type -> google.analytics.admin.v1alpha.Audience
+	94,  // 317: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAudiences:output_type -> google.analytics.admin.v1alpha.ListAudiencesResponse
+	199, // 318: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAudience:output_type -> google.analytics.admin.v1alpha.Audience
+	199, // 319: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAudience:output_type -> google.analytics.admin.v1alpha.Audience
+	212, // 320: google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveAudience:output_type -> google.protobuf.Empty
+	194, // 321: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
+	68,  // 322: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSearchAds360Links:output_type -> google.analytics.admin.v1alpha.ListSearchAds360LinksResponse
+	194, // 323: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
+	212, // 324: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSearchAds360Link:output_type -> google.protobuf.Empty
+	194, // 325: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSearchAds360Link:output_type -> google.analytics.admin.v1alpha.SearchAds360Link
+	200, // 326: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAttributionSettings:output_type -> google.analytics.admin.v1alpha.AttributionSettings
+	200, // 327: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAttributionSettings:output_type -> google.analytics.admin.v1alpha.AttributionSettings
+	1,   // 328: google.analytics.admin.v1alpha.AnalyticsAdminService.RunAccessReport:output_type -> google.analytics.admin.v1alpha.RunAccessReportResponse
+	201, // 329: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
+	201, // 330: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
+	201, // 331: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAccessBinding:output_type -> google.analytics.admin.v1alpha.AccessBinding
+	212, // 332: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccessBinding:output_type -> google.protobuf.Empty
+	104, // 333: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccessBindings:output_type -> google.analytics.admin.v1alpha.ListAccessBindingsResponse
+	107, // 334: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchCreateAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchCreateAccessBindingsResponse
+	102, // 335: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchGetAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchGetAccessBindingsResponse
+	110, // 336: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchUpdateAccessBindings:output_type -> google.analytics.admin.v1alpha.BatchUpdateAccessBindingsResponse
+	212, // 337: google.analytics.admin.v1alpha.AnalyticsAdminService.BatchDeleteAccessBindings:output_type -> google.protobuf.Empty
+	202, // 338: google.analytics.admin.v1alpha.AnalyticsAdminService.GetExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
+	118, // 339: google.analytics.admin.v1alpha.AnalyticsAdminService.ListExpandedDataSets:output_type -> google.analytics.admin.v1alpha.ListExpandedDataSetsResponse
+	202, // 340: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
+	202, // 341: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateExpandedDataSet:output_type -> google.analytics.admin.v1alpha.ExpandedDataSet
+	212, // 342: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteExpandedDataSet:output_type -> google.protobuf.Empty
+	203, // 343: google.analytics.admin.v1alpha.AnalyticsAdminService.GetChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
+	124, // 344: google.analytics.admin.v1alpha.AnalyticsAdminService.ListChannelGroups:output_type -> google.analytics.admin.v1alpha.ListChannelGroupsResponse
+	203, // 345: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
+	203, // 346: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateChannelGroup:output_type -> google.analytics.admin.v1alpha.ChannelGroup
+	212, // 347: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteChannelGroup:output_type -> google.protobuf.Empty
+	126, // 348: google.analytics.admin.v1alpha.AnalyticsAdminService.SetAutomatedGa4ConfigurationOptOut:output_type -> google.analytics.admin.v1alpha.SetAutomatedGa4ConfigurationOptOutResponse
+	128, // 349: google.analytics.admin.v1alpha.AnalyticsAdminService.FetchAutomatedGa4ConfigurationOptOut:output_type -> google.analytics.admin.v1alpha.FetchAutomatedGa4ConfigurationOptOutResponse
+	204, // 350: google.analytics.admin.v1alpha.AnalyticsAdminService.GetBigQueryLink:output_type -> google.analytics.admin.v1alpha.BigQueryLink
+	131, // 351: google.analytics.admin.v1alpha.AnalyticsAdminService.ListBigQueryLinks:output_type -> google.analytics.admin.v1alpha.ListBigQueryLinksResponse
+	205, // 352: google.analytics.admin.v1alpha.AnalyticsAdminService.GetEnhancedMeasurementSettings:output_type -> google.analytics.admin.v1alpha.EnhancedMeasurementSettings
+	205, // 353: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEnhancedMeasurementSettings:output_type -> google.analytics.admin.v1alpha.EnhancedMeasurementSettings
+	137, // 354: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateConnectedSiteTag:output_type -> google.analytics.admin.v1alpha.CreateConnectedSiteTagResponse
+	212, // 355: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteConnectedSiteTag:output_type -> google.protobuf.Empty
+	140, // 356: google.analytics.admin.v1alpha.AnalyticsAdminService.ListConnectedSiteTags:output_type -> google.analytics.admin.v1alpha.ListConnectedSiteTagsResponse
+	147, // 357: google.analytics.admin.v1alpha.AnalyticsAdminService.FetchConnectedGa4Property:output_type -> google.analytics.admin.v1alpha.FetchConnectedGa4PropertyResponse
+	208, // 358: google.analytics.admin.v1alpha.AnalyticsAdminService.GetAdSenseLink:output_type -> google.analytics.admin.v1alpha.AdSenseLink
+	208, // 359: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAdSenseLink:output_type -> google.analytics.admin.v1alpha.AdSenseLink
+	212, // 360: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAdSenseLink:output_type -> google.protobuf.Empty
+	145, // 361: google.analytics.admin.v1alpha.AnalyticsAdminService.ListAdSenseLinks:output_type -> google.analytics.admin.v1alpha.ListAdSenseLinksResponse
+	209, // 362: google.analytics.admin.v1alpha.AnalyticsAdminService.GetEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
+	153, // 363: google.analytics.admin.v1alpha.AnalyticsAdminService.ListEventCreateRules:output_type -> google.analytics.admin.v1alpha.ListEventCreateRulesResponse
+	209, // 364: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
+	209, // 365: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEventCreateRule:output_type -> google.analytics.admin.v1alpha.EventCreateRule
+	212, // 366: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteEventCreateRule:output_type -> google.protobuf.Empty
+	206, // 367: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataRedactionSettings:output_type -> google.analytics.admin.v1alpha.DataRedactionSettings
+	206, // 368: google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataRedactionSettings:output_type -> google.analytics.admin.v1alpha.DataRedactionSettings
+	155, // 369: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateRollupProperty:output_type -> google.analytics.admin.v1alpha.CreateRollupPropertyResponse
+	210, // 370: google.analytics.admin.v1alpha.AnalyticsAdminService.GetRollupPropertySourceLink:output_type -> google.analytics.admin.v1alpha.RollupPropertySourceLink
+	158, // 371: google.analytics.admin.v1alpha.AnalyticsAdminService.ListRollupPropertySourceLinks:output_type -> google.analytics.admin.v1alpha.ListRollupPropertySourceLinksResponse
+	210, // 372: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateRollupPropertySourceLink:output_type -> google.analytics.admin.v1alpha.RollupPropertySourceLink
+	212, // 373: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteRollupPropertySourceLink:output_type -> google.protobuf.Empty
+	162, // 374: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubproperty:output_type -> google.analytics.admin.v1alpha.CreateSubpropertyResponse
+	211, // 375: google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubpropertyEventFilter:output_type -> google.analytics.admin.v1alpha.SubpropertyEventFilter
+	211, // 376: google.analytics.admin.v1alpha.AnalyticsAdminService.GetSubpropertyEventFilter:output_type -> google.analytics.admin.v1alpha.SubpropertyEventFilter
+	166, // 377: google.analytics.admin.v1alpha.AnalyticsAdminService.ListSubpropertyEventFilters:output_type -> google.analytics.admin.v1alpha.ListSubpropertyEventFiltersResponse
+	211, // 378: google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertyEventFilter:output_type -> google.analytics.admin.v1alpha.SubpropertyEventFilter
+	212, // 379: google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSubpropertyEventFilter:output_type -> google.protobuf.Empty
+	249, // [249:380] is the sub-list for method output_type
+	118, // [118:249] is the sub-list for method input_type
 	118, // [118:118] is the sub-list for extension type_name
 	118, // [118:118] is the sub-list for extension extendee
 	0,   // [0:118] is the sub-list for field type_name
@@ -16707,8 +16762,10 @@ type AnalyticsAdminServiceClient interface {
 	// records of each time a user reads Google Analytics reporting data. Access
 	// records are retained for up to 2 years.
 	//
-	// Data Access Reports can be requested for a property. The property must be
-	// in Google Analytics 360. This method is only available to Administrators.
+	// Data Access Reports can be requested for a property. Reports may be
+	// requested for any property, but dimensions that aren't related to quota can
+	// only be requested on Google Analytics 360 properties. This method is only
+	// available to Administrators.
 	//
 	// These data access records include GA4 UI Reporting, GA4 UI Explorations,
 	// GA4 Data API, and other products like Firebase & Admob that can retrieve
@@ -16837,10 +16894,16 @@ type AnalyticsAdminServiceClient interface {
 	// Create a subproperty and a subproperty event filter that applies to the
 	// created subproperty.
 	CreateSubproperty(ctx context.Context, in *CreateSubpropertyRequest, opts ...grpc.CallOption) (*CreateSubpropertyResponse, error)
-	// Deletes a subproperty event filter.
-	DeleteSubpropertyEventFilter(ctx context.Context, in *DeleteSubpropertyEventFilterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a subproperty Event Filter.
 	CreateSubpropertyEventFilter(ctx context.Context, in *CreateSubpropertyEventFilterRequest, opts ...grpc.CallOption) (*SubpropertyEventFilter, error)
+	// Lookup for a single subproperty Event Filter.
+	GetSubpropertyEventFilter(ctx context.Context, in *GetSubpropertyEventFilterRequest, opts ...grpc.CallOption) (*SubpropertyEventFilter, error)
+	// List all subproperty Event Filters on a property.
+	ListSubpropertyEventFilters(ctx context.Context, in *ListSubpropertyEventFiltersRequest, opts ...grpc.CallOption) (*ListSubpropertyEventFiltersResponse, error)
+	// Updates a subproperty Event Filter.
+	UpdateSubpropertyEventFilter(ctx context.Context, in *UpdateSubpropertyEventFilterRequest, opts ...grpc.CallOption) (*SubpropertyEventFilter, error)
+	// Deletes a subproperty event filter.
+	DeleteSubpropertyEventFilter(ctx context.Context, in *DeleteSubpropertyEventFilterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type analyticsAdminServiceClient struct {
@@ -17985,18 +18048,45 @@ func (c *analyticsAdminServiceClient) CreateSubproperty(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *analyticsAdminServiceClient) DeleteSubpropertyEventFilter(ctx context.Context, in *DeleteSubpropertyEventFilterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteSubpropertyEventFilter", in, out, opts...)
+func (c *analyticsAdminServiceClient) CreateSubpropertyEventFilter(ctx context.Context, in *CreateSubpropertyEventFilterRequest, opts ...grpc.CallOption) (*SubpropertyEventFilter, error) {
+	out := new(SubpropertyEventFilter)
+	err := c.cc.Invoke(ctx, "/google.analytics.admin.v1alpha.AnalyticsAdminService/CreateSubpropertyEventFilter", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *analyticsAdminServiceClient) CreateSubpropertyEventFilter(ctx context.Context, in *CreateSubpropertyEventFilterRequest, opts ...grpc.CallOption) (*SubpropertyEventFilter, error) {
+func (c *analyticsAdminServiceClient) GetSubpropertyEventFilter(ctx context.Context, in *GetSubpropertyEventFilterRequest, opts ...grpc.CallOption) (*SubpropertyEventFilter, error) {
 	out := new(SubpropertyEventFilter)
-	err := c.cc.Invoke(ctx, "/google.analytics.admin.v1alpha.AnalyticsAdminService/CreateSubpropertyEventFilter", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetSubpropertyEventFilter", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *analyticsAdminServiceClient) ListSubpropertyEventFilters(ctx context.Context, in *ListSubpropertyEventFiltersRequest, opts ...grpc.CallOption) (*ListSubpropertyEventFiltersResponse, error) {
+	out := new(ListSubpropertyEventFiltersResponse)
+	err := c.cc.Invoke(ctx, "/google.analytics.admin.v1alpha.AnalyticsAdminService/ListSubpropertyEventFilters", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *analyticsAdminServiceClient) UpdateSubpropertyEventFilter(ctx context.Context, in *UpdateSubpropertyEventFilterRequest, opts ...grpc.CallOption) (*SubpropertyEventFilter, error) {
+	out := new(SubpropertyEventFilter)
+	err := c.cc.Invoke(ctx, "/google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSubpropertyEventFilter", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *analyticsAdminServiceClient) DeleteSubpropertyEventFilter(ctx context.Context, in *DeleteSubpropertyEventFilterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteSubpropertyEventFilter", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -18225,8 +18315,10 @@ type AnalyticsAdminServiceServer interface {
 	// records of each time a user reads Google Analytics reporting data. Access
 	// records are retained for up to 2 years.
 	//
-	// Data Access Reports can be requested for a property. The property must be
-	// in Google Analytics 360. This method is only available to Administrators.
+	// Data Access Reports can be requested for a property. Reports may be
+	// requested for any property, but dimensions that aren't related to quota can
+	// only be requested on Google Analytics 360 properties. This method is only
+	// available to Administrators.
 	//
 	// These data access records include GA4 UI Reporting, GA4 UI Explorations,
 	// GA4 Data API, and other products like Firebase & Admob that can retrieve
@@ -18355,10 +18447,16 @@ type AnalyticsAdminServiceServer interface {
 	// Create a subproperty and a subproperty event filter that applies to the
 	// created subproperty.
 	CreateSubproperty(context.Context, *CreateSubpropertyRequest) (*CreateSubpropertyResponse, error)
-	// Deletes a subproperty event filter.
-	DeleteSubpropertyEventFilter(context.Context, *DeleteSubpropertyEventFilterRequest) (*emptypb.Empty, error)
 	// Creates a subproperty Event Filter.
 	CreateSubpropertyEventFilter(context.Context, *CreateSubpropertyEventFilterRequest) (*SubpropertyEventFilter, error)
+	// Lookup for a single subproperty Event Filter.
+	GetSubpropertyEventFilter(context.Context, *GetSubpropertyEventFilterRequest) (*SubpropertyEventFilter, error)
+	// List all subproperty Event Filters on a property.
+	ListSubpropertyEventFilters(context.Context, *ListSubpropertyEventFiltersRequest) (*ListSubpropertyEventFiltersResponse, error)
+	// Updates a subproperty Event Filter.
+	UpdateSubpropertyEventFilter(context.Context, *UpdateSubpropertyEventFilterRequest) (*SubpropertyEventFilter, error)
+	// Deletes a subproperty event filter.
+	DeleteSubpropertyEventFilter(context.Context, *DeleteSubpropertyEventFilterRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedAnalyticsAdminServiceServer can be embedded to have forward compatible implementations.
@@ -18743,11 +18841,20 @@ func (*UnimplementedAnalyticsAdminServiceServer) DeleteRollupPropertySourceLink(
 func (*UnimplementedAnalyticsAdminServiceServer) CreateSubproperty(context.Context, *CreateSubpropertyRequest) (*CreateSubpropertyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSubproperty not implemented")
 }
-func (*UnimplementedAnalyticsAdminServiceServer) DeleteSubpropertyEventFilter(context.Context, *DeleteSubpropertyEventFilterRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteSubpropertyEventFilter not implemented")
-}
 func (*UnimplementedAnalyticsAdminServiceServer) CreateSubpropertyEventFilter(context.Context, *CreateSubpropertyEventFilterRequest) (*SubpropertyEventFilter, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSubpropertyEventFilter not implemented")
+}
+func (*UnimplementedAnalyticsAdminServiceServer) GetSubpropertyEventFilter(context.Context, *GetSubpropertyEventFilterRequest) (*SubpropertyEventFilter, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSubpropertyEventFilter not implemented")
+}
+func (*UnimplementedAnalyticsAdminServiceServer) ListSubpropertyEventFilters(context.Context, *ListSubpropertyEventFiltersRequest) (*ListSubpropertyEventFiltersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSubpropertyEventFilters not implemented")
+}
+func (*UnimplementedAnalyticsAdminServiceServer) UpdateSubpropertyEventFilter(context.Context, *UpdateSubpropertyEventFilterRequest) (*SubpropertyEventFilter, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSubpropertyEventFilter not implemented")
+}
+func (*UnimplementedAnalyticsAdminServiceServer) DeleteSubpropertyEventFilter(context.Context, *DeleteSubpropertyEventFilterRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteSubpropertyEventFilter not implemented")
 }
 
 func RegisterAnalyticsAdminServiceServer(s *grpc.Server, srv AnalyticsAdminServiceServer) {
@@ -21022,24 +21129,6 @@ func _AnalyticsAdminService_CreateSubproperty_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AnalyticsAdminService_DeleteSubpropertyEventFilter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteSubpropertyEventFilterRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AnalyticsAdminServiceServer).DeleteSubpropertyEventFilter(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteSubpropertyEventFilter",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalyticsAdminServiceServer).DeleteSubpropertyEventFilter(ctx, req.(*DeleteSubpropertyEventFilterRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _AnalyticsAdminService_CreateSubpropertyEventFilter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateSubpropertyEventFilterRequest)
 	if err := dec(in); err != nil {
@@ -21054,6 +21143,78 @@ func _AnalyticsAdminService_CreateSubpropertyEventFilter_Handler(srv interface{}
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AnalyticsAdminServiceServer).CreateSubpropertyEventFilter(ctx, req.(*CreateSubpropertyEventFilterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AnalyticsAdminService_GetSubpropertyEventFilter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSubpropertyEventFilterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsAdminServiceServer).GetSubpropertyEventFilter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetSubpropertyEventFilter",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsAdminServiceServer).GetSubpropertyEventFilter(ctx, req.(*GetSubpropertyEventFilterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AnalyticsAdminService_ListSubpropertyEventFilters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSubpropertyEventFiltersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsAdminServiceServer).ListSubpropertyEventFilters(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/google.analytics.admin.v1alpha.AnalyticsAdminService/ListSubpropertyEventFilters",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsAdminServiceServer).ListSubpropertyEventFilters(ctx, req.(*ListSubpropertyEventFiltersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AnalyticsAdminService_UpdateSubpropertyEventFilter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateSubpropertyEventFilterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsAdminServiceServer).UpdateSubpropertyEventFilter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSubpropertyEventFilter",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsAdminServiceServer).UpdateSubpropertyEventFilter(ctx, req.(*UpdateSubpropertyEventFilterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AnalyticsAdminService_DeleteSubpropertyEventFilter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSubpropertyEventFilterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsAdminServiceServer).DeleteSubpropertyEventFilter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/google.analytics.admin.v1alpha.AnalyticsAdminService/DeleteSubpropertyEventFilter",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsAdminServiceServer).DeleteSubpropertyEventFilter(ctx, req.(*DeleteSubpropertyEventFilterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -21567,12 +21728,24 @@ var _AnalyticsAdminService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _AnalyticsAdminService_CreateSubproperty_Handler,
 		},
 		{
-			MethodName: "DeleteSubpropertyEventFilter",
-			Handler:    _AnalyticsAdminService_DeleteSubpropertyEventFilter_Handler,
-		},
-		{
 			MethodName: "CreateSubpropertyEventFilter",
 			Handler:    _AnalyticsAdminService_CreateSubpropertyEventFilter_Handler,
+		},
+		{
+			MethodName: "GetSubpropertyEventFilter",
+			Handler:    _AnalyticsAdminService_GetSubpropertyEventFilter_Handler,
+		},
+		{
+			MethodName: "ListSubpropertyEventFilters",
+			Handler:    _AnalyticsAdminService_ListSubpropertyEventFilters_Handler,
+		},
+		{
+			MethodName: "UpdateSubpropertyEventFilter",
+			Handler:    _AnalyticsAdminService_UpdateSubpropertyEventFilter_Handler,
+		},
+		{
+			MethodName: "DeleteSubpropertyEventFilter",
+			Handler:    _AnalyticsAdminService_DeleteSubpropertyEventFilter_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
