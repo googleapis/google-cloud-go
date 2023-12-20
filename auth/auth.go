@@ -79,7 +79,7 @@ type Token struct {
 
 // IsValid reports that a [Token] is non-nil, has a [Token.Value], and has not
 // expired. A token is considered expired if [Token.Expiry] has passed or will
-// pass in the next 10 seconds.
+// pass in the next 3 minutes and 45 seconds.
 func (t *Token) IsValid() bool {
 	return t.isValidWithEarlyExpiry(defaultExpiryDelta)
 }
@@ -101,7 +101,8 @@ type CachedTokenProviderOptions struct {
 	// even if it is expired.
 	DisableAutoRefresh bool
 	// ExpireEarly configures the amount of time before a token expires, that it
-	// should be refreshed. If unset, the default value is 10 seconds.
+	// should be refreshed. If unset, the default value is 3 minutes and 45
+	// seconds.
 	ExpireEarly time.Duration
 }
 
@@ -120,9 +121,9 @@ func (ctpo *CachedTokenProviderOptions) expireEarly() time.Duration {
 }
 
 // NewCachedTokenProvider wraps a [TokenProvider] to cache the tokens returned
-// by the underlying provider. By default it will refresh tokens ten seconds
-// before they expire, but this time can be configured with the optional
-// options.
+// by the underlying provider. By default it will refresh tokens 3 minutes and
+// 45 seconds before they expire, but this time can be configured with the
+// optional options.
 func NewCachedTokenProvider(tp TokenProvider, opts *CachedTokenProviderOptions) TokenProvider {
 	if ctp, ok := tp.(*cachedTokenProvider); ok {
 		return ctp
