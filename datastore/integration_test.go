@@ -811,6 +811,10 @@ func TestIntegration_AggregationQueriesInTransaction(t *testing.T) {
 			if readTime.IsZero() {
 				// Use current time as read time if read time is not specified in test case
 				readTime = time.Now().Truncate(time.Microsecond)
+
+				// Read time is truncated to microseconds. If immediately used in NewTransaction call,
+				// it leads to "read_time cannot be in the future" error
+				time.Sleep(time.Second)
 			}
 
 			tx, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)

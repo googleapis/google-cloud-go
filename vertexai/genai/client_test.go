@@ -16,10 +16,10 @@ package genai
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -49,7 +49,7 @@ func TestLive(t *testing.T) {
 	}
 	defer client.Close()
 	model := client.GenerativeModel(*modelName)
-	model.Temperature = 0
+	model.Temperature = Ptr[float32](0)
 
 	t.Run("GenerateContent", func(t *testing.T) {
 		resp, err := model.GenerateContent(ctx, Text("What is the average size of a swallow?"))
@@ -63,7 +63,7 @@ func TestLive(t *testing.T) {
 	t.Run("streaming", func(t *testing.T) {
 		iter := model.GenerateContentStream(ctx, Text("Are you hungry?"))
 		got := responsesString(t, iter)
-		checkMatch(t, got, `(don't|do not) have (a .* body|the ability)`)
+		checkMatch(t, got, `(don't|do\s+not) (have|possess) .*(a .* body|the ability)`)
 	})
 
 	t.Run("chat", func(t *testing.T) {
@@ -104,16 +104,16 @@ func TestLive(t *testing.T) {
 
 		checkMatch(t,
 			send("Which is best?", true),
-			"best", "air fryer", "Philips", "([Cc]onsider|research|compare)", "factors|features")
+			"best", "air fryer", "Philips", "([Cc]onsider|research|compare|preference)", "factors|features")
 
 		checkMatch(t,
 			send("Say that again.", false),
-			"best", "air fryer", "Philips", "([Cc]onsider|research|compare)", "factors|features")
+			"best", "air fryer", "Philips", "([Cc]onsider|research|compare|preference)", "factors|features")
 	})
 
 	t.Run("image", func(t *testing.T) {
 		vmodel := client.GenerativeModel(*modelName + "-vision")
-		vmodel.Temperature = 0
+		vmodel.Temperature = Ptr[float32](0)
 
 		data, err := os.ReadFile(filepath.Join("testdata", imageFile))
 		if err != nil {
@@ -168,8 +168,8 @@ func TestLive(t *testing.T) {
 	})
 	t.Run("max-tokens", func(t *testing.T) {
 		maxModel := client.GenerativeModel(*modelName)
-		maxModel.Temperature = 0
-		maxModel.MaxOutputTokens = 10
+		maxModel.Temperature = Ptr(float32(0))
+		maxModel.SetMaxOutputTokens(10)
 		res, err := maxModel.GenerateContent(ctx, Text("What is a dog?"))
 		if err != nil {
 			t.Fatal(err)
@@ -182,8 +182,8 @@ func TestLive(t *testing.T) {
 	})
 	t.Run("max-tokens-streaming", func(t *testing.T) {
 		maxModel := client.GenerativeModel(*modelName)
-		maxModel.Temperature = 0
-		maxModel.MaxOutputTokens = 10
+		maxModel.Temperature = Ptr[float32](0)
+		maxModel.MaxOutputTokens = Ptr[int32](10)
 		iter := maxModel.GenerateContentStream(ctx, Text("What is a dog?"))
 		var merged *GenerateContentResponse
 		for {
@@ -209,6 +209,57 @@ func TestLive(t *testing.T) {
 		if g, w := res.TotalTokens, int32(10); g != w {
 			t.Errorf("got %d, want %d", g, w)
 		}
+	})
+	t.Run("tools", func(t *testing.T) {
+		weatherTool := &Tool{
+			FunctionDeclarations: []*FunctionDeclaration{{
+				Name:        "CurrentWeather",
+				Description: "Get the current weather in a given location",
+				Parameters: &Schema{
+					Type: TypeObject,
+					Properties: map[string]*Schema{
+						"location": {
+							Type:        TypeString,
+							Description: "The city and state, e.g. San Francisco, CA",
+						},
+						"unit": {
+							Type: TypeString,
+							Enum: []string{"celsius", "fahrenheit"},
+						},
+					},
+					Required: []string{"location"},
+				},
+			}},
+		}
+		model := client.GenerativeModel(*modelName)
+		model.SetTemperature(0)
+		model.Tools = []*Tool{weatherTool}
+		session := model.StartChat()
+		res, err := session.SendMessage(ctx, Text("What is the weather like in New York?"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		part := res.Candidates[0].Content.Parts[0]
+		funcall, ok := part.(FunctionCall)
+		if !ok {
+			t.Fatalf("want FunctionCall, got %T", part)
+		}
+		if g, w := funcall.Name, weatherTool.FunctionDeclarations[0].Name; g != w {
+			t.Errorf("FunctionCall.Name: got %q, want %q", g, w)
+		}
+		if g, c := funcall.Args["location"], "New York"; !strings.Contains(g.(string), c) {
+			t.Errorf(`FunctionCall.Args["location"]: got %q, want string containing %q`, g, c)
+		}
+		res, err = session.SendMessage(ctx, FunctionResponse{
+			Name: weatherTool.FunctionDeclarations[0].Name,
+			Response: map[string]any{
+				"weather_there": "cold",
+			},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		checkMatch(t, responseString(res), "(it's}|weather) .*cold")
 	})
 }
 
@@ -298,7 +349,7 @@ func TestMergeTexts(t *testing.T) {
 func checkMatch(t *testing.T, got string, wants ...string) {
 	t.Helper()
 	for _, want := range wants {
-		re, err := regexp.Compile(want)
+		re, err := regexp.Compile("(?i:" + want + ")")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -327,7 +378,7 @@ func contentString(c *Content) string {
 		}
 		fmt.Fprintf(&b, "%v", part)
 	}
-	return b.String()
+	return strings.ReplaceAll(b.String(), "\n", " ")
 }
 
 func responsesString(t *testing.T, iter *GenerateContentResponseIterator) string {
@@ -359,10 +410,79 @@ func all(iter *GenerateContentResponseIterator) ([]*GenerateContentResponse, err
 	}
 }
 
-func dump(x any) {
-	bs, err := json.MarshalIndent(x, "", "    ")
+func dump(w io.Writer, x any) {
+	var err error
+	printf := func(format string, args ...any) {
+		if err == nil {
+			_, err = fmt.Fprintf(w, format, args...)
+		}
+	}
+	printValue(reflect.ValueOf(x), "", "", printf)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%s\n", bs)
+}
+
+func printValue(v reflect.Value, indent, first string, printf func(string, ...any)) {
+	switch v.Kind() {
+	case reflect.Slice, reflect.Array, reflect.Map, reflect.Struct:
+		printf("%s%s%s{\n", indent, first, v.Type())
+		indent1 := indent + "    "
+		switch v.Kind() {
+		case reflect.Slice, reflect.Array:
+			for i := 0; i < v.Len(); i++ {
+				printValue(v.Index(i), indent1, fmt.Sprintf("[%d]: ", i), printf)
+			}
+		case reflect.Map:
+			iter := v.MapRange()
+			for iter.Next() {
+				printValue(iter.Value(), indent1, fmt.Sprintf("%q: ", iter.Key()), printf)
+			}
+		case reflect.Struct:
+			for _, sf := range reflect.VisibleFields(v.Type()) {
+				vf := v.FieldByName(sf.Name)
+				if !vf.IsZero() {
+					printValue(vf, indent1, sf.Name+": ", printf)
+				}
+			}
+		}
+		printf("%s}\n", indent)
+	case reflect.Pointer, reflect.Interface:
+		printValue(v.Elem(), indent, first, printf)
+	case reflect.String:
+		printf("%s%s%q\n", indent, first, v)
+	default:
+		printf("%s%s%v\n", indent, first, v)
+	}
+}
+
+func TestMatchString(t *testing.T) {
+	for _, test := range []struct {
+		re, in string
+	}{
+		{"do not", "I do not have"},
+		{"(don't|do not) have", "I do not have"},
+		{"(don't|do not) have", "As an AI language model, I do not have physical needs"},
+	} {
+		re := regexp.MustCompile(test.re)
+		if !re.MatchString(test.in) {
+			t.Errorf("%q doesn't match %q", test.re, test.in)
+		}
+	}
+}
+
+func TestTemperature(t *testing.T) {
+	m := &GenerativeModel{}
+	got := m.GenerationConfig.toProto().Temperature
+	if got != nil {
+		t.Errorf("got %v, want nil", got)
+	}
+	m.SetTemperature(0)
+	got = m.GenerationConfig.toProto().Temperature
+	if got == nil {
+		t.Fatal("got nil")
+	}
+	if g := *got; g != 0 {
+		t.Errorf("got %v, want 0", g)
+	}
 }

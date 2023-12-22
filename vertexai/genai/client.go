@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// To get the protoveneer tool:
+//    go install golang.org/x/exp/protoveneer/cmd/protoveneer@latest
+
+//go:generate protoveneer config.yaml ../../aiplatform/apiv1beta1/aiplatformpb
+
 // Package genai is a client for the generative VertexAI model.
 package genai
 
@@ -20,14 +25,13 @@ import (
 	"fmt"
 	"io"
 	"strings"
-	"time"
 
-	"cloud.google.com/go/civil"
-	aiplatform "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1"
-	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
+	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	"cloud.google.com/go/vertexai/internal"
+	"cloud.google.com/go/vertexai/internal/support"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	date "google.golang.org/genproto/googleapis/type/date"
 )
 
 // A Client is a Google Vertex AI client.
@@ -45,11 +49,14 @@ type Client struct {
 // You may configure the client by passing in options from the [google.golang.org/api/option]
 // package.
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
-	apiEndpoint := fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)
-	c, err := aiplatform.NewPredictionClient(ctx, option.WithEndpoint(apiEndpoint))
+	opts = append([]option.ClientOption{
+		option.WithEndpoint(fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)),
+	}, opts...)
+	c, err := aiplatform.NewPredictionClient(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
+	c.SetGoogleClientInfo("gccl", internal.Version)
 	return &Client{
 		c:         c,
 		projectID: projectID,
@@ -75,6 +82,7 @@ type GenerativeModel struct {
 
 	GenerationConfig
 	SafetySettings []*SafetySetting
+	Tools          []*Tool
 }
 
 const defaultMaxOutputTokens = 2048
@@ -82,10 +90,6 @@ const defaultMaxOutputTokens = 2048
 // GenerativeModel creates a new instance of the named model.
 func (c *Client) GenerativeModel(name string) *GenerativeModel {
 	return &GenerativeModel{
-		GenerationConfig: GenerationConfig{
-			MaxOutputTokens: defaultMaxOutputTokens,
-			TopK:            3,
-		},
 		c:        c,
 		name:     name,
 		fullName: fmt.Sprintf("projects/%s/locations/%s/publishers/google/models/%s", c.projectID, c.location, name),
@@ -131,8 +135,9 @@ func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateC
 func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
 	return &pb.GenerateContentRequest{
 		Model:            m.fullName,
-		Contents:         mapSlice(contents, (*Content).toProto),
-		SafetySettings:   mapSlice(m.SafetySettings, (*SafetySetting).toProto),
+		Contents:         support.TransformSlice(contents, (*Content).toProto),
+		SafetySettings:   support.TransformSlice(m.SafetySettings, (*SafetySetting).toProto),
+		Tools:            support.TransformSlice(m.Tools, (*Tool).toProto),
 		GenerationConfig: m.GenerationConfig.toProto(),
 	}
 }
@@ -176,28 +181,21 @@ func (iter *GenerateContentResponseIterator) Next() (*GenerateContentResponse, e
 	return gcp, nil
 }
 
-// GenerateContentResponse is the response from a GenerateContent or GenerateContentStream call.
-type GenerateContentResponse struct {
-	Candidates     []*Candidate
-	PromptFeedback *PromptFeedback
-}
-
 func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse, error) {
+	gcp := (GenerateContentResponse{}).fromProto(resp)
 	// Assume a non-nil PromptFeedback is an error.
 	// TODO: confirm.
-	pf := (PromptFeedback{}).fromProto(resp.PromptFeedback)
-	if pf != nil {
-		return nil, &BlockedError{PromptFeedback: pf}
+	if gcp.PromptFeedback != nil {
+		return nil, &BlockedError{PromptFeedback: gcp.PromptFeedback}
 	}
-	cands := mapSlice(resp.Candidates, (Candidate{}).fromProto)
 	// If any candidate is blocked, error.
 	// TODO: is this too harsh?
-	for _, c := range cands {
+	for _, c := range gcp.Candidates {
 		if c.FinishReason == FinishReasonSafety {
 			return nil, &BlockedError{Candidate: c}
 		}
 	}
-	return &GenerateContentResponse{Candidates: cands}, nil
+	return gcp, nil
 }
 
 // CountTokens counts the number of tokens in the content.
@@ -207,6 +205,7 @@ func (m *GenerativeModel) CountTokens(ctx context.Context, parts ...Part) (*Coun
 	if err != nil {
 		return nil, err
 	}
+
 	return (CountTokensResponse{}).fromProto(res), nil
 }
 
@@ -214,7 +213,7 @@ func (m *GenerativeModel) newCountTokensRequest(contents ...*Content) *pb.CountT
 	return &pb.CountTokensRequest{
 		Endpoint: m.fullName,
 		Model:    m.fullName,
-		Contents: mapSlice(contents, (*Content).toProto),
+		Contents: support.TransformSlice(contents, (*Content).toProto),
 	}
 }
 
@@ -267,7 +266,7 @@ func joinCandidateLists(dest, src []*Candidate) []*Candidate {
 			d.Content = joinContent(d.Content, s.Content)
 			// Take the last of these.
 			d.FinishReason = s.FinishReason
-			// d.FinishMessage = s.FinishMessage
+			d.FinishMessage = s.FinishMessage
 			d.SafetyRatings = s.SafetyRatings
 			d.CitationMetadata = joinCitationMetadata(d.CitationMetadata, s.CitationMetadata)
 		}
@@ -322,23 +321,4 @@ func mergeTexts(in []Part) []Part {
 		}
 	}
 	return out
-}
-
-func civilDateToProto(d civil.Date) *date.Date {
-	return &date.Date{
-		Year:  int32(d.Year),
-		Month: int32(d.Month),
-		Day:   int32(d.Day),
-	}
-}
-
-func civilDateFromProto(p *date.Date) civil.Date {
-	if p == nil {
-		return civil.Date{}
-	}
-	return civil.Date{
-		Year:  int(p.Year),
-		Month: time.Month(p.Month),
-		Day:   int(p.Day),
-	}
 }

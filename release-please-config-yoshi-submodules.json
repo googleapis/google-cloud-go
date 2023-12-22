@@ -39,6 +39,9 @@
         "appengine": {
             "component": "appengine"
         },
+        "apps": {
+            "component": "apps"
+        },
         "area120": {
             "component": "area120"
         },

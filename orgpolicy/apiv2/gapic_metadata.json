@@ -10,14 +10,29 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CreateCustomConstraint": {
+              "methods": [
+                "CreateCustomConstraint"
+              ]
+            },
             "CreatePolicy": {
               "methods": [
                 "CreatePolicy"
               ]
             },
+            "DeleteCustomConstraint": {
+              "methods": [
+                "DeleteCustomConstraint"
+              ]
+            },
             "DeletePolicy": {
               "methods": [
                 "DeletePolicy"
+              ]
+            },
+            "GetCustomConstraint": {
+              "methods": [
+                "GetCustomConstraint"
               ]
             },
             "GetEffectivePolicy": {
@@ -35,9 +50,19 @@
                 "ListConstraints"
               ]
             },
+            "ListCustomConstraints": {
+              "methods": [
+                "ListCustomConstraints"
+              ]
+            },
             "ListPolicies": {
               "methods": [
                 "ListPolicies"
+              ]
+            },
+            "UpdateCustomConstraint": {
+              "methods": [
+                "UpdateCustomConstraint"
               ]
             },
             "UpdatePolicy": {
@@ -50,14 +75,29 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "CreateCustomConstraint": {
+              "methods": [
+                "CreateCustomConstraint"
+              ]
+            },
             "CreatePolicy": {
               "methods": [
                 "CreatePolicy"
               ]
             },
+            "DeleteCustomConstraint": {
+              "methods": [
+                "DeleteCustomConstraint"
+              ]
+            },
             "DeletePolicy": {
               "methods": [
                 "DeletePolicy"
+              ]
+            },
+            "GetCustomConstraint": {
+              "methods": [
+                "GetCustomConstraint"
               ]
             },
             "GetEffectivePolicy": {
@@ -75,9 +115,19 @@
                 "ListConstraints"
               ]
             },
+            "ListCustomConstraints": {
+              "methods": [
+                "ListCustomConstraints"
+              ]
+            },
             "ListPolicies": {
               "methods": [
                 "ListPolicies"
+              ]
+            },
+            "UpdateCustomConstraint": {
+              "methods": [
+                "UpdateCustomConstraint"
               ]
             },
             "UpdatePolicy": {

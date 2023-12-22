@@ -17,7 +17,7 @@ package genai
 import (
 	"fmt"
 
-	pb "cloud.google.com/go/vertexai/internal/aiplatform/apiv1beta1/aiplatformpb"
+	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 )
 
 const (
@@ -51,6 +51,12 @@ func partFromProto(p *pb.Part) Part {
 			MIMEType: d.FileData.MimeType,
 			FileURI:  d.FileData.FileUri,
 		}
+	case *pb.Part_FunctionCall:
+		return *(FunctionCall{}).fromProto(d.FunctionCall)
+
+	case *pb.Part_FunctionResponse:
+		panic("FunctionResponse unimplemented")
+
 	default:
 		panic(fmt.Errorf("unknown Part.Data type %T", p.Data))
 	}
@@ -81,6 +87,22 @@ func (f FileData) toPart() *pb.Part {
 	}
 }
 
+func (f FunctionCall) toPart() *pb.Part {
+	return &pb.Part{
+		Data: &pb.Part_FunctionCall{
+			FunctionCall: f.toProto(),
+		},
+	}
+}
+
+func (f FunctionResponse) toPart() *pb.Part {
+	return &pb.Part{
+		Data: &pb.Part_FunctionResponse{
+			FunctionResponse: f.toProto(),
+		},
+	}
+}
+
 // ImageData is a convenience function for creating an image
 // Blob for input to a model.
 // The format should be the second part of the MIME type, after "image/".
@@ -91,3 +113,24 @@ func ImageData(format string, data []byte) Blob {
 		Data:     data,
 	}
 }
+
+// Ptr returns a pointer to its argument.
+// It can be used to initialize pointer fields:
+//
+//	model.Temperature = genai.Ptr[float32](0.1)
+func Ptr[T any](t T) *T { return &t }
+
+// SetCandidateCount sets the CandidateCount field.
+func (c *GenerationConfig) SetCandidateCount(x int32) { c.CandidateCount = &x }
+
+// SetMaxOutputTokens sets the MaxOutputTokens field.
+func (c *GenerationConfig) SetMaxOutputTokens(x int32) { c.MaxOutputTokens = &x }
+
+// SetTemperature sets the Temperature field.
+func (c *GenerationConfig) SetTemperature(x float32) { c.Temperature = &x }
+
+// SetTopP sets the TopP field.
+func (c *GenerationConfig) SetTopP(x float32) { c.TopP = &x }
+
+// SetTopK sets the TopK field.
+func (c *GenerationConfig) SetTopK(x float32) { c.TopK = &x }
