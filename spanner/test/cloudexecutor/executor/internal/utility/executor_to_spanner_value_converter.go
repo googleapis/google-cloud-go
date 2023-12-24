@@ -283,7 +283,8 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 		return out, nil
 	case spannerpb.TypeCode_STRUCT:
 		if null {
-			log.Println("Failing again due to passing untyped nil value for array of structs. Might need to change to typed nil similar to other types")
+			// TODO(sriharshach): will remove this after few successful systest runs. Need this to debug logs.
+			log.Println("Failing again due to passing untyped nil value for array of structs. Might need to change to typed nil similar to other types (made a fix below)")
 		}
 		// Non-NULL array of structs
 		structElemType := t.GetArrayElementType()
