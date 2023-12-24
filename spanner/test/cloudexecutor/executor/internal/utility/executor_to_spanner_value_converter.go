@@ -295,7 +295,10 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 			return nil, err
 		}
 		goStructType := reflect.TypeOf(dummyStructPtr)
-
+		if null {
+			log.Printf("returning nil slice of struct : %q", reflect.Zero(reflect.SliceOf(goStructType)).Interface())
+			return reflect.Zero(reflect.SliceOf(goStructType)).Interface(), nil
+		}
 		out := reflect.MakeSlice(reflect.SliceOf(goStructType), 0, len(in.GetValue()))
 		for _, value := range in.GetValue() {
 			cv, err := executorStructValueToSpannerValue(structElemType, value.GetStructValue(), false)
