@@ -209,7 +209,7 @@ func (h *PartitionedUpdate) ExecuteAction(ctx context.Context) error {
 
 	opts := h.Action.GetOptions()
 	stmt := spanner.Statement{SQL: h.Action.GetUpdate().GetSql()}
-	count, err := h.FlowContext.dbClient.PartitionedUpdateWithOptions(ctx, stmt, spanner.QueryOptions{
+	count, err := h.FlowContext.DbClient.PartitionedUpdateWithOptions(ctx, stmt, spanner.QueryOptions{
 		Priority:   opts.GetRpcPriority(),
 		RequestTag: opts.GetTag(),
 	})
