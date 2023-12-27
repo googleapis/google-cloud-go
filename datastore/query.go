@@ -833,7 +833,7 @@ func (c *Client) Run(ctx context.Context, q *Query, opts ...RunOption) *Iterator
 func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (ar AggregationResult, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.RunAggregationQuery")
 	defer func() { trace.EndSpan(ctx, err) }()
-	aro, err := c.RunAggregationQueryWithOptions(ctx, aq, nil)
+	aro, err := c.RunAggregationQueryWithOptions(ctx, aq)
 	return aro.Result, err
 }
 

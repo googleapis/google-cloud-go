@@ -24,7 +24,6 @@ import (
 	"net/url"
 	"os"
 	"reflect"
-	"slices"
 	"sort"
 	"strings"
 	"testing"
@@ -33,7 +32,6 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/rpcreplay"
-	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
@@ -997,7 +995,7 @@ func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
-	_, _, now, parent, cleanup := createTestEntities(t, ctx, client, "RunAggregationQueryWithOptions", 3)
+	_, _, now, parent, cleanup := createTestEntities(ctx, t, client, "RunAggregationQueryWithOptions", 3)
 	defer cleanup()
 
 	aggQuery := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).NewAggregationQuery().
@@ -1061,11 +1059,9 @@ func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
 						},
 					},
 					QueryStats: map[string]interface{}{
-						"bytes_returned":        "74",
 						"documents_scanned":     "0",
 						"index_entries_scanned": "3",
 						"results_returned":      "1",
-						"total_execution_time":  "14.29 msecs",
 					},
 				},
 			},
@@ -1393,7 +1389,7 @@ func TestIntegration_GetAllWithFieldMismatch(t *testing.T) {
 	}
 }
 
-func createTestEntities(t *testing.T, ctx context.Context, client *Client, partialNameKey string, count int) ([]*Key, []SQChild, int64, *Key, func()) {
+func createTestEntities(ctx context.Context, t *testing.T, client *Client, partialNameKey string, count int) ([]*Key, []SQChild, int64, *Key, func()) {
 	parent := NameKey("SQParent", keyPrefix+partialNameKey+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 
@@ -1425,7 +1421,7 @@ func TestIntegration_RunAndGetAllWithOptions(t *testing.T) {
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
-	keys, entities, now, parent, cleanup := createTestEntities(t, ctx, client, "GetAllWithOptions", 3)
+	keys, entities, now, parent, cleanup := createTestEntities(ctx, t, client, "GetAllWithOptions", 3)
 	defer cleanup()
 	query := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Order("I")
 	for _, testcase := range []struct {
@@ -1478,11 +1474,9 @@ func TestIntegration_RunAndGetAllWithOptions(t *testing.T) {
 					},
 				},
 				QueryStats: map[string]interface{}{
-					"bytes_returned":        "552",
 					"documents_scanned":     "3",
 					"index_entries_scanned": "3",
 					"results_returned":      "3",
-					"total_execution_time":  "14.29 msecs",
 				},
 			},
 			wantEntities: entities,
@@ -1527,13 +1521,6 @@ func TestIntegration_RunAndGetAllWithOptions(t *testing.T) {
 	}
 }
 
-func ignoreStatsFields(p cmp.Path) bool {
-	step, ok := p[len(p)-1].(cmp.MapIndex)
-	// Ignore these fields while comparing stats as these can differ per run
-	fields := []string{"bytes_returned", "total_execution_time"}
-	return ok && slices.Contains(fields, step.Key().String())
-}
-
 func isEqualResultSetStats(got *ResultSetStats, want *ResultSetStats) error {
 	if (got != nil && want == nil) || (got == nil && want != nil) {
 		return fmt.Errorf("Stats: got: %+v, want: %+v", got, want)
@@ -1543,8 +1530,12 @@ func isEqualResultSetStats(got *ResultSetStats, want *ResultSetStats) error {
 			return fmt.Errorf("Stats.QueryPlan.PlanInfo: got: %+v, want: %+v", got.QueryPlan, want.QueryPlan)
 		}
 
-		if !testutil.Equal(got.QueryStats, want.QueryStats, cmp.FilterPath(ignoreStatsFields, cmp.Ignore())) {
-			return fmt.Errorf("Stats.QueryPlan.QueryStats: got: %+v, want: %+v", got.QueryStats, want.QueryStats)
+		for wantK, wantV := range want.QueryStats {
+			gotV, ok := got.QueryStats[wantK]
+			if !ok || !testutil.Equal(gotV, wantV) {
+				fmt.Printf("Stats.QueryPlan.QueryStats: gotV: %+v, wantV: %+v", gotV, wantV)
+				return fmt.Errorf("Stats.QueryPlan.QueryStats: got: %+v, want: %+v", got.QueryStats, want.QueryStats)
+			}
 		}
 	}
 	return nil
