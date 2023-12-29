@@ -460,9 +460,8 @@ func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, stri
 		} else {
 			if strict {
 				return nil, errNoOrDupGoField(sliceItem, colName.GetName())
-			} else {
-				fieldVal = sliceItem.FieldByName(colName.GetName())
 			}
+			fieldVal = sliceItem.FieldByName(colName.GetName())
 		}
 		if !fieldVal.IsValid() || !fieldVal.CanSet() {
 			// have to add if we found a column because Scan() requires

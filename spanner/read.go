@@ -90,6 +90,7 @@ func streamWithReplaceSessionFunc(
 	}
 }
 
+// Iterator is an interface for iterating over Rows.
 type Iterator interface {
 	Next() (*Row, error)
 	Do(f func(r *Row) error) error

@@ -3209,6 +3209,7 @@ func (w withLenient) Apply(s *decodeSetting) {
 	s.Lenient = w.lenient
 }
 
+// WithLenient returns a DecodeOptions that allows decoding into a struct with missing fields in database.
 func WithLenient() DecodeOptions {
 	return withLenient{lenient: true}
 }
