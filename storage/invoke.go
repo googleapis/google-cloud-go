@@ -61,6 +61,7 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		bo.Multiplier = retry.backoff.Multiplier
 		bo.Initial = retry.backoff.Initial
 		bo.Max = retry.backoff.Max
+		bo.MaxRetryCount = retry.backoff.MaxRetryCount
 	}
 	var errorFunc func(err error) bool = ShouldRetry
 	if retry.shouldRetry != nil {
@@ -71,6 +72,9 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
 		err = call(ctxWithHeaders)
 		attempts++
+		if retry.backoff != nil && attempts == retry.backoff.MaxRetryCount {
+			return true, err
+		}
 		return !errorFunc(err), err
 	})
 }

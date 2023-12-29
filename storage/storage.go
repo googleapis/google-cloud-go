@@ -2059,7 +2059,7 @@ type RetryOption interface {
 }
 
 // WithBackoff allows configuration of the backoff timing used for retries.
-// Available configuration options (Initial, Max and Multiplier) are described
+// Available configuration options (Initial, Max, Multiplier and MaxRetryCount) are described
 // at https://pkg.go.dev/github.com/googleapis/gax-go/v2#Backoff. If any fields
 // are not supplied by the user, gax default values will be used.
 func WithBackoff(backoff gax.Backoff) RetryOption {
@@ -2158,9 +2158,10 @@ func (r *retryConfig) clone() *retryConfig {
 	var bo *gax.Backoff
 	if r.backoff != nil {
 		bo = &gax.Backoff{
-			Initial:    r.backoff.Initial,
-			Max:        r.backoff.Max,
-			Multiplier: r.backoff.Multiplier,
+			Initial:       r.backoff.Initial,
+			Max:           r.backoff.Max,
+			Multiplier:    r.backoff.Multiplier,
+			MaxRetryCount: r.backoff.MaxRetryCount,
 		}
 	}
 
