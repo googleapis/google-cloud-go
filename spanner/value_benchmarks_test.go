@@ -15,6 +15,7 @@
 package spanner
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"testing"
@@ -22,6 +23,7 @@ import (
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
+	"google.golang.org/api/iterator"
 )
 
 func BenchmarkEncodeIntArray(b *testing.B) {
@@ -226,6 +228,163 @@ func decodeArrayReflect(pb *proto3.ListValue, name string, typ *sppb.Type, aptr 
 		if err := decodeValue(v, typ, av.Index(i).Addr().Interface()); err != nil {
 			av.Set(reflect.Zero(av.Type())) // reset slice to nil
 			return errDecodeArrayElement(i, v, name, err)
+		}
+	}
+	return nil
+}
+
+func BenchmarkScan100RowsUsingSelectAll(b *testing.B) {
+	var rows []struct {
+		ID   int64
+		Name string
+	}
+	for i := 0; i < 100; i++ {
+		rows = append(rows, struct {
+			ID   int64
+			Name string
+		}{int64(i), fmt.Sprintf("name-%d", i)})
+	}
+	src := mockIterator(b, rows)
+	for n := 0; n < b.N; n++ {
+		it := *src
+		var res []struct {
+			ID   int64
+			Name string
+		}
+		if err := SelectAll(&it, &res); err != nil {
+			b.Fatal(err)
+		}
+		_ = res
+	}
+}
+
+func BenchmarkScan100RowsUsingToStruct(b *testing.B) {
+	var rows []struct {
+		ID   int64
+		Name string
+	}
+	for i := 0; i < 100; i++ {
+		rows = append(rows, struct {
+			ID   int64
+			Name string
+		}{int64(i), fmt.Sprintf("name-%d", i)})
+	}
+	src := mockIterator(b, rows)
+	for n := 0; n < b.N; n++ {
+		it := *src
+		var res []struct {
+			ID   int64
+			Name string
+		}
+		for {
+			row, err := it.Next()
+			if err == iterator.Done {
+				break
+			} else if err != nil {
+				b.Fatal(err)
+			}
+			var r struct {
+				ID   int64
+				Name string
+			}
+			err = row.ToStruct(&r)
+			if err != nil {
+				b.Fatal(err)
+			}
+			res = append(res, r)
+		}
+		it.Stop()
+		_ = res
+	}
+}
+
+func BenchmarkScan100RowsUsingColumns(b *testing.B) {
+	var rows []struct {
+		ID   int64
+		Name string
+	}
+	for i := 0; i < 100; i++ {
+		rows = append(rows, struct {
+			ID   int64
+			Name string
+		}{int64(i), fmt.Sprintf("name-%d", i)})
+	}
+	src := mockIterator(b, rows)
+	for n := 0; n < b.N; n++ {
+		it := *src
+		var res []struct {
+			ID   int64
+			Name string
+		}
+		for {
+			row, err := it.Next()
+			if err == iterator.Done {
+				break
+			} else if err != nil {
+				b.Fatal(err)
+			}
+			var r struct {
+				ID   int64
+				Name string
+			}
+			err = row.Columns(&r.ID, &r.Name)
+			if err != nil {
+				b.Fatal(err)
+			}
+			res = append(res, r)
+		}
+		it.Stop()
+		_ = res
+	}
+}
+
+func mockIterator[T any](t testing.TB, rows []T) *mockIteratorImpl {
+	var v T
+	var colNames []string
+	numCols := reflect.TypeOf(v).NumField()
+	for i := 0; i < numCols; i++ {
+		f := reflect.TypeOf(v).Field(i)
+		colNames = append(colNames, f.Name)
+	}
+	var srows []*Row
+	for _, e := range rows {
+		var vs []any
+		for f := 0; f < numCols; f++ {
+			v := reflect.ValueOf(e).Field(f).Interface()
+			vs = append(vs, v)
+		}
+		row, err := NewRow(colNames, vs)
+		if err != nil {
+			t.Fatal(err)
+		}
+		srows = append(srows, row)
+	}
+	return &mockIteratorImpl{rows: srows}
+}
+
+type mockIteratorImpl struct {
+	rows []*Row
+}
+
+func (i *mockIteratorImpl) Next() (*Row, error) {
+	if len(i.rows) == 0 {
+		return nil, iterator.Done
+	}
+	row := i.rows[0]
+	i.rows = i.rows[1:]
+	return row, nil
+}
+
+func (i *mockIteratorImpl) Stop() {
+	i.rows = nil
+}
+
+func (i *mockIteratorImpl) Do(f func(*Row) error) error {
+	defer i.Stop()
+	for _, row := range i.rows {
+		err := f(row)
+		if err != nil {
+			return err
 		}
 	}
 	return nil

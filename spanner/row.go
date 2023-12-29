@@ -249,6 +249,14 @@ func errColNotFound(n string) error {
 	return spannerErrorf(codes.NotFound, "column %q not found", n)
 }
 
+func errNotASlicePointer() error {
+	return spannerErrorf(codes.InvalidArgument, "destination must be a pointer to a slice")
+}
+
+func errTooManyColumns() error {
+	return spannerErrorf(codes.InvalidArgument, "too many columns returned for primitive slice")
+}
+
 // ColumnByName fetches the value from the named column, decoding it into ptr.
 // See the Row documentation for the list of acceptable argument types.
 func (r *Row) ColumnByName(name string, ptr interface{}) error {
@@ -377,4 +385,125 @@ func (r *Row) ToStructLenient(p interface{}) error {
 		p,
 		true,
 	)
+}
+
+// SelectAll scans rows into a slice (v)
+func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
+	if rows == nil {
+		return fmt.Errorf("rows is nil")
+	}
+	if v == nil {
+		return fmt.Errorf("p is nil")
+	}
+	vType := reflect.TypeOf(v)
+	if k := vType.Kind(); k != reflect.Ptr {
+		return errToStructArgType(v)
+	}
+	sliceType := vType.Elem()
+	if reflect.Slice != sliceType.Kind() {
+		return errNotASlicePointer()
+	}
+	sliceVal := reflect.Indirect(reflect.ValueOf(v))
+	itemType := sliceType.Elem()
+	s := &decodeSetting{}
+	for _, opt := range options {
+		opt.Apply(s)
+	}
+
+	isPrimitive := itemType.Kind() != reflect.Struct
+	var pointers []interface{}
+	var err error
+	if err := rows.Do(func(row *Row) error {
+		sliceItem := reflect.New(itemType).Elem()
+		if len(pointers) == 0 {
+			if isPrimitive {
+				if len(row.fields) > 1 {
+					return errTooManyColumns()
+				}
+				pointers = []interface{}{sliceItem.Addr().Interface()}
+			} else {
+				if pointers, err = structPointers(sliceItem, row.fields, s.Lenient); err != nil {
+					return err
+				}
+			}
+		}
+		if len(pointers) == 0 {
+			return nil
+		}
+		err := row.Columns(pointers...)
+		if err != nil {
+			return err
+		}
+		if len(pointers) > 0 {
+			dst := sliceItem.Addr().Interface()
+			for i, p := range pointers {
+				reflect.ValueOf(dst).Elem().Field(i).Set(reflect.ValueOf(p).Elem())
+			}
+		}
+		sliceVal.Set(reflect.Append(sliceVal, sliceItem))
+		return nil
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, strict bool) ([]interface{}, error) {
+	pointers := make([]interface{}, 0, len(cols))
+	fieldTag := make(map[string]reflect.Value, len(cols))
+	initFieldTag(sliceItem, &fieldTag)
+
+	for _, colName := range cols {
+		var fieldVal reflect.Value
+		if v, ok := fieldTag[colName.GetName()]; ok {
+			fieldVal = v
+		} else {
+			if strict {
+				return nil, errNoOrDupGoField(sliceItem, colName.GetName())
+			} else {
+				fieldVal = sliceItem.FieldByName(colName.GetName())
+			}
+		}
+		if !fieldVal.IsValid() || !fieldVal.CanSet() {
+			// have to add if we found a column because Scan() requires
+			// len(cols) arguments or it will error. This way we can scan to
+			// a useless pointer
+			var nothing interface{}
+			pointers = append(pointers, &nothing)
+			continue
+		}
+
+		pointers = append(pointers, fieldVal.Addr().Interface())
+	}
+	return pointers, nil
+}
+
+// Initialization the tags from struct.
+func initFieldTag(sliceItem reflect.Value, fieldTagMap *map[string]reflect.Value) {
+	typ := sliceItem.Type()
+
+	for i := 0; i < sliceItem.NumField(); i++ {
+		fieldType := typ.Field(i)
+		exported := (fieldType.PkgPath == "")
+		// If a named field is unexported, ignore it. An anonymous
+		// unexported field is processed, because it may contain
+		// exported fields, which are visible.
+		if !exported && !fieldType.Anonymous {
+			continue
+		}
+		if fieldType.Type.Kind() == reflect.Struct {
+			// found an embedded struct
+			sliceItemOfAnonymous := sliceItem.Field(i)
+			initFieldTag(sliceItemOfAnonymous, fieldTagMap)
+			continue
+		}
+		name, keep, _, _ := spannerTagParser(fieldType.Tag)
+		if !keep {
+			continue
+		}
+		if name == "" {
+			name = fieldType.Name
+		}
+		(*fieldTagMap)[name] = sliceItem.Field(i)
+	}
 }

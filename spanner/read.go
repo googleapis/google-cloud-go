@@ -90,6 +90,12 @@ func streamWithReplaceSessionFunc(
 	}
 }
 
+type Iterator interface {
+	Next() (*Row, error)
+	Do(f func(r *Row) error) error
+	Stop()
+}
+
 // RowIterator is an iterator over Rows.
 type RowIterator struct {
 	// The plan for the query. Available after RowIterator.Next returns
