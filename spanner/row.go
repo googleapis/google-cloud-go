@@ -413,9 +413,16 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 	isPrimitive := itemType.Kind() != reflect.Struct
 	var pointers []interface{}
 	isFistRow := true
+	rowIndex := -1
 	return rows.Do(func(row *Row) error {
 		sliceItem := reflect.New(itemType).Elem()
 		if isFistRow {
+			nRows := rows.RowsReturned()
+			if nRows != -1 {
+				sliceVal = reflect.MakeSlice(sliceType, int(nRows), int(nRows))
+				reflect.ValueOf(v).Elem().Set(sliceVal)
+				rowIndex++
+			}
 			if isPrimitive {
 				if len(row.fields) > 1 {
 					return errTooManyColumns()
@@ -436,11 +443,18 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 		if err != nil {
 			return err
 		}
-		dst := reflect.ValueOf(sliceItem.Addr().Interface()).Elem()
 		for i, p := range pointers {
-			dst.Field(i).Set(reflect.ValueOf(p).Elem())
+			if p == nil {
+				continue
+			}
+			sliceItem.Field(i).Set(reflect.ValueOf(p).Elem())
 		}
-		sliceVal.Set(reflect.Append(sliceVal, sliceItem))
+		if rowIndex >= 0 {
+			sliceVal.Index(rowIndex).Set(sliceItem)
+			rowIndex++
+		} else {
+			sliceVal.Set(reflect.Append(sliceVal, sliceItem))
+		}
 		return nil
 	})
 }

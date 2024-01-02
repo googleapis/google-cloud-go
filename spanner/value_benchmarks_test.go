@@ -378,6 +378,10 @@ func (i *mockIteratorImpl) Next() (*Row, error) {
 	return row, nil
 }
 
+func (i *mockIteratorImpl) RowsReturned() int64 {
+	return int64(len(i.rows))
+}
+
 func (i *mockIteratorImpl) Stop() {
 	i.rows = nil
 }

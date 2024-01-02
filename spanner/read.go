@@ -21,6 +21,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"strconv"
 	"sync/atomic"
 	"time"
 
@@ -95,6 +96,7 @@ type Iterator interface {
 	Next() (*Row, error)
 	Do(f func(r *Row) error) error
 	Stop()
+	RowsReturned() int64
 }
 
 // RowIterator is an iterator over Rows.
@@ -126,6 +128,24 @@ type RowIterator struct {
 	err              error
 	rows             []*Row
 	sawStats         bool
+}
+
+func (r *RowIterator) RowsReturned() int64 {
+	if r.sawStats && r.QueryStats != nil && r.QueryStats["rows_returned"] != nil {
+		switch r.QueryStats["rows_returned"].(type) {
+		case float64:
+			return r.QueryStats["rows_returned"].(int64)
+		case string:
+			v, err := strconv.Atoi(r.QueryStats["rows_returned"].(string))
+			if err != nil {
+				return -1
+			}
+			return int64(v)
+		default:
+			return -1
+		}
+	}
+	return -1
 }
 
 // Next returns the next result. Its second return value is iterator.Done if
