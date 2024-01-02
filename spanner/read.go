@@ -130,6 +130,9 @@ type RowIterator struct {
 	sawStats         bool
 }
 
+// RowsReturned returns the number of rows returned by the query. If the query
+// was a DML statement, the number of rows affected is returned. If the query
+// was a PDML statement, the number of rows affected is a lower bound.
 func (r *RowIterator) RowsReturned() int64 {
 	if r.sawStats && r.QueryStats != nil && r.QueryStats["rows_returned"] != nil {
 		switch r.QueryStats["rows_returned"].(type) {
