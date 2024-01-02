@@ -245,6 +245,7 @@ func BenchmarkScan100RowsUsingSelectAll(b *testing.B) {
 		}{int64(i), fmt.Sprintf("name-%d", i)})
 	}
 	src := mockIterator(b, rows)
+	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		it := *src
 		var res []struct {
@@ -270,6 +271,7 @@ func BenchmarkScan100RowsUsingToStruct(b *testing.B) {
 		}{int64(i), fmt.Sprintf("name-%d", i)})
 	}
 	src := mockIterator(b, rows)
+	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		it := *src
 		var res []struct {
@@ -310,6 +312,7 @@ func BenchmarkScan100RowsUsingColumns(b *testing.B) {
 		}{int64(i), fmt.Sprintf("name-%d", i)})
 	}
 	src := mockIterator(b, rows)
+	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		it := *src
 		var res []struct {

@@ -412,20 +412,22 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 
 	isPrimitive := itemType.Kind() != reflect.Struct
 	var pointers []interface{}
-	var err error
-	if err := rows.Do(func(row *Row) error {
+	isFistRow := true
+	return rows.Do(func(row *Row) error {
 		sliceItem := reflect.New(itemType).Elem()
-		if len(pointers) == 0 {
+		if isFistRow {
 			if isPrimitive {
 				if len(row.fields) > 1 {
 					return errTooManyColumns()
 				}
 				pointers = []interface{}{sliceItem.Addr().Interface()}
 			} else {
+				var err error
 				if pointers, err = structPointers(sliceItem, row.fields, s.Lenient); err != nil {
 					return err
 				}
 			}
+			isFistRow = false
 		}
 		if len(pointers) == 0 {
 			return nil
@@ -434,18 +436,13 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 		if err != nil {
 			return err
 		}
-		if len(pointers) > 0 {
-			dst := sliceItem.Addr().Interface()
-			for i, p := range pointers {
-				reflect.ValueOf(dst).Elem().Field(i).Set(reflect.ValueOf(p).Elem())
-			}
+		dst := reflect.ValueOf(sliceItem.Addr().Interface()).Elem()
+		for i, p := range pointers {
+			dst.Field(i).Set(reflect.ValueOf(p).Elem())
 		}
 		sliceVal.Set(reflect.Append(sliceVal, sliceItem))
 		return nil
-	}); err != nil {
-		return err
-	}
-	return nil
+	})
 }
 
 func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, strict bool) ([]interface{}, error) {
@@ -464,11 +461,10 @@ func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, stri
 			fieldVal = sliceItem.FieldByName(colName.GetName())
 		}
 		if !fieldVal.IsValid() || !fieldVal.CanSet() {
-			// have to add if we found a column because Scan() requires
+			// have to add if we found a column because Columns() requires
 			// len(cols) arguments or it will error. This way we can scan to
 			// a useless pointer
-			var nothing interface{}
-			pointers = append(pointers, &nothing)
+			pointers = append(pointers, nil)
 			continue
 		}
 
