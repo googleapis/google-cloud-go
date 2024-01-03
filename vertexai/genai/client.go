@@ -251,7 +251,9 @@ func joinResponses(dest, src *GenerateContentResponse) *GenerateContentResponse 
 	}
 	dest.Candidates = joinCandidateLists(dest.Candidates, src.Candidates)
 	// Keep dest.PromptFeedback.
-	// TODO: Take the last UsageMetadata.
+	if src.UsageMetadata != nil {
+		dest.UsageMetadata = src.UsageMetadata
+	}
 	return dest
 }
 

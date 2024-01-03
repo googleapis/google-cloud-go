@@ -278,6 +278,7 @@ func TestJoinResponses(t *testing.T) {
 			},
 		},
 		PromptFeedback: &PromptFeedback{BlockReasonMessage: "br1"},
+		UsageMetadata:  &UsageMetadata{TotalTokenCount: 5},
 	}
 	r2 := &GenerateContentResponse{
 		Candidates: []*Candidate{
@@ -295,6 +296,7 @@ func TestJoinResponses(t *testing.T) {
 		},
 
 		PromptFeedback: &PromptFeedback{BlockReasonMessage: "br2"},
+		UsageMetadata:  &UsageMetadata{TotalTokenCount: 10},
 	}
 	got := joinResponses(r1, r2)
 	want := &GenerateContentResponse{
@@ -311,6 +313,7 @@ func TestJoinResponses(t *testing.T) {
 			},
 		},
 		PromptFeedback: &PromptFeedback{BlockReasonMessage: "br1"},
+		UsageMetadata:  &UsageMetadata{TotalTokenCount: 10},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("\ngot %+v\nwant %+v", got, want)
