@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -161,13 +161,13 @@ func (c *PolicyTagManagerSerializationClient) Connection() *grpc.ClientConn {
 //
 // This operation automatically does the following:
 //
-//	Deletes the existing policy tags that are missing from the
-//	SerializedPolicyTag.
+//   Deletes the existing policy tags that are missing from the
+//   SerializedPolicyTag.
 //
-//	Creates policy tags that don’t have resource names. They are considered
-//	new.
+//   Creates policy tags that don’t have resource names. They are considered
+//   new.
 //
-//	Updates policy tags with valid resources names accordingly.
+//   Updates policy tags with valid resources names accordingly.
 func (c *PolicyTagManagerSerializationClient) ReplaceTaxonomy(ctx context.Context, req *datacatalogpb.ReplaceTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	return c.internalClient.ReplaceTaxonomy(ctx, req, opts...)
 }
@@ -517,13 +517,13 @@ func (c *policyTagManagerSerializationGRPCClient) ListOperations(ctx context.Con
 //
 // This operation automatically does the following:
 //
-//	Deletes the existing policy tags that are missing from the
-//	SerializedPolicyTag.
+//   Deletes the existing policy tags that are missing from the
+//   SerializedPolicyTag.
 //
-//	Creates policy tags that don’t have resource names. They are considered
-//	new.
+//   Creates policy tags that don’t have resource names. They are considered
+//   new.
 //
-//	Updates policy tags with valid resources names accordingly.
+//   Updates policy tags with valid resources names accordingly.
 func (c *policyTagManagerSerializationRESTClient) ReplaceTaxonomy(ctx context.Context, req *datacatalogpb.ReplaceTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

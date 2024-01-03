@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -253,9 +253,9 @@ type internalBinauthzManagementClient interface {
 //
 // This API implements a REST model with the following objects:
 //
-//	Policy
+//   Policy
 //
-//	Attestor
+//   Attestor
 type BinauthzManagementClient struct {
 	// The internal transport-dependent client.
 	internalClient internalBinauthzManagementClient
@@ -364,9 +364,9 @@ type binauthzManagementGRPCClient struct {
 //
 // This API implements a REST model with the following objects:
 //
-//	Policy
+//   Policy
 //
-//	Attestor
+//   Attestor
 func NewBinauthzManagementClient(ctx context.Context, opts ...option.ClientOption) (*BinauthzManagementClient, error) {
 	clientOpts := defaultBinauthzManagementGRPCClientOptions()
 	if newBinauthzManagementClientHook != nil {
@@ -440,9 +440,9 @@ type binauthzManagementRESTClient struct {
 //
 // This API implements a REST model with the following objects:
 //
-//	Policy
+//   Policy
 //
-//	Attestor
+//   Attestor
 func NewBinauthzManagementRESTClient(ctx context.Context, opts ...option.ClientOption) (*BinauthzManagementClient, error) {
 	clientOpts := append(defaultBinauthzManagementRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -148,7 +148,7 @@ type internalClient interface {
 // Client is a client for interacting with Cloud TPU API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Manages TPU nodes and other resources
+// Manages TPU nodes and other resources
 //
 // TPU API v1
 type Client struct {
@@ -331,7 +331,7 @@ type gRPCClient struct {
 // NewClient creates a new tpu client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Manages TPU nodes and other resources
+// Manages TPU nodes and other resources
 //
 // TPU API v1
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {

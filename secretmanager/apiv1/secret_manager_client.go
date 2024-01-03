@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -218,14 +218,14 @@ type internalClient interface {
 // Client is a client for interacting with Secret Manager API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Secret Manager Service
+// Secret Manager Service
 //
 // Manages secrets and operations using those secrets. Implements a REST
 // model with the following objects:
 //
-//	Secret
+//   Secret
 //
-//	SecretVersion
+//   SecretVersion
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -381,14 +381,14 @@ type gRPCClient struct {
 // NewClient creates a new secret manager service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Secret Manager Service
+// Secret Manager Service
 //
 // Manages secrets and operations using those secrets. Implements a REST
 // model with the following objects:
 //
-//	Secret
+//   Secret
 //
-//	SecretVersion
+//   SecretVersion
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -457,14 +457,14 @@ type restClient struct {
 
 // NewRESTClient creates a new secret manager service rest client.
 //
-// # Secret Manager Service
+// Secret Manager Service
 //
 // Manages secrets and operations using those secrets. Implements a REST
 // model with the following objects:
 //
-//	Secret
+//   Secret
 //
-//	SecretVersion
+//   SecretVersion
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

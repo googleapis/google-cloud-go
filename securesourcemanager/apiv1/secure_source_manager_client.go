@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -272,7 +272,7 @@ type internalClient interface {
 // Client is a client for interacting with Secure Source Manager API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Secure Source Manager API
+// Secure Source Manager API
 //
 // Access Secure Source Manager instances, resources, and repositories.
 //
@@ -499,7 +499,7 @@ type gRPCClient struct {
 // NewClient creates a new secure source manager client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Secure Source Manager API
+// Secure Source Manager API
 //
 // Access Secure Source Manager instances, resources, and repositories.
 //
@@ -602,7 +602,7 @@ type restClient struct {
 
 // NewRESTClient creates a new secure source manager rest client.
 //
-// # Secure Source Manager API
+// Secure Source Manager API
 //
 // Access Secure Source Manager instances, resources, and repositories.
 //

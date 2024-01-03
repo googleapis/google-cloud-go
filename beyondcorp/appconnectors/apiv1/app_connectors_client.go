@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -128,8 +128,8 @@ type internalClient interface {
 //
 // The AppConnectorsService exposes the following resource:
 //
-//	AppConnectors, named as follows:
-//	projects/{project_id}/locations/{location_id}/appConnectors/{app_connector_id}.
+//   AppConnectors, named as follows:
+//   projects/{project_id}/locations/{location_id}/appConnectors/{app_connector_id}.
 //
 // The AppConnectorsService provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnectors.
@@ -319,8 +319,8 @@ type gRPCClient struct {
 //
 // The AppConnectorsService exposes the following resource:
 //
-//	AppConnectors, named as follows:
-//	projects/{project_id}/locations/{location_id}/appConnectors/{app_connector_id}.
+//   AppConnectors, named as follows:
+//   projects/{project_id}/locations/{location_id}/appConnectors/{app_connector_id}.
 //
 // The AppConnectorsService provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnectors.

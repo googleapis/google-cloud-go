@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -600,11 +600,11 @@ func (c *Client) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 //
 // For Tables:
 //
-//	A
-//	schema_inference_version
-//	parameter must be explicitly set.
-//	Returns an empty response in the
-//	response field when it completes.
+//   A
+//   schema_inference_version
+//   parameter must be explicitly set.
+//   Returns an empty response in the
+//   response field when it completes.
 func (c *Client) ImportData(ctx context.Context, req *automlpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
 	return c.internalClient.ImportData(ctx, req, opts...)
 }
@@ -1947,11 +1947,11 @@ func (c *restClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 //
 // For Tables:
 //
-//	A
-//	schema_inference_version
-//	parameter must be explicitly set.
-//	Returns an empty response in the
-//	response field when it completes.
+//   A
+//   schema_inference_version
+//   parameter must be explicitly set.
+//   Returns an empty response in the
+//   response field when it completes.
 func (c *restClient) ImportData(ctx context.Context, req *automlpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

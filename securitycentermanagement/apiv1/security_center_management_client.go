@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -551,9 +551,15 @@ func (c *Client) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Context
 	return c.internalClient.SimulateSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
 }
 
-// ListEffectiveEventThreatDetectionCustomModules lists all effective Event Threat Detection custom modules for the
+// ListEffectiveEventThreatDetectionCustomModules returns a list of all EffectiveEventThreatDetectionCustomModules for the
 // given parent. This includes resident modules defined at the scope of the
-// parent along with modules inherited from its ancestors.
+// parent, and inherited modules, inherited from CRM ancestors (no
+// descendants). The difference between an EffectiveCustomModule and a
+// CustomModule is that the fields for an EffectiveCustomModule are computed
+// from ancestors if needed. For example, the enablement_state for a
+// CustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the
+// enablement_state for an EffectiveCustomModule is always computed to ENABLED
+// or DISABLED (the effective enablement_state).
 func (c *Client) ListEffectiveEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListEffectiveEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EffectiveEventThreatDetectionCustomModuleIterator {
 	return c.internalClient.ListEffectiveEventThreatDetectionCustomModules(ctx, req, opts...)
 }
@@ -569,45 +575,47 @@ func (c *Client) GetEffectiveEventThreatDetectionCustomModule(ctx context.Contex
 	return c.internalClient.GetEffectiveEventThreatDetectionCustomModule(ctx, req, opts...)
 }
 
-// ListEventThreatDetectionCustomModules lists all Event Threat Detection custom modules for the given
-// Resource Manager parent. This includes resident modules defined at the
-// scope of the parent along with modules inherited from ancestors.
+// ListEventThreatDetectionCustomModules returns a list of all EventThreatDetectionCustomModules for the given
+// parent. This includes resident modules defined at the scope of the parent,
+// and inherited modules, inherited from CRM ancestors (no descendants).
 func (c *Client) ListEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EventThreatDetectionCustomModuleIterator {
 	return c.internalClient.ListEventThreatDetectionCustomModules(ctx, req, opts...)
 }
 
-// ListDescendantEventThreatDetectionCustomModules lists all resident Event Threat Detection custom modules under the
-// given Resource Manager parent and its descendants.
+// ListDescendantEventThreatDetectionCustomModules returns a list of all resident EventThreatDetectionCustomModules under
+// the given CRM parent and all of the parent’s CRM descendants.
 func (c *Client) ListDescendantEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EventThreatDetectionCustomModuleIterator {
 	return c.internalClient.ListDescendantEventThreatDetectionCustomModules(ctx, req, opts...)
 }
 
-// GetEventThreatDetectionCustomModule gets an Event Threat Detection custom module.
+// GetEventThreatDetectionCustomModule gets an ETD custom module. Retrieves the module at the given level. The
+// difference between an EffectiveCustomModule and a CustomModule is that the
+// fields for an EffectiveCustomModule are computed from ancestors if needed.
+// For example, the enablement_state for a CustomModule can be either ENABLED,
+// DISABLED, or INHERITED. Where as the enablement_state for an
+// EffectiveCustomModule is always computed to ENABLED or DISABLED (the
+// effective enablement_state).
 func (c *Client) GetEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.GetEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EventThreatDetectionCustomModule, error) {
 	return c.internalClient.GetEventThreatDetectionCustomModule(ctx, req, opts...)
 }
 
-// CreateEventThreatDetectionCustomModule creates a resident Event Threat Detection custom module at the scope of the
-// given Resource Manager parent, and also creates inherited custom modules
-// for all descendants of the given parent. These modules are enabled by
-// default.
+// CreateEventThreatDetectionCustomModule creates an ETD custom module at the given level. Creating a module has a
+// side-effect of creating modules at all descendants.
 func (c *Client) CreateEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.CreateEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EventThreatDetectionCustomModule, error) {
 	return c.internalClient.CreateEventThreatDetectionCustomModule(ctx, req, opts...)
 }
 
-// UpdateEventThreatDetectionCustomModule updates the Event Threat Detection custom module with the given name based
-// on the given update mask. Updating the enablement state is supported for
-// both resident and inherited modules (though resident modules cannot have an
-// enablement state of “inherited”). Updating the display name or
-// configuration of a module is supported for resident modules only. The type
-// of a module cannot be changed.
+// UpdateEventThreatDetectionCustomModule updates an ETD custom module at the given level. All config fields can be
+// updated when updating the module at resident level. Only enablement state
+// can be updated when updating the module at inherited levels. Updating the
+// module has a side-effect that it updates all descendants that are inherited
+// from this module.
 func (c *Client) UpdateEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.UpdateEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EventThreatDetectionCustomModule, error) {
 	return c.internalClient.UpdateEventThreatDetectionCustomModule(ctx, req, opts...)
 }
 
-// DeleteEventThreatDetectionCustomModule deletes the specified Event Threat Detection custom module and all of its
-// descendants in the Resource Manager hierarchy. This method is only
-// supported for resident custom modules.
+// DeleteEventThreatDetectionCustomModule deletes an ETD custom module. Deletion at resident level also deletes
+// modules at all descendants. Deletion at any other level is not supported.
 func (c *Client) DeleteEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.DeleteEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEventThreatDetectionCustomModule(ctx, req, opts...)
 }
@@ -1978,9 +1986,15 @@ func (c *restClient) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Con
 	return resp, nil
 }
 
-// ListEffectiveEventThreatDetectionCustomModules lists all effective Event Threat Detection custom modules for the
+// ListEffectiveEventThreatDetectionCustomModules returns a list of all EffectiveEventThreatDetectionCustomModules for the
 // given parent. This includes resident modules defined at the scope of the
-// parent along with modules inherited from its ancestors.
+// parent, and inherited modules, inherited from CRM ancestors (no
+// descendants). The difference between an EffectiveCustomModule and a
+// CustomModule is that the fields for an EffectiveCustomModule are computed
+// from ancestors if needed. For example, the enablement_state for a
+// CustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the
+// enablement_state for an EffectiveCustomModule is always computed to ENABLED
+// or DISABLED (the effective enablement_state).
 func (c *restClient) ListEffectiveEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListEffectiveEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EffectiveEventThreatDetectionCustomModuleIterator {
 	it := &EffectiveEventThreatDetectionCustomModuleIterator{}
 	req = proto.Clone(req).(*securitycentermanagementpb.ListEffectiveEventThreatDetectionCustomModulesRequest)
@@ -2135,9 +2149,9 @@ func (c *restClient) GetEffectiveEventThreatDetectionCustomModule(ctx context.Co
 	return resp, nil
 }
 
-// ListEventThreatDetectionCustomModules lists all Event Threat Detection custom modules for the given
-// Resource Manager parent. This includes resident modules defined at the
-// scope of the parent along with modules inherited from ancestors.
+// ListEventThreatDetectionCustomModules returns a list of all EventThreatDetectionCustomModules for the given
+// parent. This includes resident modules defined at the scope of the parent,
+// and inherited modules, inherited from CRM ancestors (no descendants).
 func (c *restClient) ListEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EventThreatDetectionCustomModuleIterator {
 	it := &EventThreatDetectionCustomModuleIterator{}
 	req = proto.Clone(req).(*securitycentermanagementpb.ListEventThreatDetectionCustomModulesRequest)
@@ -2226,8 +2240,8 @@ func (c *restClient) ListEventThreatDetectionCustomModules(ctx context.Context, 
 	return it
 }
 
-// ListDescendantEventThreatDetectionCustomModules lists all resident Event Threat Detection custom modules under the
-// given Resource Manager parent and its descendants.
+// ListDescendantEventThreatDetectionCustomModules returns a list of all resident EventThreatDetectionCustomModules under
+// the given CRM parent and all of the parent’s CRM descendants.
 func (c *restClient) ListDescendantEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EventThreatDetectionCustomModuleIterator {
 	it := &EventThreatDetectionCustomModuleIterator{}
 	req = proto.Clone(req).(*securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesRequest)
@@ -2316,7 +2330,13 @@ func (c *restClient) ListDescendantEventThreatDetectionCustomModules(ctx context
 	return it
 }
 
-// GetEventThreatDetectionCustomModule gets an Event Threat Detection custom module.
+// GetEventThreatDetectionCustomModule gets an ETD custom module. Retrieves the module at the given level. The
+// difference between an EffectiveCustomModule and a CustomModule is that the
+// fields for an EffectiveCustomModule are computed from ancestors if needed.
+// For example, the enablement_state for a CustomModule can be either ENABLED,
+// DISABLED, or INHERITED. Where as the enablement_state for an
+// EffectiveCustomModule is always computed to ENABLED or DISABLED (the
+// effective enablement_state).
 func (c *restClient) GetEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.GetEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EventThreatDetectionCustomModule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2376,10 +2396,8 @@ func (c *restClient) GetEventThreatDetectionCustomModule(ctx context.Context, re
 	return resp, nil
 }
 
-// CreateEventThreatDetectionCustomModule creates a resident Event Threat Detection custom module at the scope of the
-// given Resource Manager parent, and also creates inherited custom modules
-// for all descendants of the given parent. These modules are enabled by
-// default.
+// CreateEventThreatDetectionCustomModule creates an ETD custom module at the given level. Creating a module has a
+// side-effect of creating modules at all descendants.
 func (c *restClient) CreateEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.CreateEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EventThreatDetectionCustomModule, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEventThreatDetectionCustomModule()
@@ -2449,12 +2467,11 @@ func (c *restClient) CreateEventThreatDetectionCustomModule(ctx context.Context,
 	return resp, nil
 }
 
-// UpdateEventThreatDetectionCustomModule updates the Event Threat Detection custom module with the given name based
-// on the given update mask. Updating the enablement state is supported for
-// both resident and inherited modules (though resident modules cannot have an
-// enablement state of “inherited”). Updating the display name or
-// configuration of a module is supported for resident modules only. The type
-// of a module cannot be changed.
+// UpdateEventThreatDetectionCustomModule updates an ETD custom module at the given level. All config fields can be
+// updated when updating the module at resident level. Only enablement state
+// can be updated when updating the module at inherited levels. Updating the
+// module has a side-effect that it updates all descendants that are inherited
+// from this module.
 func (c *restClient) UpdateEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.UpdateEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) (*securitycentermanagementpb.EventThreatDetectionCustomModule, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEventThreatDetectionCustomModule()
@@ -2531,9 +2548,8 @@ func (c *restClient) UpdateEventThreatDetectionCustomModule(ctx context.Context,
 	return resp, nil
 }
 
-// DeleteEventThreatDetectionCustomModule deletes the specified Event Threat Detection custom module and all of its
-// descendants in the Resource Manager hierarchy. This method is only
-// supported for resident custom modules.
+// DeleteEventThreatDetectionCustomModule deletes an ETD custom module. Deletion at resident level also deletes
+// modules at all descendants. Deletion at any other level is not supported.
 func (c *restClient) DeleteEventThreatDetectionCustomModule(ctx context.Context, req *securitycentermanagementpb.DeleteEventThreatDetectionCustomModuleRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

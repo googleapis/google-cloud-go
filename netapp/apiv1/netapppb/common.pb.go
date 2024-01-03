@@ -21,11 +21,10 @@
 package netapppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -39,9 +38,12 @@ const (
 type ServiceLevel int32
 
 const (
+	// Unspecified service level.
 	ServiceLevel_SERVICE_LEVEL_UNSPECIFIED ServiceLevel = 0
-	ServiceLevel_PREMIUM                   ServiceLevel = 1
-	ServiceLevel_EXTREME                   ServiceLevel = 2
+	// Premium service level.
+	ServiceLevel_PREMIUM ServiceLevel = 1
+	// Extreme service level.
+	ServiceLevel_EXTREME ServiceLevel = 2
 	// Standard (Software offering)
 	ServiceLevel_STANDARD ServiceLevel = 3
 )
