@@ -1,5 +1,13 @@
 # Changes
 
+## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.47.0...dialogflow/v1.48.0) (2024-01-03)
+
+
+### Features
+
+* **dialogflow:** Add sections field to HumanAgentAssistantConfig.SuggestionQueryConfig ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+* **dialogflow:** Add sections field to HumanAgentAssistantConfig.SuggestionQueryConfig ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
 ## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.46.0...dialogflow/v1.47.0) (2023-12-07)
 
 
