@@ -1620,6 +1620,11 @@ type Query struct {
 	// for syntax details. When Delimiter is set in conjunction with MatchGlob,
 	// it must be set to /.
 	MatchGlob string
+
+	// IncludeFoldersAsPrefixes includes Folders and Managed Folders in the set of
+	// prefixes returned by the query. Only applicable if Delimiter is set to /.
+	// IncludeFoldersAsPrefixes is not yet implemented in the gRPC API.
+	IncludeFoldersAsPrefixes bool
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
