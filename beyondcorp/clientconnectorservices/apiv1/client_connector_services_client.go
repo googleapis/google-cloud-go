@@ -124,8 +124,8 @@ type internalClient interface {
 //
 // The ClientConnectorServicesService exposes the following resources:
 //
-//   Client Connector Services, named as follows:
-//   projects/{project_id}/locations/{location_id}/client_connector_services/{client_connector_service_id}.
+//	Client Connector Services, named as follows:
+//	projects/{project_id}/locations/{location_id}/client_connector_services/{client_connector_service_id}.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -301,8 +301,8 @@ type gRPCClient struct {
 //
 // The ClientConnectorServicesService exposes the following resources:
 //
-//   Client Connector Services, named as follows:
-//   projects/{project_id}/locations/{location_id}/client_connector_services/{client_connector_service_id}.
+//	Client Connector Services, named as follows:
+//	projects/{project_id}/locations/{location_id}/client_connector_services/{client_connector_service_id}.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
