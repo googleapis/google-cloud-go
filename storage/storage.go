@@ -2059,7 +2059,7 @@ type RetryOption interface {
 }
 
 // WithBackoff allows configuration of the backoff timing used for retries.
-// Available configuration options (Initial, Max, Multiplier and MaxRetryCount) are described
+// Available configuration options (Initial, Max and Multiplier) are described
 // at https://pkg.go.dev/github.com/googleapis/gax-go/v2#Backoff. If any fields
 // are not supplied by the user, gax default values will be used.
 func WithBackoff(backoff gax.Backoff) RetryOption {
@@ -2074,6 +2074,21 @@ type withBackoff struct {
 
 func (wb *withBackoff) apply(config *retryConfig) {
 	config.backoff = &wb.backoff
+}
+
+// WithMaxRetry sets the maximum number of retries for operations that may fail.
+func WithMaxRetry(maxRetryCount int) RetryOption {
+	return &withMaxRetry{
+		maxRetryCount: maxRetryCount,
+	}
+}
+
+type withMaxRetry struct {
+	maxRetryCount int
+}
+
+func (wb *withMaxRetry) apply(config *retryConfig) {
+	config.maxRetryCount = wb.maxRetryCount
 }
 
 // RetryPolicy describes the available policies for which operations should be
@@ -2145,9 +2160,10 @@ func (wef *withErrorFunc) apply(config *retryConfig) {
 }
 
 type retryConfig struct {
-	backoff     *gax.Backoff
-	policy      RetryPolicy
-	shouldRetry func(err error) bool
+	backoff       *gax.Backoff
+	policy        RetryPolicy
+	shouldRetry   func(err error) bool
+	maxRetryCount int
 }
 
 func (r *retryConfig) clone() *retryConfig {
@@ -2158,17 +2174,17 @@ func (r *retryConfig) clone() *retryConfig {
 	var bo *gax.Backoff
 	if r.backoff != nil {
 		bo = &gax.Backoff{
-			Initial:       r.backoff.Initial,
-			Max:           r.backoff.Max,
-			Multiplier:    r.backoff.Multiplier,
-			MaxRetryCount: r.backoff.MaxRetryCount,
+			Initial:    r.backoff.Initial,
+			Max:        r.backoff.Max,
+			Multiplier: r.backoff.Multiplier,
 		}
 	}
 
 	return &retryConfig{
-		backoff:     bo,
-		policy:      r.policy,
-		shouldRetry: r.shouldRetry,
+		backoff:       bo,
+		policy:        r.policy,
+		shouldRetry:   r.shouldRetry,
+		maxRetryCount: r.maxRetryCount,
 	}
 }
 

@@ -977,6 +977,7 @@ func TestObjectRetryer(t *testing.T) {
 						Max:        30 * time.Second,
 						Multiplier: 3,
 					}),
+					WithMaxRetry(5),
 					WithPolicy(RetryAlways),
 					WithErrorFunc(func(err error) bool { return false }))
 			},
@@ -986,8 +987,9 @@ func TestObjectRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				policy:      RetryAlways,
-				shouldRetry: func(err error) bool { return false },
+				maxRetryCount: 5,
+				policy:        RetryAlways,
+				shouldRetry:   func(err error) bool { return false },
 			},
 		},
 		{
@@ -1010,6 +1012,15 @@ func TestObjectRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy: RetryNever,
+			},
+		},
+		{
+			name: "set max retry count only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(WithMaxRetry(11))
+			},
+			want: &retryConfig{
+				maxRetryCount: 11,
 			},
 		},
 		{
@@ -1063,6 +1074,7 @@ func TestClientSetRetry(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				}),
+				WithMaxRetry(5),
 				WithPolicy(RetryAlways),
 				WithErrorFunc(func(err error) bool { return false }),
 			},
@@ -1072,8 +1084,9 @@ func TestClientSetRetry(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				policy:      RetryAlways,
-				shouldRetry: func(err error) bool { return false },
+				maxRetryCount: 5,
+				policy:        RetryAlways,
+				shouldRetry:   func(err error) bool { return false },
 			},
 		},
 		{
@@ -1095,6 +1108,15 @@ func TestClientSetRetry(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy: RetryNever,
+			},
+		},
+		{
+			name: "set max retry count only",
+			clientOptions: []RetryOption{
+				WithMaxRetry(7),
+			},
+			want: &retryConfig{
+				maxRetryCount: 7,
 			},
 		},
 		{
@@ -1150,11 +1172,13 @@ func TestRetryer(t *testing.T) {
 			name: "object retryer configures retry",
 			objectOptions: []RetryOption{
 				WithPolicy(RetryAlways),
+				WithMaxRetry(5),
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
-				shouldRetry: ShouldRetry,
-				policy:      RetryAlways,
+				shouldRetry:   ShouldRetry,
+				maxRetryCount: 5,
+				policy:        RetryAlways,
 			},
 		},
 		{
@@ -1166,6 +1190,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				}),
 				WithPolicy(RetryAlways),
+				WithMaxRetry(11),
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
@@ -1174,8 +1199,9 @@ func TestRetryer(t *testing.T) {
 					Max:        time.Hour,
 					Multiplier: 6,
 				},
-				shouldRetry: ShouldRetry,
-				policy:      RetryAlways,
+				shouldRetry:   ShouldRetry,
+				maxRetryCount: 11,
+				policy:        RetryAlways,
 			},
 		},
 		{
@@ -1187,6 +1213,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 6,
 				}),
 				WithPolicy(RetryAlways),
+				WithMaxRetry(7),
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
@@ -1195,8 +1222,9 @@ func TestRetryer(t *testing.T) {
 					Max:        time.Hour,
 					Multiplier: 6,
 				},
-				shouldRetry: ShouldRetry,
-				policy:      RetryAlways,
+				shouldRetry:   ShouldRetry,
+				maxRetryCount: 7,
+				policy:        RetryAlways,
 			},
 		},
 		{
@@ -1206,11 +1234,13 @@ func TestRetryer(t *testing.T) {
 			},
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
+				WithMaxRetry(5),
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
-				policy:      RetryNever,
-				shouldRetry: ShouldRetry,
+				policy:        RetryNever,
+				maxRetryCount: 5,
+				shouldRetry:   ShouldRetry,
 			},
 		},
 		{
@@ -1220,11 +1250,13 @@ func TestRetryer(t *testing.T) {
 			},
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
+				WithMaxRetry(11),
 				WithErrorFunc(ShouldRetry),
 			},
 			want: &retryConfig{
-				policy:      RetryNever,
-				shouldRetry: ShouldRetry,
+				policy:        RetryNever,
+				maxRetryCount: 11,
+				shouldRetry:   ShouldRetry,
 			},
 		},
 		{
@@ -1243,10 +1275,12 @@ func TestRetryer(t *testing.T) {
 					Max:     time.Microsecond,
 				}),
 				WithErrorFunc(ShouldRetry),
+				WithMaxRetry(5),
 			},
 			want: &retryConfig{
-				policy:      RetryAlways,
-				shouldRetry: ShouldRetry,
+				policy:        RetryAlways,
+				maxRetryCount: 5,
+				shouldRetry:   ShouldRetry,
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
@@ -1280,6 +1314,7 @@ func TestRetryer(t *testing.T) {
 			bucketOptions: []RetryOption{
 				WithPolicy(RetryNever),
 				WithErrorFunc(ShouldRetry),
+				WithMaxRetry(5),
 			},
 			objectOptions: []RetryOption{
 				WithBackoff(gax.Backoff{
@@ -1288,8 +1323,9 @@ func TestRetryer(t *testing.T) {
 				}),
 			},
 			want: &retryConfig{
-				policy:      RetryNever,
-				shouldRetry: ShouldRetry,
+				policy:        RetryNever,
+				maxRetryCount: 5,
+				shouldRetry:   ShouldRetry,
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Second,
