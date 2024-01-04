@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.5.2...vertexai/v0.6.0) (2023-12-17)
+
+
+### Features
+
+* **vertexai:** Use pointers for GenerationConfig fields ([#9182](https://github.com/googleapis/google-cloud-go/issues/9182)) ([91990c1](https://github.com/googleapis/google-cloud-go/commit/91990c1746945c7f0548df972acf1498b165beb9))
+
+## [0.5.2](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.5.1...vertexai/v0.5.2) (2023-12-14)
+
+
+### Bug Fixes
+
+* **vertexai:** Bump deps to fix build error ([#9168](https://github.com/googleapis/google-cloud-go/issues/9168)) ([d361c59](https://github.com/googleapis/google-cloud-go/commit/d361c59953ec815bc3fbd0fdba04069c68e5cd99)), refs [#9167](https://github.com/googleapis/google-cloud-go/issues/9167)
+
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.5.0...vertexai/v0.5.1) (2023-12-13)
+
+
+### Bug Fixes
+
+* **vertexai:** Passthrough user opts ([#9163](https://github.com/googleapis/google-cloud-go/issues/9163)) ([c24e93c](https://github.com/googleapis/google-cloud-go/commit/c24e93c06851d3917d75a9b2362af993071961c0)), refs [#9160](https://github.com/googleapis/google-cloud-go/issues/9160)
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.4.0...vertexai/v0.5.0) (2023-12-13)
 
 

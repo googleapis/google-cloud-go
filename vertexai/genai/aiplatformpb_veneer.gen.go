@@ -479,15 +479,15 @@ func (GenerateContentResponse) fromProto(p *pb.GenerateContentResponse) *Generat
 // GenerationConfig is generation config.
 type GenerationConfig struct {
 	// Optional. Controls the randomness of predictions.
-	Temperature float32
+	Temperature *float32
 	// Optional. If specified, nucleus sampling will be used.
-	TopP float32
+	TopP *float32
 	// Optional. If specified, top-k sampling will be used.
-	TopK float32
+	TopK *float32
 	// Optional. Number of candidates to generate.
-	CandidateCount int32
+	CandidateCount *int32
 	// Optional. The maximum number of output tokens to generate per message.
-	MaxOutputTokens int32
+	MaxOutputTokens *int32
 	// Optional. Stop sequences.
 	StopSequences []string
 }
@@ -497,11 +497,11 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 		return nil
 	}
 	return &pb.GenerationConfig{
-		Temperature:     support.AddrOrNil(v.Temperature),
-		TopP:            support.AddrOrNil(v.TopP),
-		TopK:            support.AddrOrNil(v.TopK),
-		CandidateCount:  support.AddrOrNil(v.CandidateCount),
-		MaxOutputTokens: support.AddrOrNil(v.MaxOutputTokens),
+		Temperature:     v.Temperature,
+		TopP:            v.TopP,
+		TopK:            v.TopK,
+		CandidateCount:  v.CandidateCount,
+		MaxOutputTokens: v.MaxOutputTokens,
 		StopSequences:   v.StopSequences,
 	}
 }
@@ -511,11 +511,11 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 		return nil
 	}
 	return &GenerationConfig{
-		Temperature:     support.DerefOrZero(p.Temperature),
-		TopP:            support.DerefOrZero(p.TopP),
-		TopK:            support.DerefOrZero(p.TopK),
-		CandidateCount:  support.DerefOrZero(p.CandidateCount),
-		MaxOutputTokens: support.DerefOrZero(p.MaxOutputTokens),
+		Temperature:     p.Temperature,
+		TopP:            p.TopP,
+		TopK:            p.TopK,
+		CandidateCount:  p.CandidateCount,
+		MaxOutputTokens: p.MaxOutputTokens,
 		StopSequences:   p.StopSequences,
 	}
 }
