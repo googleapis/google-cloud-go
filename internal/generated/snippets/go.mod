@@ -474,3 +474,5 @@ replace cloud.google.com/go/telcoautomation => ../../../telcoautomation
 replace cloud.google.com/go/securitycentermanagement => ../../../securitycentermanagement
 
 replace cloud.google.com/go/apps => ../../../apps
+
+replace cloud.google.com/go/cloudquotas => ../../../cloudquotas
