@@ -105,7 +105,6 @@ func TestInvoke(t *testing.T) {
 			expectFinalErr:    false,
 		},
 		{
-
 			desc:              "non-idempotent retriable error retried when policy is RetryAlways",
 			count:             2,
 			initialErr:        &googleapi.Error{Code: 500},
@@ -132,7 +131,6 @@ func TestInvoke(t *testing.T) {
 			retry:             &retryConfig{policy: RetryAlways},
 			expectFinalErr:    false,
 		},
-
 		{
 			desc:              "non-retriable error retried with custom fn",
 			count:             2,
@@ -173,6 +171,47 @@ func TestInvoke(t *testing.T) {
 			},
 			expectFinalErr: false,
 		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till max-retry-count",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryAlways, maxRetryCount: 2},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryNever",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryNever, maxRetryCount: 2},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryNever",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryNever, maxRetryCount: 2},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-retriable error retried with custom fn till max-retry-count set",
+			count:             4,
+			initialErr:        io.ErrNoProgress,
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry: &retryConfig{
+				shouldRetry: func(err error) bool {
+					return err == io.ErrNoProgress
+				},
+				maxRetryCount: 2,
+			},
+			expectFinalErr: false,
+		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
 			counter := 0
@@ -188,7 +227,7 @@ func TestInvoke(t *testing.T) {
 				headers := callctx.HeadersFromContext(ctx)
 				gotClientHeader = headers["x-goog-api-client"][0]
 				gotIdempotencyHeader = headers["x-goog-gcs-idempotency-token"][0]
-				if counter <= test.count {
+				if (counter <= test.count) || (test.retry != nil && counter == test.retry.maxRetryCount) {
 					return test.initialErr
 				}
 				return test.finalErr
@@ -200,6 +239,9 @@ func TestInvoke(t *testing.T) {
 				s.Errorf("got %v, want %v", got, test.initialErr)
 			}
 			wantAttempts := 1 + test.count
+			if test.retry != nil && test.retry.maxRetryCount != 0 {
+				wantAttempts = test.retry.maxRetryCount - 1
+			}
 			if !test.expectFinalErr {
 				wantAttempts = 1
 			}
