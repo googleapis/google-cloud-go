@@ -91,12 +91,12 @@ func (ri *RowIterator) SourceJob() *Job {
 	}
 }
 
-// QueryId returns a query ID if available, or an empty string.
-func (ri *RowIterator) QueryId() string {
+// QueryID returns a query ID if available, or an empty string.
+func (ri *RowIterator) QueryID() string {
 	if ri.src == nil {
 		return ""
 	}
-	return ri.src.queryId
+	return ri.src.queryID
 }
 
 // We declare a function signature for fetching results.  The primary reason
@@ -220,7 +220,7 @@ func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
 type rowSource struct {
 	j       *Job
 	t       *Table
-	queryId string
+	queryID string
 
 	cachedRows      []*bq.TableRow
 	cachedSchema    *bq.TableSchema

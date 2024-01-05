@@ -511,7 +511,7 @@ func TestIteratorSourceJob(t *testing.T) {
 	}
 }
 
-func TestIteratorQueryId(t *testing.T) {
+func TestIteratorQueryID(t *testing.T) {
 	testcases := []struct {
 		description string
 		src         *rowSource
@@ -529,7 +529,7 @@ func TestIteratorQueryId(t *testing.T) {
 		},
 		{
 			description: "populated id",
-			src:         &rowSource{queryId: "foo"},
+			src:         &rowSource{queryID: "foo"},
 			want:        "foo",
 		},
 	}
@@ -537,7 +537,7 @@ func TestIteratorQueryId(t *testing.T) {
 	for _, tc := range testcases {
 		// Don't pass a page func, we're not reading from the iterator.
 		it := newRowIterator(context.Background(), tc.src, nil)
-		got := it.QueryId()
+		got := it.QueryID()
 		if got != tc.want {
 			t.Errorf("%s: mismatch queryid, got %q want %q", tc.description, got, tc.want)
 		}
