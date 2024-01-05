@@ -453,16 +453,19 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 	isPrimitive := itemType.Kind() != reflect.Struct
 	var pointers []interface{}
 	isFirstRow := true
+	rowIndex := int64(-1)
+	var rowsReturned int64
 	return rows.Do(func(row *Row) error {
 		sliceItem := reflect.New(itemType)
 		if isFirstRow {
 			defer func() {
 				isFirstRow = false
 			}()
-			nRows := rows.RowsReturned()
-			if nRows != -1 {
+			rowsReturned = rows.RowsReturned()
+			if rowsReturned != -1 {
 				// nRows is lower bound of the number of rows returned by the query.
-				dstVal.Set(reflect.MakeSlice(dstType, 0, int(nRows)))
+				dstVal.Set(reflect.MakeSlice(dstType, int(rowsReturned), int(rowsReturned)))
+				rowIndex++
 			}
 			if isPrimitive {
 				if len(row.fields) > 1 {
@@ -502,7 +505,12 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 		} else {
 			elemVal = sliceItem.Elem()
 		}
-		dstVal.Set(reflect.Append(dstVal, elemVal))
+		if rowIndex >= 0 && rowsReturned > rowIndex {
+			dstVal.Index(int(rowIndex)).Set(elemVal)
+			rowIndex++
+		} else {
+			dstVal.Set(reflect.Append(dstVal, elemVal))
+		}
 		return nil
 	})
 }
