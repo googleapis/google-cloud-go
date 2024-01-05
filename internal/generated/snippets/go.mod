@@ -139,6 +139,7 @@ require (
 	cloud.google.com/go/ai v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/apps v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/cloudprofiler v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/cloudquotas v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/commerce v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/config v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/edgenetwork v0.0.0-00010101000000-000000000000
