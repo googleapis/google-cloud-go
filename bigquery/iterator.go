@@ -91,6 +91,14 @@ func (ri *RowIterator) SourceJob() *Job {
 	}
 }
 
+// QueryID returns a query ID if available, or an empty string.
+func (ri *RowIterator) QueryID() string {
+	if ri.src == nil {
+		return ""
+	}
+	return ri.src.queryID
+}
+
 // We declare a function signature for fetching results.  The primary reason
 // for this is to enable us to swap out the fetch function with alternate
 // implementations (e.g. to enable testing).
@@ -210,8 +218,9 @@ func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
 //     want to retain the data unnecessarily, and we expect that the backend
 //     can always provide them if needed.
 type rowSource struct {
-	j *Job
-	t *Table
+	j       *Job
+	t       *Table
+	queryID string
 
 	cachedRows      []*bq.TableRow
 	cachedSchema    *bq.TableSchema
