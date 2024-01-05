@@ -131,7 +131,7 @@ require (
 	cloud.google.com/go/workflows v1.12.3
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.154.0
+	google.golang.org/api v0.155.0
 	google.golang.org/genproto v0.0.0-20231212172506-995d672761c0
 )
 
@@ -139,6 +139,7 @@ require (
 	cloud.google.com/go/ai v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/apps v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/cloudprofiler v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/cloudquotas v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/commerce v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/config v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/edgenetwork v0.0.0-00010101000000-000000000000
@@ -170,7 +171,7 @@ require (
 	go.opentelemetry.io/otel v1.21.0 // indirect
 	go.opentelemetry.io/otel/metric v1.21.0 // indirect
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect
-	golang.org/x/crypto v0.16.0 // indirect
+	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/oauth2 v0.15.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
@@ -474,3 +475,5 @@ replace cloud.google.com/go/telcoautomation => ../../../telcoautomation
 replace cloud.google.com/go/securitycentermanagement => ../../../securitycentermanagement
 
 replace cloud.google.com/go/apps => ../../../apps
+
+replace cloud.google.com/go/cloudquotas => ../../../cloudquotas

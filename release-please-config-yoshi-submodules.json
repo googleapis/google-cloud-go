@@ -87,6 +87,9 @@
         "cloudprofiler": {
             "component": "cloudprofiler"
         },
+        "cloudquotas": {
+            "component": "cloudquotas"
+        },
         "cloudtasks": {
             "component": "cloudtasks"
         },
