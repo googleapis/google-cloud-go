@@ -2076,8 +2076,8 @@ func (wb *withBackoff) apply(config *retryConfig) {
 	config.backoff = &wb.backoff
 }
 
-// WithMaxRetry sets the maximum number of retries for operations that may fail.
-func WithMaxRetry(maxRetryCount int) RetryOption {
+// WithMaxAttempts sets the maximum number of retries for operations that may fail.
+func WithMaxAttempts(maxRetryCount int) RetryOption {
 	return &withMaxRetry{
 		maxRetryCount: maxRetryCount,
 	}
