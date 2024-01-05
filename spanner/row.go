@@ -252,6 +252,9 @@ func errColNotFound(n string) error {
 func errNotASlicePointer() error {
 	return spannerErrorf(codes.InvalidArgument, "destination must be a pointer to a slice")
 }
+func errNilSlicePointer() error {
+	return spannerErrorf(codes.InvalidArgument, "destination must be a non nil pointer")
+}
 
 func errTooManyColumns() error {
 	return spannerErrorf(codes.InvalidArgument, "too many columns returned for primitive slice")
@@ -387,7 +390,24 @@ func (r *Row) ToStructLenient(p interface{}) error {
 	)
 }
 
-// SelectAll scans rows into a slice (v)
+// SelectAll iterates all rows to the end. After iterating it closes the rows,
+// and propagates any errors that could pop up.
+// It expects that destination should be a slice. For each row it scans data and appends it to the destination slice.
+// SelectAll supports both types of slices: slice of structs by a pointer and slice of structs by value,
+// for example:
+//
+//	type Singer struct {
+//	    ID    string
+//	    Name  string
+//	}
+//
+//	var singersByPtr []*Singer
+//	var singersByValue []Singer
+//
+// Both singersByPtr and singersByValue are valid destinations for SelectAll function.
+//
+// Before starting, SelectAll resets the destination slice,
+// so if it's not empty it will overwrite all existing elements.
 func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 	if rows == nil {
 		return fmt.Errorf("rows is nil")
@@ -395,16 +415,36 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 	if v == nil {
 		return fmt.Errorf("p is nil")
 	}
-	vType := reflect.TypeOf(v)
-	if k := vType.Kind(); k != reflect.Ptr {
-		return errToStructArgType(v)
+	dstVal := reflect.ValueOf(v)
+	if !dstVal.IsValid() || (dstVal.Kind() == reflect.Ptr && dstVal.IsNil()) {
+		return errNilSlicePointer()
 	}
-	sliceType := vType.Elem()
-	if reflect.Slice != sliceType.Kind() {
+	if dstVal.Kind() != reflect.Ptr {
 		return errNotASlicePointer()
 	}
-	sliceVal := reflect.Indirect(reflect.ValueOf(v))
-	itemType := sliceType.Elem()
+	dstVal = dstVal.Elem()
+	dstType := dstVal.Type()
+	if k := dstType.Kind(); k != reflect.Slice {
+		return errNotASlicePointer()
+	}
+
+	itemType := dstType.Elem()
+	var itemByPtr bool
+	// If it's a slice of pointers to structs,
+	// we handle it the same way as it would be slice of struct by value
+	// and dereference pointers to values,
+	// because eventually we work with fields.
+	// But if it's a slice of primitive type e.g. or []string or []*string,
+	// we must leave and pass elements as is.
+	if itemType.Kind() == reflect.Ptr {
+		elementBaseTypeElem := itemType.Elem()
+		if elementBaseTypeElem.Kind() == reflect.Struct {
+			itemType = elementBaseTypeElem
+			itemByPtr = true
+		}
+	}
+	// Make sure slice is empty.
+	dstVal.Set(dstVal.Slice(0, 0))
 	s := &decodeSetting{}
 	for _, opt := range options {
 		opt.Apply(s)
@@ -412,16 +452,17 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 
 	isPrimitive := itemType.Kind() != reflect.Struct
 	var pointers []interface{}
-	isFistRow := true
-	rowIndex := -1
+	isFirstRow := true
 	return rows.Do(func(row *Row) error {
-		sliceItem := reflect.New(itemType).Elem()
-		if isFistRow {
+		sliceItem := reflect.New(itemType)
+		if isFirstRow {
+			defer func() {
+				isFirstRow = false
+			}()
 			nRows := rows.RowsReturned()
 			if nRows != -1 {
-				sliceVal = reflect.MakeSlice(sliceType, int(nRows), int(nRows))
-				reflect.ValueOf(v).Elem().Set(sliceVal)
-				rowIndex++
+				// nRows is lower bound of the number of rows returned by the query.
+				dstVal.Set(reflect.MakeSlice(dstType, 0, int(nRows)))
 			}
 			if isPrimitive {
 				if len(row.fields) > 1 {
@@ -430,11 +471,10 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 				pointers = []interface{}{sliceItem.Addr().Interface()}
 			} else {
 				var err error
-				if pointers, err = structPointers(sliceItem, row.fields, s.Lenient); err != nil {
+				if pointers, err = structPointers(sliceItem.Elem(), row.fields, s.Lenient); err != nil {
 					return err
 				}
 			}
-			isFistRow = false
 		}
 		if len(pointers) == 0 {
 			return nil
@@ -447,14 +487,22 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 			if p == nil {
 				continue
 			}
-			sliceItem.Field(i).Set(reflect.ValueOf(p).Elem())
+			sliceItem.Elem().Field(i).Set(reflect.ValueOf(p).Elem())
 		}
-		if rowIndex >= 0 {
-			sliceVal.Index(rowIndex).Set(sliceItem)
-			rowIndex++
+		var elemVal reflect.Value
+		if itemByPtr {
+			if isFirstRow {
+				// create a new pointer to the struct with all the values copied from sliceIte
+				// because same underlying pointers array will be used for next rows
+				elemVal = reflect.New(itemType)
+				elemVal.Elem().Set(sliceItem.Elem())
+			} else {
+				elemVal = sliceItem
+			}
 		} else {
-			sliceVal.Set(reflect.Append(sliceVal, sliceItem))
+			elemVal = sliceItem.Elem()
 		}
+		dstVal.Set(reflect.Append(dstVal, elemVal))
 		return nil
 	})
 }
