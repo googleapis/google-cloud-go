@@ -190,7 +190,7 @@ func TestInvoke(t *testing.T) {
 			expectFinalErr:    false,
 		},
 		{
-			desc:              "non-retriable error retried with custom fn till max-retry-count set",
+			desc:              "non-retriable error retried with custom fn till max-retry-count",
 			count:             4,
 			initialErr:        io.ErrNoProgress,
 			finalErr:          nil,
