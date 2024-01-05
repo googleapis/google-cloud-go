@@ -181,16 +181,7 @@ func TestInvoke(t *testing.T) {
 			expectFinalErr:    false,
 		},
 		{
-			desc:              "non-idempotent retriable error retried when policy is RetryNever",
-			count:             4,
-			initialErr:        &googleapi.Error{Code: 500},
-			finalErr:          nil,
-			isIdempotentValue: false,
-			retry:             &retryConfig{policy: RetryNever, maxRetryCount: 2},
-			expectFinalErr:    false,
-		},
-		{
-			desc:              "non-idempotent retriable error retried when policy is RetryNever",
+			desc:              "non-idempotent retriable error retried when policy is RetryNever with max-retry-count set",
 			count:             4,
 			initialErr:        &googleapi.Error{Code: 500},
 			finalErr:          nil,
