@@ -2076,19 +2076,21 @@ func (wb *withBackoff) apply(config *retryConfig) {
 	config.backoff = &wb.backoff
 }
 
-// WithMaxAttempts sets the maximum number of retries for operations that may fail.
-func WithMaxAttempts(maxRetryCount int) RetryOption {
-	return &withMaxRetry{
-		maxRetryCount: maxRetryCount,
+// Configures a maximum number of retries for potentially failing operations.
+// Without this setting, operations will continue retrying indefinitely
+// until either the context is canceled or a deadline is reached.
+func WithMaxAttempts(maxAttempts int) RetryOption {
+	return &withMaxAttempts{
+		maxAttempts: maxAttempts,
 	}
 }
 
-type withMaxRetry struct {
-	maxRetryCount int
+type withMaxAttempts struct {
+	maxAttempts int
 }
 
-func (wb *withMaxRetry) apply(config *retryConfig) {
-	config.maxRetryCount = wb.maxRetryCount
+func (wb *withMaxAttempts) apply(config *retryConfig) {
+	config.maxAttempts = wb.maxAttempts
 }
 
 // RetryPolicy describes the available policies for which operations should be
@@ -2160,10 +2162,10 @@ func (wef *withErrorFunc) apply(config *retryConfig) {
 }
 
 type retryConfig struct {
-	backoff       *gax.Backoff
-	policy        RetryPolicy
-	shouldRetry   func(err error) bool
-	maxRetryCount int
+	backoff     *gax.Backoff
+	policy      RetryPolicy
+	shouldRetry func(err error) bool
+	maxAttempts int
 }
 
 func (r *retryConfig) clone() *retryConfig {
@@ -2181,10 +2183,10 @@ func (r *retryConfig) clone() *retryConfig {
 	}
 
 	return &retryConfig{
-		backoff:       bo,
-		policy:        r.policy,
-		shouldRetry:   r.shouldRetry,
-		maxRetryCount: r.maxRetryCount,
+		backoff:     bo,
+		policy:      r.policy,
+		shouldRetry: r.shouldRetry,
+		maxAttempts: r.maxAttempts,
 	}
 }
 

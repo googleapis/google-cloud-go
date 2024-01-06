@@ -70,10 +70,10 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 	return internal.Retry(ctx, bo, func() (stop bool, err error) {
 		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
 		err = call(ctxWithHeaders)
-		attempts++
-		if attempts == retry.maxRetryCount {
+		if retry.maxAttempts != 0 && attempts > retry.maxAttempts {
 			return true, err
 		}
+		attempts++
 		return !errorFunc(err), err
 	})
 }
