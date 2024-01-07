@@ -5112,7 +5112,7 @@ func TestIntegration_WithDirectedReadOptions_ReadOnlyTransaction(t *testing.T) {
 	}
 }
 
-func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction(t *testing.T) {
+func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction_ShouldThrowError(t *testing.T) {
 	t.Parallel()
 	// DirectedReadOptions for PG is supported, however we test only for Google SQL.
 	skipUnsupportedPGTest(t)
