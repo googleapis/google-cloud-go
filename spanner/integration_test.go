@@ -5112,7 +5112,6 @@ func TestIntegration_WithDirectedReadOptions_ReadOnlyTransaction(t *testing.T) {
 	}
 }
 
-// TODO(sriharshach): This test currently fails since the backend flag is still not enabled.
 func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction(t *testing.T) {
 	t.Parallel()
 	// DirectedReadOptions for PG is supported, however we test only for Google SQL.

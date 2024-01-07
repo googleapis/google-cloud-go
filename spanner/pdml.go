@@ -71,13 +71,12 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 		return 0, ToSpannerError(err)
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:             sh.getID(),
-		Sql:                 statement.SQL,
-		Params:              params,
-		ParamTypes:          paramTypes,
-		QueryOptions:        options.Options,
-		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, ""),
-		DirectedReadOptions: options.DirectedReadOptions,
+		Session:        sh.getID(),
+		Sql:            statement.SQL,
+		Params:         params,
+		ParamTypes:     paramTypes,
+		QueryOptions:   options.Options,
+		RequestOptions: createRequestOptions(options.Priority, options.RequestTag, ""),
 	}
 
 	// Make a retryer for Aborted and certain Internal errors.

@@ -276,7 +276,6 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
 	}
-
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 
