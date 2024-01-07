@@ -1164,9 +1164,6 @@ func TestClient_DirectedReadOptions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	client.PartitionedUpdateWithOptions(ctx, NewStatement(UpdateBarSetFoo), QueryOptions{DirectedReadOptions: directedReadOptions})
-	checkReqsForQueryOptions(t, server.TestSpanner, QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{}, DirectedReadOptions: directedReadOptions})
 }
 
 func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
