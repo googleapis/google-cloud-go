@@ -2,10 +2,9 @@
 name: apidiff
 on:
   pull_request:
-  
+
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   scan_changes:
@@ -44,6 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !needs.scan_changes.outputs.skip && !contains(github.event.pull_request.labels.*.name, 'breaking change allowed') }}
     continue-on-error: true
+    permissions:
+      pull-requests: write
     strategy:
       matrix: ${{ fromJson(needs.scan_changes.outputs.changed_dirs) }}
     steps:
