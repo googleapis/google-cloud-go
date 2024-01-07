@@ -26,8 +26,8 @@ import (
 	"os"
 	"strings"
 
+	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
