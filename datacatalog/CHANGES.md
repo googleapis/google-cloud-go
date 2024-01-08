@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.0...datacatalog/v1.19.1) (2024-01-08)
+
+
+### Documentation
+
+* **datacatalog:** Change field behavior of the property "name" to IDENTIFIER ([bd30055](https://github.com/googleapis/google-cloud-go/commit/bd3005532fbffa9894b11149e9693b7c33227d79))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.3...datacatalog/v1.19.0) (2023-11-09)
 
 
