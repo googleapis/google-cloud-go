@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -211,13 +211,13 @@ func (c *PredictionClient) Predict(ctx context.Context, req *aiplatformpb.Predic
 //
 // The response includes the following HTTP headers:
 //
-//	X-Vertex-AI-Endpoint-Id: ID of the
-//	Endpoint that served this
-//	prediction.
+//   X-Vertex-AI-Endpoint-Id: ID of the
+//   Endpoint that served this
+//   prediction.
 //
-//	X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
-//	DeployedModel that served
-//	this prediction.
+//   X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
+//   DeployedModel that served
+//   this prediction.
 func (c *PredictionClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	return c.internalClient.RawPredict(ctx, req, opts...)
 }
@@ -956,13 +956,13 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *aiplatformpb.Pr
 //
 // The response includes the following HTTP headers:
 //
-//	X-Vertex-AI-Endpoint-Id: ID of the
-//	Endpoint that served this
-//	prediction.
+//   X-Vertex-AI-Endpoint-Id: ID of the
+//   Endpoint that served this
+//   prediction.
 //
-//	X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
-//	DeployedModel that served
-//	this prediction.
+//   X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
+//   DeployedModel that served
+//   this prediction.
 func (c *predictionRESTClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
