@@ -21,11 +21,8 @@
 package speechpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1939,39 +1938,39 @@ func (x *LongRunningRecognizeMetadata) GetUri() string {
 //
 // 2. results { alternatives { transcript: "to be a" } stability: 0.01 }
 //
-//  3. results { alternatives { transcript: "to be" } stability: 0.9 }
-//     results { alternatives { transcript: " or not to be" } stability: 0.01 }
+// 3. results { alternatives { transcript: "to be" } stability: 0.9 }
+//    results { alternatives { transcript: " or not to be" } stability: 0.01 }
 //
-//  4. results { alternatives { transcript: "to be or not to be"
-//     confidence: 0.92 }
-//     alternatives { transcript: "to bee or not to bee" }
-//     is_final: true }
+// 4. results { alternatives { transcript: "to be or not to be"
+//                             confidence: 0.92 }
+//              alternatives { transcript: "to bee or not to bee" }
+//              is_final: true }
 //
 // 5. results { alternatives { transcript: " that's" } stability: 0.01 }
 //
-//  6. results { alternatives { transcript: " that is" } stability: 0.9 }
-//     results { alternatives { transcript: " the question" } stability: 0.01 }
+// 6. results { alternatives { transcript: " that is" } stability: 0.9 }
+//    results { alternatives { transcript: " the question" } stability: 0.01 }
 //
-//  7. results { alternatives { transcript: " that is the question"
-//     confidence: 0.98 }
-//     alternatives { transcript: " that was the question" }
-//     is_final: true }
+// 7. results { alternatives { transcript: " that is the question"
+//                             confidence: 0.98 }
+//              alternatives { transcript: " that was the question" }
+//              is_final: true }
 //
 // Notes:
 //
-//   - Only two of the above responses #4 and #7 contain final results; they are
-//     indicated by `is_final: true`. Concatenating these together generates the
-//     full transcript: "to be or not to be that is the question".
+// - Only two of the above responses #4 and #7 contain final results; they are
+//   indicated by `is_final: true`. Concatenating these together generates the
+//   full transcript: "to be or not to be that is the question".
 //
-//   - The others contain interim `results`. #3 and #6 contain two interim
-//     `results`: the first portion has a high stability and is less likely to
-//     change; the second portion has a low stability and is very likely to
-//     change. A UI designer might choose to show only high stability `results`.
+// - The others contain interim `results`. #3 and #6 contain two interim
+//   `results`: the first portion has a high stability and is less likely to
+//   change; the second portion has a low stability and is very likely to
+//   change. A UI designer might choose to show only high stability `results`.
 //
-//   - The specific `stability` and `confidence` values shown above are only for
-//     illustrative purposes. Actual values may vary.
+// - The specific `stability` and `confidence` values shown above are only for
+//   illustrative purposes. Actual values may vary.
 //
-//   - In each response, only one of these fields will be set:
+// - In each response, only one of these fields will be set:
 //     `error`,
 //     `speech_event_type`, or
 //     one or more (repeated) `results`.
