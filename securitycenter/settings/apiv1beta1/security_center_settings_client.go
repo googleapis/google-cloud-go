@@ -511,16 +511,16 @@ func (c *SecurityCenterSettingsClient) BatchGetSettings(ctx context.Context, req
 // Settings resources in the GCP resource hierarchy, and calculates the
 // effective settings on that resource by applying the following rules:
 //
-//   Settings provided closer to the target resource take precedence over
-//   those further away (e.g. folder will override organization level
-//   settings).
+//	Settings provided closer to the target resource take precedence over
+//	those further away (e.g. folder will override organization level
+//	settings).
 //
-//   Product defaults can be overridden at org, folder, project, and cluster
-//   levels.
+//	Product defaults can be overridden at org, folder, project, and cluster
+//	levels.
 //
-//   Detectors will be filtered out if they belong to a billing tier the
-//   customer
-//   has not configured.
+//	Detectors will be filtered out if they belong to a billing tier the
+//	customer
+//	has not configured.
 func (c *SecurityCenterSettingsClient) CalculateEffectiveSettings(ctx context.Context, req *settingspb.CalculateEffectiveSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
 	return c.internalClient.CalculateEffectiveSettings(ctx, req, opts...)
 }
@@ -1304,16 +1304,16 @@ func (c *securityCenterSettingsRESTClient) BatchGetSettings(ctx context.Context,
 // Settings resources in the GCP resource hierarchy, and calculates the
 // effective settings on that resource by applying the following rules:
 //
-//   Settings provided closer to the target resource take precedence over
-//   those further away (e.g. folder will override organization level
-//   settings).
+//	Settings provided closer to the target resource take precedence over
+//	those further away (e.g. folder will override organization level
+//	settings).
 //
-//   Product defaults can be overridden at org, folder, project, and cluster
-//   levels.
+//	Product defaults can be overridden at org, folder, project, and cluster
+//	levels.
 //
-//   Detectors will be filtered out if they belong to a billing tier the
-//   customer
-//   has not configured.
+//	Detectors will be filtered out if they belong to a billing tier the
+//	customer
+//	has not configured.
 func (c *securityCenterSettingsRESTClient) CalculateEffectiveSettings(ctx context.Context, req *settingspb.CalculateEffectiveSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
