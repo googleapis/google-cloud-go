@@ -22,11 +22,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/apache/arrow/go/v12/arrow"
-	"github.com/apache/arrow/go/v12/arrow/array"
-	"github.com/apache/arrow/go/v12/arrow/ipc"
-	"github.com/apache/arrow/go/v12/arrow/math"
-	"github.com/apache/arrow/go/v12/arrow/memory"
+	"github.com/apache/arrow/go/v14/arrow"
+	"github.com/apache/arrow/go/v14/arrow/array"
+	"github.com/apache/arrow/go/v14/arrow/ipc"
+	"github.com/apache/arrow/go/v14/arrow/math"
+	"github.com/apache/arrow/go/v14/arrow/memory"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 )
