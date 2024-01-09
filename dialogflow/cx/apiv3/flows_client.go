@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 var newFlowsClientHook clientHook
@@ -2153,12 +2152,6 @@ func (c *flowsRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 	return it
 }
 
-// ExportFlowOperation manages a long-running operation from ExportFlow.
-type ExportFlowOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ExportFlowOperation returns a new ExportFlowOperation from a given name.
 // The name must be that of a previously created ExportFlowOperation, possibly from a different process.
 func (c *flowsGRPCClient) ExportFlowOperation(name string) *ExportFlowOperation {
@@ -2175,70 +2168,6 @@ func (c *flowsRESTClient) ExportFlowOperation(name string) *ExportFlowOperation 
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ExportFlowOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cxpb.ExportFlowResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cxpb.ExportFlowResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ExportFlowOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cxpb.ExportFlowResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cxpb.ExportFlowResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ExportFlowOperation) Metadata() (*structpb.Struct, error) {
-	var meta structpb.Struct
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ExportFlowOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ExportFlowOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ImportFlowOperation manages a long-running operation from ImportFlow.
-type ImportFlowOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // ImportFlowOperation returns a new ImportFlowOperation from a given name.
@@ -2259,70 +2188,6 @@ func (c *flowsRESTClient) ImportFlowOperation(name string) *ImportFlowOperation 
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportFlowOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cxpb.ImportFlowResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cxpb.ImportFlowResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportFlowOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cxpb.ImportFlowResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cxpb.ImportFlowResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportFlowOperation) Metadata() (*structpb.Struct, error) {
-	var meta structpb.Struct
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportFlowOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportFlowOperation) Name() string {
-	return op.lro.Name()
-}
-
-// TrainFlowOperation manages a long-running operation from TrainFlow.
-type TrainFlowOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // TrainFlowOperation returns a new TrainFlowOperation from a given name.
 // The name must be that of a previously created TrainFlowOperation, possibly from a different process.
 func (c *flowsGRPCClient) TrainFlowOperation(name string) *TrainFlowOperation {
@@ -2339,98 +2204,4 @@ func (c *flowsRESTClient) TrainFlowOperation(name string) *TrainFlowOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *TrainFlowOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *TrainFlowOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *TrainFlowOperation) Metadata() (*structpb.Struct, error) {
-	var meta structpb.Struct
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *TrainFlowOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *TrainFlowOperation) Name() string {
-	return op.lro.Name()
-}
-
-// FlowIterator manages a stream of *cxpb.Flow.
-type FlowIterator struct {
-	items    []*cxpb.Flow
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*cxpb.Flow, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *FlowIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *FlowIterator) Next() (*cxpb.Flow, error) {
-	var item *cxpb.Flow
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *FlowIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *FlowIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

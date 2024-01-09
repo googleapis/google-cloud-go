@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,11 +70,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &iampb.SetIamPolicyRequest{
+//	req := &containeranalysispb.ExportSBOMRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb#ExportSBOMRequest.
 //	}
-//	resp, err := c.SetIamPolicy(ctx, req)
+//	resp, err := c.ExportSBOM(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

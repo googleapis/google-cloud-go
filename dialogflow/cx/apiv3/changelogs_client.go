@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1064,51 +1064,4 @@ func (c *changelogsRESTClient) ListOperations(ctx context.Context, req *longrunn
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// ChangelogIterator manages a stream of *cxpb.Changelog.
-type ChangelogIterator struct {
-	items    []*cxpb.Changelog
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*cxpb.Changelog, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ChangelogIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ChangelogIterator) Next() (*cxpb.Changelog, error) {
-	var item *cxpb.Changelog
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ChangelogIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ChangelogIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

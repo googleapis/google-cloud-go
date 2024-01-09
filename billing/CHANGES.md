@@ -1,5 +1,19 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.4...billing/v1.18.0) (2023-12-07)
+
+
+### Features
+
+* **billing:** Added the MoveBillingAccount method, which allows changing which organization a billing account belongs to ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
+
+## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.3...billing/v1.17.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **billing:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.2...billing/v1.17.3) (2023-10-26)
 
 

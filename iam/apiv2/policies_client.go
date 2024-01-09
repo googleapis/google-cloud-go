@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1067,12 +1067,6 @@ func (c *policiesRESTClient) GetOperation(ctx context.Context, req *longrunningp
 	return resp, nil
 }
 
-// CreatePolicyOperation manages a long-running operation from CreatePolicy.
-type CreatePolicyOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreatePolicyOperation returns a new CreatePolicyOperation from a given name.
 // The name must be that of a previously created CreatePolicyOperation, possibly from a different process.
 func (c *policiesGRPCClient) CreatePolicyOperation(name string) *CreatePolicyOperation {
@@ -1089,70 +1083,6 @@ func (c *policiesRESTClient) CreatePolicyOperation(name string) *CreatePolicyOpe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreatePolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreatePolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreatePolicyOperation) Metadata() (*iampb.PolicyOperationMetadata, error) {
-	var meta iampb.PolicyOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreatePolicyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreatePolicyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeletePolicyOperation manages a long-running operation from DeletePolicy.
-type DeletePolicyOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeletePolicyOperation returns a new DeletePolicyOperation from a given name.
@@ -1173,70 +1103,6 @@ func (c *policiesRESTClient) DeletePolicyOperation(name string) *DeletePolicyOpe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeletePolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeletePolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeletePolicyOperation) Metadata() (*iampb.PolicyOperationMetadata, error) {
-	var meta iampb.PolicyOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeletePolicyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeletePolicyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdatePolicyOperation manages a long-running operation from UpdatePolicy.
-type UpdatePolicyOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdatePolicyOperation returns a new UpdatePolicyOperation from a given name.
 // The name must be that of a previously created UpdatePolicyOperation, possibly from a different process.
 func (c *policiesGRPCClient) UpdatePolicyOperation(name string) *UpdatePolicyOperation {
@@ -1253,109 +1119,4 @@ func (c *policiesRESTClient) UpdatePolicyOperation(name string) *UpdatePolicyOpe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdatePolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdatePolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*iampb.Policy, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp iampb.Policy
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdatePolicyOperation) Metadata() (*iampb.PolicyOperationMetadata, error) {
-	var meta iampb.PolicyOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdatePolicyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdatePolicyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PolicyIterator manages a stream of *iampb.Policy.
-type PolicyIterator struct {
-	items    []*iampb.Policy
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*iampb.Policy, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PolicyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PolicyIterator) Next() (*iampb.Policy, error) {
-	var item *iampb.Policy
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PolicyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PolicyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

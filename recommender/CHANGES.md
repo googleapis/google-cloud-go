@@ -1,5 +1,19 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.3...recommender/v1.12.0) (2023-12-13)
+
+
+### Features
+
+* **recommender:** Support cost_in_local_currency field in the cost projection ([3d9f556](https://github.com/googleapis/google-cloud-go/commit/3d9f55678654fe678d44f3f4a08bf26c3830b653))
+
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.2...recommender/v1.11.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **recommender:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.1...recommender/v1.11.2) (2023-10-26)
 
 

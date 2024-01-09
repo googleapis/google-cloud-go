@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ func ExampleNewKeyManagementRESTClient() {
 	_ = c
 }
 
-func ExampleKeyManagementClient_ListKeyRings() {
+func ExampleKeyManagementClient_AsymmetricDecrypt() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -73,135 +73,11 @@ func ExampleKeyManagementClient_ListKeyRings() {
 	}
 	defer c.Close()
 
-	req := &kmspb.ListKeyRingsRequest{
+	req := &kmspb.AsymmetricDecryptRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListKeyRingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#AsymmetricDecryptRequest.
 	}
-	it := c.ListKeyRings(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleKeyManagementClient_ListCryptoKeys() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.ListCryptoKeysRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListCryptoKeysRequest.
-	}
-	it := c.ListCryptoKeys(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleKeyManagementClient_ListCryptoKeyVersions() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.ListCryptoKeyVersionsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListCryptoKeyVersionsRequest.
-	}
-	it := c.ListCryptoKeyVersions(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleKeyManagementClient_ListImportJobs() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.ListImportJobsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListImportJobsRequest.
-	}
-	it := c.ListImportJobs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleKeyManagementClient_GetKeyRing() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.GetKeyRingRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetKeyRingRequest.
-	}
-	resp, err := c.GetKeyRing(ctx, req)
+	resp, err := c.AsymmetricDecrypt(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -209,7 +85,7 @@ func ExampleKeyManagementClient_GetKeyRing() {
 	_ = resp
 }
 
-func ExampleKeyManagementClient_GetCryptoKey() {
+func ExampleKeyManagementClient_AsymmetricSign() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -222,111 +98,11 @@ func ExampleKeyManagementClient_GetCryptoKey() {
 	}
 	defer c.Close()
 
-	req := &kmspb.GetCryptoKeyRequest{
+	req := &kmspb.AsymmetricSignRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetCryptoKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#AsymmetricSignRequest.
 	}
-	resp, err := c.GetCryptoKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_GetCryptoKeyVersion() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.GetCryptoKeyVersionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetCryptoKeyVersionRequest.
-	}
-	resp, err := c.GetCryptoKeyVersion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_GetPublicKey() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.GetPublicKeyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetPublicKeyRequest.
-	}
-	resp, err := c.GetPublicKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_GetImportJob() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.GetImportJobRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetImportJobRequest.
-	}
-	resp, err := c.GetImportJob(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_CreateKeyRing() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.CreateKeyRingRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#CreateKeyRingRequest.
-	}
-	resp, err := c.CreateKeyRing(ctx, req)
+	resp, err := c.AsymmetricSign(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -384,31 +160,6 @@ func ExampleKeyManagementClient_CreateCryptoKeyVersion() {
 	_ = resp
 }
 
-func ExampleKeyManagementClient_ImportCryptoKeyVersion() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.ImportCryptoKeyVersionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ImportCryptoKeyVersionRequest.
-	}
-	resp, err := c.ImportCryptoKeyVersion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleKeyManagementClient_CreateImportJob() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -434,7 +185,7 @@ func ExampleKeyManagementClient_CreateImportJob() {
 	_ = resp
 }
 
-func ExampleKeyManagementClient_UpdateCryptoKey() {
+func ExampleKeyManagementClient_CreateKeyRing() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -447,136 +198,11 @@ func ExampleKeyManagementClient_UpdateCryptoKey() {
 	}
 	defer c.Close()
 
-	req := &kmspb.UpdateCryptoKeyRequest{
+	req := &kmspb.CreateKeyRingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#UpdateCryptoKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#CreateKeyRingRequest.
 	}
-	resp, err := c.UpdateCryptoKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_UpdateCryptoKeyVersion() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.UpdateCryptoKeyVersionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#UpdateCryptoKeyVersionRequest.
-	}
-	resp, err := c.UpdateCryptoKeyVersion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_UpdateCryptoKeyPrimaryVersion() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.UpdateCryptoKeyPrimaryVersionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#UpdateCryptoKeyPrimaryVersionRequest.
-	}
-	resp, err := c.UpdateCryptoKeyPrimaryVersion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_DestroyCryptoKeyVersion() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.DestroyCryptoKeyVersionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#DestroyCryptoKeyVersionRequest.
-	}
-	resp, err := c.DestroyCryptoKeyVersion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_RestoreCryptoKeyVersion() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.RestoreCryptoKeyVersionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#RestoreCryptoKeyVersionRequest.
-	}
-	resp, err := c.RestoreCryptoKeyVersion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_Encrypt() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.EncryptRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#EncryptRequest.
-	}
-	resp, err := c.Encrypt(ctx, req)
+	resp, err := c.CreateKeyRing(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -609,7 +235,7 @@ func ExampleKeyManagementClient_Decrypt() {
 	_ = resp
 }
 
-func ExampleKeyManagementClient_RawEncrypt() {
+func ExampleKeyManagementClient_DestroyCryptoKeyVersion() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -622,11 +248,11 @@ func ExampleKeyManagementClient_RawEncrypt() {
 	}
 	defer c.Close()
 
-	req := &kmspb.RawEncryptRequest{
+	req := &kmspb.DestroyCryptoKeyVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#RawEncryptRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#DestroyCryptoKeyVersionRequest.
 	}
-	resp, err := c.RawEncrypt(ctx, req)
+	resp, err := c.DestroyCryptoKeyVersion(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -634,7 +260,7 @@ func ExampleKeyManagementClient_RawEncrypt() {
 	_ = resp
 }
 
-func ExampleKeyManagementClient_RawDecrypt() {
+func ExampleKeyManagementClient_Encrypt() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -647,11 +273,11 @@ func ExampleKeyManagementClient_RawDecrypt() {
 	}
 	defer c.Close()
 
-	req := &kmspb.RawDecryptRequest{
+	req := &kmspb.EncryptRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#RawDecryptRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#EncryptRequest.
 	}
-	resp, err := c.RawDecrypt(ctx, req)
+	resp, err := c.Encrypt(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -659,7 +285,7 @@ func ExampleKeyManagementClient_RawDecrypt() {
 	_ = resp
 }
 
-func ExampleKeyManagementClient_AsymmetricSign() {
+func ExampleKeyManagementClient_GenerateRandomBytes() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -672,11 +298,11 @@ func ExampleKeyManagementClient_AsymmetricSign() {
 	}
 	defer c.Close()
 
-	req := &kmspb.AsymmetricSignRequest{
+	req := &kmspb.GenerateRandomBytesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#AsymmetricSignRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GenerateRandomBytesRequest.
 	}
-	resp, err := c.AsymmetricSign(ctx, req)
+	resp, err := c.GenerateRandomBytes(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -684,7 +310,7 @@ func ExampleKeyManagementClient_AsymmetricSign() {
 	_ = resp
 }
 
-func ExampleKeyManagementClient_AsymmetricDecrypt() {
+func ExampleKeyManagementClient_GetCryptoKey() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -697,16 +323,265 @@ func ExampleKeyManagementClient_AsymmetricDecrypt() {
 	}
 	defer c.Close()
 
-	req := &kmspb.AsymmetricDecryptRequest{
+	req := &kmspb.GetCryptoKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#AsymmetricDecryptRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetCryptoKeyRequest.
 	}
-	resp, err := c.AsymmetricDecrypt(ctx, req)
+	resp, err := c.GetCryptoKey(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleKeyManagementClient_GetCryptoKeyVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.GetCryptoKeyVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetCryptoKeyVersionRequest.
+	}
+	resp, err := c.GetCryptoKeyVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_GetImportJob() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.GetImportJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetImportJobRequest.
+	}
+	resp, err := c.GetImportJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_GetKeyRing() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.GetKeyRingRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetKeyRingRequest.
+	}
+	resp, err := c.GetKeyRing(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_GetPublicKey() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.GetPublicKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetPublicKeyRequest.
+	}
+	resp, err := c.GetPublicKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_ImportCryptoKeyVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.ImportCryptoKeyVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ImportCryptoKeyVersionRequest.
+	}
+	resp, err := c.ImportCryptoKeyVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_ListCryptoKeyVersions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.ListCryptoKeyVersionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListCryptoKeyVersionsRequest.
+	}
+	it := c.ListCryptoKeyVersions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleKeyManagementClient_ListCryptoKeys() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.ListCryptoKeysRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListCryptoKeysRequest.
+	}
+	it := c.ListCryptoKeys(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleKeyManagementClient_ListImportJobs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.ListImportJobsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListImportJobsRequest.
+	}
+	it := c.ListImportJobs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleKeyManagementClient_ListKeyRings() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.ListKeyRingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListKeyRingsRequest.
+	}
+	it := c.ListKeyRings(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
 
 func ExampleKeyManagementClient_MacSign() {
@@ -759,7 +634,7 @@ func ExampleKeyManagementClient_MacVerify() {
 	_ = resp
 }
 
-func ExampleKeyManagementClient_GenerateRandomBytes() {
+func ExampleKeyManagementClient_RawDecrypt() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -772,11 +647,136 @@ func ExampleKeyManagementClient_GenerateRandomBytes() {
 	}
 	defer c.Close()
 
-	req := &kmspb.GenerateRandomBytesRequest{
+	req := &kmspb.RawDecryptRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GenerateRandomBytesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#RawDecryptRequest.
 	}
-	resp, err := c.GenerateRandomBytes(ctx, req)
+	resp, err := c.RawDecrypt(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_RawEncrypt() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.RawEncryptRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#RawEncryptRequest.
+	}
+	resp, err := c.RawEncrypt(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_RestoreCryptoKeyVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.RestoreCryptoKeyVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#RestoreCryptoKeyVersionRequest.
+	}
+	resp, err := c.RestoreCryptoKeyVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_UpdateCryptoKey() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.UpdateCryptoKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#UpdateCryptoKeyRequest.
+	}
+	resp, err := c.UpdateCryptoKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_UpdateCryptoKeyPrimaryVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.UpdateCryptoKeyPrimaryVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#UpdateCryptoKeyPrimaryVersionRequest.
+	}
+	resp, err := c.UpdateCryptoKeyPrimaryVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_UpdateCryptoKeyVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.UpdateCryptoKeyVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#UpdateCryptoKeyVersionRequest.
+	}
+	resp, err := c.UpdateCryptoKeyVersion(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

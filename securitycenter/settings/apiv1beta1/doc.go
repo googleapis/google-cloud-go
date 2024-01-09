@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,11 +70,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &settingspb.GetServiceAccountRequest{
+//	req := &settingspb.BatchCalculateEffectiveSettingsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#GetServiceAccountRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#BatchCalculateEffectiveSettingsRequest.
 //	}
-//	resp, err := c.GetServiceAccount(ctx, req)
+//	resp, err := c.BatchCalculateEffectiveSettings(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

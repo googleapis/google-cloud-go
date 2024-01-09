@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,26 +47,27 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateProcess            []gax.CallOption
-	UpdateProcess            []gax.CallOption
-	GetProcess               []gax.CallOption
-	ListProcesses            []gax.CallOption
-	DeleteProcess            []gax.CallOption
-	CreateRun                []gax.CallOption
-	UpdateRun                []gax.CallOption
-	GetRun                   []gax.CallOption
-	ListRuns                 []gax.CallOption
-	DeleteRun                []gax.CallOption
-	CreateLineageEvent       []gax.CallOption
-	GetLineageEvent          []gax.CallOption
-	ListLineageEvents        []gax.CallOption
-	DeleteLineageEvent       []gax.CallOption
-	SearchLinks              []gax.CallOption
-	BatchSearchLinkProcesses []gax.CallOption
-	CancelOperation          []gax.CallOption
-	DeleteOperation          []gax.CallOption
-	GetOperation             []gax.CallOption
-	ListOperations           []gax.CallOption
+	ProcessOpenLineageRunEvent []gax.CallOption
+	CreateProcess              []gax.CallOption
+	UpdateProcess              []gax.CallOption
+	GetProcess                 []gax.CallOption
+	ListProcesses              []gax.CallOption
+	DeleteProcess              []gax.CallOption
+	CreateRun                  []gax.CallOption
+	UpdateRun                  []gax.CallOption
+	GetRun                     []gax.CallOption
+	ListRuns                   []gax.CallOption
+	DeleteRun                  []gax.CallOption
+	CreateLineageEvent         []gax.CallOption
+	GetLineageEvent            []gax.CallOption
+	ListLineageEvents          []gax.CallOption
+	DeleteLineageEvent         []gax.CallOption
+	SearchLinks                []gax.CallOption
+	BatchSearchLinkProcesses   []gax.CallOption
+	CancelOperation            []gax.CallOption
+	DeleteOperation            []gax.CallOption
+	GetOperation               []gax.CallOption
+	ListOperations             []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -83,6 +84,18 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
+		ProcessOpenLineageRunEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CreateProcess: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -284,6 +297,17 @@ func defaultCallOptions() *CallOptions {
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
+		ProcessOpenLineageRunEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		CreateProcess: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -472,6 +496,7 @@ type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	ProcessOpenLineageRunEvent(context.Context, *lineagepb.ProcessOpenLineageRunEventRequest, ...gax.CallOption) (*lineagepb.ProcessOpenLineageRunEventResponse, error)
 	CreateProcess(context.Context, *lineagepb.CreateProcessRequest, ...gax.CallOption) (*lineagepb.Process, error)
 	UpdateProcess(context.Context, *lineagepb.UpdateProcessRequest, ...gax.CallOption) (*lineagepb.Process, error)
 	GetProcess(context.Context, *lineagepb.GetProcessRequest, ...gax.CallOption) (*lineagepb.Process, error)
@@ -537,6 +562,14 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
+}
+
+// ProcessOpenLineageRunEvent creates new lineage events together with their parents: process and run.
+// Updates the process and run if they already exist.
+// Mapped from Open Lineage specification:
+// https://github.com/OpenLineage/OpenLineage/blob/main/spec/OpenLineage.json (at https://github.com/OpenLineage/OpenLineage/blob/main/spec/OpenLineage.json).
+func (c *Client) ProcessOpenLineageRunEvent(ctx context.Context, req *lineagepb.ProcessOpenLineageRunEventRequest, opts ...gax.CallOption) (*lineagepb.ProcessOpenLineageRunEventResponse, error) {
+	return c.internalClient.ProcessOpenLineageRunEvent(ctx, req, opts...)
 }
 
 // CreateProcess creates a new process.
@@ -855,6 +888,24 @@ func (c *restClient) Close() error {
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
+func (c *gRPCClient) ProcessOpenLineageRunEvent(ctx context.Context, req *lineagepb.ProcessOpenLineageRunEventRequest, opts ...gax.CallOption) (*lineagepb.ProcessOpenLineageRunEventResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ProcessOpenLineageRunEvent[0:len((*c.CallOptions).ProcessOpenLineageRunEvent):len((*c.CallOptions).ProcessOpenLineageRunEvent)], opts...)
+	var resp *lineagepb.ProcessOpenLineageRunEventResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ProcessOpenLineageRunEvent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) CreateProcess(ctx context.Context, req *lineagepb.CreateProcessRequest, opts ...gax.CallOption) (*lineagepb.Process, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1375,6 +1426,79 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
+// ProcessOpenLineageRunEvent creates new lineage events together with their parents: process and run.
+// Updates the process and run if they already exist.
+// Mapped from Open Lineage specification:
+// https://github.com/OpenLineage/OpenLineage/blob/main/spec/OpenLineage.json (at https://github.com/OpenLineage/OpenLineage/blob/main/spec/OpenLineage.json).
+func (c *restClient) ProcessOpenLineageRunEvent(ctx context.Context, req *lineagepb.ProcessOpenLineageRunEventRequest, opts ...gax.CallOption) (*lineagepb.ProcessOpenLineageRunEventResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetOpenLineage()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:processOpenLineageRunEvent", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ProcessOpenLineageRunEvent[0:len((*c.CallOptions).ProcessOpenLineageRunEvent):len((*c.CallOptions).ProcessOpenLineageRunEvent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &lineagepb.ProcessOpenLineageRunEventResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // CreateProcess creates a new process.
 func (c *restClient) CreateProcess(ctx context.Context, req *lineagepb.CreateProcessRequest, opts ...gax.CallOption) (*lineagepb.Process, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1826,6 +1950,9 @@ func (c *restClient) UpdateRun(ctx context.Context, req *lineagepb.UpdateRunRequ
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2806,12 +2933,6 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// DeleteProcessOperation manages a long-running operation from DeleteProcess.
-type DeleteProcessOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteProcessOperation returns a new DeleteProcessOperation from a given name.
 // The name must be that of a previously created DeleteProcessOperation, possibly from a different process.
 func (c *gRPCClient) DeleteProcessOperation(name string) *DeleteProcessOperation {
@@ -2830,59 +2951,6 @@ func (c *restClient) DeleteProcessOperation(name string) *DeleteProcessOperation
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteProcessOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteProcessOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteProcessOperation) Metadata() (*lineagepb.OperationMetadata, error) {
-	var meta lineagepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteProcessOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteProcessOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteRunOperation manages a long-running operation from DeleteRun.
-type DeleteRunOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteRunOperation returns a new DeleteRunOperation from a given name.
 // The name must be that of a previously created DeleteRunOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRunOperation(name string) *DeleteRunOperation {
@@ -2899,333 +2967,4 @@ func (c *restClient) DeleteRunOperation(name string) *DeleteRunOperation {
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteRunOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteRunOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteRunOperation) Metadata() (*lineagepb.OperationMetadata, error) {
-	var meta lineagepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteRunOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteRunOperation) Name() string {
-	return op.lro.Name()
-}
-
-// LineageEventIterator manages a stream of *lineagepb.LineageEvent.
-type LineageEventIterator struct {
-	items    []*lineagepb.LineageEvent
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*lineagepb.LineageEvent, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LineageEventIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LineageEventIterator) Next() (*lineagepb.LineageEvent, error) {
-	var item *lineagepb.LineageEvent
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LineageEventIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LineageEventIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LinkIterator manages a stream of *lineagepb.Link.
-type LinkIterator struct {
-	items    []*lineagepb.Link
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*lineagepb.Link, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LinkIterator) Next() (*lineagepb.Link, error) {
-	var item *lineagepb.Link
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LinkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ProcessIterator manages a stream of *lineagepb.Process.
-type ProcessIterator struct {
-	items    []*lineagepb.Process
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*lineagepb.Process, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProcessIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProcessIterator) Next() (*lineagepb.Process, error) {
-	var item *lineagepb.Process
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProcessIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProcessIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ProcessLinksIterator manages a stream of *lineagepb.ProcessLinks.
-type ProcessLinksIterator struct {
-	items    []*lineagepb.ProcessLinks
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*lineagepb.ProcessLinks, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProcessLinksIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProcessLinksIterator) Next() (*lineagepb.ProcessLinks, error) {
-	var item *lineagepb.ProcessLinks
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProcessLinksIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProcessLinksIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RunIterator manages a stream of *lineagepb.Run.
-type RunIterator struct {
-	items    []*lineagepb.Run
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*lineagepb.Run, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RunIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RunIterator) Next() (*lineagepb.Run, error) {
-	var item *lineagepb.Run
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RunIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RunIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

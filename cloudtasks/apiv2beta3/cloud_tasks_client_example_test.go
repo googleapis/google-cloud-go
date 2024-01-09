@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_ListQueues() {
+func ExampleClient_BufferTask() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -73,42 +73,11 @@ func ExampleClient_ListQueues() {
 	}
 	defer c.Close()
 
-	req := &cloudtaskspb.ListQueuesRequest{
+	req := &cloudtaskspb.BufferTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#ListQueuesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#BufferTaskRequest.
 	}
-	it := c.ListQueues(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetQueue() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudtasks.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudtaskspb.GetQueueRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#GetQueueRequest.
-	}
-	resp, err := c.GetQueue(ctx, req)
+	resp, err := c.BufferTask(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -141,7 +110,7 @@ func ExampleClient_CreateQueue() {
 	_ = resp
 }
 
-func ExampleClient_UpdateQueue() {
+func ExampleClient_CreateTask() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -154,11 +123,11 @@ func ExampleClient_UpdateQueue() {
 	}
 	defer c.Close()
 
-	req := &cloudtaskspb.UpdateQueueRequest{
+	req := &cloudtaskspb.CreateTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#UpdateQueueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#CreateTaskRequest.
 	}
-	resp, err := c.UpdateQueue(ctx, req)
+	resp, err := c.CreateTask(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -189,7 +158,7 @@ func ExampleClient_DeleteQueue() {
 	}
 }
 
-func ExampleClient_PurgeQueue() {
+func ExampleClient_DeleteTask() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -202,16 +171,151 @@ func ExampleClient_PurgeQueue() {
 	}
 	defer c.Close()
 
-	req := &cloudtaskspb.PurgeQueueRequest{
+	req := &cloudtaskspb.DeleteTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#PurgeQueueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#DeleteTaskRequest.
 	}
-	resp, err := c.PurgeQueue(ctx, req)
+	err = c.DeleteTask(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.GetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
+	}
+	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleClient_GetQueue() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudtaskspb.GetQueueRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#GetQueueRequest.
+	}
+	resp, err := c.GetQueue(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetTask() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudtaskspb.GetTaskRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#GetTaskRequest.
+	}
+	resp, err := c.GetTask(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListQueues() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudtaskspb.ListQueuesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#ListQueuesRequest.
+	}
+	it := c.ListQueues(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListTasks() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudtaskspb.ListTasksRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#ListTasksRequest.
+	}
+	it := c.ListTasks(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
 
 func ExampleClient_PauseQueue() {
@@ -232,6 +336,31 @@ func ExampleClient_PauseQueue() {
 		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#PauseQueueRequest.
 	}
 	resp, err := c.PauseQueue(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_PurgeQueue() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudtasks.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudtaskspb.PurgeQueueRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#PurgeQueueRequest.
+	}
+	resp, err := c.PurgeQueue(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -264,7 +393,7 @@ func ExampleClient_ResumeQueue() {
 	_ = resp
 }
 
-func ExampleClient_GetIamPolicy() {
+func ExampleClient_RunTask() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -277,11 +406,11 @@ func ExampleClient_GetIamPolicy() {
 	}
 	defer c.Close()
 
-	req := &iampb.GetIamPolicyRequest{
+	req := &cloudtaskspb.RunTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#RunTaskRequest.
 	}
-	resp, err := c.GetIamPolicy(ctx, req)
+	resp, err := c.RunTask(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -339,7 +468,7 @@ func ExampleClient_TestIamPermissions() {
 	_ = resp
 }
 
-func ExampleClient_ListTasks() {
+func ExampleClient_UpdateQueue() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -352,140 +481,11 @@ func ExampleClient_ListTasks() {
 	}
 	defer c.Close()
 
-	req := &cloudtaskspb.ListTasksRequest{
+	req := &cloudtaskspb.UpdateQueueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#ListTasksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#UpdateQueueRequest.
 	}
-	it := c.ListTasks(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetTask() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudtasks.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudtaskspb.GetTaskRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#GetTaskRequest.
-	}
-	resp, err := c.GetTask(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreateTask() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudtasks.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudtaskspb.CreateTaskRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#CreateTaskRequest.
-	}
-	resp, err := c.CreateTask(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteTask() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudtasks.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudtaskspb.DeleteTaskRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#DeleteTaskRequest.
-	}
-	err = c.DeleteTask(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_RunTask() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudtasks.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudtaskspb.RunTaskRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#RunTaskRequest.
-	}
-	resp, err := c.RunTask(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_BufferTask() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cloudtasks.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudtaskspb.BufferTaskRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#BufferTaskRequest.
-	}
-	resp, err := c.BufferTask(ctx, req)
+	resp, err := c.UpdateQueue(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

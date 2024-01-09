@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.2.3...advisorynotifications/v1.3.0) (2023-12-11)
+
+
+### Features
+
+* **advisorynotifications:** Adding project level methods to advisorynotifications.googleapis.com ([29effe6](https://github.com/googleapis/google-cloud-go/commit/29effe600e16f24a127a1422ec04263c4f7a600a))
+
+## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.2.2...advisorynotifications/v1.2.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **advisorynotifications:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.2.1...advisorynotifications/v1.2.2) (2023-10-26)
 
 

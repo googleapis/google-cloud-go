@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"time"
 
 	domainspb "cloud.google.com/go/domains/apiv1beta1/domainspb"
 	"cloud.google.com/go/longrunning"
@@ -1982,12 +1981,6 @@ func (c *restClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 	return resp, nil
 }
 
-// ConfigureContactSettingsOperation manages a long-running operation from ConfigureContactSettings.
-type ConfigureContactSettingsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ConfigureContactSettingsOperation returns a new ConfigureContactSettingsOperation from a given name.
 // The name must be that of a previously created ConfigureContactSettingsOperation, possibly from a different process.
 func (c *gRPCClient) ConfigureContactSettingsOperation(name string) *ConfigureContactSettingsOperation {
@@ -2004,70 +1997,6 @@ func (c *restClient) ConfigureContactSettingsOperation(name string) *ConfigureCo
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ConfigureContactSettingsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ConfigureContactSettingsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ConfigureContactSettingsOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ConfigureContactSettingsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ConfigureContactSettingsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ConfigureDnsSettingsOperation manages a long-running operation from ConfigureDnsSettings.
-type ConfigureDnsSettingsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // ConfigureDnsSettingsOperation returns a new ConfigureDnsSettingsOperation from a given name.
@@ -2088,70 +2017,6 @@ func (c *restClient) ConfigureDnsSettingsOperation(name string) *ConfigureDnsSet
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ConfigureDnsSettingsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ConfigureDnsSettingsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ConfigureDnsSettingsOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ConfigureDnsSettingsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ConfigureDnsSettingsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ConfigureManagementSettingsOperation manages a long-running operation from ConfigureManagementSettings.
-type ConfigureManagementSettingsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ConfigureManagementSettingsOperation returns a new ConfigureManagementSettingsOperation from a given name.
 // The name must be that of a previously created ConfigureManagementSettingsOperation, possibly from a different process.
 func (c *gRPCClient) ConfigureManagementSettingsOperation(name string) *ConfigureManagementSettingsOperation {
@@ -2168,70 +2033,6 @@ func (c *restClient) ConfigureManagementSettingsOperation(name string) *Configur
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ConfigureManagementSettingsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ConfigureManagementSettingsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ConfigureManagementSettingsOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ConfigureManagementSettingsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ConfigureManagementSettingsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteRegistrationOperation manages a long-running operation from DeleteRegistration.
-type DeleteRegistrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteRegistrationOperation returns a new DeleteRegistrationOperation from a given name.
@@ -2252,59 +2053,6 @@ func (c *restClient) DeleteRegistrationOperation(name string) *DeleteRegistratio
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteRegistrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteRegistrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteRegistrationOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteRegistrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteRegistrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ExportRegistrationOperation manages a long-running operation from ExportRegistration.
-type ExportRegistrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ExportRegistrationOperation returns a new ExportRegistrationOperation from a given name.
 // The name must be that of a previously created ExportRegistrationOperation, possibly from a different process.
 func (c *gRPCClient) ExportRegistrationOperation(name string) *ExportRegistrationOperation {
@@ -2321,70 +2069,6 @@ func (c *restClient) ExportRegistrationOperation(name string) *ExportRegistratio
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ExportRegistrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ExportRegistrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ExportRegistrationOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ExportRegistrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ExportRegistrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RegisterDomainOperation manages a long-running operation from RegisterDomain.
-type RegisterDomainOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // RegisterDomainOperation returns a new RegisterDomainOperation from a given name.
@@ -2405,70 +2089,6 @@ func (c *restClient) RegisterDomainOperation(name string) *RegisterDomainOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RegisterDomainOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RegisterDomainOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RegisterDomainOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RegisterDomainOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RegisterDomainOperation) Name() string {
-	return op.lro.Name()
-}
-
-// TransferDomainOperation manages a long-running operation from TransferDomain.
-type TransferDomainOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // TransferDomainOperation returns a new TransferDomainOperation from a given name.
 // The name must be that of a previously created TransferDomainOperation, possibly from a different process.
 func (c *gRPCClient) TransferDomainOperation(name string) *TransferDomainOperation {
@@ -2487,70 +2107,6 @@ func (c *restClient) TransferDomainOperation(name string) *TransferDomainOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *TransferDomainOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *TransferDomainOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *TransferDomainOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *TransferDomainOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *TransferDomainOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateRegistrationOperation manages a long-running operation from UpdateRegistration.
-type UpdateRegistrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateRegistrationOperation returns a new UpdateRegistrationOperation from a given name.
 // The name must be that of a previously created UpdateRegistrationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateRegistrationOperation(name string) *UpdateRegistrationOperation {
@@ -2567,109 +2123,4 @@ func (c *restClient) UpdateRegistrationOperation(name string) *UpdateRegistratio
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateRegistrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateRegistrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateRegistrationOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateRegistrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateRegistrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RegistrationIterator manages a stream of *domainspb.Registration.
-type RegistrationIterator struct {
-	items    []*domainspb.Registration
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*domainspb.Registration, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RegistrationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RegistrationIterator) Next() (*domainspb.Registration, error) {
-	var item *domainspb.Registration
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RegistrationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RegistrationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

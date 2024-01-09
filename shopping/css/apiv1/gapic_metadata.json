@@ -1,0 +1,175 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.css.v1",
+  "libraryPackage": "cloud.google.com/go/shopping/css/apiv1",
+  "services": {
+    "AccountLabelsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AccountLabelsClient",
+          "rpcs": {
+            "CreateAccountLabel": {
+              "methods": [
+                "CreateAccountLabel"
+              ]
+            },
+            "DeleteAccountLabel": {
+              "methods": [
+                "DeleteAccountLabel"
+              ]
+            },
+            "ListAccountLabels": {
+              "methods": [
+                "ListAccountLabels"
+              ]
+            },
+            "UpdateAccountLabel": {
+              "methods": [
+                "UpdateAccountLabel"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AccountLabelsClient",
+          "rpcs": {
+            "CreateAccountLabel": {
+              "methods": [
+                "CreateAccountLabel"
+              ]
+            },
+            "DeleteAccountLabel": {
+              "methods": [
+                "DeleteAccountLabel"
+              ]
+            },
+            "ListAccountLabels": {
+              "methods": [
+                "ListAccountLabels"
+              ]
+            },
+            "UpdateAccountLabel": {
+              "methods": [
+                "UpdateAccountLabel"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AccountsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AccountsClient",
+          "rpcs": {
+            "GetAccount": {
+              "methods": [
+                "GetAccount"
+              ]
+            },
+            "ListChildAccounts": {
+              "methods": [
+                "ListChildAccounts"
+              ]
+            },
+            "UpdateLabels": {
+              "methods": [
+                "UpdateLabels"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AccountsClient",
+          "rpcs": {
+            "GetAccount": {
+              "methods": [
+                "GetAccount"
+              ]
+            },
+            "ListChildAccounts": {
+              "methods": [
+                "ListChildAccounts"
+              ]
+            },
+            "UpdateLabels": {
+              "methods": [
+                "UpdateLabels"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "CssProductInputsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CssProductInputsClient",
+          "rpcs": {
+            "DeleteCssProductInput": {
+              "methods": [
+                "DeleteCssProductInput"
+              ]
+            },
+            "InsertCssProductInput": {
+              "methods": [
+                "InsertCssProductInput"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CssProductInputsClient",
+          "rpcs": {
+            "DeleteCssProductInput": {
+              "methods": [
+                "DeleteCssProductInput"
+              ]
+            },
+            "InsertCssProductInput": {
+              "methods": [
+                "InsertCssProductInput"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "CssProductsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CssProductsClient",
+          "rpcs": {
+            "GetCssProduct": {
+              "methods": [
+                "GetCssProduct"
+              ]
+            },
+            "ListCssProducts": {
+              "methods": [
+                "ListCssProducts"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CssProductsClient",
+          "rpcs": {
+            "GetCssProduct": {
+              "methods": [
+                "GetCssProduct"
+              ]
+            },
+            "ListCssProducts": {
+              "methods": [
+                "ListCssProducts"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,26 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.0...datacatalog/v1.19.1) (2024-01-08)
+
+
+### Documentation
+
+* **datacatalog:** Change field behavior of the property "name" to IDENTIFIER ([bd30055](https://github.com/googleapis/google-cloud-go/commit/bd3005532fbffa9894b11149e9693b7c33227d79))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.3...datacatalog/v1.19.0) (2023-11-09)
+
+
+### Features
+
+* **datacatalog/lineage:** Add open lineage support ([#8974](https://github.com/googleapis/google-cloud-go/issues/8974)) ([1a16cbf](https://github.com/googleapis/google-cloud-go/commit/1a16cbf260bb673e07a05e1014868b236e510499))
+
+## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.2...datacatalog/v1.18.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **datacatalog:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.1...datacatalog/v1.18.2) (2023-10-26)
 
 

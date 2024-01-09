@@ -1,5 +1,19 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.16.3...monitoring/v1.17.0) (2023-12-13)
+
+
+### Features
+
+* **monitoring/apiv3:** Added support for severity in AlertPolicy ([3d9f556](https://github.com/googleapis/google-cloud-go/commit/3d9f55678654fe678d44f3f4a08bf26c3830b653))
+
+## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.16.2...monitoring/v1.16.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **monitoring:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.16.1...monitoring/v1.16.2) (2023-10-26)
 
 

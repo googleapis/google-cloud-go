@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,62 +42,6 @@ func ExampleNewPolicyBasedRoutingClient() {
 
 	// TODO: Use client.
 	_ = c
-}
-
-func ExamplePolicyBasedRoutingClient_ListPolicyBasedRoutes() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkconnectivity.NewPolicyBasedRoutingClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networkconnectivitypb.ListPolicyBasedRoutesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#ListPolicyBasedRoutesRequest.
-	}
-	it := c.ListPolicyBasedRoutes(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExamplePolicyBasedRoutingClient_GetPolicyBasedRoute() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networkconnectivity.NewPolicyBasedRoutingClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networkconnectivitypb.GetPolicyBasedRouteRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#GetPolicyBasedRouteRequest.
-	}
-	resp, err := c.GetPolicyBasedRoute(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExamplePolicyBasedRoutingClient_CreatePolicyBasedRoute() {
@@ -155,6 +99,62 @@ func ExamplePolicyBasedRoutingClient_DeletePolicyBasedRoute() {
 	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
+	}
+}
+
+func ExamplePolicyBasedRoutingClient_GetPolicyBasedRoute() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkconnectivity.NewPolicyBasedRoutingClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkconnectivitypb.GetPolicyBasedRouteRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#GetPolicyBasedRouteRequest.
+	}
+	resp, err := c.GetPolicyBasedRoute(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExamplePolicyBasedRoutingClient_ListPolicyBasedRoutes() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkconnectivity.NewPolicyBasedRoutingClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkconnectivitypb.ListPolicyBasedRoutesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#ListPolicyBasedRoutesRequest.
+	}
+	it := c.ListPolicyBasedRoutes(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }
 

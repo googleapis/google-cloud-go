@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1899,12 +1899,6 @@ func (c *projectsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 	return resp, nil
 }
 
-// CreateProjectOperation manages a long-running operation from CreateProject.
-type CreateProjectOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateProjectOperation returns a new CreateProjectOperation from a given name.
 // The name must be that of a previously created CreateProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) CreateProjectOperation(name string) *CreateProjectOperation {
@@ -1921,70 +1915,6 @@ func (c *projectsRESTClient) CreateProjectOperation(name string) *CreateProjectO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateProjectOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.Project
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateProjectOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.Project
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateProjectOperation) Metadata() (*resourcemanagerpb.CreateProjectMetadata, error) {
-	var meta resourcemanagerpb.CreateProjectMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateProjectOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateProjectOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteProjectOperation manages a long-running operation from DeleteProject.
-type DeleteProjectOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteProjectOperation returns a new DeleteProjectOperation from a given name.
@@ -2005,70 +1935,6 @@ func (c *projectsRESTClient) DeleteProjectOperation(name string) *DeleteProjectO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteProjectOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.Project
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteProjectOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.Project
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteProjectOperation) Metadata() (*resourcemanagerpb.DeleteProjectMetadata, error) {
-	var meta resourcemanagerpb.DeleteProjectMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteProjectOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteProjectOperation) Name() string {
-	return op.lro.Name()
-}
-
-// MoveProjectOperation manages a long-running operation from MoveProject.
-type MoveProjectOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // MoveProjectOperation returns a new MoveProjectOperation from a given name.
 // The name must be that of a previously created MoveProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) MoveProjectOperation(name string) *MoveProjectOperation {
@@ -2085,70 +1951,6 @@ func (c *projectsRESTClient) MoveProjectOperation(name string) *MoveProjectOpera
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *MoveProjectOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.Project
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *MoveProjectOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.Project
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *MoveProjectOperation) Metadata() (*resourcemanagerpb.MoveProjectMetadata, error) {
-	var meta resourcemanagerpb.MoveProjectMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *MoveProjectOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *MoveProjectOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UndeleteProjectOperation manages a long-running operation from UndeleteProject.
-type UndeleteProjectOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UndeleteProjectOperation returns a new UndeleteProjectOperation from a given name.
@@ -2169,70 +1971,6 @@ func (c *projectsRESTClient) UndeleteProjectOperation(name string) *UndeleteProj
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UndeleteProjectOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.Project
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UndeleteProjectOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.Project
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UndeleteProjectOperation) Metadata() (*resourcemanagerpb.UndeleteProjectMetadata, error) {
-	var meta resourcemanagerpb.UndeleteProjectMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UndeleteProjectOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UndeleteProjectOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateProjectOperation manages a long-running operation from UpdateProject.
-type UpdateProjectOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateProjectOperation returns a new UpdateProjectOperation from a given name.
 // The name must be that of a previously created UpdateProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) UpdateProjectOperation(name string) *UpdateProjectOperation {
@@ -2249,109 +1987,4 @@ func (c *projectsRESTClient) UpdateProjectOperation(name string) *UpdateProjectO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateProjectOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.Project
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateProjectOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.Project
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateProjectOperation) Metadata() (*resourcemanagerpb.UpdateProjectMetadata, error) {
-	var meta resourcemanagerpb.UpdateProjectMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateProjectOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateProjectOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ProjectIterator manages a stream of *resourcemanagerpb.Project.
-type ProjectIterator struct {
-	items    []*resourcemanagerpb.Project
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.Project, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProjectIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProjectIterator) Next() (*resourcemanagerpb.Project, error) {
-	var item *resourcemanagerpb.Project
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProjectIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProjectIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,22 +70,21 @@
 //	}
 //	defer c.Close()
 //
-//	req := &networkconnectivitypb.ListHubsRequest{
+//	req := &networkconnectivitypb.CreateHubRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#ListHubsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb#CreateHubRequest.
 //	}
-//	it := c.ListHubs(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	op, err := c.CreateHub(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //
