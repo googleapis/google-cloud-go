@@ -2482,7 +2482,7 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 						Type: "TIMESTAMP",
 					},
 					ParameterValue: &bq.QueryParameterValue{
-						Value: ts.Format(time.DateTime),
+						Value: ts.Format(dateTimeFormat),
 					},
 				},
 			},
