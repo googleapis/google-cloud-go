@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/examples/mock
 go 1.19
 
 require (
-	cloud.google.com/go/translate v1.9.1
+	cloud.google.com/go/translate v1.10.0
 	github.com/googleapis/gax-go/v2 v2.12.0
 )
 

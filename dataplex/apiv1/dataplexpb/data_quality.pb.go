@@ -623,7 +623,12 @@ type DataQualityRule struct {
 	// `ignore_null` is `true`. In that case, such `null` rows are trivially
 	// considered passing.
 	//
-	// This field is only valid for row-level type rules.
+	// This field is only valid for the following type of rules:
+	//
+	// * RangeExpectation
+	// * RegexExpectation
+	// * SetExpectation
+	// * UniquenessExpectation
 	IgnoreNull bool `protobuf:"varint,501,opt,name=ignore_null,json=ignoreNull,proto3" json:"ignore_null,omitempty"`
 	// Required. The dimension a rule belongs to. Results are also aggregated at
 	// the dimension level. Supported dimensions are **["COMPLETENESS",
