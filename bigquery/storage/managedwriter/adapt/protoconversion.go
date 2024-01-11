@@ -17,6 +17,7 @@ package adapt
 import (
 	"encoding/base64"
 	"fmt"
+	"sort"
 	"strings"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
@@ -476,6 +477,12 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 			} else {
 				enumDP := protodesc.ToEnumDescriptorProto(inField.Enum())
 				enumDP.Name = proto.String(enumName)
+				// Ensure values in enum are sorted.
+				vals := enumDP.GetValue()
+				sort.SliceStable(vals, func(i, j int) bool {
+					return vals[i].GetNumber() < vals[j].GetNumber()
+				})
+				// Append wrapped enum to nested types.
 				root.NestedType = append(root.NestedType, &descriptorpb.DescriptorProto{
 					Name:     proto.String(enclosingTypeName),
 					EnumType: []*descriptorpb.EnumDescriptorProto{enumDP},
@@ -486,6 +493,18 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 		}
 		resultDP.Field = append(resultDP.Field, resultFDP)
 	}
+	// To reduce comparison jitter, order the common slices fields where possible.
+	//
+	// First, fields are sorted by ID number.
+	fields := resultDP.GetField()
+	sort.SliceStable(fields, func(i, j int) bool {
+		return fields[i].GetNumber() < fields[j].GetNumber()
+	})
+	// Then, sort nested messages in NestedType by name.
+	nested := resultDP.GetNestedType()
+	sort.SliceStable(nested, func(i, j int) bool {
+		return nested[i].GetName() < nested[j].GetName()
+	})
 	structTypes.add(fullProtoName)
 	return resultDP, nil
 }
