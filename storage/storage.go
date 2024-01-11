@@ -2091,10 +2091,9 @@ type withMaxAttempts struct {
 
 func (wb *withMaxAttempts) apply(config *retryConfig) {
 	if wb.maxAttempts == 0 {
-		config.zeroAttempt = true
 		config.policy = RetryNever
 	}
-	config.maxAttempts = wb.maxAttempts
+	config.maxAttempts = &wb.maxAttempts
 }
 
 // RetryPolicy describes the available policies for which operations should be
@@ -2132,7 +2131,7 @@ type withPolicy struct {
 }
 
 func (ws *withPolicy) apply(config *retryConfig) {
-	if config.zeroAttempt == false {
+	if (config.maxAttempts != nil && *config.maxAttempts != 0) || config.maxAttempts == nil {
 		config.policy = ws.policy
 	}
 }
@@ -2171,8 +2170,7 @@ type retryConfig struct {
 	backoff     *gax.Backoff
 	policy      RetryPolicy
 	shouldRetry func(err error) bool
-	maxAttempts int
-	zeroAttempt bool
+	maxAttempts *int
 }
 
 func (r *retryConfig) clone() *retryConfig {
@@ -2194,7 +2192,6 @@ func (r *retryConfig) clone() *retryConfig {
 		policy:      r.policy,
 		shouldRetry: r.shouldRetry,
 		maxAttempts: r.maxAttempts,
-		zeroAttempt: false,
 	}
 }
 

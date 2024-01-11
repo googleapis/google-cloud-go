@@ -177,7 +177,7 @@ func TestInvoke(t *testing.T) {
 			initialErr:        &googleapi.Error{Code: 500},
 			finalErr:          nil,
 			isIdempotentValue: false,
-			retry:             &retryConfig{policy: RetryAlways, maxAttempts: 2},
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(2)},
 			expectFinalErr:    false,
 		},
 		{
@@ -186,7 +186,7 @@ func TestInvoke(t *testing.T) {
 			initialErr:        &googleapi.Error{Code: 500},
 			finalErr:          nil,
 			isIdempotentValue: false,
-			retry:             &retryConfig{policy: RetryNever, maxAttempts: 2},
+			retry:             &retryConfig{policy: RetryNever, maxAttempts: expectedAttempts(2)},
 			expectFinalErr:    false,
 		},
 		{
@@ -199,7 +199,7 @@ func TestInvoke(t *testing.T) {
 				shouldRetry: func(err error) bool {
 					return err == io.ErrNoProgress
 				},
-				maxAttempts: 2,
+				maxAttempts: expectedAttempts(2),
 			},
 			expectFinalErr: false,
 		},
@@ -209,7 +209,7 @@ func TestInvoke(t *testing.T) {
 			initialErr:        &googleapi.Error{Code: 500},
 			finalErr:          nil,
 			isIdempotentValue: false,
-			retry:             &retryConfig{policy: RetryAlways, maxAttempts: 4},
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(4)},
 			expectFinalErr:    true,
 		},
 		{
@@ -218,7 +218,7 @@ func TestInvoke(t *testing.T) {
 			initialErr:        &googleapi.Error{Code: 500},
 			finalErr:          nil,
 			isIdempotentValue: true,
-			retry:             &retryConfig{policy: RetryAlways, maxAttempts: 4},
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(4)},
 			expectFinalErr:    false,
 		},
 		{
@@ -227,7 +227,7 @@ func TestInvoke(t *testing.T) {
 			initialErr:        &googleapi.Error{Code: 500},
 			finalErr:          nil,
 			isIdempotentValue: true,
-			retry:             &retryConfig{policy: RetryAlways, maxAttempts: 0, zeroAttempt: true},
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(0)},
 			expectFinalErr:    false,
 		},
 	} {
@@ -250,7 +250,7 @@ func TestInvoke(t *testing.T) {
 				}
 				return test.finalErr
 			}
-			if test.retry != nil && test.retry.zeroAttempt == true {
+			if test.retry != nil && test.retry.maxAttempts != nil && *test.retry.maxAttempts == 0 {
 				test.retry.policy = RetryNever
 			}
 			got := run(ctx, call, test.retry, test.isIdempotentValue)
@@ -263,8 +263,8 @@ func TestInvoke(t *testing.T) {
 			if !test.expectFinalErr {
 				wantAttempts = 1
 			}
-			if test.retry != nil && (test.retry.zeroAttempt == true || test.retry.maxAttempts != 0) && test.retry.policy != RetryNever {
-				wantAttempts = test.retry.maxAttempts
+			if test.retry != nil && test.retry.maxAttempts != nil && *test.retry.maxAttempts != 0 && test.retry.policy != RetryNever {
+				wantAttempts = *test.retry.maxAttempts
 			}
 
 			wantClientHeader := strings.ReplaceAll(initialClientHeader, "gccl-attempt-count/1", fmt.Sprintf("gccl-attempt-count/%v", wantAttempts))
