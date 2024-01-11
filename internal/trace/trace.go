@@ -32,10 +32,10 @@ import (
 )
 
 const (
-	TelemetryPlatformTracingOpenCensus           = "opencensus"
-	TelemetryPlatformTracingOpenTelemetry        = "opentelemetry"
-	TelemetryPlatformTracingVar                  = "GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING"
-	OpenTelemetryTracerName               string = "cloud.google.com/go"
+	TelemetryPlatformTracingOpenCensus    = "opencensus"
+	TelemetryPlatformTracingOpenTelemetry = "opentelemetry"
+	TelemetryPlatformTracingVar           = "GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING"
+	OpenTelemetryTracerName               = "cloud.google.com/go"
 )
 
 var (
