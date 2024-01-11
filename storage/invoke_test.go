@@ -204,13 +204,24 @@ func TestInvoke(t *testing.T) {
 			expectFinalErr: false,
 		},
 		{
-			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts where count equals to maxAttempts",
-			count:             4,
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts where count equals to maxAttempts-1",
+			count:             3,
 			initialErr:        &googleapi.Error{Code: 500},
 			finalErr:          nil,
 			isIdempotentValue: false,
 			retry:             &retryConfig{policy: RetryAlways, maxAttempts: 4},
 			expectFinalErr:    true,
+		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts where count equals to maxAttempts",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry: &retryConfig{
+				maxAttempts: 4,
+			},
+			expectFinalErr: false,
 		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
@@ -243,7 +254,7 @@ func TestInvoke(t *testing.T) {
 				wantAttempts = 1
 			}
 			if test.retry != nil && test.retry.maxAttempts != 0 && test.retry.policy != RetryNever {
-				wantAttempts = 1 + test.retry.maxAttempts
+				wantAttempts = test.retry.maxAttempts
 			}
 
 			wantClientHeader := strings.ReplaceAll(initialClientHeader, "gccl-attempt-count/1", fmt.Sprintf("gccl-attempt-count/%v", wantAttempts))
