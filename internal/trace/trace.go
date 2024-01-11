@@ -32,14 +32,14 @@ import (
 )
 
 const (
-	TelemetryPlatformTracingOpenCensus    = "opencensus"
-	TelemetryPlatformTracingOpenTelemetry = "opentelemetry"
-	TelemetryPlatformTracingVar           = "GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING"
-	OpenTelemetryTracerName     string = "cloud.google.com/go"
+	TelemetryPlatformTracingOpenCensus           = "opencensus"
+	TelemetryPlatformTracingOpenTelemetry        = "opentelemetry"
+	TelemetryPlatformTracingVar                  = "GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING"
+	OpenTelemetryTracerName               string = "cloud.google.com/go"
 )
 
 var (
-	OpenTelemetryTracingEnabled bool   = strings.EqualFold(strings.TrimSpace(
+	OpenTelemetryTracingEnabled bool = strings.EqualFold(strings.TrimSpace(
 		os.Getenv(TelemetryPlatformTracingVar)), TelemetryPlatformTracingOpenTelemetry)
 )
 
