@@ -412,7 +412,8 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 			}
 		}
 		rowSource := &rowSource{
-			j: minimalJob,
+			j:       minimalJob,
+			queryID: resp.QueryId,
 			// RowIterator can precache results from the iterator to save a lookup.
 			cachedRows:      resp.Rows,
 			cachedSchema:    resp.Schema,
