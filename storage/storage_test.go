@@ -1059,7 +1059,7 @@ func TestObjectRetryer(t *testing.T) {
 			},
 		},
 		{
-			name: "set max retry count only",
+			name: "set max retry attempts only",
 			call: func(o *ObjectHandle) *ObjectHandle {
 				return o.Retryer(WithMaxAttempts(11))
 			},
@@ -1197,7 +1197,7 @@ func TestClientSetRetry(t *testing.T) {
 			},
 		},
 		{
-			name: "set max retry count only",
+			name: "set max retry attempts only",
 			clientOptions: []RetryOption{
 				WithMaxAttempts(7),
 			},

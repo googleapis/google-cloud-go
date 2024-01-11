@@ -1152,7 +1152,7 @@ func TestBucketRetryer(t *testing.T) {
 			},
 		},
 		{
-			name: "set max retry count only",
+			name: "set max retry attempts only",
 			call: func(b *BucketHandle) *BucketHandle {
 				return b.Retryer(WithMaxAttempts(5))
 			},
