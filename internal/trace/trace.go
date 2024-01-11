@@ -38,7 +38,7 @@ const (
 )
 
 var (
-	OpenTelemetryTracerName     string = "cloud.google.com/go"
+	openTelemetryTracerName     string = "cloud.google.com/go"
 	OpenTelemetryTracingEnabled bool   = strings.EqualFold(strings.TrimSpace(
 		os.Getenv(TelemetryPlatformTracingVar)), TelemetryPlatformTracingOpenTelemetry)
 )
@@ -67,7 +67,7 @@ func IsOpenTelemetryTracingEnabled() bool {
 // "opencensus" will be required to continue using OpenCensus tracing.
 func StartSpan(ctx context.Context, name string) context.Context {
 	if IsOpenTelemetryTracingEnabled() {
-		ctx, _ = otel.GetTracerProvider().Tracer(OpenTelemetryTracerName).Start(ctx, name)
+		ctx, _ = otel.GetTracerProvider().Tracer(openTelemetryTracerName).Start(ctx, name)
 	} else {
 		ctx, _ = trace.StartSpan(ctx, name)
 	}
