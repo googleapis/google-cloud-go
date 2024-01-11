@@ -30,8 +30,8 @@ import (
 	"cloud.google.com/go/pubsub/internal/distribution"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
@@ -72,6 +72,7 @@ type messageIterator struct {
 	po         *pullOptions
 	ps         *pullStream
 	subc       *vkit.SubscriberClient
+	subID      string
 	subName    string
 	kaTick     <-chan time.Time // keep-alive (deadline extensions)
 	ackTicker  *time.Ticker     // message acks
@@ -132,12 +133,15 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 	cctx, cancel := context.WithCancel(context.Background())
 	cctx = withSubscriptionKey(cctx, subName)
 
+	subID := strings.Split(subName, "/")[3]
+
 	it := &messageIterator{
 		ctx:                cctx,
 		cancel:             cancel,
 		ps:                 ps,
 		po:                 po,
 		subc:               subc,
+		subID:              subID,
 		subName:            subName,
 		kaTick:             time.After(keepAlivePeriod),
 		ackTicker:          ackTicker,
@@ -305,15 +309,13 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 
 		opts := getSubSpanAttributes(it.subName, m, semconv.MessagingOperationReceive)
 		if m.Attributes != nil {
-			ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(m))
-
-			log.Printf("context extracted: %+v\n", ctx)
+			ctx = propagation.TraceContext{}.Extract(ctx, newMessageCarrier(m))
 		}
-		_, span := tracer().Start(ctx, fmt.Sprintf("%s %s", it.subName, subscribeReceiveSpanName), opts...)
+		_, span := tracer().Start(ctx, fmt.Sprintf("%s %s", it.subID, subscribeSpanName), opts...)
 		span.SetAttributes(
 			attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
 			attribute.String(ackIDAttribute, ackID),
-			attribute.Int(numBatchedMessagesAttribute, len(pendingMessages)),
+			semconv.MessagingBatchMessageCount(len(pendingMessages)),
 		)
 		it.activeSpan.Store(ackID, span)
 	}
@@ -539,7 +541,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
 				}
 			}
-			_, ackSpan := tracer().Start(context.Background(), ackSpanName, trace.WithLinks(links...))
+			_, ackSpan := tracer().Start(context.Background(), fmt.Sprintf("%s %s", it.subID, ackSpanName), trace.WithLinks(links...))
 			defer ackSpan.End()
 			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch))
 
@@ -594,14 +596,15 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 	for len(ackIDs) > 0 {
 		toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
 
-		var spanName, eventName string
+		spanName := it.subID + " "
+		var eventName string
 		if isNack {
 			recordStat(it.ctx, NackCount, int64(len(toSend)))
-			spanName = nackSpanName
+			spanName += spanName + nackSpanName
 			eventName = "nack"
 		} else {
 			recordStat(it.ctx, ModAckCount, int64(len(toSend)))
-			spanName = modAckSpanName
+			spanName = spanName + modAckSpanName
 			eventName = "modack"
 		}
 
@@ -627,8 +630,8 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 				defer mSpan.End()
 				if !isNack {
 					mSpan.SetAttributes(
-						attribute.Int(modackDeadlineSecondsAttribute, int(deadlineSec)),
-						attribute.Bool(initialModackAttribute, isReceipt))
+						attribute.Int(ackDeadlineSecAttribute, int(deadlineSec)),
+						attribute.Bool(receiptModackAttribute, isReceipt))
 				}
 				mSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch))
 			}

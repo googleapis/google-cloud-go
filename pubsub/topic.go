@@ -33,10 +33,9 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"go.opentelemetry.io/otel/propagation"
+	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc"
@@ -572,7 +571,7 @@ var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, 
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
-	ctx, publishSpan := startPublishSpan(ctx, msg, t.String())
+	ctx, publishSpan := startPublishSpan(ctx, msg, t.ID())
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
@@ -765,6 +764,17 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		// key, it doesn't matter which we read from.
 		orderingKey = bms[0].msg.OrderingKey
 	}
+
+	links := make([]trace.Link, 0, numMsgs)
+	for _, bm := range bms {
+		links = append(links, trace.Link{SpanContext: bm.span.SpanContext()})
+	}
+
+	topicID := strings.Split(t.name, "/")[3]
+	_, pSpan := tracer().Start(ctx, fmt.Sprintf("%s %s", topicID, publishRPCSpanName), trace.WithLinks(links...))
+	pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs))
+	defer pSpan.End()
+
 	for i, bm := range bms {
 		pbMsgs[i] = &pb.PubsubMessage{
 			Data:        bm.msg.Data,
@@ -772,12 +782,10 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			OrderingKey: bm.msg.OrderingKey,
 		}
 		if bm.msg.Attributes != nil {
-			ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(bm.msg))
+			ctx = propagation.TraceContext{}.Extract(ctx, newMessageCarrier(bm.msg))
 		}
-		_, pSpan := tracer().Start(ctx, publishRPCSpanName)
-		pSpan.SetAttributes(attribute.Int(numBatchedMessagesAttribute, numMsgs))
+
 		defer bm.span.End()
-		defer pSpan.End()
 		bm.msg = nil // release bm.msg for GC
 	}
 

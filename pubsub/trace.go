@@ -28,7 +28,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/protobuf/proto"
@@ -310,36 +310,34 @@ func (c messageCarrier) Keys() []string {
 
 const (
 	// publish span names
-	publisherSpanName          = "send"
+	publisherSpanName          = "create"
 	publishFlowControlSpanName = "publisher flow control"
-	publishBatcherSpanName     = "publish scheduler"
+	publishBatcherSpanName     = "publisher batching"
 	publishRPCSpanName         = "publish"
 
 	// subscribe span names
-	subscribeReceiveSpanName      = "receive"
+	subscribeSpanName             = "subscribe"
 	subscriberFlowControlSpanName = "subscriber flow control"
 	subscribeProcessSpanName      = "process"
 	subscribeSchedulerSpanName    = "subscribe scheduler"
-	receiptModAckSpanName         = "send initial ModifyAckDeadline"
-	modAckSpanName                = "send ModifyAckDeadline"
-	ackSpanName                   = "send Acknowledge"
-	nackSpanName                  = "send Negative Acknowledge"
+	modAckSpanName                = "modify ack deadline"
+	ackSpanName                   = "ack"
+	nackSpanName                  = "nack"
 
 	// custom pubsub specific attributes
-	numBatchedMessagesAttribute    = "messaging.gcp.pubsub.num_messages_in_batch"
-	subscriptionAttribute          = "messaging.gcp.pubsub.subscription"
-	orderingAttribute              = "messaging.gcp.pubsub.ordering_key"
-	deliveryAttemptAttribute       = "messaging.gcp.pubsub.delivery_attempt"
-	eosAttribute                   = "messaging.gcp.pppubsub.exactly_once_delivery"
-	ackIDAttribute                 = "messaging.gcp.pubsub.ack_id"
-	resultAttribute                = "messaging.gcp.pubsub.result"
-	modackDeadlineSecondsAttribute = "messaging.gcp.pubsub.modack_deadline_seconds"
-	initialModackAttribute         = "messaging.gcp.pubsub.is_initial_modack"
+	pubsubPrefix             = "messaging.gcp_pubsub."
+	orderingAttribute        = pubsubPrefix + "message.ordering_key"
+	deliveryAttemptAttribute = pubsubPrefix + "message.delivery_attempt"
+	eosAttribute             = pubsubPrefix + "exactly_once_delivery"
+	ackIDAttribute           = pubsubPrefix + "message.ack_id"
+	resultAttribute          = pubsubPrefix + "result"
+	ackDeadlineSecAttribute  = pubsubPrefix + "ack_deadline_seconds"
+	receiptModackAttribute   = pubsubPrefix + "is_receipt_modack"
 )
 
-func startPublishSpan(ctx context.Context, m *Message, topicName string) (context.Context, trace.Span) {
-	opts := getPublishSpanAttributes(topicName, m)
-	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicName, publisherSpanName), opts...)
+func startPublishSpan(ctx context.Context, m *Message, topicID string) (context.Context, trace.Span) {
+	opts := getPublishSpanAttributes(topicID, m)
+	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicID, publisherSpanName), opts...)
 }
 
 func startPublishFlowControlSpan(ctx context.Context) (context.Context, trace.Span) {
@@ -362,10 +360,10 @@ func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyV
 	ss := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingSystemKey.String("pubsub"),
-			semconv.MessagingDestinationKey.String(topic),
-			semconv.MessagingDestinationKindTopic,
-			semconv.MessagingMessageIDKey.String(msg.ID),
-			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+			semconv.MessagingDestinationName(topic),
+			semconv.MessagingDestinationTemplate("projects/{projectID}/subscriptions/{subscriptionID}"),
+			semconv.MessagingMessageID(msg.ID),
+			semconv.MessagingMessagePayloadSizeBytes(msgSize),
 			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
 		trace.WithAttributes(opts...),
@@ -381,7 +379,7 @@ func injectPropagation(ctx context.Context, msg *Message) {
 		if msg.Attributes == nil {
 			msg.Attributes = make(map[string]string)
 		}
-		otel.GetTextMapPropagator().Inject(ctx, newMessageCarrier(msg))
+		propagation.TraceContext{}.Inject(ctx, newMessageCarrier(msg))
 	}
 }
 
@@ -394,10 +392,9 @@ func getSubSpanAttributes(sub string, msg *Message, opts ...attribute.KeyValue) 
 	ss := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingSystemKey.String("pubsub"),
-			semconv.MessagingDestinationKindTopic,
-			semconv.MessagingMessageIDKey.String(msg.ID),
-			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
-			attribute.String(subscriptionAttribute, sub),
+			semconv.MessagingDestinationName(sub),
+			semconv.MessagingMessageID(msg.ID),
+			semconv.MessagingMessagePayloadSizeBytes(msgSize),
 			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
 		trace.WithAttributes(opts...),

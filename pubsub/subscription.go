@@ -29,7 +29,7 @@ import (
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
@@ -1426,7 +1426,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						m := msg.(*Message)
 						schedulerSpan.End()
 						defer wg.Done()
-						_, cSpan := tracer().Start(ctx3, fmt.Sprintf("%s %s", s.String(), subscribeProcessSpanName))
+						_, cSpan := tracer().Start(ctx3, fmt.Sprintf("%s %s", s.ID(), subscribeProcessSpanName))
 						defer cSpan.End()
 						old2 := ackh.doneFunc
 						ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {

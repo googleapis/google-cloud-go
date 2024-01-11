@@ -32,7 +32,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/instrumentation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/protobuf/proto"
 )
@@ -58,7 +58,7 @@ func TestTrace_MessageCarrier(t *testing.T) {
 	}
 
 	newCtx := context.Background()
-	otel.GetTextMapPropagator().Extract(newCtx, newMessageCarrier(msg))
+	propagation.TraceContext{}.Extract(newCtx, newMessageCarrier(msg))
 	if _, ok := msg.Attributes[googclientPrefix+"traceparent"]; !ok {
 		t.Fatalf("expected traceparent in message attributes, found empty string")
 	}
@@ -95,8 +95,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 			Name:     fmt.Sprintf("%s %s", topicName, publisherSpanName),
 			SpanKind: trace.SpanKindProducer,
 			Attributes: []attribute.KeyValue{
-				semconv.MessagingDestinationKindTopic,
-				semconv.MessagingDestinationKey.String(topicName),
+				semconv.MessagingDestinationName(topicName),
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
@@ -126,7 +125,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 		tracetest.SpanStub{
 			Name: publishRPCSpanName,
 			Attributes: []attribute.KeyValue{
-				attribute.Int(numBatchedMessagesAttribute, 1),
+				semconv.MessagingBatchMessageCount(1),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
@@ -349,10 +348,10 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			},
 		},
 		tracetest.SpanStub{
-			Name:     fmt.Sprintf("%s %s", subName, subscribeReceiveSpanName),
+			Name:     fmt.Sprintf("%s %s", subName, subscribeSpanName),
 			SpanKind: trace.SpanKindConsumer,
 			Attributes: []attribute.KeyValue{
-				semconv.MessagingDestinationKindTopic,
+				semconv.MessagingDestinationName(topicName),
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
@@ -363,8 +362,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				attribute.String(resultAttribute, "ack"),
 				attribute.String(orderingAttribute, m.OrderingKey),
 				semconv.MessagingSystemKey.String("pubsub"),
-				attribute.Int(numBatchedMessagesAttribute, 1),
-				attribute.String(subscriptionAttribute, subName),
+				semconv.MessagingBatchMessageCount(1),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
@@ -399,9 +397,9 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				Version: internal.Version,
 			},
 			Attributes: []attribute.KeyValue{
-				attribute.Bool(initialModackAttribute, true),
-				attribute.Int(modackDeadlineSecondsAttribute, 10),
-				attribute.Int(numBatchedMessagesAttribute, 1),
+				attribute.Bool(receiptModackAttribute, true),
+				attribute.Int(ackDeadlineSecAttribute, 10),
+				semconv.MessagingBatchMessageCount(1),
 			},
 		},
 	}
@@ -457,8 +455,7 @@ func getPublishSpanStubsWithError(topicName string, m *Message, msgSize int, err
 			Name:     fmt.Sprintf("%s %s", topicName, publisherSpanName),
 			SpanKind: trace.SpanKindProducer,
 			Attributes: []attribute.KeyValue{
-				semconv.MessagingDestinationKindTopic,
-				semconv.MessagingDestinationKey.String(topicName),
+				semconv.MessagingDestinationName(topicName),
 				semconv.MessagingMessageIDKey.String(""),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
 				attribute.String(orderingAttribute, m.OrderingKey),
