@@ -110,6 +110,7 @@
     "securitycentermanagement": "0.1.1",
     "servicecontrol": "1.12.4",
     "servicedirectory": "1.11.3",
+    "servicehealth": "0.0.0",
     "servicemanagement": "1.9.5",
     "serviceusage": "1.8.3",
     "shell": "1.7.4",
