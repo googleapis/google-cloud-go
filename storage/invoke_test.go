@@ -218,10 +218,17 @@ func TestInvoke(t *testing.T) {
 			initialErr:        &googleapi.Error{Code: 500},
 			finalErr:          nil,
 			isIdempotentValue: true,
-			retry: &retryConfig{
-				maxAttempts: 4,
-			},
-			expectFinalErr: false,
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: 4},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-idempotent retriable error not retried when policy is RetryAlways with maxAttempts equals to zero",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: 0, zeroAttempt: true},
+			expectFinalErr:    false,
 		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
@@ -243,6 +250,9 @@ func TestInvoke(t *testing.T) {
 				}
 				return test.finalErr
 			}
+			if test.retry != nil && test.retry.zeroAttempt == true {
+				test.retry.policy = RetryNever
+			}
 			got := run(ctx, call, test.retry, test.isIdempotentValue)
 			if test.expectFinalErr && got != test.finalErr {
 				s.Errorf("got %v, want %v", got, test.finalErr)
@@ -253,7 +263,7 @@ func TestInvoke(t *testing.T) {
 			if !test.expectFinalErr {
 				wantAttempts = 1
 			}
-			if test.retry != nil && test.retry.maxAttempts != 0 && test.retry.policy != RetryNever {
+			if test.retry != nil && (test.retry.zeroAttempt == true || test.retry.maxAttempts != 0) && test.retry.policy != RetryNever {
 				wantAttempts = test.retry.maxAttempts
 			}
 
