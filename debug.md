@@ -1,5 +1,11 @@
 # Logging, Debugging and Telemetry
 
+**Warning:The OpenCensus project is obsolete and was archived on July 31st,
+2023.** This means that any security vulnerabilities that are found will not be
+patched. We recommend that you begin migrating to OpenCensus tracing to
+OpenTelemetry, the successor project. See [OpenCensus](#opencensus) below for
+details.
+
 Logging, debugging and telemetry all capture data that can be used for
 troubleshooting. Logging records specific events and transactions. Debugging
 exposes values for immediate analysis. Telemetry is suitable for production use
@@ -172,6 +178,12 @@ func main() {
 ```
 
 ## Telemetry
+
+**Warning:The OpenCensus project is obsolete and was archived on July 31st,
+2023.** This means that any security vulnerabilities that are found will not be
+patched. We recommend that you begin migrating to OpenCensus tracing to
+OpenTelemetry, the successor project. See [OpenCensus](#opencensus) below for
+details.
 
 The Google Cloud client libraries for Go still use the OpenCensus project by
 default. However, opt-in support for
