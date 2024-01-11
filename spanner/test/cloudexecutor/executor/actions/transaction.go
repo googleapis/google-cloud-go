@@ -21,9 +21,9 @@ import (
 
 	"cloud.google.com/go/spanner"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/utility"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"google.golang.org/api/option"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
@@ -58,7 +58,7 @@ func (h *StartTxnHandler) ExecuteAction(ctx context.Context) error {
 	if err != nil {
 		return h.OutcomeSender.FinishWithError(err)
 	}
-	h.FlowContext.dbClient = client
+	h.FlowContext.DbClient = client
 	if h.FlowContext.isTransactionActiveLocked() {
 		return h.OutcomeSender.FinishWithError(spanner.ToSpannerError(status.Error(codes.InvalidArgument, "already in a transaction")))
 	}

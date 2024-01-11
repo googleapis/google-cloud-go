@@ -3079,7 +3079,15 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	// Create a 2nd cluster in 1st destination project
 	clusterUID := uid.NewSpace("c-", &uid.Options{Short: true})
 	destProj1Inst1Cl2 := clusterUID.New()
-	defer destIAdminClient1.DeleteCluster(ctx, destProj1Inst1, destProj1Inst1Cl2)
+	defer func() {
+		testutil.Retry(t, 3, 2*time.Second, func(r *testutil.R) {
+			err := destIAdminClient1.DeleteCluster(ctx, destProj1Inst1, destProj1Inst1Cl2)
+			if err != nil {
+				r.Errorf("DeleteCluster: %v", err)
+			}
+		})
+	}()
+
 	err = destIAdminClient1.CreateCluster(ctx, &ClusterConfig{
 		InstanceID:  destProj1Inst1,
 		ClusterID:   destProj1Inst1Cl2,
@@ -3090,13 +3098,6 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateCluster: %v", err)
 	}
-
-	// Create a 2nd instance in 1st destination project
-	destProj1Inst2, destProj1Inst2Cl1, err := createInstance(ctx, testEnv, destIAdminClient1)
-	if err != nil {
-		t.Fatalf("CreateInstance: %v", err)
-	}
-	defer destIAdminClient1.DeleteInstance(ctx, destProj1Inst2)
 
 	type testcase struct {
 		desc         string
@@ -3117,12 +3118,23 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 			destInstance: destProj1Inst1,
 			destCluster:  destProj1Inst1Cl2,
 		},
-		{
+	}
+
+	if instanceToCreate != "" {
+		// Create a 2nd instance in 1st destination project
+		destProj1Inst2, destProj1Inst2Cl1, err := createInstance(ctx, testEnv, destIAdminClient1)
+		if err != nil {
+			t.Fatalf("CreateInstance: %v", err)
+		}
+		defer destIAdminClient1.DeleteInstance(ctx, destProj1Inst2)
+		testcases = append(testcases, testcase{
 			desc:         "Copy backup to same project, different instance",
 			destProject:  destProj1,
 			destInstance: destProj1Inst2,
 			destCluster:  destProj1Inst2Cl1,
-		},
+		})
+	} else {
+		t.Logf("WARNING: run-create-instance-tests not set, skipping tests that require instance creation")
 	}
 
 	if testEnv.Config().Project2 != "" {

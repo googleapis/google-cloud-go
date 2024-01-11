@@ -21,9 +21,9 @@ import (
 
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
+	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/utility"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -209,7 +209,7 @@ func (h *PartitionedUpdate) ExecuteAction(ctx context.Context) error {
 
 	opts := h.Action.GetOptions()
 	stmt := spanner.Statement{SQL: h.Action.GetUpdate().GetSql()}
-	count, err := h.FlowContext.dbClient.PartitionedUpdateWithOptions(ctx, stmt, spanner.QueryOptions{
+	count, err := h.FlowContext.DbClient.PartitionedUpdateWithOptions(ctx, stmt, spanner.QueryOptions{
 		Priority:   opts.GetRpcPriority(),
 		RequestTag: opts.GetTag(),
 	})

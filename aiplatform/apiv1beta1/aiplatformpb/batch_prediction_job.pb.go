@@ -648,7 +648,7 @@ type BatchPredictionJob_InstanceConfig struct {
 	// [excluded_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.excluded_fields]
 	// must be empty.
 	//
-	// The input must be JSONL with objects at each line, CSV, BigQuery
+	// The input must be JSONL with objects at each line, BigQuery
 	// or TfRecord.
 	IncludedFields []string `protobuf:"bytes,3,rep,name=included_fields,json=includedFields,proto3" json:"included_fields,omitempty"`
 	// Fields that will be excluded in the prediction instance that is
@@ -662,7 +662,7 @@ type BatchPredictionJob_InstanceConfig struct {
 	// [included_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.included_fields]
 	// must be empty.
 	//
-	// The input must be JSONL with objects at each line, CSV, BigQuery
+	// The input must be JSONL with objects at each line, BigQuery
 	// or TfRecord.
 	ExcludedFields []string `protobuf:"bytes,4,rep,name=excluded_fields,json=excludedFields,proto3" json:"excluded_fields,omitempty"`
 }

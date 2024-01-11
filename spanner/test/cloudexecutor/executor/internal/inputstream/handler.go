@@ -25,9 +25,9 @@ import (
 	"sync"
 
 	"cloud.google.com/go/spanner"
+	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/actions"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -70,6 +70,10 @@ func (h *CloudStreamHandler) Execute() error {
 		req, err := h.Stream.Recv()
 		if err == io.EOF {
 			log.Println("Client called Done, half-closed the stream")
+			if h.executionFlowContext != nil && h.executionFlowContext.DbClient != nil {
+				log.Println("Closing the client object in execution flow context")
+				h.executionFlowContext.DbClient.Close()
+			}
 			break
 		}
 		if err != nil {

@@ -39,9 +39,12 @@ const (
 type ServiceLevel int32
 
 const (
+	// Unspecified service level.
 	ServiceLevel_SERVICE_LEVEL_UNSPECIFIED ServiceLevel = 0
-	ServiceLevel_PREMIUM                   ServiceLevel = 1
-	ServiceLevel_EXTREME                   ServiceLevel = 2
+	// Premium service level.
+	ServiceLevel_PREMIUM ServiceLevel = 1
+	// Extreme service level.
+	ServiceLevel_EXTREME ServiceLevel = 2
 	// Standard (Software offering)
 	ServiceLevel_STANDARD ServiceLevel = 3
 )

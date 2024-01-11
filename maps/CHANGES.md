@@ -2,6 +2,13 @@
 
 
 
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.1...maps/v1.6.2) (2023-12-11)
+
+
+### Documentation
+
+* **maps/places:** Change comments for some fields in Places API ([29effe6](https://github.com/googleapis/google-cloud-go/commit/29effe600e16f24a127a1422ec04263c4f7a600a))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.0...maps/v1.6.1) (2023-11-01)
 
 

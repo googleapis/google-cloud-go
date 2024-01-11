@@ -4281,6 +4281,11 @@
                 "SetIamPolicy"
               ]
             },
+            "StreamGenerateContent": {
+              "methods": [
+                "StreamGenerateContent"
+              ]
+            },
             "StreamingPredict": {
               "methods": [
                 "StreamingPredict"
@@ -4379,6 +4384,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamGenerateContent": {
+              "methods": [
+                "StreamGenerateContent"
               ]
             },
             "StreamingPredict": {
