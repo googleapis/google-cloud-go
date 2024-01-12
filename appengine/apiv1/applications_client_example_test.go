@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,31 +57,6 @@ func ExampleNewApplicationsRESTClient() {
 	_ = c
 }
 
-func ExampleApplicationsClient_GetApplication() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := appengine.NewApplicationsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &appenginepb.GetApplicationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetApplicationRequest.
-	}
-	resp, err := c.GetApplication(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleApplicationsClient_CreateApplication() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -112,7 +87,7 @@ func ExampleApplicationsClient_CreateApplication() {
 	_ = resp
 }
 
-func ExampleApplicationsClient_UpdateApplication() {
+func ExampleApplicationsClient_GetApplication() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -125,16 +100,11 @@ func ExampleApplicationsClient_UpdateApplication() {
 	}
 	defer c.Close()
 
-	req := &appenginepb.UpdateApplicationRequest{
+	req := &appenginepb.GetApplicationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#UpdateApplicationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetApplicationRequest.
 	}
-	op, err := c.UpdateApplication(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
+	resp, err := c.GetApplication(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -160,6 +130,36 @@ func ExampleApplicationsClient_RepairApplication() {
 		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#RepairApplicationRequest.
 	}
 	op, err := c.RepairApplication(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleApplicationsClient_UpdateApplication() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := appengine.NewApplicationsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &appenginepb.UpdateApplicationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#UpdateApplicationRequest.
+	}
+	op, err := c.UpdateApplication(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

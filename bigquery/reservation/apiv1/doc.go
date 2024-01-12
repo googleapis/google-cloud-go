@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,11 +67,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &reservationpb.CreateReservationRequest{
+//	req := &reservationpb.CreateAssignmentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#CreateReservationRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#CreateAssignmentRequest.
 //	}
-//	resp, err := c.CreateReservation(ctx, req)
+//	resp, err := c.CreateAssignment(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.0.3...gkemulticloud/v1.1.0) (2024-01-03)
+
+
+### Features
+
+* **gkemulticloud:** Added proxy support for Attached Clusters ([#9171](https://github.com/googleapis/google-cloud-go/issues/9171)) ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
+## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.0.2...gkemulticloud/v1.0.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.0.1...gkemulticloud/v1.0.2) (2023-10-26)
 
 

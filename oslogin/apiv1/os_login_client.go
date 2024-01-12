@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -880,6 +880,11 @@ func (c *restClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.Impo
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetProjectId() != "" {
 		params.Add("projectId", fmt.Sprintf("%v", req.GetProjectId()))
+	}
+	if items := req.GetRegions(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("regions", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &osconfigpb.ExecutePatchJobRequest{
+//	req := &osconfigpb.CancelPatchJobRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#ExecutePatchJobRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#CancelPatchJobRequest.
 //	}
-//	resp, err := c.ExecutePatchJob(ctx, req)
+//	resp, err := c.CancelPatchJob(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

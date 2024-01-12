@@ -1,5 +1,19 @@
 # Changes
 
+## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.3...channel/v1.17.4) (2024-01-03)
+
+
+### Documentation
+
+* **channel:** A comment for service `CloudChannelReportsService` is changed ([cbe96af](https://github.com/googleapis/google-cloud-go/commit/cbe96af778ec9152b528714281de9e534f01c237))
+
+## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.2...channel/v1.17.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **channel:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.1...channel/v1.17.2) (2023-10-26)
 
 

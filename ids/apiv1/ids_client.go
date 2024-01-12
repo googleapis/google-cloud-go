@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -790,12 +790,6 @@ func (c *restClient) DeleteEndpoint(ctx context.Context, req *idspb.DeleteEndpoi
 	}, nil
 }
 
-// CreateEndpointOperation manages a long-running operation from CreateEndpoint.
-type CreateEndpointOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateEndpointOperation returns a new CreateEndpointOperation from a given name.
 // The name must be that of a previously created CreateEndpointOperation, possibly from a different process.
 func (c *gRPCClient) CreateEndpointOperation(name string) *CreateEndpointOperation {
@@ -814,70 +808,6 @@ func (c *restClient) CreateEndpointOperation(name string) *CreateEndpointOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateEndpointOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*idspb.Endpoint, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp idspb.Endpoint
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateEndpointOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*idspb.Endpoint, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp idspb.Endpoint
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateEndpointOperation) Metadata() (*idspb.OperationMetadata, error) {
-	var meta idspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateEndpointOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateEndpointOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteEndpointOperation manages a long-running operation from DeleteEndpoint.
-type DeleteEndpointOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteEndpointOperation returns a new DeleteEndpointOperation from a given name.
 // The name must be that of a previously created DeleteEndpointOperation, possibly from a different process.
 func (c *gRPCClient) DeleteEndpointOperation(name string) *DeleteEndpointOperation {
@@ -894,98 +824,4 @@ func (c *restClient) DeleteEndpointOperation(name string) *DeleteEndpointOperati
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteEndpointOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteEndpointOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteEndpointOperation) Metadata() (*idspb.OperationMetadata, error) {
-	var meta idspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteEndpointOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteEndpointOperation) Name() string {
-	return op.lro.Name()
-}
-
-// EndpointIterator manages a stream of *idspb.Endpoint.
-type EndpointIterator struct {
-	items    []*idspb.Endpoint
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*idspb.Endpoint, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EndpointIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EndpointIterator) Next() (*idspb.Endpoint, error) {
-	var item *idspb.Endpoint
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EndpointIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EndpointIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

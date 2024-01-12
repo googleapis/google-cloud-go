@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ func ExampleNewUptimeCheckClient() {
 	_ = c
 }
 
-func ExampleUptimeCheckClient_ListUptimeCheckConfigs() {
+func ExampleUptimeCheckClient_CreateUptimeCheckConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -54,21 +54,38 @@ func ExampleUptimeCheckClient_ListUptimeCheckConfigs() {
 	}
 	defer c.Close()
 
-	req := &monitoringpb.ListUptimeCheckConfigsRequest{
+	req := &monitoringpb.CreateUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListUptimeCheckConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateUptimeCheckConfigRequest.
 	}
-	it := c.ListUptimeCheckConfigs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	resp, err := c.CreateUptimeCheckConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleUptimeCheckClient_DeleteUptimeCheckConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewUptimeCheckClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.DeleteUptimeCheckConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteUptimeCheckConfigRequest.
+	}
+	err = c.DeleteUptimeCheckConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
 
@@ -97,7 +114,7 @@ func ExampleUptimeCheckClient_GetUptimeCheckConfig() {
 	_ = resp
 }
 
-func ExampleUptimeCheckClient_CreateUptimeCheckConfig() {
+func ExampleUptimeCheckClient_ListUptimeCheckConfigs() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -110,63 +127,21 @@ func ExampleUptimeCheckClient_CreateUptimeCheckConfig() {
 	}
 	defer c.Close()
 
-	req := &monitoringpb.CreateUptimeCheckConfigRequest{
+	req := &monitoringpb.ListUptimeCheckConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateUptimeCheckConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListUptimeCheckConfigsRequest.
 	}
-	resp, err := c.CreateUptimeCheckConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleUptimeCheckClient_UpdateUptimeCheckConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := monitoring.NewUptimeCheckClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.UpdateUptimeCheckConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#UpdateUptimeCheckConfigRequest.
-	}
-	resp, err := c.UpdateUptimeCheckConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleUptimeCheckClient_DeleteUptimeCheckConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := monitoring.NewUptimeCheckClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.DeleteUptimeCheckConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteUptimeCheckConfigRequest.
-	}
-	err = c.DeleteUptimeCheckConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListUptimeCheckConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }
 
@@ -199,4 +174,29 @@ func ExampleUptimeCheckClient_ListUptimeCheckIps() {
 		// TODO: Use resp.
 		_ = resp
 	}
+}
+
+func ExampleUptimeCheckClient_UpdateUptimeCheckConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewUptimeCheckClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.UpdateUptimeCheckConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#UpdateUptimeCheckConfigRequest.
+	}
+	resp, err := c.UpdateUptimeCheckConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ func ExampleMapsPlatformDatasetsV1AlphaClient_CreateDataset() {
 	_ = resp
 }
 
-func ExampleMapsPlatformDatasetsV1AlphaClient_UpdateDatasetMetadata() {
+func ExampleMapsPlatformDatasetsV1AlphaClient_DeleteDataset() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -96,16 +96,37 @@ func ExampleMapsPlatformDatasetsV1AlphaClient_UpdateDatasetMetadata() {
 	}
 	defer c.Close()
 
-	req := &mapsplatformdatasetspb.UpdateDatasetMetadataRequest{
+	req := &mapsplatformdatasetspb.DeleteDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha/mapsplatformdatasetspb#UpdateDatasetMetadataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha/mapsplatformdatasetspb#DeleteDatasetRequest.
 	}
-	resp, err := c.UpdateDatasetMetadata(ctx, req)
+	err = c.DeleteDataset(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+}
+
+func ExampleMapsPlatformDatasetsV1AlphaClient_DeleteDatasetVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := mapsplatformdatasets.NewMapsPlatformDatasetsV1AlphaClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &mapsplatformdatasetspb.DeleteDatasetVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha/mapsplatformdatasetspb#DeleteDatasetVersionRequest.
+	}
+	err = c.DeleteDatasetVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleMapsPlatformDatasetsV1AlphaClient_GetDataset() {
@@ -195,7 +216,7 @@ func ExampleMapsPlatformDatasetsV1AlphaClient_ListDatasets() {
 	}
 }
 
-func ExampleMapsPlatformDatasetsV1AlphaClient_DeleteDataset() {
+func ExampleMapsPlatformDatasetsV1AlphaClient_UpdateDatasetMetadata() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -208,35 +229,14 @@ func ExampleMapsPlatformDatasetsV1AlphaClient_DeleteDataset() {
 	}
 	defer c.Close()
 
-	req := &mapsplatformdatasetspb.DeleteDatasetRequest{
+	req := &mapsplatformdatasetspb.UpdateDatasetMetadataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha/mapsplatformdatasetspb#DeleteDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha/mapsplatformdatasetspb#UpdateDatasetMetadataRequest.
 	}
-	err = c.DeleteDataset(ctx, req)
+	resp, err := c.UpdateDatasetMetadata(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-}
-
-func ExampleMapsPlatformDatasetsV1AlphaClient_DeleteDatasetVersion() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := mapsplatformdatasets.NewMapsPlatformDatasetsV1AlphaClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &mapsplatformdatasetspb.DeleteDatasetVersionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha/mapsplatformdatasetspb#DeleteDatasetVersionRequest.
-	}
-	err = c.DeleteDatasetVersion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
+	// TODO: Use resp.
+	_ = resp
 }

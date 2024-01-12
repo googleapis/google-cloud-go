@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -909,12 +909,6 @@ func (c *tagBindingsRESTClient) GetOperation(ctx context.Context, req *longrunni
 	return resp, nil
 }
 
-// CreateTagBindingOperation manages a long-running operation from CreateTagBinding.
-type CreateTagBindingOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateTagBindingOperation returns a new CreateTagBindingOperation from a given name.
 // The name must be that of a previously created CreateTagBindingOperation, possibly from a different process.
 func (c *tagBindingsGRPCClient) CreateTagBindingOperation(name string) *CreateTagBindingOperation {
@@ -933,70 +927,6 @@ func (c *tagBindingsRESTClient) CreateTagBindingOperation(name string) *CreateTa
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateTagBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.TagBinding, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.TagBinding
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateTagBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*resourcemanagerpb.TagBinding, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp resourcemanagerpb.TagBinding
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateTagBindingOperation) Metadata() (*resourcemanagerpb.CreateTagBindingMetadata, error) {
-	var meta resourcemanagerpb.CreateTagBindingMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateTagBindingOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateTagBindingOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteTagBindingOperation manages a long-running operation from DeleteTagBinding.
-type DeleteTagBindingOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteTagBindingOperation returns a new DeleteTagBindingOperation from a given name.
 // The name must be that of a previously created DeleteTagBindingOperation, possibly from a different process.
 func (c *tagBindingsGRPCClient) DeleteTagBindingOperation(name string) *DeleteTagBindingOperation {
@@ -1013,145 +943,4 @@ func (c *tagBindingsRESTClient) DeleteTagBindingOperation(name string) *DeleteTa
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteTagBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteTagBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteTagBindingOperation) Metadata() (*resourcemanagerpb.DeleteTagBindingMetadata, error) {
-	var meta resourcemanagerpb.DeleteTagBindingMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteTagBindingOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteTagBindingOperation) Name() string {
-	return op.lro.Name()
-}
-
-// EffectiveTagIterator manages a stream of *resourcemanagerpb.EffectiveTag.
-type EffectiveTagIterator struct {
-	items    []*resourcemanagerpb.EffectiveTag
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.EffectiveTag, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EffectiveTagIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EffectiveTagIterator) Next() (*resourcemanagerpb.EffectiveTag, error) {
-	var item *resourcemanagerpb.EffectiveTag
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EffectiveTagIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EffectiveTagIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TagBindingIterator manages a stream of *resourcemanagerpb.TagBinding.
-type TagBindingIterator struct {
-	items    []*resourcemanagerpb.TagBinding
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*resourcemanagerpb.TagBinding, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TagBindingIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TagBindingIterator) Next() (*resourcemanagerpb.TagBinding, error) {
-	var item *resourcemanagerpb.TagBinding
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TagBindingIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TagBindingIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

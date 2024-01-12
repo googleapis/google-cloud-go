@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -66,6 +66,11 @@ type CallOptions struct {
 	ListJobTriggers          []gax.CallOption
 	DeleteJobTrigger         []gax.CallOption
 	ActivateJobTrigger       []gax.CallOption
+	CreateDiscoveryConfig    []gax.CallOption
+	UpdateDiscoveryConfig    []gax.CallOption
+	GetDiscoveryConfig       []gax.CallOption
+	ListDiscoveryConfigs     []gax.CallOption
+	DeleteDiscoveryConfig    []gax.CallOption
 	CreateDlpJob             []gax.CallOption
 	ListDlpJobs              []gax.CallOption
 	GetDlpJob                []gax.CallOption
@@ -299,6 +304,51 @@ func defaultCallOptions() *CallOptions {
 		},
 		ActivateJobTrigger: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
+		},
+		CreateDiscoveryConfig: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+		},
+		UpdateDiscoveryConfig: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+		},
+		GetDiscoveryConfig: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDiscoveryConfigs: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteDiscoveryConfig: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		CreateDlpJob: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
@@ -593,6 +643,48 @@ func defaultRESTCallOptions() *CallOptions {
 		ActivateJobTrigger: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
+		CreateDiscoveryConfig: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+		},
+		UpdateDiscoveryConfig: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+		},
+		GetDiscoveryConfig: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListDiscoveryConfigs: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		DeleteDiscoveryConfig: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		CreateDlpJob: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
@@ -686,7 +778,7 @@ func defaultRESTCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods available from Cloud Data Loss Prevention (DLP) API.
+// internalClient is an interface that defines the methods available from Cloud Data Loss Prevention (DLP).
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -713,6 +805,11 @@ type internalClient interface {
 	ListJobTriggers(context.Context, *dlppb.ListJobTriggersRequest, ...gax.CallOption) *JobTriggerIterator
 	DeleteJobTrigger(context.Context, *dlppb.DeleteJobTriggerRequest, ...gax.CallOption) error
 	ActivateJobTrigger(context.Context, *dlppb.ActivateJobTriggerRequest, ...gax.CallOption) (*dlppb.DlpJob, error)
+	CreateDiscoveryConfig(context.Context, *dlppb.CreateDiscoveryConfigRequest, ...gax.CallOption) (*dlppb.DiscoveryConfig, error)
+	UpdateDiscoveryConfig(context.Context, *dlppb.UpdateDiscoveryConfigRequest, ...gax.CallOption) (*dlppb.DiscoveryConfig, error)
+	GetDiscoveryConfig(context.Context, *dlppb.GetDiscoveryConfigRequest, ...gax.CallOption) (*dlppb.DiscoveryConfig, error)
+	ListDiscoveryConfigs(context.Context, *dlppb.ListDiscoveryConfigsRequest, ...gax.CallOption) *DiscoveryConfigIterator
+	DeleteDiscoveryConfig(context.Context, *dlppb.DeleteDiscoveryConfigRequest, ...gax.CallOption) error
 	CreateDlpJob(context.Context, *dlppb.CreateDlpJobRequest, ...gax.CallOption) (*dlppb.DlpJob, error)
 	ListDlpJobs(context.Context, *dlppb.ListDlpJobsRequest, ...gax.CallOption) *DlpJobIterator
 	GetDlpJob(context.Context, *dlppb.GetDlpJobRequest, ...gax.CallOption) (*dlppb.DlpJob, error)
@@ -727,7 +824,7 @@ type internalClient interface {
 	FinishDlpJob(context.Context, *dlppb.FinishDlpJobRequest, ...gax.CallOption) error
 }
 
-// Client is a client for interacting with Cloud Data Loss Prevention (DLP) API.
+// Client is a client for interacting with Cloud Data Loss Prevention (DLP).
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Cloud Data Loss Prevention (DLP) API is a service that allows clients
@@ -933,6 +1030,31 @@ func (c *Client) ActivateJobTrigger(ctx context.Context, req *dlppb.ActivateJobT
 	return c.internalClient.ActivateJobTrigger(ctx, req, opts...)
 }
 
+// CreateDiscoveryConfig creates a config for discovery to scan and profile storage.
+func (c *Client) CreateDiscoveryConfig(ctx context.Context, req *dlppb.CreateDiscoveryConfigRequest, opts ...gax.CallOption) (*dlppb.DiscoveryConfig, error) {
+	return c.internalClient.CreateDiscoveryConfig(ctx, req, opts...)
+}
+
+// UpdateDiscoveryConfig updates a discovery configuration.
+func (c *Client) UpdateDiscoveryConfig(ctx context.Context, req *dlppb.UpdateDiscoveryConfigRequest, opts ...gax.CallOption) (*dlppb.DiscoveryConfig, error) {
+	return c.internalClient.UpdateDiscoveryConfig(ctx, req, opts...)
+}
+
+// GetDiscoveryConfig gets a discovery configuration.
+func (c *Client) GetDiscoveryConfig(ctx context.Context, req *dlppb.GetDiscoveryConfigRequest, opts ...gax.CallOption) (*dlppb.DiscoveryConfig, error) {
+	return c.internalClient.GetDiscoveryConfig(ctx, req, opts...)
+}
+
+// ListDiscoveryConfigs lists discovery configurations.
+func (c *Client) ListDiscoveryConfigs(ctx context.Context, req *dlppb.ListDiscoveryConfigsRequest, opts ...gax.CallOption) *DiscoveryConfigIterator {
+	return c.internalClient.ListDiscoveryConfigs(ctx, req, opts...)
+}
+
+// DeleteDiscoveryConfig deletes a discovery configuration.
+func (c *Client) DeleteDiscoveryConfig(ctx context.Context, req *dlppb.DeleteDiscoveryConfigRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDiscoveryConfig(ctx, req, opts...)
+}
+
 // CreateDlpJob creates a new job to inspect storage or calculate risk metrics.
 // See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
 // https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
@@ -1025,7 +1147,7 @@ func (c *Client) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobReques
 	return c.internalClient.FinishDlpJob(ctx, req, opts...)
 }
 
-// gRPCClient is a client for interacting with Cloud Data Loss Prevention (DLP) API over gRPC transport.
+// gRPCClient is a client for interacting with Cloud Data Loss Prevention (DLP) over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
@@ -1647,6 +1769,120 @@ func (c *gRPCClient) ActivateJobTrigger(ctx context.Context, req *dlppb.Activate
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) CreateDiscoveryConfig(ctx context.Context, req *dlppb.CreateDiscoveryConfigRequest, opts ...gax.CallOption) (*dlppb.DiscoveryConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDiscoveryConfig[0:len((*c.CallOptions).CreateDiscoveryConfig):len((*c.CallOptions).CreateDiscoveryConfig)], opts...)
+	var resp *dlppb.DiscoveryConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateDiscoveryConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateDiscoveryConfig(ctx context.Context, req *dlppb.UpdateDiscoveryConfigRequest, opts ...gax.CallOption) (*dlppb.DiscoveryConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDiscoveryConfig[0:len((*c.CallOptions).UpdateDiscoveryConfig):len((*c.CallOptions).UpdateDiscoveryConfig)], opts...)
+	var resp *dlppb.DiscoveryConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateDiscoveryConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetDiscoveryConfig(ctx context.Context, req *dlppb.GetDiscoveryConfigRequest, opts ...gax.CallOption) (*dlppb.DiscoveryConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDiscoveryConfig[0:len((*c.CallOptions).GetDiscoveryConfig):len((*c.CallOptions).GetDiscoveryConfig)], opts...)
+	var resp *dlppb.DiscoveryConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetDiscoveryConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListDiscoveryConfigs(ctx context.Context, req *dlppb.ListDiscoveryConfigsRequest, opts ...gax.CallOption) *DiscoveryConfigIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDiscoveryConfigs[0:len((*c.CallOptions).ListDiscoveryConfigs):len((*c.CallOptions).ListDiscoveryConfigs)], opts...)
+	it := &DiscoveryConfigIterator{}
+	req = proto.Clone(req).(*dlppb.ListDiscoveryConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DiscoveryConfig, string, error) {
+		resp := &dlppb.ListDiscoveryConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListDiscoveryConfigs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDiscoveryConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) DeleteDiscoveryConfig(ctx context.Context, req *dlppb.DeleteDiscoveryConfigRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDiscoveryConfig[0:len((*c.CallOptions).DeleteDiscoveryConfig):len((*c.CallOptions).DeleteDiscoveryConfig)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteDiscoveryConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *gRPCClient) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
@@ -3419,6 +3655,332 @@ func (c *restClient) ActivateJobTrigger(ctx context.Context, req *dlppb.Activate
 	return resp, nil
 }
 
+// CreateDiscoveryConfig creates a config for discovery to scan and profile storage.
+func (c *restClient) CreateDiscoveryConfig(ctx context.Context, req *dlppb.CreateDiscoveryConfigRequest, opts ...gax.CallOption) (*dlppb.DiscoveryConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v/discoveryConfigs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDiscoveryConfig[0:len((*c.CallOptions).CreateDiscoveryConfig):len((*c.CallOptions).CreateDiscoveryConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dlppb.DiscoveryConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateDiscoveryConfig updates a discovery configuration.
+func (c *restClient) UpdateDiscoveryConfig(ctx context.Context, req *dlppb.UpdateDiscoveryConfigRequest, opts ...gax.CallOption) (*dlppb.DiscoveryConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDiscoveryConfig[0:len((*c.CallOptions).UpdateDiscoveryConfig):len((*c.CallOptions).UpdateDiscoveryConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dlppb.DiscoveryConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetDiscoveryConfig gets a discovery configuration.
+func (c *restClient) GetDiscoveryConfig(ctx context.Context, req *dlppb.GetDiscoveryConfigRequest, opts ...gax.CallOption) (*dlppb.DiscoveryConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDiscoveryConfig[0:len((*c.CallOptions).GetDiscoveryConfig):len((*c.CallOptions).GetDiscoveryConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dlppb.DiscoveryConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListDiscoveryConfigs lists discovery configurations.
+func (c *restClient) ListDiscoveryConfigs(ctx context.Context, req *dlppb.ListDiscoveryConfigsRequest, opts ...gax.CallOption) *DiscoveryConfigIterator {
+	it := &DiscoveryConfigIterator{}
+	req = proto.Clone(req).(*dlppb.ListDiscoveryConfigsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DiscoveryConfig, string, error) {
+		resp := &dlppb.ListDiscoveryConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/discoveryConfigs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDiscoveryConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteDiscoveryConfig deletes a discovery configuration.
+func (c *restClient) DeleteDiscoveryConfig(ctx context.Context, req *dlppb.DeleteDiscoveryConfigRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
 // CreateDlpJob creates a new job to inspect storage or calculate risk metrics.
 // See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
 // https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
@@ -4209,239 +4771,4 @@ func (c *restClient) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobRe
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
-}
-
-// DeidentifyTemplateIterator manages a stream of *dlppb.DeidentifyTemplate.
-type DeidentifyTemplateIterator struct {
-	items    []*dlppb.DeidentifyTemplate
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dlppb.DeidentifyTemplate, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DeidentifyTemplateIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DeidentifyTemplateIterator) Next() (*dlppb.DeidentifyTemplate, error) {
-	var item *dlppb.DeidentifyTemplate
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DeidentifyTemplateIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DeidentifyTemplateIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DlpJobIterator manages a stream of *dlppb.DlpJob.
-type DlpJobIterator struct {
-	items    []*dlppb.DlpJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dlppb.DlpJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DlpJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DlpJobIterator) Next() (*dlppb.DlpJob, error) {
-	var item *dlppb.DlpJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DlpJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DlpJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// InspectTemplateIterator manages a stream of *dlppb.InspectTemplate.
-type InspectTemplateIterator struct {
-	items    []*dlppb.InspectTemplate
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dlppb.InspectTemplate, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InspectTemplateIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InspectTemplateIterator) Next() (*dlppb.InspectTemplate, error) {
-	var item *dlppb.InspectTemplate
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InspectTemplateIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InspectTemplateIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// JobTriggerIterator manages a stream of *dlppb.JobTrigger.
-type JobTriggerIterator struct {
-	items    []*dlppb.JobTrigger
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dlppb.JobTrigger, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *JobTriggerIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *JobTriggerIterator) Next() (*dlppb.JobTrigger, error) {
-	var item *dlppb.JobTrigger
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *JobTriggerIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *JobTriggerIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// StoredInfoTypeIterator manages a stream of *dlppb.StoredInfoType.
-type StoredInfoTypeIterator struct {
-	items    []*dlppb.StoredInfoType
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dlppb.StoredInfoType, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StoredInfoTypeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StoredInfoTypeIterator) Next() (*dlppb.StoredInfoType, error) {
-	var item *dlppb.StoredInfoType
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StoredInfoTypeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StoredInfoTypeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

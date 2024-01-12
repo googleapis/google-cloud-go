@@ -1,5 +1,19 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.11.4...orgpolicy/v1.12.0) (2024-01-03)
+
+
+### Features
+
+* **orgpolicy:** Add custom constraints CRUD APIs, proper etag support in Org Policy Update/Delete API ([#9181](https://github.com/googleapis/google-cloud-go/issues/9181)) ([902d842](https://github.com/googleapis/google-cloud-go/commit/902d84299b5073543ade684aa311b791bed3a999))
+
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.11.3...orgpolicy/v1.11.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.11.2...orgpolicy/v1.11.3) (2023-10-26)
 
 

@@ -209,6 +209,71 @@ func TestClient_Single_Read_SessionNotFound(t *testing.T) {
 	}
 }
 
+func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_RemoveSessionFromPool(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: WarnAndClose,
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteStreamingSql,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	ctx := context.Background()
+	single := client.Single()
+	iter := single.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	p := client.idleSessions
+	sh := single.sh
+	// simulate session to be last used before 60 mins
+	sh.mu.Lock()
+	sh.lastUseTime = time.Now().Add(-time.Hour)
+	sh.mu.Unlock()
+
+	// force run task to clean up unexpected long-running sessions
+	p.removeLongRunningSessions()
+	rowCount := int64(0)
+	for {
+		// Backend throws SessionNotFoundError. Session gets replaced with new session
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		rowCount++
+	}
+	// New session returns back to pool
+	iter.Stop()
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if g, w := p.idleList.Len(), 1; g != w {
+		t.Fatalf("Idle Sessions in pool, count mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := p.numInUse, uint64(0); g != w {
+		t.Fatalf("Number of sessions currently in use mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := p.numOpened, uint64(1); g != w {
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+
+	sh.mu.Lock()
+	defer sh.mu.Unlock()
+	if g, w := sh.eligibleForLongRunning, false; g != w {
+		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
+	}
+	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
+		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+}
+
 func TestClient_Single_ReadRow_SessionNotFound(t *testing.T) {
 	t.Parallel()
 
@@ -490,12 +555,16 @@ func checkReqsForQueryOptions(t *testing.T, server InMemSpannerServer, qo QueryO
 		t.Fatalf("Length mismatch, got %v, want %v", got, want)
 	}
 
-	reqQueryOptions := sqlReqs[0].QueryOptions
+	sqlReq := sqlReqs[0]
+	reqQueryOptions := sqlReq.QueryOptions
 	if got, want := reqQueryOptions.OptimizerVersion, qo.Options.OptimizerVersion; got != want {
 		t.Fatalf("Optimizer version mismatch, got %v, want %v", got, want)
 	}
 	if got, want := reqQueryOptions.OptimizerStatisticsPackage, qo.Options.OptimizerStatisticsPackage; got != want {
 		t.Fatalf("Optimizer statistics package mismatch, got %v, want %v", got, want)
+	}
+	if got, want := sqlReq.DirectedReadOptions, qo.DirectedReadOptions; got.String() != want.String() {
+		t.Fatalf("Directed Read Options mismatch, got %v, want %v", got, want)
 	}
 }
 
@@ -538,6 +607,9 @@ func checkReqsForReadOptions(t *testing.T, server InMemSpannerServer, ro ReadOpt
 	}
 	if got, want := reqRequestOptions.RequestTag, ro.RequestTag; got != want {
 		t.Fatalf("Request tag mismatch, got %v, want %v", got, want)
+	}
+	if got, want := sqlReq.DirectedReadOptions, ro.DirectedReadOptions; got.String() != want.String() {
+		t.Fatalf("Directed Read Options mismatch, got %v, want %v", got, want)
 	}
 }
 
@@ -971,6 +1043,195 @@ func TestClient_ReadOnlyTransaction_ReadOptions(t *testing.T) {
 	}
 }
 
+func TestClient_DirectedReadOptions(t *testing.T) {
+	directedReadOptions := &sppb.DirectedReadOptions{
+		Replicas: &sppb.DirectedReadOptions_IncludeReplicas_{
+			IncludeReplicas: &sppb.DirectedReadOptions_IncludeReplicas{
+				ReplicaSelections: []*sppb.DirectedReadOptions_ReplicaSelection{
+					{
+						Location: "us-west1",
+						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
+					},
+				},
+				AutoFailoverDisabled: true,
+			},
+		},
+	}
+
+	readOptionsTestCases := []ReadOptionsTestCase{
+		{
+			name:      "Client level",
+			clientDRO: directedReadOptions,
+			want:      &ReadOptions{DirectedReadOptions: directedReadOptions},
+		},
+		{
+			name: "Read level",
+			read: &ReadOptions{DirectedReadOptions: directedReadOptions},
+			want: &ReadOptions{DirectedReadOptions: directedReadOptions},
+		},
+		{
+			name:      "Read level has precedence than client level",
+			clientDRO: &sppb.DirectedReadOptions{},
+			read:      &ReadOptions{DirectedReadOptions: directedReadOptions},
+			want:      &ReadOptions{DirectedReadOptions: directedReadOptions},
+		},
+	}
+
+	queryOptionsTestCases := []QueryOptionsTestCase{
+		{
+			name:      "Client level",
+			clientDRO: directedReadOptions,
+			want:      QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{}, DirectedReadOptions: directedReadOptions},
+		},
+		{
+			name:  "Query level",
+			query: QueryOptions{DirectedReadOptions: directedReadOptions},
+			want:  QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{}, DirectedReadOptions: directedReadOptions},
+		},
+		{
+			name:      "Query level has precedence than client level",
+			clientDRO: &sppb.DirectedReadOptions{},
+			query:     QueryOptions{DirectedReadOptions: directedReadOptions},
+			want:      QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{}, DirectedReadOptions: directedReadOptions},
+		},
+	}
+
+	for _, tt := range readOptionsTestCases {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DirectedReadOptions: tt.clientDRO})
+			defer teardown()
+
+			tx := client.ReadOnlyTransaction()
+			defer tx.Close()
+
+			var iter *RowIterator
+			if tt.read == nil {
+				iter = tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+			} else {
+				iter = tx.ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, tt.read)
+			}
+			testReadOptions(t, iter, server.TestSpanner, *tt.want)
+		})
+	}
+
+	for _, tt := range queryOptionsTestCases {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DirectedReadOptions: tt.clientDRO})
+			defer teardown()
+
+			var iter *RowIterator
+			if tt.query.DirectedReadOptions == nil {
+				iter = client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+			} else {
+				iter = client.Single().QueryWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), tt.query)
+			}
+			testQueryOptions(t, iter, server.TestSpanner, tt.want)
+		})
+	}
+
+	ctx := context.Background()
+	directedReadOptionsForRW := &sppb.DirectedReadOptions{
+		Replicas: &sppb.DirectedReadOptions_ExcludeReplicas_{
+			ExcludeReplicas: &sppb.DirectedReadOptions_ExcludeReplicas{
+				ReplicaSelections: []*sppb.DirectedReadOptions_ReplicaSelection{
+					{
+						Location: "us-west1",
+						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
+					},
+				},
+			},
+		},
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DirectedReadOptions: directedReadOptionsForRW})
+	defer teardown()
+
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+		iter := txn.ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, &ReadOptions{DirectedReadOptions: directedReadOptions})
+		testReadOptions(t, iter, server.TestSpanner, ReadOptions{DirectedReadOptions: directedReadOptions})
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+		iter := txn.QueryWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), QueryOptions{DirectedReadOptions: directedReadOptions})
+		testQueryOptions(t, iter, server.TestSpanner, QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{}, DirectedReadOptions: directedReadOptions})
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: WarnAndClose,
+				idleTimeThreshold:           300 * time.Millisecond,
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 200 * time.Millisecond,
+		})
+	server.TestSpanner.PutExecutionTime(MethodStreamingRead,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 200 * time.Millisecond,
+		})
+	ctx := context.Background()
+	p := client.idleSessions
+
+	roTxn := client.ReadOnlyTransaction()
+	defer roTxn.Close()
+	iter := roTxn.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	iter.Next()
+	iter.Stop()
+
+	// Get the session last use time.
+	roTxn.sh.mu.Lock()
+	sessionPrevLastUseTime := roTxn.sh.lastUseTime
+	roTxn.sh.mu.Unlock()
+
+	iter = roTxn.Read(ctx, "FOO", AllKeys(), []string{"BAR"})
+	iter.Next()
+	iter.Stop()
+
+	// Get the latest session last use time
+	roTxn.sh.mu.Lock()
+	sessionLatestLastUseTime := roTxn.sh.lastUseTime
+	sessionCheckoutTime := roTxn.sh.checkoutTime
+	roTxn.sh.mu.Unlock()
+
+	// sessionLatestLastUseTime should not be equal to sessionPrevLastUseTime.
+	// This is because session lastUse time should be updated whenever a new operation is being executed on the transaction.
+	if (sessionLatestLastUseTime.Sub(sessionPrevLastUseTime)).Milliseconds() <= 0 {
+		t.Fatalf("Session lastUseTime times should not be equal")
+	}
+
+	if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
+	}
+	if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
+	}
+	// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
+	// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
+	p.removeLongRunningSessions()
+	if p.numOfLeakedSessionsRemoved > 0 {
+		t.Fatalf("Expected session to not get cleaned by background maintainer")
+	}
+}
+
 func setQueryOptionsEnvVars(opts *sppb.ExecuteSqlRequest_QueryOptions) func() {
 	os.Setenv("SPANNER_OPTIMIZER_VERSION", opts.OptimizerVersion)
 	os.Setenv("SPANNER_OPTIMIZER_STATISTICS_PACKAGE", opts.OptimizerStatisticsPackage)
@@ -1369,6 +1630,126 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteUpdate(t *testing.T
 	}
 }
 
+func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionShouldFail(t *testing.T) {
+	t.Parallel()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: WarnAndClose,
+			},
+		},
+	})
+	defer teardown()
+	ctx := context.Background()
+	p := client.idleSessions
+	msg := "session is already recycled / destroyed"
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		rowCount, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := rowCount, int64(UpdateBarSetFooRowCount); g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
+		}
+
+		// Simulate the session to be last used before 60 mins.
+		// The background task cleans up this long-running session.
+		tx.sh.mu.Lock()
+		tx.sh.lastUseTime = time.Now().Add(-time.Hour)
+		if g, w := tx.sh.eligibleForLongRunning, false; g != w {
+			tx.sh.mu.Unlock()
+			return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		tx.sh.mu.Unlock()
+
+		// force run task to clean up unexpected long-running sessions
+		p.removeLongRunningSessions()
+
+		// The session associated with this transaction tx has been destroyed. So the below call should fail.
+		// Eventually this means the entire transaction should not succeed.
+		_, err = tx.Update(ctx, NewStatement("UPDATE FOO SET BAR='value' WHERE ID=1"))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err == nil {
+		t.Fatalf("Missing expected exception")
+	}
+	if status.Code(err) != codes.FailedPrecondition || !strings.Contains(err.Error(), msg) {
+		t.Fatalf("error mismatch\nGot: %v\nWant: %v", err, msg)
+	}
+}
+
+func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeShouldBeUpdated(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: WarnAndClose,
+				idleTimeThreshold:           300 * time.Millisecond,
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 200 * time.Millisecond,
+		})
+	ctx := context.Background()
+	p := client.idleSessions
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		// Execute first operation on the transaction
+		_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+
+		// Get the session last use time.
+		tx.sh.mu.Lock()
+		sessionPrevLastUseTime := tx.sh.lastUseTime
+		tx.sh.mu.Unlock()
+
+		// Execute second operation on the transaction
+		_, err = tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		// Get the latest session last use time
+		tx.sh.mu.Lock()
+		sessionLatestLastUseTime := tx.sh.lastUseTime
+		sessionCheckoutTime := tx.sh.checkoutTime
+		tx.sh.mu.Unlock()
+
+		// sessionLatestLastUseTime should not be equal to sessionPrevLastUseTime.
+		// This is because session lastUse time should be updated whenever a new operation is being executed on the transaction.
+		if (sessionLatestLastUseTime.Sub(sessionPrevLastUseTime)).Milliseconds() <= 0 {
+			t.Fatalf("Session lastUseTime times should not be equal")
+		}
+
+		if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
+		}
+		if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
+		}
+		// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
+		// The session should not be cleaned since the latest operation on the transaction has updated the lastUseTime.
+		p.removeLongRunningSessions()
+		if p.numOfLeakedSessionsRemoved > 0 {
+			t.Fatalf("Expected session to not get cleaned by background maintainer")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *testing.T) {
 	t.Parallel()
 
@@ -1399,6 +1780,65 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *test
 	}
 	if g, w := attempts, 2; g != w {
 		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAction(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: WarnAndClose,
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteBatchDml,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	ctx := context.Background()
+	p := client.idleSessions
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if attempts == 2 {
+			// Simulate the session to be long-running. The background task should not clean up this long-running session.
+			tx.sh.mu.Lock()
+			tx.sh.lastUseTime = time.Now().Add(-time.Hour)
+			if g, w := tx.sh.eligibleForLongRunning, true; g != w {
+				tx.sh.mu.Unlock()
+				return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
+			}
+			tx.sh.mu.Unlock()
+
+			// force run task to clean up unexpected long-running sessions
+			p.removeLongRunningSessions()
+		}
+		rowCounts, err := tx.BatchUpdate(ctx, []Statement{NewStatement(UpdateBarSetFoo)})
+		if err != nil {
+			return err
+		}
+		if g, w := len(rowCounts), 1; g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row counts length mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		if g, w := rowCounts[0], int64(UpdateBarSetFooRowCount); g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
+		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 
@@ -3586,66 +4026,68 @@ func TestBatchReadOnlyTransactionFromID_ReadOptions(t *testing.T) {
 }
 
 type QueryOptionsTestCase struct {
-	name   string
-	client QueryOptions
-	env    QueryOptions
-	query  QueryOptions
-	want   QueryOptions
+	name      string
+	client    QueryOptions
+	clientDRO *sppb.DirectedReadOptions
+	env       QueryOptions
+	query     QueryOptions
+	want      QueryOptions
 }
 
 func queryOptionsTestCases() []QueryOptionsTestCase {
 	statsPkg := "latest"
 	return []QueryOptionsTestCase{
 		{
-			"Client level",
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
-			QueryOptions{Options: nil},
-			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			name:   "Client level",
+			client: QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			env:    QueryOptions{Options: nil},
+			query:  QueryOptions{Options: nil},
+			want:   QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
 		},
 		{
-			"Environment level",
-			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
-			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			name:   "Environment level",
+			client: QueryOptions{Options: nil},
+			env:    QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			query:  QueryOptions{Options: nil},
+			want:   QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
 		},
 		{
-			"Query level",
-			QueryOptions{Options: nil},
-			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			name:   "Query level",
+			client: QueryOptions{Options: nil},
+			env:    QueryOptions{Options: nil},
+			query:  QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			want:   QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
 		},
 		{
-			"Environment level has precedence",
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2", OptimizerStatisticsPackage: statsPkg}},
-			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2", OptimizerStatisticsPackage: statsPkg}},
+			name:   "Environment level has precedence",
+			client: QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			env:    QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2", OptimizerStatisticsPackage: statsPkg}},
+			query:  QueryOptions{Options: nil},
+			want:   QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2", OptimizerStatisticsPackage: statsPkg}},
 		},
 		{
-			"Query level has precedence than client level",
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
-			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
+			name:   "Query level has precedence than client level",
+			client: QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			env:    QueryOptions{Options: nil},
+			query:  QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
+			want:   QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
 		},
 		{
-			"Query level has highest precedence",
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2", OptimizerStatisticsPackage: statsPkg}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
+			name:   "Query level has highest precedence",
+			client: QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			env:    QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2", OptimizerStatisticsPackage: statsPkg}},
+			query:  QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
+			want:   QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
 		},
 	}
 }
 
 type ReadOptionsTestCase struct {
-	name   string
-	client *ReadOptions
-	read   *ReadOptions
-	want   *ReadOptions
+	name      string
+	client    *ReadOptions
+	clientDRO *sppb.DirectedReadOptions
+	read      *ReadOptions
+	want      *ReadOptions
 }
 
 func readOptionsTestCases() []ReadOptionsTestCase {
@@ -3910,6 +4352,44 @@ func TestClient_PDML_Priority(t *testing.T) {
 	} {
 		client.PartitionedUpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
 		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{Priority: qo.Priority})
+	}
+}
+
+func TestClient_WhenLongRunningPartitionedUpdateRequest_TakeNoAction(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                 1,
+			MaxOpened:                 1,
+			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: WarnAndClose,
+				executionFrequency:          15 * time.Millisecond, // check long-running sessions every 15ms
+			},
+		},
+	})
+	defer teardown()
+	// delay the rpc by 30ms. The background task runs to clean long-running sessions.
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 30 * time.Millisecond,
+		})
+
+	stmt := NewStatement(UpdateBarSetFoo)
+	// This transaction is eligible to be long-running, so the background task should not clean its session.
+	rowCount, err := client.PartitionedUpdate(ctx, stmt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := rowCount, int64(UpdateBarSetFooRowCount); g != w {
+		t.Errorf("Row count mismatch\nGot: %v\nWant: %v", g, w)
+	}
+	p := client.idleSessions
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
+		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 

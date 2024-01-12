@@ -1,5 +1,20 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.12.2...oslogin/v1.13.0) (2024-01-11)
+
+
+### Features
+
+* **oslogin:** Add regions field to ImportSshPublicKeyRequest ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+* **oslogin:** Added field `ImportSshPublicKeyRequest.regions` ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
+## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.12.1...oslogin/v1.12.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **oslogin:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.12.0...oslogin/v1.12.1) (2023-10-26)
 
 
