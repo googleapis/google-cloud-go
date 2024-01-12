@@ -99,10 +99,11 @@ type sessionClient struct {
 	batchTimeout  time.Duration
 	logger        *log.Logger
 	callOptions   *vkit.CallOptions
+	otConfig      *openTelemetryConfig
 }
 
 // newSessionClient creates a session client to use for a database.
-func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, disableRouteToLeader bool, md metadata.MD, batchTimeout time.Duration, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
+func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, disableRouteToLeader bool, md metadata.MD, batchTimeout time.Duration, logger *log.Logger, callOptions *vkit.CallOptions, otConfig *openTelemetryConfig) *sessionClient {
 	return &sessionClient{
 		connPool:             connPool,
 		database:             database,
@@ -115,6 +116,7 @@ func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, 
 		batchTimeout:         batchTimeout,
 		logger:               logger,
 		callOptions:          callOptions,
+		otConfig:             otConfig,
 	}
 }
 
@@ -162,6 +164,12 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 		err = captureGFELatencyStats(ctxGFE, md, "createSession")
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
+		}
+	}
+	if isOpenTelemetryMetricsEnabled() && md != nil && sc.otConfig != nil {
+		ct := getCommonTags(sc)
+		if err := createAttributeAndCaptureGFELatencyMetricsOT(ctx, ct, md, "createSession", sc.otConfig); err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Try disabling and rerunning. Error: %v", err)
 		}
 	}
 	if err != nil {
@@ -283,6 +291,12 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 			err = captureGFELatencyStats(ctxGFE, mdForGFELatency, "executeBatchCreateSessions")
 			if err != nil {
 				trace.TracePrintf(ctx, nil, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", err)
+			}
+		}
+		if isOpenTelemetryMetricsEnabled() && mdForGFELatency != nil && sc.otConfig != nil {
+			ct := getCommonTags(sc)
+			if err := createAttributeAndCaptureGFELatencyMetricsOT(ctx, ct, mdForGFELatency, "executeBatchCreateSessions", sc.otConfig); err != nil {
+				trace.TracePrintf(ctx, nil, "Error in Capturing GFE Latency and Header Missing count through OpenTelemetry. Try disabling and rerunning. Error: %v", err)
 			}
 		}
 		if err != nil {

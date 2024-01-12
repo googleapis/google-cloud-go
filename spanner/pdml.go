@@ -132,6 +132,12 @@ func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlReq
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
 	}
+	if isOpenTelemetryMetricsEnabled() && md != nil && sh.session.pool != nil {
+		err := captureGFELatencyMetricsOT(ctx, md, "executePdml_ExecuteSql", sh.session.pool.otConfig, sh.session.pool.otConfig.attributeMap)
+		if err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Try disabling and rerunning. Error: %v", err)
+		}
+	}
 	if err != nil {
 		return 0, err
 	}
