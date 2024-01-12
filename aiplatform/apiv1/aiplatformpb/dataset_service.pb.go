@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -724,8 +723,9 @@ type ExportDataResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// All of the files that are exported in this export operation. For custom
-	// code training export, only three (training, validation and test) GCS paths
-	// in wildcard format are populated (e.g., gs://.../training-*).
+	// code training export, only three (training, validation and test)
+	// Cloud Storage paths in wildcard format are populated
+	// (for example, gs://.../training-*).
 	ExportedFiles []string `protobuf:"bytes,1,rep,name=exported_files,json=exportedFiles,proto3" json:"exported_files,omitempty"`
 	// Only present for custom code training export use case. Records data stats,
 	// i.e., train/validation/test item/annotation counts calculated during

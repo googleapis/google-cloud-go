@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -98,7 +97,7 @@ type ModelEvaluation struct {
 	// The metadata of the ModelEvaluation.
 	// For the ModelEvaluation uploaded from Managed Pipeline, metadata contains a
 	// structured value with keys of "pipeline_job_id", "evaluation_dataset_type",
-	// "evaluation_dataset_path".
+	// "evaluation_dataset_path", "row_based_metrics_path".
 	Metadata *structpb.Value `protobuf:"bytes,11,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
