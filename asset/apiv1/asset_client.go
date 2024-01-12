@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -774,25 +774,25 @@ func (c *Client) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req *as
 // policies) under a scope. This RPC supports custom constraints and the
 // following 10 canned constraints:
 //
-//	storage.uniformBucketLevelAccess
+//   storage.uniformBucketLevelAccess
 //
-//	iam.disableServiceAccountKeyCreation
+//   iam.disableServiceAccountKeyCreation
 //
-//	iam.allowedPolicyMemberDomains
+//   iam.allowedPolicyMemberDomains
 //
-//	compute.vmExternalIpAccess
+//   compute.vmExternalIpAccess
 //
-//	appengine.enforceServiceAccountActAsCheck
+//   appengine.enforceServiceAccountActAsCheck
 //
-//	gcp.resourceLocations
+//   gcp.resourceLocations
 //
-//	compute.trustedImageProjects
+//   compute.trustedImageProjects
 //
-//	compute.skipDefaultNetworkCreation
+//   compute.skipDefaultNetworkCreation
 //
-//	compute.requireOsLogin
+//   compute.requireOsLogin
 //
-//	compute.disableNestedVirtualization
+//   compute.disableNestedVirtualization
 //
 // This RPC only returns either resources of types supported by searchable
 // asset
@@ -3320,25 +3320,25 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 // policies) under a scope. This RPC supports custom constraints and the
 // following 10 canned constraints:
 //
-//	storage.uniformBucketLevelAccess
+//   storage.uniformBucketLevelAccess
 //
-//	iam.disableServiceAccountKeyCreation
+//   iam.disableServiceAccountKeyCreation
 //
-//	iam.allowedPolicyMemberDomains
+//   iam.allowedPolicyMemberDomains
 //
-//	compute.vmExternalIpAccess
+//   compute.vmExternalIpAccess
 //
-//	appengine.enforceServiceAccountActAsCheck
+//   appengine.enforceServiceAccountActAsCheck
 //
-//	gcp.resourceLocations
+//   gcp.resourceLocations
 //
-//	compute.trustedImageProjects
+//   compute.trustedImageProjects
 //
-//	compute.skipDefaultNetworkCreation
+//   compute.skipDefaultNetworkCreation
 //
-//	compute.requireOsLogin
+//   compute.requireOsLogin
 //
-//	compute.disableNestedVirtualization
+//   compute.disableNestedVirtualization
 //
 // This RPC only returns either resources of types supported by searchable
 // asset
