@@ -362,10 +362,10 @@ func (c *DocumentsClient) GetDocument(ctx context.Context, req *dialogflowpb.Get
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *DocumentsClient) CreateDocument(ctx context.Context, req *dialogflowpb.CreateDocumentRequest, opts ...gax.CallOption) (*CreateDocumentOperation, error) {
 	return c.internalClient.CreateDocument(ctx, req, opts...)
 }
@@ -384,11 +384,11 @@ func (c *DocumentsClient) CreateDocumentOperation(name string) *CreateDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response:
-//   ImportDocumentsResponse
+//	response:
+//	ImportDocumentsResponse
 func (c *DocumentsClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	return c.internalClient.ImportDocuments(ctx, req, opts...)
 }
@@ -405,11 +405,11 @@ func (c *DocumentsClient) ImportDocumentsOperation(name string) *ImportDocuments
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *DocumentsClient) DeleteDocument(ctx context.Context, req *dialogflowpb.DeleteDocumentRequest, opts ...gax.CallOption) (*DeleteDocumentOperation, error) {
 	return c.internalClient.DeleteDocument(ctx, req, opts...)
 }
@@ -426,10 +426,10 @@ func (c *DocumentsClient) DeleteDocumentOperation(name string) *DeleteDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *DocumentsClient) UpdateDocument(ctx context.Context, req *dialogflowpb.UpdateDocumentRequest, opts ...gax.CallOption) (*UpdateDocumentOperation, error) {
 	return c.internalClient.UpdateDocument(ctx, req, opts...)
 }
@@ -449,10 +449,10 @@ func (c *DocumentsClient) UpdateDocumentOperation(name string) *UpdateDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -473,10 +473,10 @@ func (c *DocumentsClient) ReloadDocumentOperation(name string) *ReloadDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *DocumentsClient) ExportDocument(ctx context.Context, req *dialogflowpb.ExportDocumentRequest, opts ...gax.CallOption) (*ExportDocumentOperation, error) {
 	return c.internalClient.ExportDocument(ctx, req, opts...)
 }
@@ -1175,10 +1175,10 @@ func (c *documentsRESTClient) GetDocument(ctx context.Context, req *dialogflowpb
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *documentsRESTClient) CreateDocument(ctx context.Context, req *dialogflowpb.CreateDocumentRequest, opts ...gax.CallOption) (*CreateDocumentOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDocument()
@@ -1257,11 +1257,11 @@ func (c *documentsRESTClient) CreateDocument(ctx context.Context, req *dialogflo
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response:
-//   ImportDocumentsResponse
+//	response:
+//	ImportDocumentsResponse
 func (c *documentsRESTClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1337,11 +1337,11 @@ func (c *documentsRESTClient) ImportDocuments(ctx context.Context, req *dialogfl
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response: An Empty
-//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//	response: An Empty
+//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *documentsRESTClient) DeleteDocument(ctx context.Context, req *dialogflowpb.DeleteDocumentRequest, opts ...gax.CallOption) (*DeleteDocumentOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1411,10 +1411,10 @@ func (c *documentsRESTClient) DeleteDocument(ctx context.Context, req *dialogflo
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *documentsRESTClient) UpdateDocument(ctx context.Context, req *dialogflowpb.UpdateDocumentRequest, opts ...gax.CallOption) (*UpdateDocumentOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDocument()
@@ -1501,10 +1501,10 @@ func (c *documentsRESTClient) UpdateDocument(ctx context.Context, req *dialogflo
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 //
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
@@ -1584,10 +1584,10 @@ func (c *documentsRESTClient) ReloadDocument(ctx context.Context, req *dialogflo
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//   response: Document
+//	response: Document
 func (c *documentsRESTClient) ExportDocument(ctx context.Context, req *dialogflowpb.ExportDocumentRequest, opts ...gax.CallOption) (*ExportDocumentOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
