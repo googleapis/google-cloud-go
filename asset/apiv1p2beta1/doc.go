@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 // Package asset is an auto-generated package for the
 // Cloud Asset API.
 //
-// The cloud asset API manages the history and inventory of cloud resources.
+// The Cloud Asset API manages the history and inventory of Google Cloud
+// resources.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //

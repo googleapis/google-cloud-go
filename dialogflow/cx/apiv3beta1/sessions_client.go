@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ type SessionsCallOptions struct {
 	StreamingDetectIntent []gax.CallOption
 	MatchIntent           []gax.CallOption
 	FulfillIntent         []gax.CallOption
+	SubmitAnswerFeedback  []gax.CallOption
 	GetLocation           []gax.CallOption
 	ListLocations         []gax.CallOption
 	CancelOperation       []gax.CallOption
@@ -108,6 +109,18 @@ func defaultSessionsCallOptions() *SessionsCallOptions {
 				})
 			}),
 		},
+		SubmitAnswerFeedback: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -154,6 +167,17 @@ func defaultSessionsRESTCallOptions() *SessionsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		SubmitAnswerFeedback: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -171,6 +195,7 @@ type internalSessionsClient interface {
 	StreamingDetectIntent(context.Context, ...gax.CallOption) (cxpb.Sessions_StreamingDetectIntentClient, error)
 	MatchIntent(context.Context, *cxpb.MatchIntentRequest, ...gax.CallOption) (*cxpb.MatchIntentResponse, error)
 	FulfillIntent(context.Context, *cxpb.FulfillIntentRequest, ...gax.CallOption) (*cxpb.FulfillIntentResponse, error)
+	SubmitAnswerFeedback(context.Context, *cxpb.SubmitAnswerFeedbackRequest, ...gax.CallOption) (*cxpb.AnswerFeedback, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -256,6 +281,12 @@ func (c *SessionsClient) MatchIntent(ctx context.Context, req *cxpb.MatchIntentR
 // Otherwise, the behavior is undefined.
 func (c *SessionsClient) FulfillIntent(ctx context.Context, req *cxpb.FulfillIntentRequest, opts ...gax.CallOption) (*cxpb.FulfillIntentResponse, error) {
 	return c.internalClient.FulfillIntent(ctx, req, opts...)
+}
+
+// SubmitAnswerFeedback updates the feedback received from the user for a single turn of the bot
+// response.
+func (c *SessionsClient) SubmitAnswerFeedback(ctx context.Context, req *cxpb.SubmitAnswerFeedbackRequest, opts ...gax.CallOption) (*cxpb.AnswerFeedback, error) {
+	return c.internalClient.SubmitAnswerFeedback(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -496,6 +527,24 @@ func (c *sessionsGRPCClient) FulfillIntent(ctx context.Context, req *cxpb.Fulfil
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.sessionsClient.FulfillIntent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *sessionsGRPCClient) SubmitAnswerFeedback(ctx context.Context, req *cxpb.SubmitAnswerFeedbackRequest, opts ...gax.CallOption) (*cxpb.AnswerFeedback, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SubmitAnswerFeedback[0:len((*c.CallOptions).SubmitAnswerFeedback):len((*c.CallOptions).SubmitAnswerFeedback)], opts...)
+	var resp *cxpb.AnswerFeedback
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.sessionsClient.SubmitAnswerFeedback(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -833,6 +882,73 @@ func (c *sessionsRESTClient) FulfillIntent(ctx context.Context, req *cxpb.Fulfil
 	opts = append((*c.CallOptions).FulfillIntent[0:len((*c.CallOptions).FulfillIntent):len((*c.CallOptions).FulfillIntent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.FulfillIntentResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SubmitAnswerFeedback updates the feedback received from the user for a single turn of the bot
+// response.
+func (c *sessionsRESTClient) SubmitAnswerFeedback(ctx context.Context, req *cxpb.SubmitAnswerFeedbackRequest, opts ...gax.CallOption) (*cxpb.AnswerFeedback, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:submitAnswerFeedback", req.GetSession())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SubmitAnswerFeedback[0:len((*c.CallOptions).SubmitAnswerFeedback):len((*c.CallOptions).SubmitAnswerFeedback)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cxpb.AnswerFeedback{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
