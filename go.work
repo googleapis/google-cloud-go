@@ -134,6 +134,7 @@ use (
 	./securitycentermanagement
 	./servicecontrol
 	./servicedirectory
+	./servicehealth
 	./servicemanagement
 	./serviceusage
 	./shell
