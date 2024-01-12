@@ -577,18 +577,18 @@ type internalRegistrationClient interface {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//   The API has a collection of
-//   Namespace
-//   resources, named projects/*/locations/*/namespaces/*.
+//	The API has a collection of
+//	Namespace
+//	resources, named projects/*/locations/*/namespaces/*.
 //
-//   Each Namespace has a collection of
-//   Service resources, named
-//   projects/*/locations/*/namespaces/*/services/*.
+//	Each Namespace has a collection of
+//	Service resources, named
+//	projects/*/locations/*/namespaces/*/services/*.
 //
-//   Each Service has a collection of
-//   Endpoint
-//   resources, named
-//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//	Each Service has a collection of
+//	Endpoint
+//	resources, named
+//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 type RegistrationClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegistrationClient
@@ -747,18 +747,18 @@ type registrationGRPCClient struct {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//   The API has a collection of
-//   Namespace
-//   resources, named projects/*/locations/*/namespaces/*.
+//	The API has a collection of
+//	Namespace
+//	resources, named projects/*/locations/*/namespaces/*.
 //
-//   Each Namespace has a collection of
-//   Service resources, named
-//   projects/*/locations/*/namespaces/*/services/*.
+//	Each Namespace has a collection of
+//	Service resources, named
+//	projects/*/locations/*/namespaces/*/services/*.
 //
-//   Each Service has a collection of
-//   Endpoint
-//   resources, named
-//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//	Each Service has a collection of
+//	Endpoint
+//	resources, named
+//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*RegistrationClient, error) {
 	clientOpts := defaultRegistrationGRPCClientOptions()
 	if newRegistrationClientHook != nil {
@@ -831,18 +831,18 @@ type registrationRESTClient struct {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//   The API has a collection of
-//   Namespace
-//   resources, named projects/*/locations/*/namespaces/*.
+//	The API has a collection of
+//	Namespace
+//	resources, named projects/*/locations/*/namespaces/*.
 //
-//   Each Namespace has a collection of
-//   Service resources, named
-//   projects/*/locations/*/namespaces/*/services/*.
+//	Each Namespace has a collection of
+//	Service resources, named
+//	projects/*/locations/*/namespaces/*/services/*.
 //
-//   Each Service has a collection of
-//   Endpoint
-//   resources, named
-//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//	Each Service has a collection of
+//	Endpoint
+//	resources, named
+//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 func NewRegistrationRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegistrationClient, error) {
 	clientOpts := append(defaultRegistrationRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
