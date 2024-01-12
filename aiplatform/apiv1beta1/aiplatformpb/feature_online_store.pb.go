@@ -360,7 +360,9 @@ func (*FeatureOnlineStore_Optimized) Descriptor() ([]byte, []int) {
 
 // The dedicated serving endpoint for this FeatureOnlineStore. Only need to
 // set when you choose Optimized storage type or enable EmbeddingManagement.
-// Will use public endpoint by default.
+// Will use public endpoint by default. Note, for EmbeddingManagement use
+// case, only [DedicatedServingEndpoint.public_endpoint_domain_name] is
+// available now.
 type FeatureOnlineStore_DedicatedServingEndpoint struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -369,8 +371,9 @@ type FeatureOnlineStore_DedicatedServingEndpoint struct {
 	// Output only. This field will be populated with the domain name to use for
 	// this FeatureOnlineStore
 	PublicEndpointDomainName string `protobuf:"bytes,2,opt,name=public_endpoint_domain_name,json=publicEndpointDomainName,proto3" json:"public_endpoint_domain_name,omitempty"`
-	// Optional. Private service connect config.
-	// If
+	// Optional. Private service connect config. The private service connection
+	// is available only for Optimized storage type, not for embedding
+	// management now. If
 	// [PrivateServiceConnectConfig.enable_private_service_connect][google.cloud.aiplatform.v1beta1.PrivateServiceConnectConfig.enable_private_service_connect]
 	// set to true, customers will use private service connection to send
 	// request. Otherwise, the connection will set to public endpoint.
