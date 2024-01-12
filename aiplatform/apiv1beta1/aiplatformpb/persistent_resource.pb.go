@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -47,12 +46,12 @@ const (
 	// The PROVISIONING state indicates the persistent resources is being
 	// created.
 	PersistentResource_PROVISIONING PersistentResource_State = 1
-	// The RUNNING state indicates the persistent resources is healthy and fully
+	// The RUNNING state indicates the persistent resource is healthy and fully
 	// usable.
 	PersistentResource_RUNNING PersistentResource_State = 3
-	// The STOPPING state indicates the persistent resources is being deleted.
+	// The STOPPING state indicates the persistent resource is being deleted.
 	PersistentResource_STOPPING PersistentResource_State = 4
-	// The ERROR state indicates the persistent resources may be unusable.
+	// The ERROR state indicates the persistent resource may be unusable.
 	// Details can be found in the `error` field.
 	PersistentResource_ERROR PersistentResource_State = 5
 )
