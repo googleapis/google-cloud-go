@@ -98,6 +98,10 @@ func TestBQToTableMetadata(t *testing.T) {
 						},
 					},
 				},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 			&TableMetadata{
 				Description:        "desc",
@@ -160,6 +164,10 @@ func TestBQToTableMetadata(t *testing.T) {
 						},
 					},
 				},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 		},
 	} {
@@ -193,6 +201,10 @@ func TestTableMetadataToBQ(t *testing.T) {
 				Labels:             map[string]string{"a": "b"},
 				ExternalDataConfig: &ExternalDataConfig{SourceFormat: Bigtable},
 				EncryptionConfig:   &EncryptionConfig{KMSKeyName: "keyName"},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 			&bq.Table{
 				FriendlyName: "n",
@@ -206,6 +218,10 @@ func TestTableMetadataToBQ(t *testing.T) {
 				Labels:                    map[string]string{"a": "b"},
 				ExternalDataConfiguration: &bq.ExternalDataConfiguration{SourceFormat: "BIGTABLE"},
 				EncryptionConfiguration:   &bq.EncryptionConfiguration{KmsKeyName: "keyName"},
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
 			},
 		},
 		{
@@ -514,6 +530,21 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 						},
 					},
 				},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
+			},
+			want: &bq.Table{
+				ResourceTags: map[string]string{
+					"key1": "val1",
+					"key2": "val2",
+				},
+				ForceSendFields: []string{"ResourceTags"},
 			},
 		},
 	} {

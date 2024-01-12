@@ -1,6 +1,41 @@
 # Changelog
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.3.0...discoveryengine/v1.4.0) (2023-12-13)
+
+
+### Features
+
+* **discoveryengine:** Add site search engine service ([#9158](https://github.com/googleapis/google-cloud-go/issues/9158)) ([f41f85e](https://github.com/googleapis/google-cloud-go/commit/f41f85ee090a733321eeac2aaba9930471d33e4c))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.2.3...discoveryengine/v1.3.0) (2023-12-07)
+
+
+### Features
+
+* **discoveryengine:** New clients ([#9089](https://github.com/googleapis/google-cloud-go/issues/9089)) ([fab7e82](https://github.com/googleapis/google-cloud-go/commit/fab7e8247851c3c1a907aaecbd6b04d56dd201c7))
+
+## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.2.2...discoveryengine/v1.2.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.2.1...discoveryengine/v1.2.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.2.0...discoveryengine/v1.2.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.1.0...discoveryengine/v1.2.0) (2023-09-11)
 
 

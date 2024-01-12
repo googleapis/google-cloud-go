@@ -723,7 +723,10 @@ type ExportDataResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// All of the files that are exported in this export operation.
+	// All of the files that are exported in this export operation. For custom
+	// code training export, only three (training, validation and test)
+	// Cloud Storage paths in wildcard format are populated
+	// (for example, gs://.../training-*).
 	ExportedFiles []string `protobuf:"bytes,1,rep,name=exported_files,json=exportedFiles,proto3" json:"exported_files,omitempty"`
 }
 

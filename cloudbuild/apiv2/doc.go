@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,11 +67,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &cloudbuildpb.CreateConnectionRequest{
+//	req := &cloudbuildpb.BatchCreateRepositoriesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#CreateConnectionRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb#BatchCreateRepositoriesRequest.
 //	}
-//	op, err := c.CreateConnection(ctx, req)
+//	op, err := c.BatchCreateRepositories(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -69,11 +69,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &managedidentitiespb.CreateMicrosoftAdDomainRequest{
+//	req := &managedidentitiespb.AttachTrustRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#CreateMicrosoftAdDomainRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#AttachTrustRequest.
 //	}
-//	op, err := c.CreateMicrosoftAdDomain(ctx, req)
+//	op, err := c.AttachTrust(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -17,6 +17,7 @@ package auth
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -36,7 +37,9 @@ const (
 	// Parameter key for Exchange method to support PKCE.
 	codeVerifierKey = "code_verifier"
 
-	defaultExpiryDelta = 10 * time.Second
+	// 3 minutes and 45 seconds before expiration. The shortest MDS cache is 4 minutes,
+	// so we give it 15 seconds to refresh it's cache before attempting to refresh a token.
+	defaultExpiryDelta = 215 * time.Second
 )
 
 var (
@@ -224,17 +227,17 @@ type Options2LO struct {
 	// contents of a PEM file that contains a private key. It is used to sign
 	// the JWT created.
 	PrivateKey []byte
+	// TokenURL is th URL the JWT is sent to. Required.
+	TokenURL string
 	// PrivateKeyID is the ID of the key used to sign the JWT. It is used as the
-	// "kid" in the JWT header.
+	// "kid" in the JWT header. Optional.
 	PrivateKeyID string
 	// Subject is the used for to impersonate a user. It is used as the "sub" in
 	// the JWT.m Optional.
 	Subject string
 	// Scopes specifies requested permissions for the token. Optional.
 	Scopes []string
-	// TokenURL is th URL the JWT is sent to.
-	TokenURL string
-	// Expires specifies the lifetime of the token.
+	// Expires specifies the lifetime of the token. Optional.
 	Expires time.Duration
 	// Audience specifies the "aud" in the JWT. Optional.
 	Audience string
@@ -249,16 +252,34 @@ type Options2LO struct {
 	UseIDToken bool
 }
 
-func (c *Options2LO) client() *http.Client {
-	if c.Client != nil {
-		return c.Client
+func (o *Options2LO) client() *http.Client {
+	if o.Client != nil {
+		return o.Client
 	}
 	return internal.CloneDefaultClient()
 }
 
+func (o *Options2LO) validate() error {
+	if o == nil {
+		return errors.New("auth: options must be provided")
+	}
+	if o.Email == "" {
+		return errors.New("auth: email must be provided")
+	}
+	if len(o.PrivateKey) == 0 {
+		return errors.New("auth: private key must be provided")
+	}
+	if o.TokenURL == "" {
+		return errors.New("auth: token URL must be provided")
+	}
+	return nil
+}
+
 // New2LOTokenProvider returns a [TokenProvider] from the provided options.
 func New2LOTokenProvider(opts *Options2LO) (TokenProvider, error) {
-	// TODO(codyoss): add validation
+	if err := opts.validate(); err != nil {
+		return nil, err
+	}
 	return tokenProvider2LO{opts: opts, Client: opts.client()}, nil
 }
 

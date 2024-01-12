@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@
 // Provides natural language understanding technologies, such as sentiment
 // analysis, entity recognition, entity sentiment analysis, and other text
 // annotations, to developers.
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation
 //
@@ -71,11 +69,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &languagepb.AnalyzeSentimentRequest{
+//	req := &languagepb.AnalyzeEntitiesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/language/apiv2/languagepb#AnalyzeSentimentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/language/apiv2/languagepb#AnalyzeEntitiesRequest.
 //	}
-//	resp, err := c.AnalyzeSentiment(ctx, req)
+//	resp, err := c.AnalyzeEntities(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -45,6 +45,7 @@ import (
 	v1 "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
+	"github.com/stretchr/testify/require"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
@@ -894,6 +895,92 @@ func deleteTestSession(ctx context.Context, t *testing.T, sessionName string) {
 	defer gapic.Close()
 	if err := gapic.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: sessionName}); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestIntegration_BatchWrite(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	mgs := make([]*MutationGroup, len(writes))
+	// Try to write four rows through the BatchWrite API.
+	for i, w := range writes {
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		ms := make([]*Mutation, 1)
+		ms[0] = m
+		mgs[i] = &MutationGroup{Mutations: ms}
+	}
+	// Records the mutation group indexes received in the response.
+	seen := make(map[int32]int32)
+	numMutationGroups := len(mgs)
+	validate := func(res *sppb.BatchWriteResponse) error {
+		if status := status.ErrorProto(res.GetStatus()); status != nil {
+			t.Fatalf("Invalid status: %v", status)
+		}
+		if ts := res.GetCommitTimestamp(); ts == nil {
+			t.Fatal("Invalid commit timestamp")
+		}
+		for _, idx := range res.GetIndexes() {
+			if idx >= 0 && idx < int32(numMutationGroups) {
+				seen[idx]++
+			} else {
+				t.Fatalf("Index %v out of range. Expected range [%v,%v]", idx, 0, numMutationGroups-1)
+			}
+		}
+		return nil
+	}
+	iter := client.BatchWrite(ctx, mgs)
+	if err := iter.Do(validate); err != nil {
+		t.Fatal(err)
+	}
+	// Validate that each mutation group index is seen exactly once.
+	if numMutationGroups != len(seen) {
+		t.Fatalf("Expected %v indexes, got %v indexes", numMutationGroups, len(seen))
+	}
+	for idx, ct := range seen {
+		if ct != 1 {
+			t.Fatalf("Index %v seen %v times instead of exactly once", idx, ct)
+		}
+	}
+
+	// Verify the writes by reading the database.
+	singersQuery := "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@p1, @p2, @p3)"
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		singersQuery = "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId = $1 OR  SingerId = $2 OR  SingerId = $3"
+	}
+	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
+		OptimizerVersion:           "1",
+		OptimizerStatisticsPackage: "latest",
+	}}
+	got, err := readAll(client.Single().QueryWithOptions(ctx, Statement{
+		singersQuery,
+		map[string]interface{}{"p1": int64(1), "p2": int64(3), "p3": int64(4)},
+	}, qo))
+
+	if err != nil {
+		t.Errorf("ReadOnlyTransaction.QueryWithOptions returns error %v, want nil", err)
+	}
+
+	want := [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result from ReadOnlyTransaction.QueryWithOptions: %v, want %v", got, want)
 	}
 }
 
@@ -1931,29 +2018,40 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	n2 := *n2p
 
 	type Message struct {
-		Name string
-		Body string
-		Time int64
+		Name       string
+		Body       string
+		Time       int64
+		FloatValue interface{}
 	}
-	msg := Message{"Alice", "Hello", 1294706395881547000}
-	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
-	var unmarshalledJSONstruct interface{}
-	json.Unmarshal([]byte(jsonStr), &unmarshalledJSONstruct)
+	msg := Message{"Alice", "Hello", 145688415796432520, json.Number("0.39240506000000003")}
+	unmarshalledJSONStructUsingNumber := map[string]interface{}{
+		"Name":       "Alice",
+		"Body":       "Hello",
+		"Time":       json.Number("145688415796432520"),
+		"FloatValue": json.Number("0.39240506000000003"),
+	}
+	unmarshalledJSONStruct := map[string]interface{}{
+		"Name":       "Alice",
+		"Body":       "Hello",
+		"Time":       1.456884157964325e+17,
+		"FloatValue": 0.39240506,
+	}
 
 	tests := []struct {
-		col  string
-		val  interface{}
-		want interface{}
+		col                   string
+		val                   interface{}
+		wantWithDefaultConfig interface{}
+		wantWithNumber        interface{}
 	}{
 		{col: "String", val: ""},
-		{col: "String", val: "", want: NullString{"", true}},
+		{col: "String", val: "", wantWithDefaultConfig: NullString{"", true}, wantWithNumber: NullString{"", true}},
 		{col: "String", val: "foo"},
-		{col: "String", val: "foo", want: NullString{"foo", true}},
-		{col: "String", val: NullString{"bar", true}, want: "bar"},
-		{col: "String", val: NullString{"bar", false}, want: NullString{"", false}},
-		{col: "StringArray", val: []string(nil), want: []NullString(nil)},
-		{col: "StringArray", val: []string{}, want: []NullString{}},
-		{col: "StringArray", val: []string{"foo", "bar"}, want: []NullString{{"foo", true}, {"bar", true}}},
+		{col: "String", val: "foo", wantWithDefaultConfig: NullString{"foo", true}, wantWithNumber: NullString{"foo", true}},
+		{col: "String", val: NullString{"bar", true}, wantWithDefaultConfig: "bar", wantWithNumber: "bar"},
+		{col: "String", val: NullString{"bar", false}, wantWithDefaultConfig: NullString{"", false}, wantWithNumber: NullString{"", false}},
+		{col: "StringArray", val: []string(nil), wantWithDefaultConfig: []NullString(nil), wantWithNumber: []NullString(nil)},
+		{col: "StringArray", val: []string{}, wantWithDefaultConfig: []NullString{}, wantWithNumber: []NullString{}},
+		{col: "StringArray", val: []string{"foo", "bar"}, wantWithDefaultConfig: []NullString{{"foo", true}, {"bar", true}}, wantWithNumber: []NullString{{"foo", true}, {"bar", true}}},
 		{col: "StringArray", val: []NullString(nil)},
 		{col: "StringArray", val: []NullString{}},
 		{col: "StringArray", val: []NullString{{"foo", true}, {}}},
@@ -1963,32 +2061,32 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "BytesArray", val: [][]byte(nil)},
 		{col: "BytesArray", val: [][]byte{}},
 		{col: "BytesArray", val: [][]byte{{1}, {2, 3}}},
-		{col: "Int64a", val: 0, want: int64(0)},
-		{col: "Int64a", val: -1, want: int64(-1)},
-		{col: "Int64a", val: 2, want: int64(2)},
+		{col: "Int64a", val: 0, wantWithDefaultConfig: int64(0), wantWithNumber: int64(0)},
+		{col: "Int64a", val: -1, wantWithDefaultConfig: int64(-1), wantWithNumber: int64(-1)},
+		{col: "Int64a", val: 2, wantWithDefaultConfig: int64(2), wantWithNumber: int64(2)},
 		{col: "Int64a", val: int64(3)},
-		{col: "Int64a", val: 4, want: NullInt64{4, true}},
-		{col: "Int64a", val: NullInt64{5, true}, want: int64(5)},
-		{col: "Int64a", val: NullInt64{6, true}, want: int64(6)},
-		{col: "Int64a", val: NullInt64{7, false}, want: NullInt64{0, false}},
-		{col: "Int64Array", val: []int(nil), want: []NullInt64(nil)},
-		{col: "Int64Array", val: []int{}, want: []NullInt64{}},
-		{col: "Int64Array", val: []int{1, 2}, want: []NullInt64{{1, true}, {2, true}}},
-		{col: "Int64Array", val: []int64(nil), want: []NullInt64(nil)},
-		{col: "Int64Array", val: []int64{}, want: []NullInt64{}},
-		{col: "Int64Array", val: []int64{1, 2}, want: []NullInt64{{1, true}, {2, true}}},
+		{col: "Int64a", val: 4, wantWithDefaultConfig: NullInt64{4, true}, wantWithNumber: NullInt64{4, true}},
+		{col: "Int64a", val: NullInt64{5, true}, wantWithDefaultConfig: int64(5), wantWithNumber: int64(5)},
+		{col: "Int64a", val: NullInt64{6, true}, wantWithDefaultConfig: int64(6), wantWithNumber: int64(6)},
+		{col: "Int64a", val: NullInt64{7, false}, wantWithDefaultConfig: NullInt64{0, false}, wantWithNumber: NullInt64{0, false}},
+		{col: "Int64Array", val: []int(nil), wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
+		{col: "Int64Array", val: []int{}, wantWithDefaultConfig: []NullInt64{}, wantWithNumber: []NullInt64{}},
+		{col: "Int64Array", val: []int{1, 2}, wantWithDefaultConfig: []NullInt64{{1, true}, {2, true}}, wantWithNumber: []NullInt64{{1, true}, {2, true}}},
+		{col: "Int64Array", val: []int64(nil), wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
+		{col: "Int64Array", val: []int64{}, wantWithDefaultConfig: []NullInt64{}, wantWithNumber: []NullInt64{}},
+		{col: "Int64Array", val: []int64{1, 2}, wantWithDefaultConfig: []NullInt64{{1, true}, {2, true}}, wantWithNumber: []NullInt64{{1, true}, {2, true}}},
 		{col: "Int64Array", val: []NullInt64(nil)},
 		{col: "Int64Array", val: []NullInt64{}},
 		{col: "Int64Array", val: []NullInt64{{1, true}, {}}},
 		{col: "Bool", val: false},
 		{col: "Bool", val: true},
-		{col: "Bool", val: false, want: NullBool{false, true}},
-		{col: "Bool", val: true, want: NullBool{true, true}},
+		{col: "Bool", val: false, wantWithDefaultConfig: NullBool{false, true}, wantWithNumber: NullBool{false, true}},
+		{col: "Bool", val: true, wantWithDefaultConfig: NullBool{true, true}, wantWithNumber: NullBool{true, true}},
 		{col: "Bool", val: NullBool{true, true}},
 		{col: "Bool", val: NullBool{false, false}},
-		{col: "BoolArray", val: []bool(nil), want: []NullBool(nil)},
-		{col: "BoolArray", val: []bool{}, want: []NullBool{}},
-		{col: "BoolArray", val: []bool{true, false}, want: []NullBool{{true, true}, {false, true}}},
+		{col: "BoolArray", val: []bool(nil), wantWithDefaultConfig: []NullBool(nil), wantWithNumber: []NullBool(nil)},
+		{col: "BoolArray", val: []bool{}, wantWithDefaultConfig: []NullBool{}, wantWithNumber: []NullBool{}},
+		{col: "BoolArray", val: []bool{true, false}, wantWithDefaultConfig: []NullBool{{true, true}, {false, true}}, wantWithNumber: []NullBool{{true, true}, {false, true}}},
 		{col: "BoolArray", val: []NullBool(nil)},
 		{col: "BoolArray", val: []NullBool{}},
 		{col: "BoolArray", val: []NullBool{{false, true}, {true, true}, {}}},
@@ -1997,150 +2095,162 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Float64", val: math.NaN()},
 		{col: "Float64", val: math.Inf(1)},
 		{col: "Float64", val: math.Inf(-1)},
-		{col: "Float64", val: 2.78, want: NullFloat64{2.78, true}},
-		{col: "Float64", val: NullFloat64{2.71, true}, want: 2.71},
-		{col: "Float64", val: NullFloat64{1.41, true}, want: NullFloat64{1.41, true}},
+		{col: "Float64", val: 2.78, wantWithDefaultConfig: NullFloat64{2.78, true}, wantWithNumber: NullFloat64{2.78, true}},
+		{col: "Float64", val: NullFloat64{2.71, true}, wantWithDefaultConfig: 2.71, wantWithNumber: 2.71},
+		{col: "Float64", val: NullFloat64{1.41, true}, wantWithDefaultConfig: NullFloat64{1.41, true}, wantWithNumber: NullFloat64{1.41, true}},
 		{col: "Float64", val: NullFloat64{0, false}},
-		{col: "Float64Array", val: []float64(nil), want: []NullFloat64(nil)},
-		{col: "Float64Array", val: []float64{}, want: []NullFloat64{}},
-		{col: "Float64Array", val: []float64{2.72, 3.14, math.Inf(1)}, want: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}},
+		{col: "Float64Array", val: []float64(nil), wantWithDefaultConfig: []NullFloat64(nil), wantWithNumber: []NullFloat64(nil)},
+		{col: "Float64Array", val: []float64{}, wantWithDefaultConfig: []NullFloat64{}, wantWithNumber: []NullFloat64{}},
+		{col: "Float64Array", val: []float64{2.72, 3.14, math.Inf(1)}, wantWithDefaultConfig: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}, wantWithNumber: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}},
 		{col: "Float64Array", val: []NullFloat64(nil)},
 		{col: "Float64Array", val: []NullFloat64{}},
 		{col: "Float64Array", val: []NullFloat64{{2.72, true}, {math.Inf(1), true}, {}}},
 		{col: "Date", val: d1},
-		{col: "Date", val: d1, want: NullDate{d1, true}},
+		{col: "Date", val: d1, wantWithDefaultConfig: NullDate{d1, true}, wantWithNumber: NullDate{d1, true}},
 		{col: "Date", val: NullDate{d1, true}},
-		{col: "Date", val: NullDate{d1, true}, want: d1},
+		{col: "Date", val: NullDate{d1, true}, wantWithDefaultConfig: d1, wantWithNumber: d1},
 		{col: "Date", val: NullDate{civil.Date{}, false}},
-		{col: "DateArray", val: []civil.Date(nil), want: []NullDate(nil)},
-		{col: "DateArray", val: []civil.Date{}, want: []NullDate{}},
-		{col: "DateArray", val: []civil.Date{d1, d2, d3}, want: []NullDate{{d1, true}, {d2, true}, {d3, true}}},
+		{col: "DateArray", val: []civil.Date(nil), wantWithDefaultConfig: []NullDate(nil), wantWithNumber: []NullDate(nil)},
+		{col: "DateArray", val: []civil.Date{}, wantWithDefaultConfig: []NullDate{}, wantWithNumber: []NullDate{}},
+		{col: "DateArray", val: []civil.Date{d1, d2, d3}, wantWithDefaultConfig: []NullDate{{d1, true}, {d2, true}, {d3, true}}, wantWithNumber: []NullDate{{d1, true}, {d2, true}, {d3, true}}},
 		{col: "Timestamp", val: t1},
-		{col: "Timestamp", val: t1, want: NullTime{t1, true}},
+		{col: "Timestamp", val: t1, wantWithDefaultConfig: NullTime{t1, true}, wantWithNumber: NullTime{t1, true}},
 		{col: "Timestamp", val: NullTime{t1, true}},
-		{col: "Timestamp", val: NullTime{t1, true}, want: t1},
+		{col: "Timestamp", val: NullTime{t1, true}, wantWithDefaultConfig: t1, wantWithNumber: t1},
 		{col: "Timestamp", val: NullTime{}},
-		{col: "TimestampArray", val: []time.Time(nil), want: []NullTime(nil)},
-		{col: "TimestampArray", val: []time.Time{}, want: []NullTime{}},
-		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, want: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
+		{col: "TimestampArray", val: []time.Time(nil), wantWithDefaultConfig: []NullTime(nil), wantWithNumber: []NullTime(nil)},
+		{col: "TimestampArray", val: []time.Time{}, wantWithDefaultConfig: []NullTime{}, wantWithNumber: []NullTime{}},
+		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, wantWithDefaultConfig: []NullTime{{t1, true}, {t2, true}, {t3, true}}, wantWithNumber: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
 		{col: "Numeric", val: n1},
 		{col: "Numeric", val: n2},
-		{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
-		{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
-		{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
-		{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
+		{col: "Numeric", val: n1, wantWithDefaultConfig: NullNumeric{n1, true}, wantWithNumber: NullNumeric{n1, true}},
+		{col: "Numeric", val: n2, wantWithDefaultConfig: NullNumeric{n2, true}, wantWithNumber: NullNumeric{n2, true}},
+		{col: "Numeric", val: NullNumeric{n1, true}, wantWithDefaultConfig: n1, wantWithNumber: n1},
+		{col: "Numeric", val: NullNumeric{n1, true}, wantWithDefaultConfig: NullNumeric{n1, true}, wantWithNumber: NullNumeric{n1, true}},
 		{col: "Numeric", val: NullNumeric{n0, false}},
-		{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
-		{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
-		{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
+		{col: "NumericArray", val: []big.Rat(nil), wantWithDefaultConfig: []NullNumeric(nil), wantWithNumber: []NullNumeric(nil)},
+		{col: "NumericArray", val: []big.Rat{}, wantWithDefaultConfig: []NullNumeric{}, wantWithNumber: []NullNumeric{}},
+		{col: "NumericArray", val: []big.Rat{n1, n2}, wantWithDefaultConfig: []NullNumeric{{n1, true}, {n2, true}}, wantWithNumber: []NullNumeric{{n1, true}, {n2, true}}},
 		{col: "NumericArray", val: []NullNumeric(nil)},
 		{col: "NumericArray", val: []NullNumeric{}},
 		{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
-		{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshalledJSONstruct, true}},
-		{col: "JSON", val: NullJSON{msg, false}, want: NullJSON{}},
+		{col: "JSON", val: NullJSON{msg, true}, wantWithDefaultConfig: NullJSON{unmarshalledJSONStruct, true}, wantWithNumber: NullJSON{unmarshalledJSONStructUsingNumber, true}},
+		{col: "JSON", val: NullJSON{msg, false}, wantWithDefaultConfig: NullJSON{}, wantWithNumber: NullJSON{}},
 		{col: "JSONArray", val: []NullJSON(nil)},
 		{col: "JSONArray", val: []NullJSON{}},
-		{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, want: []NullJSON{{unmarshalledJSONstruct, true}, {unmarshalledJSONstruct, true}, {}}},
-		{col: "String", val: nil, want: NullString{}},
-		{col: "StringArray", val: nil, want: []NullString(nil)},
-		{col: "Bytes", val: nil, want: []byte(nil)},
-		{col: "BytesArray", val: nil, want: [][]byte(nil)},
-		{col: "Int64a", val: nil, want: NullInt64{}},
-		{col: "Int64Array", val: nil, want: []NullInt64(nil)},
-		{col: "Bool", val: nil, want: NullBool{}},
-		{col: "BoolArray", val: nil, want: []NullBool(nil)},
-		{col: "Float64", val: nil, want: NullFloat64{}},
-		{col: "Float64Array", val: nil, want: []NullFloat64(nil)},
-		{col: "Numeric", val: nil, want: NullNumeric{}},
-		{col: "NumericArray", val: nil, want: []NullNumeric(nil)},
-		{col: "JSON", val: nil, want: NullJSON{}},
-		{col: "JSONArray", val: nil, want: []NullJSON(nil)},
+		{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, wantWithDefaultConfig: []NullJSON{{unmarshalledJSONStruct, true}, {unmarshalledJSONStruct, true}, {}}, wantWithNumber: []NullJSON{{unmarshalledJSONStructUsingNumber, true}, {unmarshalledJSONStructUsingNumber, true}, {}}},
+		{col: "String", val: nil, wantWithDefaultConfig: NullString{}, wantWithNumber: NullString{}},
+		{col: "StringArray", val: nil, wantWithDefaultConfig: []NullString(nil), wantWithNumber: []NullString(nil)},
+		{col: "Bytes", val: nil, wantWithDefaultConfig: []byte(nil), wantWithNumber: []byte(nil)},
+		{col: "BytesArray", val: nil, wantWithDefaultConfig: [][]byte(nil), wantWithNumber: [][]byte(nil)},
+		{col: "Int64a", val: nil, wantWithDefaultConfig: NullInt64{}, wantWithNumber: NullInt64{}},
+		{col: "Int64Array", val: nil, wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
+		{col: "Bool", val: nil, wantWithDefaultConfig: NullBool{}, wantWithNumber: NullBool{}},
+		{col: "BoolArray", val: nil, wantWithDefaultConfig: []NullBool(nil), wantWithNumber: []NullBool(nil)},
+		{col: "Float64", val: nil, wantWithDefaultConfig: NullFloat64{}, wantWithNumber: NullFloat64{}},
+		{col: "Float64Array", val: nil, wantWithDefaultConfig: []NullFloat64(nil), wantWithNumber: []NullFloat64(nil)},
+		{col: "Numeric", val: nil, wantWithDefaultConfig: NullNumeric{}, wantWithNumber: NullNumeric{}},
+		{col: "NumericArray", val: nil, wantWithDefaultConfig: []NullNumeric(nil), wantWithNumber: []NullNumeric(nil)},
+		{col: "JSON", val: nil, wantWithDefaultConfig: NullJSON{}, wantWithNumber: NullJSON{}},
+		{col: "JSONArray", val: nil, wantWithDefaultConfig: []NullJSON(nil), wantWithNumber: []NullJSON(nil)},
 	}
 
 	// See https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/31
 	if !isEmulatorEnvSet() {
 		tests = append(tests, []struct {
-			col  string
-			val  interface{}
-			want interface{}
+			col                   string
+			val                   interface{}
+			wantWithDefaultConfig interface{}
+			wantWithNumber        interface{}
 		}{
-			{col: "Date", val: nil, want: NullDate{}},
-			{col: "Timestamp", val: nil, want: NullTime{}},
+			{col: "Date", val: nil, wantWithDefaultConfig: NullDate{}, wantWithNumber: NullDate{}},
+			{col: "Timestamp", val: nil, wantWithDefaultConfig: NullTime{}, wantWithNumber: NullTime{}},
 		}...)
 	}
 
-	// Write rows into table first using DML.
-	statements := make([]Statement, 0)
-	for i, test := range tests {
-		stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
-		// Note: We are not setting the parameter type here to ensure that it
-		// can be automatically recognized when it is actually needed.
-		stmt.Params["id"] = i
-		stmt.Params["value"] = test.val
-		statements = append(statements, stmt)
-	}
-	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		rowCounts, err := tx.BatchUpdate(ctx, statements)
+	for _, withNumberConfigOption := range []bool{false, true} {
+		if withNumberConfigOption {
+			UseNumberWithJSONDecoderEncoder(withNumberConfigOption)
+			defer UseNumberWithJSONDecoderEncoder(!withNumberConfigOption)
+		}
+		// Write rows into table first using DML.
+		statements := make([]Statement, 0)
+		for i, test := range tests {
+			stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
+			// Note: We are not setting the parameter type here to ensure that it
+			// can be automatically recognized when it is actually needed.
+			stmt.Params["id"] = i
+			stmt.Params["value"] = test.val
+			statements = append(statements, stmt)
+		}
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			rowCounts, err := tx.BatchUpdate(ctx, statements)
+			if err != nil {
+				return err
+			}
+			if len(rowCounts) != len(tests) {
+				return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+			}
+			for i, c := range rowCounts {
+				if c != 1 {
+					return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+				}
+			}
+			return nil
+		})
 		if err != nil {
-			return err
+			t.Fatalf("failed to insert values using DML: %v", err)
 		}
-		if len(rowCounts) != len(tests) {
-			return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+		// Delete all the rows so we can insert them using mutations as well.
+		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+		if err != nil {
+			t.Fatalf("failed to delete all rows: %v", err)
 		}
-		for i, c := range rowCounts {
-			if c != 1 {
-				return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+
+		// Verify that we can insert the rows using mutations.
+		var muts []*Mutation
+		for i, test := range tests {
+			muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))
+		}
+		if _, err := client.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
+		}
+
+		for i, test := range tests {
+			row, err := client.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
+			if err != nil {
+				t.Fatalf("Unable to fetch row %v: %v", i, err)
+			}
+			verifyDirectPathRemoteAddress(t)
+			want := test.wantWithDefaultConfig
+			if withNumberConfigOption {
+				want = test.wantWithNumber
+			}
+			if want == nil {
+				want = test.val
+			}
+			gotp := reflect.New(reflect.TypeOf(want))
+			if err := row.Column(0, gotp.Interface()); err != nil {
+				t.Errorf("%v-%d: col:%v val:%#v, %v", withNumberConfigOption, i, test.col, test.val, err)
+				continue
+			}
+			got := reflect.Indirect(gotp).Interface()
+
+			// One of the test cases is checking NaN handling.  Given
+			// NaN!=NaN, we can't use reflect to test for it.
+			if isNaN(got) && isNaN(want) {
+				continue
+			}
+
+			// Check non-NaN cases.
+			if !testEqual(got, want) {
+				t.Errorf("%v-%d: col:%v val:%#v, got %#v, want %#v", withNumberConfigOption, i, test.col, test.val, got, want)
+				continue
 			}
 		}
-		return nil
-	})
-	if err != nil {
-		t.Fatalf("failed to insert values using DML: %v", err)
-	}
-	// Delete all the rows so we can insert them using mutations as well.
-	_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
-	if err != nil {
-		t.Fatalf("failed to delete all rows: %v", err)
-	}
-
-	// Verify that we can insert the rows using mutations.
-	var muts []*Mutation
-	for i, test := range tests {
-		muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))
-	}
-	if _, err := client.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
-		t.Fatal(err)
-	}
-
-	for i, test := range tests {
-		row, err := client.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
-		if err != nil {
-			t.Fatalf("Unable to fetch row %v: %v", i, err)
-		}
-		verifyDirectPathRemoteAddress(t)
-		// Create new instance of type of test.want.
-		want := test.want
-		if want == nil {
-			want = test.val
-		}
-		gotp := reflect.New(reflect.TypeOf(want))
-		if err := row.Column(0, gotp.Interface()); err != nil {
-			t.Errorf("%d: col:%v val:%#v, %v", i, test.col, test.val, err)
-			continue
-		}
-		got := reflect.Indirect(gotp).Interface()
-
-		// One of the test cases is checking NaN handling.  Given
-		// NaN!=NaN, we can't use reflect to test for it.
-		if isNaN(got) && isNaN(want) {
-			continue
-		}
-
-		// Check non-NaN cases.
-		if !testEqual(got, want) {
-			t.Errorf("%d: col:%v val:%#v, got %#v, want %#v", i, test.col, test.val, got, want)
-			continue
-		}
+		// cleanup
+		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+		require.NoError(t, err)
 	}
 }
 
@@ -4924,6 +5034,140 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 				t.Errorf("BIT REVERSED SEQUENECES error=%v, wantErr: %v", gotErr, tt.wantErr)
 			}
 		})
+	}
+}
+
+func TestIntegration_WithDirectedReadOptions_ReadOnlyTransaction(t *testing.T) {
+	t.Parallel()
+	// DirectedReadOptions for PG is supported, however we test only for Google SQL.
+	skipUnsupportedPGTest(t)
+	skipEmulatorTest(t)
+
+	ctxTimeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	directedReadOptions := &sppb.DirectedReadOptions{
+		Replicas: &sppb.DirectedReadOptions_IncludeReplicas_{
+			IncludeReplicas: &sppb.DirectedReadOptions_IncludeReplicas{
+				ReplicaSelections: []*sppb.DirectedReadOptions_ReplicaSelection{
+					{
+						Location: "us-west1",
+						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
+					},
+				},
+				AutoFailoverDisabled: true,
+			},
+		},
+	}
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	// Try to write four rows through the Apply API.
+	for i, w := range writes {
+		var err error
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	want := [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}}
+
+	// Test DirectedReadOptions for ReadOnlyTransaction.ReadWithOptions
+	got, err := readAll(client.ReadOnlyTransaction().ReadWithOptions(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"},
+		&ReadOptions{DirectedReadOptions: directedReadOptions}))
+	if err != nil {
+		t.Errorf("DirectedReadOptions using ReadOptions returns error %v, want nil", err)
+	}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result in DirectedReadOptions test: %v, want %v", got, want)
+	}
+
+	// Test DirectedReadOptions for ReadOnlyTransaction.QueryWithOptions
+	singersQuery := "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@p1, @p2, @p3) ORDER BY SingerId"
+	got, err = readAll(client.Single().QueryWithOptions(ctx, Statement{
+		singersQuery,
+		map[string]interface{}{"p1": int64(1), "p2": int64(3), "p3": int64(4)},
+	}, QueryOptions{DirectedReadOptions: directedReadOptions}))
+
+	if err != nil {
+		t.Errorf("DirectedReadOptions using QueryOptions returns error %v, want nil", err)
+	}
+
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result in DirectedReadOptions test: %v, want %v", got, want)
+	}
+}
+
+func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction_ShouldThrowError(t *testing.T) {
+	t.Parallel()
+	// DirectedReadOptions for PG is supported, however we test only for Google SQL.
+	skipUnsupportedPGTest(t)
+	skipEmulatorTest(t)
+
+	ctxTimeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	directedReadOptions := &sppb.DirectedReadOptions{
+		Replicas: &sppb.DirectedReadOptions_IncludeReplicas_{
+			IncludeReplicas: &sppb.DirectedReadOptions_IncludeReplicas{
+				ReplicaSelections: []*sppb.DirectedReadOptions_ReplicaSelection{
+					{
+						Location: "us-west1",
+						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
+					},
+				},
+				AutoFailoverDisabled: true,
+			},
+		},
+	}
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	// Try to write four rows through the Apply API.
+	for i, w := range writes {
+		var err error
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) (err error) {
+		_, err = readAll(tx.ReadWithOptions(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}, &ReadOptions{DirectedReadOptions: directedReadOptions}))
+		return err
+	})
+	if err == nil {
+		t.Fatal("expected err, got nil")
+	}
+	if msg, ok := matchError(err, codes.InvalidArgument, "Directed reads can only be performed in a read-only transaction"); !ok {
+		t.Fatal(msg)
 	}
 }
 
