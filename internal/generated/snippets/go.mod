@@ -477,3 +477,5 @@ replace cloud.google.com/go/securitycentermanagement => ../../../securitycenterm
 replace cloud.google.com/go/apps => ../../../apps
 
 replace cloud.google.com/go/cloudquotas => ../../../cloudquotas
+
+replace cloud.google.com/go/servicehealth => ../../../servicehealth

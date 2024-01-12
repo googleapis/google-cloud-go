@@ -499,7 +499,7 @@ func (p *postProcessor) processCommit(title, body string) (string, string, error
 			// When OwlBot generates the commit body, after commit titles it provides 'Source-Link's.
 			// The source-link pointing to the googleapis/googleapis repo commit allows us to extract
 			// hash and find files changed in order to identify the commit's scope.
-			if strings.Contains(line, "googleapis/googleapis/") {
+			if strings.HasPrefix(line, "Source-Link") && strings.Contains(line, "googleapis/googleapis/") {
 				hash := extractHashFromLine(line)
 				scopes, err := p.getScopesFromGoogleapisCommitHash(hash)
 				if err != nil {
