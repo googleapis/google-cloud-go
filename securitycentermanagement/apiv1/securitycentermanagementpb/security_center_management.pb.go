@@ -21,11 +21,8 @@
 package securitycentermanagementpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	expr "google.golang.org/genproto/googleapis/type/expr"
@@ -38,6 +35,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1468,11 +1467,10 @@ type UpdateSecurityHealthAnalyticsCustomModuleRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Field mask is used to specify the fields to be overwritten in the
-	// SecurityHealthAnalyticsCustomModule resource by the update.
-	// The fields specified in the update_mask are relative to the resource, not
-	// the full request. A field will be overwritten if it is in the mask. If the
-	// user does not provide a mask then all fields will be overwritten.
+	// Required. The list of fields to be updated. The only fields that can be
+	// updated are `enablement_state` and `custom_config`. If empty or set to the
+	// wildcard value `*`, both `enablement_state` and `custom_config` are
+	// updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,1,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// Required. The resource being updated
 	SecurityHealthAnalyticsCustomModule *SecurityHealthAnalyticsCustomModule `protobuf:"bytes,2,opt,name=security_health_analytics_custom_module,json=securityHealthAnalyticsCustomModule,proto3" json:"security_health_analytics_custom_module,omitempty"`

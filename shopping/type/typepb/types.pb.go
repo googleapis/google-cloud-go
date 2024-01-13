@@ -21,11 +21,10 @@
 package typepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -396,6 +395,7 @@ func (x *CustomAttribute) GetGroupValues() []*CustomAttribute {
 //
 // Destinations are used in Merchant Center to allow you to control where the
 // products from your data feed should be displayed.
+//
 type Destination struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -441,6 +441,7 @@ func (*Destination) Descriptor() ([]byte, []int) {
 // ads](https://support.google.com/merchants/answer/6149970)) or a subset of
 // formats within a destination (for example, [Discovery
 // ads](https://support.google.com/merchants/answer/13389785)).
+//
 type ReportingContext struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
