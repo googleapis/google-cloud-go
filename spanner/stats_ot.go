@@ -46,15 +46,29 @@ var (
 	otMu = sync.RWMutex{}
 )
 
-func getOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger) *openTelemetryConfig {
+func getOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger, sessionClientId string, db string) (*openTelemetryConfig, error) {
 	config := &openTelemetryConfig{
 		attributeMap: []attribute.KeyValue{},
 	}
 	if !isOpenTelemetryMetricsEnabled() {
-		return config
+		return config, nil
 	}
+	_, instance, database, err := parseDatabaseName(db)
+	if err != nil {
+		return nil, err
+	}
+
+	// Construct attributes for Metrics
+	attributeMap := []attribute.KeyValue{
+		attributeKeyClientID.String(sessionClientId),
+		attributeKeyDatabase.String(database),
+		attributeKeyInstance.String(instance),
+		attributeKeyLibVersion.String(internal.Version),
+	}
+	config.attributeMap = append(config.attributeMap, attributeMap...)
+
 	setOpenTelemetryMetricProvider(config, mp, logger)
-	return config
+	return config, nil
 }
 
 func setOpenTelemetryMetricProvider(config *openTelemetryConfig, mp metric.MeterProvider, logger *log.Logger) {
@@ -200,6 +214,7 @@ func registerSessionPoolOTMetrics(pool *sessionPool) error {
 	return err
 }
 
+// EnableOpenTelemetryMetrics enables OpenTelemetery metrics
 func EnableOpenTelemetryMetrics() {
 	setOpenTelemetryMetricsFlag(true)
 }
@@ -217,7 +232,8 @@ func setOpenTelemetryMetricsFlag(enable bool) {
 	otMu.Unlock()
 }
 
-func captureGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod string, otConfig *openTelemetryConfig, attr []attribute.KeyValue) error {
+func recordGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod string, otConfig *openTelemetryConfig) error {
+	attr := otConfig.attributeMap
 	if len(md.Get("server-timing")) == 0 && otConfig.gfeHeaderMissingCount != nil {
 		otConfig.gfeHeaderMissingCount.Add(ctx, 1, metric.WithAttributes(attr...))
 		return nil
@@ -232,14 +248,4 @@ func captureGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod s
 		otConfig.gfeLatency.Record(ctx, int64(gfeLatency), metric.WithAttributes(attr...))
 	}
 	return nil
-}
-
-func createAttributeAndCaptureGFELatencyMetricsOT(ctx context.Context, ct *commonTags, md metadata.MD, keyMethod string, otConfig *openTelemetryConfig) error {
-	attr := []attribute.KeyValue{
-		attributeKeyClientID.String(ct.clientID),
-		attributeKeyDatabase.String(ct.database),
-		attributeKeyInstance.String(ct.instance),
-		attributeKeyLibVersion.String(ct.libVersion),
-	}
-	return captureGFELatencyMetricsOT(ctx, md, keyMethod, otConfig, attr)
 }

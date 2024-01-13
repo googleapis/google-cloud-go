@@ -298,10 +298,8 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		md.Append(requestsCompressionHeader, gzip.Name)
 	}
 
-	otConfig := getOpenTelemetryConfig(config.OpenTelemetryMeterProvider, config.Logger)
-
 	// Create a session client.
-	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions, otConfig)
+	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
@@ -310,6 +308,16 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		sc.close()
 		return nil, err
 	}
+
+	// Create a OpenTelemetry configuration
+	otConfig, err := getOpenTelemetryConfig(config.OpenTelemetryMeterProvider, config.Logger, sc.id, database)
+	if err != nil {
+		// The error returned here will be due to database name parsing
+		return nil, err
+	}
+	sc.otConfig = otConfig
+	sp.otConfig = otConfig
+
 	c = &Client{
 		sc:                   sc,
 		idleSessions:         sp,
@@ -907,8 +915,8 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 				trace.TracePrintf(ct, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 			}
 		}
-		if isOpenTelemetryMetricsEnabled() && md != nil && c.ct != nil && c.otConfig != nil {
-			if metricErr := createAttributeAndCaptureGFELatencyMetricsOT(ct, c.ct, md, "BatchWrite", c.otConfig); metricErr != nil {
+		if isOpenTelemetryMetricsEnabled() && md != nil && c.otConfig != nil {
+			if metricErr := recordGFELatencyMetricsOT(ct, md, "BatchWrite", c.otConfig); metricErr != nil {
 				trace.TracePrintf(ct, nil, "Error in recording GFE Latency through OpenTelemetry. Try disabling and rerunning. Error: %v", err)
 			}
 		}

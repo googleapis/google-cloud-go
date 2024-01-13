@@ -36,7 +36,6 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	octrace "go.opencensus.io/trace"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -659,7 +658,6 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		SessionPoolConfig: config,
 		mw:                newMaintenanceWindow(config.MaxOpened),
 		rand:              rand.New(rand.NewSource(time.Now().UnixNano())),
-		otConfig:          sc.otConfig,
 	}
 
 	_, instance, database, err := parseDatabaseName(sc.database)
@@ -677,18 +675,6 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		logf(pool.sc.logger, "Failed to create tag map, error: %v", err)
 	}
 	pool.tagMap = tag.FromContext(ctx)
-
-	if isOpenTelemetryMetricsEnabled() {
-		attributeMap := []attribute.KeyValue{
-			attributeKeyClientID.String(sc.id),
-			attributeKeyDatabase.String(database),
-			attributeKeyInstance.String(instance),
-			attributeKeyLibVersion.String(internal.Version),
-		}
-		if pool.otConfig != nil {
-			pool.otConfig.attributeMap = append(pool.otConfig.attributeMap, attributeMap...)
-		}
-	}
 
 	// On GCE VM, within the same region an healthcheck ping takes on average
 	// 10ms to finish, given a 5 minutes interval and 10 healthcheck workers, a
