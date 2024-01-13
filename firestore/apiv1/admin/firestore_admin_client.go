@@ -432,7 +432,8 @@ func (c *FirestoreAdminClient) UpdateFieldOperation(name string) *UpdateFieldOpe
 // only supports listing fields that have been explicitly overridden. To issue
 // this query, call
 // FirestoreAdmin.ListFields
-// with the filter set to indexConfig.usesAncestorConfig:false orttlConfig:*`.
+// with the filter set to indexConfig.usesAncestorConfig:false or
+// ttlConfig:*.
 func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	return c.internalClient.ListFields(ctx, req, opts...)
 }
@@ -1602,7 +1603,8 @@ func (c *firestoreAdminRESTClient) UpdateField(ctx context.Context, req *adminpb
 // only supports listing fields that have been explicitly overridden. To issue
 // this query, call
 // FirestoreAdmin.ListFields
-// with the filter set to indexConfig.usesAncestorConfig:false orttlConfig:*`.
+// with the filter set to indexConfig.usesAncestorConfig:false or
+// ttlConfig:*.
 func (c *firestoreAdminRESTClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	it := &FieldIterator{}
 	req = proto.Clone(req).(*adminpb.ListFieldsRequest)

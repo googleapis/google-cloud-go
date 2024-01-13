@@ -21,11 +21,8 @@
 package adminpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2081,7 +2080,7 @@ type FirestoreAdminClient interface {
 	// only supports listing fields that have been explicitly overridden. To issue
 	// this query, call
 	// [FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]
-	// with the filter set to `indexConfig.usesAncestorConfig:false or
+	// with the filter set to `indexConfig.usesAncestorConfig:false` or
 	// `ttlConfig:*`.
 	ListFields(ctx context.Context, in *ListFieldsRequest, opts ...grpc.CallOption) (*ListFieldsResponse, error)
 	// Exports a copy of all or a subset of documents from Google Cloud Firestore
@@ -2288,7 +2287,7 @@ type FirestoreAdminServer interface {
 	// only supports listing fields that have been explicitly overridden. To issue
 	// this query, call
 	// [FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]
-	// with the filter set to `indexConfig.usesAncestorConfig:false or
+	// with the filter set to `indexConfig.usesAncestorConfig:false` or
 	// `ttlConfig:*`.
 	ListFields(context.Context, *ListFieldsRequest) (*ListFieldsResponse, error)
 	// Exports a copy of all or a subset of documents from Google Cloud Firestore
