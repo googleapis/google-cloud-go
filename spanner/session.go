@@ -883,6 +883,12 @@ func (p *sessionPool) close(ctx context.Context) {
 		return
 	}
 	p.valid = false
+	if p.otConfig != nil && p.otConfig.otMetricRegistration != nil {
+		err := p.otConfig.otMetricRegistration.Unregister()
+		if err != nil {
+			logf(p.sc.logger, "Failed to unregister callback from the OpenTelemetry meter, error : %v", err)
+		}
+	}
 	p.mu.Unlock()
 	p.hc.close()
 	// destroy all the sessions

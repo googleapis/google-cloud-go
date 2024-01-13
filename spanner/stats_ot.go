@@ -233,6 +233,9 @@ func setOpenTelemetryMetricsFlag(enable bool) {
 }
 
 func recordGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod string, otConfig *openTelemetryConfig) error {
+	if !isOpenTelemetryMetricsEnabled() || md == nil && otConfig == nil {
+		return nil
+	}
 	attr := otConfig.attributeMap
 	if len(md.Get("server-timing")) == 0 && otConfig.gfeHeaderMissingCount != nil {
 		otConfig.gfeHeaderMissingCount.Add(ctx, 1, metric.WithAttributes(attr...))
