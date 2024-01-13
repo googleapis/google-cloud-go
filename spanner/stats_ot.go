@@ -46,7 +46,7 @@ var (
 	otMu = sync.RWMutex{}
 )
 
-func getOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger, sessionClientId string, db string) (*openTelemetryConfig, error) {
+func getOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger, sessionClientID string, db string) (*openTelemetryConfig, error) {
 	config := &openTelemetryConfig{
 		attributeMap: []attribute.KeyValue{},
 	}
@@ -60,7 +60,7 @@ func getOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger, session
 
 	// Construct attributes for Metrics
 	attributeMap := []attribute.KeyValue{
-		attributeKeyClientID.String(sessionClientId),
+		attributeKeyClientID.String(sessionClientID),
 		attributeKeyDatabase.String(database),
 		attributeKeyInstance.String(instance),
 		attributeKeyLibVersion.String(internal.Version),
