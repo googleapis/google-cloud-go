@@ -658,6 +658,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		SessionPoolConfig: config,
 		mw:                newMaintenanceWindow(config.MaxOpened),
 		rand:              rand.New(rand.NewSource(time.Now().UnixNano())),
+		otConfig:          sc.otConfig,
 	}
 
 	_, instance, database, err := parseDatabaseName(sc.database)

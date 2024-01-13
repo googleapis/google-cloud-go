@@ -301,14 +301,6 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 
-	// Create a session pool.
-	config.SessionPoolConfig.sessionLabels = sessionLabels
-	sp, err := newSessionPool(sc, config.SessionPoolConfig)
-	if err != nil {
-		sc.close()
-		return nil, err
-	}
-
 	// Create a OpenTelemetry configuration
 	otConfig, err := getOpenTelemetryConfig(config.OpenTelemetryMeterProvider, config.Logger, sc.id, database)
 	if err != nil {
@@ -319,9 +311,14 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.mu.Lock()
 	sc.otConfig = otConfig
 	sc.mu.Unlock()
-	sp.mu.Lock()
-	sp.otConfig = otConfig
-	sp.mu.Unlock()
+
+	// Create a session pool.
+	config.SessionPoolConfig.sessionLabels = sessionLabels
+	sp, err := newSessionPool(sc, config.SessionPoolConfig)
+	if err != nil {
+		sc.close()
+		return nil, err
+	}
 
 	c = &Client{
 		sc:                   sc,

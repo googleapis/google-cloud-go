@@ -28,7 +28,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const otInstrumentationScope = "cloud.google.com/go/"
+const otInstrumentationScope = "cloud.google.com/go"
 
 var (
 	attributeKeyClientID   = attribute.Key("client_id")
@@ -53,6 +53,7 @@ func getOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger, session
 	if !isOpenTelemetryMetricsEnabled() {
 		return config, nil
 	}
+	logf(logger, "OT Metrics enbaled in getOpenTelemetryConfig()")
 	_, instance, database, err := parseDatabaseName(db)
 	if err != nil {
 		return nil, err
@@ -87,7 +88,7 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	meter := config.meterProvider.Meter(otInstrumentationScope, metric.WithInstrumentationVersion(internal.Version))
 
 	openSessionCountInstrument, err := meter.Int64ObservableGauge(
-		"spanner/open_session_count_test_ot_local",
+		"open_session_count_test_ot_local",
 		metric.WithDescription("Number of sessions currently opened"),
 		metric.WithUnit("1"),
 	)
@@ -191,7 +192,7 @@ func registerSessionPoolOTMetrics(pool *sessionPool) error {
 	attributesInUseSessions := append(attributes, attributeNumInUseSessions)
 	attributesAvailableSessions := append(attributes, attributeNumSessions)
 
-	reg, err := otConfig.meterProvider.Meter(otInstrumentationScope).RegisterCallback(
+	reg, err := otConfig.meterProvider.Meter(otInstrumentationScope, metric.WithInstrumentationVersion(internal.Version)).RegisterCallback(
 		func(ctx context.Context, o metric.Observer) error {
 			pool.mu.Lock()
 			defer pool.mu.Unlock()
