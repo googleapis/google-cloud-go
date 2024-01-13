@@ -596,15 +596,15 @@ type internalMetastoreClient interface {
 //
 // The BigLake Metastore API defines the following resource model:
 //
-//   A collection of Google Cloud projects: /projects/*
+//	A collection of Google Cloud projects: /projects/*
 //
-//   Each project has a collection of available locations: /locations/*
+//	Each project has a collection of available locations: /locations/*
 //
-//   Each location has a collection of catalogs: /catalogs/*
+//	Each location has a collection of catalogs: /catalogs/*
 //
-//   Each catalog has a collection of databases: /databases/*
+//	Each catalog has a collection of databases: /databases/*
 //
-//   Each database has a collection of tables: /tables/*
+//	Each database has a collection of tables: /tables/*
 type MetastoreClient struct {
 	// The internal transport-dependent client.
 	internalClient internalMetastoreClient
@@ -756,15 +756,15 @@ type metastoreGRPCClient struct {
 //
 // The BigLake Metastore API defines the following resource model:
 //
-//   A collection of Google Cloud projects: /projects/*
+//	A collection of Google Cloud projects: /projects/*
 //
-//   Each project has a collection of available locations: /locations/*
+//	Each project has a collection of available locations: /locations/*
 //
-//   Each location has a collection of catalogs: /catalogs/*
+//	Each location has a collection of catalogs: /catalogs/*
 //
-//   Each catalog has a collection of databases: /databases/*
+//	Each catalog has a collection of databases: /databases/*
 //
-//   Each database has a collection of tables: /tables/*
+//	Each database has a collection of tables: /tables/*
 func NewMetastoreClient(ctx context.Context, opts ...option.ClientOption) (*MetastoreClient, error) {
 	clientOpts := defaultMetastoreGRPCClientOptions()
 	if newMetastoreClientHook != nil {
@@ -838,15 +838,15 @@ type metastoreRESTClient struct {
 //
 // The BigLake Metastore API defines the following resource model:
 //
-//   A collection of Google Cloud projects: /projects/*
+//	A collection of Google Cloud projects: /projects/*
 //
-//   Each project has a collection of available locations: /locations/*
+//	Each project has a collection of available locations: /locations/*
 //
-//   Each location has a collection of catalogs: /catalogs/*
+//	Each location has a collection of catalogs: /catalogs/*
 //
-//   Each catalog has a collection of databases: /databases/*
+//	Each catalog has a collection of databases: /databases/*
 //
-//   Each database has a collection of tables: /tables/*
+//	Each database has a collection of tables: /tables/*
 func NewMetastoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*MetastoreClient, error) {
 	clientOpts := append(defaultMetastoreRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
