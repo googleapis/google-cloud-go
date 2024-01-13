@@ -190,19 +190,19 @@ type internalCloudMemcacheClient interface {
 // for Memcached API and defines the following resource model for managing
 // Memorystore Memcached (also called Memcached below) instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Memcached instances, named:
-//	/instances/*
+//   Each location has a collection of Memcached instances, named:
+//   /instances/*
 //
-//	As such, Memcached instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Memcached instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be a GCP region; for example:
 //
-//	projects/my-memcached-project/locations/us-central1/instances/my-memcached
+//   projects/my-memcached-project/locations/us-central1/instances/my-memcached
 type CloudMemcacheClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudMemcacheClient
@@ -395,19 +395,19 @@ type cloudMemcacheGRPCClient struct {
 // for Memcached API and defines the following resource model for managing
 // Memorystore Memcached (also called Memcached below) instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Memcached instances, named:
-//	/instances/*
+//   Each location has a collection of Memcached instances, named:
+//   /instances/*
 //
-//	As such, Memcached instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Memcached instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be a GCP region; for example:
 //
-//	projects/my-memcached-project/locations/us-central1/instances/my-memcached
+//   projects/my-memcached-project/locations/us-central1/instances/my-memcached
 func NewCloudMemcacheClient(ctx context.Context, opts ...option.ClientOption) (*CloudMemcacheClient, error) {
 	clientOpts := defaultCloudMemcacheGRPCClientOptions()
 	if newCloudMemcacheClientHook != nil {
@@ -500,19 +500,19 @@ type cloudMemcacheRESTClient struct {
 // for Memcached API and defines the following resource model for managing
 // Memorystore Memcached (also called Memcached below) instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Memcached instances, named:
-//	/instances/*
+//   Each location has a collection of Memcached instances, named:
+//   /instances/*
 //
-//	As such, Memcached instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Memcached instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be a GCP region; for example:
 //
-//	projects/my-memcached-project/locations/us-central1/instances/my-memcached
+//   projects/my-memcached-project/locations/us-central1/instances/my-memcached
 func NewCloudMemcacheRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudMemcacheClient, error) {
 	clientOpts := append(defaultCloudMemcacheRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
