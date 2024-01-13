@@ -315,8 +315,13 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		// The error returned here will be due to database name parsing
 		return nil, err
 	}
+	// To prevent data race in unit tests (ex: TestClient_SessionNotFound)
+	sc.mu.Lock()
 	sc.otConfig = otConfig
+	sc.mu.Unlock()
+	sp.mu.Lock()
 	sp.otConfig = otConfig
+	sp.mu.Unlock()
 
 	c = &Client{
 		sc:                   sc,
