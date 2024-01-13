@@ -179,9 +179,9 @@ func TestOTStats_SessionPool(t *testing.T) {
 	}
 }
 
-func getAttributes(clientId string) attribute.Set {
+func getAttributes(clientID string) attribute.Set {
 	return attribute.NewSet(
-		attribute.Key("client_id").String(clientId),
+		attribute.Key("client_id").String(clientID),
 		attribute.Key("database").String("[DATABASE]"),
 		attribute.Key("instance_id").String("[INSTANCE]"),
 		attribute.Key("library_version").String(internal.Version),

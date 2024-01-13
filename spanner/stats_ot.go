@@ -47,6 +47,7 @@ var (
 )
 
 func getOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger, sessionClientID string, db string) (*openTelemetryConfig, error) {
+	logf(logger, "Inside getOpenTelemetryConfig()")
 	config := &openTelemetryConfig{
 		attributeMap: []attribute.KeyValue{},
 	}
