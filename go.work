@@ -163,4 +163,5 @@ use (
 	./websecurityscanner
 	./workflows
 	./workstations
+	./spanner/test/opentelemetry/test
 )
