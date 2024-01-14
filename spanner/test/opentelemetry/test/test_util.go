@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/spanner"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
@@ -63,5 +64,30 @@ func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config spanne
 	return server, client, func() {
 		client.Close()
 		serverTeardown()
+	}
+}
+
+func waitFor(t *testing.T, assert func() error) {
+	t.Helper()
+	timeout := 120 * time.Second
+	ta := time.After(timeout)
+
+	for {
+		select {
+		case <-ta:
+			if err := assert(); err != nil {
+				t.Fatalf("after %v waiting, got %v", timeout, err)
+			}
+			return
+		default:
+		}
+
+		if err := assert(); err != nil {
+			// Fail. Let's pause and retry.
+			time.Sleep(10 * time.Millisecond)
+			continue
+		}
+
+		return
 	}
 }

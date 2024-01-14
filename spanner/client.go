@@ -115,6 +115,11 @@ func (c *Client) DatabaseName() string {
 	return c.sc.database
 }
 
+// ClientID returns the id of the Client. This is strongly not recommended for applications.
+func (c *Client) ClientID() string {
+	return c.sc.id
+}
+
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
 	// NumChannels is the number of gRPC channels.
