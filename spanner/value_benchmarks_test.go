@@ -16,6 +16,7 @@ package spanner
 
 import (
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 	"testing"
@@ -233,6 +234,85 @@ func decodeArrayReflect(pb *proto3.ListValue, name string, typ *sppb.Type, aptr 
 	return nil
 }
 
+func BenchmarkScan(b *testing.B) {
+	scanMethods := []string{"row.Column()", "row.ToStruct()", "row.SelectAll()"}
+	for _, method := range scanMethods {
+		for k := 0.; k <= 20; k++ {
+			n := int(math.Pow(2, k))
+			b.Run(fmt.Sprintf("%s/%d", method, n), func(b *testing.B) {
+				b.StopTimer()
+				var rows []struct {
+					ID     int64
+					Name   string
+					Active bool
+					City   string
+					State  string
+				}
+				for i := 0; i < n; i++ {
+					rows = append(rows, struct {
+						ID     int64
+						Name   string
+						Active bool
+						City   string
+						State  string
+					}{int64(i), fmt.Sprintf("name-%d", i), true, "city", "state"})
+				}
+				src := mockBenchmarkIterator(b, rows)
+				for i := 0; i < b.N; i++ {
+					it := *src
+					var res []struct {
+						ID     int64
+						Name   string
+						Active bool
+						City   string
+						State  string
+					}
+					b.StartTimer()
+					switch method {
+					case "row.SelectAll()":
+						if err := SelectAll(&it, &res); err != nil {
+							b.Fatal(err)
+						}
+						_ = res
+						break
+					default:
+						for {
+							row, err := it.Next()
+							if err == iterator.Done {
+								break
+							} else if err != nil {
+								b.Fatal(err)
+							}
+							var r struct {
+								ID     int64
+								Name   string
+								Active bool
+								City   string
+								State  string
+							}
+							if method == "row.Column()" {
+								err = row.Columns(&r.ID, &r.Name, &r.Active, &r.City, &r.State)
+								if err != nil {
+									b.Fatal(err)
+								}
+							} else {
+								err = row.ToStruct(&r)
+								if err != nil {
+									b.Fatal(err)
+								}
+							}
+							res = append(res, r)
+						}
+						it.Stop()
+						_ = res
+					}
+
+				}
+			})
+		}
+	}
+}
+
 func BenchmarkScan100RowsUsingSelectAll(b *testing.B) {
 	var rows []struct {
 		ID   int64
@@ -244,7 +324,7 @@ func BenchmarkScan100RowsUsingSelectAll(b *testing.B) {
 			Name string
 		}{int64(i), fmt.Sprintf("name-%d", i)})
 	}
-	src := mockIterator(b, rows)
+	src := mockBenchmarkIterator(b, rows)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		it := *src
@@ -270,7 +350,7 @@ func BenchmarkScan100RowsUsingToStruct(b *testing.B) {
 			Name string
 		}{int64(i), fmt.Sprintf("name-%d", i)})
 	}
-	src := mockIterator(b, rows)
+	src := mockBenchmarkIterator(b, rows)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		it := *src
@@ -311,7 +391,7 @@ func BenchmarkScan100RowsUsingColumns(b *testing.B) {
 			Name string
 		}{int64(i), fmt.Sprintf("name-%d", i)})
 	}
-	src := mockIterator(b, rows)
+	src := mockBenchmarkIterator(b, rows)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		it := *src
@@ -341,7 +421,7 @@ func BenchmarkScan100RowsUsingColumns(b *testing.B) {
 	}
 }
 
-func mockIterator[T any](t testing.TB, rows []T) *mockIteratorImpl {
+func mockBenchmarkIterator[T any](t testing.TB, rows []T) *mockIteratorImpl {
 	var v T
 	var colNames []string
 	numCols := reflect.TypeOf(v).NumField()
@@ -376,10 +456,6 @@ func (i *mockIteratorImpl) Next() (*Row, error) {
 	row := i.rows[0]
 	i.rows = i.rows[1:]
 	return row, nil
-}
-
-func (i *mockIteratorImpl) RowsReturned() int64 {
-	return int64(len(i.rows))
 }
 
 func (i *mockIteratorImpl) Stop() {

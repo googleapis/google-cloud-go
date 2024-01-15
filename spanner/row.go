@@ -252,6 +252,7 @@ func errColNotFound(n string) error {
 func errNotASlicePointer() error {
 	return spannerErrorf(codes.InvalidArgument, "destination must be a pointer to a slice")
 }
+
 func errNilSlicePointer() error {
 	return spannerErrorf(codes.InvalidArgument, "destination must be a non nil pointer")
 }
@@ -390,10 +391,10 @@ func (r *Row) ToStructLenient(p interface{}) error {
 	)
 }
 
-// SelectAll iterates all rows to the end. After iterating it closes the rows,
-// and propagates any errors that could pop up.
-// It expects that destination should be a slice. For each row it scans data and appends it to the destination slice.
-// SelectAll supports both types of slices: slice of structs by a pointer and slice of structs by value,
+// SelectAll iterates all rows to the end. After iterating it closes the rows
+// and propagates any errors that could pop up with destination slice partially filled.
+// It expects that destination should be a slice. For each row, it scans data and appends it to the destination slice.
+// SelectAll supports both types of slices: slice of pointers and slice of structs or primitives by value,
 // for example:
 //
 //	type Singer struct {
@@ -406,16 +407,19 @@ func (r *Row) ToStructLenient(p interface{}) error {
 //
 // Both singersByPtr and singersByValue are valid destinations for SelectAll function.
 //
-// Before starting, SelectAll resets the destination slice,
-// so if it's not empty it will overwrite all existing elements.
-func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
+// custom setting such as lenient can be passed as an option using DecodeOptions
+// example: to ignore extra columns in the row
+//
+//	var singersByPtr []*Singer
+//	err := spanner.SelectAll(row, &singersByPtr, spanner.WithLenient())
+func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptions) error {
 	if rows == nil {
 		return fmt.Errorf("rows is nil")
 	}
-	if v == nil {
-		return fmt.Errorf("p is nil")
+	if destination == nil {
+		return fmt.Errorf("destination is nil")
 	}
-	dstVal := reflect.ValueOf(v)
+	dstVal := reflect.ValueOf(destination)
 	if !dstVal.IsValid() || (dstVal.Kind() == reflect.Ptr && dstVal.IsNil()) {
 		return errNilSlicePointer()
 	}
@@ -443,8 +447,6 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 			itemByPtr = true
 		}
 	}
-	// Make sure slice is empty.
-	dstVal.Set(dstVal.Slice(0, 0))
 	s := &decodeSetting{}
 	for _, opt := range options {
 		opt.Apply(s)
@@ -453,44 +455,36 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 	isPrimitive := itemType.Kind() != reflect.Struct
 	var pointers []interface{}
 	isFirstRow := true
-	rowIndex := int64(-1)
-	var rowsReturned int64
+	var err error
 	return rows.Do(func(row *Row) error {
 		sliceItem := reflect.New(itemType)
-		if isFirstRow {
+		if isFirstRow && !isPrimitive {
 			defer func() {
 				isFirstRow = false
 			}()
-			rowsReturned = rows.RowsReturned()
-			if rowsReturned != -1 {
-				// nRows is lower bound of the number of rows returned by the query.
-				dstVal.Set(reflect.MakeSlice(dstType, int(rowsReturned), int(rowsReturned)))
-				rowIndex++
+			if pointers, err = structPointers(sliceItem.Elem(), row.fields, s.Lenient); err != nil {
+				return err
 			}
-			if isPrimitive {
-				if len(row.fields) > 1 {
-					return errTooManyColumns()
-				}
-				pointers = []interface{}{sliceItem.Addr().Interface()}
-			} else {
-				var err error
-				if pointers, err = structPointers(sliceItem.Elem(), row.fields, s.Lenient); err != nil {
-					return err
-				}
+		} else if isPrimitive {
+			if len(row.fields) > 1 && !s.Lenient {
+				return errTooManyColumns()
 			}
+			pointers = []interface{}{sliceItem.Interface()}
 		}
 		if len(pointers) == 0 {
 			return nil
 		}
-		err := row.Columns(pointers...)
+		err = row.Columns(pointers...)
 		if err != nil {
 			return err
 		}
-		for i, p := range pointers {
-			if p == nil {
-				continue
+		if !isPrimitive {
+			for i, p := range pointers {
+				if p == nil {
+					continue
+				}
+				sliceItem.Elem().Field(i).Set(reflect.ValueOf(p).Elem())
 			}
-			sliceItem.Elem().Field(i).Set(reflect.ValueOf(p).Elem())
 		}
 		var elemVal reflect.Value
 		if itemByPtr {
@@ -505,17 +499,12 @@ func SelectAll(rows Iterator, v interface{}, options ...DecodeOptions) error {
 		} else {
 			elemVal = sliceItem.Elem()
 		}
-		if rowIndex >= 0 && rowsReturned > rowIndex {
-			dstVal.Index(int(rowIndex)).Set(elemVal)
-			rowIndex++
-		} else {
-			dstVal.Set(reflect.Append(dstVal, elemVal))
-		}
+		dstVal.Set(reflect.Append(dstVal, elemVal))
 		return nil
 	})
 }
 
-func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, strict bool) ([]interface{}, error) {
+func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, lenient bool) ([]interface{}, error) {
 	pointers := make([]interface{}, 0, len(cols))
 	fieldTag := make(map[string]reflect.Value, len(cols))
 	initFieldTag(sliceItem, &fieldTag)
@@ -525,7 +514,7 @@ func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, stri
 		if v, ok := fieldTag[colName.GetName()]; ok {
 			fieldVal = v
 		} else {
-			if strict {
+			if !lenient {
 				return nil, errNoOrDupGoField(sliceItem, colName.GetName())
 			}
 			fieldVal = sliceItem.FieldByName(colName.GetName())
