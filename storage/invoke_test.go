@@ -250,9 +250,6 @@ func TestInvoke(t *testing.T) {
 				}
 				return test.finalErr
 			}
-			if test.retry != nil && test.retry.maxAttempts != nil && *test.retry.maxAttempts == 0 {
-				test.retry.policy = RetryNever
-			}
 			got := run(ctx, call, test.retry, test.isIdempotentValue)
 			if test.expectFinalErr && got != test.finalErr {
 				s.Errorf("got %v, want %v", got, test.finalErr)

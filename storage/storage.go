@@ -2090,9 +2090,6 @@ type withMaxAttempts struct {
 }
 
 func (wb *withMaxAttempts) apply(config *retryConfig) {
-	if wb.maxAttempts == 0 {
-		config.policy = RetryNever
-	}
 	config.maxAttempts = &wb.maxAttempts
 }
 
@@ -2131,9 +2128,7 @@ type withPolicy struct {
 }
 
 func (ws *withPolicy) apply(config *retryConfig) {
-	if (config.maxAttempts != nil && *config.maxAttempts != 0) || config.maxAttempts == nil {
-		config.policy = ws.policy
-	}
+	config.policy = ws.policy
 }
 
 // WithErrorFunc allows users to pass a custom function to the retryer. Errors
