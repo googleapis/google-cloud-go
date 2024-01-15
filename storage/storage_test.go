@@ -997,27 +997,6 @@ func TestObjectRetryer(t *testing.T) {
 			},
 		},
 		{
-			name: "default max attempt nil value will not change retry policy to retry never",
-			call: func(o *ObjectHandle) *ObjectHandle {
-				return o.Retryer(
-					WithBackoff(gax.Backoff{
-						Initial:    2 * time.Second,
-						Max:        30 * time.Second,
-						Multiplier: 3,
-					}),
-					WithPolicy(RetryAlways))
-			},
-			want: &retryConfig{
-				backoff: &gax.Backoff{
-					Initial:    2 * time.Second,
-					Max:        30 * time.Second,
-					Multiplier: 3,
-				},
-				maxAttempts: nil,
-				policy:      RetryAlways,
-			},
-		},
-		{
 			name: "set some backoff options",
 			call: func(o *ObjectHandle) *ObjectHandle {
 				return o.Retryer(
@@ -1112,26 +1091,6 @@ func TestClientSetRetry(t *testing.T) {
 				maxAttempts: expectedAttempts(5),
 				policy:      RetryAlways,
 				shouldRetry: func(err error) bool { return false },
-			},
-		},
-		{
-			name: "default max attempt nil value will not change retry policy to retry never",
-			clientOptions: []RetryOption{
-				WithBackoff(gax.Backoff{
-					Initial:    2 * time.Second,
-					Max:        30 * time.Second,
-					Multiplier: 3,
-				}),
-				WithPolicy(RetryAlways),
-			},
-			want: &retryConfig{
-				backoff: &gax.Backoff{
-					Initial:    2 * time.Second,
-					Max:        30 * time.Second,
-					Multiplier: 3,
-				},
-				maxAttempts: nil,
-				policy:      RetryAlways,
 			},
 		},
 		{

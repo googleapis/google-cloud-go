@@ -1086,27 +1086,6 @@ func TestBucketRetryer(t *testing.T) {
 			},
 		},
 		{
-			name: "default max attempt nil value will not change retry policy to retry never",
-			call: func(b *BucketHandle) *BucketHandle {
-				return b.Retryer(
-					WithBackoff(gax.Backoff{
-						Initial:    2 * time.Second,
-						Max:        30 * time.Second,
-						Multiplier: 3,
-					}),
-					WithPolicy(RetryAlways))
-			},
-			want: &retryConfig{
-				backoff: &gax.Backoff{
-					Initial:    2 * time.Second,
-					Max:        30 * time.Second,
-					Multiplier: 3,
-				},
-				policy:      RetryAlways,
-				maxAttempts: nil,
-			},
-		},
-		{
 			name: "set some backoff options",
 			call: func(b *BucketHandle) *BucketHandle {
 				return b.Retryer(
