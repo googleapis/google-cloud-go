@@ -115,7 +115,7 @@ func (c *Client) DatabaseName() string {
 	return c.sc.database
 }
 
-// ClientID returns the id of the Client. This is strongly not recommended for applications.
+// ClientID returns the id of the Client. This is not recommended for customer applications and used internally for testing.
 func (c *Client) ClientID() string {
 	return c.sc.id
 }

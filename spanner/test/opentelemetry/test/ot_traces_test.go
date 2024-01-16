@@ -65,8 +65,6 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 		return nil
 	})
 	spans := te.spans()
-	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
-	// cannot do that.
 	if len(spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
@@ -74,10 +72,6 @@ func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 	if !findSpan(spans, spanName) {
 		t.Errorf("Expected span %s not found", spanName)
 	}
-	/*s := spans[len(spans)-1].Status
-	if want := otcodes.Ok; s.Code != want {
-		t.Errorf("got %v, want %v", s.Code, want)
-	}*/
 }
 
 func findSpan(spans tracetest.SpanStubs, spanName string) bool {
