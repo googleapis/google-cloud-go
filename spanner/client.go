@@ -103,6 +103,7 @@ type Client struct {
 	bwo                  BatchWriteOptions
 	ct                   *commonTags
 	disableRouteToLeader bool
+	dro                  *sppb.DirectedReadOptions
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -186,6 +187,11 @@ type ClientConfig struct {
 
 	// BatchTimeout specifies the timeout for a batch of sessions managed sessionClient.
 	BatchTimeout time.Duration
+
+	// ClientConfig options used to set the DirectedReadOptions for all ReadRequests
+	// and ExecuteSqlRequests for the Client which indicate which replicas or regions
+	// should be used for non-transactional reads or queries.
+	DirectedReadOptions *sppb.DirectedReadOptions
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -291,6 +297,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		bwo:                  config.BatchWriteOptions,
 		ct:                   getCommonTags(sc),
 		disableRouteToLeader: config.DisableRouteToLeader,
+		dro:                  config.DirectedReadOptions,
 	}
 	return c, nil
 }
@@ -374,6 +381,8 @@ func (c *Client) Single() *ReadOnlyTransaction {
 		t.sh = sh
 		return nil
 	}
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
 	return t
 }
@@ -397,6 +406,8 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
 	return t
 }
@@ -465,6 +476,8 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
 	return t, nil
 }
@@ -496,6 +509,8 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
 	return t
 }

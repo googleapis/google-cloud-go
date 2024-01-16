@@ -34,6 +34,7 @@ use (
 	./cloudbuild
 	./clouddms
 	./cloudprofiler
+	./cloudquotas
 	./cloudtasks
 	./commerce
 	./compute
@@ -133,6 +134,7 @@ use (
 	./securitycentermanagement
 	./servicecontrol
 	./servicedirectory
+	./servicehealth
 	./servicemanagement
 	./serviceusage
 	./shell
