@@ -396,7 +396,6 @@ func TestMain(m *testing.M) {
 			continue
 		}
 		testDialect = dialect
-		//setOpenTelemetryMetricsFlag(false)
 		res := m.Run()
 		if res != 0 {
 			cleanup()
