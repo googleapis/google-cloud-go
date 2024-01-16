@@ -16,7 +16,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
 	"os"
 	"path"
@@ -29,32 +28,31 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// w1r3 or "write one, read three" is a benchmark that uploads a randomly generated
-// object once and then downloads in three times. The object is downloaded more
-// than once to compare "cold" (just uploaded) vs. "hot" data.
+// continuousReads is a benchmark that continuously downloads the same set of
+// objects from GCS until the timeout is reached.
 //
 // SET UP
 //   - Initialize structs to populate with the benchmark results.
 //   - Select a random API to use to upload and download the object, unless an
 //     API is set in the command-line,
-//   - Select a random size for the object that will be uploaded; this size will
+//   - Select a random size for the objects; this size will
 //     be between two values configured in the command-line.
-//   - Create an object of that size on disk, and fill with random contents.
-//   - Select, for the upload and each download separately, the following parameters:
-//   - the application buffer size set in the command-line
-//   - the chunksize (only for uploads) set in the command-line,
-//   - if the client library will perform CRC32C and/or MD5 hashes on the data.
+//   - Create a directory of objects of that size in GCS, uploading random
+//     contents directly from memory. The number of objects created is equal to
+//     the command-line configuration for the number of objects in a directory.
 //
 // BENCHMARK
 //   - Grab a storage client from the pool.
-//   - Take a snapshot of the current memory stats.
-//   - Upload the object that was created in the set up, capturing the time taken.
-//     This includes opening the file, writing the object, and verifying the hash
-//     (if applicable).
-//   - Take another snapshot of memory stats.
-//   - Downloads the same object (3 times) sequentially with the same client,
-//     capturing the elapsed time and taking memory snapshots before and after
-//     each download.
+//   - Check if the timeout is exceeded; if so, compile p50, p90 and p99 and return.
+//   - Queue a goroutine that performs a download. This goroutine will run as
+//     soon as there is an available worker. The number of workers that run
+//     concurrently is set in the command-line.
+//   - This goroutine chooses the object to download by receiving an object name
+//     from the channel. At the end of the download, it will return that name to
+//     the channel. That way, no goroutines are reading from the same object at
+//     the same time.
+//   - The time taken is saved in a slice that is used to compile the percentiles
+//     once the timeout is exceeded.
 type continuousReads struct {
 	opts          *benchmarkOptions
 	bucketName    string
@@ -131,7 +129,6 @@ func (r *continuousReads) run(ctx context.Context) error {
 	benchGroup, ctx := errgroup.WithContext(ctx)
 	benchGroup.SetLimit(r.numWorkers)
 
-	i := 0
 	for {
 		select {
 		case <-ctx.Done():
@@ -145,8 +142,6 @@ func (r *continuousReads) run(ctx context.Context) error {
 			benchGroup.Go(func() error {
 				client := getClient(ctx, r.api)
 				object := <-r.objects
-				fmt.Println("hi ", i)
-				i++
 
 				var span trace.Span
 				ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "continuous_reads")
