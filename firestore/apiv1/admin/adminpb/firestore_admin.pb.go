@@ -2081,7 +2081,7 @@ type FirestoreAdminClient interface {
 	// only supports listing fields that have been explicitly overridden. To issue
 	// this query, call
 	// [FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]
-	// with the filter set to `indexConfig.usesAncestorConfig:false or
+	// with the filter set to `indexConfig.usesAncestorConfig:false` or
 	// `ttlConfig:*`.
 	ListFields(ctx context.Context, in *ListFieldsRequest, opts ...grpc.CallOption) (*ListFieldsResponse, error)
 	// Exports a copy of all or a subset of documents from Google Cloud Firestore
@@ -2288,7 +2288,7 @@ type FirestoreAdminServer interface {
 	// only supports listing fields that have been explicitly overridden. To issue
 	// this query, call
 	// [FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]
-	// with the filter set to `indexConfig.usesAncestorConfig:false or
+	// with the filter set to `indexConfig.usesAncestorConfig:false` or
 	// `ttlConfig:*`.
 	ListFields(context.Context, *ListFieldsRequest) (*ListFieldsResponse, error)
 	// Exports a copy of all or a subset of documents from Google Cloud Firestore
