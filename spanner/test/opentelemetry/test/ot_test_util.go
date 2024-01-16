@@ -20,8 +20,8 @@ import (
 	"context"
 
 	"go.opentelemetry.io/otel"
-	/*sdkmetric "go.opentelemetry.io/otel/sdk/metric"
-	"go.opentelemetry.io/otel/sdk/metric/metricdata"*/
+	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 )
@@ -32,8 +32,8 @@ type openTelemetryTestExporter struct {
 	exporter *tracetest.InMemoryExporter
 	tp       *sdktrace.TracerProvider
 
-	/*metricReader *sdkmetric.ManualReader
-	mp           *sdkmetric.MeterProvider*/
+	metricReader *sdkmetric.ManualReader
+	mp           *sdkmetric.MeterProvider
 }
 
 // newOpenTelemetryTestExporter creates a OpenTelemetryTestExporter with
@@ -48,18 +48,18 @@ func newOpenTelemetryTestExporter(globalMeter bool, globalTracer bool) *openTele
 		otel.SetTracerProvider(tp)
 	}
 
-	/*metricReader := sdkmetric.NewManualReader()
+	metricReader := sdkmetric.NewManualReader()
 	mp := sdkmetric.NewMeterProvider(
 		sdkmetric.WithReader(metricReader),
 	)
 	if globalMeter {
 		otel.SetMeterProvider(mp)
-	}*/
+	}
 	return &openTelemetryTestExporter{
-		exporter: exporter,
-		tp:       tp,
-		/*metricReader: metricReader,
-		mp:           mp,*/
+		exporter:     exporter,
+		tp:           tp,
+		metricReader: metricReader,
+		mp:           mp,
 	}
 }
 
@@ -69,14 +69,14 @@ func (te *openTelemetryTestExporter) spans() tracetest.SpanStubs {
 }
 
 // metrics returns the current in-memory stored metrics.
-/*func (te *openTelemetryTestExporter) metrics(ctx context.Context) (*metricdata.ResourceMetrics, error) {
+func (te *openTelemetryTestExporter) metrics(ctx context.Context) (*metricdata.ResourceMetrics, error) {
 	rm := metricdata.ResourceMetrics{}
 	err := te.metricReader.Collect(ctx, &rm)
 	return &rm, err
-}*/
+}
 
 // Unregister shuts down the underlying OpenTelemetry TracerProvider.
 func (te *openTelemetryTestExporter) Unregister(ctx context.Context) {
 	te.tp.Shutdown(ctx)
-	//te.mp.Shutdown(ctx)
+	te.mp.Shutdown(ctx)
 }

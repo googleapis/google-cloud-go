@@ -16,7 +16,6 @@ limitations under the License.
 
 package test
 
-/*
 import (
 	"context"
 	"errors"
@@ -388,4 +387,3 @@ func validateOTMetric(t *testing.T, ctx context.Context, te *openTelemetryTestEx
 	}
 	metricdatatest.AssertEqual(t, expectedMetric, resourceMetrics.ScopeMetrics[0].Metrics[idx], metricdatatest.IgnoreTimestamp(), metricdatatest.IgnoreExemplars())
 }
-*/
