@@ -28,6 +28,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+// OtInstrumentationScope is the instrumentation name that will be associated with the emitted telemetry.
 const OtInstrumentationScope = "cloud.google.com/go"
 const metricsPrefix = "spanner/"
 
@@ -222,13 +223,13 @@ func EnableOpenTelemetryMetrics() {
 	setOpenTelemetryMetricsFlag(true)
 }
 
+// IsOpenTelemetryMetricsEnabled tells whether OpenTelemtery metrics is enabled or not.
 func IsOpenTelemetryMetricsEnabled() bool {
 	otMu.RLock()
 	defer otMu.RUnlock()
 	return openTelemetryMetricsEnabled
 }
 
-// Needed for unit testing
 func setOpenTelemetryMetricsFlag(enable bool) {
 	otMu.Lock()
 	openTelemetryMetricsEnabled = enable

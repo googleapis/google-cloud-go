@@ -163,7 +163,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			metricName := test.expectedMetric.Name
 			expectedMetric := test.expectedMetric
-			validateOTMetric(t, ctx, te, metricName, expectedMetric)
+			validateOTMetric(ctx, t, te, metricName, expectedMetric)
 		})
 	}
 }
@@ -211,7 +211,7 @@ func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 		},
 	}
 
-	validateOTMetric(t, ctx, te, expectedMetricData.Name, expectedMetricData)
+	validateOTMetric(ctx, t, te, expectedMetricData.Name, expectedMetricData)
 }
 
 func TestOTMetrics_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
@@ -248,7 +248,7 @@ func TestOTMetrics_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 			IsMonotonic: true,
 		},
 	}
-	validateOTMetric(t, ctx1, te, expectedMetricData.Name, expectedMetricData)
+	validateOTMetric(ctx1, t, te, expectedMetricData.Name, expectedMetricData)
 }
 
 func TestOTMetrics_GFELatency(t *testing.T) {
@@ -369,7 +369,7 @@ func getAttributes(clientID string) []attribute.KeyValue {
 	}
 }
 
-func validateOTMetric(t *testing.T, ctx context.Context, te *openTelemetryTestExporter, metricName string, expectedMetric metricdata.Metrics) {
+func validateOTMetric(ctx context.Context, t *testing.T, te *openTelemetryTestExporter, metricName string, expectedMetric metricdata.Metrics) {
 	resourceMetrics, err := te.metrics(ctx)
 	if err != nil {
 		t.Error(err)
