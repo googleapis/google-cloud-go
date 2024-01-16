@@ -22,9 +22,6 @@ package recaptchaenterprisepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1441,7 +1440,7 @@ type AccountVerificationInfo struct {
 	// Output only. Result of the latest account verification challenge.
 	LatestVerificationResult AccountVerificationInfo_Result `protobuf:"varint,7,opt,name=latest_verification_result,json=latestVerificationResult,proto3,enum=google.cloud.recaptchaenterprise.v1.AccountVerificationInfo_Result" json:"latest_verification_result,omitempty"`
 	// Username of the account that is being verified. Deprecated. Customers
-	// should now provide the hashed account ID field in Event.
+	// should now provide the `account_id` field in `event.user_info`.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/recaptchaenterprise/v1/recaptchaenterprise.proto.
 	Username string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
