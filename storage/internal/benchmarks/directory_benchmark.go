@@ -146,29 +146,7 @@ func (r *directoryBenchmark) cleanup() error {
 	}
 
 	// Delete uploaded objects
-	c := nonBenchmarkingClients.Get()
-	// List objects under root and delete all
-	root := path.Base(r.uploadDirectoryPath)
-	it := c.Bucket(r.bucketName).Objects(context.Background(), &storage.Query{
-		Prefix:     root,
-		Projection: storage.ProjectionNoACL,
-	})
-
-	attrs, err := it.Next()
-
-	for err == nil {
-		o := c.Bucket(r.bucketName).Object(attrs.Name).Retryer(storage.WithPolicy(storage.RetryAlways))
-		if err := o.Delete(context.Background()); err != nil {
-			return err
-		}
-		attrs, err = it.Next()
-	}
-
-	if err != iterator.Done {
-		return fmt.Errorf("Bucket.Objects: %w", err)
-	}
-
-	return nil
+	return deleteDirectoryFromGCS(r.bucketName, path.Base(r.uploadDirectoryPath))
 }
 
 func (r *directoryBenchmark) uploadDirectory(ctx context.Context, numWorkers int) (elapsedTime time.Duration, err error) {
