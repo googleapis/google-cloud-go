@@ -57,35 +57,6 @@ func TestOTMetrics_InstrumentationScope(t *testing.T) {
 	if rm.ScopeMetrics[0].Scope.Version != internal.Version {
 		t.Fatalf("Error in instrumentation scope version, got: %s, want: %s", rm.ScopeMetrics[0].Scope.Version, internal.Version)
 	}
-	/*t.Logf("Length of scope metrics %d", len(rm.ScopeMetrics))
-	t.Logf("Length of scope metrics %q", rm.ScopeMetrics)
-	t.Logf("Length of scope metrics %q", rm.ScopeMetrics[0].Metrics)
-	t.Logf("Length of scope metrics %q", rm.ScopeMetrics[0].Scope)
-	t.Logf("Length of scope metrics %q", rm.ScopeMetrics[1].Metrics)
-	t.Logf("Length of scope metrics %d", len(rm.ScopeMetrics[1].Metrics))
-	t.Logf("Length of scope metrics %q", rm.ScopeMetrics[1].Scope)*/
-
-	/*for _, m := range rm.ScopeMetrics {
-		t.Log(m.Scope)
-		for _, metric := range m.Metrics {
-			t.Log(metric.Data)
-			switch metric.Data.(type) {
-			case metricdata.Gauge[int64]:
-				a := metric.Data.(metricdata.Gauge[int64]).DataPoints
-				t.Log(a)
-			case metricdata.Gauge[float64]:
-				a := metric.Data.(metricdata.Gauge[float64]).DataPoints
-				t.Log(a)
-			case metricdata.Sum[int64]:
-				a := metric.Data.(metricdata.Sum[int64]).DataPoints
-				t.Log(a)
-			case metricdata.Sum[float64]:
-				a := metric.Data.(metricdata.Sum[float64]).DataPoints
-				t.Log(a)
-			}
-		}
-	}*/
-	//metricdatatest.AssertAggregationsEqual()
 }
 
 func TestOTMetrics_SessionPool(t *testing.T) {
@@ -107,7 +78,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 		{
 			"OpenSessionCount",
 			metricdata.Metrics{
-				Name:        "open_session_count_test_ot_local",
+				Name:        "spanner/open_session_count",
 				Description: "Number of sessions currently opened",
 				Unit:        "1",
 				Data: metricdata.Gauge[int64]{
@@ -123,7 +94,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 		{
 			"MaxAllowedSessionsCount",
 			metricdata.Metrics{
-				Name:        "max_allowed_sessions_test_ot_local",
+				Name:        "spanner/max_allowed_sessions",
 				Description: "The maximum number of sessions allowed. Configurable by the user.",
 				Unit:        "1",
 				Data: metricdata.Gauge[int64]{
@@ -139,7 +110,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 		{
 			"MaxInUseSessionsCount",
 			metricdata.Metrics{
-				Name:        "max_in_use_sessions_test_ot_local",
+				Name:        "spanner/max_in_use_sessions",
 				Description: "The maximum number of sessions in use during the last 10 minute interval.",
 				Unit:        "1",
 				Data: metricdata.Gauge[int64]{
@@ -155,7 +126,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 		{
 			"AcquiredSessionsCount",
 			metricdata.Metrics{
-				Name:        "num_acquired_sessions_test_ot_ctr_local",
+				Name:        "spanner/num_acquired_sessions",
 				Description: "The number of sessions acquired from the session pool.",
 				Unit:        "1",
 				Data: metricdata.Sum[int64]{
@@ -173,7 +144,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 		{
 			"ReleasedSessionsCount",
 			metricdata.Metrics{
-				Name:        "num_released_sessions_test_ot_ctr_local",
+				Name:        "spanner/num_released_sessions",
 				Description: "The number of sessions released by the user and pool maintainer.",
 				Unit:        "1",
 				Data: metricdata.Sum[int64]{
@@ -197,7 +168,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 	}
 }
 
-func TestOTStats_SessionPool_SessionsCount(t *testing.T) {
+func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 	ctx := context.Background()
 	te := newOpenTelemetryTestExporter(false, false)
 	t.Cleanup(func() {
@@ -223,7 +194,7 @@ func TestOTStats_SessionPool_SessionsCount(t *testing.T) {
 	attributesNumSessions := append(getAttributes(client.ClientID()), attribute.Key("type").String("num_sessions"))
 
 	expectedMetricData := metricdata.Metrics{
-		Name:        "num_sessions_in_pool_test_ot_local",
+		Name:        "spanner/num_sessions_in_pool",
 		Description: "The number of sessions currently in use.",
 		Unit:        "1",
 		Data: metricdata.Gauge[int64]{
@@ -243,7 +214,7 @@ func TestOTStats_SessionPool_SessionsCount(t *testing.T) {
 	validateOTMetric(t, ctx, te, expectedMetricData.Name, expectedMetricData)
 }
 
-func TestOTStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
+func TestOTMetrics_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	ctx1 := context.Background()
 	te := newOpenTelemetryTestExporter(false, false)
 	t.Cleanup(func() {
@@ -263,7 +234,7 @@ func TestOTStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	client.Single().ReadRow(ctx, "Users", spanner.Key{"alice"}, []string{"email"})
 
 	expectedMetricData := metricdata.Metrics{
-		Name:        "get_session_timeouts_int64counter",
+		Name:        "spanner/get_session_timeouts",
 		Description: "The number of get sessions timeouts due to pool exhaustion.",
 		Unit:        "1",
 		Data: metricdata.Sum[int64]{
@@ -280,7 +251,7 @@ func TestOTStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	validateOTMetric(t, ctx1, te, expectedMetricData.Name, expectedMetricData)
 }
 
-func TestOTStats_GFE_Latency(t *testing.T) {
+func TestOTMetrics_GFELatency(t *testing.T) {
 	ctx := context.Background()
 	te := newOpenTelemetryTestExporter(false, false)
 	t.Cleanup(func() {
@@ -336,9 +307,10 @@ func TestOTStats_GFE_Latency(t *testing.T) {
 		t.Fatalf("ScopeMetrics length mismatch, got %v, want %v", got, want)
 	}
 
-	idx := getMetricIndex(resourceMetrics.ScopeMetrics[0].Metrics, "gfe_latency_test_ot_local")
+	gfeLatencyMetricName := "spanner/gfe_latency"
+	idx := getMetricIndex(resourceMetrics.ScopeMetrics[0].Metrics, gfeLatencyMetricName)
 	if idx == -1 {
-		t.Fatalf("Metric Name %s not found", "gfe_latency_test_ot_local")
+		t.Fatalf("Metric Name %s not found", gfeLatencyMetricName)
 	}
 	/*
 		expectedMetricData := metricdata.Metrics{
@@ -361,8 +333,8 @@ func TestOTStats_GFE_Latency(t *testing.T) {
 		metricdatatest.AssertEqual(t, expectedMetricData, resourceMetrics.ScopeMetrics[0].Metrics[idx], metricdatatest.IgnoreTimestamp(), metricdatatest.IgnoreExemplars())
 	*/
 	gfeLatencyRecordedMetric := resourceMetrics.ScopeMetrics[0].Metrics[idx]
-	if gfeLatencyRecordedMetric.Name != "gfe_latency_test_ot_local" {
-		t.Fatalf("Got metric name: %s, want: %s", gfeLatencyRecordedMetric.Name, "gfe_latency_test_ot_local")
+	if gfeLatencyRecordedMetric.Name != gfeLatencyMetricName {
+		t.Fatalf("Got metric name: %s, want: %s", gfeLatencyRecordedMetric.Name, gfeLatencyMetricName)
 	}
 	if _, ok := gfeLatencyRecordedMetric.Data.(metricdata.Histogram[int64]); !ok {
 		t.Fatal("gfe latency metric data not of type metricdata.Histogram[int64]")
@@ -375,13 +347,14 @@ func TestOTStats_GFE_Latency(t *testing.T) {
 	}
 	metricdatatest.AssertHasAttributes[metricdata.HistogramDataPoint[int64]](t, gfeLatencyRecordedMetricData.DataPoints[0], attributeGFELatency...)
 
-	idx1 := getMetricIndex(resourceMetrics.ScopeMetrics[0].Metrics, "gfe_header_missing_count_local")
+	gfeHeaderMissingMetric := "spanner/gfe_header_missing_count"
+	idx1 := getMetricIndex(resourceMetrics.ScopeMetrics[0].Metrics, gfeHeaderMissingMetric)
 	if idx1 == -1 {
-		t.Fatalf("Metric Name %s not found", "gfe_header_missing_count_local")
+		t.Fatalf("Metric Name %s not found", gfeHeaderMissingMetric)
 	}
 
 	expectedMetricData := metricdata.Metrics{
-		Name:        "gfe_header_missing_count_local",
+		Name:        gfeHeaderMissingMetric,
 		Description: "Number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network",
 		Unit:        "1",
 		Data: metricdata.Sum[int64]{
