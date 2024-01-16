@@ -231,13 +231,13 @@ type internalClient interface {
 // The Cloud Quotas API is an infrastructure service for Google Cloud that lets
 // service consumers list and manage their resource usage limits.
 //
-//	List/Get the metadata and current status of the quotas for a service.
+//   List/Get the metadata and current status of the quotas for a service.
 //
-//	Create/Update quota preferencess that declare the preferred quota values.
+//   Create/Update quota preferencess that declare the preferred quota values.
 //
-//	Check the status of a quota preference request.
+//   Check the status of a quota preference request.
 //
-//	List/Get pending and historical quota preference.
+//   List/Get pending and historical quota preference.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -323,13 +323,13 @@ type gRPCClient struct {
 // The Cloud Quotas API is an infrastructure service for Google Cloud that lets
 // service consumers list and manage their resource usage limits.
 //
-//	List/Get the metadata and current status of the quotas for a service.
+//   List/Get the metadata and current status of the quotas for a service.
 //
-//	Create/Update quota preferencess that declare the preferred quota values.
+//   Create/Update quota preferencess that declare the preferred quota values.
 //
-//	Check the status of a quota preference request.
+//   Check the status of a quota preference request.
 //
-//	List/Get pending and historical quota preference.
+//   List/Get pending and historical quota preference.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -401,13 +401,13 @@ type restClient struct {
 // The Cloud Quotas API is an infrastructure service for Google Cloud that lets
 // service consumers list and manage their resource usage limits.
 //
-//	List/Get the metadata and current status of the quotas for a service.
+//   List/Get the metadata and current status of the quotas for a service.
 //
-//	Create/Update quota preferencess that declare the preferred quota values.
+//   Create/Update quota preferencess that declare the preferred quota values.
 //
-//	Check the status of a quota preference request.
+//   Check the status of a quota preference request.
 //
-//	List/Get pending and historical quota preference.
+//   List/Get pending and historical quota preference.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
