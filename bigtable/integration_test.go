@@ -52,6 +52,7 @@ const (
 	directPathIPV4Prefix      = "34.126"
 	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
 	prefixOfInstanceResources = "bt-it-"
+	prefixOfClusterResources  = "bt-it-c-"
 )
 
 var (
@@ -127,16 +128,24 @@ func cleanup(c IntegrationTestConfig) error {
 		return err
 	}
 
-	for _, info := range instances {
-		if strings.HasPrefix(info.Name, prefixOfInstanceResources) {
-			timestamp := info.Name[len(prefixOfInstanceResources):]
+	for _, instanceInfo := range instances {
+		if strings.HasPrefix(instanceInfo.Name, prefixOfInstanceResources) {
+			timestamp := instanceInfo.Name[len(prefixOfInstanceResources):]
 			t, err := strconv.ParseInt(timestamp, 10, 64)
 			if err != nil {
 				return err
 			}
 			uT := time.Unix(t, 0)
 			if time.Now().After(uT.Add(timeUntilResourceCleanup)) {
-				iac.DeleteInstance(ctx, info.Name)
+				iac.DeleteInstance(ctx, instanceInfo.Name)
+			}
+		} else {
+			clusters, err := iac.Clusters(ctx, instanceInfo.Name)
+			if err != nil {
+				return err
+			}
+			for _, clusterInfo := range clusters {
+				iac.DeleteCluster(ctx, instanceInfo.Name, clusterInfo.Name)
 			}
 		}
 	}
@@ -3077,7 +3086,7 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	destIAdminClient1 := srcIAdminClient
 
 	// Create a 2nd cluster in 1st destination project
-	clusterUID := uid.NewSpace("c-", &uid.Options{Short: true})
+	clusterUID := uid.NewSpace(prefixOfClusterResources, &uid.Options{Short: true})
 	destProj1Inst1Cl2 := clusterUID.New()
 	defer func() {
 		testutil.Retry(t, 3, 2*time.Second, func(r *testutil.R) {
