@@ -63,6 +63,7 @@ var (
 		"j§adams":     {"gwashington", "tjefferson"},
 	}
 
+	clusterUIDSpace  = uid.NewSpace(prefixOfClusterResources, &uid.Options{Short: true})
 	tableNameSpace   = uid.NewSpace("cbt-test", &uid.Options{Short: true})
 	myTableName      = fmt.Sprintf("mytable-%d", time.Now().Unix())
 	myOtherTableName = fmt.Sprintf("myothertable-%d", time.Now().Unix())
@@ -82,11 +83,15 @@ func populatePresidentsGraph(table *Table) error {
 	return nil
 }
 
+func generateNewInstanceName() string {
+	return fmt.Sprintf("%v%d", prefixOfInstanceResources, time.Now().Unix())
+}
+
 var instanceToCreate string
 
 func init() {
 	if runCreateInstanceTests {
-		instanceToCreate = fmt.Sprintf("bt-it-%d", time.Now().Unix())
+		instanceToCreate = generateNewInstanceName()
 	}
 }
 
@@ -140,6 +145,7 @@ func cleanup(c IntegrationTestConfig) error {
 				iac.DeleteInstance(ctx, instanceInfo.Name)
 			}
 		} else {
+			// Delete clusters created in existing instances
 			clusters, err := iac.Clusters(ctx, instanceInfo.Name)
 			if err != nil {
 				return err
@@ -2389,7 +2395,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 	defer iAdminClient.Close()
 
-	clusterID := instanceToCreate + "-cluster"
+	clusterID := clusterUIDSpace.New()
 
 	// Create a development instance
 	conf := &InstanceConf{
@@ -2468,7 +2474,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 
 	// Now add a second cluster as the only change. The first cluster must also be provided so
 	// it is not removed.
-	clusterID2 := clusterID + "-2"
+	clusterID2 := clusterUIDSpace.New()
 	confWithClusters = &InstanceWithClustersConfig{
 		InstanceID: instanceToCreate,
 		Clusters: []ClusterConfig{
@@ -3014,9 +3020,8 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 }
 
 func createInstance(ctx context.Context, testEnv IntegrationEnv, iAdminClient *InstanceAdminClient) (string, string, error) {
-	diffInstanceId := uid.NewSpace(prefixOfInstanceResources, &uid.Options{Short: true})
-	diffInstance := diffInstanceId.New()
-	diffCluster := testEnv.Config().Cluster + "-d"
+	diffInstance := generateNewInstanceName()
+	diffCluster := clusterUIDSpace.New()
 	conf := &InstanceConf{
 		InstanceId:   diffInstance,
 		ClusterId:    diffCluster,
@@ -3088,8 +3093,7 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	destIAdminClient1 := srcIAdminClient
 
 	// Create a 2nd cluster in 1st destination project
-	clusterUID := uid.NewSpace(prefixOfClusterResources, &uid.Options{Short: true})
-	destProj1Inst1Cl2 := clusterUID.New()
+	destProj1Inst1Cl2 := clusterUIDSpace.New()
 	defer func() {
 		testutil.Retry(t, 3, 2*time.Second, func(r *testutil.R) {
 			err := destIAdminClient1.DeleteCluster(ctx, destProj1Inst1, destProj1Inst1Cl2)
