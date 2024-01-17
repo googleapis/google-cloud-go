@@ -1523,7 +1523,8 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1601,7 +1602,8 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1685,7 +1687,8 @@ func TestIntegration_Admin(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1877,7 +1880,8 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1915,7 +1919,8 @@ func TestIntegration_BackupIAM(t *testing.T) {
 		t.Skip("emulator doesn't support IAM Policy creation")
 	}
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1989,7 +1994,8 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	}
 
 	timeout := 7 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2274,7 +2280,9 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 
 	// Create an instance admin client
 	timeout := 7 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
@@ -2370,7 +2378,8 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2540,7 +2549,8 @@ func TestIntegration_Autoscaling(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2708,7 +2718,8 @@ func TestIntegration_Granularity(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -3216,7 +3227,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	timeout := 15 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
