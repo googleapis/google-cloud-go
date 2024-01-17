@@ -26,13 +26,18 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/trace"
+	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"google.golang.org/api/option"
 
 	metricExporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"google.golang.org/api/iterator"
+
+	traceExporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 )
 
 var muElapsedTimes sync.Mutex
@@ -324,6 +329,8 @@ func setupAndEnableOT() *metric.MeterProvider {
 	if err != nil {
 		panic(err)
 	}
+	trace.OpenTelemetryTracingEnabled = true
+	setTracerProvider(res)
 	return meterProvider
 }
 
@@ -358,4 +365,18 @@ func newResource() (*resource.Resource, error) {
 			semconv.ServiceName("my-service-spanner"),
 			semconv.ServiceVersion("0.1.0"),
 		))
+}
+
+func setTracerProvider(res *resource.Resource) {
+	exporter, err := traceExporter.New(traceExporter.WithProjectID("span-cloud-testing"))
+	if err != nil {
+		log.Print(err)
+	}
+
+	traceProvider := sdktrace.NewTracerProvider(
+		sdktrace.WithResource(res),
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+	)
+	otel.SetTracerProvider(traceProvider)
 }
