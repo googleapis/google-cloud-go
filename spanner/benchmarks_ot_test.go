@@ -316,6 +316,7 @@ func setupAndEnableOT() *metric.MeterProvider {
 		log.Fatal(err)
 	}
 
+	EnableOpenTelemetryMetrics()
 	// Create a meter provider.
 	// You can pass this instance directly to your instrumented code if it
 	// accepts a MeterProvider instance.
