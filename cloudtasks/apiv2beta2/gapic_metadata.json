@@ -15,11 +15,6 @@
                 "AcknowledgeTask"
               ]
             },
-            "BufferTask": {
-              "methods": [
-                "BufferTask"
-              ]
-            },
             "CancelLease": {
               "methods": [
                 "CancelLease"
@@ -138,11 +133,6 @@
             "AcknowledgeTask": {
               "methods": [
                 "AcknowledgeTask"
-              ]
-            },
-            "BufferTask": {
-              "methods": [
-                "BufferTask"
               ]
             },
             "CancelLease": {

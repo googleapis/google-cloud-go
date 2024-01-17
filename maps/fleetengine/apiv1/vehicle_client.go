@@ -185,43 +185,43 @@ func (c *VehicleClient) Connection() *grpc.ClientConn {
 //
 // The following Vehicle fields are required when creating a Vehicle:
 //
-//	vehicleState
+//   vehicleState
 //
-//	supportedTripTypes
+//   supportedTripTypes
 //
-//	maximumCapacity
+//   maximumCapacity
 //
-//	vehicleType
+//   vehicleType
 //
 // The following Vehicle fields are ignored when creating a Vehicle:
 //
-//	name
+//   name
 //
-//	currentTrips
+//   currentTrips
 //
-//	availableCapacity
+//   availableCapacity
 //
-//	current_route_segment
+//   current_route_segment
 //
-//	current_route_segment_end_point
+//   current_route_segment_end_point
 //
-//	current_route_segment_version
+//   current_route_segment_version
 //
-//	current_route_segment_traffic
+//   current_route_segment_traffic
 //
-//	route
+//   route
 //
-//	waypoints
+//   waypoints
 //
-//	waypoints_version
+//   waypoints_version
 //
-//	remaining_distance_meters
+//   remaining_distance_meters
 //
-//	remaining_time_seconds
+//   remaining_time_seconds
 //
-//	eta_to_next_waypoint
+//   eta_to_next_waypoint
 //
-//	navigation_status
+//   navigation_status
 //
 // All other fields are optional and used if provided.
 func (c *VehicleClient) CreateVehicle(ctx context.Context, req *fleetenginepb.CreateVehicleRequest, opts ...gax.CallOption) (*fleetenginepb.Vehicle, error) {
@@ -238,13 +238,13 @@ func (c *VehicleClient) GetVehicle(ctx context.Context, req *fleetenginepb.GetVe
 // When updating a Vehicle, the following fields cannot be updated since
 // they are managed by the server:
 //
-//	currentTrips
+//   currentTrips
 //
-//	availableCapacity
+//   availableCapacity
 //
-//	current_route_segment_version
+//   current_route_segment_version
 //
-//	waypoints_version
+//   waypoints_version
 //
 // The vehicle name also cannot be updated.
 //
