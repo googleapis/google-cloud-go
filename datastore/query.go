@@ -628,13 +628,13 @@ func (c *Client) Count(ctx context.Context, q *Query) (n int, err error) {
 
 const (
 	// QueryModeNormal is the default mode. Only the query results are returned.
-	QueryModeNormal QueryMode = iota
+	QueryModeNormal QueryMode = iota // = 0
 	// QueryModeExplain returns only the query plan, without any results or execution
 	// statistics information.
-	QueryModeExplain
+	QueryModeExplain // = 1
 	// QueryModeExplainAnalyze returns both the query plan and the execution statistics along
 	// with the results.
-	QueryModeExplainAnalyze
+	QueryModeExplainAnalyze // = 2
 )
 
 // RunOption lets the user provide options while running a query

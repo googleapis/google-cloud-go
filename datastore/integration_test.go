@@ -1416,21 +1416,17 @@ func createTestEntities(ctx context.Context, t *testing.T, client *Client, parti
 	}
 }
 
-func TestIntegration_RunAndGetAllWithOptions(t *testing.T) {
-	ctx := context.Background()
-	client := newTestClient(ctx, t)
-	defer client.Close()
+type runWithOptionsTestcase struct {
+	desc         string
+	wantKeys     []*Key
+	wantStats    *ResultSetStats
+	wantEntities []SQChild
+	opts         []RunOption
+}
 
-	keys, entities, now, parent, cleanup := createTestEntities(ctx, t, client, "GetAllWithOptions", 3)
-	defer cleanup()
-	query := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Order("I")
-	for _, testcase := range []struct {
-		desc         string
-		wantKeys     []*Key
-		wantStats    *ResultSetStats
-		wantEntities []SQChild
-		opts         []RunOption
-	}{
+func getRunWithOptionsTestcases(ctx context.Context, t *testing.T, client *Client, partialNameKey string, count int) ([]runWithOptionsTestcase, int64, *Key, func()) {
+	keys, entities, now, parent, cleanup := createTestEntities(ctx, t, client, partialNameKey, count)
+	return []runWithOptionsTestcase{
 		{
 			desc:         "No mode",
 			wantKeys:     keys,
@@ -1481,8 +1477,17 @@ func TestIntegration_RunAndGetAllWithOptions(t *testing.T) {
 			},
 			wantEntities: entities,
 		},
-	} {
-		// Test GetAllWithOptions
+	}, now, parent, cleanup
+}
+
+func TestIntegration_GetAllWithOptions(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+	testcases, now, parent, cleanup := getRunWithOptionsTestcases(ctx, t, client, "GetAllWithOptions", 3)
+	defer cleanup()
+	query := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Order("I")
+	for _, testcase := range testcases {
 		var gotSQChildsFromGetAll []SQChild
 		gotRes, gotErr := client.GetAllWithOptions(ctx, query, &gotSQChildsFromGetAll, testcase.opts...)
 		if gotErr != nil {
@@ -1497,8 +1502,17 @@ func TestIntegration_RunAndGetAllWithOptions(t *testing.T) {
 		if err := isEqualResultSetStats(gotRes.Stats, testcase.wantStats); err != nil {
 			t.Errorf("%v %+v", testcase.desc, err)
 		}
+	}
+}
 
-		// Test Run()
+func TestIntegration_RunWithOptions(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+	testcases, now, parent, cleanup := getRunWithOptionsTestcases(ctx, t, client, "RunWithOptions", 3)
+	defer cleanup()
+	query := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Order("I")
+	for _, testcase := range testcases {
 		var gotSQChildsFromRun []SQChild
 		iter := client.Run(ctx, query, testcase.opts...)
 		for {
@@ -1533,7 +1547,6 @@ func isEqualResultSetStats(got *ResultSetStats, want *ResultSetStats) error {
 		for wantK, wantV := range want.QueryStats {
 			gotV, ok := got.QueryStats[wantK]
 			if !ok || !testutil.Equal(gotV, wantV) {
-				fmt.Printf("Stats.QueryPlan.QueryStats: gotV: %+v, wantV: %+v", gotV, wantV)
 				return fmt.Errorf("Stats.QueryPlan.QueryStats: got: %+v, want: %+v", got.QueryStats, want.QueryStats)
 			}
 		}
