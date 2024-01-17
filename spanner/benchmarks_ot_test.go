@@ -16,7 +16,6 @@ limitations under the License.
 
 package spanner
 
-/*
 import (
 	"context"
 	"fmt"
@@ -27,10 +26,12 @@ import (
 	"testing"
 	"time"
 
-	"go.opencensus.io/trace"
+	"go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/api/option"
 
-	"contrib.go.opencensus.io/exporter/stackdriver"
+	metricExporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
+	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"google.golang.org/api/iterator"
 )
 
@@ -46,12 +47,15 @@ var (
 	parallelThreads       = 5
 )
 
-func createBenchmarkActualServer(ctx context.Context, incStep uint64, clientConfig ClientConfig, database string) (client *Client, err error) {
+func createBenchmarkActualServer(ctx context.Context, incStep uint64, clientConfig ClientConfig, database string, mp *metric.MeterProvider) (client *Client, err error) {
 	t := &testing.T{}
 	clientConfig.SessionPoolConfig = SessionPoolConfig{
 		MinOpened: 100,
 		MaxOpened: 400,
 		incStep:   incStep,
+	}
+	if mp != nil {
+		clientConfig.OpenTelemetryMeterProvider = mp
 	}
 	options := []option.ClientOption{option.WithEndpoint("staging-wrenchworks.sandbox.googleapis.com:443")}
 	client, err = NewClientWithConfig(ctx, database, clientConfig, options...)
@@ -69,7 +73,7 @@ func createBenchmarkActualServer(ctx context.Context, incStep uint64, clientConf
 	return
 }
 
-func readWorkerReal(client *Client, b *testing.B, jobs <-chan int, results chan<- int) {
+func readWorkerReal1(client *Client, b *testing.B, jobs <-chan int, results chan<- int) {
 	for range jobs {
 		startTime := time.Now()
 		iter := client.Single().Query(context.Background(), getRandomisedReadStatement())
@@ -95,7 +99,7 @@ func readWorkerReal(client *Client, b *testing.B, jobs <-chan int, results chan<
 	}
 }
 
-func writeWorkerReal(client *Client, b *testing.B, jobs <-chan int, results chan<- int64) {
+func writeWorkerReal1(client *Client, b *testing.B, jobs <-chan int, results chan<- int64) {
 	for range jobs {
 		startTime := time.Now()
 		var updateCount int64
@@ -117,115 +121,31 @@ func writeWorkerReal(client *Client, b *testing.B, jobs <-chan int, results chan
 	}
 }
 
-func BenchmarkClientBurstReadIncStep25RealServer(b *testing.B) {
-	b.Logf("Running Burst Read Benchmark With no instrumentation")
+func BenchmarkClientBurstReadIncStep25RealServerOpenTelemetry(b *testing.B) {
+	b.Logf("Running Burst Read Benchmark With opentelemetry instrumentation")
 	elapsedTimes = []time.Duration{}
-	burstRead(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1")
+	meterProvider := setupAndEnableOT()
+	burstRead(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1", meterProvider)
 }
 
-func BenchmarkClientBurstWriteIncStep25RealServer(b *testing.B) {
-	b.Logf("Running Burst Write Benchmark With no instrumentation")
+func BenchmarkClientBurstWriteIncStep25RealServerOpenTelemetry(b *testing.B) {
+	b.Logf("Running Burst Write Benchmark With opentelemetry instrumentation")
 	elapsedTimes = []time.Duration{}
-	burstWrite(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1")
+	meterProvider := setupAndEnableOT()
+	burstWrite(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1", meterProvider)
 }
 
-func BenchmarkClientBurstReadWriteIncStep25RealServer(b *testing.B) {
-	b.Logf("Running Burst Read Benchmark With no instrumentation")
+func BenchmarkClientBurstReadWriteIncStep25RealServerOpenTelemetry(b *testing.B) {
+	b.Logf("Running Burst Read and Write Benchmark With opentelemetry instrumentation")
 	elapsedTimes = []time.Duration{}
-	burstReadAndWrite(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1")
+	meterProvider := setupAndEnableOT()
+	burstReadAndWrite(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1", meterProvider)
 }
 
-func BenchmarkClientBurstReadIncStep25RealServerOpenCensus(b *testing.B) {
-	b.Logf("Running Burst Read Benchmark With OpenCensus instrumentation")
-	if err := EnableStatViews(); err != nil {
-		log.Fatalf("Failed: %v", err)
-	}
-	if err := EnableGfeLatencyView(); err != nil {
-		log.Fatalf("Failed: %v", err)
-	}
-	elapsedTimes = []time.Duration{}
-	// Create OpenCensus Stackdriver exporter.
-	sd, err := stackdriver.NewExporter(stackdriver.Options{
-		ProjectID:         "span-cloud-testing",
-		ReportingInterval: 10 * time.Second,
-		//TraceSpansBufferMaxBytes: 100,
-		BundleDelayThreshold: 50 * time.Millisecond,
-		BundleCountThreshold: 5000,
-	})
-	sd.StartMetricsExporter()
-	// Register it as a trace exporter
-	trace.RegisterExporter(sd)
-	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
-	if err != nil {
-		log.Fatalf("Failed: %v", err)
-	}
-	burstRead(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1")
-	sd.Flush()
-	sd.StopMetricsExporter()
-}
-
-func BenchmarkClientBurstWriteIncStep25RealServerOpenCensus(b *testing.B) {
-	b.Logf("Running Burst Write Benchmark With OpenCensus instrumentation")
-	if err := EnableStatViews(); err != nil {
-		log.Fatalf("Failed: %v", err)
-	}
-	if err := EnableGfeLatencyView(); err != nil {
-		log.Fatalf("Failed: %v", err)
-	}
-	elapsedTimes = []time.Duration{}
-	// Create OpenCensus Stackdriver exporter.
-	sd, err := stackdriver.NewExporter(stackdriver.Options{
-		ProjectID:         "span-cloud-testing",
-		ReportingInterval: 10 * time.Second,
-		//TraceSpansBufferMaxBytes: 100,
-		BundleDelayThreshold: 50 * time.Millisecond,
-		BundleCountThreshold: 5000,
-	})
-	sd.StartMetricsExporter()
-	// Register it as a trace exporter
-	trace.RegisterExporter(sd)
-	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
-	if err != nil {
-		log.Fatalf("Failed: %v", err)
-	}
-	burstWrite(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1")
-	sd.Flush()
-	sd.StopMetricsExporter()
-}
-
-func BenchmarkClientBurstReadWriteIncStep25RealServerOpenCensus(b *testing.B) {
-	b.Logf("Running Burst Write Benchmark With OpenCensus instrumentation")
-	if err := EnableStatViews(); err != nil {
-		log.Fatalf("Failed: %v", err)
-	}
-	if err := EnableGfeLatencyView(); err != nil {
-		log.Fatalf("Failed: %v", err)
-	}
-	elapsedTimes = []time.Duration{}
-	// Create OpenCensus Stackdriver exporter.
-	sd, err := stackdriver.NewExporter(stackdriver.Options{
-		ProjectID:         "span-cloud-testing",
-		ReportingInterval: 10 * time.Second,
-		//TraceSpansBufferMaxBytes: 100,
-		BundleDelayThreshold: 50 * time.Millisecond,
-		BundleCountThreshold: 5000,
-	})
-	sd.StartMetricsExporter()
-	// Register it as a trace exporter
-	trace.RegisterExporter(sd)
-	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
-	if err != nil {
-		log.Fatalf("Failed: %v", err)
-	}
-	burstReadAndWrite(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1")
-	sd.Flush()
-	sd.StopMetricsExporter()
-}
-
-func burstRead(b *testing.B, incStep uint64, database string) {
+func burstRead(b *testing.B, incStep uint64, database string, mp *metric.MeterProvider) {
 	for n := 0; n < b.N; n++ {
 		log.Printf("burstRead called once")
-		client, err := createBenchmarkActualServer(context.Background(), incStep, ClientConfig{}, database)
+		client, err := createBenchmarkActualServer(context.Background(), incStep, ClientConfig{}, database, mp)
 		if err != nil {
 			b.Fatalf("Failed to initialize the client: error : %q", err)
 		}
@@ -241,7 +161,7 @@ func burstRead(b *testing.B, incStep uint64, database string) {
 		parallel := parallelThreads
 
 		for w := 0; w < parallel; w++ {
-			go readWorkerReal(client, b, jobs, results)
+			go readWorkerReal1(client, b, jobs, results)
 		}
 		for j := 0; j < totalQueries; j++ {
 			jobs <- j
@@ -257,10 +177,10 @@ func burstRead(b *testing.B, incStep uint64, database string) {
 	}
 }
 
-func burstWrite(b *testing.B, incStep uint64, database string) {
+func burstWrite(b *testing.B, incStep uint64, database string, mp *metric.MeterProvider) {
 	for n := 0; n < b.N; n++ {
 		log.Printf("burstWrite called once")
-		client, err := createBenchmarkActualServer(context.Background(), incStep, ClientConfig{}, database)
+		client, err := createBenchmarkActualServer(context.Background(), incStep, ClientConfig{}, database, mp)
 		if err != nil {
 			b.Fatalf("Failed to initialize the client: error : %q", err)
 		}
@@ -276,7 +196,7 @@ func burstWrite(b *testing.B, incStep uint64, database string) {
 		parallel := parallelThreads
 
 		for w := 0; w < parallel; w++ {
-			go writeWorkerReal(client, b, jobs, results)
+			go writeWorkerReal1(client, b, jobs, results)
 		}
 		for j := 0; j < totalUpdates; j++ {
 			jobs <- j
@@ -286,16 +206,16 @@ func burstWrite(b *testing.B, incStep uint64, database string) {
 		for a := 0; a < totalUpdates; a++ {
 			totalRows = totalRows + <-results
 		}
-		b.Logf("Total Rows: %d", totalRows)
+		b.Logf("Total Updates: %d", totalRows)
 		reportBenchmarkResults(b, sp)
 		client.Close()
 	}
 }
 
-func burstReadAndWrite(b *testing.B, incStep uint64, database string) {
+func burstReadAndWrite(b *testing.B, incStep uint64, database string, mp *metric.MeterProvider) {
 	for n := 0; n < b.N; n++ {
 		log.Printf("burstReadAndWrite called once")
-		client, err := createBenchmarkActualServer(context.Background(), incStep, ClientConfig{}, database)
+		client, err := createBenchmarkActualServer(context.Background(), incStep, ClientConfig{}, database, mp)
 		if err != nil {
 			b.Fatalf("Failed to initialize the client: error : %q", err)
 		}
@@ -315,13 +235,13 @@ func burstReadAndWrite(b *testing.B, incStep uint64, database string) {
 		parallelReads := parallelThreads
 
 		for w := 0; w < parallelWrites; w++ {
-			go writeWorkerReal(client, b, writeJobs, writeResults)
+			go writeWorkerReal1(client, b, writeJobs, writeResults)
 		}
 		for j := 0; j < totalUpdates; j++ {
 			writeJobs <- j
 		}
 		for w := 0; w < parallelReads; w++ {
-			go readWorkerReal(client, b, readJobs, readResults)
+			go readWorkerReal1(client, b, readJobs, readResults)
 		}
 		for j := 0; j < totalQueries; j++ {
 			readJobs <- j
@@ -389,4 +309,52 @@ func getRandomisedUpdateStatement() Statement {
 	stmt.Params["id"] = randomKey
 	return stmt
 }
-*/
+
+func setupAndEnableOT() *metric.MeterProvider {
+	res, err := newResource()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a meter provider.
+	// You can pass this instance directly to your instrumented code if it
+	// accepts a MeterProvider instance.
+	meterProvider, err := newMeterProvider(res)
+	if err != nil {
+		panic(err)
+	}
+	return meterProvider
+}
+
+func newMeterProvider(res *resource.Resource) (*metric.MeterProvider, error) {
+	exporter, err := metricExporter.New(
+		metricExporter.WithProjectID("span-cloud-testing"),
+		/*metricExporter.WithMetricDescriptorTypeFormatter(
+			func(metrics metricdata.Metrics) string {
+				return fmt.Sprintf("custom.googleapis.com/%s", metrics.Name)
+			},
+		)*/
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	meterProvider := metric.NewMeterProvider(
+		metric.WithResource(res),
+		metric.WithReader(metric.NewPeriodicReader(exporter, metric.WithInterval(10*time.Second))), // Default is 1m. Set to 3s for demonstrative purposes.
+		//metric.WithReader(reader),
+		//metric.WithInterval(10*time.Second),
+
+		//metric.WithView(),
+	)
+
+	return meterProvider, nil
+}
+
+func newResource() (*resource.Resource, error) {
+	return resource.Merge(resource.Default(),
+		resource.NewWithAttributes(semconv.SchemaURL,
+			semconv.ServiceName("my-service-spanner"),
+			semconv.ServiceVersion("0.1.0"),
+		))
+}
