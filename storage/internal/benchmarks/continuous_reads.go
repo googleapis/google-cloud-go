@@ -20,6 +20,7 @@ import (
 	"os"
 	"path"
 	"slices"
+	"sync"
 	"time"
 
 	"go.opentelemetry.io/otel"
@@ -60,6 +61,7 @@ type continuousReads struct {
 	numWorkers    int
 	objects       chan string // list of objects to synchronize reads
 	results       []time.Duration
+	resultMu      sync.Mutex
 	api           benchmarkAPI
 	objectSize    int64 // every object must be of the same size
 }
@@ -68,7 +70,7 @@ func (r *continuousReads) setup(ctx context.Context) error {
 	// Check for context cancellation
 	select {
 	case <-ctx.Done():
-		return ctx.Err()
+		return nil // don't error out here since we expect to finish with a cancellation
 	default:
 	}
 
@@ -166,13 +168,14 @@ func (r *continuousReads) run(ctx context.Context) error {
 				})
 
 				if err != nil {
+					r.resultMu.Lock()
 					r.results = append(r.results, timeTaken)
+					r.resultMu.Unlock()
 				}
 				r.objects <- object
 
 				return err
 			})
-
 		}
 	}
 }
