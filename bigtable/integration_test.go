@@ -52,7 +52,7 @@ const (
 	directPathIPV4Prefix      = "34.126"
 	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
 	prefixOfInstanceResources = "bt-it-"
-	prefixOfClusterResources  = "bt-it-c-"
+	prefixOfClusterResources  = "bt-c-"
 )
 
 var (
@@ -145,7 +145,9 @@ func cleanup(c IntegrationTestConfig) error {
 				return err
 			}
 			for _, clusterInfo := range clusters {
-				iac.DeleteCluster(ctx, instanceInfo.Name, clusterInfo.Name)
+				if strings.HasPrefix(clusterInfo.Name, prefixOfClusterResources) {
+					iac.DeleteCluster(ctx, instanceInfo.Name, clusterInfo.Name)
+				}
 			}
 		}
 	}
