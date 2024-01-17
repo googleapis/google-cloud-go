@@ -227,7 +227,7 @@ func TestInvoke(t *testing.T) {
 			initialErr:        &googleapi.Error{Code: 500},
 			finalErr:          nil,
 			isIdempotentValue: true,
-			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(0)},
+			retry:             &retryConfig{maxAttempts: expectedAttempts(0), policy: RetryAlways},
 			expectFinalErr:    false,
 		},
 	} {
