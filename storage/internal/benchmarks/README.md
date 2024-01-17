@@ -39,5 +39,5 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 
 \*\* Note that this workload is experimental and will not work under certain conditions. Here's a non-comprehensive list of notes on workload 9:
  - output type must be `cloud-monitoring`
- - it continues reading until the timeout is reached - the workload will always fail with deadline exceeded
+ - it continues reading until the timeout is reached - samples should be set to 1
  - `directory_num_objects` must be larger than `workers`
