@@ -2076,7 +2076,10 @@ func (wb *withBackoff) apply(config *retryConfig) {
 	config.backoff = &wb.backoff
 }
 
-// WithMaxAttempts configures a maximum number of retries for potentially failing operations.
+// WithMaxAttempts configures the maximum number of times an API call can be made
+// in the case of retryable errors.
+// For example, if you set WithMaxAttempts(5), the operation will be attempted up to 5
+// times total (initial call plus 4 retries).
 // Without this setting, operations will continue retrying indefinitely
 // until either the context is canceled or a deadline is reached.
 func WithMaxAttempts(maxAttempts int) RetryOption {
