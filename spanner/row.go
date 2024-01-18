@@ -407,8 +407,8 @@ func (r *Row) ToStructLenient(p interface{}) error {
 //
 // Both singersByPtr and singersByValue are valid destinations for SelectAll function.
 //
-// custom setting such as lenient can be passed as an option using DecodeOptions
-// example: to ignore extra columns in the row
+// Add the option `spanner.WithLenient()` to instruct SelectAll to ignore additional columns in the rows that are not present in the destination struct.
+// example:
 //
 //	var singersByPtr []*Singer
 //	err := spanner.SelectAll(row, &singersByPtr, spanner.WithLenient())
@@ -479,17 +479,18 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 			return err
 		}
 		if !isPrimitive {
+			e := sliceItem.Elem()
 			for i, p := range pointers {
 				if p == nil {
 					continue
 				}
-				sliceItem.Elem().Field(i).Set(reflect.ValueOf(p).Elem())
+				e.Field(i).Set(reflect.ValueOf(p).Elem())
 			}
 		}
 		var elemVal reflect.Value
 		if itemByPtr {
 			if isFirstRow {
-				// create a new pointer to the struct with all the values copied from sliceIte
+				// create a new pointer to the struct with all the values copied from sliceItem
 				// because same underlying pointers array will be used for next rows
 				elemVal = reflect.New(itemType)
 				elemVal.Elem().Set(sliceItem.Elem())

@@ -128,6 +128,7 @@ type RowIterator struct {
 	sawStats         bool
 }
 
+// this is for safety from future changes to RowIterator making sure that it implements rowIterator interface.
 var _ rowIterator = (*RowIterator)(nil)
 
 // Next returns the next result. Its second return value is iterator.Done if
