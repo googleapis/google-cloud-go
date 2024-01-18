@@ -2,6 +2,13 @@
 
 
 
+## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.2...maps/v1.6.3) (2024-01-11)
+
+
+### Documentation
+
+* **maps/fleetengine:** Better comments on SearchVehicle fields ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
 ## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.1...maps/v1.6.2) (2023-12-11)
 
 

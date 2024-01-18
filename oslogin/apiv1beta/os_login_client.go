@@ -911,6 +911,11 @@ func (c *restClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.Impo
 	if req.GetProjectId() != "" {
 		params.Add("projectId", fmt.Sprintf("%v", req.GetProjectId()))
 	}
+	if items := req.GetRegions(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("regions", fmt.Sprintf("%v", item))
+		}
+	}
 	if req.GetView() != 0 {
 		params.Add("view", fmt.Sprintf("%v", req.GetView()))
 	}

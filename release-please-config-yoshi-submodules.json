@@ -336,6 +336,9 @@
         "servicedirectory": {
             "component": "servicedirectory"
         },
+        "servicehealth": {
+            "component": "servicehealth"
+        },
         "servicemanagement": {
             "component": "servicemanagement"
         },
