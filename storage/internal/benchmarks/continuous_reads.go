@@ -52,6 +52,8 @@ import (
 //     from the channel. At the end of the download, it will return that name to
 //     the channel. That way, no goroutines are reading from the same object at
 //     the same time.
+//     Note that since the same objects are downloaded continuously, the downloads
+//     will overwrite previous downloads of the same object.
 //   - The time taken is saved in a slice that is used to compile the percentiles
 //     once the timeout is exceeded.
 type continuousReads struct {
