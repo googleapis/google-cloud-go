@@ -98,7 +98,7 @@ type ModelEvaluation struct {
 	// The metadata of the ModelEvaluation.
 	// For the ModelEvaluation uploaded from Managed Pipeline, metadata contains a
 	// structured value with keys of "pipeline_job_id", "evaluation_dataset_type",
-	// "evaluation_dataset_path".
+	// "evaluation_dataset_path", "row_based_metrics_path".
 	Metadata *structpb.Value `protobuf:"bytes,11,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 

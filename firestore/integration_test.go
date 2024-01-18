@@ -2324,7 +2324,7 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 		A int
 	}
 
-	docRef := iColl.Doc(fmt.Sprintf("bw_create_%d", time.Now().Unix()))
+	docRef := iColl.Doc(fmt.Sprintf("bw_create_1_%d", time.Now().Unix()))
 	_, err := docRef.Create(ctx, BWDoc{A: 6})
 	if err != nil {
 		t.Fatalf("Create: %v", err)
@@ -2338,7 +2338,7 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 	}{
 		{
 			desc:           "Successful",
-			ref:            iColl.Doc(fmt.Sprintf("bw_create_%d", time.Now().Unix())),
+			ref:            iColl.Doc(fmt.Sprintf("bw_create_2_%d", time.Now().Unix())),
 			wantStatusCode: codes.OK,
 		},
 		{

@@ -85,7 +85,7 @@ require (
 	cloud.google.com/go/notebooks v1.11.2
 	cloud.google.com/go/optimization v1.6.2
 	cloud.google.com/go/orchestration v1.8.4
-	cloud.google.com/go/orgpolicy v1.11.4
+	cloud.google.com/go/orgpolicy v1.12.0
 	cloud.google.com/go/osconfig v1.12.4
 	cloud.google.com/go/oslogin v1.12.2
 	cloud.google.com/go/phishingprotection v0.8.4
@@ -174,7 +174,7 @@ require (
 	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/oauth2 v0.15.0 // indirect
-	golang.org/x/sync v0.5.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
@@ -477,3 +477,5 @@ replace cloud.google.com/go/securitycentermanagement => ../../../securitycenterm
 replace cloud.google.com/go/apps => ../../../apps
 
 replace cloud.google.com/go/cloudquotas => ../../../cloudquotas
+
+replace cloud.google.com/go/servicehealth => ../../../servicehealth
