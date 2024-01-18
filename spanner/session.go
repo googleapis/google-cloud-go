@@ -1087,7 +1087,7 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 			p.recordStat(ctx, GetSessionTimeoutsCount, 1)
 			if p.otConfig != nil {
 				// TODO(sriharshach): context.WithoutCancel is supported only in 1.21 Go version. Waiting for OTel team to release the fix
-				p.recordOTStat(context.WithoutCancel(ctx), p.otConfig.getSessionTimeoutsCount, 1)
+				p.recordOTStat(ctx, p.otConfig.getSessionTimeoutsCount, 1)
 			}
 			p.mu.Lock()
 			p.numWaiters--
