@@ -1071,6 +1071,7 @@ func TestBucketRetryer(t *testing.T) {
 						Multiplier: 3,
 					}),
 					WithPolicy(RetryAlways),
+					WithMaxAttempts(5),
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
@@ -1080,6 +1081,7 @@ func TestBucketRetryer(t *testing.T) {
 					Multiplier: 3,
 				},
 				policy:      RetryAlways,
+				maxAttempts: expectedAttempts(5),
 				shouldRetry: func(err error) bool { return false },
 			},
 		},
@@ -1103,6 +1105,15 @@ func TestBucketRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy: RetryNever,
+			},
+		},
+		{
+			name: "set max retry attempts only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(WithMaxAttempts(5))
+			},
+			want: &retryConfig{
+				maxAttempts: expectedAttempts(5),
 			},
 		},
 		{
