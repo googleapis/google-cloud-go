@@ -16,7 +16,6 @@ limitations under the License.
 
 package spanner
 
-/*
 import (
 	"context"
 	"fmt"
@@ -389,4 +388,3 @@ func getRandomisedUpdateStatement() Statement {
 	stmt.Params["id"] = randomKey
 	return stmt
 }
-*/

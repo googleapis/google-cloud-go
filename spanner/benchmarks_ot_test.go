@@ -16,6 +16,7 @@ limitations under the License.
 
 package spanner
 
+/*
 import (
 	"context"
 	"fmt"
@@ -337,11 +338,11 @@ func setupAndEnableOT() *metric.MeterProvider {
 func newMeterProvider(res *resource.Resource) (*metric.MeterProvider, error) {
 	exporter, err := metricExporter.New(
 		metricExporter.WithProjectID("span-cloud-testing"),
-		/*metricExporter.WithMetricDescriptorTypeFormatter(
-			func(metrics metricdata.Metrics) string {
-				return fmt.Sprintf("custom.googleapis.com/%s", metrics.Name)
-			},
-		)*/
+		//metricExporter.WithMetricDescriptorTypeFormatter(
+		//	func(metrics metricdata.Metrics) string {
+		//		return fmt.Sprintf("custom.googleapis.com/%s", metrics.Name)
+		//	},
+		//)
 	)
 	if err != nil {
 		return nil, err
@@ -380,3 +381,4 @@ func setTracerProvider(res *resource.Resource) {
 	)
 	otel.SetTracerProvider(traceProvider)
 }
+*/
