@@ -17,20 +17,23 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
+	"fmt"
 	"log"
+	"math/rand"
+	"sort"
+	"sync"
+	"testing"
 	"time"
 
-	"cloud.google.com/go/internal/trace"
-	metricExporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
-	traceExporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
-	"go.opentelemetry.io/otel"
+	"go.opencensus.io/trace"
+	"google.golang.org/api/option"
+
+	"contrib.go.opencensus.io/exporter/stackdriver"
 	"go.opentelemetry.io/otel/sdk/metric"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	"google.golang.org/api/iterator"
 )
 
-/*
 var muElapsedTimes sync.Mutex
 var elapsedTimes []time.Duration
 var (
@@ -69,7 +72,7 @@ func createBenchmarkActualServer(ctx context.Context, incStep uint64, clientConf
 	return
 }
 
-func readWorkerReal1(client *Client, b *testing.B, jobs <-chan int, results chan<- int) {
+func readWorkerReal(client *Client, b *testing.B, jobs <-chan int, results chan<- int) {
 	for range jobs {
 		startTime := time.Now()
 		iter := client.Single().Query(context.Background(), getRandomisedReadStatement())
@@ -95,7 +98,7 @@ func readWorkerReal1(client *Client, b *testing.B, jobs <-chan int, results chan
 	}
 }
 
-func writeWorkerReal1(client *Client, b *testing.B, jobs <-chan int, results chan<- int64) {
+func writeWorkerReal(client *Client, b *testing.B, jobs <-chan int, results chan<- int64) {
 	for range jobs {
 		startTime := time.Now()
 		var updateCount int64
@@ -117,95 +120,35 @@ func writeWorkerReal1(client *Client, b *testing.B, jobs <-chan int, results cha
 	}
 }
 
-func BenchmarkClientBurstReadIncStep25RealServerOpenTelemetry(b *testing.B) {
-	b.Logf("Running Burst Read Benchmark With opentelemetry instrumentation")
+func BenchmarkClientBurstReadWriteIncStep25RealServerOpenCensus(b *testing.B) {
+	b.Logf("Running Burst Write Benchmark With OpenCensus instrumentation")
+	if err := EnableStatViews(); err != nil {
+		log.Fatalf("Failed: %v", err)
+	}
+	if err := EnableGfeLatencyView(); err != nil {
+		log.Fatalf("Failed: %v", err)
+	}
 	elapsedTimes = []time.Duration{}
-	meterProvider := setupAndEnableOT()
-	burstRead(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1", meterProvider)
-}
+	// Create OpenCensus Stackdriver exporter.
+	sd, err := stackdriver.NewExporter(stackdriver.Options{
+		ProjectID:         "span-cloud-testing",
+		ReportingInterval: 10 * time.Second,
+		//TraceSpansBufferMaxBytes: 100,
+		BundleDelayThreshold: 50 * time.Millisecond,
+		BundleCountThreshold: 5000,
+	})
+	sd.StartMetricsExporter()
+	// Register it as a trace exporter
+	trace.RegisterExporter(sd)
+	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
+	if err != nil {
+		log.Fatalf("Failed: %v", err)
+	}
 
-func BenchmarkClientBurstWriteIncStep25RealServerOpenTelemetry(b *testing.B) {
-	b.Logf("Running Burst Write Benchmark With opentelemetry instrumentation")
-	elapsedTimes = []time.Duration{}
-	meterProvider := setupAndEnableOT()
-	burstWrite(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1", meterProvider)
-}
-
-func BenchmarkClientBurstReadWriteIncStep25RealServerOpenTelemetry(b *testing.B) {
-	b.Logf("Running Burst Read and Write Benchmark With opentelemetry instrumentation")
-	elapsedTimes = []time.Duration{}
 	meterProvider := setupAndEnableOT()
 	burstReadAndWrite(b, 25, "projects/span-cloud-testing/instances/harsha-test-gcloud/databases/database1", meterProvider)
-}
-
-func burstRead(b *testing.B, incStep uint64, database string, mp *metric.MeterProvider) {
-	for n := 0; n < b.N; n++ {
-		log.Printf("burstRead called once")
-		client, err := createBenchmarkActualServer(context.Background(), incStep, ClientConfig{}, database, mp)
-		if err != nil {
-			b.Fatalf("Failed to initialize the client: error : %q", err)
-		}
-		sp := client.idleSessions
-		log.Printf("Session pool length, %d", sp.idleList.Len())
-		if uint64(sp.idleList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
-		}
-
-		totalQueries := parallelThreads * totalReadsPerThread
-		jobs := make(chan int, totalQueries)
-		results := make(chan int, totalQueries)
-		parallel := parallelThreads
-
-		for w := 0; w < parallel; w++ {
-			go readWorkerReal1(client, b, jobs, results)
-		}
-		for j := 0; j < totalQueries; j++ {
-			jobs <- j
-		}
-		close(jobs)
-		totalRows := 0
-		for a := 0; a < totalQueries; a++ {
-			totalRows = totalRows + <-results
-		}
-		b.Logf("Total Rows: %d", totalRows)
-		reportBenchmarkResults(b, sp)
-		client.Close()
-	}
-}
-
-func burstWrite(b *testing.B, incStep uint64, database string, mp *metric.MeterProvider) {
-	for n := 0; n < b.N; n++ {
-		log.Printf("burstWrite called once")
-		client, err := createBenchmarkActualServer(context.Background(), incStep, ClientConfig{}, database, mp)
-		if err != nil {
-			b.Fatalf("Failed to initialize the client: error : %q", err)
-		}
-		sp := client.idleSessions
-		log.Printf("Session pool length, %d", sp.idleList.Len())
-		if uint64(sp.idleList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
-		}
-
-		totalUpdates := parallelThreads * totalUpdatesPerThread
-		jobs := make(chan int, totalUpdates)
-		results := make(chan int64, totalUpdates)
-		parallel := parallelThreads
-
-		for w := 0; w < parallel; w++ {
-			go writeWorkerReal1(client, b, jobs, results)
-		}
-		for j := 0; j < totalUpdates; j++ {
-			jobs <- j
-		}
-		close(jobs)
-		totalRows := int64(0)
-		for a := 0; a < totalUpdates; a++ {
-			totalRows = totalRows + <-results
-		}
-		b.Logf("Total Updates: %d", totalRows)
-		reportBenchmarkResults(b, sp)
-		client.Close()
-	}
+	sd.Flush()
+	sd.StopMetricsExporter()
 }
 
 func burstReadAndWrite(b *testing.B, incStep uint64, database string, mp *metric.MeterProvider) {
@@ -231,13 +174,13 @@ func burstReadAndWrite(b *testing.B, incStep uint64, database string, mp *metric
 		parallelReads := parallelThreads
 
 		for w := 0; w < parallelWrites; w++ {
-			go writeWorkerReal1(client, b, writeJobs, writeResults)
+			go writeWorkerReal(client, b, writeJobs, writeResults)
 		}
 		for j := 0; j < totalUpdates; j++ {
 			writeJobs <- j
 		}
 		for w := 0; w < parallelReads; w++ {
-			go readWorkerReal1(client, b, readJobs, readResults)
+			go readWorkerReal(client, b, readJobs, readResults)
 		}
 		for j := 0; j < totalQueries; j++ {
 			readJobs <- j
@@ -260,7 +203,6 @@ func burstReadAndWrite(b *testing.B, incStep uint64, database string, mp *metric
 		client.Close()
 	}
 }
-
 
 func reportBenchmarkResults(b *testing.B, sp *sessionPool) {
 	sp.mu.Lock()
@@ -305,70 +247,4 @@ func getRandomisedUpdateStatement() Statement {
 	stmt := NewStatement(updateQuery)
 	stmt.Params["id"] = randomKey
 	return stmt
-}*/
-
-func setupAndEnableOT() *metric.MeterProvider {
-	res, err := newResource()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	EnableOpenTelemetryMetrics()
-	// Create a meter provider.
-	// You can pass this instance directly to your instrumented code if it
-	// accepts a MeterProvider instance.
-	meterProvider, err := newMeterProvider(res)
-	if err != nil {
-		panic(err)
-	}
-	trace.OpenTelemetryTracingEnabled = true
-	setTracerProvider(res)
-	return meterProvider
-}
-
-func newMeterProvider(res *resource.Resource) (*metric.MeterProvider, error) {
-	exporter, err := metricExporter.New(
-		metricExporter.WithProjectID("span-cloud-testing"),
-		//metricExporter.WithMetricDescriptorTypeFormatter(
-		//	func(metrics metricdata.Metrics) string {
-		//		return fmt.Sprintf("custom.googleapis.com/%s", metrics.Name)
-		//	},
-		//)
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	meterProvider := metric.NewMeterProvider(
-		metric.WithResource(res),
-		metric.WithReader(metric.NewPeriodicReader(exporter, metric.WithInterval(10*time.Second))), // Default is 1m. Set to 3s for demonstrative purposes.
-		//metric.WithReader(reader),
-		//metric.WithInterval(10*time.Second),
-
-		//metric.WithView(),
-	)
-
-	return meterProvider, nil
-}
-
-func newResource() (*resource.Resource, error) {
-	return resource.Merge(resource.Default(),
-		resource.NewWithAttributes(semconv.SchemaURL,
-			semconv.ServiceName("my-service-spanner"),
-			semconv.ServiceVersion("0.1.0"),
-		))
-}
-
-func setTracerProvider(res *resource.Resource) {
-	exporter, err := traceExporter.New(traceExporter.WithProjectID("span-cloud-testing"))
-	if err != nil {
-		log.Print(err)
-	}
-
-	traceProvider := sdktrace.NewTracerProvider(
-		sdktrace.WithResource(res),
-		sdktrace.WithBatcher(exporter),
-		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-	)
-	otel.SetTracerProvider(traceProvider)
 }
