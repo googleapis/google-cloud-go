@@ -118,7 +118,7 @@ modules:
   - securitycentermanagement
   - servicecontrol
   - servicedirectory
-  - serviceusage
+  - servicehealth
   - servicemanagement
   - serviceusage
   - shell
@@ -284,12 +284,6 @@ service-configs:
   - input-directory: google/api/apikeys/v2
     service-config: apikeys_v2.yaml
     import-path: cloud.google.com/go/apikeys/apiv2
-  - input-directory: google/api/servicecontrol/v1
-    service-config: servicecontrol.yaml
-    import-path: cloud.google.com/go/servicecontrol/apiv1
-  - input-directory: google/api/servicemanagement/v1
-    service-config: servicemanagement_v1.yaml
-    import-path: cloud.google.com/go/servicemanagement/apiv1
   - input-directory: google/appengine/v1
     service-config: appengine_v1.yaml
     import-path: cloud.google.com/go/appengine/apiv1
@@ -792,12 +786,21 @@ service-configs:
   - input-directory: google/cloud/securitycentermanagement/v1
     service-config: securitycentermanagement_v1.yaml
     import-path: cloud.google.com/go/securitycentermanagement/apiv1
+  - input-directory: google/api/servicecontrol/v1
+    service-config: servicecontrol.yaml
+    import-path: cloud.google.com/go/servicecontrol/apiv1
   - input-directory: google/cloud/servicedirectory/v1
     service-config: servicedirectory_v1.yaml
     import-path: cloud.google.com/go/servicedirectory/apiv1
   - input-directory: google/cloud/servicedirectory/v1beta1
     service-config: servicedirectory_v1beta1.yaml
     import-path: cloud.google.com/go/servicedirectory/apiv1beta1
+  - input-directory: google/cloud/servicehealth/v1
+    service-config: servicehealth_v1.yaml
+    import-path: cloud.google.com/go/servicehealth/apiv1
+  - input-directory: google/api/servicemanagement/v1
+    service-config: servicemanagement_v1.yaml
+    import-path: cloud.google.com/go/servicemanagement/apiv1
   - input-directory: google/api/serviceusage/v1
     service-config: serviceusage_v1.yaml
     import-path: cloud.google.com/go/serviceusage/apiv1

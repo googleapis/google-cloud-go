@@ -330,8 +330,9 @@ deep-remove-regex:
   - /internal/generated/snippets/servicecontrol/apiv1/
   - /internal/generated/snippets/servicedirectory/apiv1/
   - /internal/generated/snippets/servicedirectory/apiv1beta1/
-  - /internal/generated/snippets/serviceusage/apiv1/
+  - /internal/generated/snippets/servicehealth/apiv1/
   - /internal/generated/snippets/servicemanagement/apiv1/
+  - /internal/generated/snippets/serviceusage/apiv1/
   - /internal/generated/snippets/shell/apiv1/
   - /internal/generated/snippets/shopping/css/apiv1/
   - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
@@ -456,8 +457,9 @@ deep-remove-regex:
   - /servicecontrol/apiv1/
   - /servicedirectory/apiv1/
   - /servicedirectory/apiv1beta1/
-  - /serviceusage/apiv1/
+  - /servicehealth/apiv1/
   - /servicemanagement/apiv1/
+  - /serviceusage/apiv1/
   - /shell/apiv1/
   - /shopping/css/apiv1/
   - /shopping/merchant/inventories/apiv1beta/
@@ -963,9 +965,11 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/servicedirectory/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/api/serviceusage/v1/cloud.google.com/go
+  - source: /google/cloud/servicehealth/v1/cloud.google.com/go
     dest: /
   - source: /google/api/servicemanagement/v1/cloud.google.com/go
+    dest: /
+  - source: /google/api/serviceusage/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/shell/v1/cloud.google.com/go
     dest: /

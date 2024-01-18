@@ -3,6 +3,25 @@
 
 
 
+## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.57.1...bigquery/v1.58.0) (2024-01-18)
+
+
+### Features
+
+* **bigquery/storage/managedwriter:** Improve schema comparison stability ([#9241](https://github.com/googleapis/google-cloud-go/issues/9241)) ([faccb68](https://github.com/googleapis/google-cloud-go/commit/faccb68deeb18ad51875042242a1141285448bbb))
+* **bigquery/storage:** Add ability to request compressed ReadRowsResponse rows ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+* **bigquery:** Add DataGovernanceType to routines ([#8990](https://github.com/googleapis/google-cloud-go/issues/8990)) ([57491ae](https://github.com/googleapis/google-cloud-go/commit/57491ae3b7bbcee2abe1064dfb4f18cb3a511265))
+* **bigquery:** Add schema support for RANGE type ([#9050](https://github.com/googleapis/google-cloud-go/issues/9050)) ([477ccee](https://github.com/googleapis/google-cloud-go/commit/477ccee8eb210a0e0f9c71513318e0fbbd08928c))
+* **bigquery:** Add support for AllowNonIncrementalDefinition and Staleness on MaterializedView ([#8673](https://github.com/googleapis/google-cloud-go/issues/8673)) ([6ec2bb2](https://github.com/googleapis/google-cloud-go/commit/6ec2bb218335acf791af859852fc6c8e9bea7a08))
+* **bigquery:** Add table resource tags support ([#9084](https://github.com/googleapis/google-cloud-go/issues/9084)) ([3569cc2](https://github.com/googleapis/google-cloud-go/commit/3569cc27b3357c3f62ccfae1670a1bf6383dee9a))
+* **bigquery:** Expose query id on row iterator if available ([#9224](https://github.com/googleapis/google-cloud-go/issues/9224)) ([bbff8ac](https://github.com/googleapis/google-cloud-go/commit/bbff8ac817fb95af219c588bdadc0ca1784c5c0c))
+
+
+### Documentation
+
+* **bigquery/storage/managedwriter:** Add documentation for ingesting JSON to a ManagedStream ([#9137](https://github.com/googleapis/google-cloud-go/issues/9137)) ([cae54ed](https://github.com/googleapis/google-cloud-go/commit/cae54ed31548e6f17f3b6bc217bb117723f04e15))
+* **bigquery:** Update package docs to show query parameterization ([#8965](https://github.com/googleapis/google-cloud-go/issues/8965)) ([cc76ab3](https://github.com/googleapis/google-cloud-go/commit/cc76ab35c25a672ed3255c0b26a99bef2cb81868))
+
 ## [1.57.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.57.0...bigquery/v1.57.1) (2023-11-01)
 
 
