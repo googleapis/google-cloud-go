@@ -16,6 +16,7 @@ limitations under the License.
 
 package spanner
 
+/*
 import (
 	"context"
 	"fmt"
@@ -378,3 +379,4 @@ func setTracerProvider(res *resource.Resource) {
 	)
 	otel.SetTracerProvider(traceProvider)
 }
+*/
