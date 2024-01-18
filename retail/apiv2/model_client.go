@@ -218,13 +218,13 @@ type internalModelClient interface {
 //
 // This service allows you to do the following:
 //
-//   Initiate training of a model.
+//	Initiate training of a model.
 //
-//   Pause training of an existing model.
+//	Pause training of an existing model.
 //
-//   List all the available models along with their metadata.
+//	List all the available models along with their metadata.
 //
-//   Control their tuning schedule.
+//	Control their tuning schedule.
 type ModelClient struct {
 	// The internal transport-dependent client.
 	internalClient internalModelClient
@@ -361,13 +361,13 @@ type modelGRPCClient struct {
 //
 // This service allows you to do the following:
 //
-//   Initiate training of a model.
+//	Initiate training of a model.
 //
-//   Pause training of an existing model.
+//	Pause training of an existing model.
 //
-//   List all the available models along with their metadata.
+//	List all the available models along with their metadata.
 //
-//   Control their tuning schedule.
+//	Control their tuning schedule.
 func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelClient, error) {
 	clientOpts := defaultModelGRPCClientOptions()
 	if newModelClientHook != nil {

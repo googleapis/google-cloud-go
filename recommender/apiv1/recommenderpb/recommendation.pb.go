@@ -21,6 +21,9 @@
 package recommenderpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	money "google.golang.org/genproto/googleapis/type/money"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -28,8 +31,6 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -586,11 +587,12 @@ func (x *OperationGroup) GetOperations() []*Operation {
 // Contains an operation for a resource loosely based on the JSON-PATCH format
 // with support for:
 //
-// * Custom filters for describing partial array patch.
-// * Extended path values for describing nested arrays.
-// * Custom fields for describing the resource for which the operation is being
-//   described.
-// * Allows extension to custom operations not natively supported by RFC6902.
+//   - Custom filters for describing partial array patch.
+//   - Extended path values for describing nested arrays.
+//   - Custom fields for describing the resource for which the operation is being
+//     described.
+//   - Allows extension to custom operations not natively supported by RFC6902.
+//
 // See https://tools.ietf.org/html/rfc6902 for details on the original RFC.
 type Operation struct {
 	state         protoimpl.MessageState

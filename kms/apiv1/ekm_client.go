@@ -220,12 +220,12 @@ type internalEkmClient interface {
 // EkmClient is a client for interacting with Cloud Key Management Service (KMS) API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Cloud Key Management EKM Service
+// # Google Cloud Key Management EKM Service
 //
 // Manages external cryptographic keys and operations using those keys.
 // Implements a REST model with the following objects:
 //
-//   EkmConnection
+//	EkmConnection
 type EkmClient struct {
 	// The internal transport-dependent client.
 	internalClient internalEkmClient
@@ -360,12 +360,12 @@ type ekmGRPCClient struct {
 // NewEkmClient creates a new ekm service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Cloud Key Management EKM Service
+// # Google Cloud Key Management EKM Service
 //
 // Manages external cryptographic keys and operations using those keys.
 // Implements a REST model with the following objects:
 //
-//   EkmConnection
+//	EkmConnection
 func NewEkmClient(ctx context.Context, opts ...option.ClientOption) (*EkmClient, error) {
 	clientOpts := defaultEkmGRPCClientOptions()
 	if newEkmClientHook != nil {
@@ -436,12 +436,12 @@ type ekmRESTClient struct {
 
 // NewEkmRESTClient creates a new ekm service rest client.
 //
-// Google Cloud Key Management EKM Service
+// # Google Cloud Key Management EKM Service
 //
 // Manages external cryptographic keys and operations using those keys.
 // Implements a REST model with the following objects:
 //
-//   EkmConnection
+//	EkmConnection
 func NewEkmRESTClient(ctx context.Context, opts ...option.ClientOption) (*EkmClient, error) {
 	clientOpts := append(defaultEkmRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
