@@ -3565,10 +3565,10 @@ func (c *AnalyticsAdminClient) ApproveDisplayVideo360AdvertiserLinkProposal(ctx 
 // CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.
 // Cancelling can mean either:
 //
-//	Declining a proposal initiated from Display & Video 360
+//   Declining a proposal initiated from Display & Video 360
 //
-//	Withdrawing a proposal initiated from Google Analytics
-//	After being cancelled, a proposal will eventually be deleted automatically.
+//   Withdrawing a proposal initiated from Google Analytics
+//   After being cancelled, a proposal will eventually be deleted automatically.
 func (c *AnalyticsAdminClient) CancelDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
 	return c.internalClient.CancelDisplayVideo360AdvertiserLinkProposal(ctx, req, opts...)
 }
@@ -10422,10 +10422,10 @@ func (c *analyticsAdminRESTClient) ApproveDisplayVideo360AdvertiserLinkProposal(
 // CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.
 // Cancelling can mean either:
 //
-//	Declining a proposal initiated from Display & Video 360
+//   Declining a proposal initiated from Display & Video 360
 //
-//	Withdrawing a proposal initiated from Google Analytics
-//	After being cancelled, a proposal will eventually be deleted automatically.
+//   Withdrawing a proposal initiated from Google Analytics
+//   After being cancelled, a proposal will eventually be deleted automatically.
 func (c *analyticsAdminRESTClient) CancelDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

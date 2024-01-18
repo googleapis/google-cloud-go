@@ -21,13 +21,12 @@
 package firestorepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -342,6 +341,14 @@ func (StructuredQuery_UnaryFilter_Operator) EnumDescriptor() ([]byte, []int) {
 }
 
 // A Firestore query.
+//
+// The query stages are executed in the following order:
+// 1. from
+// 2. where
+// 3. select
+// 4. order_by + start_at + end_at
+// 5. offset
+// 6. limit
 type StructuredQuery struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
