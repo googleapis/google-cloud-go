@@ -17,7 +17,13 @@ limitations under the License.
 package spanner
 
 import (
+	"context"
+	"fmt"
 	"log"
+	"math/rand"
+	"sort"
+	"sync"
+	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -28,9 +34,10 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
-/*
 var muElapsedTimes sync.Mutex
 var elapsedTimes []time.Duration
 var (
@@ -261,7 +268,6 @@ func burstReadAndWrite(b *testing.B, incStep uint64, database string, mp *metric
 	}
 }
 
-
 func reportBenchmarkResults(b *testing.B, sp *sessionPool) {
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
@@ -305,7 +311,7 @@ func getRandomisedUpdateStatement() Statement {
 	stmt := NewStatement(updateQuery)
 	stmt.Params["id"] = randomKey
 	return stmt
-}*/
+}
 
 func setupAndEnableOT() *metric.MeterProvider {
 	res, err := newResource()
