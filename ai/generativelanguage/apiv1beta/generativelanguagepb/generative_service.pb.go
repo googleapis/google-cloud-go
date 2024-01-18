@@ -22,14 +22,15 @@ package generativelanguagepb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -614,11 +615,11 @@ func (x *SemanticRetrieverConfig) GetMinimumRelevanceScore() float32 {
 // Note on safety ratings and content filtering. They are reported for both
 // prompt in `GenerateContentResponse.prompt_feedback` and for each candidate
 // in `finish_reason` and in `safety_ratings`. The API contract is that:
-//  - either all requested candidates are returned or no candidates at all
-//  - no candidates are returned only if there was something wrong with the
-//    prompt (see `prompt_feedback`)
-//  - feedback on each candidate is reported on `finish_reason` and
-//    `safety_ratings`.
+//   - either all requested candidates are returned or no candidates at all
+//   - no candidates are returned only if there was something wrong with the
+//     prompt (see `prompt_feedback`)
+//   - feedback on each candidate is reported on `finish_reason` and
+//     `safety_ratings`.
 type GenerateContentResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

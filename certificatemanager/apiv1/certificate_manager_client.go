@@ -846,7 +846,7 @@ type internalClient interface {
 // Client is a client for interacting with Certificate Manager API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// API Overview
+// # API Overview
 //
 // Certificates Manager API allows customers to see and manage all their TLS
 // certificates.
@@ -855,25 +855,25 @@ type internalClient interface {
 // group them into collections, and create serving configuration that can be
 // easily applied to other Cloud resources e.g. Target Proxies.
 //
-// Data Model
+// # Data Model
 //
 // The Certificates Manager service exposes the following resources:
 //
-//   Certificate that describes a single TLS certificate.
+//	Certificate that describes a single TLS certificate.
 //
-//   CertificateMap that describes a collection of certificates that can be
-//   attached to a target resource.
+//	CertificateMap that describes a collection of certificates that can be
+//	attached to a target resource.
 //
-//   CertificateMapEntry that describes a single configuration entry that
-//   consists of a SNI and a group of certificates. It’s a subresource of
-//   CertificateMap.
+//	CertificateMapEntry that describes a single configuration entry that
+//	consists of a SNI and a group of certificates. It’s a subresource of
+//	CertificateMap.
 //
 // Certificate, CertificateMap and CertificateMapEntry IDs
 // have to fully match the regexp [a-z0-9-]{1,63}. In other words,
 //
-//   only lower case letters, digits, and hyphen are allowed
+//	only lower case letters, digits, and hyphen are allowed
 //
-//   length of the resource ID has to be in [1,63] range.
+//	length of the resource ID has to be in [1,63] range.
 //
 // Provides methods to manage Cloud Certificate Manager entities.
 type Client struct {
@@ -1177,7 +1177,7 @@ type gRPCClient struct {
 // NewClient creates a new certificate manager client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// API Overview
+// # API Overview
 //
 // Certificates Manager API allows customers to see and manage all their TLS
 // certificates.
@@ -1186,25 +1186,25 @@ type gRPCClient struct {
 // group them into collections, and create serving configuration that can be
 // easily applied to other Cloud resources e.g. Target Proxies.
 //
-// Data Model
+// # Data Model
 //
 // The Certificates Manager service exposes the following resources:
 //
-//   Certificate that describes a single TLS certificate.
+//	Certificate that describes a single TLS certificate.
 //
-//   CertificateMap that describes a collection of certificates that can be
-//   attached to a target resource.
+//	CertificateMap that describes a collection of certificates that can be
+//	attached to a target resource.
 //
-//   CertificateMapEntry that describes a single configuration entry that
-//   consists of a SNI and a group of certificates. It’s a subresource of
-//   CertificateMap.
+//	CertificateMapEntry that describes a single configuration entry that
+//	consists of a SNI and a group of certificates. It’s a subresource of
+//	CertificateMap.
 //
 // Certificate, CertificateMap and CertificateMapEntry IDs
 // have to fully match the regexp [a-z0-9-]{1,63}. In other words,
 //
-//   only lower case letters, digits, and hyphen are allowed
+//	only lower case letters, digits, and hyphen are allowed
 //
-//   length of the resource ID has to be in [1,63] range.
+//	length of the resource ID has to be in [1,63] range.
 //
 // Provides methods to manage Cloud Certificate Manager entities.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -1293,7 +1293,7 @@ type restClient struct {
 
 // NewRESTClient creates a new certificate manager rest client.
 //
-// API Overview
+// # API Overview
 //
 // Certificates Manager API allows customers to see and manage all their TLS
 // certificates.
@@ -1302,25 +1302,25 @@ type restClient struct {
 // group them into collections, and create serving configuration that can be
 // easily applied to other Cloud resources e.g. Target Proxies.
 //
-// Data Model
+// # Data Model
 //
 // The Certificates Manager service exposes the following resources:
 //
-//   Certificate that describes a single TLS certificate.
+//	Certificate that describes a single TLS certificate.
 //
-//   CertificateMap that describes a collection of certificates that can be
-//   attached to a target resource.
+//	CertificateMap that describes a collection of certificates that can be
+//	attached to a target resource.
 //
-//   CertificateMapEntry that describes a single configuration entry that
-//   consists of a SNI and a group of certificates. It’s a subresource of
-//   CertificateMap.
+//	CertificateMapEntry that describes a single configuration entry that
+//	consists of a SNI and a group of certificates. It’s a subresource of
+//	CertificateMap.
 //
 // Certificate, CertificateMap and CertificateMapEntry IDs
 // have to fully match the regexp [a-z0-9-]{1,63}. In other words,
 //
-//   only lower case letters, digits, and hyphen are allowed
+//	only lower case letters, digits, and hyphen are allowed
 //
-//   length of the resource ID has to be in [1,63] range.
+//	length of the resource ID has to be in [1,63] range.
 //
 // Provides methods to manage Cloud Certificate Manager entities.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {

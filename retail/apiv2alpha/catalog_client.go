@@ -505,13 +505,13 @@ func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateC
 //
 // More specifically:
 //
-//   PredictionService will only return product IDs from branch {newBranch}.
+//	PredictionService will only return product IDs from branch {newBranch}.
 //
-//   SearchService will only return product IDs from branch {newBranch}
-//   (if branch is not explicitly set).
+//	SearchService will only return product IDs from branch {newBranch}
+//	(if branch is not explicitly set).
 //
-//   UserEventService will only join events with products from branch
-//   {newBranch}.
+//	UserEventService will only join events with products from branch
+//	{newBranch}.
 func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
 	return c.internalClient.SetDefaultBranch(ctx, req, opts...)
 }
@@ -1240,13 +1240,13 @@ func (c *catalogRESTClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 //
 // More specifically:
 //
-//   PredictionService will only return product IDs from branch {newBranch}.
+//	PredictionService will only return product IDs from branch {newBranch}.
 //
-//   SearchService will only return product IDs from branch {newBranch}
-//   (if branch is not explicitly set).
+//	SearchService will only return product IDs from branch {newBranch}
+//	(if branch is not explicitly set).
 //
-//   UserEventService will only join events with products from branch
-//   {newBranch}.
+//	UserEventService will only join events with products from branch
+//	{newBranch}.
 func (c *catalogRESTClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
