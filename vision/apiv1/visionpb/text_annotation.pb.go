@@ -21,11 +21,10 @@
 package visionpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -168,9 +167,7 @@ func (Block_BlockType) EnumDescriptor() ([]byte, []int) {
 
 // TextAnnotation contains a structured representation of OCR extracted text.
 // The hierarchy of an OCR extracted text structure is like this:
-//
-//	TextAnnotation -> Page -> Block -> Paragraph -> Word -> Symbol
-//
+//     TextAnnotation -> Page -> Block -> Paragraph -> Word -> Symbol
 // Each structural component, starting from Page, may further have their own
 // properties. Properties describe detected languages, breaks etc.. Please refer
 // to the [TextAnnotation.TextProperty][google.cloud.vision.v1.TextAnnotation.TextProperty] message definition below for more

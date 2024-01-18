@@ -22,12 +22,11 @@
 package orgpolicypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -279,10 +278,9 @@ func (*Policy_RestoreDefault_) isPolicy_PolicyType() {}
 // if the value contains a ":". Values prefixed with "is:" are treated the
 // same as values with no prefix.
 // Ancestry subtrees must be in one of the following formats:
-//   - "projects/<project-id>", e.g. "projects/tokyo-rain-123"
-//   - "folders/<folder-id>", e.g. "folders/1234"
-//   - "organizations/<organization-id>", e.g. "organizations/1234"
-//
+//     - "projects/<project-id>", e.g. "projects/tokyo-rain-123"
+//     - "folders/<folder-id>", e.g. "folders/1234"
+//     - "organizations/<organization-id>", e.g. "organizations/1234"
 // The `supports_under` field of the associated `Constraint`  defines whether
 // ancestry prefixes can be used. You can set `allowed_values` and
 // `denied_values` in the same `Policy` if `all_values` is
