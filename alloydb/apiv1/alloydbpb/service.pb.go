@@ -21,8 +21,11 @@
 package alloydbpb
 
 import (
-	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -34,8 +37,6 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -1698,10 +1699,10 @@ func (x *BatchCreateInstancesMetadata) GetInstanceStatuses() map[string]*BatchCr
 // but the third failed to create and the 4th was never picked up for creation
 // because of failure of the previous one. Then, resulting states would look
 // something like:
-//   1. Instance1 = ROLLED_BACK
-//   2. Instance2 = ROLLED_BACK
-//   3. Instance3 = FAILED
-//   4. Instance4 = FAILED
+//  1. Instance1 = ROLLED_BACK
+//  2. Instance2 = ROLLED_BACK
+//  3. Instance3 = FAILED
+//  4. Instance4 = FAILED
 //
 // However, while the operation is running, the instance might be in other
 // states including PENDING_CREATE, ACTIVE, DELETING and CREATING. The states
