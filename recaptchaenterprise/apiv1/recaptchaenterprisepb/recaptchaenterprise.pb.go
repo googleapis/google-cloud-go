@@ -1441,7 +1441,7 @@ type AccountVerificationInfo struct {
 	// Output only. Result of the latest account verification challenge.
 	LatestVerificationResult AccountVerificationInfo_Result `protobuf:"varint,7,opt,name=latest_verification_result,json=latestVerificationResult,proto3,enum=google.cloud.recaptchaenterprise.v1.AccountVerificationInfo_Result" json:"latest_verification_result,omitempty"`
 	// Username of the account that is being verified. Deprecated. Customers
-	// should now provide the hashed account ID field in Event.
+	// should now provide the `account_id` field in `event.user_info`.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/recaptchaenterprise/v1/recaptchaenterprise.proto.
 	Username string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
