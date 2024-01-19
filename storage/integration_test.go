@@ -883,11 +883,13 @@ func TestIntegration_Autoclass(t *testing.T) {
 		defer h.mustDeleteBucket(bkt)
 
 		// Get Autoclass configuration from bucket attrs.
+		// Autoclass.TerminalStorageClass is defaulted to NEARLINE if not specified.
 		attrs, err := bkt.Attrs(ctx)
 		if err != nil {
 			t.Fatalf("get bucket attrs failed: %v", err)
 		}
 		var toggleTime time.Time
+		var tscUpdateTime time.Time
 		if attrs != nil && attrs.Autoclass != nil {
 			if got, want := attrs.Autoclass.Enabled, true; got != want {
 				t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
@@ -895,10 +897,33 @@ func TestIntegration_Autoclass(t *testing.T) {
 			if toggleTime = attrs.Autoclass.ToggleTime; toggleTime.IsZero() {
 				t.Error("got a zero time value, want a populated value")
 			}
+			if got, want := attrs.Autoclass.TerminalStorageClass, "NEARLINE"; got != want {
+				t.Errorf("attr.Autoclass.TerminalStorageClass = %v, want %v", got, want)
+			}
+			if tscUpdateTime := attrs.Autoclass.TerminalStorageClassUpdateTime; tscUpdateTime.IsZero() {
+				t.Error("got a zero time value, want a populated value")
+			}
+		}
+
+		// Update TerminalStorageClass on the bucket.
+		ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.Autoclass.Enabled, true; got != want {
+			t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
+		}
+		if got, want := attrs.Autoclass.TerminalStorageClass, "ARCHIVE"; got != want {
+			t.Errorf("attr.Autoclass.TerminalStorageClass = %v, want %v", got, want)
+		}
+		latestTSCUpdateTime := attrs.Autoclass.TerminalStorageClassUpdateTime
+		if latestTSCUpdateTime.IsZero() {
+			t.Error("got a zero time value, want a populated value")
+		}
+		if !latestTSCUpdateTime.After(tscUpdateTime) {
+			t.Error("latestTSCUpdateTime should be newer than bucket creation tscUpdateTime")
 		}
 
 		// Disable Autoclass on the bucket.
-		ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
+		ua = BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
 		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
 		if got, want := attrs.Autoclass.Enabled, false; got != want {
 			t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
@@ -907,7 +932,7 @@ func TestIntegration_Autoclass(t *testing.T) {
 		if latestToggleTime.IsZero() {
 			t.Error("got a zero time value, want a populated value")
 		}
-		if latestToggleTime.Before(toggleTime) {
+		if !latestToggleTime.After(toggleTime) {
 			t.Error("latestToggleTime should be newer than bucket creation toggleTime")
 		}
 	})
@@ -1294,8 +1319,7 @@ func TestIntegration_ObjectIteration(t *testing.T) {
 func TestIntegration_ObjectIterationMatchGlob(t *testing.T) {
 	// This is a separate test from the Object Iteration test above because
 	// MatchGlob is not yet implemented for gRPC.
-	ctx := skipGRPC("https://github.com/googleapis/google-cloud-go/issues/7727")
-	multiTransportTest(skipJSONReads(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		// Reset testTime, 'cause object last modification time should be within 5 min
 		// from test (test iteration if -count passed) start time.
 		testTime = time.Now().UTC()
@@ -2207,12 +2231,10 @@ func TestIntegration_BucketACL(t *testing.T) {
 		}
 
 		var bACL []ACLRule
-		ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
-		defer cancel()
 
 		// Retry to account for propagation delay in metadata update.
 		err = retry(ctx, func() error {
-			bACL, err = bkt.ACL().List(ctxWithTimeout)
+			bACL, err = bkt.ACL().List(ctx)
 			return err
 		}, func() error {
 			if !containsACLRule(bACL, testACLRule(rule2)) {
@@ -2514,9 +2536,13 @@ func TestIntegration_Encryption(t *testing.T) {
 
 		checkRead("first object", obj, key, contents)
 
+		// We create 2 objects here and we can interleave operations to get around
+		// the rate limit for object mutation operations (create, update, and delete).
 		obj2 := client.Bucket(bucket).Object("customer-encryption-2")
+		obj4 := client.Bucket(bucket).Object("customer-encryption-4")
+
 		// Copying an object without the key should fail.
-		if _, err := obj2.CopierFrom(obj).Run(ctx); err == nil {
+		if _, err := obj4.CopierFrom(obj).Run(ctx); err == nil {
 			t.Fatal("want error, got nil")
 		}
 		// Copying an object with the key should succeed.
@@ -2565,11 +2591,11 @@ func TestIntegration_Encryption(t *testing.T) {
 
 		// You can't compose one or more unencrypted source objects into an
 		// encrypted destination object.
-		_, err := obj2.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
+		_, err := obj4.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := obj3.Key(key).ComposerFrom(obj2).Run(ctx); err == nil {
+		if _, err := obj3.Key(key).ComposerFrom(obj4).Run(ctx); err == nil {
 			t.Fatal("got nil, want error")
 		}
 	})
@@ -3049,7 +3075,6 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
-				h := testHelper{t}
 				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 				t.Cleanup(cancel)
 
@@ -3137,22 +3162,28 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 				checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
 
 				// Copy
-				_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
+				copyObj := bucket.Object("copy")
+				_, err = copyObj.CopierFrom(bucket.Object(objectName)).Run(ctx)
 				checkforErrors("copy", err)
 				// Delete "copy" object, if created
 				if err == nil {
 					t.Cleanup(func() {
-						h.mustDeleteObject(bucket.Object("copy"))
+						if err := deleteObjectIfExists(copyObj, WithErrorFunc(retryOnTransient400and403)); err != nil {
+							t.Error(err)
+						}
 					})
 				}
 
 				// Compose
-				_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
+				composeObj := bucket.Object("compose")
+				_, err = composeObj.ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
 				checkforErrors("compose", err)
 				// Delete "compose" object, if created
 				if err == nil {
 					t.Cleanup(func() {
-						h.mustDeleteObject(bucket.Object("compose"))
+						if err := deleteObjectIfExists(composeObj, WithErrorFunc(retryOnTransient400and403)); err != nil {
+							t.Error(err)
+						}
 					})
 				}
 
@@ -3856,6 +3887,200 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 		err := bkt.LockRetentionPolicy(ctx)
 		if err == nil {
 			t.Fatal("expected error locking bucket without metageneration condition, got nil")
+		}
+	})
+}
+
+func TestIntegration_BucketObjectRetention(t *testing.T) {
+	ctx := skipJSONReads(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		setTrue, setFalse := true, false
+
+		for _, test := range []struct {
+			desc              string
+			enable            *bool
+			wantRetentionMode string
+		}{
+			{
+				desc:              "ObjectRetentionMode is not enabled by default",
+				wantRetentionMode: "",
+			},
+			{
+				desc:              "Enable retention",
+				enable:            &setTrue,
+				wantRetentionMode: "Enabled",
+			},
+			{
+				desc:              "Set object retention to false",
+				enable:            &setFalse,
+				wantRetentionMode: "",
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				b := client.Bucket(prefix + uidSpace.New())
+				if test.enable != nil {
+					b = b.SetObjectRetention(*test.enable)
+				}
+
+				err := b.Create(ctx, testutil.ProjID(), nil)
+				if err != nil {
+					t.Fatalf("error creating bucket: %v", err)
+				}
+				t.Cleanup(func() { b.Delete(ctx) })
+
+				attrs, err := b.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("b.Attrs: %v", err)
+				}
+				if got, want := attrs.ObjectRetentionMode, test.wantRetentionMode; got != want {
+					t.Errorf("expected ObjectRetentionMode to be %q, got %q", want, got)
+				}
+			})
+		}
+	})
+}
+
+func TestIntegration_ObjectRetention(t *testing.T) {
+	ctx := skipJSONReads(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		b := client.Bucket(prefix + uidSpace.New()).SetObjectRetention(true)
+
+		if err := b.Create(ctx, testutil.ProjID(), nil); err != nil {
+			t.Fatalf("error creating bucket: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(b) })
+
+		retentionUnlocked := &ObjectRetention{
+			Mode:        "Unlocked",
+			RetainUntil: time.Now().Add(time.Minute * 20).Truncate(time.Second),
+		}
+		retentionUnlockedExtended := &ObjectRetention{
+			Mode:        "Unlocked",
+			RetainUntil: time.Now().Add(time.Hour).Truncate(time.Second),
+		}
+
+		// Create an object with future retain until time
+		o := b.Object("retention-on-create" + uidSpaceObjects.New())
+		w := o.NewWriter(ctx)
+		w.Retention = retentionUnlocked
+		h.mustWrite(w, []byte("contents"))
+		t.Cleanup(func() {
+			if _, err := o.OverrideUnlockedRetention(true).Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{}}); err != nil {
+				t.Fatalf("failed to remove retention from object: %v", err)
+			}
+			h.mustDeleteObject(o)
+		})
+
+		if got, want := w.Attrs().Retention, retentionUnlocked; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
+			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
+		}
+
+		// Delete object under retention returns 403
+		if err := o.Delete(ctx); err == nil || extractErrCode(err) != http.StatusForbidden {
+			t.Fatalf("delete should have failed with: %v, instead got:%v", http.StatusForbidden, err)
+		}
+
+		// Extend retain until time of Unlocked object is possible
+		attrs, err := o.Update(ctx, ObjectAttrsToUpdate{Retention: retentionUnlockedExtended})
+		if err != nil {
+			t.Fatalf("failed to add retention to object: %v", err)
+		}
+
+		if got, want := attrs.Retention, retentionUnlockedExtended; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
+			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
+		}
+
+		// Reduce retain until time of Unlocked object without
+		// override_unlocked_retention=True returns 403
+		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: retentionUnlocked})
+		if err == nil || extractErrCode(err) != http.StatusForbidden {
+			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		// Remove retention of Unlocked object without
+		// override_unlocked_retention=True returns 403
+		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{}})
+		if err == nil || extractErrCode(err) != http.StatusForbidden {
+			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		// Reduce retain until time of Unlocked object with override_unlocked_retention=True
+		attrs, err = o.OverrideUnlockedRetention(true).Update(ctx, ObjectAttrsToUpdate{
+			Retention: retentionUnlocked,
+		})
+		if err != nil {
+			t.Fatalf("failed to add retention to object: %v", err)
+		}
+
+		if got, want := attrs.Retention, retentionUnlocked; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
+			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
+		}
+
+		// Create a new object
+		objectWithRetentionOnUpdate := b.Object("retention-on-update" + uidSpaceObjects.New())
+		w = objectWithRetentionOnUpdate.NewWriter(ctx)
+		h.mustWrite(w, []byte("contents"))
+
+		// Retention should not be set
+		if got := w.Attrs().Retention; got != nil {
+			t.Errorf("expected no ObjectRetention, got: %+v", got)
+		}
+
+		// Update object with only one of (retain until time, retention mode) returns 400
+		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{Mode: "Locked"}})
+		if err == nil || extractErrCode(err) != http.StatusBadRequest {
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{RetainUntil: time.Now().Add(time.Second)}})
+		if err == nil || extractErrCode(err) != http.StatusBadRequest {
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		// Update object with future retain until time
+		attrs, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: retentionUnlocked})
+		if err != nil {
+			t.Errorf("o.Update: %v", err)
+		}
+
+		if got, want := attrs.Retention, retentionUnlocked; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
+			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
+		}
+
+		// Update/Patch object with retain until time in the past returns 400
+		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{RetainUntil: time.Now().Add(-time.Second)}})
+		if err == nil || extractErrCode(err) != http.StatusBadRequest {
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		// Update object with only one of (retain until time, retention mode) returns 400
+		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{Mode: "Locked"}})
+		if err == nil || extractErrCode(err) != http.StatusBadRequest {
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{RetainUntil: time.Now().Add(time.Second)}})
+		if err == nil || extractErrCode(err) != http.StatusBadRequest {
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		// Remove retention of Unlocked object with override_unlocked_retention=True
+		attrs, err = objectWithRetentionOnUpdate.OverrideUnlockedRetention(true).Update(ctx, ObjectAttrsToUpdate{
+			Retention: &ObjectRetention{},
+		})
+		if err != nil {
+			t.Fatalf("failed to remove retention from object: %v", err)
+		}
+
+		if got := attrs.Retention; got != nil {
+			t.Errorf("mismatching retention config, got: %+v, wanted nil", got)
+		}
+
+		// We should be able to delete the object as normal since retention was removed
+		if err := objectWithRetentionOnUpdate.Delete(ctx); err != nil {
+			t.Errorf("object.Delete:%v", err)
 		}
 	})
 }
@@ -5279,6 +5504,27 @@ func (h testHelper) mustRead(obj *ObjectHandle) []byte {
 		h.t.Fatalf("read: %v", err)
 	}
 	return data
+}
+
+// deleteObjectIfExists deletes an object with a RetryAlways policy (unless another
+// policy is supplied in the options). It will not return an error if the object
+// is already deleted/doesn't exist. It will time out after 15 seconds.
+func deleteObjectIfExists(o *ObjectHandle, retryOpts ...RetryOption) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	defer cancel()
+	retryOpts = append([]RetryOption{WithPolicy(RetryAlways)}, retryOpts...)
+
+	if err := o.Retryer(retryOpts...).Delete(ctx); err != nil {
+		var apiErr *apierror.APIError
+		if ok := errors.As(err, &apiErr); ok {
+			// Object may already be deleted with retry; if so, return no error.
+			if apiErr.HTTPCode() == 404 || apiErr.GRPCStatus().Code() == codes.NotFound {
+				return nil
+			}
+		}
+		return fmt.Errorf("delete object %s from bucket %s: %v", o.ObjectName(), o.BucketName(), err)
+	}
+	return nil
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {

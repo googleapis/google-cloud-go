@@ -925,7 +925,7 @@ func (x *ExecutionReference) GetCompletionTime() *timestamppb.Timestamp {
 	return nil
 }
 
-// RunJob Overrides that contains Execution fields to be overridden on the go.
+// RunJob Overrides that contains Execution fields to be overridden.
 type RunJobRequest_Overrides struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -995,7 +995,7 @@ func (x *RunJobRequest_Overrides) GetTimeout() *durationpb.Duration {
 	return nil
 }
 
-// Per container override specification.
+// Per-container override specification.
 type RunJobRequest_Overrides_ContainerOverride struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

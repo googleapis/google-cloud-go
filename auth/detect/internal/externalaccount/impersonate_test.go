@@ -31,9 +31,10 @@ var (
 
 func TestImpersonation(t *testing.T) {
 	var impersonationTests = []struct {
-		name     string
-		opts     *Options
-		wantBody string
+		name          string
+		opts          *Options
+		wantBody      string
+		metricsHeader string
 	}{
 		{
 			name: "Base Impersonation",
@@ -46,7 +47,8 @@ func TestImpersonation(t *testing.T) {
 				CredentialSource: testBaseCredSource,
 				Scopes:           []string{"https://www.googleapis.com/auth/devstorage.full_control"},
 			},
-			wantBody: "{\"lifetime\":\"3600s\",\"scope\":[\"https://www.googleapis.com/auth/devstorage.full_control\"]}",
+			wantBody:      "{\"lifetime\":\"3600s\",\"scope\":[\"https://www.googleapis.com/auth/devstorage.full_control\"]}",
+			metricsHeader: expectedMetricsHeader("file", true, false),
 		},
 		{
 			name: "With TokenLifetime Set",
@@ -60,7 +62,8 @@ func TestImpersonation(t *testing.T) {
 				Scopes:           []string{"https://www.googleapis.com/auth/devstorage.full_control"},
 				ServiceAccountImpersonationLifetimeSeconds: 10000,
 			},
-			wantBody: "{\"lifetime\":\"10000s\",\"scope\":[\"https://www.googleapis.com/auth/devstorage.full_control\"]}",
+			wantBody:      "{\"lifetime\":\"10000s\",\"scope\":[\"https://www.googleapis.com/auth/devstorage.full_control\"]}",
+			metricsHeader: expectedMetricsHeader("file", true, false),
 		},
 	}
 	for _, tt := range impersonationTests {

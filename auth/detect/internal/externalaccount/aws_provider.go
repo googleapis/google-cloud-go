@@ -69,6 +69,7 @@ const (
 
 	awsTimeFormatLong  = "20060102T150405Z"
 	awsTimeFormatShort = "20060102"
+	awsProviderType    = "aws"
 )
 
 type awsSubjectProvider struct {
@@ -168,6 +169,10 @@ func (sp *awsSubjectProvider) subjectToken(ctx context.Context) (string, error) 
 	return url.QueryEscape(string(result)), nil
 }
 
+func (sp *awsSubjectProvider) providerType() string {
+	return awsProviderType
+}
+
 func (cs *awsSubjectProvider) getAWSSessionToken(ctx context.Context) (string, error) {
 	if cs.IMDSv2SessionTokenURL == "" {
 		return "", nil
@@ -234,7 +239,6 @@ func (cs *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]
 	// Only the us-east-2 part should be used.
 	bodyLen := len(respBody)
 	if bodyLen == 0 {
-		// TODO(codyoss): this was the old behaviour, but maybe this should be an error
 		return "", nil
 	}
 	return string(respBody[:bodyLen-1]), nil

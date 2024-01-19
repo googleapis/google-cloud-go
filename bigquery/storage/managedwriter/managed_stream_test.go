@@ -110,7 +110,7 @@ func TestManagedStream_RequestOptimization(t *testing.T) {
 	}
 	ms.streamSettings.streamID = "FOO"
 	ms.streamSettings.TraceID = "TRACE"
-	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -191,7 +191,7 @@ func TestManagedStream_FlowControllerFailure(t *testing.T) {
 	router.conn.fc = newFlowController(1, 0)
 	router.conn.fc.acquire(ctx, 0)
 
-	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -236,7 +236,7 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 		t.Errorf("addWriter: %v", err)
 	}
 	conn := router.conn
-	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -293,7 +293,7 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
 	}
-	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 	if err := pool.addWriter(ms); err != nil {
 		t.Errorf("addWriter: %v", err)
 	}
@@ -316,7 +316,7 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 	cancel()
 
 	// First, append with an invalid context.
-	pw := newPendingWrite(cancelCtx, ms, fakeReq, ms.curDescVersion, "", "")
+	pw := newPendingWrite(cancelCtx, ms, fakeReq, ms.curTemplate, "", "")
 	err := ms.appendWithRetry(pw)
 	if err != context.Canceled {
 		t.Errorf("expected cancelled context error, got: %v", err)
@@ -457,7 +457,7 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
 	}
-	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 	if err := pool.addWriter(ms); err != nil {
 		t.Errorf("addWriter: %v", err)
 	}
@@ -509,7 +509,7 @@ func TestManagedStream_LeakingGoroutinesReconnect(t *testing.T) {
 		retry:          newStatelessRetryer(),
 	}
 	ms.retry.maxAttempts = 4
-	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 	if err := pool.addWriter(ms); err != nil {
 		t.Errorf("addWriter: %v", err)
 	}
@@ -575,7 +575,7 @@ func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
 		streamSettings: defaultStreamSettings(),
 		retry:          newStatelessRetryer(),
 	}
-	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 	if err := pool.addWriter(ms); err != nil {
 		t.Errorf("addWriter: %v", err)
 	}
@@ -624,7 +624,7 @@ func TestManagedStream_Closure(t *testing.T) {
 		streamSettings: defaultStreamSettings(),
 	}
 	ms.ctx, ms.cancel = context.WithCancel(pool.ctx)
-	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 	if err := pool.addWriter(ms); err != nil {
 		t.Errorf("addWriter A: %v", err)
 	}

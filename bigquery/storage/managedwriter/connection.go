@@ -376,8 +376,22 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	// Additionally, we check multiplex status as schema changes for explicit streams
 	// require reconnect, whereas multiplex does not.
 	forceReconnect := false
-	if pw.writer != nil && pw.descVersion != nil && pw.descVersion.isNewer(pw.writer.curDescVersion) {
-		pw.writer.curDescVersion = pw.descVersion
+	promoted := false
+	if pw.writer != nil && pw.reqTmpl != nil {
+		if !pw.reqTmpl.Compatible(pw.writer.curTemplate) {
+			if pw.writer.curTemplate == nil {
+				// promote because there's no current template
+				pw.writer.curTemplate = pw.reqTmpl
+				promoted = true
+			} else {
+				if pw.writer.curTemplate.versionTime.Before(pw.reqTmpl.versionTime) {
+					pw.writer.curTemplate = pw.reqTmpl
+					promoted = true
+				}
+			}
+		}
+	}
+	if promoted {
 		if co.optimizer == nil {
 			forceReconnect = true
 		} else {

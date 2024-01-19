@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,6 +47,11 @@ type CallOptions struct {
 	DeleteKey                            []gax.CallOption
 	MigrateKey                           []gax.CallOption
 	GetMetrics                           []gax.CallOption
+	CreateFirewallPolicy                 []gax.CallOption
+	ListFirewallPolicies                 []gax.CallOption
+	GetFirewallPolicy                    []gax.CallOption
+	UpdateFirewallPolicy                 []gax.CallOption
+	DeleteFirewallPolicy                 []gax.CallOption
 	ListRelatedAccountGroups             []gax.CallOption
 	ListRelatedAccountGroupMemberships   []gax.CallOption
 	SearchRelatedAccountGroupMemberships []gax.CallOption
@@ -90,6 +95,11 @@ func defaultCallOptions() *CallOptions {
 		},
 		MigrateKey:                           []gax.CallOption{},
 		GetMetrics:                           []gax.CallOption{},
+		CreateFirewallPolicy:                 []gax.CallOption{},
+		ListFirewallPolicies:                 []gax.CallOption{},
+		GetFirewallPolicy:                    []gax.CallOption{},
+		UpdateFirewallPolicy:                 []gax.CallOption{},
+		DeleteFirewallPolicy:                 []gax.CallOption{},
 		ListRelatedAccountGroups:             []gax.CallOption{},
 		ListRelatedAccountGroupMemberships:   []gax.CallOption{},
 		SearchRelatedAccountGroupMemberships: []gax.CallOption{},
@@ -111,6 +121,11 @@ type internalClient interface {
 	DeleteKey(context.Context, *recaptchaenterprisepb.DeleteKeyRequest, ...gax.CallOption) error
 	MigrateKey(context.Context, *recaptchaenterprisepb.MigrateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
 	GetMetrics(context.Context, *recaptchaenterprisepb.GetMetricsRequest, ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error)
+	CreateFirewallPolicy(context.Context, *recaptchaenterprisepb.CreateFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
+	ListFirewallPolicies(context.Context, *recaptchaenterprisepb.ListFirewallPoliciesRequest, ...gax.CallOption) *FirewallPolicyIterator
+	GetFirewallPolicy(context.Context, *recaptchaenterprisepb.GetFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
+	UpdateFirewallPolicy(context.Context, *recaptchaenterprisepb.UpdateFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
+	DeleteFirewallPolicy(context.Context, *recaptchaenterprisepb.DeleteFirewallPolicyRequest, ...gax.CallOption) error
 	ListRelatedAccountGroups(context.Context, *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, ...gax.CallOption) *RelatedAccountGroupIterator
 	ListRelatedAccountGroupMemberships(context.Context, *recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest, ...gax.CallOption) *RelatedAccountGroupMembershipIterator
 	SearchRelatedAccountGroupMemberships(context.Context, *recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest, ...gax.CallOption) *RelatedAccountGroupMembershipIterator
@@ -197,7 +212,7 @@ func (c *Client) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.Delet
 // MigrateKey migrates an existing key from reCAPTCHA to reCAPTCHA Enterprise.
 // Once a key is migrated, it can be used from either product. SiteVerify
 // requests are billed as CreateAssessment calls. You must be
-// authenticated as one of the current owners of the reCAPTCHA Site Key, and
+// authenticated as one of the current owners of the reCAPTCHA Key, and
 // your user must have the reCAPTCHA Enterprise Admin IAM role in the
 // destination project.
 func (c *Client) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.MigrateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
@@ -208,6 +223,33 @@ func (c *Client) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.Migr
 // dashboards.
 func (c *Client) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.GetMetricsRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error) {
 	return c.internalClient.GetMetrics(ctx, req, opts...)
+}
+
+// CreateFirewallPolicy creates a new FirewallPolicy, specifying conditions at which reCAPTCHA
+// Enterprise actions can be executed.
+// A project may have a maximum of 1000 policies.
+func (c *Client) CreateFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.CreateFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	return c.internalClient.CreateFirewallPolicy(ctx, req, opts...)
+}
+
+// ListFirewallPolicies returns the list of all firewall policies that belong to a project.
+func (c *Client) ListFirewallPolicies(ctx context.Context, req *recaptchaenterprisepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
+	return c.internalClient.ListFirewallPolicies(ctx, req, opts...)
+}
+
+// GetFirewallPolicy returns the specified firewall policy.
+func (c *Client) GetFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.GetFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	return c.internalClient.GetFirewallPolicy(ctx, req, opts...)
+}
+
+// UpdateFirewallPolicy updates the specified firewall policy.
+func (c *Client) UpdateFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.UpdateFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	return c.internalClient.UpdateFirewallPolicy(ctx, req, opts...)
+}
+
+// DeleteFirewallPolicy deletes the specified firewall policy.
+func (c *Client) DeleteFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.DeleteFirewallPolicyRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteFirewallPolicy(ctx, req, opts...)
 }
 
 // ListRelatedAccountGroups list groups of related accounts.
@@ -501,6 +543,120 @@ func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.
 	return resp, nil
 }
 
+func (c *gRPCClient) CreateFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.CreateFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateFirewallPolicy[0:len((*c.CallOptions).CreateFirewallPolicy):len((*c.CallOptions).CreateFirewallPolicy)], opts...)
+	var resp *recaptchaenterprisepb.FirewallPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateFirewallPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListFirewallPolicies(ctx context.Context, req *recaptchaenterprisepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListFirewallPolicies[0:len((*c.CallOptions).ListFirewallPolicies):len((*c.CallOptions).ListFirewallPolicies)], opts...)
+	it := &FirewallPolicyIterator{}
+	req = proto.Clone(req).(*recaptchaenterprisepb.ListFirewallPoliciesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.FirewallPolicy, string, error) {
+		resp := &recaptchaenterprisepb.ListFirewallPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListFirewallPolicies(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetFirewallPolicies(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.GetFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetFirewallPolicy[0:len((*c.CallOptions).GetFirewallPolicy):len((*c.CallOptions).GetFirewallPolicy)], opts...)
+	var resp *recaptchaenterprisepb.FirewallPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetFirewallPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.UpdateFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy.name", url.QueryEscape(req.GetFirewallPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateFirewallPolicy[0:len((*c.CallOptions).UpdateFirewallPolicy):len((*c.CallOptions).UpdateFirewallPolicy)], opts...)
+	var resp *recaptchaenterprisepb.FirewallPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateFirewallPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.DeleteFirewallPolicyRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteFirewallPolicy[0:len((*c.CallOptions).DeleteFirewallPolicy):len((*c.CallOptions).DeleteFirewallPolicy)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteFirewallPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, opts ...gax.CallOption) *RelatedAccountGroupIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -637,145 +793,4 @@ func (c *gRPCClient) SearchRelatedAccountGroupMemberships(ctx context.Context, r
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// KeyIterator manages a stream of *recaptchaenterprisepb.Key.
-type KeyIterator struct {
-	items    []*recaptchaenterprisepb.Key
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recaptchaenterprisepb.Key, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *KeyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *KeyIterator) Next() (*recaptchaenterprisepb.Key, error) {
-	var item *recaptchaenterprisepb.Key
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *KeyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *KeyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RelatedAccountGroupIterator manages a stream of *recaptchaenterprisepb.RelatedAccountGroup.
-type RelatedAccountGroupIterator struct {
-	items    []*recaptchaenterprisepb.RelatedAccountGroup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recaptchaenterprisepb.RelatedAccountGroup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RelatedAccountGroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RelatedAccountGroupIterator) Next() (*recaptchaenterprisepb.RelatedAccountGroup, error) {
-	var item *recaptchaenterprisepb.RelatedAccountGroup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RelatedAccountGroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RelatedAccountGroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RelatedAccountGroupMembershipIterator manages a stream of *recaptchaenterprisepb.RelatedAccountGroupMembership.
-type RelatedAccountGroupMembershipIterator struct {
-	items    []*recaptchaenterprisepb.RelatedAccountGroupMembership
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recaptchaenterprisepb.RelatedAccountGroupMembership, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RelatedAccountGroupMembershipIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RelatedAccountGroupMembershipIterator) Next() (*recaptchaenterprisepb.RelatedAccountGroupMembership, error) {
-	var item *recaptchaenterprisepb.RelatedAccountGroupMembership
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RelatedAccountGroupMembershipIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RelatedAccountGroupMembershipIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

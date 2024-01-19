@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,16 +55,6 @@ type AnalyticsAdminCallOptions struct {
 	CreateProperty                               []gax.CallOption
 	DeleteProperty                               []gax.CallOption
 	UpdateProperty                               []gax.CallOption
-	GetUserLink                                  []gax.CallOption
-	BatchGetUserLinks                            []gax.CallOption
-	ListUserLinks                                []gax.CallOption
-	AuditUserLinks                               []gax.CallOption
-	CreateUserLink                               []gax.CallOption
-	BatchCreateUserLinks                         []gax.CallOption
-	UpdateUserLink                               []gax.CallOption
-	BatchUpdateUserLinks                         []gax.CallOption
-	DeleteUserLink                               []gax.CallOption
-	BatchDeleteUserLinks                         []gax.CallOption
 	CreateFirebaseLink                           []gax.CallOption
 	DeleteFirebaseLink                           []gax.CallOption
 	ListFirebaseLinks                            []gax.CallOption
@@ -172,6 +162,19 @@ type AnalyticsAdminCallOptions struct {
 	CreateEventCreateRule                        []gax.CallOption
 	UpdateEventCreateRule                        []gax.CallOption
 	DeleteEventCreateRule                        []gax.CallOption
+	UpdateDataRedactionSettings                  []gax.CallOption
+	GetDataRedactionSettings                     []gax.CallOption
+	CreateRollupProperty                         []gax.CallOption
+	GetRollupPropertySourceLink                  []gax.CallOption
+	ListRollupPropertySourceLinks                []gax.CallOption
+	CreateRollupPropertySourceLink               []gax.CallOption
+	DeleteRollupPropertySourceLink               []gax.CallOption
+	CreateSubproperty                            []gax.CallOption
+	CreateSubpropertyEventFilter                 []gax.CallOption
+	GetSubpropertyEventFilter                    []gax.CallOption
+	ListSubpropertyEventFilters                  []gax.CallOption
+	UpdateSubpropertyEventFilter                 []gax.CallOption
+	DeleteSubpropertyEventFilter                 []gax.CallOption
 }
 
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
@@ -231,36 +234,6 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 		UpdateProperty: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetUserLink: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		BatchGetUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		ListUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		AuditUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		CreateUserLink: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		BatchCreateUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		UpdateUserLink: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		BatchUpdateUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		DeleteUserLink: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		BatchDeleteUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
 		CreateFirebaseLink: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -1540,6 +1513,175 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		DeleteEventCreateRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateDataRedactionSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetDataRedactionSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateRollupProperty: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetRollupPropertySourceLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListRollupPropertySourceLinks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateRollupPropertySourceLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteRollupPropertySourceLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateSubproperty: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateSubpropertyEventFilter: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetSubpropertyEventFilter: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSubpropertyEventFilters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSubpropertyEventFilter: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteSubpropertyEventFilter: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1599,36 +1741,6 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 		UpdateProperty: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetUserLink: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		BatchGetUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		ListUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		AuditUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		CreateUserLink: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		BatchCreateUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		UpdateUserLink: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		BatchUpdateUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		DeleteUserLink: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
-		BatchDeleteUserLinks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
 		CreateFirebaseLink: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -2823,6 +2935,162 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		UpdateDataRedactionSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetDataRedactionSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateRollupProperty: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetRollupPropertySourceLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListRollupPropertySourceLinks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateRollupPropertySourceLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteRollupPropertySourceLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateSubproperty: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateSubpropertyEventFilter: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetSubpropertyEventFilter: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListSubpropertyEventFilters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateSubpropertyEventFilter: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteSubpropertyEventFilter: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 	}
 }
 
@@ -2842,16 +3110,6 @@ type internalAnalyticsAdminClient interface {
 	CreateProperty(context.Context, *adminpb.CreatePropertyRequest, ...gax.CallOption) (*adminpb.Property, error)
 	DeleteProperty(context.Context, *adminpb.DeletePropertyRequest, ...gax.CallOption) (*adminpb.Property, error)
 	UpdateProperty(context.Context, *adminpb.UpdatePropertyRequest, ...gax.CallOption) (*adminpb.Property, error)
-	GetUserLink(context.Context, *adminpb.GetUserLinkRequest, ...gax.CallOption) (*adminpb.UserLink, error)
-	BatchGetUserLinks(context.Context, *adminpb.BatchGetUserLinksRequest, ...gax.CallOption) (*adminpb.BatchGetUserLinksResponse, error)
-	ListUserLinks(context.Context, *adminpb.ListUserLinksRequest, ...gax.CallOption) *UserLinkIterator
-	AuditUserLinks(context.Context, *adminpb.AuditUserLinksRequest, ...gax.CallOption) *AuditUserLinkIterator
-	CreateUserLink(context.Context, *adminpb.CreateUserLinkRequest, ...gax.CallOption) (*adminpb.UserLink, error)
-	BatchCreateUserLinks(context.Context, *adminpb.BatchCreateUserLinksRequest, ...gax.CallOption) (*adminpb.BatchCreateUserLinksResponse, error)
-	UpdateUserLink(context.Context, *adminpb.UpdateUserLinkRequest, ...gax.CallOption) (*adminpb.UserLink, error)
-	BatchUpdateUserLinks(context.Context, *adminpb.BatchUpdateUserLinksRequest, ...gax.CallOption) (*adminpb.BatchUpdateUserLinksResponse, error)
-	DeleteUserLink(context.Context, *adminpb.DeleteUserLinkRequest, ...gax.CallOption) error
-	BatchDeleteUserLinks(context.Context, *adminpb.BatchDeleteUserLinksRequest, ...gax.CallOption) error
 	CreateFirebaseLink(context.Context, *adminpb.CreateFirebaseLinkRequest, ...gax.CallOption) (*adminpb.FirebaseLink, error)
 	DeleteFirebaseLink(context.Context, *adminpb.DeleteFirebaseLinkRequest, ...gax.CallOption) error
 	ListFirebaseLinks(context.Context, *adminpb.ListFirebaseLinksRequest, ...gax.CallOption) *FirebaseLinkIterator
@@ -2959,6 +3217,19 @@ type internalAnalyticsAdminClient interface {
 	CreateEventCreateRule(context.Context, *adminpb.CreateEventCreateRuleRequest, ...gax.CallOption) (*adminpb.EventCreateRule, error)
 	UpdateEventCreateRule(context.Context, *adminpb.UpdateEventCreateRuleRequest, ...gax.CallOption) (*adminpb.EventCreateRule, error)
 	DeleteEventCreateRule(context.Context, *adminpb.DeleteEventCreateRuleRequest, ...gax.CallOption) error
+	UpdateDataRedactionSettings(context.Context, *adminpb.UpdateDataRedactionSettingsRequest, ...gax.CallOption) (*adminpb.DataRedactionSettings, error)
+	GetDataRedactionSettings(context.Context, *adminpb.GetDataRedactionSettingsRequest, ...gax.CallOption) (*adminpb.DataRedactionSettings, error)
+	CreateRollupProperty(context.Context, *adminpb.CreateRollupPropertyRequest, ...gax.CallOption) (*adminpb.CreateRollupPropertyResponse, error)
+	GetRollupPropertySourceLink(context.Context, *adminpb.GetRollupPropertySourceLinkRequest, ...gax.CallOption) (*adminpb.RollupPropertySourceLink, error)
+	ListRollupPropertySourceLinks(context.Context, *adminpb.ListRollupPropertySourceLinksRequest, ...gax.CallOption) *RollupPropertySourceLinkIterator
+	CreateRollupPropertySourceLink(context.Context, *adminpb.CreateRollupPropertySourceLinkRequest, ...gax.CallOption) (*adminpb.RollupPropertySourceLink, error)
+	DeleteRollupPropertySourceLink(context.Context, *adminpb.DeleteRollupPropertySourceLinkRequest, ...gax.CallOption) error
+	CreateSubproperty(context.Context, *adminpb.CreateSubpropertyRequest, ...gax.CallOption) (*adminpb.CreateSubpropertyResponse, error)
+	CreateSubpropertyEventFilter(context.Context, *adminpb.CreateSubpropertyEventFilterRequest, ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error)
+	GetSubpropertyEventFilter(context.Context, *adminpb.GetSubpropertyEventFilterRequest, ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error)
+	ListSubpropertyEventFilters(context.Context, *adminpb.ListSubpropertyEventFiltersRequest, ...gax.CallOption) *SubpropertyEventFilterIterator
+	UpdateSubpropertyEventFilter(context.Context, *adminpb.UpdateSubpropertyEventFilterRequest, ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error)
+	DeleteSubpropertyEventFilter(context.Context, *adminpb.DeleteSubpropertyEventFilterRequest, ...gax.CallOption) error
 }
 
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
@@ -3017,7 +3288,7 @@ func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.Li
 //
 // If the accounts are not restored before the expiration time, the account
 // and all child resources (eg: Properties, GoogleAdsLinks, Streams,
-// UserLinks) will be permanently purged.
+// AccessBindings) will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
 // Returns an error if the target is not found.
@@ -3066,7 +3337,7 @@ func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.
 // However, they can be restored using the Trash Can UI.
 //
 // If the properties are not restored before the expiration time, the Property
-// and all child resources (eg: GoogleAdsLinks, Streams, UserLinks)
+// and all child resources (eg: GoogleAdsLinks, Streams, AccessBindings)
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
@@ -3078,71 +3349,6 @@ func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.
 // UpdateProperty updates a property.
 func (c *AnalyticsAdminClient) UpdateProperty(ctx context.Context, req *adminpb.UpdatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.UpdateProperty(ctx, req, opts...)
-}
-
-// GetUserLink gets information about a user’s link to an account or property.
-func (c *AnalyticsAdminClient) GetUserLink(ctx context.Context, req *adminpb.GetUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
-	return c.internalClient.GetUserLink(ctx, req, opts...)
-}
-
-// BatchGetUserLinks gets information about multiple users’ links to an account or property.
-func (c *AnalyticsAdminClient) BatchGetUserLinks(ctx context.Context, req *adminpb.BatchGetUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchGetUserLinksResponse, error) {
-	return c.internalClient.BatchGetUserLinks(ctx, req, opts...)
-}
-
-// ListUserLinks lists all user links on an account or property.
-func (c *AnalyticsAdminClient) ListUserLinks(ctx context.Context, req *adminpb.ListUserLinksRequest, opts ...gax.CallOption) *UserLinkIterator {
-	return c.internalClient.ListUserLinks(ctx, req, opts...)
-}
-
-// AuditUserLinks lists all user links on an account or property, including implicit ones
-// that come from effective permissions granted by groups or organization
-// admin roles.
-//
-// If a returned user link does not have direct permissions, they cannot
-// be removed from the account or property directly with the DeleteUserLink
-// command. They have to be removed from the group/etc that gives them
-// permissions, which is currently only usable/discoverable in the GA or GMP
-// UIs.
-func (c *AnalyticsAdminClient) AuditUserLinks(ctx context.Context, req *adminpb.AuditUserLinksRequest, opts ...gax.CallOption) *AuditUserLinkIterator {
-	return c.internalClient.AuditUserLinks(ctx, req, opts...)
-}
-
-// CreateUserLink creates a user link on an account or property.
-//
-// If the user with the specified email already has permissions on the
-// account or property, then the user’s existing permissions will be unioned
-// with the permissions specified in the new UserLink.
-func (c *AnalyticsAdminClient) CreateUserLink(ctx context.Context, req *adminpb.CreateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
-	return c.internalClient.CreateUserLink(ctx, req, opts...)
-}
-
-// BatchCreateUserLinks creates information about multiple users’ links to an account or property.
-//
-// This method is transactional. If any UserLink cannot be created, none of
-// the UserLinks will be created.
-func (c *AnalyticsAdminClient) BatchCreateUserLinks(ctx context.Context, req *adminpb.BatchCreateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchCreateUserLinksResponse, error) {
-	return c.internalClient.BatchCreateUserLinks(ctx, req, opts...)
-}
-
-// UpdateUserLink updates a user link on an account or property.
-func (c *AnalyticsAdminClient) UpdateUserLink(ctx context.Context, req *adminpb.UpdateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
-	return c.internalClient.UpdateUserLink(ctx, req, opts...)
-}
-
-// BatchUpdateUserLinks updates information about multiple users’ links to an account or property.
-func (c *AnalyticsAdminClient) BatchUpdateUserLinks(ctx context.Context, req *adminpb.BatchUpdateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchUpdateUserLinksResponse, error) {
-	return c.internalClient.BatchUpdateUserLinks(ctx, req, opts...)
-}
-
-// DeleteUserLink deletes a user link on an account or property.
-func (c *AnalyticsAdminClient) DeleteUserLink(ctx context.Context, req *adminpb.DeleteUserLinkRequest, opts ...gax.CallOption) error {
-	return c.internalClient.DeleteUserLink(ctx, req, opts...)
-}
-
-// BatchDeleteUserLinks deletes information about multiple users’ links to an account or property.
-func (c *AnalyticsAdminClient) BatchDeleteUserLinks(ctx context.Context, req *adminpb.BatchDeleteUserLinksRequest, opts ...gax.CallOption) error {
-	return c.internalClient.BatchDeleteUserLinks(ctx, req, opts...)
 }
 
 // CreateFirebaseLink creates a FirebaseLink.
@@ -3520,8 +3726,10 @@ func (c *AnalyticsAdminClient) UpdateAttributionSettings(ctx context.Context, re
 // records of each time a user reads Google Analytics reporting data. Access
 // records are retained for up to 2 years.
 //
-// Data Access Reports can be requested for a property. The property must be
-// in Google Analytics 360. This method is only available to Administrators.
+// Data Access Reports can be requested for a property. Reports may be
+// requested for any property, but dimensions that aren’t related to quota can
+// only be requested on Google Analytics 360 properties. This method is only
+// available to Administrators.
 //
 // These data access records include GA4 UI Reporting, GA4 UI Explorations,
 // GA4 Data API, and other products like Firebase & Admob that can retrieve
@@ -3740,6 +3948,80 @@ func (c *AnalyticsAdminClient) UpdateEventCreateRule(ctx context.Context, req *a
 // DeleteEventCreateRule deletes an EventCreateRule.
 func (c *AnalyticsAdminClient) DeleteEventCreateRule(ctx context.Context, req *adminpb.DeleteEventCreateRuleRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEventCreateRule(ctx, req, opts...)
+}
+
+// UpdateDataRedactionSettings updates a DataRedactionSettings on a property.
+func (c *AnalyticsAdminClient) UpdateDataRedactionSettings(ctx context.Context, req *adminpb.UpdateDataRedactionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRedactionSettings, error) {
+	return c.internalClient.UpdateDataRedactionSettings(ctx, req, opts...)
+}
+
+// GetDataRedactionSettings lookup for a single DataRedactionSettings.
+func (c *AnalyticsAdminClient) GetDataRedactionSettings(ctx context.Context, req *adminpb.GetDataRedactionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRedactionSettings, error) {
+	return c.internalClient.GetDataRedactionSettings(ctx, req, opts...)
+}
+
+// CreateRollupProperty create a roll-up property and all roll-up property source links.
+func (c *AnalyticsAdminClient) CreateRollupProperty(ctx context.Context, req *adminpb.CreateRollupPropertyRequest, opts ...gax.CallOption) (*adminpb.CreateRollupPropertyResponse, error) {
+	return c.internalClient.CreateRollupProperty(ctx, req, opts...)
+}
+
+// GetRollupPropertySourceLink lookup for a single roll-up property source Link.
+// Only roll-up properties can have source links, so this method will throw an
+// error if used on other types of properties.
+func (c *AnalyticsAdminClient) GetRollupPropertySourceLink(ctx context.Context, req *adminpb.GetRollupPropertySourceLinkRequest, opts ...gax.CallOption) (*adminpb.RollupPropertySourceLink, error) {
+	return c.internalClient.GetRollupPropertySourceLink(ctx, req, opts...)
+}
+
+// ListRollupPropertySourceLinks lists roll-up property source Links on a property.
+// Only roll-up properties can have source links, so this method will throw an
+// error if used on other types of properties.
+func (c *AnalyticsAdminClient) ListRollupPropertySourceLinks(ctx context.Context, req *adminpb.ListRollupPropertySourceLinksRequest, opts ...gax.CallOption) *RollupPropertySourceLinkIterator {
+	return c.internalClient.ListRollupPropertySourceLinks(ctx, req, opts...)
+}
+
+// CreateRollupPropertySourceLink creates a roll-up property source link.
+// Only roll-up properties can have source links, so this method will throw an
+// error if used on other types of properties.
+func (c *AnalyticsAdminClient) CreateRollupPropertySourceLink(ctx context.Context, req *adminpb.CreateRollupPropertySourceLinkRequest, opts ...gax.CallOption) (*adminpb.RollupPropertySourceLink, error) {
+	return c.internalClient.CreateRollupPropertySourceLink(ctx, req, opts...)
+}
+
+// DeleteRollupPropertySourceLink deletes a roll-up property source link.
+// Only roll-up properties can have source links, so this method will throw an
+// error if used on other types of properties.
+func (c *AnalyticsAdminClient) DeleteRollupPropertySourceLink(ctx context.Context, req *adminpb.DeleteRollupPropertySourceLinkRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteRollupPropertySourceLink(ctx, req, opts...)
+}
+
+// CreateSubproperty create a subproperty and a subproperty event filter that applies to the
+// created subproperty.
+func (c *AnalyticsAdminClient) CreateSubproperty(ctx context.Context, req *adminpb.CreateSubpropertyRequest, opts ...gax.CallOption) (*adminpb.CreateSubpropertyResponse, error) {
+	return c.internalClient.CreateSubproperty(ctx, req, opts...)
+}
+
+// CreateSubpropertyEventFilter creates a subproperty Event Filter.
+func (c *AnalyticsAdminClient) CreateSubpropertyEventFilter(ctx context.Context, req *adminpb.CreateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	return c.internalClient.CreateSubpropertyEventFilter(ctx, req, opts...)
+}
+
+// GetSubpropertyEventFilter lookup for a single subproperty Event Filter.
+func (c *AnalyticsAdminClient) GetSubpropertyEventFilter(ctx context.Context, req *adminpb.GetSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	return c.internalClient.GetSubpropertyEventFilter(ctx, req, opts...)
+}
+
+// ListSubpropertyEventFilters list all subproperty Event Filters on a property.
+func (c *AnalyticsAdminClient) ListSubpropertyEventFilters(ctx context.Context, req *adminpb.ListSubpropertyEventFiltersRequest, opts ...gax.CallOption) *SubpropertyEventFilterIterator {
+	return c.internalClient.ListSubpropertyEventFilters(ctx, req, opts...)
+}
+
+// UpdateSubpropertyEventFilter updates a subproperty Event Filter.
+func (c *AnalyticsAdminClient) UpdateSubpropertyEventFilter(ctx context.Context, req *adminpb.UpdateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	return c.internalClient.UpdateSubpropertyEventFilter(ctx, req, opts...)
+}
+
+// DeleteSubpropertyEventFilter deletes a subproperty event filter.
+func (c *AnalyticsAdminClient) DeleteSubpropertyEventFilter(ctx context.Context, req *adminpb.DeleteSubpropertyEventFilterRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSubpropertyEventFilter(ctx, req, opts...)
 }
 
 // analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
@@ -4143,234 +4425,6 @@ func (c *analyticsAdminGRPCClient) UpdateProperty(ctx context.Context, req *admi
 		return nil, err
 	}
 	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) GetUserLink(ctx context.Context, req *adminpb.GetUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).GetUserLink[0:len((*c.CallOptions).GetUserLink):len((*c.CallOptions).GetUserLink)], opts...)
-	var resp *adminpb.UserLink
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.GetUserLink(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) BatchGetUserLinks(ctx context.Context, req *adminpb.BatchGetUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchGetUserLinksResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).BatchGetUserLinks[0:len((*c.CallOptions).BatchGetUserLinks):len((*c.CallOptions).BatchGetUserLinks)], opts...)
-	var resp *adminpb.BatchGetUserLinksResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.BatchGetUserLinks(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) ListUserLinks(ctx context.Context, req *adminpb.ListUserLinksRequest, opts ...gax.CallOption) *UserLinkIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).ListUserLinks[0:len((*c.CallOptions).ListUserLinks):len((*c.CallOptions).ListUserLinks)], opts...)
-	it := &UserLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListUserLinksRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.UserLink, string, error) {
-		resp := &adminpb.ListUserLinksResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.analyticsAdminClient.ListUserLinks(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetUserLinks(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *analyticsAdminGRPCClient) AuditUserLinks(ctx context.Context, req *adminpb.AuditUserLinksRequest, opts ...gax.CallOption) *AuditUserLinkIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).AuditUserLinks[0:len((*c.CallOptions).AuditUserLinks):len((*c.CallOptions).AuditUserLinks)], opts...)
-	it := &AuditUserLinkIterator{}
-	req = proto.Clone(req).(*adminpb.AuditUserLinksRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AuditUserLink, string, error) {
-		resp := &adminpb.AuditUserLinksResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.analyticsAdminClient.AuditUserLinks(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetUserLinks(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *analyticsAdminGRPCClient) CreateUserLink(ctx context.Context, req *adminpb.CreateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).CreateUserLink[0:len((*c.CallOptions).CreateUserLink):len((*c.CallOptions).CreateUserLink)], opts...)
-	var resp *adminpb.UserLink
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.CreateUserLink(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) BatchCreateUserLinks(ctx context.Context, req *adminpb.BatchCreateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchCreateUserLinksResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).BatchCreateUserLinks[0:len((*c.CallOptions).BatchCreateUserLinks):len((*c.CallOptions).BatchCreateUserLinks)], opts...)
-	var resp *adminpb.BatchCreateUserLinksResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.BatchCreateUserLinks(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) UpdateUserLink(ctx context.Context, req *adminpb.UpdateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "user_link.name", url.QueryEscape(req.GetUserLink().GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).UpdateUserLink[0:len((*c.CallOptions).UpdateUserLink):len((*c.CallOptions).UpdateUserLink)], opts...)
-	var resp *adminpb.UserLink
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.UpdateUserLink(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) BatchUpdateUserLinks(ctx context.Context, req *adminpb.BatchUpdateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchUpdateUserLinksResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).BatchUpdateUserLinks[0:len((*c.CallOptions).BatchUpdateUserLinks):len((*c.CallOptions).BatchUpdateUserLinks)], opts...)
-	var resp *adminpb.BatchUpdateUserLinksResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.BatchUpdateUserLinks(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) DeleteUserLink(ctx context.Context, req *adminpb.DeleteUserLinkRequest, opts ...gax.CallOption) error {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).DeleteUserLink[0:len((*c.CallOptions).DeleteUserLink):len((*c.CallOptions).DeleteUserLink)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.analyticsAdminClient.DeleteUserLink(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
-func (c *analyticsAdminGRPCClient) BatchDeleteUserLinks(ctx context.Context, req *adminpb.BatchDeleteUserLinksRequest, opts ...gax.CallOption) error {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).BatchDeleteUserLinks[0:len((*c.CallOptions).BatchDeleteUserLinks):len((*c.CallOptions).BatchDeleteUserLinks)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.analyticsAdminClient.BatchDeleteUserLinks(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
 }
 
 func (c *analyticsAdminGRPCClient) CreateFirebaseLink(ctx context.Context, req *adminpb.CreateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
@@ -6737,6 +6791,282 @@ func (c *analyticsAdminGRPCClient) DeleteEventCreateRule(ctx context.Context, re
 	return err
 }
 
+func (c *analyticsAdminGRPCClient) UpdateDataRedactionSettings(ctx context.Context, req *adminpb.UpdateDataRedactionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRedactionSettings, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_redaction_settings.name", url.QueryEscape(req.GetDataRedactionSettings().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDataRedactionSettings[0:len((*c.CallOptions).UpdateDataRedactionSettings):len((*c.CallOptions).UpdateDataRedactionSettings)], opts...)
+	var resp *adminpb.DataRedactionSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateDataRedactionSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetDataRedactionSettings(ctx context.Context, req *adminpb.GetDataRedactionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRedactionSettings, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDataRedactionSettings[0:len((*c.CallOptions).GetDataRedactionSettings):len((*c.CallOptions).GetDataRedactionSettings)], opts...)
+	var resp *adminpb.DataRedactionSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetDataRedactionSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) CreateRollupProperty(ctx context.Context, req *adminpb.CreateRollupPropertyRequest, opts ...gax.CallOption) (*adminpb.CreateRollupPropertyResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).CreateRollupProperty[0:len((*c.CallOptions).CreateRollupProperty):len((*c.CallOptions).CreateRollupProperty)], opts...)
+	var resp *adminpb.CreateRollupPropertyResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateRollupProperty(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetRollupPropertySourceLink(ctx context.Context, req *adminpb.GetRollupPropertySourceLinkRequest, opts ...gax.CallOption) (*adminpb.RollupPropertySourceLink, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetRollupPropertySourceLink[0:len((*c.CallOptions).GetRollupPropertySourceLink):len((*c.CallOptions).GetRollupPropertySourceLink)], opts...)
+	var resp *adminpb.RollupPropertySourceLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetRollupPropertySourceLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListRollupPropertySourceLinks(ctx context.Context, req *adminpb.ListRollupPropertySourceLinksRequest, opts ...gax.CallOption) *RollupPropertySourceLinkIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListRollupPropertySourceLinks[0:len((*c.CallOptions).ListRollupPropertySourceLinks):len((*c.CallOptions).ListRollupPropertySourceLinks)], opts...)
+	it := &RollupPropertySourceLinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListRollupPropertySourceLinksRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.RollupPropertySourceLink, string, error) {
+		resp := &adminpb.ListRollupPropertySourceLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListRollupPropertySourceLinks(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRollupPropertySourceLinks(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateRollupPropertySourceLink(ctx context.Context, req *adminpb.CreateRollupPropertySourceLinkRequest, opts ...gax.CallOption) (*adminpb.RollupPropertySourceLink, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateRollupPropertySourceLink[0:len((*c.CallOptions).CreateRollupPropertySourceLink):len((*c.CallOptions).CreateRollupPropertySourceLink)], opts...)
+	var resp *adminpb.RollupPropertySourceLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateRollupPropertySourceLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteRollupPropertySourceLink(ctx context.Context, req *adminpb.DeleteRollupPropertySourceLinkRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteRollupPropertySourceLink[0:len((*c.CallOptions).DeleteRollupPropertySourceLink):len((*c.CallOptions).DeleteRollupPropertySourceLink)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteRollupPropertySourceLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) CreateSubproperty(ctx context.Context, req *adminpb.CreateSubpropertyRequest, opts ...gax.CallOption) (*adminpb.CreateSubpropertyResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).CreateSubproperty[0:len((*c.CallOptions).CreateSubproperty):len((*c.CallOptions).CreateSubproperty)], opts...)
+	var resp *adminpb.CreateSubpropertyResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateSubproperty(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) CreateSubpropertyEventFilter(ctx context.Context, req *adminpb.CreateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSubpropertyEventFilter[0:len((*c.CallOptions).CreateSubpropertyEventFilter):len((*c.CallOptions).CreateSubpropertyEventFilter)], opts...)
+	var resp *adminpb.SubpropertyEventFilter
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateSubpropertyEventFilter(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetSubpropertyEventFilter(ctx context.Context, req *adminpb.GetSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSubpropertyEventFilter[0:len((*c.CallOptions).GetSubpropertyEventFilter):len((*c.CallOptions).GetSubpropertyEventFilter)], opts...)
+	var resp *adminpb.SubpropertyEventFilter
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetSubpropertyEventFilter(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListSubpropertyEventFilters(ctx context.Context, req *adminpb.ListSubpropertyEventFiltersRequest, opts ...gax.CallOption) *SubpropertyEventFilterIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSubpropertyEventFilters[0:len((*c.CallOptions).ListSubpropertyEventFilters):len((*c.CallOptions).ListSubpropertyEventFilters)], opts...)
+	it := &SubpropertyEventFilterIterator{}
+	req = proto.Clone(req).(*adminpb.ListSubpropertyEventFiltersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SubpropertyEventFilter, string, error) {
+		resp := &adminpb.ListSubpropertyEventFiltersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListSubpropertyEventFilters(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSubpropertyEventFilters(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) UpdateSubpropertyEventFilter(ctx context.Context, req *adminpb.UpdateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "subproperty_event_filter.name", url.QueryEscape(req.GetSubpropertyEventFilter().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSubpropertyEventFilter[0:len((*c.CallOptions).UpdateSubpropertyEventFilter):len((*c.CallOptions).UpdateSubpropertyEventFilter)], opts...)
+	var resp *adminpb.SubpropertyEventFilter
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateSubpropertyEventFilter(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteSubpropertyEventFilter(ctx context.Context, req *adminpb.DeleteSubpropertyEventFilterRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteSubpropertyEventFilter[0:len((*c.CallOptions).DeleteSubpropertyEventFilter):len((*c.CallOptions).DeleteSubpropertyEventFilter)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteSubpropertyEventFilter(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 // GetAccount lookup for a single Account.
 func (c *analyticsAdminRESTClient) GetAccount(ctx context.Context, req *adminpb.GetAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -6900,7 +7230,7 @@ func (c *analyticsAdminRESTClient) ListAccounts(ctx context.Context, req *adminp
 //
 // If the accounts are not restored before the expiration time, the account
 // and all child resources (eg: Properties, GoogleAdsLinks, Streams,
-// UserLinks) will be permanently purged.
+// AccessBindings) will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
 // Returns an error if the target is not found.
@@ -7399,7 +7729,7 @@ func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *admi
 // However, they can be restored using the Trash Can UI.
 //
 // If the properties are not restored before the expiration time, the Property
-// and all child resources (eg: GoogleAdsLinks, Streams, UserLinks)
+// and all child resources (eg: GoogleAdsLinks, Streams, AccessBindings)
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
@@ -7535,683 +7865,6 @@ func (c *analyticsAdminRESTClient) UpdateProperty(ctx context.Context, req *admi
 		return nil, e
 	}
 	return resp, nil
-}
-
-// GetUserLink gets information about a user’s link to an account or property.
-func (c *analyticsAdminRESTClient) GetUserLink(ctx context.Context, req *adminpb.GetUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).GetUserLink[0:len((*c.CallOptions).GetUserLink):len((*c.CallOptions).GetUserLink)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.UserLink{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// BatchGetUserLinks gets information about multiple users’ links to an account or property.
-func (c *analyticsAdminRESTClient) BatchGetUserLinks(ctx context.Context, req *adminpb.BatchGetUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchGetUserLinksResponse, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks:batchGet", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-	if items := req.GetNames(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("names", fmt.Sprintf("%v", item))
-		}
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).BatchGetUserLinks[0:len((*c.CallOptions).BatchGetUserLinks):len((*c.CallOptions).BatchGetUserLinks)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.BatchGetUserLinksResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// ListUserLinks lists all user links on an account or property.
-func (c *analyticsAdminRESTClient) ListUserLinks(ctx context.Context, req *adminpb.ListUserLinksRequest, opts ...gax.CallOption) *UserLinkIterator {
-	it := &UserLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListUserLinksRequest)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.UserLink, string, error) {
-		resp := &adminpb.ListUserLinksResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		baseUrl, err := url.Parse(c.endpoint)
-		if err != nil {
-			return nil, "", err
-		}
-		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks", req.GetParent())
-
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-		if req.GetPageSize() != 0 {
-			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
-		}
-		if req.GetPageToken() != "" {
-			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			httpRsp, err := c.httpClient.Do(httpReq)
-			if err != nil {
-				return err
-			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetUserLinks(), resp.GetNextPageToken(), nil
-	}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-// AuditUserLinks lists all user links on an account or property, including implicit ones
-// that come from effective permissions granted by groups or organization
-// admin roles.
-//
-// If a returned user link does not have direct permissions, they cannot
-// be removed from the account or property directly with the DeleteUserLink
-// command. They have to be removed from the group/etc that gives them
-// permissions, which is currently only usable/discoverable in the GA or GMP
-// UIs.
-func (c *analyticsAdminRESTClient) AuditUserLinks(ctx context.Context, req *adminpb.AuditUserLinksRequest, opts ...gax.CallOption) *AuditUserLinkIterator {
-	it := &AuditUserLinkIterator{}
-	req = proto.Clone(req).(*adminpb.AuditUserLinksRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AuditUserLink, string, error) {
-		resp := &adminpb.AuditUserLinksResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
-		}
-
-		baseUrl, err := url.Parse(c.endpoint)
-		if err != nil {
-			return nil, "", err
-		}
-		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks:audit", req.GetParent())
-
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			httpRsp, err := c.httpClient.Do(httpReq)
-			if err != nil {
-				return err
-			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetUserLinks(), resp.GetNextPageToken(), nil
-	}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-// CreateUserLink creates a user link on an account or property.
-//
-// If the user with the specified email already has permissions on the
-// account or property, then the user’s existing permissions will be unioned
-// with the permissions specified in the new UserLink.
-func (c *analyticsAdminRESTClient) CreateUserLink(ctx context.Context, req *adminpb.CreateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	body := req.GetUserLink()
-	jsonReq, err := m.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-	if req.GetNotifyNewUser() {
-		params.Add("notifyNewUser", fmt.Sprintf("%v", req.GetNotifyNewUser()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).CreateUserLink[0:len((*c.CallOptions).CreateUserLink):len((*c.CallOptions).CreateUserLink)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.UserLink{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// BatchCreateUserLinks creates information about multiple users’ links to an account or property.
-//
-// This method is transactional. If any UserLink cannot be created, none of
-// the UserLinks will be created.
-func (c *analyticsAdminRESTClient) BatchCreateUserLinks(ctx context.Context, req *adminpb.BatchCreateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchCreateUserLinksResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks:batchCreate", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).BatchCreateUserLinks[0:len((*c.CallOptions).BatchCreateUserLinks):len((*c.CallOptions).BatchCreateUserLinks)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.BatchCreateUserLinksResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// UpdateUserLink updates a user link on an account or property.
-func (c *analyticsAdminRESTClient) UpdateUserLink(ctx context.Context, req *adminpb.UpdateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	body := req.GetUserLink()
-	jsonReq, err := m.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetUserLink().GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "user_link.name", url.QueryEscape(req.GetUserLink().GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).UpdateUserLink[0:len((*c.CallOptions).UpdateUserLink):len((*c.CallOptions).UpdateUserLink)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.UserLink{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// BatchUpdateUserLinks updates information about multiple users’ links to an account or property.
-func (c *analyticsAdminRESTClient) BatchUpdateUserLinks(ctx context.Context, req *adminpb.BatchUpdateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchUpdateUserLinksResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks:batchUpdate", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).BatchUpdateUserLinks[0:len((*c.CallOptions).BatchUpdateUserLinks):len((*c.CallOptions).BatchUpdateUserLinks)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &adminpb.BatchUpdateUserLinksResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// DeleteUserLink deletes a user link on an account or property.
-func (c *analyticsAdminRESTClient) DeleteUserLink(ctx context.Context, req *adminpb.DeleteUserLinkRequest, opts ...gax.CallOption) error {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
-	}, opts...)
-}
-
-// BatchDeleteUserLinks deletes information about multiple users’ links to an account or property.
-func (c *analyticsAdminRESTClient) BatchDeleteUserLinks(ctx context.Context, req *adminpb.BatchDeleteUserLinksRequest, opts ...gax.CallOption) error {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks:batchDelete", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
-	}, opts...)
 }
 
 // CreateFirebaseLink creates a FirebaseLink.
@@ -12792,8 +12445,10 @@ func (c *analyticsAdminRESTClient) UpdateAttributionSettings(ctx context.Context
 // records of each time a user reads Google Analytics reporting data. Access
 // records are retained for up to 2 years.
 //
-// Data Access Reports can be requested for a property. The property must be
-// in Google Analytics 360. This method is only available to Administrators.
+// Data Access Reports can be requested for a property. Reports may be
+// requested for any property, but dimensions that aren’t related to quota can
+// only be requested on Google Analytics 360 properties. This method is only
+// available to Administrators.
 //
 // These data access records include GA4 UI Reporting, GA4 UI Explorations,
 // GA4 Data API, and other products like Firebase & Admob that can retrieve
@@ -15347,1130 +15002,861 @@ func (c *analyticsAdminRESTClient) DeleteEventCreateRule(ctx context.Context, re
 	}, opts...)
 }
 
-// AccessBindingIterator manages a stream of *adminpb.AccessBinding.
-type AccessBindingIterator struct {
-	items    []*adminpb.AccessBinding
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.AccessBinding, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AccessBindingIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AccessBindingIterator) Next() (*adminpb.AccessBinding, error) {
-	var item *adminpb.AccessBinding
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// UpdateDataRedactionSettings updates a DataRedactionSettings on a property.
+func (c *analyticsAdminRESTClient) UpdateDataRedactionSettings(ctx context.Context, req *adminpb.UpdateDataRedactionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRedactionSettings, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDataRedactionSettings()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
 
-func (it *AccessBindingIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AccessBindingIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// AccountIterator manages a stream of *adminpb.Account.
-type AccountIterator struct {
-	items    []*adminpb.Account
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Account, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AccountIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AccountIterator) Next() (*adminpb.Account, error) {
-	var item *adminpb.Account
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDataRedactionSettings().GetName())
 
-func (it *AccountIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AccountIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// AccountSummaryIterator manages a stream of *adminpb.AccountSummary.
-type AccountSummaryIterator struct {
-	items    []*adminpb.AccountSummary
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.AccountSummary, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AccountSummaryIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AccountSummaryIterator) Next() (*adminpb.AccountSummary, error) {
-	var item *adminpb.AccountSummary
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
 
-func (it *AccountSummaryIterator) bufLen() int {
-	return len(it.items)
-}
+	baseUrl.RawQuery = params.Encode()
 
-func (it *AccountSummaryIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_redaction_settings.name", url.QueryEscape(req.GetDataRedactionSettings().GetName()))}
 
-// AdSenseLinkIterator manages a stream of *adminpb.AdSenseLink.
-type AdSenseLinkIterator struct {
-	items    []*adminpb.AdSenseLink
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDataRedactionSettings[0:len((*c.CallOptions).UpdateDataRedactionSettings):len((*c.CallOptions).UpdateDataRedactionSettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.DataRedactionSettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
 
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.AdSenseLink, nextPageToken string, err error)
-}
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AdSenseLinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
 
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AdSenseLinkIterator) Next() (*adminpb.AdSenseLink, error) {
-	var item *adminpb.AdSenseLink
-	if err := it.nextFunc(); err != nil {
-		return item, err
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	return resp, nil
 }
 
-func (it *AdSenseLinkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AdSenseLinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// AudienceIterator manages a stream of *adminpb.Audience.
-type AudienceIterator struct {
-	items    []*adminpb.Audience
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Audience, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AudienceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AudienceIterator) Next() (*adminpb.Audience, error) {
-	var item *adminpb.Audience
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// GetDataRedactionSettings lookup for a single DataRedactionSettings.
+func (c *analyticsAdminRESTClient) GetDataRedactionSettings(ctx context.Context, req *adminpb.GetDataRedactionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRedactionSettings, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
-func (it *AudienceIterator) bufLen() int {
-	return len(it.items)
-}
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-func (it *AudienceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
+	baseUrl.RawQuery = params.Encode()
 
-// AuditUserLinkIterator manages a stream of *adminpb.AuditUserLink.
-type AuditUserLinkIterator struct {
-	items    []*adminpb.AuditUserLink
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDataRedactionSettings[0:len((*c.CallOptions).GetDataRedactionSettings):len((*c.CallOptions).GetDataRedactionSettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.DataRedactionSettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.AuditUserLink, nextPageToken string, err error)
-}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AuditUserLinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
 
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AuditUserLinkIterator) Next() (*adminpb.AuditUserLink, error) {
-	var item *adminpb.AuditUserLink
-	if err := it.nextFunc(); err != nil {
-		return item, err
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	return resp, nil
 }
 
-func (it *AuditUserLinkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AuditUserLinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// BigQueryLinkIterator manages a stream of *adminpb.BigQueryLink.
-type BigQueryLinkIterator struct {
-	items    []*adminpb.BigQueryLink
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.BigQueryLink, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BigQueryLinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BigQueryLinkIterator) Next() (*adminpb.BigQueryLink, error) {
-	var item *adminpb.BigQueryLink
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// CreateRollupProperty create a roll-up property and all roll-up property source links.
+func (c *analyticsAdminRESTClient) CreateRollupProperty(ctx context.Context, req *adminpb.CreateRollupPropertyRequest, opts ...gax.CallOption) (*adminpb.CreateRollupPropertyResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
 
-func (it *BigQueryLinkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BigQueryLinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ChangeHistoryEventIterator manages a stream of *adminpb.ChangeHistoryEvent.
-type ChangeHistoryEventIterator struct {
-	items    []*adminpb.ChangeHistoryEvent
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ChangeHistoryEvent, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ChangeHistoryEventIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ChangeHistoryEventIterator) Next() (*adminpb.ChangeHistoryEvent, error) {
-	var item *adminpb.ChangeHistoryEvent
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:createRollupProperty")
 
-func (it *ChangeHistoryEventIterator) bufLen() int {
-	return len(it.items)
-}
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-func (it *ChangeHistoryEventIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
+	baseUrl.RawQuery = params.Encode()
 
-// ChannelGroupIterator manages a stream of *adminpb.ChannelGroup.
-type ChannelGroupIterator struct {
-	items    []*adminpb.ChannelGroup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateRollupProperty[0:len((*c.CallOptions).CreateRollupProperty):len((*c.CallOptions).CreateRollupProperty)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.CreateRollupPropertyResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
 
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ChannelGroup, nextPageToken string, err error)
-}
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ChannelGroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
 
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ChannelGroupIterator) Next() (*adminpb.ChannelGroup, error) {
-	var item *adminpb.ChannelGroup
-	if err := it.nextFunc(); err != nil {
-		return item, err
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	return resp, nil
 }
 
-func (it *ChannelGroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ChannelGroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ConversionEventIterator manages a stream of *adminpb.ConversionEvent.
-type ConversionEventIterator struct {
-	items    []*adminpb.ConversionEvent
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ConversionEvent, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ConversionEventIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ConversionEventIterator) Next() (*adminpb.ConversionEvent, error) {
-	var item *adminpb.ConversionEvent
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// GetRollupPropertySourceLink lookup for a single roll-up property source Link.
+// Only roll-up properties can have source links, so this method will throw an
+// error if used on other types of properties.
+func (c *analyticsAdminRESTClient) GetRollupPropertySourceLink(ctx context.Context, req *adminpb.GetRollupPropertySourceLinkRequest, opts ...gax.CallOption) (*adminpb.RollupPropertySourceLink, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
-func (it *ConversionEventIterator) bufLen() int {
-	return len(it.items)
-}
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-func (it *ConversionEventIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
+	baseUrl.RawQuery = params.Encode()
 
-// CustomDimensionIterator manages a stream of *adminpb.CustomDimension.
-type CustomDimensionIterator struct {
-	items    []*adminpb.CustomDimension
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetRollupPropertySourceLink[0:len((*c.CallOptions).GetRollupPropertySourceLink):len((*c.CallOptions).GetRollupPropertySourceLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.RollupPropertySourceLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.CustomDimension, nextPageToken string, err error)
-}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CustomDimensionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
 
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CustomDimensionIterator) Next() (*adminpb.CustomDimension, error) {
-	var item *adminpb.CustomDimension
-	if err := it.nextFunc(); err != nil {
-		return item, err
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	return resp, nil
 }
 
-func (it *CustomDimensionIterator) bufLen() int {
-	return len(it.items)
-}
+// ListRollupPropertySourceLinks lists roll-up property source Links on a property.
+// Only roll-up properties can have source links, so this method will throw an
+// error if used on other types of properties.
+func (c *analyticsAdminRESTClient) ListRollupPropertySourceLinks(ctx context.Context, req *adminpb.ListRollupPropertySourceLinksRequest, opts ...gax.CallOption) *RollupPropertySourceLinkIterator {
+	it := &RollupPropertySourceLinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListRollupPropertySourceLinksRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.RollupPropertySourceLink, string, error) {
+		resp := &adminpb.ListRollupPropertySourceLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/rollupPropertySourceLinks", req.GetParent())
 
-func (it *CustomDimensionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
 
-// CustomMetricIterator manages a stream of *adminpb.CustomMetric.
-type CustomMetricIterator struct {
-	items    []*adminpb.CustomMetric
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+		baseUrl.RawQuery = params.Encode()
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
 
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.CustomMetric, nextPageToken string, err error)
-}
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CustomMetricIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
 
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CustomMetricIterator) Next() (*adminpb.CustomMetric, error) {
-	var item *adminpb.CustomMetric
-	if err := it.nextFunc(); err != nil {
-		return item, err
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRollupPropertySourceLinks(), resp.GetNextPageToken(), nil
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
 
-func (it *CustomMetricIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CustomMetricIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DataStreamIterator manages a stream of *adminpb.DataStream.
-type DataStreamIterator struct {
-	items    []*adminpb.DataStream
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.DataStream, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataStreamIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataStreamIterator) Next() (*adminpb.DataStream, error) {
-	var item *adminpb.DataStream
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
-func (it *DataStreamIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataStreamIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DisplayVideo360AdvertiserLinkIterator manages a stream of *adminpb.DisplayVideo360AdvertiserLink.
-type DisplayVideo360AdvertiserLinkIterator struct {
-	items    []*adminpb.DisplayVideo360AdvertiserLink
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.DisplayVideo360AdvertiserLink, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DisplayVideo360AdvertiserLinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DisplayVideo360AdvertiserLinkIterator) Next() (*adminpb.DisplayVideo360AdvertiserLink, error) {
-	var item *adminpb.DisplayVideo360AdvertiserLink
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// CreateRollupPropertySourceLink creates a roll-up property source link.
+// Only roll-up properties can have source links, so this method will throw an
+// error if used on other types of properties.
+func (c *analyticsAdminRESTClient) CreateRollupPropertySourceLink(ctx context.Context, req *adminpb.CreateRollupPropertySourceLinkRequest, opts ...gax.CallOption) (*adminpb.RollupPropertySourceLink, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRollupPropertySourceLink()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
 
-func (it *DisplayVideo360AdvertiserLinkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DisplayVideo360AdvertiserLinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DisplayVideo360AdvertiserLinkProposalIterator manages a stream of *adminpb.DisplayVideo360AdvertiserLinkProposal.
-type DisplayVideo360AdvertiserLinkProposalIterator struct {
-	items    []*adminpb.DisplayVideo360AdvertiserLinkProposal
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.DisplayVideo360AdvertiserLinkProposal, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DisplayVideo360AdvertiserLinkProposalIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DisplayVideo360AdvertiserLinkProposalIterator) Next() (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
-	var item *adminpb.DisplayVideo360AdvertiserLinkProposal
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/rollupPropertySourceLinks", req.GetParent())
 
-func (it *DisplayVideo360AdvertiserLinkProposalIterator) bufLen() int {
-	return len(it.items)
-}
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-func (it *DisplayVideo360AdvertiserLinkProposalIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
+	baseUrl.RawQuery = params.Encode()
 
-// EventCreateRuleIterator manages a stream of *adminpb.EventCreateRule.
-type EventCreateRuleIterator struct {
-	items    []*adminpb.EventCreateRule
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateRollupPropertySourceLink[0:len((*c.CallOptions).CreateRollupPropertySourceLink):len((*c.CallOptions).CreateRollupPropertySourceLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.RollupPropertySourceLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.EventCreateRule, nextPageToken string, err error)
-}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EventCreateRuleIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
 
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EventCreateRuleIterator) Next() (*adminpb.EventCreateRule, error) {
-	var item *adminpb.EventCreateRule
-	if err := it.nextFunc(); err != nil {
-		return item, err
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	return resp, nil
 }
 
-func (it *EventCreateRuleIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EventCreateRuleIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ExpandedDataSetIterator manages a stream of *adminpb.ExpandedDataSet.
-type ExpandedDataSetIterator struct {
-	items    []*adminpb.ExpandedDataSet
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ExpandedDataSet, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ExpandedDataSetIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ExpandedDataSetIterator) Next() (*adminpb.ExpandedDataSet, error) {
-	var item *adminpb.ExpandedDataSet
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// DeleteRollupPropertySourceLink deletes a roll-up property source link.
+// Only roll-up properties can have source links, so this method will throw an
+// error if used on other types of properties.
+func (c *analyticsAdminRESTClient) DeleteRollupPropertySourceLink(ctx context.Context, req *adminpb.DeleteRollupPropertySourceLinkRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
 }
 
-func (it *ExpandedDataSetIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ExpandedDataSetIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// FirebaseLinkIterator manages a stream of *adminpb.FirebaseLink.
-type FirebaseLinkIterator struct {
-	items    []*adminpb.FirebaseLink
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.FirebaseLink, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *FirebaseLinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *FirebaseLinkIterator) Next() (*adminpb.FirebaseLink, error) {
-	var item *adminpb.FirebaseLink
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// CreateSubproperty create a subproperty and a subproperty event filter that applies to the
+// created subproperty.
+func (c *analyticsAdminRESTClient) CreateSubproperty(ctx context.Context, req *adminpb.CreateSubpropertyRequest, opts ...gax.CallOption) (*adminpb.CreateSubpropertyResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
 
-func (it *FirebaseLinkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *FirebaseLinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// GoogleAdsLinkIterator manages a stream of *adminpb.GoogleAdsLink.
-type GoogleAdsLinkIterator struct {
-	items    []*adminpb.GoogleAdsLink
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.GoogleAdsLink, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *GoogleAdsLinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *GoogleAdsLinkIterator) Next() (*adminpb.GoogleAdsLink, error) {
-	var item *adminpb.GoogleAdsLink
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:createSubproperty")
 
-func (it *GoogleAdsLinkIterator) bufLen() int {
-	return len(it.items)
-}
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-func (it *GoogleAdsLinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
+	baseUrl.RawQuery = params.Encode()
 
-// MeasurementProtocolSecretIterator manages a stream of *adminpb.MeasurementProtocolSecret.
-type MeasurementProtocolSecretIterator struct {
-	items    []*adminpb.MeasurementProtocolSecret
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSubproperty[0:len((*c.CallOptions).CreateSubproperty):len((*c.CallOptions).CreateSubproperty)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.CreateSubpropertyResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
 
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.MeasurementProtocolSecret, nextPageToken string, err error)
-}
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *MeasurementProtocolSecretIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
 
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *MeasurementProtocolSecretIterator) Next() (*adminpb.MeasurementProtocolSecret, error) {
-	var item *adminpb.MeasurementProtocolSecret
-	if err := it.nextFunc(); err != nil {
-		return item, err
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	return resp, nil
 }
 
-func (it *MeasurementProtocolSecretIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *MeasurementProtocolSecretIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PropertyIterator manages a stream of *adminpb.Property.
-type PropertyIterator struct {
-	items    []*adminpb.Property
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Property, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PropertyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PropertyIterator) Next() (*adminpb.Property, error) {
-	var item *adminpb.Property
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// CreateSubpropertyEventFilter creates a subproperty Event Filter.
+func (c *analyticsAdminRESTClient) CreateSubpropertyEventFilter(ctx context.Context, req *adminpb.CreateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSubpropertyEventFilter()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
 
-func (it *PropertyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PropertyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SKAdNetworkConversionValueSchemaIterator manages a stream of *adminpb.SKAdNetworkConversionValueSchema.
-type SKAdNetworkConversionValueSchemaIterator struct {
-	items    []*adminpb.SKAdNetworkConversionValueSchema
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.SKAdNetworkConversionValueSchema, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SKAdNetworkConversionValueSchemaIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SKAdNetworkConversionValueSchemaIterator) Next() (*adminpb.SKAdNetworkConversionValueSchema, error) {
-	var item *adminpb.SKAdNetworkConversionValueSchema
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/subpropertyEventFilters", req.GetParent())
 
-func (it *SKAdNetworkConversionValueSchemaIterator) bufLen() int {
-	return len(it.items)
-}
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-func (it *SKAdNetworkConversionValueSchemaIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
+	baseUrl.RawQuery = params.Encode()
 
-// SearchAds360LinkIterator manages a stream of *adminpb.SearchAds360Link.
-type SearchAds360LinkIterator struct {
-	items    []*adminpb.SearchAds360Link
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSubpropertyEventFilter[0:len((*c.CallOptions).CreateSubpropertyEventFilter):len((*c.CallOptions).CreateSubpropertyEventFilter)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SubpropertyEventFilter{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.SearchAds360Link, nextPageToken string, err error)
-}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SearchAds360LinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
 
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SearchAds360LinkIterator) Next() (*adminpb.SearchAds360Link, error) {
-	var item *adminpb.SearchAds360Link
-	if err := it.nextFunc(); err != nil {
-		return item, err
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	return resp, nil
 }
 
-func (it *SearchAds360LinkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SearchAds360LinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// UserLinkIterator manages a stream of *adminpb.UserLink.
-type UserLinkIterator struct {
-	items    []*adminpb.UserLink
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.UserLink, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *UserLinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *UserLinkIterator) Next() (*adminpb.UserLink, error) {
-	var item *adminpb.UserLink
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// GetSubpropertyEventFilter lookup for a single subproperty Event Filter.
+func (c *analyticsAdminRESTClient) GetSubpropertyEventFilter(ctx context.Context, req *adminpb.GetSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSubpropertyEventFilter[0:len((*c.CallOptions).GetSubpropertyEventFilter):len((*c.CallOptions).GetSubpropertyEventFilter)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SubpropertyEventFilter{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
-func (it *UserLinkIterator) bufLen() int {
-	return len(it.items)
+// ListSubpropertyEventFilters list all subproperty Event Filters on a property.
+func (c *analyticsAdminRESTClient) ListSubpropertyEventFilters(ctx context.Context, req *adminpb.ListSubpropertyEventFiltersRequest, opts ...gax.CallOption) *SubpropertyEventFilterIterator {
+	it := &SubpropertyEventFilterIterator{}
+	req = proto.Clone(req).(*adminpb.ListSubpropertyEventFiltersRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SubpropertyEventFilter, string, error) {
+		resp := &adminpb.ListSubpropertyEventFiltersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/subpropertyEventFilters", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSubpropertyEventFilters(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
-func (it *UserLinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+// UpdateSubpropertyEventFilter updates a subproperty Event Filter.
+func (c *analyticsAdminRESTClient) UpdateSubpropertyEventFilter(ctx context.Context, req *adminpb.UpdateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSubpropertyEventFilter()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetSubpropertyEventFilter().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "subproperty_event_filter.name", url.QueryEscape(req.GetSubpropertyEventFilter().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSubpropertyEventFilter[0:len((*c.CallOptions).UpdateSubpropertyEventFilter):len((*c.CallOptions).UpdateSubpropertyEventFilter)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SubpropertyEventFilter{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteSubpropertyEventFilter deletes a subproperty event filter.
+func (c *analyticsAdminRESTClient) DeleteSubpropertyEventFilter(ctx context.Context, req *adminpb.DeleteSubpropertyEventFilterRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
 }

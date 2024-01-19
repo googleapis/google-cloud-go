@@ -589,7 +589,6 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	t.initBundler()
 	t.mu.RLock()
 	defer t.mu.RUnlock()
-	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
 		ipubsub.SetPublishResult(r, "", ErrTopicStopped)
 		return r

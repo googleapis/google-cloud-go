@@ -1,5 +1,48 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.12.2...oslogin/v1.13.0) (2024-01-11)
+
+
+### Features
+
+* **oslogin:** Add regions field to ImportSshPublicKeyRequest ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+* **oslogin:** Added field `ImportSshPublicKeyRequest.regions` ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
+## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.12.1...oslogin/v1.12.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **oslogin:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.12.0...oslogin/v1.12.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **oslogin:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.11.1...oslogin/v1.12.0) (2023-10-17)
+
+
+### Features
+
+* **oslogin:** Location-based HTTP binding for SignSshPublicKey ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.11.0...oslogin/v1.11.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **oslogin:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.10.1...oslogin/v1.11.0) (2023-10-04)
+
+
+### Features
+
+* **oslogin:** Added SecurityKey.device_nickname ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.10.0...oslogin/v1.10.1) (2023-06-20)
 
 

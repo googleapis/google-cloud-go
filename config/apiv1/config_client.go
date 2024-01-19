@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"time"
 
 	configpb "cloud.google.com/go/config/apiv1/configpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -64,6 +63,11 @@ type CallOptions struct {
 	LockDeployment            []gax.CallOption
 	UnlockDeployment          []gax.CallOption
 	ExportLockInfo            []gax.CallOption
+	CreatePreview             []gax.CallOption
+	GetPreview                []gax.CallOption
+	ListPreviews              []gax.CallOption
+	DeletePreview             []gax.CallOption
+	ExportPreviewResult       []gax.CallOption
 	GetLocation               []gax.CallOption
 	ListLocations             []gax.CallOption
 	GetIamPolicy              []gax.CallOption
@@ -105,6 +109,11 @@ func defaultCallOptions() *CallOptions {
 		LockDeployment:            []gax.CallOption{},
 		UnlockDeployment:          []gax.CallOption{},
 		ExportLockInfo:            []gax.CallOption{},
+		CreatePreview:             []gax.CallOption{},
+		GetPreview:                []gax.CallOption{},
+		ListPreviews:              []gax.CallOption{},
+		DeletePreview:             []gax.CallOption{},
+		ExportPreviewResult:       []gax.CallOption{},
 		GetLocation:               []gax.CallOption{},
 		ListLocations:             []gax.CallOption{},
 		GetIamPolicy:              []gax.CallOption{},
@@ -135,6 +144,11 @@ func defaultRESTCallOptions() *CallOptions {
 		LockDeployment:            []gax.CallOption{},
 		UnlockDeployment:          []gax.CallOption{},
 		ExportLockInfo:            []gax.CallOption{},
+		CreatePreview:             []gax.CallOption{},
+		GetPreview:                []gax.CallOption{},
+		ListPreviews:              []gax.CallOption{},
+		DeletePreview:             []gax.CallOption{},
+		ExportPreviewResult:       []gax.CallOption{},
 		GetLocation:               []gax.CallOption{},
 		ListLocations:             []gax.CallOption{},
 		GetIamPolicy:              []gax.CallOption{},
@@ -173,6 +187,13 @@ type internalClient interface {
 	UnlockDeployment(context.Context, *configpb.UnlockDeploymentRequest, ...gax.CallOption) (*UnlockDeploymentOperation, error)
 	UnlockDeploymentOperation(name string) *UnlockDeploymentOperation
 	ExportLockInfo(context.Context, *configpb.ExportLockInfoRequest, ...gax.CallOption) (*configpb.LockInfo, error)
+	CreatePreview(context.Context, *configpb.CreatePreviewRequest, ...gax.CallOption) (*CreatePreviewOperation, error)
+	CreatePreviewOperation(name string) *CreatePreviewOperation
+	GetPreview(context.Context, *configpb.GetPreviewRequest, ...gax.CallOption) (*configpb.Preview, error)
+	ListPreviews(context.Context, *configpb.ListPreviewsRequest, ...gax.CallOption) *PreviewIterator
+	DeletePreview(context.Context, *configpb.DeletePreviewRequest, ...gax.CallOption) (*DeletePreviewOperation, error)
+	DeletePreviewOperation(name string) *DeletePreviewOperation
+	ExportPreviewResult(context.Context, *configpb.ExportPreviewResultRequest, ...gax.CallOption) (*configpb.ExportPreviewResultResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -336,6 +357,44 @@ func (c *Client) UnlockDeploymentOperation(name string) *UnlockDeploymentOperati
 // ExportLockInfo exports the lock info on a locked deployment.
 func (c *Client) ExportLockInfo(ctx context.Context, req *configpb.ExportLockInfoRequest, opts ...gax.CallOption) (*configpb.LockInfo, error) {
 	return c.internalClient.ExportLockInfo(ctx, req, opts...)
+}
+
+// CreatePreview creates a Preview.
+func (c *Client) CreatePreview(ctx context.Context, req *configpb.CreatePreviewRequest, opts ...gax.CallOption) (*CreatePreviewOperation, error) {
+	return c.internalClient.CreatePreview(ctx, req, opts...)
+}
+
+// CreatePreviewOperation returns a new CreatePreviewOperation from a given name.
+// The name must be that of a previously created CreatePreviewOperation, possibly from a different process.
+func (c *Client) CreatePreviewOperation(name string) *CreatePreviewOperation {
+	return c.internalClient.CreatePreviewOperation(name)
+}
+
+// GetPreview gets details about a Preview.
+func (c *Client) GetPreview(ctx context.Context, req *configpb.GetPreviewRequest, opts ...gax.CallOption) (*configpb.Preview, error) {
+	return c.internalClient.GetPreview(ctx, req, opts...)
+}
+
+// ListPreviews lists Previews in a given project and
+// location.
+func (c *Client) ListPreviews(ctx context.Context, req *configpb.ListPreviewsRequest, opts ...gax.CallOption) *PreviewIterator {
+	return c.internalClient.ListPreviews(ctx, req, opts...)
+}
+
+// DeletePreview deletes a Preview.
+func (c *Client) DeletePreview(ctx context.Context, req *configpb.DeletePreviewRequest, opts ...gax.CallOption) (*DeletePreviewOperation, error) {
+	return c.internalClient.DeletePreview(ctx, req, opts...)
+}
+
+// DeletePreviewOperation returns a new DeletePreviewOperation from a given name.
+// The name must be that of a previously created DeletePreviewOperation, possibly from a different process.
+func (c *Client) DeletePreviewOperation(name string) *DeletePreviewOperation {
+	return c.internalClient.DeletePreviewOperation(name)
+}
+
+// ExportPreviewResult export Preview results.
+func (c *Client) ExportPreviewResult(ctx context.Context, req *configpb.ExportPreviewResultRequest, opts ...gax.CallOption) (*configpb.ExportPreviewResultResponse, error) {
+	return c.internalClient.ExportPreviewResult(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -946,6 +1005,128 @@ func (c *gRPCClient) ExportLockInfo(ctx context.Context, req *configpb.ExportLoc
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.ExportLockInfo(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreatePreview(ctx context.Context, req *configpb.CreatePreviewRequest, opts ...gax.CallOption) (*CreatePreviewOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreatePreview[0:len((*c.CallOptions).CreatePreview):len((*c.CallOptions).CreatePreview)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreatePreview(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreatePreviewOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetPreview(ctx context.Context, req *configpb.GetPreviewRequest, opts ...gax.CallOption) (*configpb.Preview, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetPreview[0:len((*c.CallOptions).GetPreview):len((*c.CallOptions).GetPreview)], opts...)
+	var resp *configpb.Preview
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetPreview(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListPreviews(ctx context.Context, req *configpb.ListPreviewsRequest, opts ...gax.CallOption) *PreviewIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListPreviews[0:len((*c.CallOptions).ListPreviews):len((*c.CallOptions).ListPreviews)], opts...)
+	it := &PreviewIterator{}
+	req = proto.Clone(req).(*configpb.ListPreviewsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*configpb.Preview, string, error) {
+		resp := &configpb.ListPreviewsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListPreviews(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPreviews(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) DeletePreview(ctx context.Context, req *configpb.DeletePreviewRequest, opts ...gax.CallOption) (*DeletePreviewOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeletePreview[0:len((*c.CallOptions).DeletePreview):len((*c.CallOptions).DeletePreview)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeletePreview(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeletePreviewOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ExportPreviewResult(ctx context.Context, req *configpb.ExportPreviewResultRequest, opts ...gax.CallOption) (*configpb.ExportPreviewResultResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportPreviewResult[0:len((*c.CallOptions).ExportPreviewResult):len((*c.CallOptions).ExportPreviewResult)], opts...)
+	var resp *configpb.ExportPreviewResultResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ExportPreviewResult(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -2307,6 +2488,372 @@ func (c *restClient) ExportLockInfo(ctx context.Context, req *configpb.ExportLoc
 	return resp, nil
 }
 
+// CreatePreview creates a Preview.
+func (c *restClient) CreatePreview(ctx context.Context, req *configpb.CreatePreviewRequest, opts ...gax.CallOption) (*CreatePreviewOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPreview()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/previews", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetPreviewId() != "" {
+		params.Add("previewId", fmt.Sprintf("%v", req.GetPreviewId()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreatePreviewOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetPreview gets details about a Preview.
+func (c *restClient) GetPreview(ctx context.Context, req *configpb.GetPreviewRequest, opts ...gax.CallOption) (*configpb.Preview, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetPreview[0:len((*c.CallOptions).GetPreview):len((*c.CallOptions).GetPreview)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &configpb.Preview{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListPreviews lists Previews in a given project and
+// location.
+func (c *restClient) ListPreviews(ctx context.Context, req *configpb.ListPreviewsRequest, opts ...gax.CallOption) *PreviewIterator {
+	it := &PreviewIterator{}
+	req = proto.Clone(req).(*configpb.ListPreviewsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*configpb.Preview, string, error) {
+		resp := &configpb.ListPreviewsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/previews", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPreviews(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeletePreview deletes a Preview.
+func (c *restClient) DeletePreview(ctx context.Context, req *configpb.DeletePreviewRequest, opts ...gax.CallOption) (*DeletePreviewOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeletePreviewOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ExportPreviewResult export Preview results.
+func (c *restClient) ExportPreviewResult(ctx context.Context, req *configpb.ExportPreviewResultRequest, opts ...gax.CallOption) (*configpb.ExportPreviewResultResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:export", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ExportPreviewResult[0:len((*c.CallOptions).ExportPreviewResult):len((*c.CallOptions).ExportPreviewResult)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &configpb.ExportPreviewResultResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2907,12 +3454,6 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// CreateDeploymentOperation manages a long-running operation from CreateDeployment.
-type CreateDeploymentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateDeploymentOperation returns a new CreateDeploymentOperation from a given name.
 // The name must be that of a previously created CreateDeploymentOperation, possibly from a different process.
 func (c *gRPCClient) CreateDeploymentOperation(name string) *CreateDeploymentOperation {
@@ -2931,68 +3472,22 @@ func (c *restClient) CreateDeploymentOperation(name string) *CreateDeploymentOpe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDeploymentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*configpb.Deployment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp configpb.Deployment
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// CreatePreviewOperation returns a new CreatePreviewOperation from a given name.
+// The name must be that of a previously created CreatePreviewOperation, possibly from a different process.
+func (c *gRPCClient) CreatePreviewOperation(name string) *CreatePreviewOperation {
+	return &CreatePreviewOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDeploymentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*configpb.Deployment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp configpb.Deployment
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// CreatePreviewOperation returns a new CreatePreviewOperation from a given name.
+// The name must be that of a previously created CreatePreviewOperation, possibly from a different process.
+func (c *restClient) CreatePreviewOperation(name string) *CreatePreviewOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreatePreviewOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDeploymentOperation) Metadata() (*configpb.OperationMetadata, error) {
-	var meta configpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateDeploymentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateDeploymentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDeploymentOperation manages a long-running operation from DeleteDeployment.
-type DeleteDeploymentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteDeploymentOperation returns a new DeleteDeploymentOperation from a given name.
@@ -3013,68 +3508,22 @@ func (c *restClient) DeleteDeploymentOperation(name string) *DeleteDeploymentOpe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDeploymentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*configpb.Deployment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp configpb.Deployment
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// DeletePreviewOperation returns a new DeletePreviewOperation from a given name.
+// The name must be that of a previously created DeletePreviewOperation, possibly from a different process.
+func (c *gRPCClient) DeletePreviewOperation(name string) *DeletePreviewOperation {
+	return &DeletePreviewOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDeploymentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*configpb.Deployment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp configpb.Deployment
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// DeletePreviewOperation returns a new DeletePreviewOperation from a given name.
+// The name must be that of a previously created DeletePreviewOperation, possibly from a different process.
+func (c *restClient) DeletePreviewOperation(name string) *DeletePreviewOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeletePreviewOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDeploymentOperation) Metadata() (*configpb.OperationMetadata, error) {
-	var meta configpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDeploymentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDeploymentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// LockDeploymentOperation manages a long-running operation from LockDeployment.
-type LockDeploymentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // LockDeploymentOperation returns a new LockDeploymentOperation from a given name.
@@ -3095,70 +3544,6 @@ func (c *restClient) LockDeploymentOperation(name string) *LockDeploymentOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *LockDeploymentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*configpb.Deployment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp configpb.Deployment
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *LockDeploymentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*configpb.Deployment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp configpb.Deployment
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *LockDeploymentOperation) Metadata() (*configpb.OperationMetadata, error) {
-	var meta configpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *LockDeploymentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *LockDeploymentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UnlockDeploymentOperation manages a long-running operation from UnlockDeployment.
-type UnlockDeploymentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UnlockDeploymentOperation returns a new UnlockDeploymentOperation from a given name.
 // The name must be that of a previously created UnlockDeploymentOperation, possibly from a different process.
 func (c *gRPCClient) UnlockDeploymentOperation(name string) *UnlockDeploymentOperation {
@@ -3177,70 +3562,6 @@ func (c *restClient) UnlockDeploymentOperation(name string) *UnlockDeploymentOpe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UnlockDeploymentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*configpb.Deployment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp configpb.Deployment
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UnlockDeploymentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*configpb.Deployment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp configpb.Deployment
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UnlockDeploymentOperation) Metadata() (*configpb.OperationMetadata, error) {
-	var meta configpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UnlockDeploymentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UnlockDeploymentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateDeploymentOperation manages a long-running operation from UpdateDeployment.
-type UpdateDeploymentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateDeploymentOperation returns a new UpdateDeploymentOperation from a given name.
 // The name must be that of a previously created UpdateDeploymentOperation, possibly from a different process.
 func (c *gRPCClient) UpdateDeploymentOperation(name string) *UpdateDeploymentOperation {
@@ -3257,297 +3578,4 @@ func (c *restClient) UpdateDeploymentOperation(name string) *UpdateDeploymentOpe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateDeploymentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*configpb.Deployment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp configpb.Deployment
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateDeploymentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*configpb.Deployment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp configpb.Deployment
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateDeploymentOperation) Metadata() (*configpb.OperationMetadata, error) {
-	var meta configpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateDeploymentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateDeploymentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeploymentIterator manages a stream of *configpb.Deployment.
-type DeploymentIterator struct {
-	items    []*configpb.Deployment
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*configpb.Deployment, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DeploymentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DeploymentIterator) Next() (*configpb.Deployment, error) {
-	var item *configpb.Deployment
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DeploymentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DeploymentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ResourceIterator manages a stream of *configpb.Resource.
-type ResourceIterator struct {
-	items    []*configpb.Resource
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*configpb.Resource, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ResourceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ResourceIterator) Next() (*configpb.Resource, error) {
-	var item *configpb.Resource
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ResourceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ResourceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RevisionIterator manages a stream of *configpb.Revision.
-type RevisionIterator struct {
-	items    []*configpb.Revision
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*configpb.Revision, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RevisionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RevisionIterator) Next() (*configpb.Revision, error) {
-	var item *configpb.Revision
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RevisionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RevisionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

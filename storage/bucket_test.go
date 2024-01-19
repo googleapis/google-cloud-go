@@ -65,7 +65,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true},
+		Autoclass:  &Autoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -169,7 +169,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
 		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &raw.BucketAutoclass{Enabled: true},
+		Autoclass:  &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
 				Action: &raw.BucketLifecycleRuleAction{
@@ -398,7 +398,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass: "NEARLINE",
-		Autoclass:    &Autoclass{Enabled: false},
+		Autoclass:    &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -442,8 +442,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:         &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:         &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass:    "NEARLINE",
-		Autoclass:       &raw.BucketAutoclass{Enabled: false, ForceSendFields: []string{"Enabled"}},
-		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle"},
+		Autoclass:       &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "ARCHIVE", ForceSendFields: []string{"Enabled"}},
+		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle", "Autoclass"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -621,6 +621,9 @@ func TestNewBucket(t *testing.T) {
 			RetentionPeriod: 3,
 			EffectiveTime:   aTime.Format(time.RFC3339),
 		},
+		ObjectRetention: &raw.BucketObjectRetention{
+			Mode: "Enabled",
+		},
 		IamConfiguration: &raw.BucketIamConfiguration{
 			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
 				Enabled:    true,
@@ -648,8 +651,10 @@ func TestNewBucket(t *testing.T) {
 		Website:       &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		ProjectNumber: 123231313,
 		Autoclass: &raw.BucketAutoclass{
-			Enabled:    true,
-			ToggleTime: "2017-10-23T04:05:06Z",
+			Enabled:                        true,
+			ToggleTime:                     "2017-10-23T04:05:06Z",
+			TerminalStorageClass:           "NEARLINE",
+			TerminalStorageClassUpdateTime: "2017-10-23T04:05:06Z",
 		},
 	}
 	want := &BucketAttrs{
@@ -684,6 +689,7 @@ func TestNewBucket(t *testing.T) {
 			EffectiveTime:   aTime,
 			RetentionPeriod: 3 * time.Second,
 		},
+		ObjectRetentionMode:      "Enabled",
 		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true, LockedTime: aTime},
 		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true, LockedTime: aTime},
 		CORS: []CORS{
@@ -702,20 +708,23 @@ func TestNewBucket(t *testing.T) {
 		LocationType:     "dual-region",
 		ProjectNumber:    123231313,
 		Autoclass: &Autoclass{
-			Enabled:    true,
-			ToggleTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+			Enabled:                        true,
+			ToggleTime:                     time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+			TerminalStorageClass:           "NEARLINE",
+			TerminalStorageClassUpdateTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
 		},
 	}
 	got, err := newBucket(rb)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
 
 func TestNewBucketFromProto(t *testing.T) {
+	autoclassTSC := "NEARLINE"
 	pb := &storagepb.Bucket{
 		Name: "name",
 		Acl: []*storagepb.BucketAccessControl{
@@ -753,7 +762,12 @@ func TestNewBucketFromProto(t *testing.T) {
 		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
 		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
 		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true, ToggleTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))},
+		Autoclass: &storagepb.Bucket_Autoclass{
+			Enabled:                        true,
+			ToggleTime:                     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			TerminalStorageClass:           &autoclassTSC,
+			TerminalStorageClassUpdateTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
@@ -794,7 +808,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), TerminalStorageClass: "NEARLINE", TerminalStorageClassUpdateTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -807,7 +821,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		},
 	}
 	got := newBucketFromProto(pb)
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
@@ -842,7 +856,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true},
+		Autoclass:  &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -858,6 +872,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		Etag:           "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
 	}
 	got := attrs.toProtoBucket()
+	autoclassTSC := "ARCHIVE"
 	want := &storagepb.Bucket{
 		Name: "name",
 		Acl: []*storagepb.BucketAccessControl{
@@ -891,7 +906,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
 		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
 		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true},
+		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true, TerminalStorageClass: &autoclassTSC},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
@@ -1056,6 +1071,7 @@ func TestBucketRetryer(t *testing.T) {
 						Multiplier: 3,
 					}),
 					WithPolicy(RetryAlways),
+					WithMaxAttempts(5),
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
@@ -1065,6 +1081,7 @@ func TestBucketRetryer(t *testing.T) {
 					Multiplier: 3,
 				},
 				policy:      RetryAlways,
+				maxAttempts: expectedAttempts(5),
 				shouldRetry: func(err error) bool { return false },
 			},
 		},
@@ -1088,6 +1105,15 @@ func TestBucketRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy: RetryNever,
+			},
+		},
+		{
+			name: "set max retry attempts only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(WithMaxAttempts(5))
+			},
+			want: &retryConfig{
+				maxAttempts: expectedAttempts(5),
 			},
 		},
 		{

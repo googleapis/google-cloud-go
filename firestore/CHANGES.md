@@ -1,5 +1,17 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.13.0...firestore/v1.14.0) (2023-10-19)
+
+
+### Features
+
+* **firestore:** SUM and AVG aggregations ([#8293](https://github.com/googleapis/google-cloud-go/issues/8293)) ([011f9ff](https://github.com/googleapis/google-cloud-go/commit/011f9ff083bebad5c30443b3b0fd9df68579a65b))
+
+
+### Bug Fixes
+
+* **firestore:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.12.0...firestore/v1.13.0) (2023-09-18)
 
 

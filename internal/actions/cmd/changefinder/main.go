@@ -28,18 +28,23 @@ import (
 
 var (
 	dir       = flag.String("dir", "", "the root directory to evaluate")
-	format    = flag.String("format", "plain", "output format, one of [plain|github], defaults to 'plain'")
+	format    = flag.String("format", "plain", "output format, one of [plain|github|commit], defaults to 'plain'")
 	ghVarName = flag.String("gh-var", "submodules", "github format's variable name to set output for, defaults to 'submodules'.")
 	base      = flag.String("base", "origin/main", "the base ref to compare to, defaults to 'origin/main'")
 	// See https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
 	filter         = flag.String("diff-filter", "", "the git diff filter to apply [A|C|D|M|R|T|U|X|B] - lowercase to exclude")
 	pathFilter     = flag.String("path-filter", "", "filter commits by changes to target path(s)")
 	contentPattern = flag.String("content-regex", "", "regular expression to execute against contents of diff")
+	commitMessage  = flag.String("commit-message", "", "message to use with the module in nested commit format")
+	commitScope    = flag.String("commit-scope", "", "scope to use in commit message - only for format=commit")
 )
 
 func main() {
 	flag.BoolVar(&logg.Quiet, "q", false, "quiet mode, minimal logging")
 	flag.Parse()
+	if *format == "commit" && (*commitMessage == "" || *commitScope == "") {
+		logg.Fatalf("requested format=commit and missing commit-message or commit-scope")
+	}
 	rootDir, err := os.Getwd()
 	if err != nil {
 		logg.Fatal(err)
@@ -88,6 +93,12 @@ func output(s []string) error {
 			logg.Fatalf("unable to marshal submodules: %v", err)
 		}
 		fmt.Printf("::set-output name=%s::%s", *ghVarName, b)
+	case "commit":
+		for _, m := range s {
+			fmt.Println("BEGIN_NESTED_COMMIT")
+			fmt.Printf("%s(%s):%s\n", *commitScope, m, *commitMessage)
+			fmt.Println("END_NESTED_COMMIT")
+		}
 	case "plain":
 		fallthrough
 	default:

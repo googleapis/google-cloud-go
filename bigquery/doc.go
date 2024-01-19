@@ -33,15 +33,19 @@ To start working with this package, create a client:
 
 # Querying
 
-To query existing tables, create a Query and call its Read method:
+To query existing tables, create a Query and call its Read method, which starts the
+query and waits for it to complete:
 
 	q := client.Query(`
 	    SELECT year, SUM(number) as num
-	    FROM ` + "`bigquery-public-data.usa_names.usa_1910_2013`" + `
-	    WHERE name = "William"
+	    FROM bigquery-public-data.usa_names.usa_1910_2013
+	    WHERE name = @name
 	    GROUP BY year
 	    ORDER BY year
 	`)
+	q.Parameters = []bigquery.QueryParameter{
+		{Name: "name", Value: "William"},
+	}
 	it, err := q.Read(ctx)
 	if err != nil {
 	    // TODO: Handle error.

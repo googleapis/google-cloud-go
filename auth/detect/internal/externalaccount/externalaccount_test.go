@@ -16,6 +16,7 @@ package externalaccount
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -72,6 +73,7 @@ func TestToken(t *testing.T) {
 		contentType:   "application/x-www-form-urlencoded",
 		body:          baseCredsRequestBody,
 		response:      baseCredsResponseBody,
+		metricsHeader: expectedMetricsHeader("file", false, false),
 	}
 
 	tok, err := run(t, opts, server)
@@ -98,6 +100,7 @@ func TestWorkforcePoolTokenWithClientID(t *testing.T) {
 		contentType:   "application/x-www-form-urlencoded",
 		body:          workforcePoolRequestBodyWithClientID,
 		response:      baseCredsResponseBody,
+		metricsHeader: expectedMetricsHeader("file", false, false),
 	}
 
 	tok, err := run(t, &opts, &server)
@@ -123,6 +126,7 @@ func TestWorkforcePoolTokenWithoutClientID(t *testing.T) {
 		contentType:   "application/x-www-form-urlencoded",
 		body:          workforcePoolRequestBodyWithoutClientID,
 		response:      baseCredsResponseBody,
+		metricsHeader: expectedMetricsHeader("file", false, false),
 	}
 
 	tok, err := run(t, &opts, &server)
@@ -196,6 +200,7 @@ type testExchangeTokenServer struct {
 	contentType   string
 	body          string
 	response      string
+	metricsHeader string
 }
 
 func run(t *testing.T, opts *Options, tets *testExchangeTokenServer) (*auth.Token, error) {
@@ -210,6 +215,10 @@ func run(t *testing.T, opts *Options, tets *testExchangeTokenServer) (*auth.Toke
 		headerContentType := r.Header.Get("Content-Type")
 		if got, want := headerContentType, tets.contentType; got != want {
 			t.Errorf("got %v, want %v", got, want)
+		}
+		headerMetrics := r.Header.Get("x-goog-api-client")
+		if got, want := headerMetrics, tets.metricsHeader; got != want {
+			t.Errorf("got %v but want %v", got, want)
 		}
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -265,4 +274,8 @@ func cloneTestOpts() *Options {
 		ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
 		Client:                         internal.CloneDefaultClient(),
 	}
+}
+
+func expectedMetricsHeader(source string, saImpersonation bool, configLifetime bool) string {
+	return fmt.Sprintf("gl-go/%s auth/unknown google-byoid-sdk source/%s sa-impersonation/%t config-lifetime/%t", goVersion(), source, saImpersonation, configLifetime)
 }

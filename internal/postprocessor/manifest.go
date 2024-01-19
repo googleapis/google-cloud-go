@@ -63,11 +63,11 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 	for _, manual := range p.config.ManualClientInfo {
 		entries[manual.DistributionName] = *manual
 	}
-	for inputDir, conf := range p.config.GoogleapisToImportPath {
-		if conf.ServiceConfig == "" {
+	for inputDir, li := range p.config.GoogleapisToImportPath {
+		if li.ServiceConfig == "" {
 			continue
 		}
-		yamlPath := filepath.Join(p.googleapisDir, inputDir, conf.ServiceConfig)
+		yamlPath := filepath.Join(p.googleapisDir, inputDir, li.ServiceConfig)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
 			return nil, err
@@ -79,11 +79,12 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
 			return nil, fmt.Errorf("decode: %v", err)
 		}
-		docURL, err := docURL(p.googleCloudDir, conf.ImportPath, conf.RelPath)
+		docURL, err := docURL(p.googleCloudDir, li.ImportPath, li.RelPath)
 		if err != nil {
 			return nil, fmt.Errorf("unable to build docs URL: %v", err)
 		}
-		releaseLevel, err := releaseLevel(p.googleCloudDir, conf.ImportPath, conf.RelPath)
+
+		releaseLevel, err := releaseLevel(p.googleCloudDir, li)
 		if err != nil {
 			return nil, fmt.Errorf("unable to calculate release level for %v: %v", inputDir, err)
 		}
@@ -95,7 +96,7 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 
 		entry := ManifestEntry{
 			APIShortname:        apiShortname,
-			DistributionName:    conf.ImportPath,
+			DistributionName:    li.ImportPath,
 			Description:         yamlConfig.Title,
 			Language:            "go",
 			ClientLibraryType:   "generated",
@@ -103,7 +104,7 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 			ReleaseLevel:        releaseLevel,
 			LibraryType:         gapicAutoLibraryType,
 		}
-		entries[conf.ImportPath] = entry
+		entries[li.ImportPath] = entry
 	}
 	// Remove base module entry
 	delete(entries, "")
@@ -132,9 +133,12 @@ func docURL(cloudDir, importPath, relPath string) (string, error) {
 	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }
 
-func releaseLevel(cloudDir, importPath, relPath string) (string, error) {
-	i := strings.LastIndex(importPath, "/")
-	lastElm := importPath[i+1:]
+func releaseLevel(cloudDir string, li *libraryInfo) (string, error) {
+	if li.ReleaseLevel != "" {
+		return li.ReleaseLevel, nil
+	}
+	i := strings.LastIndex(li.ImportPath, "/")
+	lastElm := li.ImportPath[i+1:]
 	if strings.Contains(lastElm, "alpha") {
 		return "preview", nil
 	} else if strings.Contains(lastElm, "beta") {
@@ -142,7 +146,7 @@ func releaseLevel(cloudDir, importPath, relPath string) (string, error) {
 	}
 
 	// Determine by scanning doc.go for our beta disclaimer
-	docFile := filepath.Join(cloudDir, relPath, "doc.go")
+	docFile := filepath.Join(cloudDir, li.RelPath, "doc.go")
 	f, err := os.Open(docFile)
 	if err != nil {
 		return "", err

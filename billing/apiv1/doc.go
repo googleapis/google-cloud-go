@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &billingpb.GetBillingAccountRequest{
+//	req := &billingpb.CreateBillingAccountRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#GetBillingAccountRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#CreateBillingAccountRequest.
 //	}
-//	resp, err := c.GetBillingAccount(ctx, req)
+//	resp, err := c.CreateBillingAccount(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

@@ -449,7 +449,7 @@ type CreatePipelineJobRequest struct {
 	// generated.
 	//
 	// This value should be less than 128 characters, and valid characters
-	// are /[a-z][0-9]-/.
+	// are `/[a-z][0-9]-/`.
 	PipelineJobId string `protobuf:"bytes,3,opt,name=pipeline_job_id,json=pipelineJobId,proto3" json:"pipeline_job_id,omitempty"`
 }
 

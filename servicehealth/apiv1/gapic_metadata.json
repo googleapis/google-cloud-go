@@ -1,0 +1,103 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.servicehealth.v1",
+  "libraryPackage": "cloud.google.com/go/servicehealth/apiv1",
+  "services": {
+    "ServiceHealth": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetEvent": {
+              "methods": [
+                "GetEvent"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOrganizationEvent": {
+              "methods": [
+                "GetOrganizationEvent"
+              ]
+            },
+            "GetOrganizationImpact": {
+              "methods": [
+                "GetOrganizationImpact"
+              ]
+            },
+            "ListEvents": {
+              "methods": [
+                "ListEvents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOrganizationEvents": {
+              "methods": [
+                "ListOrganizationEvents"
+              ]
+            },
+            "ListOrganizationImpacts": {
+              "methods": [
+                "ListOrganizationImpacts"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetEvent": {
+              "methods": [
+                "GetEvent"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOrganizationEvent": {
+              "methods": [
+                "GetOrganizationEvent"
+              ]
+            },
+            "GetOrganizationImpact": {
+              "methods": [
+                "GetOrganizationImpact"
+              ]
+            },
+            "ListEvents": {
+              "methods": [
+                "ListEvents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOrganizationEvents": {
+              "methods": [
+                "ListOrganizationEvents"
+              ]
+            },
+            "ListOrganizationImpacts": {
+              "methods": [
+                "ListOrganizationImpacts"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

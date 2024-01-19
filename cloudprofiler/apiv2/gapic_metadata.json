@@ -1,0 +1,77 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.devtools.cloudprofiler.v2",
+  "libraryPackage": "cloud.google.com/go/cloudprofiler/apiv2",
+  "services": {
+    "ExportService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ExportClient",
+          "rpcs": {
+            "ListProfiles": {
+              "methods": [
+                "ListProfiles"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ExportClient",
+          "rpcs": {
+            "ListProfiles": {
+              "methods": [
+                "ListProfiles"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ProfilerService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ProfilerClient",
+          "rpcs": {
+            "CreateOfflineProfile": {
+              "methods": [
+                "CreateOfflineProfile"
+              ]
+            },
+            "CreateProfile": {
+              "methods": [
+                "CreateProfile"
+              ]
+            },
+            "UpdateProfile": {
+              "methods": [
+                "UpdateProfile"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ProfilerClient",
+          "rpcs": {
+            "CreateOfflineProfile": {
+              "methods": [
+                "CreateOfflineProfile"
+              ]
+            },
+            "CreateProfile": {
+              "methods": [
+                "CreateProfile"
+              ]
+            },
+            "UpdateProfile": {
+              "methods": [
+                "UpdateProfile"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
