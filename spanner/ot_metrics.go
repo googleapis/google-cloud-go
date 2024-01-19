@@ -49,14 +49,12 @@ var (
 )
 
 func getOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger, sessionClientID string, db string) (*openTelemetryConfig, error) {
-	logf(logger, "Inside getOpenTelemetryConfig()")
 	config := &openTelemetryConfig{
 		attributeMap: []attribute.KeyValue{},
 	}
 	if !IsOpenTelemetryMetricsEnabled() {
 		return config, nil
 	}
-	logf(logger, "OT Metrics enbaled in getOpenTelemetryConfig()")
 	_, instance, database, err := parseDatabaseName(db)
 	if err != nil {
 		return nil, err
@@ -199,7 +197,6 @@ func registerSessionPoolOTMetrics(pool *sessionPool) error {
 		func(ctx context.Context, o metric.Observer) error {
 			pool.mu.Lock()
 			defer pool.mu.Unlock()
-			log.Print("RegisterCallback called for meter")
 
 			o.ObserveInt64(otConfig.openSessionCount, int64(pool.numOpened), metric.WithAttributes(attributes...))
 			o.ObserveInt64(otConfig.maxAllowedSessionsCount, int64(pool.SessionPoolConfig.MaxOpened), metric.WithAttributes(attributes...))
