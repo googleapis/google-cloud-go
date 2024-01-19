@@ -161,10 +161,10 @@ func TestCreateSink(t *testing.T) {
 		IncludeChildren: true,
 	}
 	got, err := client.CreateSink(ctx, sink)
-	defer client.DeleteSink(ctx, sink.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer client.DeleteSink(ctx, sink.ID)
 
 	sink.WriterIdentity = ltest.SharedServiceAccount
 	if want := sink; !testutil.Equal(got, want) {
@@ -181,10 +181,11 @@ func TestCreateSink(t *testing.T) {
 	// UniqueWriterIdentity
 	sink.ID = sinkIDs.New()
 	got, err = client.CreateSinkOpt(ctx, sink, SinkOptions{UniqueWriterIdentity: true})
-	defer client.DeleteSink(ctx, sink.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer client.DeleteSink(ctx, sink.ID)
+
 	// Grant destination permissions to sink's writer identity.
 	err = addBucketCreator(testBucket, got.WriterIdentity)
 	if err != nil {
@@ -207,10 +208,10 @@ func TestUpdateSink(t *testing.T) {
 	}
 
 	_, err := client.CreateSink(ctx, sink)
-	defer client.DeleteSink(ctx, sink.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer client.DeleteSink(ctx, sink.ID)
 
 	got, err := client.UpdateSink(ctx, sink)
 	if err != nil {
@@ -254,10 +255,10 @@ func TestUpdateSinkOpt(t *testing.T) {
 	}
 
 	_, err := client.CreateSink(ctx, origSink)
-	defer client.DeleteSink(ctx, origSink.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer client.DeleteSink(ctx, origSink.ID)
 
 	// Updating with empty options is an error.
 	_, err = client.UpdateSinkOpt(ctx, &Sink{ID: id, Destination: testSinkDestination}, SinkOptions{})
@@ -316,11 +317,10 @@ func TestListSinks(t *testing.T) {
 	}
 	for _, s := range sinks {
 		_, err := client.CreateSink(ctx, s)
-		defer client.DeleteSink(ctx, s.ID)
 		if err != nil {
 			t.Fatalf("Create(%q): %v", s.ID, err)
 		}
-
+		defer client.DeleteSink(ctx, s.ID)
 	}
 
 	got := map[string]*Sink{}
