@@ -135,6 +135,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 	}
 
 	topic, err := c.CreateTopic(ctx, topicID)
+	topic.disableTracing = true
 	if err != nil {
 		t.Fatalf("failed to create topic: %v", err)
 	}

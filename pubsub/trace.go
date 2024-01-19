@@ -30,6 +30,7 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/noop"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/protobuf/proto"
 )
@@ -269,7 +270,11 @@ func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 
 const defaultTracerName = "cloud.google.com/go/pubsub"
 
-func tracer() trace.Tracer {
+func tracer(disable bool) trace.Tracer {
+	if disable {
+		// If tracing is not enabled on the client, return a no-op tracer even if a tracer provider is registered.
+		return noop.NewTracerProvider().Tracer("")
+	}
 	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))
 }
 
@@ -335,17 +340,17 @@ const (
 	receiptModackAttribute   = pubsubPrefix + "is_receipt_modack"
 )
 
-func startPublishSpan(ctx context.Context, m *Message, topicID string) (context.Context, trace.Span) {
+func startPublishSpan(ctx context.Context, m *Message, topicID string, enableTracing bool) (context.Context, trace.Span) {
 	opts := getPublishSpanAttributes(topicID, m)
-	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicID, publisherSpanName), opts...)
+	return tracer(enableTracing).Start(ctx, fmt.Sprintf("%s %s", topicID, publisherSpanName), opts...)
 }
 
-func startPublishFlowControlSpan(ctx context.Context) (context.Context, trace.Span) {
-	return tracer().Start(ctx, publishFlowControlSpanName)
+func startPublishFlowControlSpan(ctx context.Context, enableTracing bool) (context.Context, trace.Span) {
+	return tracer(enableTracing).Start(ctx, publishFlowControlSpanName)
 }
 
-func startBatcherSpan(ctx context.Context) (context.Context, trace.Span) {
-	return tracer().Start(ctx, publishBatcherSpanName)
+func startBatcherSpan(ctx context.Context, enableTracing bool) (context.Context, trace.Span) {
+	return tracer(enableTracing).Start(ctx, publishBatcherSpanName)
 }
 
 func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {

@@ -86,6 +86,11 @@ type Topic struct {
 
 	// EnableMessageOrdering enables delivery of ordered keys.
 	EnableMessageOrdering bool
+
+	// disableTracing disables tracing of Pub/Sub messages on this topic.
+	// This is configured at client instantiation, and is an addition option
+	// to disable tracing even when a tracer provider is detectd.
+	disableTracing bool
 }
 
 // PublishSettings control the bundling of published messages.
@@ -203,6 +208,7 @@ func newTopic(c *Client, name string) *Topic {
 		c:               c,
 		name:            name,
 		PublishSettings: DefaultPublishSettings,
+		disableTracing:  c.disableTracing,
 	}
 }
 
@@ -571,7 +577,7 @@ var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, 
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
-	ctx, publishSpan := startPublishSpan(ctx, msg, t.ID())
+	ctx, publishSpan := startPublishSpan(ctx, msg, t.ID(), t.disableTracing)
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
@@ -603,7 +609,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		return r
 	}
 
-	ctx2, fcSpan := startPublishFlowControlSpan(ctx)
+	ctx2, fcSpan := startPublishFlowControlSpan(ctx, t.disableTracing)
 	if err := t.flowController.acquire(ctx2, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
@@ -612,7 +618,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	}
 	fcSpan.End()
 
-	_, batcherSpan := startBatcherSpan(ctx)
+	_, batcherSpan := startBatcherSpan(ctx, t.disableTracing)
 
 	bmsg := &bundledMessage{
 		msg:         msg,
@@ -771,7 +777,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	}
 
 	topicID := strings.Split(t.name, "/")[3]
-	_, pSpan := tracer().Start(ctx, fmt.Sprintf("%s %s", topicID, publishRPCSpanName), trace.WithLinks(links...))
+	_, pSpan := tracer(t.disableTracing).Start(ctx, fmt.Sprintf("%s %s", topicID, publishRPCSpanName), trace.WithLinks(links...))
 	pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs))
 	defer pSpan.End()
 

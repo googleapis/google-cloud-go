@@ -103,6 +103,7 @@ type messageIterator struct {
 	enableExactlyOnceDelivery bool
 	sendNewAckDeadline        bool
 
+	enableTracing bool
 	// This maps trace parent spans to ackIDs, used for otel tracing.
 	activeSpan sync.Map
 }
@@ -311,7 +312,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		if m.Attributes != nil {
 			ctx = propagation.TraceContext{}.Extract(ctx, newMessageCarrier(m))
 		}
-		_, span := tracer().Start(ctx, fmt.Sprintf("%s %s", it.subID, subscribeSpanName), opts...)
+		_, span := tracer(it.enableTracing).Start(ctx, fmt.Sprintf("%s %s", it.subID, subscribeSpanName), opts...)
 		span.SetAttributes(
 			attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
 			attribute.String(ackIDAttribute, ackID),
@@ -541,7 +542,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
 				}
 			}
-			_, ackSpan := tracer().Start(context.Background(), fmt.Sprintf("%s %s", it.subID, ackSpanName), trace.WithLinks(links...))
+			_, ackSpan := tracer(it.enableTracing).Start(context.Background(), fmt.Sprintf("%s %s", it.subID, ackSpanName), trace.WithLinks(links...))
 			defer ackSpan.End()
 			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch))
 
@@ -626,7 +627,7 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
 				}
 
-				_, mSpan := tracer().Start(context.Background(), spanName, trace.WithLinks(links...))
+				_, mSpan := tracer(it.enableTracing).Start(context.Background(), spanName, trace.WithLinks(links...))
 				defer mSpan.End()
 				if !isNack {
 					mSpan.SetAttributes(
