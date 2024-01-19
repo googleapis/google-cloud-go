@@ -307,7 +307,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 
 	// Create a OpenTelemetry configuration
-	otConfig, err := getOpenTelemetryConfig(config.OpenTelemetryMeterProvider, config.Logger, sc.id, database)
+	otConfig, err := createOpenTelemetryConfig(config.OpenTelemetryMeterProvider, config.Logger, sc.id, database)
 	if err != nil {
 		// The error returned here will be due to database name parsing
 		return nil, err
