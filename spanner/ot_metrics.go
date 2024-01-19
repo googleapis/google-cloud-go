@@ -91,7 +91,7 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	meter := config.meterProvider.Meter(OtInstrumentationScope, metric.WithInstrumentationVersion(internal.Version))
 
 	openSessionCountInstrument, err := meter.Int64ObservableGauge(
-		metricsPrefix+"open_session_count1",
+		metricsPrefix+"open_session_count",
 		metric.WithDescription("Number of sessions currently opened"),
 		metric.WithUnit("1"),
 	)
@@ -101,7 +101,7 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	config.openSessionCount = openSessionCountInstrument
 
 	maxAllowedSessionsCountInstrument, err := meter.Int64ObservableGauge(
-		metricsPrefix+"max_allowed_sessions1",
+		metricsPrefix+"max_allowed_sessions",
 		metric.WithDescription("The maximum number of sessions allowed. Configurable by the user."),
 		metric.WithUnit("1"),
 	)
@@ -111,7 +111,7 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	config.maxAllowedSessionsCount = maxAllowedSessionsCountInstrument
 
 	sessionsCountInstrument, _ := meter.Int64ObservableGauge(
-		metricsPrefix+"num_sessions_in_pool1",
+		metricsPrefix+"num_sessions_in_pool",
 		metric.WithDescription("The number of sessions currently in use."),
 		metric.WithUnit("1"),
 	)
@@ -121,7 +121,7 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	config.sessionsCount = sessionsCountInstrument
 
 	maxInUseSessionsCountInstrument, err := meter.Int64ObservableGauge(
-		metricsPrefix+"max_in_use_sessions1",
+		metricsPrefix+"max_in_use_sessions",
 		metric.WithDescription("The maximum number of sessions in use during the last 10 minute interval."),
 		metric.WithUnit("1"),
 	)
@@ -131,7 +131,7 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	config.maxInUseSessionsCount = maxInUseSessionsCountInstrument
 
 	getSessionTimeoutsCountInstrument, err := meter.Int64Counter(
-		metricsPrefix+"get_session_timeouts1",
+		metricsPrefix+"get_session_timeouts",
 		metric.WithDescription("The number of get sessions timeouts due to pool exhaustion."),
 		metric.WithUnit("1"),
 	)
@@ -141,7 +141,7 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	config.getSessionTimeoutsCount = getSessionTimeoutsCountInstrument
 
 	acquiredSessionsCountInstrument, err := meter.Int64Counter(
-		metricsPrefix+"num_acquired_sessions1",
+		metricsPrefix+"num_acquired_sessions",
 		metric.WithDescription("The number of sessions acquired from the session pool."),
 		metric.WithUnit("1"),
 	)
@@ -151,7 +151,7 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	config.acquiredSessionsCount = acquiredSessionsCountInstrument
 
 	releasedSessionsCountInstrument, err := meter.Int64Counter(
-		metricsPrefix+"num_released_sessions1",
+		metricsPrefix+"num_released_sessions",
 		metric.WithDescription("The number of sessions released by the user and pool maintainer."),
 		metric.WithUnit("1"),
 	)
@@ -161,7 +161,7 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	config.releasedSessionsCount = releasedSessionsCountInstrument
 
 	gfeLatencyInstrument, err := meter.Int64Histogram(
-		metricsPrefix+"gfe_latency1",
+		metricsPrefix+"gfe_latency",
 		metric.WithDescription("Latency between Google's network receiving an RPC and reading back the first byte of the response"),
 		metric.WithUnit("ms"),
 		metric.WithExplicitBucketBoundaries(0.0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0,
@@ -175,7 +175,7 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	config.gfeLatency = gfeLatencyInstrument
 
 	gfeHeaderMissingCountInstrument, err := meter.Int64Counter(
-		metricsPrefix+"gfe_header_missing_count1",
+		metricsPrefix+"gfe_header_missing_count",
 		metric.WithDescription("Number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network"),
 		metric.WithUnit("1"),
 	)
