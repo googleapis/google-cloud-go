@@ -37,59 +37,61 @@ func TestParseConventionalCommitPkg(t *testing.T) {
 
 func TestFormatChanges(t *testing.T) {
 	tests := []struct {
-		name       string
-		changes    []*ChangeInfo
-		onlyGapics bool
-		want       string
-		truncate   bool
+		name          string
+		changes       []*ChangeInfo
+		onlyGapics    bool
+		maxChangesLen int
+		want          string
 	}{
 		{
-			name:    "basic",
-			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar"}},
-			want:    "\nChanges:\n\nfix: foo\n  bar\n\n",
+			name:          "basic",
+			changes:       []*ChangeInfo{{Title: "fix: foo", Body: "bar"}},
+			maxChangesLen: maxChangesLen,
+			want:          "\nChanges:\n\nfix: foo\n  bar\n\n",
 		},
 		{
-			name:    "breaking change",
-			changes: []*ChangeInfo{{Title: "feat!: breaking change", Body: "BREAKING CHANGE: The world is breaking."}},
-			want:    "\nChanges:\n\nfeat!: breaking change\n  BREAKING CHANGE: The world is breaking.\n\n",
+			name:          "breaking change",
+			changes:       []*ChangeInfo{{Title: "feat!: breaking change", Body: "BREAKING CHANGE: The world is breaking."}},
+			maxChangesLen: maxChangesLen,
+			want:          "\nChanges:\n\nfeat!: breaking change\n  BREAKING CHANGE: The world is breaking.\n\n",
 		},
 		{
-			name:    "multi-lined body indented",
-			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}},
-			want:    "\nChanges:\n\nfix: foo\n  bar\n  baz\n\n",
+			name:          "multi-lined body indented",
+			changes:       []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}},
+			maxChangesLen: maxChangesLen,
+			want:          "\nChanges:\n\nfix: foo\n  bar\n  baz\n\n",
 		},
 		{
-			name:    "multi-lined body indented, multiple changes",
-			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}, {Title: "fix: baz", Body: "foo\nbar"}},
-			want:    "\nChanges:\n\nfix: foo\n  bar\n  baz\n\nfix: baz\n  foo\n  bar\n\n",
+			name:          "multi-lined body indented, multiple changes",
+			changes:       []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}, {Title: "fix: baz", Body: "foo\nbar"}},
+			maxChangesLen: maxChangesLen,
+			want:          "\nChanges:\n\nfix: foo\n  bar\n  baz\n\nfix: baz\n  foo\n  bar\n\n",
 		},
 		{
-			name:       "no package, filtered",
-			changes:    []*ChangeInfo{{Title: "fix: foo", Body: "bar"}},
-			onlyGapics: true,
-			want:       "",
+			name:          "no package, filtered",
+			changes:       []*ChangeInfo{{Title: "fix: foo", Body: "bar"}},
+			onlyGapics:    true,
+			maxChangesLen: maxChangesLen,
+			want:          "",
 		},
 		{
-			name:     "truncate long title",
-			changes:  []*ChangeInfo{{Title: "fix: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod ", Body: "tempor incididunt ut\nPiperOrigin-RevId: bar"}},
-			truncate: true,
-			want:     "\nChanges:\n\nfix: Lorem ipsum dolor si...\n  PiperOrigin-RevId: bar\n\n",
+			name:          "truncate long title",
+			changes:       []*ChangeInfo{{Title: "fix: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod", Body: "tempor incididunt ut\nPiperOrigin-RevId: bar"}},
+			maxChangesLen: 100,
+			want:          "\nChanges:\n\nfix: Lorem ipsum dolor si...\n  PiperOrigin-RevId: bar\n\n",
 		},
 		{
-			name:     "truncate short title",
-			changes:  []*ChangeInfo{{Title: "fix: Lorem ipsum dolor", Body: "tempor incididunt ut\nPiperOrigin-RevId: bar"}},
-			truncate: true,
-			want:     "\nChanges:\n\nfix: Lorem ipsum dolor\n  PiperOrigin-RevId: bar\n\n",
+			name:          "no truncate short title",
+			changes:       []*ChangeInfo{{Title: "fix: Lorem ipsum dolor", Body: "tempor incididunt ut\n PiperOrigin-RevId: bar"}},
+			maxChangesLen: 50,
+			want:          "\nChanges:\n\nfix: Lorem ipsum dolor\n  PiperOrigin-RevId: bar\n\n",
 		},
 	}
 
 	for _, tc := range tests {
+		maxChangesLen = tc.maxChangesLen
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := FormatChanges(tc.changes, tc.onlyGapics, true)
-			if err != nil {
-				t.Errorf("FormatChanges err: %v\n", err)
-			}
-			if got != tc.want {
+			if got := FormatChanges(tc.changes, tc.onlyGapics); got != tc.want {
 				t.Errorf("FormatChanges() = %q, want %q", got, tc.want)
 			}
 		})

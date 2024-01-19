@@ -15,7 +15,6 @@
 package git
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -39,9 +38,18 @@ type ChangeInfo struct {
 // FormatChanges turns a slice of changes into formatted string that will match
 // the conventional commit footer pattern. This will allow these changes to be
 // parsed into the changelog.
-func FormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate bool) (string, error) {
+func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
+	formatted := truncateAndFormatChanges(changes, onlyGapicChanges, false)
+	if len(formatted) > maxChangesLen {
+		// Retry formatting by truncating
+		return truncateAndFormatChanges(changes, onlyGapicChanges, true)
+	}
+	return formatted
+}
+
+func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate bool) string {
 	if len(changes) == 0 {
-		return "", nil
+		return ""
 	}
 	var sb strings.Builder
 	sb.WriteString("\nChanges:\n\n")
@@ -74,17 +82,9 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate bool) (stri
 	// If the buffer is empty except for the "Changes:" text return an empty
 	// string.
 	if sb.Len() == 11 {
-		return "", nil
+		return ""
 	}
-
-	if sb.Len() > maxChangesLen {
-		if truncate {
-			return "", errors.New("Commit body too long")
-		}
-		// Retry formatting by truncating
-		return FormatChanges(changes, onlyGapicChanges, true)
-	}
-	return sb.String(), nil
+	return sb.String()
 }
 
 // ParseChangeInfo gets the ChangeInfo for a given googleapis hash.

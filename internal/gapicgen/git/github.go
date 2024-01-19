@@ -167,11 +167,7 @@ func (gc *GithubClient) CreateGenprotoPR(ctx context.Context, genprotoDir string
 	sb.WriteString(genprotoCommitBody)
 	if !hasCorrespondingPR {
 		sb.WriteString("\n\nThere is no corresponding google-cloud-go PR.\n")
-		formatted, err := FormatChanges(changes, false, false)
-		if err != nil {
-			return 0, err
-		}
-		sb.WriteString(formatted)
+		sb.WriteString(FormatChanges(changes, false))
 	}
 	body := sb.String()
 
