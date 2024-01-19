@@ -41,6 +41,7 @@ func TestFormatChanges(t *testing.T) {
 		changes    []*ChangeInfo
 		onlyGapics bool
 		want       string
+		truncate   bool
 	}{
 		{
 			name:    "basic",
@@ -68,11 +69,27 @@ func TestFormatChanges(t *testing.T) {
 			onlyGapics: true,
 			want:       "",
 		},
+		{
+			name:     "truncate long title",
+			changes:  []*ChangeInfo{{Title: "fix: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod ", Body: "tempor incididunt ut\nPiperOrigin-RevId: bar"}},
+			truncate: true,
+			want:     "\nChanges:\n\nfix: Lorem ipsum dolor si...\n  PiperOrigin-RevId: bar\n\n",
+		},
+		{
+			name:     "truncate short title",
+			changes:  []*ChangeInfo{{Title: "fix: Lorem ipsum dolor", Body: "tempor incididunt ut\nPiperOrigin-RevId: bar"}},
+			truncate: true,
+			want:     "\nChanges:\n\nfix: Lorem ipsum dolor\n  PiperOrigin-RevId: bar\n\n",
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := FormatChanges(tc.changes, tc.onlyGapics); got != tc.want {
+			got, err := FormatChanges(tc.changes, tc.onlyGapics, true)
+			if err != nil {
+				t.Errorf("FormatChanges err: %v\n", err)
+			}
+			if got != tc.want {
 				t.Errorf("FormatChanges() = %q, want %q", got, tc.want)
 			}
 		})

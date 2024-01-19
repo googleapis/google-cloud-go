@@ -15,6 +15,7 @@
 package git
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -22,6 +23,10 @@ import (
 
 	"cloud.google.com/go/internal/gapicgen/execv"
 	"github.com/go-git/go-git/v5"
+)
+
+const (
+	maxTruncatedTitleLen = 25
 )
 
 // ChangeInfo represents a change and its associated metadata.
@@ -34,9 +39,9 @@ type ChangeInfo struct {
 // FormatChanges turns a slice of changes into formatted string that will match
 // the conventional commit footer pattern. This will allow these changes to be
 // parsed into the changelog.
-func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
+func FormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate bool) (string, error) {
 	if len(changes) == 0 {
-		return ""
+		return "", nil
 	}
 	var sb strings.Builder
 	sb.WriteString("\nChanges:\n\n")
@@ -44,7 +49,11 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 		if onlyGapicChanges {
 			continue
 		}
-		sb.WriteString(fmt.Sprintf("%s\n", c.Title))
+		title := c.Title
+		if truncate && len(title) > maxTruncatedTitleLen {
+			title = fmt.Sprintf("%v...", title[:maxTruncatedTitleLen])
+		}
+		sb.WriteString(fmt.Sprintf("%s\n", title))
 
 		// Format the commit body to conventional commit footer standards.
 		splitBody := strings.Split(c.Body, "\n")
@@ -52,14 +61,30 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 			splitBody[i] = fmt.Sprintf("  %s", splitBody[i])
 		}
 		body := strings.Join(splitBody, "\n")
+
+		if truncate {
+			startBody := strings.Index(body, "PiperOrigin-RevId")
+			if startBody != -1 {
+				body = fmt.Sprintf("  %s", body[startBody:])
+			}
+		}
+
 		sb.WriteString(fmt.Sprintf("%s\n\n", body))
 	}
 	// If the buffer is empty except for the "Changes:" text return an empty
 	// string.
 	if sb.Len() == 11 {
-		return ""
+		return "", nil
 	}
-	return sb.String()
+
+	if sb.Len() > maxChangesLen {
+		if truncate {
+			return "", errors.New("Commit body too long")
+		}
+		// Retry formatting by truncating
+		return FormatChanges(changes, onlyGapicChanges, true)
+	}
+	return sb.String(), nil
 }
 
 // ParseChangeInfo gets the ChangeInfo for a given googleapis hash.
