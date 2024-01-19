@@ -340,7 +340,7 @@ const (
 	receiptModackAttribute   = pubsubPrefix + "is_receipt_modack"
 )
 
-func startPublishSpan(ctx context.Context, m *Message, topicID string, enableTracing bool) (context.Context, trace.Span) {
+func startCreateSpan(ctx context.Context, m *Message, topicID string, enableTracing bool) (context.Context, trace.Span) {
 	opts := getPublishSpanAttributes(topicID, m)
 	return tracer(enableTracing).Start(ctx, fmt.Sprintf("%s %s", topicID, publisherSpanName), opts...)
 }
