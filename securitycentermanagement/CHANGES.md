@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.0...securitycentermanagement/v0.1.1) (2024-01-08)
+
+
+### Documentation
+
+* **securitycentermanagement:** Updates on multiple comments, syncing terminology and clarifying some aspects ([#9219](https://github.com/googleapis/google-cloud-go/issues/9219)) ([82054d0](https://github.com/googleapis/google-cloud-go/commit/82054d0e6905358e48517cbc8ea844dfb624082c))
+
 ## 0.1.0 (2023-12-07)
 
 
