@@ -253,9 +253,9 @@ type internalBinauthzManagementServiceV1Beta1Client interface {
 //
 // This API implements a REST model with the following objects:
 //
-//	Policy
+//   Policy
 //
-//	Attestor
+//   Attestor
 type BinauthzManagementServiceV1Beta1Client struct {
 	// The internal transport-dependent client.
 	internalClient internalBinauthzManagementServiceV1Beta1Client
@@ -364,9 +364,9 @@ type binauthzManagementServiceV1Beta1GRPCClient struct {
 //
 // This API implements a REST model with the following objects:
 //
-//	Policy
+//   Policy
 //
-//	Attestor
+//   Attestor
 func NewBinauthzManagementServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*BinauthzManagementServiceV1Beta1Client, error) {
 	clientOpts := defaultBinauthzManagementServiceV1Beta1GRPCClientOptions()
 	if newBinauthzManagementServiceV1Beta1ClientHook != nil {
@@ -440,9 +440,9 @@ type binauthzManagementServiceV1Beta1RESTClient struct {
 //
 // This API implements a REST model with the following objects:
 //
-//	Policy
+//   Policy
 //
-//	Attestor
+//   Attestor
 func NewBinauthzManagementServiceV1Beta1RESTClient(ctx context.Context, opts ...option.ClientOption) (*BinauthzManagementServiceV1Beta1Client, error) {
 	clientOpts := append(defaultBinauthzManagementServiceV1Beta1RESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
