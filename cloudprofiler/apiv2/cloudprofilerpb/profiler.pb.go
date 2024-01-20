@@ -22,6 +22,9 @@ package cloudprofilerpb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -30,8 +33,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -126,7 +127,6 @@ func (ProfileType) EnumDescriptor() ([]byte, []int) {
 // The deployment field must be populated. The profile_type specifies the list
 // of profile types supported by the agent. The creation call will hang until a
 // profile of one of these types needs to be collected.
-//
 type CreateProfileRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

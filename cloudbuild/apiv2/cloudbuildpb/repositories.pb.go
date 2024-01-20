@@ -21,8 +21,11 @@
 package cloudbuildpb
 
 import (
-	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -33,8 +36,6 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (

@@ -772,18 +772,18 @@ type internalKeyManagementClient interface {
 // KeyManagementClient is a client for interacting with Cloud Key Management Service (KMS) API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Cloud Key Management Service
+// # Google Cloud Key Management Service
 //
 // Manages cryptographic keys and operations using those keys. Implements a REST
 // model with the following objects:
 //
-//   KeyRing
+//	KeyRing
 //
-//   CryptoKey
+//	CryptoKey
 //
-//   CryptoKeyVersion
+//	CryptoKeyVersion
 //
-//   ImportJob
+//	ImportJob
 //
 // If you are using manual gRPC libraries, see
 // Using gRPC with Cloud KMS (at https://cloud.google.com/kms/docs/grpc).
@@ -1120,18 +1120,18 @@ type keyManagementGRPCClient struct {
 // NewKeyManagementClient creates a new key management service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Cloud Key Management Service
+// # Google Cloud Key Management Service
 //
 // Manages cryptographic keys and operations using those keys. Implements a REST
 // model with the following objects:
 //
-//   KeyRing
+//	KeyRing
 //
-//   CryptoKey
+//	CryptoKey
 //
-//   CryptoKeyVersion
+//	CryptoKeyVersion
 //
-//   ImportJob
+//	ImportJob
 //
 // If you are using manual gRPC libraries, see
 // Using gRPC with Cloud KMS (at https://cloud.google.com/kms/docs/grpc).
@@ -1205,18 +1205,18 @@ type keyManagementRESTClient struct {
 
 // NewKeyManagementRESTClient creates a new key management service rest client.
 //
-// Google Cloud Key Management Service
+// # Google Cloud Key Management Service
 //
 // Manages cryptographic keys and operations using those keys. Implements a REST
 // model with the following objects:
 //
-//   KeyRing
+//	KeyRing
 //
-//   CryptoKey
+//	CryptoKey
 //
-//   CryptoKeyVersion
+//	CryptoKeyVersion
 //
-//   ImportJob
+//	ImportJob
 //
 // If you are using manual gRPC libraries, see
 // Using gRPC with Cloud KMS (at https://cloud.google.com/kms/docs/grpc).
