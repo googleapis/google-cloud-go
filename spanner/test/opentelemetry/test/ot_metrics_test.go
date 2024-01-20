@@ -34,6 +34,7 @@ import (
 )
 
 func TestOTMetrics_InstrumentationScope(t *testing.T) {
+	skipGo119Test(t)
 	ctx := context.Background()
 	te := newOpenTelemetryTestExporter(false, false)
 	t.Cleanup(func() {
@@ -60,6 +61,7 @@ func TestOTMetrics_InstrumentationScope(t *testing.T) {
 }
 
 func TestOTMetrics_SessionPool(t *testing.T) {
+	skipGo119Test(t)
 	ctx := context.Background()
 	te := newOpenTelemetryTestExporter(false, false)
 	t.Cleanup(func() {
@@ -169,6 +171,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 }
 
 func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
+	skipGo119Test(t)
 	ctx := context.Background()
 	te := newOpenTelemetryTestExporter(false, false)
 	t.Cleanup(func() {
@@ -215,6 +218,7 @@ func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 }
 
 func TestOTMetrics_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
+	skipGo119Test(t)
 	ctx1 := context.Background()
 	te := newOpenTelemetryTestExporter(false, false)
 	t.Cleanup(func() {
@@ -252,6 +256,7 @@ func TestOTMetrics_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 }
 
 func TestOTMetrics_GFELatency(t *testing.T) {
+	skipGo119Test(t)
 	ctx := context.Background()
 	te := newOpenTelemetryTestExporter(false, false)
 	t.Cleanup(func() {
@@ -321,7 +326,6 @@ func TestOTMetrics_GFELatency(t *testing.T) {
 	}
 	gfeLatencyRecordedMetricData := gfeLatencyRecordedMetric.Data.(metricdata.Histogram[int64])
 	count := gfeLatencyRecordedMetricData.DataPoints[0].Count
-	t.Logf("Gfe latenct count %d", count)
 	if got, want := count, uint64(0); got <= want {
 		t.Fatalf("Incorrect data: got %d, wanted more than %d for metric %v", got, want, gfeLatencyRecordedMetric.Name)
 	}

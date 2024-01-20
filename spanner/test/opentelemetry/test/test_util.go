@@ -19,9 +19,11 @@ package test
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/version"
 	"cloud.google.com/go/spanner"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
 )
@@ -62,5 +64,17 @@ func waitFor(t *testing.T, assert func() error) {
 		}
 
 		return
+	}
+}
+
+// Check the version of Go runtime
+func isGoVersionEarliest() bool {
+	return strings.Contains(version.Go(), "1.19")
+}
+
+// Skip test if Go version is 1.19
+func skipGo119Test(t *testing.T) {
+	if isGoVersionEarliest() {
+		t.Skip("Skipping testing against Go 1.19 version")
 	}
 }
