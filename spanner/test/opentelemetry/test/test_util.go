@@ -1,3 +1,6 @@
+//go:build go1.20
+// +build go1.20
+
 /*
 Copyright 2024 Google LLC
 
