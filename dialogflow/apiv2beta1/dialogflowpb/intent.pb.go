@@ -21,8 +21,11 @@
 package dialogflowpb
 
 import (
-	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,8 +35,6 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -4788,14 +4789,14 @@ func (x *Intent_Message_CarouselSelect_Item) GetImage() *Intent_Message_Image {
 // Rich Business Messaging (RBM) Media displayed in Cards
 // The following media-types are currently supported:
 //
-// Image Types
+// # Image Types
 //
 // * image/jpeg
 // * image/jpg'
 // * image/gif
 // * image/png
 //
-// Video Types
+// # Video Types
 //
 // * video/h263
 // * video/m4v
