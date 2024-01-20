@@ -28,7 +28,6 @@ import (
 )
 
 func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
-	skipGo119Test(t)
 	ctx := context.Background()
 	te := newOpenTelemetryTestExporter(false, true)
 	old := trace.OpenTelemetryTracingEnabled
