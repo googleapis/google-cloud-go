@@ -21,14 +21,15 @@
 package aiplatformpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -279,17 +280,17 @@ func (x *ModelEvaluationSlice_Slice_SliceSpec) GetConfigs() map[string]*ModelEva
 //
 // Example 1:
 //
-//     {
-//       "zip_code": { "value": { "float_value": 12345.0 } }
-//     }
+//	{
+//	  "zip_code": { "value": { "float_value": 12345.0 } }
+//	}
 //
 // A single slice for any data with zip_code 12345 in the dataset.
 //
 // Example 2:
 //
-//     {
-//       "zip_code": { "range": { "low": 12345, "high": 20000 } }
-//     }
+//	{
+//	  "zip_code": { "range": { "low": 12345, "high": 20000 } }
+//	}
 //
 // A single slice containing data where the zip_codes between 12345 and
 // 20000 For this example, data with the zip_code of 12345 will be in this
@@ -297,10 +298,10 @@ func (x *ModelEvaluationSlice_Slice_SliceSpec) GetConfigs() map[string]*ModelEva
 //
 // Example 3:
 //
-//     {
-//       "zip_code": { "range": { "low": 10000, "high": 20000 } },
-//       "country": { "value": { "string_value": "US" } }
-//     }
+//	{
+//	  "zip_code": { "range": { "low": 10000, "high": 20000 } },
+//	  "country": { "value": { "string_value": "US" } }
+//	}
 //
 // A single slice containing data where the zip_codes between 10000 and
 // 20000 has the country "US". For this example, data with the zip_code of
@@ -308,16 +309,16 @@ func (x *ModelEvaluationSlice_Slice_SliceSpec) GetConfigs() map[string]*ModelEva
 //
 // Example 4:
 //
-//     { "country": {"all_values": { "value": true } } }
+//	{ "country": {"all_values": { "value": true } } }
 //
 // Three slices are computed, one for each unique country in the dataset.
 //
 // Example 5:
 //
-//     {
-//       "country": { "all_values": { "value": true } },
-//       "zip_code": { "value": { "float_value": 12345.0 } }
-//     }
+//	{
+//	  "country": { "all_values": { "value": true } },
+//	  "zip_code": { "value": { "float_value": 12345.0 } }
+//	}
 //
 // Three slices are computed, one for each unique country in the dataset
 // where the zip_code is also 12345. For this example, data with zip_code
