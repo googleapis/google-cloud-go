@@ -21,9 +21,6 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -31,6 +28,8 @@ import (
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -284,17 +283,16 @@ func (StudySpec_ObservationNoise) EnumDescriptor() ([]byte, []int) {
 // This indicates which measurement to use if/when the service automatically
 // selects the final measurement from previously reported intermediate
 // measurements. Choose this based on two considerations:
-//
-//	A) Do you expect your measurements to monotonically improve?
-//	   If so, choose LAST_MEASUREMENT. On the other hand, if you're in a
-//	   situation where your system can "over-train" and you expect the
-//	   performance to get better for a while but then start declining,
-//	   choose BEST_MEASUREMENT.
-//	B) Are your measurements significantly noisy and/or irreproducible?
-//	   If so, BEST_MEASUREMENT will tend to be over-optimistic, and it
-//	   may be better to choose LAST_MEASUREMENT.
-//	If both or neither of (A) and (B) apply, it doesn't matter which
-//	selection type is chosen.
+//  A) Do you expect your measurements to monotonically improve?
+//     If so, choose LAST_MEASUREMENT. On the other hand, if you're in a
+//     situation where your system can "over-train" and you expect the
+//     performance to get better for a while but then start declining,
+//     choose BEST_MEASUREMENT.
+//  B) Are your measurements significantly noisy and/or irreproducible?
+//     If so, BEST_MEASUREMENT will tend to be over-optimistic, and it
+//     may be better to choose LAST_MEASUREMENT.
+//  If both or neither of (A) and (B) apply, it doesn't matter which
+//  selection type is chosen.
 type StudySpec_MeasurementSelectionType int32
 
 const (

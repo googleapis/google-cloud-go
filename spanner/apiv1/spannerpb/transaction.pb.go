@@ -21,13 +21,12 @@
 package spannerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -111,32 +110,32 @@ func (TransactionOptions_ReadWrite_ReadLockMode) EnumDescriptor() ([]byte, []int
 //
 // Cloud Spanner supports three transaction modes:
 //
-//  1. Locking read-write. This type of transaction is the only way
-//     to write data into Cloud Spanner. These transactions rely on
-//     pessimistic locking and, if necessary, two-phase commit.
-//     Locking read-write transactions may abort, requiring the
-//     application to retry.
+//   1. Locking read-write. This type of transaction is the only way
+//      to write data into Cloud Spanner. These transactions rely on
+//      pessimistic locking and, if necessary, two-phase commit.
+//      Locking read-write transactions may abort, requiring the
+//      application to retry.
 //
-//  2. Snapshot read-only. Snapshot read-only transactions provide guaranteed
-//     consistency across several reads, but do not allow
-//     writes. Snapshot read-only transactions can be configured to read at
-//     timestamps in the past, or configured to perform a strong read
-//     (where Spanner will select a timestamp such that the read is
-//     guaranteed to see the effects of all transactions that have committed
-//     before the start of the read). Snapshot read-only transactions do not
-//     need to be committed.
+//   2. Snapshot read-only. Snapshot read-only transactions provide guaranteed
+//      consistency across several reads, but do not allow
+//      writes. Snapshot read-only transactions can be configured to read at
+//      timestamps in the past, or configured to perform a strong read
+//      (where Spanner will select a timestamp such that the read is
+//      guaranteed to see the effects of all transactions that have committed
+//      before the start of the read). Snapshot read-only transactions do not
+//      need to be committed.
 //
-//     Queries on change streams must be performed with the snapshot read-only
-//     transaction mode, specifying a strong read. Please see
-//     [TransactionOptions.ReadOnly.strong][google.spanner.v1.TransactionOptions.ReadOnly.strong]
-//     for more details.
+//      Queries on change streams must be performed with the snapshot read-only
+//      transaction mode, specifying a strong read. Please see
+//      [TransactionOptions.ReadOnly.strong][google.spanner.v1.TransactionOptions.ReadOnly.strong]
+//      for more details.
 //
-//  3. Partitioned DML. This type of transaction is used to execute
-//     a single Partitioned DML statement. Partitioned DML partitions
-//     the key space and runs the DML statement over each partition
-//     in parallel using separate, internal transactions that commit
-//     independently. Partitioned DML transactions do not need to be
-//     committed.
+//   3. Partitioned DML. This type of transaction is used to execute
+//      a single Partitioned DML statement. Partitioned DML partitions
+//      the key space and runs the DML statement over each partition
+//      in parallel using separate, internal transactions that commit
+//      independently. Partitioned DML transactions do not need to be
+//      committed.
 //
 // For transactions that only read, snapshot read-only transactions
 // provide simpler semantics and are almost always faster. In
@@ -387,38 +386,38 @@ func (TransactionOptions_ReadWrite_ReadLockMode) EnumDescriptor() ([]byte, []int
 // That said, Partitioned DML is not a drop-in replacement for standard DML used
 // in ReadWrite transactions.
 //
-//   - The DML statement must be fully-partitionable. Specifically, the statement
-//     must be expressible as the union of many statements which each access only
-//     a single row of the table.
+//  - The DML statement must be fully-partitionable. Specifically, the statement
+//    must be expressible as the union of many statements which each access only
+//    a single row of the table.
 //
-//   - The statement is not applied atomically to all rows of the table. Rather,
-//     the statement is applied atomically to partitions of the table, in
-//     independent transactions. Secondary index rows are updated atomically
-//     with the base table rows.
+//  - The statement is not applied atomically to all rows of the table. Rather,
+//    the statement is applied atomically to partitions of the table, in
+//    independent transactions. Secondary index rows are updated atomically
+//    with the base table rows.
 //
-//   - Partitioned DML does not guarantee exactly-once execution semantics
-//     against a partition. The statement will be applied at least once to each
-//     partition. It is strongly recommended that the DML statement should be
-//     idempotent to avoid unexpected results. For instance, it is potentially
-//     dangerous to run a statement such as
-//     `UPDATE table SET column = column + 1` as it could be run multiple times
-//     against some rows.
+//  - Partitioned DML does not guarantee exactly-once execution semantics
+//    against a partition. The statement will be applied at least once to each
+//    partition. It is strongly recommended that the DML statement should be
+//    idempotent to avoid unexpected results. For instance, it is potentially
+//    dangerous to run a statement such as
+//    `UPDATE table SET column = column + 1` as it could be run multiple times
+//    against some rows.
 //
-//   - The partitions are committed automatically - there is no support for
-//     Commit or Rollback. If the call returns an error, or if the client issuing
-//     the ExecuteSql call dies, it is possible that some rows had the statement
-//     executed on them successfully. It is also possible that statement was
-//     never executed against other rows.
+//  - The partitions are committed automatically - there is no support for
+//    Commit or Rollback. If the call returns an error, or if the client issuing
+//    the ExecuteSql call dies, it is possible that some rows had the statement
+//    executed on them successfully. It is also possible that statement was
+//    never executed against other rows.
 //
-//   - Partitioned DML transactions may only contain the execution of a single
-//     DML statement via ExecuteSql or ExecuteStreamingSql.
+//  - Partitioned DML transactions may only contain the execution of a single
+//    DML statement via ExecuteSql or ExecuteStreamingSql.
 //
-//   - If any error is encountered during the execution of the partitioned DML
-//     operation (for instance, a UNIQUE INDEX violation, division by zero, or a
-//     value that cannot be stored due to schema constraints), then the
-//     operation is stopped at that point and an error is returned. It is
-//     possible that at this point, some partitions have been committed (or even
-//     committed multiple times), and other partitions have not been run at all.
+//  - If any error is encountered during the execution of the partitioned DML
+//    operation (for instance, a UNIQUE INDEX violation, division by zero, or a
+//    value that cannot be stored due to schema constraints), then the
+//    operation is stopped at that point and an error is returned. It is
+//    possible that at this point, some partitions have been committed (or even
+//    committed multiple times), and other partitions have not been run at all.
 //
 // Given the above, Partitioned DML is good fit for large, database-wide,
 // operations that are idempotent, such as deleting old rows from a very large
