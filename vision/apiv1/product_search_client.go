@@ -539,17 +539,17 @@ type internalProductSearchClient interface {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//   The API has a collection of ProductSet resources, named
+//   projects/*/locations/*/productSets/*, which acts as a way to put different
+//   products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
-//	projects/*/locations/*/products/*
+//   The API has a collection of Product resources, named
+//   projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
-//	projects/*/locations/*/products/*/referenceImages/*
+//   Each Product has a collection of ReferenceImage resources, named
+//   projects/*/locations/*/products/*/referenceImages/*
 type ProductSearchClient struct {
 	// The internal transport-dependent client.
 	internalClient internalProductSearchClient
@@ -590,8 +590,8 @@ func (c *ProductSearchClient) Connection() *grpc.ClientConn {
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if display_name is missing, or is longer than
-//	4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is missing, or is longer than
+//   4096 characters.
 func (c *ProductSearchClient) CreateProductSet(ctx context.Context, req *visionpb.CreateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	return c.internalClient.CreateProductSet(ctx, req, opts...)
 }
@@ -600,8 +600,8 @@ func (c *ProductSearchClient) CreateProductSet(ctx context.Context, req *visionp
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100, or less
-//	than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100, or less
+//   than 1.
 func (c *ProductSearchClient) ListProductSets(ctx context.Context, req *visionpb.ListProductSetsRequest, opts ...gax.CallOption) *ProductSetIterator {
 	return c.internalClient.ListProductSets(ctx, req, opts...)
 }
@@ -610,7 +610,7 @@ func (c *ProductSearchClient) ListProductSets(ctx context.Context, req *visionpb
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the ProductSet does not exist.
+//   Returns NOT_FOUND if the ProductSet does not exist.
 func (c *ProductSearchClient) GetProductSet(ctx context.Context, req *visionpb.GetProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	return c.internalClient.GetProductSet(ctx, req, opts...)
 }
@@ -620,10 +620,10 @@ func (c *ProductSearchClient) GetProductSet(ctx context.Context, req *visionpb.G
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the ProductSet does not exist.
+//   Returns NOT_FOUND if the ProductSet does not exist.
 //
-//	Returns INVALID_ARGUMENT if display_name is present in update_mask but
-//	missing from the request or longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is present in update_mask but
+//   missing from the request or longer than 4096 characters.
 func (c *ProductSearchClient) UpdateProductSet(ctx context.Context, req *visionpb.UpdateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	return c.internalClient.UpdateProductSet(ctx, req, opts...)
 }
@@ -640,12 +640,12 @@ func (c *ProductSearchClient) DeleteProductSet(ctx context.Context, req *visionp
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
-//	characters.
+//   Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
+//   characters.
 //
-//	Returns INVALID_ARGUMENT if description is longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if description is longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if product_category is missing or invalid.
+//   Returns INVALID_ARGUMENT if product_category is missing or invalid.
 func (c *ProductSearchClient) CreateProduct(ctx context.Context, req *visionpb.CreateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	return c.internalClient.CreateProduct(ctx, req, opts...)
 }
@@ -654,7 +654,7 @@ func (c *ProductSearchClient) CreateProduct(ctx context.Context, req *visionpb.C
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
 func (c *ProductSearchClient) ListProducts(ctx context.Context, req *visionpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	return c.internalClient.ListProducts(ctx, req, opts...)
 }
@@ -663,7 +663,7 @@ func (c *ProductSearchClient) ListProducts(ctx context.Context, req *visionpb.Li
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product does not exist.
+//   Returns NOT_FOUND if the Product does not exist.
 func (c *ProductSearchClient) GetProduct(ctx context.Context, req *visionpb.GetProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	return c.internalClient.GetProduct(ctx, req, opts...)
 }
@@ -677,15 +677,15 @@ func (c *ProductSearchClient) GetProduct(ctx context.Context, req *visionpb.GetP
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product does not exist.
+//   Returns NOT_FOUND if the Product does not exist.
 //
-//	Returns INVALID_ARGUMENT if display_name is present in update_mask but is
-//	missing from the request or longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is present in update_mask but is
+//   missing from the request or longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if description is present in update_mask but is
-//	longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if description is present in update_mask but is
+//   longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if product_category is present in update_mask.
+//   Returns INVALID_ARGUMENT if product_category is present in update_mask.
 func (c *ProductSearchClient) UpdateProduct(ctx context.Context, req *visionpb.UpdateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	return c.internalClient.UpdateProduct(ctx, req, opts...)
 }
@@ -712,15 +712,15 @@ func (c *ProductSearchClient) DeleteProduct(ctx context.Context, req *visionpb.D
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
-//	characters.
+//   Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
+//   characters.
 //
-//	Returns INVALID_ARGUMENT if the product does not exist.
+//   Returns INVALID_ARGUMENT if the product does not exist.
 //
-//	Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
-//	compatible with the parent product’s product_category is detected.
+//   Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
+//   compatible with the parent product’s product_category is detected.
 //
-//	Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
+//   Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
 func (c *ProductSearchClient) CreateReferenceImage(ctx context.Context, req *visionpb.CreateReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
 	return c.internalClient.CreateReferenceImage(ctx, req, opts...)
 }
@@ -740,10 +740,10 @@ func (c *ProductSearchClient) DeleteReferenceImage(ctx context.Context, req *vis
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the parent product does not exist.
+//   Returns NOT_FOUND if the parent product does not exist.
 //
-//	Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
-//	than 1.
+//   Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
+//   than 1.
 func (c *ProductSearchClient) ListReferenceImages(ctx context.Context, req *visionpb.ListReferenceImagesRequest, opts ...gax.CallOption) *ReferenceImageIterator {
 	return c.internalClient.ListReferenceImages(ctx, req, opts...)
 }
@@ -752,7 +752,7 @@ func (c *ProductSearchClient) ListReferenceImages(ctx context.Context, req *visi
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the specified image does not exist.
+//   Returns NOT_FOUND if the specified image does not exist.
 func (c *ProductSearchClient) GetReferenceImage(ctx context.Context, req *visionpb.GetReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
 	return c.internalClient.GetReferenceImage(ctx, req, opts...)
 }
@@ -764,7 +764,7 @@ func (c *ProductSearchClient) GetReferenceImage(ctx context.Context, req *vision
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product or the ProductSet doesn’t exist.
+//   Returns NOT_FOUND if the Product or the ProductSet doesn’t exist.
 func (c *ProductSearchClient) AddProductToProductSet(ctx context.Context, req *visionpb.AddProductToProductSetRequest, opts ...gax.CallOption) error {
 	return c.internalClient.AddProductToProductSet(ctx, req, opts...)
 }
@@ -780,7 +780,7 @@ func (c *ProductSearchClient) RemoveProductFromProductSet(ctx context.Context, r
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
 func (c *ProductSearchClient) ListProductsInProductSet(ctx context.Context, req *visionpb.ListProductsInProductSetRequest, opts ...gax.CallOption) *ProductIterator {
 	return c.internalClient.ListProductsInProductSet(ctx, req, opts...)
 }
@@ -868,17 +868,17 @@ type productSearchGRPCClient struct {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//   The API has a collection of ProductSet resources, named
+//   projects/*/locations/*/productSets/*, which acts as a way to put different
+//   products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
-//	projects/*/locations/*/products/*
+//   The API has a collection of Product resources, named
+//   projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
-//	projects/*/locations/*/products/*/referenceImages/*
+//   Each Product has a collection of ReferenceImage resources, named
+//   projects/*/locations/*/products/*/referenceImages/*
 func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*ProductSearchClient, error) {
 	clientOpts := defaultProductSearchGRPCClientOptions()
 	if newProductSearchClientHook != nil {
@@ -966,17 +966,17 @@ type productSearchRESTClient struct {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//   The API has a collection of ProductSet resources, named
+//   projects/*/locations/*/productSets/*, which acts as a way to put different
+//   products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
-//	projects/*/locations/*/products/*
+//   The API has a collection of Product resources, named
+//   projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
-//	projects/*/locations/*/products/*/referenceImages/*
+//   Each Product has a collection of ReferenceImage resources, named
+//   projects/*/locations/*/products/*/referenceImages/*
 func NewProductSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProductSearchClient, error) {
 	clientOpts := append(defaultProductSearchRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1479,8 +1479,8 @@ func (c *productSearchGRPCClient) PurgeProducts(ctx context.Context, req *vision
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if display_name is missing, or is longer than
-//	4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is missing, or is longer than
+//   4096 characters.
 func (c *productSearchRESTClient) CreateProductSet(ctx context.Context, req *visionpb.CreateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProductSet()
@@ -1554,8 +1554,8 @@ func (c *productSearchRESTClient) CreateProductSet(ctx context.Context, req *vis
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100, or less
-//	than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100, or less
+//   than 1.
 func (c *productSearchRESTClient) ListProductSets(ctx context.Context, req *visionpb.ListProductSetsRequest, opts ...gax.CallOption) *ProductSetIterator {
 	it := &ProductSetIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductSetsRequest)
@@ -1648,7 +1648,7 @@ func (c *productSearchRESTClient) ListProductSets(ctx context.Context, req *visi
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the ProductSet does not exist.
+//   Returns NOT_FOUND if the ProductSet does not exist.
 func (c *productSearchRESTClient) GetProductSet(ctx context.Context, req *visionpb.GetProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1713,10 +1713,10 @@ func (c *productSearchRESTClient) GetProductSet(ctx context.Context, req *vision
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the ProductSet does not exist.
+//   Returns NOT_FOUND if the ProductSet does not exist.
 //
-//	Returns INVALID_ARGUMENT if display_name is present in update_mask but
-//	missing from the request or longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is present in update_mask but
+//   missing from the request or longer than 4096 characters.
 func (c *productSearchRESTClient) UpdateProductSet(ctx context.Context, req *visionpb.UpdateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProductSet()
@@ -1839,12 +1839,12 @@ func (c *productSearchRESTClient) DeleteProductSet(ctx context.Context, req *vis
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
-//	characters.
+//   Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
+//   characters.
 //
-//	Returns INVALID_ARGUMENT if description is longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if description is longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if product_category is missing or invalid.
+//   Returns INVALID_ARGUMENT if product_category is missing or invalid.
 func (c *productSearchRESTClient) CreateProduct(ctx context.Context, req *visionpb.CreateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProduct()
@@ -1918,7 +1918,7 @@ func (c *productSearchRESTClient) CreateProduct(ctx context.Context, req *vision
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
 func (c *productSearchRESTClient) ListProducts(ctx context.Context, req *visionpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductsRequest)
@@ -2011,7 +2011,7 @@ func (c *productSearchRESTClient) ListProducts(ctx context.Context, req *visionp
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product does not exist.
+//   Returns NOT_FOUND if the Product does not exist.
 func (c *productSearchRESTClient) GetProduct(ctx context.Context, req *visionpb.GetProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2080,15 +2080,15 @@ func (c *productSearchRESTClient) GetProduct(ctx context.Context, req *visionpb.
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product does not exist.
+//   Returns NOT_FOUND if the Product does not exist.
 //
-//	Returns INVALID_ARGUMENT if display_name is present in update_mask but is
-//	missing from the request or longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is present in update_mask but is
+//   missing from the request or longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if description is present in update_mask but is
-//	longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if description is present in update_mask but is
+//   longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if product_category is present in update_mask.
+//   Returns INVALID_ARGUMENT if product_category is present in update_mask.
 func (c *productSearchRESTClient) UpdateProduct(ctx context.Context, req *visionpb.UpdateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProduct()
@@ -2221,15 +2221,15 @@ func (c *productSearchRESTClient) DeleteProduct(ctx context.Context, req *vision
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
-//	characters.
+//   Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
+//   characters.
 //
-//	Returns INVALID_ARGUMENT if the product does not exist.
+//   Returns INVALID_ARGUMENT if the product does not exist.
 //
-//	Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
-//	compatible with the parent product’s product_category is detected.
+//   Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
+//   compatible with the parent product’s product_category is detected.
 //
-//	Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
+//   Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
 func (c *productSearchRESTClient) CreateReferenceImage(ctx context.Context, req *visionpb.CreateReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetReferenceImage()
@@ -2351,10 +2351,10 @@ func (c *productSearchRESTClient) DeleteReferenceImage(ctx context.Context, req 
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the parent product does not exist.
+//   Returns NOT_FOUND if the parent product does not exist.
 //
-//	Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
-//	than 1.
+//   Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
+//   than 1.
 func (c *productSearchRESTClient) ListReferenceImages(ctx context.Context, req *visionpb.ListReferenceImagesRequest, opts ...gax.CallOption) *ReferenceImageIterator {
 	it := &ReferenceImageIterator{}
 	req = proto.Clone(req).(*visionpb.ListReferenceImagesRequest)
@@ -2447,7 +2447,7 @@ func (c *productSearchRESTClient) ListReferenceImages(ctx context.Context, req *
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the specified image does not exist.
+//   Returns NOT_FOUND if the specified image does not exist.
 func (c *productSearchRESTClient) GetReferenceImage(ctx context.Context, req *visionpb.GetReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2514,7 +2514,7 @@ func (c *productSearchRESTClient) GetReferenceImage(ctx context.Context, req *vi
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product or the ProductSet doesn’t exist.
+//   Returns NOT_FOUND if the Product or the ProductSet doesn’t exist.
 func (c *productSearchRESTClient) AddProductToProductSet(ctx context.Context, req *visionpb.AddProductToProductSetRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2616,7 +2616,7 @@ func (c *productSearchRESTClient) RemoveProductFromProductSet(ctx context.Contex
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
 func (c *productSearchRESTClient) ListProductsInProductSet(ctx context.Context, req *visionpb.ListProductsInProductSetRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductsInProductSetRequest)
