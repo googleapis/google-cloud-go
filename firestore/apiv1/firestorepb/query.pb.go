@@ -342,6 +342,14 @@ func (StructuredQuery_UnaryFilter_Operator) EnumDescriptor() ([]byte, []int) {
 }
 
 // A Firestore query.
+//
+// The query stages are executed in the following order:
+// 1. from
+// 2. where
+// 3. select
+// 4. order_by + start_at + end_at
+// 5. offset
+// 6. limit
 type StructuredQuery struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
