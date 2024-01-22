@@ -982,6 +982,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	obj := msg.GetMetadata()
 	// This is the size of the entire object, even if only a range was requested.
 	size := obj.GetSize()
+	content := msg.GetChecksummedData().GetContent()
 
 	r = &Reader{
 		Attrs: ReaderObjectAttrs{
@@ -1000,9 +1001,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			size:   size,
 			// Store the content from the first Recv in the
 			// client buffer for reading later.
-			leftovers: msg.GetChecksummedData().GetContent(),
-			settings:  s,
-			zeroRange: params.length == 0,
+			cachedContent:       &content,
+			cachedContentLen:    int64(len(content)),
+			cachedContentOffset: 0,
+			settings:            s,
+			zeroRange:           params.length == 0,
 		},
 	}
 
@@ -1396,13 +1399,15 @@ type readStreamResponse struct {
 }
 
 type gRPCReader struct {
-	seen, size int64
-	zeroRange  bool
-	stream     storagepb.Storage_ReadObjectClient
-	reopen     func(seen int64) (*readStreamResponse, context.CancelFunc, error)
-	leftovers  []byte
-	cancel     context.CancelFunc
-	settings   *settings
+	seen, size          int64
+	zeroRange           bool
+	stream              storagepb.Storage_ReadObjectClient
+	reopen              func(seen int64) (*readStreamResponse, context.CancelFunc, error)
+	cachedContent       *[]byte // Cached content from previous recv, not yet copied to user.
+	cachedContentLen    int64
+	cachedContentOffset int64
+	cancel              context.CancelFunc
+	settings            *settings
 }
 
 // Read reads bytes into the user's buffer from an open gRPC stream.
@@ -1421,12 +1426,18 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 	}
 
 	var n int
-	// Read leftovers and return what was available to conform to the Reader
-	// interface: https://pkg.go.dev/io#Reader.
-	if len(r.leftovers) > 0 {
-		n = copy(p, r.leftovers)
+	// Read cached content from previous recv calls, and return what was available
+	// to conform to the Reader interface: https://pkg.go.dev/io#Reader.
+	if r.cachedContentLen-r.cachedContentOffset > 0 {
+		n = copy(p, (*r.cachedContent)[r.cachedContentOffset:])
 		r.seen += int64(n)
-		r.leftovers = r.leftovers[n:]
+		r.cachedContentOffset += int64(n)
+		if r.cachedContentOffset == r.cachedContentLen {
+			// If there is no more cached content, reset values.
+			r.cachedContent = nil
+			r.cachedContentOffset = 0
+			r.cachedContentLen = 0
+		}
 		return n, nil
 	}
 
@@ -1445,11 +1456,14 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 	// https://cloud.google.com/storage/docs/transcoding.
 	content := msg.GetChecksummedData().GetContent()
 	n = copy(p[n:], content)
-	leftover := len(content) - n
+	contentLen := len(content)
+	leftover := contentLen - n
 	if leftover > 0 {
 		// Wasn't able to copy all of the data in the message, store for
 		// future Read calls.
-		r.leftovers = content[n:]
+		r.cachedContent = &content
+		r.cachedContentLen = int64(contentLen)
+		r.cachedContentOffset = r.cachedContentLen - int64(leftover)
 	}
 	r.seen += int64(n)
 
