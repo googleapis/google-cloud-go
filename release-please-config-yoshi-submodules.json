@@ -330,6 +330,9 @@
         "securitycentermanagement": {
             "component": "securitycentermanagement"
         },
+        "securityposture": {
+            "component": "securityposture"
+        },
         "servicecontrol": {
             "component": "servicecontrol"
         },

@@ -132,6 +132,7 @@ use (
 	./security
 	./securitycenter
 	./securitycentermanagement
+	./securityposture
 	./servicecontrol
 	./servicedirectory
 	./servicehealth
