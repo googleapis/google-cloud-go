@@ -5,7 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go/storage v1.36.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.21.0
-	github.com/cloudprober/cloudprober v0.12.7
+	github.com/cloudprober/cloudprober v0.13.2
 	github.com/google/uuid v1.5.0
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.22.0
