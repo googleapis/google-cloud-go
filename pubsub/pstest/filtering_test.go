@@ -76,6 +76,17 @@ func getAttrs() map[int]messageAttrs {
 			"name":     "com",
 			"timezone": "UTC",
 		},
+		10: {
+			"lang": "jp",
+			"\u307F\u3093\u306A": "dummy1",
+		},
+		11: {
+			"\u307F\u3093\u306A": "dummy2",
+		},
+		12: {
+			"name": "com",
+			"\u307F\u3093\u306A": "dummy3",
+		},
 	}
 }
 
@@ -86,36 +97,40 @@ func Test_filterByAttrs(t *testing.T) {
 	}{
 		{
 			filter: "attributes.name = \"com\"",
-			want:   []int{1, 4, 9},
+			want:   []int{1, 4, 9, 12},
 		},
 
 		{
 			filter: "attributes.name != \"com\"",
-			want:   []int{2, 3, 5, 6, 7, 8},
+			want:   []int{2, 3, 5, 6, 7, 8, 10, 11},
 		},
 		{
 			filter: "hasPrefix(attributes.name, \"co\")",
-			want:   []int{1, 4, 7, 9},
+			want:   []int{1, 4, 7, 9, 12},
 		},
 		{
 			filter: "attributes:name",
-			want:   []int{1, 2, 3, 4, 5, 6, 7, 9},
+			want:   []int{1, 2, 3, 4, 5, 6, 7, 9, 12},
 		},
 		{
 			filter: "NOT attributes:name",
-			want:   []int{8},
+			want:   []int{8, 10, 11},
 		},
 		{
 			filter: "(NOT attributes:name) OR attributes.name = \"co\"",
-			want:   []int{7, 8},
+			want:   []int{7, 8, 10, 11},
 		},
 		{
 			filter: "NOT (attributes:name OR attributes.lang = \"jp\")",
-			want:   []int{},
+			want:   []int{11},
 		},
 		{
 			filter: "attributes.name = \"com\" AND -attributes:\"lang\"",
-			want:   []int{9},
+			want:   []int{9, 12},
+		},
+		{
+			filter: "attributes:\"\u307F\u3093\u306A\"",
+			want:   []int{10, 11, 12},
 		},
 	}
 	for _, tc := range tt {
