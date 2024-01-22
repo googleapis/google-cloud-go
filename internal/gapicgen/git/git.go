@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	maxTruncatedTitleLen = 25
+	maxTruncatedTitleLen = 22
 )
 
 // ChangeInfo represents a change and its associated metadata.
