@@ -116,6 +116,7 @@ modules:
   - security
   - securitycenter
   - securitycentermanagement
+  - securityposture
   - servicecontrol
   - servicedirectory
   - servicehealth
@@ -786,6 +787,9 @@ service-configs:
   - input-directory: google/cloud/securitycentermanagement/v1
     service-config: securitycentermanagement_v1.yaml
     import-path: cloud.google.com/go/securitycentermanagement/apiv1
+  - input-directory: google/cloud/securityposture/v1
+    service-config: securityposture_v1.yaml
+    import-path: cloud.google.com/go/securityposture/apiv1
   - input-directory: google/api/servicecontrol/v1
     service-config: servicecontrol.yaml
     import-path: cloud.google.com/go/servicecontrol/apiv1

@@ -47,9 +47,13 @@ If you have been assigned to review this PR, please:
 - Approve and submit this PR if you believe it's ready to ship. That will prompt
 genbot to assign reviewers to the google-cloud-go PR.
 `
+	maxCommitBodyLen = 65536
 )
 
-var conventionalCommitScopeRe = regexp.MustCompile(`.*\((.*)\): .*`)
+var (
+	conventionalCommitScopeRe = regexp.MustCompile(`.*\((.*)\): .*`)
+	maxChangesLen             = maxCommitBodyLen - len(genprotoCommitBody)
+)
 
 // PullRequest represents a GitHub pull request.
 type PullRequest struct {
