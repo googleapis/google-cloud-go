@@ -111,11 +111,40 @@ func initSinks(ctx context.Context) func() {
 		}
 	}
 	if integrationTest {
+		for _, bn := range bucketNames(ctx, storageClient) {
+			if bucketIDs.Older(bn, 36*time.Hour) {
+				storageClient.Bucket(bn).Delete(ctx) // ignore error
+			}
+		}
 		return func() {
-			storageClient.Close()
+			// Cleanup the bucket we used on this test run.
+			defer storageClient.Close()
+			if err := storageClient.Bucket(testBucket).Delete(ctx); err != nil {
+				log.Printf("deleting %q: %v", testBucket, err)
+			}
 		}
 	}
 	return func() {}
+}
+
+// Collect the name of all buckets for the test project.
+func bucketNames(ctx context.Context, client *storage.Client) []string {
+	var names []string
+	it := client.Buckets(ctx, testProjectID)
+loop:
+	for {
+		b, err := it.Next()
+		switch err {
+		case nil:
+			names = append(names, b.Name)
+		case iterator.Done:
+			break loop
+		default:
+			log.Printf("listing buckets: %v", err)
+			break loop
+		}
+	}
+	return names
 }
 
 // addBucketIAMPolicy adds the specified IAM policy to the bucket pointed to by the bucketHandle.
