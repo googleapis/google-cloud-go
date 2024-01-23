@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"mime"
 	"net/http"
 	"net/url"
@@ -40,13 +39,19 @@ type AuthorizationHandler func(authCodeURL string) (code string, state string, e
 type Options3LO struct {
 	// ClientID is the application's ID.
 	ClientID string
-	// ClientSecret is the application's secret.
+	// ClientSecret is the application's secret. Not required if AuthHandlerOpts
+	// is set.
 	ClientSecret string
 	// AuthURL is the URL for authenticating.
 	AuthURL string
 	// TokenURL is the URL for retrieving a token.
 	TokenURL string
-	// RedirectURL is the URL to redirect users to.
+	// AuthStyle is used to describe how to client info in the token request.
+	AuthStyle Style
+	// RefreshToken is the token used to refresh the credential. Not required
+	// if AuthHandlerOpts is set.
+	RefreshToken string
+	// RedirectURL is the URL to redirect users to. Optional.
 	RedirectURL string
 	// Scopes specifies requested permissions for the Token. Optional.
 	Scopes []string
@@ -56,8 +61,6 @@ type Options3LO struct {
 	// Client is the client to be used to make the underlying token requests.
 	// Optional.
 	Client *http.Client
-	// AuthStyle is used to describe how to client info in the token request.
-	AuthStyle Style
 	// EarlyTokenExpiry is the time before the token expires that it should be
 	// refreshed. If not set the default value is 10 seconds. Optional.
 	EarlyTokenExpiry time.Duration
@@ -67,8 +70,33 @@ type Options3LO struct {
 	AuthHandlerOpts *AuthorizationHandlerOptions
 }
 
-// PKCEConfig holds parameters to support PKCE.
-type PKCEConfig struct {
+func (o *Options3LO) validate() error {
+	if o == nil {
+		return errors.New("auth: options must be provided")
+	}
+	if o.ClientID == "" {
+		return errors.New("auth: client ID must be provided")
+	}
+	if o.AuthHandlerOpts == nil && o.ClientSecret == "" {
+		return errors.New("auth: client secret must be provided")
+	}
+	if o.AuthURL == "" {
+		return errors.New("auth: auth URL must be provided")
+	}
+	if o.TokenURL == "" {
+		return errors.New("auth: token URL must be provided")
+	}
+	if o.AuthStyle == StyleUnknown {
+		return errors.New("auth: auth style must be provided")
+	}
+	if o.AuthHandlerOpts == nil && o.RefreshToken == "" {
+		return errors.New("auth: refresh token must be provided")
+	}
+	return nil
+}
+
+// PKCEOptions holds parameters to support PKCE.
+type PKCEOptions struct {
 	// Challenge is the un-padded, base64-url-encoded string of the encrypted code verifier.
 	Challenge string // The un-padded, base64-url-encoded string of the encrypted code verifier.
 	// ChallengeMethod is the encryption method (ex. S256).
@@ -120,13 +148,13 @@ func (c *Options3LO) authCodeURL(state string, values url.Values) string {
 		v.Set("state", state)
 	}
 	if c.AuthHandlerOpts != nil {
-		if c.AuthHandlerOpts.PKCEConfig != nil &&
-			c.AuthHandlerOpts.PKCEConfig.Challenge != "" {
-			v.Set(codeChallengeKey, c.AuthHandlerOpts.PKCEConfig.Challenge)
+		if c.AuthHandlerOpts.PKCEOpts != nil &&
+			c.AuthHandlerOpts.PKCEOpts.Challenge != "" {
+			v.Set(codeChallengeKey, c.AuthHandlerOpts.PKCEOpts.Challenge)
 		}
-		if c.AuthHandlerOpts.PKCEConfig != nil &&
-			c.AuthHandlerOpts.PKCEConfig.ChallengeMethod != "" {
-			v.Set(codeChallengeMethodKey, c.AuthHandlerOpts.PKCEConfig.ChallengeMethod)
+		if c.AuthHandlerOpts.PKCEOpts != nil &&
+			c.AuthHandlerOpts.PKCEOpts.ChallengeMethod != "" {
+			v.Set(codeChallengeMethodKey, c.AuthHandlerOpts.PKCEOpts.ChallengeMethod)
 		}
 	}
 	for k := range values {
@@ -144,12 +172,14 @@ func (c *Options3LO) authCodeURL(state string, values url.Values) string {
 // New3LOTokenProvider returns a [TokenProvider] based on the 3-legged OAuth2
 // configuration. The TokenProvider is caches and auto-refreshes tokens by
 // default.
-func New3LOTokenProvider(refreshToken string, opts *Options3LO) (TokenProvider, error) {
+func New3LOTokenProvider(opts *Options3LO) (TokenProvider, error) {
+	if err := opts.validate(); err != nil {
+		return nil, err
+	}
 	if opts.AuthHandlerOpts != nil {
 		return new3LOTokenProviderWithAuthHandler(opts), nil
 	}
-	// TODO(codyoss): validate the things
-	return NewCachedTokenProvider(&tokenProvider3LO{opts: opts, refreshToken: refreshToken, client: opts.client()}, &CachedTokenProviderOptions{
+	return NewCachedTokenProvider(&tokenProvider3LO{opts: opts, refreshToken: opts.RefreshToken, client: opts.client()}, &CachedTokenProviderOptions{
 		ExpireEarly: opts.EarlyTokenExpiry,
 	}), nil
 }
@@ -163,8 +193,8 @@ type AuthorizationHandlerOptions struct {
 	// State is used verify that the "state" is identical in the request and
 	// response before exchanging the auth code for OAuth2 token.
 	State string
-	// PKCEConfig allows setting configurations for PKCE. Optional.
-	PKCEConfig *PKCEConfig
+	// PKCEOpts allows setting configurations for PKCE. Optional.
+	PKCEOpts *PKCEOptions
 }
 
 func new3LOTokenProviderWithAuthHandler(opts *Options3LO) TokenProvider {
@@ -185,9 +215,9 @@ func (c *Options3LO) exchange(ctx context.Context, code string) (*Token, string,
 		v.Set("redirect_uri", c.RedirectURL)
 	}
 	if c.AuthHandlerOpts != nil &&
-		c.AuthHandlerOpts.PKCEConfig != nil &&
-		c.AuthHandlerOpts.PKCEConfig.Verifier != "" {
-		v.Set(codeVerifierKey, c.AuthHandlerOpts.PKCEConfig.Verifier)
+		c.AuthHandlerOpts.PKCEOpts != nil &&
+		c.AuthHandlerOpts.PKCEOpts.Verifier != "" {
+		v.Set(codeVerifierKey, c.AuthHandlerOpts.PKCEOpts.Verifier)
 	}
 	for k := range c.URLParams {
 		v.Set(k, c.URLParams.Get(k))
@@ -246,9 +276,6 @@ func (tp tokenProviderWithHandler) Token(ctx context.Context) (*Token, error) {
 // fetchToken returns a Token, refresh token, and/or an error.
 func fetchToken(ctx context.Context, c *Options3LO, v url.Values) (*Token, string, error) {
 	var refreshToken string
-	if c.AuthStyle == StyleUnknown {
-		return nil, refreshToken, fmt.Errorf("auth: missing required field AuthStyle")
-	}
 	if c.AuthStyle == StyleInParams {
 		if c.ClientID != "" {
 			v.Set("client_id", c.ClientID)
@@ -271,7 +298,7 @@ func fetchToken(ctx context.Context, c *Options3LO, v url.Values) (*Token, strin
 	if err != nil {
 		return nil, refreshToken, err
 	}
-	body, err := io.ReadAll(io.LimitReader(r.Body, 1<<20))
+	body, err := internal.ReadAll(r.Body)
 	r.Body.Close()
 	if err != nil {
 		return nil, refreshToken, fmt.Errorf("auth: cannot fetch token: %w", err)

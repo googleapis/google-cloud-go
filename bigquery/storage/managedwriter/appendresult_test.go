@@ -132,7 +132,8 @@ func TestPendingWrite(t *testing.T) {
 func TestPendingWrite_ConstructFullRequest(t *testing.T) {
 
 	testDP := &descriptorpb.DescriptorProto{Name: proto.String("foo")}
-	testDV := newDescriptorVersion(testDP)
+	testTmpl := newVersionedTemplate().revise(reviseProtoSchema(testDP))
+
 	testEmptyTraceID := buildTraceID(&streamSettings{})
 
 	for _, tc := range []struct {
@@ -144,7 +145,7 @@ func TestPendingWrite_ConstructFullRequest(t *testing.T) {
 		{
 			desc: "nil request",
 			pw: &pendingWrite{
-				descVersion: testDV,
+				reqTmpl: testTmpl,
 			},
 			want: &storagepb.AppendRowsRequest{
 				Rows: &storagepb.AppendRowsRequest_ProtoRows{
@@ -159,8 +160,8 @@ func TestPendingWrite_ConstructFullRequest(t *testing.T) {
 		{
 			desc: "empty req w/trace",
 			pw: &pendingWrite{
-				req:         &storagepb.AppendRowsRequest{},
-				descVersion: testDV,
+				req:     &storagepb.AppendRowsRequest{},
+				reqTmpl: testTmpl,
 			},
 			addTrace: true,
 			want: &storagepb.AppendRowsRequest{
@@ -177,8 +178,8 @@ func TestPendingWrite_ConstructFullRequest(t *testing.T) {
 		{
 			desc: "basic req",
 			pw: &pendingWrite{
-				req:         &storagepb.AppendRowsRequest{},
-				descVersion: testDV,
+				req:     &storagepb.AppendRowsRequest{},
+				reqTmpl: testTmpl,
 			},
 			want: &storagepb.AppendRowsRequest{
 				Rows: &storagepb.AppendRowsRequest_ProtoRows{
@@ -194,7 +195,7 @@ func TestPendingWrite_ConstructFullRequest(t *testing.T) {
 			desc: "everything w/trace",
 			pw: &pendingWrite{
 				req:           &storagepb.AppendRowsRequest{},
-				descVersion:   testDV,
+				reqTmpl:       testTmpl,
 				traceID:       "foo",
 				writeStreamID: "streamid",
 			},

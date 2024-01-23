@@ -316,7 +316,7 @@ func (s *GServer) CreateTopic(_ context.Context, t *pb.Topic) (*pb.Topic, error)
 	if s.topics[t.Name] != nil {
 		return nil, status.Errorf(codes.AlreadyExists, "topic %q", t.Name)
 	}
-	if err := checkMRD(t.MessageRetentionDuration); err != nil {
+	if err := checkTopicMessageRetention(t.MessageRetentionDuration); err != nil {
 		return nil, err
 	}
 	top := newTopic(t)
@@ -357,7 +357,7 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 		case "message_storage_policy":
 			t.proto.MessageStoragePolicy = req.Topic.MessageStoragePolicy
 		case "message_retention_duration":
-			if err := checkMRD(req.Topic.MessageRetentionDuration); err != nil {
+			if err := checkTopicMessageRetention(req.Topic.MessageRetentionDuration); err != nil {
 				return nil, err
 			}
 			t.proto.MessageRetentionDuration = req.Topic.MessageRetentionDuration
@@ -493,7 +493,7 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.MessageRetentionDuration == nil {
 		ps.MessageRetentionDuration = defaultMessageRetentionDuration
 	}
-	if err := checkMRD(ps.MessageRetentionDuration); err != nil {
+	if err := checkSubMessageRetention(ps.MessageRetentionDuration); err != nil {
 		return nil, err
 	}
 	if ps.PushConfig == nil {
@@ -561,18 +561,33 @@ func checkAckDeadline(ads int32) error {
 }
 
 const (
-	minMessageRetentionDuration = 10 * time.Minute
-	maxMessageRetentionDuration = 31 * 24 * time.Hour // 31 days is the maximum supported duration (https://cloud.google.com/pubsub/docs/replay-overview#configuring_message_retention)
+	minTopicMessageRetentionDuration = 10 * time.Minute
+	// 31 days is the maximum topic supported duration (https://cloud.google.com/pubsub/docs/replay-overview#configuring_message_retention)
+	maxTopicMessageRetentionDuration = 31 * 24 * time.Hour
+	minSubMessageRetentionDuration   = 10 * time.Minute
+	// 7 days is the maximum subscription supported duration (https://cloud.google.com/pubsub/docs/replay-overview#configuring_message_retention)
+	maxSubMessageRetentionDuration = 7 * 24 * time.Hour
 )
 
 var defaultMessageRetentionDuration = durpb.New(168 * time.Hour) // default is 7 days
 
-func checkMRD(pmrd *durpb.Duration) error {
+func checkTopicMessageRetention(pmrd *durpb.Duration) error {
 	if pmrd == nil {
 		return nil
 	}
 	mrd := pmrd.AsDuration()
-	if mrd < minMessageRetentionDuration || mrd > maxMessageRetentionDuration {
+	if mrd < minTopicMessageRetentionDuration || mrd > maxTopicMessageRetentionDuration {
+		return status.Errorf(codes.InvalidArgument, "bad message_retention_duration %+v", pmrd)
+	}
+	return nil
+}
+
+func checkSubMessageRetention(pmrd *durpb.Duration) error {
+	if pmrd == nil {
+		return nil
+	}
+	mrd := pmrd.AsDuration()
+	if mrd < minSubMessageRetentionDuration || mrd > maxSubMessageRetentionDuration {
 		return status.Errorf(codes.InvalidArgument, "bad message_retention_duration %+v", pmrd)
 	}
 	return nil
@@ -644,7 +659,7 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.RetainAckedMessages = req.Subscription.RetainAckedMessages
 
 		case "message_retention_duration":
-			if err := checkMRD(req.Subscription.MessageRetentionDuration); err != nil {
+			if err := checkSubMessageRetention(req.Subscription.MessageRetentionDuration); err != nil {
 				return nil, err
 			}
 			sub.proto.MessageRetentionDuration = req.Subscription.MessageRetentionDuration

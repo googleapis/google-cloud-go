@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/resourcemanager/apiv3",
-    "version": "1.9.1",
+    "version": "1.9.4",
     "language": "GO",
     "apis": [
       {

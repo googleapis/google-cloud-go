@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -54,6 +55,7 @@ type DataMigrationCallOptions struct {
 	VerifyMigrationJob                   []gax.CallOption
 	RestartMigrationJob                  []gax.CallOption
 	GenerateSshScript                    []gax.CallOption
+	GenerateTcpProxyScript               []gax.CallOption
 	ListConnectionProfiles               []gax.CallOption
 	GetConnectionProfile                 []gax.CallOption
 	CreateConnectionProfile              []gax.CallOption
@@ -68,6 +70,10 @@ type DataMigrationCallOptions struct {
 	CreateConversionWorkspace            []gax.CallOption
 	UpdateConversionWorkspace            []gax.CallOption
 	DeleteConversionWorkspace            []gax.CallOption
+	CreateMappingRule                    []gax.CallOption
+	DeleteMappingRule                    []gax.CallOption
+	ListMappingRules                     []gax.CallOption
+	GetMappingRule                       []gax.CallOption
 	SeedConversionWorkspace              []gax.CallOption
 	ImportMappingRules                   []gax.CallOption
 	ConvertConversionWorkspace           []gax.CallOption
@@ -139,6 +145,18 @@ func defaultDataMigrationCallOptions() *DataMigrationCallOptions {
 		GenerateSshScript: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GenerateTcpProxyScript: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListConnectionProfiles: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -180,6 +198,54 @@ func defaultDataMigrationCallOptions() *DataMigrationCallOptions {
 		},
 		DeleteConversionWorkspace: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateMappingRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteMappingRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListMappingRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetMappingRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		SeedConversionWorkspace: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -249,6 +315,7 @@ type internalDataMigrationClient interface {
 	RestartMigrationJob(context.Context, *clouddmspb.RestartMigrationJobRequest, ...gax.CallOption) (*RestartMigrationJobOperation, error)
 	RestartMigrationJobOperation(name string) *RestartMigrationJobOperation
 	GenerateSshScript(context.Context, *clouddmspb.GenerateSshScriptRequest, ...gax.CallOption) (*clouddmspb.SshScript, error)
+	GenerateTcpProxyScript(context.Context, *clouddmspb.GenerateTcpProxyScriptRequest, ...gax.CallOption) (*clouddmspb.TcpProxyScript, error)
 	ListConnectionProfiles(context.Context, *clouddmspb.ListConnectionProfilesRequest, ...gax.CallOption) *ConnectionProfileIterator
 	GetConnectionProfile(context.Context, *clouddmspb.GetConnectionProfileRequest, ...gax.CallOption) (*clouddmspb.ConnectionProfile, error)
 	CreateConnectionProfile(context.Context, *clouddmspb.CreateConnectionProfileRequest, ...gax.CallOption) (*CreateConnectionProfileOperation, error)
@@ -271,6 +338,10 @@ type internalDataMigrationClient interface {
 	UpdateConversionWorkspaceOperation(name string) *UpdateConversionWorkspaceOperation
 	DeleteConversionWorkspace(context.Context, *clouddmspb.DeleteConversionWorkspaceRequest, ...gax.CallOption) (*DeleteConversionWorkspaceOperation, error)
 	DeleteConversionWorkspaceOperation(name string) *DeleteConversionWorkspaceOperation
+	CreateMappingRule(context.Context, *clouddmspb.CreateMappingRuleRequest, ...gax.CallOption) (*clouddmspb.MappingRule, error)
+	DeleteMappingRule(context.Context, *clouddmspb.DeleteMappingRuleRequest, ...gax.CallOption) error
+	ListMappingRules(context.Context, *clouddmspb.ListMappingRulesRequest, ...gax.CallOption) *MappingRuleIterator
+	GetMappingRule(context.Context, *clouddmspb.GetMappingRuleRequest, ...gax.CallOption) (*clouddmspb.MappingRule, error)
 	SeedConversionWorkspace(context.Context, *clouddmspb.SeedConversionWorkspaceRequest, ...gax.CallOption) (*SeedConversionWorkspaceOperation, error)
 	SeedConversionWorkspaceOperation(name string) *SeedConversionWorkspaceOperation
 	ImportMappingRules(context.Context, *clouddmspb.ImportMappingRulesRequest, ...gax.CallOption) (*ImportMappingRulesOperation, error)
@@ -458,6 +529,12 @@ func (c *DataMigrationClient) GenerateSshScript(ctx context.Context, req *cloudd
 	return c.internalClient.GenerateSshScript(ctx, req, opts...)
 }
 
+// GenerateTcpProxyScript generate a TCP Proxy configuration script to configure a cloud-hosted VM
+// running a TCP Proxy.
+func (c *DataMigrationClient) GenerateTcpProxyScript(ctx context.Context, req *clouddmspb.GenerateTcpProxyScriptRequest, opts ...gax.CallOption) (*clouddmspb.TcpProxyScript, error) {
+	return c.internalClient.GenerateTcpProxyScript(ctx, req, opts...)
+}
+
 // ListConnectionProfiles retrieves a list of all connection profiles in a given project and
 // location.
 func (c *DataMigrationClient) ListConnectionProfiles(ctx context.Context, req *clouddmspb.ListConnectionProfilesRequest, opts ...gax.CallOption) *ConnectionProfileIterator {
@@ -577,6 +654,26 @@ func (c *DataMigrationClient) DeleteConversionWorkspace(ctx context.Context, req
 // The name must be that of a previously created DeleteConversionWorkspaceOperation, possibly from a different process.
 func (c *DataMigrationClient) DeleteConversionWorkspaceOperation(name string) *DeleteConversionWorkspaceOperation {
 	return c.internalClient.DeleteConversionWorkspaceOperation(name)
+}
+
+// CreateMappingRule creates a new mapping rule for a given conversion workspace.
+func (c *DataMigrationClient) CreateMappingRule(ctx context.Context, req *clouddmspb.CreateMappingRuleRequest, opts ...gax.CallOption) (*clouddmspb.MappingRule, error) {
+	return c.internalClient.CreateMappingRule(ctx, req, opts...)
+}
+
+// DeleteMappingRule deletes a single mapping rule.
+func (c *DataMigrationClient) DeleteMappingRule(ctx context.Context, req *clouddmspb.DeleteMappingRuleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteMappingRule(ctx, req, opts...)
+}
+
+// ListMappingRules lists the mapping rules for a specific conversion workspace.
+func (c *DataMigrationClient) ListMappingRules(ctx context.Context, req *clouddmspb.ListMappingRulesRequest, opts ...gax.CallOption) *MappingRuleIterator {
+	return c.internalClient.ListMappingRules(ctx, req, opts...)
+}
+
+// GetMappingRule gets the details of a mapping rule.
+func (c *DataMigrationClient) GetMappingRule(ctx context.Context, req *clouddmspb.GetMappingRuleRequest, opts ...gax.CallOption) (*clouddmspb.MappingRule, error) {
+	return c.internalClient.GetMappingRule(ctx, req, opts...)
 }
 
 // SeedConversionWorkspace imports a snapshot of the source database into the
@@ -1094,6 +1191,24 @@ func (c *dataMigrationGRPCClient) GenerateSshScript(ctx context.Context, req *cl
 	return resp, nil
 }
 
+func (c *dataMigrationGRPCClient) GenerateTcpProxyScript(ctx context.Context, req *clouddmspb.GenerateTcpProxyScriptRequest, opts ...gax.CallOption) (*clouddmspb.TcpProxyScript, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "migration_job", url.QueryEscape(req.GetMigrationJob()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateTcpProxyScript[0:len((*c.CallOptions).GenerateTcpProxyScript):len((*c.CallOptions).GenerateTcpProxyScript)], opts...)
+	var resp *clouddmspb.TcpProxyScript
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.GenerateTcpProxyScript(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *dataMigrationGRPCClient) ListConnectionProfiles(ctx context.Context, req *clouddmspb.ListConnectionProfilesRequest, opts ...gax.CallOption) *ConnectionProfileIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -1444,6 +1559,102 @@ func (c *dataMigrationGRPCClient) DeleteConversionWorkspace(ctx context.Context,
 	return &DeleteConversionWorkspaceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *dataMigrationGRPCClient) CreateMappingRule(ctx context.Context, req *clouddmspb.CreateMappingRuleRequest, opts ...gax.CallOption) (*clouddmspb.MappingRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateMappingRule[0:len((*c.CallOptions).CreateMappingRule):len((*c.CallOptions).CreateMappingRule)], opts...)
+	var resp *clouddmspb.MappingRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.CreateMappingRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataMigrationGRPCClient) DeleteMappingRule(ctx context.Context, req *clouddmspb.DeleteMappingRuleRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteMappingRule[0:len((*c.CallOptions).DeleteMappingRule):len((*c.CallOptions).DeleteMappingRule)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.dataMigrationClient.DeleteMappingRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *dataMigrationGRPCClient) ListMappingRules(ctx context.Context, req *clouddmspb.ListMappingRulesRequest, opts ...gax.CallOption) *MappingRuleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListMappingRules[0:len((*c.CallOptions).ListMappingRules):len((*c.CallOptions).ListMappingRules)], opts...)
+	it := &MappingRuleIterator{}
+	req = proto.Clone(req).(*clouddmspb.ListMappingRulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.MappingRule, string, error) {
+		resp := &clouddmspb.ListMappingRulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.dataMigrationClient.ListMappingRules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetMappingRules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *dataMigrationGRPCClient) GetMappingRule(ctx context.Context, req *clouddmspb.GetMappingRuleRequest, opts ...gax.CallOption) (*clouddmspb.MappingRule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetMappingRule[0:len((*c.CallOptions).GetMappingRule):len((*c.CallOptions).GetMappingRule)], opts...)
+	var resp *clouddmspb.MappingRule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.GetMappingRule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *dataMigrationGRPCClient) SeedConversionWorkspace(ctx context.Context, req *clouddmspb.SeedConversionWorkspaceRequest, opts ...gax.CallOption) (*SeedConversionWorkspaceOperation, error) {
@@ -1904,78 +2115,12 @@ func (c *dataMigrationGRPCClient) ListOperations(ctx context.Context, req *longr
 	return it
 }
 
-// ApplyConversionWorkspaceOperation manages a long-running operation from ApplyConversionWorkspace.
-type ApplyConversionWorkspaceOperation struct {
-	lro *longrunning.Operation
-}
-
 // ApplyConversionWorkspaceOperation returns a new ApplyConversionWorkspaceOperation from a given name.
 // The name must be that of a previously created ApplyConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) ApplyConversionWorkspaceOperation(name string) *ApplyConversionWorkspaceOperation {
 	return &ApplyConversionWorkspaceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ApplyConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ApplyConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ApplyConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ApplyConversionWorkspaceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ApplyConversionWorkspaceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CommitConversionWorkspaceOperation manages a long-running operation from CommitConversionWorkspace.
-type CommitConversionWorkspaceOperation struct {
-	lro *longrunning.Operation
 }
 
 // CommitConversionWorkspaceOperation returns a new CommitConversionWorkspaceOperation from a given name.
@@ -1986,134 +2131,12 @@ func (c *dataMigrationGRPCClient) CommitConversionWorkspaceOperation(name string
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CommitConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CommitConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CommitConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CommitConversionWorkspaceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CommitConversionWorkspaceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ConvertConversionWorkspaceOperation manages a long-running operation from ConvertConversionWorkspace.
-type ConvertConversionWorkspaceOperation struct {
-	lro *longrunning.Operation
-}
-
 // ConvertConversionWorkspaceOperation returns a new ConvertConversionWorkspaceOperation from a given name.
 // The name must be that of a previously created ConvertConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) ConvertConversionWorkspaceOperation(name string) *ConvertConversionWorkspaceOperation {
 	return &ConvertConversionWorkspaceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ConvertConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ConvertConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ConvertConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ConvertConversionWorkspaceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ConvertConversionWorkspaceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateConnectionProfileOperation manages a long-running operation from CreateConnectionProfile.
-type CreateConnectionProfileOperation struct {
-	lro *longrunning.Operation
 }
 
 // CreateConnectionProfileOperation returns a new CreateConnectionProfileOperation from a given name.
@@ -2124,134 +2147,12 @@ func (c *dataMigrationGRPCClient) CreateConnectionProfileOperation(name string) 
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateConnectionProfileOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConnectionProfile, error) {
-	var resp clouddmspb.ConnectionProfile
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateConnectionProfileOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConnectionProfile, error) {
-	var resp clouddmspb.ConnectionProfile
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateConnectionProfileOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateConnectionProfileOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateConnectionProfileOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateConversionWorkspaceOperation manages a long-running operation from CreateConversionWorkspace.
-type CreateConversionWorkspaceOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateConversionWorkspaceOperation returns a new CreateConversionWorkspaceOperation from a given name.
 // The name must be that of a previously created CreateConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CreateConversionWorkspaceOperation(name string) *CreateConversionWorkspaceOperation {
 	return &CreateConversionWorkspaceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateConversionWorkspaceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateConversionWorkspaceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateMigrationJobOperation manages a long-running operation from CreateMigrationJob.
-type CreateMigrationJobOperation struct {
-	lro *longrunning.Operation
 }
 
 // CreateMigrationJobOperation returns a new CreateMigrationJobOperation from a given name.
@@ -2262,134 +2163,12 @@ func (c *dataMigrationGRPCClient) CreateMigrationJobOperation(name string) *Crea
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateMigrationJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateMigrationJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateMigrationJobOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateMigrationJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateMigrationJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreatePrivateConnectionOperation manages a long-running operation from CreatePrivateConnection.
-type CreatePrivateConnectionOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreatePrivateConnectionOperation returns a new CreatePrivateConnectionOperation from a given name.
 // The name must be that of a previously created CreatePrivateConnectionOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
 	return &CreatePrivateConnectionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreatePrivateConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.PrivateConnection, error) {
-	var resp clouddmspb.PrivateConnection
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreatePrivateConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.PrivateConnection, error) {
-	var resp clouddmspb.PrivateConnection
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreatePrivateConnectionOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreatePrivateConnectionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreatePrivateConnectionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteConnectionProfileOperation manages a long-running operation from DeleteConnectionProfile.
-type DeleteConnectionProfileOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteConnectionProfileOperation returns a new DeleteConnectionProfileOperation from a given name.
@@ -2400,112 +2179,12 @@ func (c *dataMigrationGRPCClient) DeleteConnectionProfileOperation(name string) 
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteConnectionProfileOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteConnectionProfileOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteConnectionProfileOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteConnectionProfileOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteConnectionProfileOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteConversionWorkspaceOperation manages a long-running operation from DeleteConversionWorkspace.
-type DeleteConversionWorkspaceOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteConversionWorkspaceOperation returns a new DeleteConversionWorkspaceOperation from a given name.
 // The name must be that of a previously created DeleteConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) DeleteConversionWorkspaceOperation(name string) *DeleteConversionWorkspaceOperation {
 	return &DeleteConversionWorkspaceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteConversionWorkspaceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteConversionWorkspaceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteMigrationJobOperation manages a long-running operation from DeleteMigrationJob.
-type DeleteMigrationJobOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteMigrationJobOperation returns a new DeleteMigrationJobOperation from a given name.
@@ -2516,112 +2195,12 @@ func (c *dataMigrationGRPCClient) DeleteMigrationJobOperation(name string) *Dele
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteMigrationJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteMigrationJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteMigrationJobOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteMigrationJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteMigrationJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeletePrivateConnectionOperation manages a long-running operation from DeletePrivateConnection.
-type DeletePrivateConnectionOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeletePrivateConnectionOperation returns a new DeletePrivateConnectionOperation from a given name.
 // The name must be that of a previously created DeletePrivateConnectionOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
 	return &DeletePrivateConnectionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeletePrivateConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeletePrivateConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeletePrivateConnectionOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeletePrivateConnectionOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeletePrivateConnectionOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ImportMappingRulesOperation manages a long-running operation from ImportMappingRules.
-type ImportMappingRulesOperation struct {
-	lro *longrunning.Operation
 }
 
 // ImportMappingRulesOperation returns a new ImportMappingRulesOperation from a given name.
@@ -2632,134 +2211,12 @@ func (c *dataMigrationGRPCClient) ImportMappingRulesOperation(name string) *Impo
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportMappingRulesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportMappingRulesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportMappingRulesOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportMappingRulesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportMappingRulesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PromoteMigrationJobOperation manages a long-running operation from PromoteMigrationJob.
-type PromoteMigrationJobOperation struct {
-	lro *longrunning.Operation
-}
-
 // PromoteMigrationJobOperation returns a new PromoteMigrationJobOperation from a given name.
 // The name must be that of a previously created PromoteMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) PromoteMigrationJobOperation(name string) *PromoteMigrationJobOperation {
 	return &PromoteMigrationJobOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *PromoteMigrationJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *PromoteMigrationJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *PromoteMigrationJobOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *PromoteMigrationJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *PromoteMigrationJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RestartMigrationJobOperation manages a long-running operation from RestartMigrationJob.
-type RestartMigrationJobOperation struct {
-	lro *longrunning.Operation
 }
 
 // RestartMigrationJobOperation returns a new RestartMigrationJobOperation from a given name.
@@ -2770,134 +2227,12 @@ func (c *dataMigrationGRPCClient) RestartMigrationJobOperation(name string) *Res
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RestartMigrationJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RestartMigrationJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RestartMigrationJobOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RestartMigrationJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RestartMigrationJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ResumeMigrationJobOperation manages a long-running operation from ResumeMigrationJob.
-type ResumeMigrationJobOperation struct {
-	lro *longrunning.Operation
-}
-
 // ResumeMigrationJobOperation returns a new ResumeMigrationJobOperation from a given name.
 // The name must be that of a previously created ResumeMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) ResumeMigrationJobOperation(name string) *ResumeMigrationJobOperation {
 	return &ResumeMigrationJobOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ResumeMigrationJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ResumeMigrationJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ResumeMigrationJobOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ResumeMigrationJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ResumeMigrationJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RollbackConversionWorkspaceOperation manages a long-running operation from RollbackConversionWorkspace.
-type RollbackConversionWorkspaceOperation struct {
-	lro *longrunning.Operation
 }
 
 // RollbackConversionWorkspaceOperation returns a new RollbackConversionWorkspaceOperation from a given name.
@@ -2908,134 +2243,12 @@ func (c *dataMigrationGRPCClient) RollbackConversionWorkspaceOperation(name stri
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RollbackConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RollbackConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RollbackConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RollbackConversionWorkspaceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RollbackConversionWorkspaceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SeedConversionWorkspaceOperation manages a long-running operation from SeedConversionWorkspace.
-type SeedConversionWorkspaceOperation struct {
-	lro *longrunning.Operation
-}
-
 // SeedConversionWorkspaceOperation returns a new SeedConversionWorkspaceOperation from a given name.
 // The name must be that of a previously created SeedConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) SeedConversionWorkspaceOperation(name string) *SeedConversionWorkspaceOperation {
 	return &SeedConversionWorkspaceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SeedConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SeedConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SeedConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SeedConversionWorkspaceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SeedConversionWorkspaceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StartMigrationJobOperation manages a long-running operation from StartMigrationJob.
-type StartMigrationJobOperation struct {
-	lro *longrunning.Operation
 }
 
 // StartMigrationJobOperation returns a new StartMigrationJobOperation from a given name.
@@ -3046,134 +2259,12 @@ func (c *dataMigrationGRPCClient) StartMigrationJobOperation(name string) *Start
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StartMigrationJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StartMigrationJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StartMigrationJobOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StartMigrationJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StartMigrationJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StopMigrationJobOperation manages a long-running operation from StopMigrationJob.
-type StopMigrationJobOperation struct {
-	lro *longrunning.Operation
-}
-
 // StopMigrationJobOperation returns a new StopMigrationJobOperation from a given name.
 // The name must be that of a previously created StopMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) StopMigrationJobOperation(name string) *StopMigrationJobOperation {
 	return &StopMigrationJobOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StopMigrationJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StopMigrationJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StopMigrationJobOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StopMigrationJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StopMigrationJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateConnectionProfileOperation manages a long-running operation from UpdateConnectionProfile.
-type UpdateConnectionProfileOperation struct {
-	lro *longrunning.Operation
 }
 
 // UpdateConnectionProfileOperation returns a new UpdateConnectionProfileOperation from a given name.
@@ -3184,134 +2275,12 @@ func (c *dataMigrationGRPCClient) UpdateConnectionProfileOperation(name string) 
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateConnectionProfileOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConnectionProfile, error) {
-	var resp clouddmspb.ConnectionProfile
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateConnectionProfileOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConnectionProfile, error) {
-	var resp clouddmspb.ConnectionProfile
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateConnectionProfileOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateConnectionProfileOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateConnectionProfileOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateConversionWorkspaceOperation manages a long-running operation from UpdateConversionWorkspace.
-type UpdateConversionWorkspaceOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateConversionWorkspaceOperation returns a new UpdateConversionWorkspaceOperation from a given name.
 // The name must be that of a previously created UpdateConversionWorkspaceOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) UpdateConversionWorkspaceOperation(name string) *UpdateConversionWorkspaceOperation {
 	return &UpdateConversionWorkspaceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
-	var resp clouddmspb.ConversionWorkspace
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateConversionWorkspaceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateConversionWorkspaceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateMigrationJobOperation manages a long-running operation from UpdateMigrationJob.
-type UpdateMigrationJobOperation struct {
-	lro *longrunning.Operation
 }
 
 // UpdateMigrationJobOperation returns a new UpdateMigrationJobOperation from a given name.
@@ -3322,503 +2291,10 @@ func (c *dataMigrationGRPCClient) UpdateMigrationJobOperation(name string) *Upda
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateMigrationJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateMigrationJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateMigrationJobOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateMigrationJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateMigrationJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// VerifyMigrationJobOperation manages a long-running operation from VerifyMigrationJob.
-type VerifyMigrationJobOperation struct {
-	lro *longrunning.Operation
-}
-
 // VerifyMigrationJobOperation returns a new VerifyMigrationJobOperation from a given name.
 // The name must be that of a previously created VerifyMigrationJobOperation, possibly from a different process.
 func (c *dataMigrationGRPCClient) VerifyMigrationJobOperation(name string) *VerifyMigrationJobOperation {
 	return &VerifyMigrationJobOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *VerifyMigrationJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *VerifyMigrationJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	var resp clouddmspb.MigrationJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *VerifyMigrationJobOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
-	var meta clouddmspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *VerifyMigrationJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *VerifyMigrationJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ConnectionProfileIterator manages a stream of *clouddmspb.ConnectionProfile.
-type ConnectionProfileIterator struct {
-	items    []*clouddmspb.ConnectionProfile
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.ConnectionProfile, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ConnectionProfileIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ConnectionProfileIterator) Next() (*clouddmspb.ConnectionProfile, error) {
-	var item *clouddmspb.ConnectionProfile
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ConnectionProfileIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ConnectionProfileIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ConversionWorkspaceIterator manages a stream of *clouddmspb.ConversionWorkspace.
-type ConversionWorkspaceIterator struct {
-	items    []*clouddmspb.ConversionWorkspace
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.ConversionWorkspace, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ConversionWorkspaceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ConversionWorkspaceIterator) Next() (*clouddmspb.ConversionWorkspace, error) {
-	var item *clouddmspb.ConversionWorkspace
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ConversionWorkspaceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ConversionWorkspaceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DatabaseEntityIterator manages a stream of *clouddmspb.DatabaseEntity.
-type DatabaseEntityIterator struct {
-	items    []*clouddmspb.DatabaseEntity
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.DatabaseEntity, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DatabaseEntityIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DatabaseEntityIterator) Next() (*clouddmspb.DatabaseEntity, error) {
-	var item *clouddmspb.DatabaseEntity
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DatabaseEntityIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DatabaseEntityIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// MigrationJobIterator manages a stream of *clouddmspb.MigrationJob.
-type MigrationJobIterator struct {
-	items    []*clouddmspb.MigrationJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.MigrationJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *MigrationJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *MigrationJobIterator) Next() (*clouddmspb.MigrationJob, error) {
-	var item *clouddmspb.MigrationJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *MigrationJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *MigrationJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PrivateConnectionIterator manages a stream of *clouddmspb.PrivateConnection.
-type PrivateConnectionIterator struct {
-	items    []*clouddmspb.PrivateConnection
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.PrivateConnection, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PrivateConnectionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PrivateConnectionIterator) Next() (*clouddmspb.PrivateConnection, error) {
-	var item *clouddmspb.PrivateConnection
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PrivateConnectionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PrivateConnectionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// StringIterator manages a stream of string.
-type StringIterator struct {
-	items    []string
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StringIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StringIterator) Next() (string, error) {
-	var item string
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StringIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StringIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

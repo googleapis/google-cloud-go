@@ -250,6 +250,7 @@ type ListEndpointsRequest struct {
 	//     * A key including a space must be quoted. `labels."a key"`.
 	//
 	// Some examples:
+	//
 	//   * `endpoint=1`
 	//   * `displayName="myDisplayName"`
 	//   * `labels.myKey="myValue"`
@@ -268,6 +269,7 @@ type ListEndpointsRequest struct {
 	// A comma-separated list of fields to order by, sorted in ascending order.
 	// Use "desc" after a field name for descending.
 	// Supported fields:
+	//
 	//   * `display_name`
 	//   * `create_time`
 	//   * `update_time`

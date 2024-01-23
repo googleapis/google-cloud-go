@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1",
-    "version": "1.1.0",
+    "version": "1.4.0",
     "language": "GO",
     "apis": [
       {
@@ -145,6 +145,373 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_ConverseConversation_sync",
+      "title": "discoveryengine ConverseConversation Sample",
+      "description": "ConverseConversation converses a conversation.",
+      "file": "ConversationalSearchClient/ConverseConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ConverseConversation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.ConverseConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ConverseConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.ConverseConversationResponse",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "ConverseConversation",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.ConverseConversation",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_CreateConversation_sync",
+      "title": "discoveryengine CreateConversation Sample",
+      "description": "CreateConversation creates a Conversation.\n\nIf the [Conversation][google.cloud.discoveryengine.v1.Conversation] to\ncreate already exists, an ALREADY_EXISTS error is returned.",
+      "file": "ConversationalSearchClient/CreateConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConversation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.CreateConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Conversation",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "CreateConversation",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.CreateConversation",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_DeleteConversation_sync",
+      "title": "discoveryengine DeleteConversation Sample",
+      "description": "DeleteConversation deletes a Conversation.\n\nIf the [Conversation][google.cloud.discoveryengine.v1.Conversation] to\ndelete does not exist, a NOT_FOUND error is returned.",
+      "file": "ConversationalSearchClient/DeleteConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConversation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.DeleteConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "DeleteConversation",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.DeleteConversation",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_GetConversation_sync",
+      "title": "discoveryengine GetConversation Sample",
+      "description": "GetConversation gets a Conversation.",
+      "file": "ConversationalSearchClient/GetConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConversation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.GetConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Conversation",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "GetConversation",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.GetConversation",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ConversationalSearchClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_ListConversations_sync",
+      "title": "discoveryengine ListConversations Sample",
+      "description": "ListConversations lists all Conversations by their parent\n[DataStore][google.cloud.discoveryengine.v1.DataStore].",
+      "file": "ConversationalSearchClient/ListConversations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConversations",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.ListConversations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListConversationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConversationIterator",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "ListConversations",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.ListConversations",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ConversationalSearchClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_UpdateConversation_sync",
+      "title": "discoveryengine UpdateConversation Sample",
+      "description": "UpdateConversation updates a Conversation.\n\n[Conversation][google.cloud.discoveryengine.v1.Conversation] action type\ncannot be changed. If the\n[Conversation][google.cloud.discoveryengine.v1.Conversation] to update does\nnot exist, a NOT_FOUND error is returned.",
+      "file": "ConversationalSearchClient/UpdateConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConversation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.UpdateConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.UpdateConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Conversation",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "UpdateConversation",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.UpdateConversation",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1025,7 +1392,7 @@
     {
       "regionTag": "discoveryengine_v1_generated_UserEventService_CollectUserEvent_sync",
       "title": "discoveryengine CollectUserEvent Sample",
-      "description": "CollectUserEvent writes a single user event from the browser. This uses a GET request to\ndue to browser restriction of POST-ing to a 3rd party domain.\n\nThis method is used only by the Discovery Engine API JavaScript pixel and\nGoogle Tag Manager. Users should not call this method directly.",
+      "description": "CollectUserEvent writes a single user event from the browser. This uses a GET request to\ndue to browser restriction of POST-ing to a third-party domain.\n\nThis method is used only by the Discovery Engine API JavaScript pixel and\nGoogle Tag Manager. Users should not call this method directly.",
       "file": "UserEventClient/CollectUserEvent/main.go",
       "language": "GO",
       "clientMethod": {

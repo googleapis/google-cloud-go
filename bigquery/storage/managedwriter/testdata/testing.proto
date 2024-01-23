@@ -74,3 +74,21 @@ message WithOneOf {
     double double_value = 3;
   }
 }
+
+message DefaultValues {
+  optional string id = 1;
+  optional string strcol = 2;
+  optional string strcol_withdef = 3;
+  optional int64 intcol = 4;
+  optional int64 intcol_withdef = 5;
+  optional string otherstr = 6;
+  optional string otherstr_default = 7;
+}
+
+message DefaultValuesPartialSchema {
+  optional string id = 1;
+  optional string strcol = 2;
+  optional string strcol_withdef = 3;
+  optional int64 intcol = 4;
+  optional int64 intcol_withdef = 5;
+}

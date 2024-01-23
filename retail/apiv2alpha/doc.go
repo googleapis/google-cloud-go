@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := retail.NewCatalogClient(ctx)
+//	c, err := retail.NewAnalyticsClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -65,32 +65,31 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := retail.NewCatalogClient(ctx)
+//	c, err := retail.NewAnalyticsClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
 //	defer c.Close()
 //
-//	req := &retailpb.ListCatalogsRequest{
+//	req := &retailpb.ExportAnalyticsMetricsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ListCatalogsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ExportAnalyticsMetricsRequest.
 //	}
-//	it := c.ListCatalogs(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
+//	op, err := c.ExportAnalyticsMetrics(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
 //	}
+//
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //
-// The ctx passed to NewCatalogClient is used for authentication requests and
+// The ctx passed to NewAnalyticsClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

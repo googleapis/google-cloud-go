@@ -30,7 +30,7 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-func TestIntegration_TableCreate(t *testing.T) {
+func TestIntegration_TableInvalidSchema(t *testing.T) {
 	// Check that creating a record field with an empty schema is an error.
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -48,6 +48,40 @@ func TestIntegration_TableCreate(t *testing.T) {
 	}
 	if !hasStatusCode(err, http.StatusBadRequest) {
 		t.Fatalf("want a 400 error, got %v", err)
+	}
+}
+
+func TestIntegration_TableValidSchema(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table("t_bad")
+	schema := Schema{
+		{
+			Name: "range_dt",
+			Type: RangeFieldType,
+			RangeElementType: &RangeElementType{
+				Type: DateTimeFieldType,
+			},
+		},
+		{Name: "rec", Type: RecordFieldType, Schema: Schema{
+			{Name: "inner", Type: IntegerFieldType},
+		}},
+	}
+	err := table.Create(ctx, &TableMetadata{
+		Schema: schema,
+	})
+	if err != nil {
+		t.Fatalf("table.Create: %v", err)
+	}
+
+	meta, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("table.Metadata: %v", err)
+	}
+	if diff := testutil.Diff(meta.Schema, schema); diff != "" {
+		t.Fatalf("got=-, want=+:\n%s", diff)
 	}
 }
 

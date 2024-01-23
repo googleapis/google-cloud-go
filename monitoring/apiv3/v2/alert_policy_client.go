@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -170,11 +170,19 @@ func (c *AlertPolicyClient) GetAlertPolicy(ctx context.Context, req *monitoringp
 }
 
 // CreateAlertPolicy creates a new alerting policy.
+//
+// Design your application to single-thread API calls that modify the state of
+// alerting policies in a single project. This includes calls to
+// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 func (c *AlertPolicyClient) CreateAlertPolicy(ctx context.Context, req *monitoringpb.CreateAlertPolicyRequest, opts ...gax.CallOption) (*monitoringpb.AlertPolicy, error) {
 	return c.internalClient.CreateAlertPolicy(ctx, req, opts...)
 }
 
 // DeleteAlertPolicy deletes an alerting policy.
+//
+// Design your application to single-thread API calls that modify the state of
+// alerting policies in a single project. This includes calls to
+// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 func (c *AlertPolicyClient) DeleteAlertPolicy(ctx context.Context, req *monitoringpb.DeleteAlertPolicyRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteAlertPolicy(ctx, req, opts...)
 }
@@ -183,6 +191,10 @@ func (c *AlertPolicyClient) DeleteAlertPolicy(ctx context.Context, req *monitori
 // a new one or replace only certain fields in the current alerting policy by
 // specifying the fields to be updated via updateMask. Returns the
 // updated alerting policy.
+//
+// Design your application to single-thread API calls that modify the state of
+// alerting policies in a single project. This includes calls to
+// CreateAlertPolicy, DeleteAlertPolicy and UpdateAlertPolicy.
 func (c *AlertPolicyClient) UpdateAlertPolicy(ctx context.Context, req *monitoringpb.UpdateAlertPolicyRequest, opts ...gax.CallOption) (*monitoringpb.AlertPolicy, error) {
 	return c.internalClient.UpdateAlertPolicy(ctx, req, opts...)
 }
@@ -379,51 +391,4 @@ func (c *alertPolicyGRPCClient) UpdateAlertPolicy(ctx context.Context, req *moni
 		return nil, err
 	}
 	return resp, nil
-}
-
-// AlertPolicyIterator manages a stream of *monitoringpb.AlertPolicy.
-type AlertPolicyIterator struct {
-	items    []*monitoringpb.AlertPolicy
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*monitoringpb.AlertPolicy, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AlertPolicyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AlertPolicyIterator) Next() (*monitoringpb.AlertPolicy, error) {
-	var item *monitoringpb.AlertPolicy
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AlertPolicyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AlertPolicyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

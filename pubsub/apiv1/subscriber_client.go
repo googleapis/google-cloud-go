@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -563,16 +563,16 @@ func (c *SubscriberClient) Connection() *grpc.ClientConn {
 }
 
 // CreateSubscription creates a subscription to a given topic. See the [resource name rules]
-// (https://cloud.google.com/pubsub/docs/admin#resource_names (at https://cloud.google.com/pubsub/docs/admin#resource_names)).
+// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names (at https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names)).
 // If the subscription already exists, returns ALREADY_EXISTS.
 // If the corresponding topic doesn’t exist, returns NOT_FOUND.
 //
 // If the name is not provided in the request, the server will assign a random
 // name for this subscription on the same project as the topic, conforming
 // to the [resource name format]
-// (https://cloud.google.com/pubsub/docs/admin#resource_names (at https://cloud.google.com/pubsub/docs/admin#resource_names)). The generated
-// name is populated in the returned Subscription object. Note that for REST
-// API requests, you must specify a name in the request.
+// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names (at https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names)). The
+// generated name is populated in the returned Subscription object. Note that
+// for REST API requests, you must specify a name in the request.
 func (c *SubscriberClient) CreateSubscription(ctx context.Context, req *pubsubpb.Subscription, opts ...gax.CallOption) (*pubsubpb.Subscription, error) {
 	return c.internalClient.CreateSubscription(ctx, req, opts...)
 }
@@ -680,7 +680,7 @@ func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.List
 // the request, the server will assign a random
 // name for this snapshot on the same project as the subscription, conforming
 // to the [resource name format]
-// (https://cloud.google.com/pubsub/docs/admin#resource_names (at https://cloud.google.com/pubsub/docs/admin#resource_names)). The
+// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names (at https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names)). The
 // generated name is populated in the returned Snapshot object. Note that for
 // REST API requests, you must specify a name in the request.
 func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.CreateSnapshotRequest, opts ...gax.CallOption) (*pubsubpb.Snapshot, error) {
@@ -1269,16 +1269,16 @@ func (c *subscriberGRPCClient) TestIamPermissions(ctx context.Context, req *iamp
 }
 
 // CreateSubscription creates a subscription to a given topic. See the [resource name rules]
-// (https://cloud.google.com/pubsub/docs/admin#resource_names (at https://cloud.google.com/pubsub/docs/admin#resource_names)).
+// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names (at https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names)).
 // If the subscription already exists, returns ALREADY_EXISTS.
 // If the corresponding topic doesn’t exist, returns NOT_FOUND.
 //
 // If the name is not provided in the request, the server will assign a random
 // name for this subscription on the same project as the topic, conforming
 // to the [resource name format]
-// (https://cloud.google.com/pubsub/docs/admin#resource_names (at https://cloud.google.com/pubsub/docs/admin#resource_names)). The generated
-// name is populated in the returned Subscription object. Note that for REST
-// API requests, you must specify a name in the request.
+// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names (at https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names)). The
+// generated name is populated in the returned Subscription object. Note that
+// for REST API requests, you must specify a name in the request.
 func (c *subscriberRESTClient) CreateSubscription(ctx context.Context, req *pubsubpb.Subscription, opts ...gax.CallOption) (*pubsubpb.Subscription, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2013,7 +2013,7 @@ func (c *subscriberRESTClient) ListSnapshots(ctx context.Context, req *pubsubpb.
 // the request, the server will assign a random
 // name for this snapshot on the same project as the subscription, conforming
 // to the [resource name format]
-// (https://cloud.google.com/pubsub/docs/admin#resource_names (at https://cloud.google.com/pubsub/docs/admin#resource_names)). The
+// (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names (at https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names)). The
 // generated name is populated in the returned Snapshot object. Note that for
 // REST API requests, you must specify a name in the request.
 func (c *subscriberRESTClient) CreateSnapshot(ctx context.Context, req *pubsubpb.CreateSnapshotRequest, opts ...gax.CallOption) (*pubsubpb.Snapshot, error) {
@@ -2477,98 +2477,4 @@ func (c *subscriberRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 		return nil, e
 	}
 	return resp, nil
-}
-
-// SnapshotIterator manages a stream of *pubsubpb.Snapshot.
-type SnapshotIterator struct {
-	items    []*pubsubpb.Snapshot
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsubpb.Snapshot, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SnapshotIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SnapshotIterator) Next() (*pubsubpb.Snapshot, error) {
-	var item *pubsubpb.Snapshot
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SnapshotIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SnapshotIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SubscriptionIterator manages a stream of *pubsubpb.Subscription.
-type SubscriptionIterator struct {
-	items    []*pubsubpb.Subscription
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsubpb.Subscription, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SubscriptionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SubscriptionIterator) Next() (*pubsubpb.Subscription, error) {
-	var item *pubsubpb.Subscription
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SubscriptionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SubscriptionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

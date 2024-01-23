@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"testing"
 	"time"
 
@@ -689,12 +690,11 @@ func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 
 	s.ReceiveSettings = ReceiveSettings{
 		NumGoroutines: 1,
-		// This needs to be greater than total deadline otherwise the message will be redelivered.
-		MinExtensionPeriod: 30 * time.Second,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
 	exactlyOnceDeliveryRetryDeadline = 10 * time.Second
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		log.Printf("received message: %v\n", msg)
 		ar := msg.AckWithResult()
 		s, err := ar.Get(ctx)
 		if s != AcknowledgeStatusOther {

@@ -21,6 +21,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -32,6 +33,7 @@ const (
 
 	quotaProjectEnvVar = "GOOGLE_CLOUD_QUOTA_PROJECT"
 	projectEnvVar      = "GOOGLE_CLOUD_PROJECT"
+	maxBodySize        = 1 << 20
 )
 
 // CloneDefaultClient returns a [http.Client] with some good defaults.
@@ -110,4 +112,10 @@ func GetProjectID(b []byte, override string) string {
 		return v.ProjectID
 	}
 	return v.Project
+}
+
+// ReadAll consumes the whole reader and safely reads the content of its body
+// with some overflow protection.
+func ReadAll(r io.Reader) ([]byte, error) {
+	return io.ReadAll(io.LimitReader(r, maxBodySize))
 }

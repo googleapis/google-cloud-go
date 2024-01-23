@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -138,7 +138,7 @@ type Snooze_Criteria struct {
 	//
 	//     projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[POLICY_ID]
 	//
-	// There is a limit of 10 policies per snooze. This limit is checked during
+	// There is a limit of 16 policies per snooze. This limit is checked during
 	// snooze creation.
 	Policies []string `protobuf:"bytes,1,rep,name=policies,proto3" json:"policies,omitempty"`
 }

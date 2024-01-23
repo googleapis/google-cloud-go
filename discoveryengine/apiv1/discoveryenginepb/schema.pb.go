@@ -46,7 +46,7 @@ type Schema struct {
 	// Schema representation. One of
 	// [struct_schema][google.cloud.discoveryengine.v1.Schema.struct_schema] or
 	// [json_schema][google.cloud.discoveryengine.v1.Schema.json_schema] should be
-	// provided otherwise an INVALID_ARGUMENT error is thrown.
+	// provided otherwise an `INVALID_ARGUMENT` error is thrown.
 	//
 	// Types that are assignable to Schema:
 	//	*Schema_StructSchema

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ type CallOptions struct {
 	MarkInsightAccepted         []gax.CallOption
 	ListRecommendations         []gax.CallOption
 	GetRecommendation           []gax.CallOption
+	MarkRecommendationDismissed []gax.CallOption
 	MarkRecommendationClaimed   []gax.CallOption
 	MarkRecommendationSucceeded []gax.CallOption
 	MarkRecommendationFailed    []gax.CallOption
@@ -127,6 +128,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		MarkRecommendationDismissed: []gax.CallOption{},
 		MarkRecommendationClaimed: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -196,6 +198,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		MarkRecommendationDismissed: []gax.CallOption{},
 		MarkRecommendationClaimed: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -222,6 +225,7 @@ type internalClient interface {
 	MarkInsightAccepted(context.Context, *recommenderpb.MarkInsightAcceptedRequest, ...gax.CallOption) (*recommenderpb.Insight, error)
 	ListRecommendations(context.Context, *recommenderpb.ListRecommendationsRequest, ...gax.CallOption) *RecommendationIterator
 	GetRecommendation(context.Context, *recommenderpb.GetRecommendationRequest, ...gax.CallOption) (*recommenderpb.Recommendation, error)
+	MarkRecommendationDismissed(context.Context, *recommenderpb.MarkRecommendationDismissedRequest, ...gax.CallOption) (*recommenderpb.Recommendation, error)
 	MarkRecommendationClaimed(context.Context, *recommenderpb.MarkRecommendationClaimedRequest, ...gax.CallOption) (*recommenderpb.Recommendation, error)
 	MarkRecommendationSucceeded(context.Context, *recommenderpb.MarkRecommendationSucceededRequest, ...gax.CallOption) (*recommenderpb.Recommendation, error)
 	MarkRecommendationFailed(context.Context, *recommenderpb.MarkRecommendationFailedRequest, ...gax.CallOption) (*recommenderpb.Recommendation, error)
@@ -301,6 +305,19 @@ func (c *Client) ListRecommendations(ctx context.Context, req *recommenderpb.Lis
 // IAM permission for the specified recommender.
 func (c *Client) GetRecommendation(ctx context.Context, req *recommenderpb.GetRecommendationRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
 	return c.internalClient.GetRecommendation(ctx, req, opts...)
+}
+
+// MarkRecommendationDismissed mark the Recommendation State as Dismissed. Users can use this method to
+// indicate to the Recommender API that an ACTIVE recommendation has to
+// be marked back as DISMISSED.
+//
+// MarkRecommendationDismissed can be applied to recommendations in ACTIVE
+// state.
+//
+// Requires the recommender.*.update IAM permission for the specified
+// recommender.
+func (c *Client) MarkRecommendationDismissed(ctx context.Context, req *recommenderpb.MarkRecommendationDismissedRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
+	return c.internalClient.MarkRecommendationDismissed(ctx, req, opts...)
 }
 
 // MarkRecommendationClaimed marks the Recommendation State as Claimed. Users can use this method to
@@ -655,6 +672,24 @@ func (c *gRPCClient) GetRecommendation(ctx context.Context, req *recommenderpb.G
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.GetRecommendation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) MarkRecommendationDismissed(ctx context.Context, req *recommenderpb.MarkRecommendationDismissedRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).MarkRecommendationDismissed[0:len((*c.CallOptions).MarkRecommendationDismissed):len((*c.CallOptions).MarkRecommendationDismissed)], opts...)
+	var resp *recommenderpb.Recommendation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.MarkRecommendationDismissed(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1135,6 +1170,80 @@ func (c *restClient) GetRecommendation(ctx context.Context, req *recommenderpb.G
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// MarkRecommendationDismissed mark the Recommendation State as Dismissed. Users can use this method to
+// indicate to the Recommender API that an ACTIVE recommendation has to
+// be marked back as DISMISSED.
+//
+// MarkRecommendationDismissed can be applied to recommendations in ACTIVE
+// state.
+//
+// Requires the recommender.*.update IAM permission for the specified
+// recommender.
+func (c *restClient) MarkRecommendationDismissed(ctx context.Context, req *recommenderpb.MarkRecommendationDismissedRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:markDismissed", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).MarkRecommendationDismissed[0:len((*c.CallOptions).MarkRecommendationDismissed):len((*c.CallOptions).MarkRecommendationDismissed)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommenderpb.Recommendation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}
@@ -1671,98 +1780,4 @@ func (c *restClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 		return nil, e
 	}
 	return resp, nil
-}
-
-// InsightIterator manages a stream of *recommenderpb.Insight.
-type InsightIterator struct {
-	items    []*recommenderpb.Insight
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recommenderpb.Insight, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InsightIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InsightIterator) Next() (*recommenderpb.Insight, error) {
-	var item *recommenderpb.Insight
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InsightIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InsightIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RecommendationIterator manages a stream of *recommenderpb.Recommendation.
-type RecommendationIterator struct {
-	items    []*recommenderpb.Recommendation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recommenderpb.Recommendation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RecommendationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RecommendationIterator) Next() (*recommenderpb.Recommendation, error) {
-	var item *recommenderpb.Recommendation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RecommendationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RecommendationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

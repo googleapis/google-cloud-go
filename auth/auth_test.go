@@ -21,12 +21,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/auth/internal/jwt"
+	"github.com/google/go-cmp/cmp"
 )
 
 var fakePrivateKey = []byte(`-----BEGIN RSA PRIVATE KEY-----
@@ -114,9 +114,9 @@ func TestToken_isValidWithEarlyExpiry(t *testing.T) {
 		expiry time.Duration
 		want   bool
 	}{
-		{name: "12 seconds", tok: &Token{Expiry: now.Add(12 * time.Second)}, expiry: defaultExpiryDelta, want: true},
-		{name: "10 seconds", tok: &Token{Expiry: now.Add(defaultExpiryDelta)}, expiry: defaultExpiryDelta, want: true},
-		{name: "10 seconds-1ns", tok: &Token{Expiry: now.Add(defaultExpiryDelta - 1*time.Nanosecond)}, expiry: defaultExpiryDelta, want: false},
+		{name: "4 minutes", tok: &Token{Expiry: now.Add(4 * 60 * time.Second)}, expiry: defaultExpiryDelta, want: true},
+		{name: "3 minutes and 45 seconds", tok: &Token{Expiry: now.Add(defaultExpiryDelta)}, expiry: defaultExpiryDelta, want: true},
+		{name: "3 minutes and 45 seconds-1ns", tok: &Token{Expiry: now.Add(defaultExpiryDelta - 1*time.Nanosecond)}, expiry: defaultExpiryDelta, want: false},
 		{name: "-1 hour", tok: &Token{Expiry: now.Add(-1 * time.Hour)}, expiry: defaultExpiryDelta, want: false},
 		{name: "12 seconds, custom expiryDelta", tok: &Token{Expiry: now.Add(12 * time.Second)}, expiry: time.Second * 5, want: true},
 		{name: "5 seconds, custom expiryDelta", tok: &Token{Expiry: now.Add(time.Second * 5)}, expiry: time.Second * 5, want: true},
@@ -178,7 +178,7 @@ func TestError_Error(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_JSONResponse(t *testing.T) {
+func TestNew2LOTokenProvider_JSONResponse(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{
@@ -221,7 +221,7 @@ func TestConfigJWT2LO_JSONResponse(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_BadResponse(t *testing.T) {
+func TestNew2LOTokenProvider_BadResponse(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"scope": "user", "token_type": "bearer"}`))
@@ -259,7 +259,7 @@ func TestConfigJWT2LO_BadResponse(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_BadResponseType(t *testing.T) {
+func TestNew2LOTokenProvider_BadResponseType(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"access_token":123, "scope": "user", "token_type": "bearer"}`))
@@ -283,7 +283,7 @@ func TestConfigJWT2LO_BadResponseType(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_Assertion(t *testing.T) {
+func TestNew2LOTokenProvider_Assertion(t *testing.T) {
 	var assertion string
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
@@ -339,7 +339,7 @@ func TestConfigJWT2LO_Assertion(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_AssertionPayload(t *testing.T) {
+func TestNew2LOTokenProvider_AssertionPayload(t *testing.T) {
 	var assertion string
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
@@ -427,7 +427,7 @@ func TestConfigJWT2LO_AssertionPayload(t *testing.T) {
 				}
 				m := got.(map[string]interface{})
 				for v, k := range opts.PrivateClaims {
-					if !reflect.DeepEqual(m[v], k) {
+					if !cmp.Equal(m[v], k) {
 						t.Errorf("payload private claims key = %q: got %#v; want %#v", v, m[v], k)
 					}
 				}
@@ -436,7 +436,7 @@ func TestConfigJWT2LO_AssertionPayload(t *testing.T) {
 	}
 }
 
-func TestConfigJWT2LO_TokenError(t *testing.T) {
+func TestNew2LOTokenProvider_TokenError(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -465,5 +465,44 @@ func TestConfigJWT2LO_TokenError(t *testing.T) {
 	expected := fmt.Sprintf("auth: cannot fetch token: %v\nResponse: %s", "400", `{"error": "invalid_grant"}`)
 	if errStr := err.Error(); errStr != expected {
 		t.Fatalf("got %#v, expected %#v", errStr, expected)
+	}
+}
+
+func TestNew2LOTokenProvider_Validate(t *testing.T) {
+	tests := []struct {
+		name string
+		opts *Options2LO
+	}{
+		{
+			name: "missing options",
+		},
+		{
+			name: "missing email",
+			opts: &Options2LO{
+				PrivateKey: []byte("key"),
+				TokenURL:   "url",
+			},
+		},
+		{
+			name: "missing key",
+			opts: &Options2LO{
+				Email:    "email",
+				TokenURL: "url",
+			},
+		},
+		{
+			name: "missing URL",
+			opts: &Options2LO{
+				Email:      "email",
+				PrivateKey: []byte("key"),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if _, err := New2LOTokenProvider(tt.opts); err == nil {
+				t.Error("got nil, want an error")
+			}
+		})
 	}
 }

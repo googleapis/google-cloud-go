@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ type ConversationsCallOptions struct {
 	ListMessages               []gax.CallOption
 	SuggestConversationSummary []gax.CallOption
 	GenerateStatelessSummary   []gax.CallOption
+	SearchKnowledge            []gax.CallOption
 	GetLocation                []gax.CallOption
 	ListLocations              []gax.CallOption
 	CancelOperation            []gax.CallOption
@@ -171,6 +172,18 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 				})
 			}),
 		},
+		SearchKnowledge: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -269,6 +282,17 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		SearchKnowledge: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -290,6 +314,7 @@ type internalConversationsClient interface {
 	ListMessages(context.Context, *dialogflowpb.ListMessagesRequest, ...gax.CallOption) *MessageIterator
 	SuggestConversationSummary(context.Context, *dialogflowpb.SuggestConversationSummaryRequest, ...gax.CallOption) (*dialogflowpb.SuggestConversationSummaryResponse, error)
 	GenerateStatelessSummary(context.Context, *dialogflowpb.GenerateStatelessSummaryRequest, ...gax.CallOption) (*dialogflowpb.GenerateStatelessSummaryResponse, error)
+	SearchKnowledge(context.Context, *dialogflowpb.SearchKnowledgeRequest, ...gax.CallOption) (*dialogflowpb.SearchKnowledgeResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -399,6 +424,11 @@ func (c *ConversationsClient) SuggestConversationSummary(ctx context.Context, re
 // resource created for it.
 func (c *ConversationsClient) GenerateStatelessSummary(ctx context.Context, req *dialogflowpb.GenerateStatelessSummaryRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateStatelessSummaryResponse, error) {
 	return c.internalClient.GenerateStatelessSummary(ctx, req, opts...)
+}
+
+// SearchKnowledge get answers for the given query based on knowledge documents.
+func (c *ConversationsClient) SearchKnowledge(ctx context.Context, req *dialogflowpb.SearchKnowledgeRequest, opts ...gax.CallOption) (*dialogflowpb.SearchKnowledgeResponse, error) {
+	return c.internalClient.SearchKnowledge(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -766,6 +796,24 @@ func (c *conversationsGRPCClient) GenerateStatelessSummary(ctx context.Context, 
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.conversationsClient.GenerateStatelessSummary(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *conversationsGRPCClient) SearchKnowledge(ctx context.Context, req *dialogflowpb.SearchKnowledgeRequest, opts ...gax.CallOption) (*dialogflowpb.SearchKnowledgeResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "conversation", url.QueryEscape(req.GetConversation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SearchKnowledge[0:len((*c.CallOptions).SearchKnowledge):len((*c.CallOptions).SearchKnowledge)], opts...)
+	var resp *dialogflowpb.SearchKnowledgeResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.conversationsClient.SearchKnowledge(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1522,6 +1570,72 @@ func (c *conversationsRESTClient) GenerateStatelessSummary(ctx context.Context, 
 	return resp, nil
 }
 
+// SearchKnowledge get answers for the given query based on knowledge documents.
+func (c *conversationsRESTClient) SearchKnowledge(ctx context.Context, req *dialogflowpb.SearchKnowledgeRequest, opts ...gax.CallOption) (*dialogflowpb.SearchKnowledgeResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/suggestions:searchKnowledge", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "conversation", url.QueryEscape(req.GetConversation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SearchKnowledge[0:len((*c.CallOptions).SearchKnowledge):len((*c.CallOptions).SearchKnowledge)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dialogflowpb.SearchKnowledgeResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *conversationsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1866,98 +1980,4 @@ func (c *conversationsRESTClient) ListOperations(ctx context.Context, req *longr
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// ConversationIterator manages a stream of *dialogflowpb.Conversation.
-type ConversationIterator struct {
-	items    []*dialogflowpb.Conversation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Conversation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ConversationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ConversationIterator) Next() (*dialogflowpb.Conversation, error) {
-	var item *dialogflowpb.Conversation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ConversationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ConversationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// MessageIterator manages a stream of *dialogflowpb.Message.
-type MessageIterator struct {
-	items    []*dialogflowpb.Message
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Message, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *MessageIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *MessageIterator) Next() (*dialogflowpb.Message, error) {
-	var item *dialogflowpb.Message
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *MessageIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *MessageIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

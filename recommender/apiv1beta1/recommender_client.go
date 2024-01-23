@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,6 +56,8 @@ type CallOptions struct {
 	UpdateRecommenderConfig     []gax.CallOption
 	GetInsightTypeConfig        []gax.CallOption
 	UpdateInsightTypeConfig     []gax.CallOption
+	ListRecommenders            []gax.CallOption
+	ListInsightTypes            []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -140,6 +142,8 @@ func defaultCallOptions() *CallOptions {
 		UpdateRecommenderConfig: []gax.CallOption{},
 		GetInsightTypeConfig:    []gax.CallOption{},
 		UpdateInsightTypeConfig: []gax.CallOption{},
+		ListRecommenders:        []gax.CallOption{},
+		ListInsightTypes:        []gax.CallOption{},
 	}
 }
 
@@ -209,6 +213,8 @@ func defaultRESTCallOptions() *CallOptions {
 		UpdateRecommenderConfig: []gax.CallOption{},
 		GetInsightTypeConfig:    []gax.CallOption{},
 		UpdateInsightTypeConfig: []gax.CallOption{},
+		ListRecommenders:        []gax.CallOption{},
+		ListInsightTypes:        []gax.CallOption{},
 	}
 }
 
@@ -229,6 +235,8 @@ type internalClient interface {
 	UpdateRecommenderConfig(context.Context, *recommenderpb.UpdateRecommenderConfigRequest, ...gax.CallOption) (*recommenderpb.RecommenderConfig, error)
 	GetInsightTypeConfig(context.Context, *recommenderpb.GetInsightTypeConfigRequest, ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error)
 	UpdateInsightTypeConfig(context.Context, *recommenderpb.UpdateInsightTypeConfigRequest, ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error)
+	ListRecommenders(context.Context, *recommenderpb.ListRecommendersRequest, ...gax.CallOption) *RecommenderTypeIterator
+	ListInsightTypes(context.Context, *recommenderpb.ListInsightTypesRequest, ...gax.CallOption) *InsightTypeIterator
 }
 
 // Client is a client for interacting with Recommender API.
@@ -369,6 +377,18 @@ func (c *Client) GetInsightTypeConfig(ctx context.Context, req *recommenderpb.Ge
 // config.
 func (c *Client) UpdateInsightTypeConfig(ctx context.Context, req *recommenderpb.UpdateInsightTypeConfigRequest, opts ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error) {
 	return c.internalClient.UpdateInsightTypeConfig(ctx, req, opts...)
+}
+
+// ListRecommenders lists all available Recommenders.
+// No IAM permissions are required.
+func (c *Client) ListRecommenders(ctx context.Context, req *recommenderpb.ListRecommendersRequest, opts ...gax.CallOption) *RecommenderTypeIterator {
+	return c.internalClient.ListRecommenders(ctx, req, opts...)
+}
+
+// ListInsightTypes lists available InsightTypes.
+// No IAM permissions are required.
+func (c *Client) ListInsightTypes(ctx context.Context, req *recommenderpb.ListInsightTypesRequest, opts ...gax.CallOption) *InsightTypeIterator {
+	return c.internalClient.ListInsightTypes(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Recommender API over gRPC transport.
@@ -787,6 +807,92 @@ func (c *gRPCClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) ListRecommenders(ctx context.Context, req *recommenderpb.ListRecommendersRequest, opts ...gax.CallOption) *RecommenderTypeIterator {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).ListRecommenders[0:len((*c.CallOptions).ListRecommenders):len((*c.CallOptions).ListRecommenders)], opts...)
+	it := &RecommenderTypeIterator{}
+	req = proto.Clone(req).(*recommenderpb.ListRecommendersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.RecommenderType, string, error) {
+		resp := &recommenderpb.ListRecommendersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListRecommenders(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRecommenders(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListInsightTypes(ctx context.Context, req *recommenderpb.ListInsightTypesRequest, opts ...gax.CallOption) *InsightTypeIterator {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).ListInsightTypes[0:len((*c.CallOptions).ListInsightTypes):len((*c.CallOptions).ListInsightTypes)], opts...)
+	it := &InsightTypeIterator{}
+	req = proto.Clone(req).(*recommenderpb.ListInsightTypesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.InsightType, string, error) {
+		resp := &recommenderpb.ListInsightTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListInsightTypes(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetInsightTypes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // ListInsights lists insights for the specified Cloud Resource. Requires the
@@ -1673,96 +1779,182 @@ func (c *restClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 	return resp, nil
 }
 
-// InsightIterator manages a stream of *recommenderpb.Insight.
-type InsightIterator struct {
-	items    []*recommenderpb.Insight
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+// ListRecommenders lists all available Recommenders.
+// No IAM permissions are required.
+func (c *restClient) ListRecommenders(ctx context.Context, req *recommenderpb.ListRecommendersRequest, opts ...gax.CallOption) *RecommenderTypeIterator {
+	it := &RecommenderTypeIterator{}
+	req = proto.Clone(req).(*recommenderpb.ListRecommendersRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.RecommenderType, string, error) {
+		resp := &recommenderpb.ListRecommendersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/recommenders")
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
 
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recommenderpb.Insight, nextPageToken string, err error)
-}
+		baseUrl.RawQuery = params.Encode()
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InsightIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
 
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InsightIterator) Next() (*recommenderpb.Insight, error) {
-	var item *recommenderpb.Insight
-	if err := it.nextFunc(); err != nil {
-		return item, err
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRecommenders(), resp.GetNextPageToken(), nil
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
 
-func (it *InsightIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InsightIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RecommendationIterator manages a stream of *recommenderpb.Recommendation.
-type RecommendationIterator struct {
-	items    []*recommenderpb.Recommendation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recommenderpb.Recommendation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RecommendationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RecommendationIterator) Next() (*recommenderpb.Recommendation, error) {
-	var item *recommenderpb.Recommendation
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
-func (it *RecommendationIterator) bufLen() int {
-	return len(it.items)
-}
+// ListInsightTypes lists available InsightTypes.
+// No IAM permissions are required.
+func (c *restClient) ListInsightTypes(ctx context.Context, req *recommenderpb.ListInsightTypesRequest, opts ...gax.CallOption) *InsightTypeIterator {
+	it := &InsightTypeIterator{}
+	req = proto.Clone(req).(*recommenderpb.ListInsightTypesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.InsightType, string, error) {
+		resp := &recommenderpb.ListInsightTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/insightTypes")
 
-func (it *RecommendationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetInsightTypes(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.21.3",
+    "version": "0.22.0",
     "language": "GO",
     "apis": [
       {
@@ -239,52 +239,6 @@
       ]
     },
     {
-      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_AuditUserLinks_sync",
-      "title": "analyticsadmin AuditUserLinks Sample",
-      "description": "AuditUserLinks lists all user links on an account or property, including implicit ones\nthat come from effective permissions granted by groups or organization\nadmin roles.\n\nIf a returned user link does not have direct permissions, they cannot\nbe removed from the account or property directly with the DeleteUserLink\ncommand. They have to be removed from the group/etc that gives them\npermissions, which is currently only usable/discoverable in the GA or GMP\nUIs.",
-      "file": "AnalyticsAdminClient/AuditUserLinks/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "AuditUserLinks",
-        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.AuditUserLinks",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "adminpb.AuditUserLinksRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "AuditUserLinkIterator",
-        "client": {
-          "shortName": "AnalyticsAdminClient",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
-        },
-        "method": {
-          "shortName": "AuditUserLinks",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.AuditUserLinks",
-          "service": {
-            "shortName": "AnalyticsAdminService",
-            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 60,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchCreateAccessBindings_sync",
       "title": "analyticsadmin BatchCreateAccessBindings Sample",
       "description": "BatchCreateAccessBindings creates information about multiple access bindings to an account or\nproperty.\n\nThis method is transactional. If any AccessBinding cannot be created, none\nof the AccessBindings will be created.",
@@ -331,52 +285,6 @@
       ]
     },
     {
-      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchCreateUserLinks_sync",
-      "title": "analyticsadmin BatchCreateUserLinks Sample",
-      "description": "BatchCreateUserLinks creates information about multiple users' links to an account or property.\n\nThis method is transactional. If any UserLink cannot be created, none of\nthe UserLinks will be created.",
-      "file": "AnalyticsAdminClient/BatchCreateUserLinks/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "BatchCreateUserLinks",
-        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchCreateUserLinks",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "adminpb.BatchCreateUserLinksRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*adminpb.BatchCreateUserLinksResponse",
-        "client": {
-          "shortName": "AnalyticsAdminClient",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
-        },
-        "method": {
-          "shortName": "BatchCreateUserLinks",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchCreateUserLinks",
-          "service": {
-            "shortName": "AnalyticsAdminService",
-            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchDeleteAccessBindings_sync",
       "title": "analyticsadmin BatchDeleteAccessBindings Sample",
       "description": "BatchDeleteAccessBindings deletes information about multiple users' links to an account or property.",
@@ -406,51 +314,6 @@
         "method": {
           "shortName": "BatchDeleteAccessBindings",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchDeleteAccessBindings",
-          "service": {
-            "shortName": "AnalyticsAdminService",
-            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 51,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchDeleteUserLinks_sync",
-      "title": "analyticsadmin BatchDeleteUserLinks Sample",
-      "description": "BatchDeleteUserLinks deletes information about multiple users' links to an account or property.",
-      "file": "AnalyticsAdminClient/BatchDeleteUserLinks/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "BatchDeleteUserLinks",
-        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchDeleteUserLinks",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "adminpb.BatchDeleteUserLinksRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "AnalyticsAdminClient",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
-        },
-        "method": {
-          "shortName": "BatchDeleteUserLinks",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchDeleteUserLinks",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -513,52 +376,6 @@
       ]
     },
     {
-      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchGetUserLinks_sync",
-      "title": "analyticsadmin BatchGetUserLinks Sample",
-      "description": "BatchGetUserLinks gets information about multiple users' links to an account or property.",
-      "file": "AnalyticsAdminClient/BatchGetUserLinks/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "BatchGetUserLinks",
-        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchGetUserLinks",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "adminpb.BatchGetUserLinksRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*adminpb.BatchGetUserLinksResponse",
-        "client": {
-          "shortName": "AnalyticsAdminClient",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
-        },
-        "method": {
-          "shortName": "BatchGetUserLinks",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchGetUserLinks",
-          "service": {
-            "shortName": "AnalyticsAdminService",
-            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchUpdateAccessBindings_sync",
       "title": "analyticsadmin BatchUpdateAccessBindings Sample",
       "description": "BatchUpdateAccessBindings updates information about multiple access bindings to an account or\nproperty.",
@@ -589,52 +406,6 @@
         "method": {
           "shortName": "BatchUpdateAccessBindings",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchUpdateAccessBindings",
-          "service": {
-            "shortName": "AnalyticsAdminService",
-            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchUpdateUserLinks_sync",
-      "title": "analyticsadmin BatchUpdateUserLinks Sample",
-      "description": "BatchUpdateUserLinks updates information about multiple users' links to an account or property.",
-      "file": "AnalyticsAdminClient/BatchUpdateUserLinks/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "BatchUpdateUserLinks",
-        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchUpdateUserLinks",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "adminpb.BatchUpdateUserLinksRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*adminpb.BatchUpdateUserLinksResponse",
-        "client": {
-          "shortName": "AnalyticsAdminClient",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
-        },
-        "method": {
-          "shortName": "BatchUpdateUserLinks",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchUpdateUserLinks",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -1479,6 +1250,144 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateRollupProperty_sync",
+      "title": "analyticsadmin CreateRollupProperty Sample",
+      "description": "CreateRollupProperty create a roll-up property and all roll-up property source links.",
+      "file": "AnalyticsAdminClient/CreateRollupProperty/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRollupProperty",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateRollupProperty",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateRollupPropertyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.CreateRollupPropertyResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateRollupProperty",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateRollupProperty",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateRollupPropertySourceLink_sync",
+      "title": "analyticsadmin CreateRollupPropertySourceLink Sample",
+      "description": "CreateRollupPropertySourceLink creates a roll-up property source link.\nOnly roll-up properties can have source links, so this method will throw an\nerror if used on other types of properties.",
+      "file": "AnalyticsAdminClient/CreateRollupPropertySourceLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRollupPropertySourceLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateRollupPropertySourceLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateRollupPropertySourceLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.RollupPropertySourceLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateRollupPropertySourceLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateRollupPropertySourceLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateSKAdNetworkConversionValueSchema_sync",
+      "title": "analyticsadmin CreateSKAdNetworkConversionValueSchema Sample",
+      "description": "CreateSKAdNetworkConversionValueSchema creates a SKAdNetworkConversionValueSchema.",
+      "file": "AnalyticsAdminClient/CreateSKAdNetworkConversionValueSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSKAdNetworkConversionValueSchema",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateSKAdNetworkConversionValueSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateSKAdNetworkConversionValueSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SKAdNetworkConversionValueSchema",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateSKAdNetworkConversionValueSchema",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSKAdNetworkConversionValueSchema",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateSearchAds360Link_sync",
       "title": "analyticsadmin CreateSearchAds360Link Sample",
       "description": "CreateSearchAds360Link creates a SearchAds360Link.",
@@ -1525,21 +1434,21 @@
       ]
     },
     {
-      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateUserLink_sync",
-      "title": "analyticsadmin CreateUserLink Sample",
-      "description": "CreateUserLink creates a user link on an account or property.\n\nIf the user with the specified email already has permissions on the\naccount or property, then the user's existing permissions will be unioned\nwith the permissions specified in the new UserLink.",
-      "file": "AnalyticsAdminClient/CreateUserLink/main.go",
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateSubproperty_sync",
+      "title": "analyticsadmin CreateSubproperty Sample",
+      "description": "CreateSubproperty create a subproperty and a subproperty event filter that applies to the\ncreated subproperty.",
+      "file": "AnalyticsAdminClient/CreateSubproperty/main.go",
       "language": "GO",
       "clientMethod": {
-        "shortName": "CreateUserLink",
-        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateUserLink",
+        "shortName": "CreateSubproperty",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateSubproperty",
         "parameters": [
           {
             "type": "context.Context",
             "name": "ctx"
           },
           {
-            "type": "adminpb.CreateUserLinkRequest",
+            "type": "adminpb.CreateSubpropertyRequest",
             "name": "req"
           },
           {
@@ -1547,14 +1456,60 @@
             "name": "opts"
           }
         ],
-        "resultType": "*adminpb.UserLink",
+        "resultType": "*adminpb.CreateSubpropertyResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
         },
         "method": {
-          "shortName": "CreateUserLink",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateUserLink",
+          "shortName": "CreateSubproperty",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubproperty",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateSubpropertyEventFilter_sync",
+      "title": "analyticsadmin CreateSubpropertyEventFilter Sample",
+      "description": "CreateSubpropertyEventFilter creates a subproperty Event Filter.",
+      "file": "AnalyticsAdminClient/CreateSubpropertyEventFilter/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSubpropertyEventFilter",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateSubpropertyEventFilter",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateSubpropertyEventFilterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SubpropertyEventFilter",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateSubpropertyEventFilter",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSubpropertyEventFilter",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -1618,7 +1573,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteAccount_sync",
       "title": "analyticsadmin DeleteAccount Sample",
-      "description": "DeleteAccount marks target Account as soft-deleted (ie: \"trashed\") and returns it.\n\nThis API does not have a method to restore soft-deleted accounts.\nHowever, they can be restored using the Trash Can UI.\n\nIf the accounts are not restored before the expiration time, the account\nand all child resources (eg: Properties, GoogleAdsLinks, Streams,\nUserLinks) will be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772\n\nReturns an error if the target is not found.",
+      "description": "DeleteAccount marks target Account as soft-deleted (ie: \"trashed\") and returns it.\n\nThis API does not have a method to restore soft-deleted accounts.\nHowever, they can be restored using the Trash Can UI.\n\nIf the accounts are not restored before the expiration time, the account\nand all child resources (eg: Properties, GoogleAdsLinks, Streams,\nAccessBindings) will be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772\n\nReturns an error if the target is not found.",
       "file": "AnalyticsAdminClient/DeleteAccount/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2203,7 +2158,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteProperty_sync",
       "title": "analyticsadmin DeleteProperty Sample",
-      "description": "DeleteProperty marks target Property as soft-deleted (ie: \"trashed\") and returns it.\n\nThis API does not have a method to restore soft-deleted properties.\nHowever, they can be restored using the Trash Can UI.\n\nIf the properties are not restored before the expiration time, the Property\nand all child resources (eg: GoogleAdsLinks, Streams, UserLinks)\nwill be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772\n\nReturns an error if the target is not found, or is not a GA4 Property.",
+      "description": "DeleteProperty marks target Property as soft-deleted (ie: \"trashed\") and returns it.\n\nThis API does not have a method to restore soft-deleted properties.\nHowever, they can be restored using the Trash Can UI.\n\nIf the properties are not restored before the expiration time, the Property\nand all child resources (eg: GoogleAdsLinks, Streams, AccessBindings)\nwill be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772\n\nReturns an error if the target is not found, or is not a GA4 Property.",
       "file": "AnalyticsAdminClient/DeleteProperty/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2242,6 +2197,96 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteRollupPropertySourceLink_sync",
+      "title": "analyticsadmin DeleteRollupPropertySourceLink Sample",
+      "description": "DeleteRollupPropertySourceLink deletes a roll-up property source link.\nOnly roll-up properties can have source links, so this method will throw an\nerror if used on other types of properties.",
+      "file": "AnalyticsAdminClient/DeleteRollupPropertySourceLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRollupPropertySourceLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteRollupPropertySourceLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteRollupPropertySourceLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteRollupPropertySourceLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteRollupPropertySourceLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteSKAdNetworkConversionValueSchema_sync",
+      "title": "analyticsadmin DeleteSKAdNetworkConversionValueSchema Sample",
+      "description": "DeleteSKAdNetworkConversionValueSchema deletes target SKAdNetworkConversionValueSchema.",
+      "file": "AnalyticsAdminClient/DeleteSKAdNetworkConversionValueSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSKAdNetworkConversionValueSchema",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteSKAdNetworkConversionValueSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteSKAdNetworkConversionValueSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteSKAdNetworkConversionValueSchema",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSKAdNetworkConversionValueSchema",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -2292,21 +2337,21 @@
       ]
     },
     {
-      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteUserLink_sync",
-      "title": "analyticsadmin DeleteUserLink Sample",
-      "description": "DeleteUserLink deletes a user link on an account or property.",
-      "file": "AnalyticsAdminClient/DeleteUserLink/main.go",
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteSubpropertyEventFilter_sync",
+      "title": "analyticsadmin DeleteSubpropertyEventFilter Sample",
+      "description": "DeleteSubpropertyEventFilter deletes a subproperty event filter.",
+      "file": "AnalyticsAdminClient/DeleteSubpropertyEventFilter/main.go",
       "language": "GO",
       "clientMethod": {
-        "shortName": "DeleteUserLink",
-        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteUserLink",
+        "shortName": "DeleteSubpropertyEventFilter",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteSubpropertyEventFilter",
         "parameters": [
           {
             "type": "context.Context",
             "name": "ctx"
           },
           {
-            "type": "adminpb.DeleteUserLinkRequest",
+            "type": "adminpb.DeleteSubpropertyEventFilterRequest",
             "name": "req"
           },
           {
@@ -2319,8 +2364,8 @@
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
         },
         "method": {
-          "shortName": "DeleteUserLink",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteUserLink",
+          "shortName": "DeleteSubpropertyEventFilter",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSubpropertyEventFilter",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -2889,6 +2934,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetDataRedactionSettings_sync",
+      "title": "analyticsadmin GetDataRedactionSettings Sample",
+      "description": "GetDataRedactionSettings lookup for a single DataRedactionSettings.",
+      "file": "AnalyticsAdminClient/GetDataRedactionSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataRedactionSettings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetDataRedactionSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetDataRedactionSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.DataRedactionSettings",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetDataRedactionSettings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataRedactionSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetDataRetentionSettings_sync",
       "title": "analyticsadmin GetDataRetentionSettings Sample",
       "description": "GetDataRetentionSettings returns the singleton data retention settings for this property.",
@@ -3441,6 +3532,98 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetRollupPropertySourceLink_sync",
+      "title": "analyticsadmin GetRollupPropertySourceLink Sample",
+      "description": "GetRollupPropertySourceLink lookup for a single roll-up property source Link.\nOnly roll-up properties can have source links, so this method will throw an\nerror if used on other types of properties.",
+      "file": "AnalyticsAdminClient/GetRollupPropertySourceLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRollupPropertySourceLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetRollupPropertySourceLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetRollupPropertySourceLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.RollupPropertySourceLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetRollupPropertySourceLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetRollupPropertySourceLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetSKAdNetworkConversionValueSchema_sync",
+      "title": "analyticsadmin GetSKAdNetworkConversionValueSchema Sample",
+      "description": "GetSKAdNetworkConversionValueSchema looks up a single SKAdNetworkConversionValueSchema.",
+      "file": "AnalyticsAdminClient/GetSKAdNetworkConversionValueSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSKAdNetworkConversionValueSchema",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetSKAdNetworkConversionValueSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetSKAdNetworkConversionValueSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SKAdNetworkConversionValueSchema",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetSKAdNetworkConversionValueSchema",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetSKAdNetworkConversionValueSchema",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetSearchAds360Link_sync",
       "title": "analyticsadmin GetSearchAds360Link Sample",
       "description": "GetSearchAds360Link look up a single SearchAds360Link",
@@ -3487,21 +3670,21 @@
       ]
     },
     {
-      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetUserLink_sync",
-      "title": "analyticsadmin GetUserLink Sample",
-      "description": "GetUserLink gets information about a user's link to an account or property.",
-      "file": "AnalyticsAdminClient/GetUserLink/main.go",
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetSubpropertyEventFilter_sync",
+      "title": "analyticsadmin GetSubpropertyEventFilter Sample",
+      "description": "GetSubpropertyEventFilter lookup for a single subproperty Event Filter.",
+      "file": "AnalyticsAdminClient/GetSubpropertyEventFilter/main.go",
       "language": "GO",
       "clientMethod": {
-        "shortName": "GetUserLink",
-        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetUserLink",
+        "shortName": "GetSubpropertyEventFilter",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetSubpropertyEventFilter",
         "parameters": [
           {
             "type": "context.Context",
             "name": "ctx"
           },
           {
-            "type": "adminpb.GetUserLinkRequest",
+            "type": "adminpb.GetSubpropertyEventFilterRequest",
             "name": "req"
           },
           {
@@ -3509,14 +3692,14 @@
             "name": "opts"
           }
         ],
-        "resultType": "*adminpb.UserLink",
+        "resultType": "*adminpb.SubpropertyEventFilter",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
         },
         "method": {
-          "shortName": "GetUserLink",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetUserLink",
+          "shortName": "GetSubpropertyEventFilter",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetSubpropertyEventFilter",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -4453,6 +4636,98 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListRollupPropertySourceLinks_sync",
+      "title": "analyticsadmin ListRollupPropertySourceLinks Sample",
+      "description": "ListRollupPropertySourceLinks lists roll-up property source Links on a property.\nOnly roll-up properties can have source links, so this method will throw an\nerror if used on other types of properties.",
+      "file": "AnalyticsAdminClient/ListRollupPropertySourceLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRollupPropertySourceLinks",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListRollupPropertySourceLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListRollupPropertySourceLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RollupPropertySourceLinkIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListRollupPropertySourceLinks",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListRollupPropertySourceLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListSKAdNetworkConversionValueSchemas_sync",
+      "title": "analyticsadmin ListSKAdNetworkConversionValueSchemas Sample",
+      "description": "ListSKAdNetworkConversionValueSchemas lists SKAdNetworkConversionValueSchema on a stream.\nProperties can have at most one SKAdNetworkConversionValueSchema.",
+      "file": "AnalyticsAdminClient/ListSKAdNetworkConversionValueSchemas/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSKAdNetworkConversionValueSchemas",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListSKAdNetworkConversionValueSchemas",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListSKAdNetworkConversionValueSchemasRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SKAdNetworkConversionValueSchemaIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListSKAdNetworkConversionValueSchemas",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListSKAdNetworkConversionValueSchemas",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListSearchAds360Links_sync",
       "title": "analyticsadmin ListSearchAds360Links Sample",
       "description": "ListSearchAds360Links lists all SearchAds360Links on a property.",
@@ -4499,21 +4774,21 @@
       ]
     },
     {
-      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListUserLinks_sync",
-      "title": "analyticsadmin ListUserLinks Sample",
-      "description": "ListUserLinks lists all user links on an account or property.",
-      "file": "AnalyticsAdminClient/ListUserLinks/main.go",
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListSubpropertyEventFilters_sync",
+      "title": "analyticsadmin ListSubpropertyEventFilters Sample",
+      "description": "ListSubpropertyEventFilters list all subproperty Event Filters on a property.",
+      "file": "AnalyticsAdminClient/ListSubpropertyEventFilters/main.go",
       "language": "GO",
       "clientMethod": {
-        "shortName": "ListUserLinks",
-        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListUserLinks",
+        "shortName": "ListSubpropertyEventFilters",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListSubpropertyEventFilters",
         "parameters": [
           {
             "type": "context.Context",
             "name": "ctx"
           },
           {
-            "type": "adminpb.ListUserLinksRequest",
+            "type": "adminpb.ListSubpropertyEventFiltersRequest",
             "name": "req"
           },
           {
@@ -4521,14 +4796,14 @@
             "name": "opts"
           }
         ],
-        "resultType": "UserLinkIterator",
+        "resultType": "SubpropertyEventFilterIterator",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
         },
         "method": {
-          "shortName": "ListUserLinks",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListUserLinks",
+          "shortName": "ListSubpropertyEventFilters",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListSubpropertyEventFilters",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -4593,7 +4868,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_RunAccessReport_sync",
       "title": "analyticsadmin RunAccessReport Sample",
-      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. The property must be\nin Google Analytics 360. This method is only available to Administrators.\n\nThese data access records include GA4 UI Reporting, GA4 UI Explorations,\nGA4 Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).",
+      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. Reports may be\nrequested for any property, but dimensions that aren't related to quota can\nonly be requested on Google Analytics 360 properties. This method is only\navailable to Administrators.\n\nThese data access records include GA4 UI Reporting, GA4 UI Explorations,\nGA4 Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).",
       "file": "AnalyticsAdminClient/RunAccessReport/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5097,6 +5372,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateDataRedactionSettings_sync",
+      "title": "analyticsadmin UpdateDataRedactionSettings Sample",
+      "description": "UpdateDataRedactionSettings updates a DataRedactionSettings on a property.",
+      "file": "AnalyticsAdminClient/UpdateDataRedactionSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataRedactionSettings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateDataRedactionSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateDataRedactionSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.DataRedactionSettings",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateDataRedactionSettings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataRedactionSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateDataRetentionSettings_sync",
       "title": "analyticsadmin UpdateDataRetentionSettings Sample",
       "description": "UpdateDataRetentionSettings updates the singleton data retention settings for this property.",
@@ -5557,6 +5878,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateSKAdNetworkConversionValueSchema_sync",
+      "title": "analyticsadmin UpdateSKAdNetworkConversionValueSchema Sample",
+      "description": "UpdateSKAdNetworkConversionValueSchema updates a SKAdNetworkConversionValueSchema.",
+      "file": "AnalyticsAdminClient/UpdateSKAdNetworkConversionValueSchema/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSKAdNetworkConversionValueSchema",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateSKAdNetworkConversionValueSchema",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateSKAdNetworkConversionValueSchemaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SKAdNetworkConversionValueSchema",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateSKAdNetworkConversionValueSchema",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSKAdNetworkConversionValueSchema",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateSearchAds360Link_sync",
       "title": "analyticsadmin UpdateSearchAds360Link Sample",
       "description": "UpdateSearchAds360Link updates a SearchAds360Link on a property.",
@@ -5603,21 +5970,21 @@
       ]
     },
     {
-      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateUserLink_sync",
-      "title": "analyticsadmin UpdateUserLink Sample",
-      "description": "UpdateUserLink updates a user link on an account or property.",
-      "file": "AnalyticsAdminClient/UpdateUserLink/main.go",
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateSubpropertyEventFilter_sync",
+      "title": "analyticsadmin UpdateSubpropertyEventFilter Sample",
+      "description": "UpdateSubpropertyEventFilter updates a subproperty Event Filter.",
+      "file": "AnalyticsAdminClient/UpdateSubpropertyEventFilter/main.go",
       "language": "GO",
       "clientMethod": {
-        "shortName": "UpdateUserLink",
-        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateUserLink",
+        "shortName": "UpdateSubpropertyEventFilter",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateSubpropertyEventFilter",
         "parameters": [
           {
             "type": "context.Context",
             "name": "ctx"
           },
           {
-            "type": "adminpb.UpdateUserLinkRequest",
+            "type": "adminpb.UpdateSubpropertyEventFilterRequest",
             "name": "req"
           },
           {
@@ -5625,14 +5992,14 @@
             "name": "opts"
           }
         ],
-        "resultType": "*adminpb.UserLink",
+        "resultType": "*adminpb.SubpropertyEventFilter",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
         },
         "method": {
-          "shortName": "UpdateUserLink",
-          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateUserLink",
+          "shortName": "UpdateSubpropertyEventFilter",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertyEventFilter",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"

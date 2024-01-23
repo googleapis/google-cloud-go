@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"math"
 	"net/url"
-	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -1002,11 +1001,6 @@ func (c *vizierGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb
 	return resp, nil
 }
 
-// CheckTrialEarlyStoppingStateOperation manages a long-running operation from CheckTrialEarlyStoppingState.
-type CheckTrialEarlyStoppingStateOperation struct {
-	lro *longrunning.Operation
-}
-
 // CheckTrialEarlyStoppingStateOperation returns a new CheckTrialEarlyStoppingStateOperation from a given name.
 // The name must be that of a previously created CheckTrialEarlyStoppingStateOperation, possibly from a different process.
 func (c *vizierGRPCClient) CheckTrialEarlyStoppingStateOperation(name string) *CheckTrialEarlyStoppingStateOperation {
@@ -1015,221 +1009,10 @@ func (c *vizierGRPCClient) CheckTrialEarlyStoppingStateOperation(name string) *C
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CheckTrialEarlyStoppingStateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.CheckTrialEarlyStoppingStateResponse, error) {
-	var resp aiplatformpb.CheckTrialEarlyStoppingStateResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CheckTrialEarlyStoppingStateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.CheckTrialEarlyStoppingStateResponse, error) {
-	var resp aiplatformpb.CheckTrialEarlyStoppingStateResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CheckTrialEarlyStoppingStateOperation) Metadata() (*aiplatformpb.CheckTrialEarlyStoppingStateMetatdata, error) {
-	var meta aiplatformpb.CheckTrialEarlyStoppingStateMetatdata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CheckTrialEarlyStoppingStateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CheckTrialEarlyStoppingStateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SuggestTrialsOperation manages a long-running operation from SuggestTrials.
-type SuggestTrialsOperation struct {
-	lro *longrunning.Operation
-}
-
 // SuggestTrialsOperation returns a new SuggestTrialsOperation from a given name.
 // The name must be that of a previously created SuggestTrialsOperation, possibly from a different process.
 func (c *vizierGRPCClient) SuggestTrialsOperation(name string) *SuggestTrialsOperation {
 	return &SuggestTrialsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SuggestTrialsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.SuggestTrialsResponse, error) {
-	var resp aiplatformpb.SuggestTrialsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SuggestTrialsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.SuggestTrialsResponse, error) {
-	var resp aiplatformpb.SuggestTrialsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SuggestTrialsOperation) Metadata() (*aiplatformpb.SuggestTrialsMetadata, error) {
-	var meta aiplatformpb.SuggestTrialsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SuggestTrialsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SuggestTrialsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StudyIterator manages a stream of *aiplatformpb.Study.
-type StudyIterator struct {
-	items    []*aiplatformpb.Study
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Study, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StudyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StudyIterator) Next() (*aiplatformpb.Study, error) {
-	var item *aiplatformpb.Study
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StudyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StudyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TrialIterator manages a stream of *aiplatformpb.Trial.
-type TrialIterator struct {
-	items    []*aiplatformpb.Trial
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Trial, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TrialIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TrialIterator) Next() (*aiplatformpb.Trial, error) {
-	var item *aiplatformpb.Trial
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TrialIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TrialIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -442,10 +442,11 @@ type ChannelGroup struct {
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// The description of the Channel Group. Max length of 256 characters.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	// Required. The grouping rules of channels. Maximum number of rules is 25.
+	// Required. The grouping rules of channels. Maximum number of rules is 50.
 	GroupingRule []*GroupingRule `protobuf:"bytes,4,rep,name=grouping_rule,json=groupingRule,proto3" json:"grouping_rule,omitempty"`
-	// Output only. Default Channel Group defined by Google, which cannot be
-	// updated.
+	// Output only. If true, then this channel group is the Default Channel Group
+	// predefined by Google Analytics. Display name and grouping rules cannot be
+	// updated for this channel group.
 	SystemDefined bool `protobuf:"varint,5,opt,name=system_defined,json=systemDefined,proto3" json:"system_defined,omitempty"`
 }
 

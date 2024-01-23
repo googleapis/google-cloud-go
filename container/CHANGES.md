@@ -1,5 +1,62 @@
 # Changes
 
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.29.0...container/v1.30.0) (2024-01-22)
+
+
+### Features
+
+* **container:** Add fields desired_in_transit_encryption_config and in_transit_encryption_config ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.28.0...container/v1.29.0) (2023-11-27)
+
+
+### Features
+
+* **container:** Add enable_relay field to advanced_datapath_observability_config ([#9037](https://github.com/googleapis/google-cloud-go/issues/9037)) ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+* **container:** Add Provisioning Request API ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.27.1...container/v1.28.0) (2023-11-09)
+
+
+### Features
+
+* **container:** Added EnterpriseConfig ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.27.0...container/v1.27.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **container:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.26.2...container/v1.27.0) (2023-10-31)
+
+
+### Features
+
+* **container:** Add ResourceManagerTags API to attach tags on the underlying Compute Engine VMs of GKE Nodes which can be used to selectively enforce Cloud Firewall network firewall policies ([4d40180](https://github.com/googleapis/google-cloud-go/commit/4d40180da0557c2a2e9e2cb8b0509b429676bfc0))
+
+## [1.26.2](https://github.com/googleapis/google-cloud-go/compare/container/v1.26.1...container/v1.26.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **container:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.26.0...container/v1.26.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **container:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.25.0...container/v1.26.0) (2023-09-11)
+
+
+### Features
+
+* **container:** Add support for NodeConfig Update ([#8461](https://github.com/googleapis/google-cloud-go/issues/8461)) ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.24.0...container/v1.25.0) (2023-08-14)
 
 

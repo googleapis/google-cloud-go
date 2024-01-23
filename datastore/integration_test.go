@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"reflect"
 	"sort"
@@ -68,6 +69,10 @@ var (
 		return newClient(ctx, t, nil)
 	}
 	testParams map[string]interface{}
+
+	// xGoogReqParamsHeaderChecker is a HeaderChecker that ensures that the "x-goog-request-params"
+	// header is present on outgoing metadata.
+	xGoogReqParamsHeaderChecker *testutil.HeaderChecker
 )
 
 func TestMain(m *testing.M) {
@@ -121,6 +126,24 @@ func testMain(m *testing.M) int {
 	for _, databaseID := range databaseIDs {
 		log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
 		testParams["databaseID"] = databaseID
+		xGoogReqParamsHeaderChecker = &testutil.HeaderChecker{
+			Key: reqParamsHeader,
+			ValuesValidator: func(values ...string) error {
+				if len(values) == 0 {
+					return fmt.Errorf("missing values")
+				}
+				wantValue := fmt.Sprintf("project_id=%s", url.QueryEscape(testutil.ProjID()))
+				if databaseID != DefaultDatabaseID && databaseID != "" {
+					wantValue = fmt.Sprintf("%s&database_id=%s", wantValue, url.QueryEscape(databaseID))
+				}
+				for _, gotValue := range values {
+					if gotValue != wantValue {
+						return fmt.Errorf("got %s, want %s", gotValue, wantValue)
+					}
+				}
+				return nil
+			},
+		}
 		status := m.Run()
 		if status != 0 {
 			return status
@@ -153,6 +176,7 @@ func initReplay() {
 			OnFailure: t.Fatalf,
 			Checkers: []*testutil.HeaderChecker{
 				testutil.XGoogClientHeaderChecker,
+				xGoogReqParamsHeaderChecker,
 			},
 		}
 
@@ -179,6 +203,7 @@ func newClient(ctx context.Context, t *testing.T, dialOpts []grpc.DialOption) *C
 		OnFailure: t.Fatalf,
 		Checkers: []*testutil.HeaderChecker{
 			testutil.XGoogClientHeaderChecker,
+			xGoogReqParamsHeaderChecker,
 		},
 	}
 	opts := append(grpcHeadersEnforcer.CallOptions(), option.WithTokenSource(ts))
@@ -339,6 +364,34 @@ func TestIntegration_ListValues(t *testing.T) {
 	}
 	if err = client.Delete(ctx, k); err != nil {
 		t.Errorf("client.Delete: %v", err)
+	}
+}
+
+func TestIntegration_PutGetUntypedNil(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	type X struct {
+		I interface{} `json:"i"`
+	}
+
+	putX := &X{
+		I: nil,
+	}
+	key, err := client.Put(ctx, IncompleteKey("X", nil), putX)
+	if err != nil {
+		t.Fatalf("client.Put got: %v, want: nil", err)
+	}
+
+	getX := &X{}
+	err = client.Get(ctx, key, getX)
+	if err != nil {
+		t.Fatalf("client.Get got: %v, want: nil", err)
+	}
+
+	if !reflect.DeepEqual(getX, putX) {
+		t.Fatalf("got: %v, want: %v", getX, putX)
 	}
 }
 
@@ -700,6 +753,93 @@ func TestIntegration_Filters(t *testing.T) {
 	})
 }
 
+func TestIntegration_AggregationQueriesInTransaction(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	parent := NameKey("SQParent", keyPrefix+"AggregationQueriesInTransaction"+suffix, nil)
+	now := timeNow.Truncate(time.Millisecond).Unix()
+	children := []*SQChild{
+		{I: 0, T: now, U: now, V: 1.5, W: "str"},
+		{I: 1, T: now, U: now, V: 1.5, W: "str"},
+		{I: 2, T: now, U: now, V: 1.5, W: "str"},
+	}
+
+	keys := make([]*Key, len(children))
+	for i := range keys {
+		keys[i] = IncompleteKey("SQChild", parent)
+	}
+
+	keys, err := client.PutMulti(ctx, keys, children)
+	if err != nil {
+		t.Fatalf("client.PutMulti: %v", err)
+	}
+	defer func() {
+		err := client.DeleteMulti(ctx, keys)
+		if err != nil {
+			t.Errorf("client.DeleteMulti: %v", err)
+		}
+	}()
+
+	testcases := []struct {
+		desc          string
+		readTime      time.Time
+		wantAggResult AggregationResult
+	}{
+		{
+			desc:     "Aggregations in transaction before creating entities",
+			readTime: time.Now().Add(-59 * time.Minute).Truncate(time.Microsecond),
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
+				"sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
+				"avg":   &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+			},
+		},
+		{
+			desc: "Aggregations in transaction after creating entities",
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 3}},
+				"sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 3}},
+				"avg":   &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 1}},
+			},
+		},
+	}
+	for _, tc := range testcases {
+		testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
+			readTime := tc.readTime
+			if readTime.IsZero() {
+				// Use current time as read time if read time is not specified in test case
+				readTime = time.Now().Truncate(time.Microsecond)
+
+				// Read time is truncated to microseconds. If immediately used in NewTransaction call,
+				// it leads to "read_time cannot be in the future" error
+				time.Sleep(time.Second)
+			}
+
+			tx, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
+			if err != nil {
+				r.Errorf("client.NewTransaction: %v", err)
+				return
+			}
+			aggQuery := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Transaction(tx).NewAggregationQuery().
+				WithCount("count").
+				WithSum("I", "sum").
+				WithAvg("I", "avg")
+
+			gotAggResult, gotErr := client.RunAggregationQuery(ctx, aggQuery)
+			if gotErr != nil {
+				r.Errorf("got: %v, want: nil", gotErr)
+				return
+			}
+			if !reflect.DeepEqual(gotAggResult, tc.wantAggResult) {
+				r.Errorf("%q: Mismatch in aggregation result got: %+v, want: %+v", tc.desc, gotAggResult, tc.wantAggResult)
+				return
+			}
+		})
+	}
+}
+
 func TestIntegration_AggregationQueries(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
@@ -723,14 +863,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		keys[i] = IncompleteKey("SQChild", parent)
 	}
 
-	// Create transaction with read before creating entities
-	readTime := time.Now().Add(-59 * time.Minute).Truncate(time.Microsecond)
-	txBeforeCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
-	if err != nil {
-		t.Fatalf("client.NewTransaction: %v", err)
-	}
-
-	keys, err = client.PutMulti(ctx, keys, children)
+	keys, err := client.PutMulti(ctx, keys, children)
 	if err != nil {
 		t.Fatalf("client.PutMulti: %v", err)
 	}
@@ -740,13 +873,6 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			t.Errorf("client.DeleteMulti: %v", err)
 		}
 	}()
-
-	// Create transaction with read after creating entities
-	readTime = time.Now().Truncate(time.Microsecond)
-	txAfterCreate, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
-	if err != nil {
-		t.Fatalf("client.NewTransaction: %v", err)
-	}
 
 	testCases := []struct {
 		desc            string
@@ -772,34 +898,6 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 				WithCount("count"),
 			wantAggResult: map[string]interface{}{
 				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
-			},
-		},
-		{
-			desc: "Aggregations in transaction before creating entities",
-			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
-				Transaction(txBeforeCreate).
-				NewAggregationQuery().
-				WithCount("count").
-				WithSum("I", "sum").
-				WithAvg("I", "avg"),
-			wantAggResult: map[string]interface{}{
-				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
-				"sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
-				"avg":   &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
-			},
-		},
-		{
-			desc: "Aggregations in transaction after creating entities",
-			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
-				Transaction(txAfterCreate).
-				NewAggregationQuery().
-				WithCount("count").
-				WithSum("I", "sum").
-				WithAvg("I", "avg"),
-			wantAggResult: map[string]interface{}{
-				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 8}},
-				"sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 28}},
-				"avg":   &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
 			},
 		},
 		{
@@ -874,18 +972,20 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
-		gotFailure := gotErr != nil
+		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+			gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
+			gotFailure := gotErr != nil
 
-		if gotFailure != testCase.wantFailure ||
-			(gotErr != nil && !strings.Contains(gotErr.Error(), testCase.wantErrMsg)) {
-			t.Errorf("%q: Mismatch in error got: %v, want: %q", testCase.desc, gotErr, testCase.wantErrMsg)
-			continue
-		}
-		if !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
-			t.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
-			continue
-		}
+			if gotFailure != testCase.wantFailure ||
+				(gotErr != nil && !strings.Contains(gotErr.Error(), testCase.wantErrMsg)) {
+				r.Errorf("%q: Mismatch in error got: %v, want: %q", testCase.desc, gotErr, testCase.wantErrMsg)
+				return
+			}
+			if gotErr == nil && !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
+				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
+				return
+			}
+		})
 	}
 
 }

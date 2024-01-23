@@ -39,6 +39,9 @@
         "appengine": {
             "component": "appengine"
         },
+        "apps": {
+            "component": "apps"
+        },
         "area120": {
             "component": "area120"
         },
@@ -50,9 +53,6 @@
         },
         "assuredworkloads": {
             "component": "assuredworkloads"
-        },
-        "auth": {
-            "component": "auth"
         },
         "automl": {
             "component": "automl"
@@ -83,6 +83,12 @@
         },
         "clouddms": {
             "component": "clouddms"
+        },
+        "cloudprofiler": {
+            "component": "cloudprofiler"
+        },
+        "cloudquotas": {
+            "component": "cloudquotas"
         },
         "cloudtasks": {
             "component": "cloudtasks"
@@ -158,6 +164,9 @@
         },
         "edgecontainer": {
             "component": "edgecontainer"
+        },
+        "edgenetwork": {
+            "component": "edgenetwork"
         },
         "essentialcontacts": {
             "component": "essentialcontacts"
@@ -309,17 +318,29 @@
         "secretmanager": {
             "component": "secretmanager"
         },
+        "securesourcemanager": {
+            "component": "securesourcemanager"
+        },
         "security": {
             "component": "security"
         },
         "securitycenter": {
             "component": "securitycenter"
         },
+        "securitycentermanagement": {
+            "component": "securitycentermanagement"
+        },
+        "securityposture": {
+            "component": "securityposture"
+        },
         "servicecontrol": {
             "component": "servicecontrol"
         },
         "servicedirectory": {
             "component": "servicedirectory"
+        },
+        "servicehealth": {
+            "component": "servicehealth"
         },
         "servicemanagement": {
             "component": "servicemanagement"
@@ -329,6 +350,9 @@
         },
         "shell": {
             "component": "shell"
+        },
+        "shopping": {
+            "component": "shopping"
         },
         "speech": {
             "component": "speech"
@@ -344,6 +368,9 @@
         },
         "talent": {
             "component": "talent"
+        },
+        "telcoautomation": {
+            "component": "telcoautomation"
         },
         "texttospeech": {
             "component": "texttospeech"

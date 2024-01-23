@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"time"
 
 	dataprocpb "cloud.google.com/go/dataproc/v2/apiv1/dataprocpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -1279,12 +1278,6 @@ func (c *nodeGroupControllerRESTClient) ListOperations(ctx context.Context, req 
 	return it
 }
 
-// CreateNodeGroupOperation manages a long-running operation from CreateNodeGroup.
-type CreateNodeGroupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateNodeGroupOperation returns a new CreateNodeGroupOperation from a given name.
 // The name must be that of a previously created CreateNodeGroupOperation, possibly from a different process.
 func (c *nodeGroupControllerGRPCClient) CreateNodeGroupOperation(name string) *CreateNodeGroupOperation {
@@ -1303,70 +1296,6 @@ func (c *nodeGroupControllerRESTClient) CreateNodeGroupOperation(name string) *C
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateNodeGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataprocpb.NodeGroup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dataprocpb.NodeGroup
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateNodeGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataprocpb.NodeGroup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dataprocpb.NodeGroup
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateNodeGroupOperation) Metadata() (*dataprocpb.NodeGroupOperationMetadata, error) {
-	var meta dataprocpb.NodeGroupOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateNodeGroupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateNodeGroupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ResizeNodeGroupOperation manages a long-running operation from ResizeNodeGroup.
-type ResizeNodeGroupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ResizeNodeGroupOperation returns a new ResizeNodeGroupOperation from a given name.
 // The name must be that of a previously created ResizeNodeGroupOperation, possibly from a different process.
 func (c *nodeGroupControllerGRPCClient) ResizeNodeGroupOperation(name string) *ResizeNodeGroupOperation {
@@ -1383,62 +1312,4 @@ func (c *nodeGroupControllerRESTClient) ResizeNodeGroupOperation(name string) *R
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ResizeNodeGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataprocpb.NodeGroup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dataprocpb.NodeGroup
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ResizeNodeGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataprocpb.NodeGroup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dataprocpb.NodeGroup
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ResizeNodeGroupOperation) Metadata() (*dataprocpb.NodeGroupOperationMetadata, error) {
-	var meta dataprocpb.NodeGroupOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ResizeNodeGroupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ResizeNodeGroupOperation) Name() string {
-	return op.lro.Name()
 }

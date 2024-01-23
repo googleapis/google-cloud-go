@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 var newAgentsClientHook clientHook
@@ -58,6 +57,8 @@ type AgentsCallOptions struct {
 	RestoreAgent             []gax.CallOption
 	ValidateAgent            []gax.CallOption
 	GetAgentValidationResult []gax.CallOption
+	GetGenerativeSettings    []gax.CallOption
+	UpdateGenerativeSettings []gax.CallOption
 	GetLocation              []gax.CallOption
 	ListLocations            []gax.CallOption
 	CancelOperation          []gax.CallOption
@@ -187,6 +188,30 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 				})
 			}),
 		},
+		GetGenerativeSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateGenerativeSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -296,6 +321,28 @@ func defaultAgentsRESTCallOptions() *AgentsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetGenerativeSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateGenerativeSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -320,6 +367,8 @@ type internalAgentsClient interface {
 	RestoreAgentOperation(name string) *RestoreAgentOperation
 	ValidateAgent(context.Context, *cxpb.ValidateAgentRequest, ...gax.CallOption) (*cxpb.AgentValidationResult, error)
 	GetAgentValidationResult(context.Context, *cxpb.GetAgentValidationResultRequest, ...gax.CallOption) (*cxpb.AgentValidationResult, error)
+	GetGenerativeSettings(context.Context, *cxpb.GetGenerativeSettingsRequest, ...gax.CallOption) (*cxpb.GenerativeSettings, error)
+	UpdateGenerativeSettings(context.Context, *cxpb.UpdateGenerativeSettingsRequest, ...gax.CallOption) (*cxpb.GenerativeSettings, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -460,6 +509,16 @@ func (c *AgentsClient) ValidateAgent(ctx context.Context, req *cxpb.ValidateAgen
 // when ValidateAgent is called.
 func (c *AgentsClient) GetAgentValidationResult(ctx context.Context, req *cxpb.GetAgentValidationResultRequest, opts ...gax.CallOption) (*cxpb.AgentValidationResult, error) {
 	return c.internalClient.GetAgentValidationResult(ctx, req, opts...)
+}
+
+// GetGenerativeSettings gets the generative settings for the agent.
+func (c *AgentsClient) GetGenerativeSettings(ctx context.Context, req *cxpb.GetGenerativeSettingsRequest, opts ...gax.CallOption) (*cxpb.GenerativeSettings, error) {
+	return c.internalClient.GetGenerativeSettings(ctx, req, opts...)
+}
+
+// UpdateGenerativeSettings updates the generative settings for the agent.
+func (c *AgentsClient) UpdateGenerativeSettings(ctx context.Context, req *cxpb.UpdateGenerativeSettingsRequest, opts ...gax.CallOption) (*cxpb.GenerativeSettings, error) {
+	return c.internalClient.UpdateGenerativeSettings(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -846,6 +905,42 @@ func (c *agentsGRPCClient) GetAgentValidationResult(ctx context.Context, req *cx
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.agentsClient.GetAgentValidationResult(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *agentsGRPCClient) GetGenerativeSettings(ctx context.Context, req *cxpb.GetGenerativeSettingsRequest, opts ...gax.CallOption) (*cxpb.GenerativeSettings, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetGenerativeSettings[0:len((*c.CallOptions).GetGenerativeSettings):len((*c.CallOptions).GetGenerativeSettings)], opts...)
+	var resp *cxpb.GenerativeSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.agentsClient.GetGenerativeSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *agentsGRPCClient) UpdateGenerativeSettings(ctx context.Context, req *cxpb.UpdateGenerativeSettingsRequest, opts ...gax.CallOption) (*cxpb.GenerativeSettings, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "generative_settings.name", url.QueryEscape(req.GetGenerativeSettings().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateGenerativeSettings[0:len((*c.CallOptions).UpdateGenerativeSettings):len((*c.CallOptions).UpdateGenerativeSettings)], opts...)
+	var resp *cxpb.GenerativeSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.agentsClient.UpdateGenerativeSettings(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1635,6 +1730,141 @@ func (c *agentsRESTClient) GetAgentValidationResult(ctx context.Context, req *cx
 	return resp, nil
 }
 
+// GetGenerativeSettings gets the generative settings for the agent.
+func (c *agentsRESTClient) GetGenerativeSettings(ctx context.Context, req *cxpb.GetGenerativeSettingsRequest, opts ...gax.CallOption) (*cxpb.GenerativeSettings, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetGenerativeSettings[0:len((*c.CallOptions).GetGenerativeSettings):len((*c.CallOptions).GetGenerativeSettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cxpb.GenerativeSettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateGenerativeSettings updates the generative settings for the agent.
+func (c *agentsRESTClient) UpdateGenerativeSettings(ctx context.Context, req *cxpb.UpdateGenerativeSettingsRequest, opts ...gax.CallOption) (*cxpb.GenerativeSettings, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetGenerativeSettings()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetGenerativeSettings().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "generative_settings.name", url.QueryEscape(req.GetGenerativeSettings().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateGenerativeSettings[0:len((*c.CallOptions).UpdateGenerativeSettings):len((*c.CallOptions).UpdateGenerativeSettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cxpb.GenerativeSettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *agentsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1981,12 +2211,6 @@ func (c *agentsRESTClient) ListOperations(ctx context.Context, req *longrunningp
 	return it
 }
 
-// ExportAgentOperation manages a long-running operation from ExportAgent.
-type ExportAgentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ExportAgentOperation returns a new ExportAgentOperation from a given name.
 // The name must be that of a previously created ExportAgentOperation, possibly from a different process.
 func (c *agentsGRPCClient) ExportAgentOperation(name string) *ExportAgentOperation {
@@ -2005,70 +2229,6 @@ func (c *agentsRESTClient) ExportAgentOperation(name string) *ExportAgentOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ExportAgentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cxpb.ExportAgentResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cxpb.ExportAgentResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ExportAgentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cxpb.ExportAgentResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp cxpb.ExportAgentResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ExportAgentOperation) Metadata() (*structpb.Struct, error) {
-	var meta structpb.Struct
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ExportAgentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ExportAgentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RestoreAgentOperation manages a long-running operation from RestoreAgent.
-type RestoreAgentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // RestoreAgentOperation returns a new RestoreAgentOperation from a given name.
 // The name must be that of a previously created RestoreAgentOperation, possibly from a different process.
 func (c *agentsGRPCClient) RestoreAgentOperation(name string) *RestoreAgentOperation {
@@ -2085,98 +2245,4 @@ func (c *agentsRESTClient) RestoreAgentOperation(name string) *RestoreAgentOpera
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RestoreAgentOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RestoreAgentOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RestoreAgentOperation) Metadata() (*structpb.Struct, error) {
-	var meta structpb.Struct
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RestoreAgentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RestoreAgentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AgentIterator manages a stream of *cxpb.Agent.
-type AgentIterator struct {
-	items    []*cxpb.Agent
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*cxpb.Agent, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AgentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AgentIterator) Next() (*cxpb.Agent, error) {
-	var item *cxpb.Agent
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AgentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AgentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

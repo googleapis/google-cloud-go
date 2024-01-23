@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,9 @@ import (
 
 	analyticshubpb "cloud.google.com/go/bigquery/analyticshub/apiv1/analyticshubpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -45,21 +48,28 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListDataExchanges    []gax.CallOption
-	ListOrgDataExchanges []gax.CallOption
-	GetDataExchange      []gax.CallOption
-	CreateDataExchange   []gax.CallOption
-	UpdateDataExchange   []gax.CallOption
-	DeleteDataExchange   []gax.CallOption
-	ListListings         []gax.CallOption
-	GetListing           []gax.CallOption
-	CreateListing        []gax.CallOption
-	UpdateListing        []gax.CallOption
-	DeleteListing        []gax.CallOption
-	SubscribeListing     []gax.CallOption
-	GetIamPolicy         []gax.CallOption
-	SetIamPolicy         []gax.CallOption
-	TestIamPermissions   []gax.CallOption
+	ListDataExchanges               []gax.CallOption
+	ListOrgDataExchanges            []gax.CallOption
+	GetDataExchange                 []gax.CallOption
+	CreateDataExchange              []gax.CallOption
+	UpdateDataExchange              []gax.CallOption
+	DeleteDataExchange              []gax.CallOption
+	ListListings                    []gax.CallOption
+	GetListing                      []gax.CallOption
+	CreateListing                   []gax.CallOption
+	UpdateListing                   []gax.CallOption
+	DeleteListing                   []gax.CallOption
+	SubscribeListing                []gax.CallOption
+	SubscribeDataExchange           []gax.CallOption
+	RefreshSubscription             []gax.CallOption
+	GetSubscription                 []gax.CallOption
+	ListSubscriptions               []gax.CallOption
+	ListSharedResourceSubscriptions []gax.CallOption
+	RevokeSubscription              []gax.CallOption
+	DeleteSubscription              []gax.CallOption
+	GetIamPolicy                    []gax.CallOption
+	SetIamPolicy                    []gax.CallOption
+	TestIamPermissions              []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -220,6 +230,97 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		SubscribeListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SubscribeDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RefreshSubscription: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetSubscription: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSubscriptions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSharedResourceSubscriptions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RevokeSubscription: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteSubscription: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -420,6 +521,90 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		SubscribeDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		RefreshSubscription: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetSubscription: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSubscriptions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSharedResourceSubscriptions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		RevokeSubscription: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteSubscription: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -476,6 +661,16 @@ type internalClient interface {
 	UpdateListing(context.Context, *analyticshubpb.UpdateListingRequest, ...gax.CallOption) (*analyticshubpb.Listing, error)
 	DeleteListing(context.Context, *analyticshubpb.DeleteListingRequest, ...gax.CallOption) error
 	SubscribeListing(context.Context, *analyticshubpb.SubscribeListingRequest, ...gax.CallOption) (*analyticshubpb.SubscribeListingResponse, error)
+	SubscribeDataExchange(context.Context, *analyticshubpb.SubscribeDataExchangeRequest, ...gax.CallOption) (*SubscribeDataExchangeOperation, error)
+	SubscribeDataExchangeOperation(name string) *SubscribeDataExchangeOperation
+	RefreshSubscription(context.Context, *analyticshubpb.RefreshSubscriptionRequest, ...gax.CallOption) (*RefreshSubscriptionOperation, error)
+	RefreshSubscriptionOperation(name string) *RefreshSubscriptionOperation
+	GetSubscription(context.Context, *analyticshubpb.GetSubscriptionRequest, ...gax.CallOption) (*analyticshubpb.Subscription, error)
+	ListSubscriptions(context.Context, *analyticshubpb.ListSubscriptionsRequest, ...gax.CallOption) *SubscriptionIterator
+	ListSharedResourceSubscriptions(context.Context, *analyticshubpb.ListSharedResourceSubscriptionsRequest, ...gax.CallOption) *SubscriptionIterator
+	RevokeSubscription(context.Context, *analyticshubpb.RevokeSubscriptionRequest, ...gax.CallOption) (*analyticshubpb.RevokeSubscriptionResponse, error)
+	DeleteSubscription(context.Context, *analyticshubpb.DeleteSubscriptionRequest, ...gax.CallOption) (*DeleteSubscriptionOperation, error)
+	DeleteSubscriptionOperation(name string) *DeleteSubscriptionOperation
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
@@ -496,6 +691,11 @@ type Client struct {
 
 	// The call options for this service.
 	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -587,6 +787,62 @@ func (c *Client) SubscribeListing(ctx context.Context, req *analyticshubpb.Subsc
 	return c.internalClient.SubscribeListing(ctx, req, opts...)
 }
 
+// SubscribeDataExchange creates a Subscription to a Data Exchange. This is a long-running operation
+// as it will create one or more linked datasets.
+func (c *Client) SubscribeDataExchange(ctx context.Context, req *analyticshubpb.SubscribeDataExchangeRequest, opts ...gax.CallOption) (*SubscribeDataExchangeOperation, error) {
+	return c.internalClient.SubscribeDataExchange(ctx, req, opts...)
+}
+
+// SubscribeDataExchangeOperation returns a new SubscribeDataExchangeOperation from a given name.
+// The name must be that of a previously created SubscribeDataExchangeOperation, possibly from a different process.
+func (c *Client) SubscribeDataExchangeOperation(name string) *SubscribeDataExchangeOperation {
+	return c.internalClient.SubscribeDataExchangeOperation(name)
+}
+
+// RefreshSubscription refreshes a Subscription to a Data Exchange. A Data Exchange can become
+// stale when a publisher adds or removes data. This is a long-running
+// operation as it may create many linked datasets.
+func (c *Client) RefreshSubscription(ctx context.Context, req *analyticshubpb.RefreshSubscriptionRequest, opts ...gax.CallOption) (*RefreshSubscriptionOperation, error) {
+	return c.internalClient.RefreshSubscription(ctx, req, opts...)
+}
+
+// RefreshSubscriptionOperation returns a new RefreshSubscriptionOperation from a given name.
+// The name must be that of a previously created RefreshSubscriptionOperation, possibly from a different process.
+func (c *Client) RefreshSubscriptionOperation(name string) *RefreshSubscriptionOperation {
+	return c.internalClient.RefreshSubscriptionOperation(name)
+}
+
+// GetSubscription gets the details of a Subscription.
+func (c *Client) GetSubscription(ctx context.Context, req *analyticshubpb.GetSubscriptionRequest, opts ...gax.CallOption) (*analyticshubpb.Subscription, error) {
+	return c.internalClient.GetSubscription(ctx, req, opts...)
+}
+
+// ListSubscriptions lists all subscriptions in a given project and location.
+func (c *Client) ListSubscriptions(ctx context.Context, req *analyticshubpb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
+	return c.internalClient.ListSubscriptions(ctx, req, opts...)
+}
+
+// ListSharedResourceSubscriptions lists all subscriptions on a given Data Exchange or Listing.
+func (c *Client) ListSharedResourceSubscriptions(ctx context.Context, req *analyticshubpb.ListSharedResourceSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
+	return c.internalClient.ListSharedResourceSubscriptions(ctx, req, opts...)
+}
+
+// RevokeSubscription revokes a given subscription.
+func (c *Client) RevokeSubscription(ctx context.Context, req *analyticshubpb.RevokeSubscriptionRequest, opts ...gax.CallOption) (*analyticshubpb.RevokeSubscriptionResponse, error) {
+	return c.internalClient.RevokeSubscription(ctx, req, opts...)
+}
+
+// DeleteSubscription deletes a subscription.
+func (c *Client) DeleteSubscription(ctx context.Context, req *analyticshubpb.DeleteSubscriptionRequest, opts ...gax.CallOption) (*DeleteSubscriptionOperation, error) {
+	return c.internalClient.DeleteSubscription(ctx, req, opts...)
+}
+
+// DeleteSubscriptionOperation returns a new DeleteSubscriptionOperation from a given name.
+// The name must be that of a previously created DeleteSubscriptionOperation, possibly from a different process.
+func (c *Client) DeleteSubscriptionOperation(name string) *DeleteSubscriptionOperation {
+	return c.internalClient.DeleteSubscriptionOperation(name)
+}
+
 // GetIamPolicy gets the IAM policy.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
@@ -614,6 +870,11 @@ type gRPCClient struct {
 
 	// The gRPC API client.
 	client analyticshubpb.AnalyticsHubServiceClient
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
@@ -653,6 +914,17 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -687,6 +959,11 @@ type restClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
 
@@ -716,6 +993,16 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -1042,6 +1329,194 @@ func (c *gRPCClient) SubscribeListing(ctx context.Context, req *analyticshubpb.S
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) SubscribeDataExchange(ctx context.Context, req *analyticshubpb.SubscribeDataExchangeRequest, opts ...gax.CallOption) (*SubscribeDataExchangeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SubscribeDataExchange[0:len((*c.CallOptions).SubscribeDataExchange):len((*c.CallOptions).SubscribeDataExchange)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SubscribeDataExchange(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SubscribeDataExchangeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) RefreshSubscription(ctx context.Context, req *analyticshubpb.RefreshSubscriptionRequest, opts ...gax.CallOption) (*RefreshSubscriptionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RefreshSubscription[0:len((*c.CallOptions).RefreshSubscription):len((*c.CallOptions).RefreshSubscription)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RefreshSubscription(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RefreshSubscriptionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetSubscription(ctx context.Context, req *analyticshubpb.GetSubscriptionRequest, opts ...gax.CallOption) (*analyticshubpb.Subscription, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSubscription[0:len((*c.CallOptions).GetSubscription):len((*c.CallOptions).GetSubscription)], opts...)
+	var resp *analyticshubpb.Subscription
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetSubscription(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListSubscriptions(ctx context.Context, req *analyticshubpb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSubscriptions[0:len((*c.CallOptions).ListSubscriptions):len((*c.CallOptions).ListSubscriptions)], opts...)
+	it := &SubscriptionIterator{}
+	req = proto.Clone(req).(*analyticshubpb.ListSubscriptionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.Subscription, string, error) {
+		resp := &analyticshubpb.ListSubscriptionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListSubscriptions(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSubscriptions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListSharedResourceSubscriptions(ctx context.Context, req *analyticshubpb.ListSharedResourceSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSharedResourceSubscriptions[0:len((*c.CallOptions).ListSharedResourceSubscriptions):len((*c.CallOptions).ListSharedResourceSubscriptions)], opts...)
+	it := &SubscriptionIterator{}
+	req = proto.Clone(req).(*analyticshubpb.ListSharedResourceSubscriptionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.Subscription, string, error) {
+		resp := &analyticshubpb.ListSharedResourceSubscriptionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListSharedResourceSubscriptions(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSharedResourceSubscriptions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) RevokeSubscription(ctx context.Context, req *analyticshubpb.RevokeSubscriptionRequest, opts ...gax.CallOption) (*analyticshubpb.RevokeSubscriptionResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RevokeSubscription[0:len((*c.CallOptions).RevokeSubscription):len((*c.CallOptions).RevokeSubscription)], opts...)
+	var resp *analyticshubpb.RevokeSubscriptionResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RevokeSubscription(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteSubscription(ctx context.Context, req *analyticshubpb.DeleteSubscriptionRequest, opts ...gax.CallOption) (*DeleteSubscriptionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteSubscription[0:len((*c.CallOptions).DeleteSubscription):len((*c.CallOptions).DeleteSubscription)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeleteSubscription(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteSubscriptionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
@@ -1893,6 +2368,496 @@ func (c *restClient) SubscribeListing(ctx context.Context, req *analyticshubpb.S
 	return resp, nil
 }
 
+// SubscribeDataExchange creates a Subscription to a Data Exchange. This is a long-running operation
+// as it will create one or more linked datasets.
+func (c *restClient) SubscribeDataExchange(ctx context.Context, req *analyticshubpb.SubscribeDataExchangeRequest, opts ...gax.CallOption) (*SubscribeDataExchangeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:subscribe", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &SubscribeDataExchangeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// RefreshSubscription refreshes a Subscription to a Data Exchange. A Data Exchange can become
+// stale when a publisher adds or removes data. This is a long-running
+// operation as it may create many linked datasets.
+func (c *restClient) RefreshSubscription(ctx context.Context, req *analyticshubpb.RefreshSubscriptionRequest, opts ...gax.CallOption) (*RefreshSubscriptionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:refresh", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &RefreshSubscriptionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetSubscription gets the details of a Subscription.
+func (c *restClient) GetSubscription(ctx context.Context, req *analyticshubpb.GetSubscriptionRequest, opts ...gax.CallOption) (*analyticshubpb.Subscription, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSubscription[0:len((*c.CallOptions).GetSubscription):len((*c.CallOptions).GetSubscription)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &analyticshubpb.Subscription{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSubscriptions lists all subscriptions in a given project and location.
+func (c *restClient) ListSubscriptions(ctx context.Context, req *analyticshubpb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
+	it := &SubscriptionIterator{}
+	req = proto.Clone(req).(*analyticshubpb.ListSubscriptionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.Subscription, string, error) {
+		resp := &analyticshubpb.ListSubscriptionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/subscriptions", req.GetParent())
+
+		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSubscriptions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListSharedResourceSubscriptions lists all subscriptions on a given Data Exchange or Listing.
+func (c *restClient) ListSharedResourceSubscriptions(ctx context.Context, req *analyticshubpb.ListSharedResourceSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
+	it := &SubscriptionIterator{}
+	req = proto.Clone(req).(*analyticshubpb.ListSharedResourceSubscriptionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.Subscription, string, error) {
+		resp := &analyticshubpb.ListSharedResourceSubscriptionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listSubscriptions", req.GetResource())
+
+		params := url.Values{}
+		if req.GetIncludeDeletedSubscriptions() {
+			params.Add("includeDeletedSubscriptions", fmt.Sprintf("%v", req.GetIncludeDeletedSubscriptions()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSharedResourceSubscriptions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// RevokeSubscription revokes a given subscription.
+func (c *restClient) RevokeSubscription(ctx context.Context, req *analyticshubpb.RevokeSubscriptionRequest, opts ...gax.CallOption) (*analyticshubpb.RevokeSubscriptionResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:revoke", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RevokeSubscription[0:len((*c.CallOptions).RevokeSubscription):len((*c.CallOptions).RevokeSubscription)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &analyticshubpb.RevokeSubscriptionResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteSubscription deletes a subscription.
+func (c *restClient) DeleteSubscription(ctx context.Context, req *analyticshubpb.DeleteSubscriptionRequest, opts ...gax.CallOption) (*DeleteSubscriptionOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteSubscriptionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetIamPolicy gets the IAM policy.
 func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2076,96 +3041,56 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	return resp, nil
 }
 
-// DataExchangeIterator manages a stream of *analyticshubpb.DataExchange.
-type DataExchangeIterator struct {
-	items    []*analyticshubpb.DataExchange
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*analyticshubpb.DataExchange, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataExchangeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataExchangeIterator) Next() (*analyticshubpb.DataExchange, error) {
-	var item *analyticshubpb.DataExchange
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// DeleteSubscriptionOperation returns a new DeleteSubscriptionOperation from a given name.
+// The name must be that of a previously created DeleteSubscriptionOperation, possibly from a different process.
+func (c *gRPCClient) DeleteSubscriptionOperation(name string) *DeleteSubscriptionOperation {
+	return &DeleteSubscriptionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
 }
 
-func (it *DataExchangeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataExchangeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ListingIterator manages a stream of *analyticshubpb.Listing.
-type ListingIterator struct {
-	items    []*analyticshubpb.Listing
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*analyticshubpb.Listing, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ListingIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ListingIterator) Next() (*analyticshubpb.Listing, error) {
-	var item *analyticshubpb.Listing
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// DeleteSubscriptionOperation returns a new DeleteSubscriptionOperation from a given name.
+// The name must be that of a previously created DeleteSubscriptionOperation, possibly from a different process.
+func (c *restClient) DeleteSubscriptionOperation(name string) *DeleteSubscriptionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteSubscriptionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
 }
 
-func (it *ListingIterator) bufLen() int {
-	return len(it.items)
+// RefreshSubscriptionOperation returns a new RefreshSubscriptionOperation from a given name.
+// The name must be that of a previously created RefreshSubscriptionOperation, possibly from a different process.
+func (c *gRPCClient) RefreshSubscriptionOperation(name string) *RefreshSubscriptionOperation {
+	return &RefreshSubscriptionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
-func (it *ListingIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+// RefreshSubscriptionOperation returns a new RefreshSubscriptionOperation from a given name.
+// The name must be that of a previously created RefreshSubscriptionOperation, possibly from a different process.
+func (c *restClient) RefreshSubscriptionOperation(name string) *RefreshSubscriptionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RefreshSubscriptionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// SubscribeDataExchangeOperation returns a new SubscribeDataExchangeOperation from a given name.
+// The name must be that of a previously created SubscribeDataExchangeOperation, possibly from a different process.
+func (c *gRPCClient) SubscribeDataExchangeOperation(name string) *SubscribeDataExchangeOperation {
+	return &SubscribeDataExchangeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SubscribeDataExchangeOperation returns a new SubscribeDataExchangeOperation from a given name.
+// The name must be that of a previously created SubscribeDataExchangeOperation, possibly from a different process.
+func (c *restClient) SubscribeDataExchangeOperation(name string) *SubscribeDataExchangeOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &SubscribeDataExchangeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }

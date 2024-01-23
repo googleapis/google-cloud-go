@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,6 +58,106 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
+func ExampleClient_GetInsight() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommender.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommenderpb.GetInsightRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetInsightRequest.
+	}
+	resp, err := c.GetInsight(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetInsightTypeConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommender.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommenderpb.GetInsightTypeConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetInsightTypeConfigRequest.
+	}
+	resp, err := c.GetInsightTypeConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetRecommendation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommender.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommenderpb.GetRecommendationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetRecommendationRequest.
+	}
+	resp, err := c.GetRecommendation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetRecommenderConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommender.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommenderpb.GetRecommenderConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetRecommenderConfigRequest.
+	}
+	resp, err := c.GetRecommenderConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ListInsights() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -87,56 +187,6 @@ func ExampleClient_ListInsights() {
 		// TODO: Use resp.
 		_ = resp
 	}
-}
-
-func ExampleClient_GetInsight() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := recommender.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &recommenderpb.GetInsightRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetInsightRequest.
-	}
-	resp, err := c.GetInsight(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_MarkInsightAccepted() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := recommender.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &recommenderpb.MarkInsightAcceptedRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#MarkInsightAcceptedRequest.
-	}
-	resp, err := c.MarkInsightAccepted(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleClient_ListRecommendations() {
@@ -170,7 +220,7 @@ func ExampleClient_ListRecommendations() {
 	}
 }
 
-func ExampleClient_GetRecommendation() {
+func ExampleClient_MarkInsightAccepted() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -183,11 +233,11 @@ func ExampleClient_GetRecommendation() {
 	}
 	defer c.Close()
 
-	req := &recommenderpb.GetRecommendationRequest{
+	req := &recommenderpb.MarkInsightAcceptedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetRecommendationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#MarkInsightAcceptedRequest.
 	}
-	resp, err := c.GetRecommendation(ctx, req)
+	resp, err := c.MarkInsightAccepted(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -220,7 +270,7 @@ func ExampleClient_MarkRecommendationClaimed() {
 	_ = resp
 }
 
-func ExampleClient_MarkRecommendationSucceeded() {
+func ExampleClient_MarkRecommendationDismissed() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -233,11 +283,11 @@ func ExampleClient_MarkRecommendationSucceeded() {
 	}
 	defer c.Close()
 
-	req := &recommenderpb.MarkRecommendationSucceededRequest{
+	req := &recommenderpb.MarkRecommendationDismissedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#MarkRecommendationSucceededRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#MarkRecommendationDismissedRequest.
 	}
-	resp, err := c.MarkRecommendationSucceeded(ctx, req)
+	resp, err := c.MarkRecommendationDismissed(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -270,7 +320,7 @@ func ExampleClient_MarkRecommendationFailed() {
 	_ = resp
 }
 
-func ExampleClient_GetRecommenderConfig() {
+func ExampleClient_MarkRecommendationSucceeded() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -283,61 +333,11 @@ func ExampleClient_GetRecommenderConfig() {
 	}
 	defer c.Close()
 
-	req := &recommenderpb.GetRecommenderConfigRequest{
+	req := &recommenderpb.MarkRecommendationSucceededRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetRecommenderConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#MarkRecommendationSucceededRequest.
 	}
-	resp, err := c.GetRecommenderConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateRecommenderConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := recommender.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &recommenderpb.UpdateRecommenderConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#UpdateRecommenderConfigRequest.
-	}
-	resp, err := c.UpdateRecommenderConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_GetInsightTypeConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := recommender.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &recommenderpb.GetInsightTypeConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetInsightTypeConfigRequest.
-	}
-	resp, err := c.GetInsightTypeConfig(ctx, req)
+	resp, err := c.MarkRecommendationSucceeded(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -363,6 +363,31 @@ func ExampleClient_UpdateInsightTypeConfig() {
 		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#UpdateInsightTypeConfigRequest.
 	}
 	resp, err := c.UpdateInsightTypeConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateRecommenderConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommender.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommenderpb.UpdateRecommenderConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#UpdateRecommenderConfigRequest.
+	}
+	resp, err := c.UpdateRecommenderConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -1,6 +1,76 @@
 # Changes
 
 
+## [1.23.7](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.6...documentai/v1.23.7) (2023-12-13)
+
+
+### Documentation
+
+* **documentai:** Clarify Properties documentation ([757c1b0](https://github.com/googleapis/google-cloud-go/commit/757c1b0dcca95058aedd091d1e89d5d14f2fbc1c))
+
+## [1.23.6](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.5...documentai/v1.23.6) (2023-11-27)
+
+
+### Documentation
+
+* **documentai:** Update comment for ProcessOptions.page_range ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+
+## [1.23.5](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.4...documentai/v1.23.5) (2023-11-01)
+
+
+### Bug Fixes
+
+* **documentai:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+
+### Documentation
+
+* **documentai:** Updated comments ([24e410e](https://github.com/googleapis/google-cloud-go/commit/24e410efbb6add2d33ecfb6ad98b67dc8894e578))
+
+## [1.23.4](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.3...documentai/v1.23.4) (2023-10-26)
+
+
+### Bug Fixes
+
+* **documentai:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.23.3](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.2...documentai/v1.23.3) (2023-10-17)
+
+
+### Documentation
+
+* **documentai:** Minor clarification on fields related to page range ([#8734](https://github.com/googleapis/google-cloud-go/issues/8734)) ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.1...documentai/v1.23.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **documentai:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.0...documentai/v1.23.1) (2023-10-12)
+
+
+### Documentation
+
+* **documentai:** Minor comment update ([9c502c2](https://github.com/googleapis/google-cloud-go/commit/9c502c2cf66b15c253e53747e08da77a21549cc2))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.22.1...documentai/v1.23.0) (2023-10-04)
+
+
+### Features
+
+* **documentai:** Added `SummaryOptions` to `ProcessOptions` for the Summarizer processor ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+* **documentai:** Added field Processor.processor_version_aliases ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+* **documentai:** Make `page_range` field public ([#8602](https://github.com/googleapis/google-cloud-go/issues/8602)) ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.22.0...documentai/v1.22.1) (2023-09-12)
+
+
+### Documentation
+
+* **documentai:** Update client libraries for Enterprise OCR add-ons ([#8549](https://github.com/googleapis/google-cloud-go/issues/8549)) ([0449518](https://github.com/googleapis/google-cloud-go/commit/0449518f8396cc0280c0f3303c103edcee34016b))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.21.0...documentai/v1.22.0) (2023-07-26)
 
 

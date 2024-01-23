@@ -220,7 +220,7 @@ Example code:
 		}
 
 		var entities []MyEntity
-		q := datastore.NewQuery("Entity").Filter("A =", 12).Limit(1)
+		q := datastore.NewQuery("Entity").FilterField("A", "=", 12).Limit(1)
 		if _, err := dsClient.GetAll(ctx, q, &entities); err != nil {
 			// Handle error
 		}

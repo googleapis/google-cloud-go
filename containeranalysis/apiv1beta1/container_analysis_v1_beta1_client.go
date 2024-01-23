@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ type ContainerAnalysisV1Beta1CallOptions struct {
 	GetIamPolicy            []gax.CallOption
 	TestIamPermissions      []gax.CallOption
 	GeneratePackagesSummary []gax.CallOption
+	ExportSBOM              []gax.CallOption
 }
 
 func defaultContainerAnalysisV1Beta1GRPCClientOptions() []option.ClientOption {
@@ -72,6 +73,7 @@ func defaultContainerAnalysisV1Beta1CallOptions() *ContainerAnalysisV1Beta1CallO
 			gax.WithTimeout(30000 * time.Millisecond),
 		},
 		GeneratePackagesSummary: []gax.CallOption{},
+		ExportSBOM:              []gax.CallOption{},
 	}
 }
 
@@ -87,6 +89,7 @@ func defaultContainerAnalysisV1Beta1RESTCallOptions() *ContainerAnalysisV1Beta1C
 			gax.WithTimeout(30000 * time.Millisecond),
 		},
 		GeneratePackagesSummary: []gax.CallOption{},
+		ExportSBOM:              []gax.CallOption{},
 	}
 }
 
@@ -99,6 +102,7 @@ type internalContainerAnalysisV1Beta1Client interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	GeneratePackagesSummary(context.Context, *containeranalysispb.GeneratePackagesSummaryRequest, ...gax.CallOption) (*containeranalysispb.PackagesSummaryResponse, error)
+	ExportSBOM(context.Context, *containeranalysispb.ExportSBOMRequest, ...gax.CallOption) (*containeranalysispb.ExportSBOMResponse, error)
 }
 
 // ContainerAnalysisV1Beta1Client is a client for interacting with Container Analysis API.
@@ -186,6 +190,11 @@ func (c *ContainerAnalysisV1Beta1Client) TestIamPermissions(ctx context.Context,
 // GeneratePackagesSummary gets a summary of the packages within a given resource.
 func (c *ContainerAnalysisV1Beta1Client) GeneratePackagesSummary(ctx context.Context, req *containeranalysispb.GeneratePackagesSummaryRequest, opts ...gax.CallOption) (*containeranalysispb.PackagesSummaryResponse, error) {
 	return c.internalClient.GeneratePackagesSummary(ctx, req, opts...)
+}
+
+// ExportSBOM generates an SBOM and other dependency information for the given resource.
+func (c *ContainerAnalysisV1Beta1Client) ExportSBOM(ctx context.Context, req *containeranalysispb.ExportSBOMRequest, opts ...gax.CallOption) (*containeranalysispb.ExportSBOMResponse, error) {
+	return c.internalClient.ExportSBOM(ctx, req, opts...)
 }
 
 // containerAnalysisV1Beta1GRPCClient is a client for interacting with Container Analysis API over gRPC transport.
@@ -416,6 +425,24 @@ func (c *containerAnalysisV1Beta1GRPCClient) GeneratePackagesSummary(ctx context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.containerAnalysisV1Beta1Client.GeneratePackagesSummary(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *containerAnalysisV1Beta1GRPCClient) ExportSBOM(ctx context.Context, req *containeranalysispb.ExportSBOMRequest, opts ...gax.CallOption) (*containeranalysispb.ExportSBOMResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportSBOM[0:len((*c.CallOptions).ExportSBOM):len((*c.CallOptions).ExportSBOM)], opts...)
+	var resp *containeranalysispb.ExportSBOMResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.containerAnalysisV1Beta1Client.ExportSBOM(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -670,6 +697,72 @@ func (c *containerAnalysisV1Beta1RESTClient) GeneratePackagesSummary(ctx context
 	opts = append((*c.CallOptions).GeneratePackagesSummary[0:len((*c.CallOptions).GeneratePackagesSummary):len((*c.CallOptions).GeneratePackagesSummary)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containeranalysispb.PackagesSummaryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ExportSBOM generates an SBOM and other dependency information for the given resource.
+func (c *containerAnalysisV1Beta1RESTClient) ExportSBOM(ctx context.Context, req *containeranalysispb.ExportSBOMRequest, opts ...gax.CallOption) (*containeranalysispb.ExportSBOMResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportSBOM", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ExportSBOM[0:len((*c.CallOptions).ExportSBOM):len((*c.CallOptions).ExportSBOM)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &containeranalysispb.ExportSBOMResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

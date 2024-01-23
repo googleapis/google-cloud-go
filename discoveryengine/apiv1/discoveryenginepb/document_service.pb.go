@@ -115,9 +115,10 @@ type ListDocumentsRequest struct {
 	// Use `default_branch` as the branch ID, to list documents under the default
 	// branch.
 	//
-	// If the caller does not have permission to list [Documents][]s under this
-	// branch, regardless of whether or not this branch exists, a
-	// `PERMISSION_DENIED` error is returned.
+	// If the caller does not have permission to list
+	// [Document][google.cloud.discoveryengine.v1.Document]s under this branch,
+	// regardless of whether or not this branch exists, a `PERMISSION_DENIED`
+	// error is returned.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Maximum number of [Document][google.cloud.discoveryengine.v1.Document]s to
 	// return. If unspecified, defaults to 100. The maximum allowed value is 1000.

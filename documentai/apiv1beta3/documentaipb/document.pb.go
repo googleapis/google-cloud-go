@@ -340,7 +340,7 @@ func (Document_Provenance_OperationType) EnumDescriptor() ([]byte, []int) {
 type RevisionRef_RevisionCase int32
 
 const (
-	// Unspecified case, fallback to read the LATEST_HUMAN_REVIEW.
+	// Unspecified case, fall back to read the `LATEST_HUMAN_REVIEW`.
 	RevisionRef_REVISION_CASE_UNSPECIFIED RevisionRef_RevisionCase = 0
 	// The latest revision made by a human.
 	RevisionRef_LATEST_HUMAN_REVIEW RevisionRef_RevisionCase = 1

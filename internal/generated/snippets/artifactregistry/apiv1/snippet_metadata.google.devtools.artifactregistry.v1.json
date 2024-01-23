@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/artifactregistry/apiv1",
-    "version": "1.14.1",
+    "version": "1.14.6",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_BatchDeleteVersions_sync",
+      "title": "artifactregistry BatchDeleteVersions Sample",
+      "description": "BatchDeleteVersions deletes multiple versions across a repository. The returned operation will\ncomplete once the versions have been deleted.",
+      "file": "Client/BatchDeleteVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeleteVersions",
+        "fullName": "google.devtools.artifactregistry.v1.Client.BatchDeleteVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "artifactregistrypb.BatchDeleteVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchDeleteVersionsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.devtools.artifactregistry.v1.Client"
+        },
+        "method": {
+          "shortName": "BatchDeleteVersions",
+          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.BatchDeleteVersions",
+          "service": {
+            "shortName": "ArtifactRegistry",
+            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_CreateRepository_sync",
       "title": "artifactregistry CreateRepository Sample",

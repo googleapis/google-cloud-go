@@ -2,6 +2,57 @@
 
 
 
+## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.2...maps/v1.6.3) (2024-01-11)
+
+
+### Documentation
+
+* **maps/fleetengine:** Better comments on SearchVehicle fields ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.1...maps/v1.6.2) (2023-12-11)
+
+
+### Documentation
+
+* **maps/places:** Change comments for some fields in Places API ([29effe6](https://github.com/googleapis/google-cloud-go/commit/29effe600e16f24a127a1422ec04263c4f7a600a))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.0...maps/v1.6.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **maps:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.5.1...maps/v1.6.0) (2023-10-31)
+
+
+### Features
+
+* **maps/fleetengine/delivery:** Add default sensors for RawLocation & SupplementalLocation ([3053c79](https://github.com/googleapis/google-cloud-go/commit/3053c7933a05b1b1c10d7730c29b28688b218552))
+* **maps/fleetengine:** Add default sensors for RawLocation & SupplementalLocation ([3053c79](https://github.com/googleapis/google-cloud-go/commit/3053c7933a05b1b1c10d7730c29b28688b218552))
+* **maps/places:** New features for Places GA ([ffb0dda](https://github.com/googleapis/google-cloud-go/commit/ffb0ddabf3d9822ba8120cabaf25515fd32e9615))
+
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.5.0...maps/v1.5.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **maps:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.4.1...maps/v1.5.0) (2023-10-17)
+
+
+### Features
+
+* **maps:** New clients ([#8739](https://github.com/googleapis/google-cloud-go/issues/8739)) ([5f1d27a](https://github.com/googleapis/google-cloud-go/commit/5f1d27aae41ff75573fdab254da2548052556b1f))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.4.0...maps/v1.4.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **maps:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.3.0...maps/v1.4.0) (2023-07-24)
 
 

@@ -203,7 +203,9 @@ type PipelineJob struct {
 	ReservedIpRanges []string `protobuf:"bytes,25,rep,name=reserved_ip_ranges,json=reservedIpRanges,proto3" json:"reserved_ip_ranges,omitempty"`
 	// A template uri from where the
 	// [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec],
-	// if empty, will be downloaded.
+	// if empty, will be downloaded. Currently, only uri from Vertex Template
+	// Registry & Gallery is supported. Reference to
+	// https://cloud.google.com/vertex-ai/docs/pipelines/create-pipeline-template.
 	TemplateUri string `protobuf:"bytes,19,opt,name=template_uri,json=templateUri,proto3" json:"template_uri,omitempty"`
 	// Output only. Pipeline template metadata. Will fill up fields if
 	// [PipelineJob.template_uri][google.cloud.aiplatform.v1beta1.PipelineJob.template_uri]
