@@ -21,10 +21,11 @@
 package cloudtaskspb
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -693,27 +694,28 @@ func (*HttpTarget_OidcToken) isHttpTarget_AuthorizationHeader() {}
 //
 // * User-specified throttling: [retry
 // configuration][google.cloud.tasks.v2beta3.Queue.retry_config],
-//   [rate limits][google.cloud.tasks.v2beta3.Queue.rate_limits], and the
-//   [queue's state][google.cloud.tasks.v2beta3.Queue.state].
 //
-// * System throttling: To prevent the worker from overloading, Cloud Tasks may
-//   temporarily reduce the queue's effective rate. User-specified settings
-//   will not be changed.
+//		[rate limits][google.cloud.tasks.v2beta3.Queue.rate_limits], and the
+//		[queue's state][google.cloud.tasks.v2beta3.Queue.state].
 //
-//  System throttling happens because:
+//	  - System throttling: To prevent the worker from overloading, Cloud Tasks may
+//	    temporarily reduce the queue's effective rate. User-specified settings
+//	    will not be changed.
 //
-//   * Cloud Tasks backs off on all errors. Normally the backoff specified in
-//     [rate limits][google.cloud.tasks.v2beta3.Queue.rate_limits] will be used.
-//     But if the worker returns `429` (Too Many Requests), `503` (Service
-//     Unavailable), or the rate of errors is high, Cloud Tasks will use a
-//     higher backoff rate. The retry specified in the `Retry-After` HTTP
-//     response header is considered.
+//	    System throttling happens because:
 //
-//   * To prevent traffic spikes and to smooth sudden increases in traffic,
-//     dispatches ramp up slowly when the queue is newly created or idle and
-//     if large numbers of tasks suddenly become available to dispatch (due to
-//     spikes in create task rates, the queue being unpaused, or many tasks
-//     that are scheduled at the same time).
+//	  - Cloud Tasks backs off on all errors. Normally the backoff specified in
+//	    [rate limits][google.cloud.tasks.v2beta3.Queue.rate_limits] will be used.
+//	    But if the worker returns `429` (Too Many Requests), `503` (Service
+//	    Unavailable), or the rate of errors is high, Cloud Tasks will use a
+//	    higher backoff rate. The retry specified in the `Retry-After` HTTP
+//	    response header is considered.
+//
+//	  - To prevent traffic spikes and to smooth sudden increases in traffic,
+//	    dispatches ramp up slowly when the queue is newly created or idle and
+//	    if large numbers of tasks suddenly become available to dispatch (due to
+//	    spikes in create task rates, the queue being unpaused, or many tasks
+//	    that are scheduled at the same time).
 type HttpRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -996,18 +998,17 @@ func (x *AppEngineHttpQueue) GetAppEngineRoutingOverride() *AppEngineRouting {
 // construct the URL that the task is delivered to can be set at the queue-level
 // or task-level:
 //
-// * If set,
-//   [app_engine_routing_override][google.cloud.tasks.v2beta3.AppEngineHttpQueue.app_engine_routing_override]
-//   is used for all tasks in the queue, no matter what the setting
-//   is for the
-//   [task-level
-//   app_engine_routing][google.cloud.tasks.v2beta3.AppEngineHttpRequest.app_engine_routing].
-//
+//   - If set,
+//     [app_engine_routing_override][google.cloud.tasks.v2beta3.AppEngineHttpQueue.app_engine_routing_override]
+//     is used for all tasks in the queue, no matter what the setting
+//     is for the
+//     [task-level
+//     app_engine_routing][google.cloud.tasks.v2beta3.AppEngineHttpRequest.app_engine_routing].
 //
 // The `url` that the task will be sent to is:
 //
-// * `url =` [host][google.cloud.tasks.v2beta3.AppEngineRouting.host] `+`
-//   [relative_uri][google.cloud.tasks.v2beta3.AppEngineHttpRequest.relative_uri]
+//   - `url =` [host][google.cloud.tasks.v2beta3.AppEngineRouting.host] `+`
+//     [relative_uri][google.cloud.tasks.v2beta3.AppEngineHttpRequest.relative_uri]
 //
 // Tasks can be dispatched to secure app handlers, unsecure app handlers, and
 // URIs restricted with

@@ -530,17 +530,17 @@ type internalDatabaseAdminClient interface {
 // DatabaseAdminClient is a client for interacting with Cloud Spanner API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Cloud Spanner Database Admin API
+// # Cloud Spanner Database Admin API
 //
 // The Cloud Spanner Database Admin API can be used to:
 //
-//   create, drop, and list databases
+//	create, drop, and list databases
 //
-//   update the schema of pre-existing databases
+//	update the schema of pre-existing databases
 //
-//   create, delete and list backups for a database
+//	create, delete and list backups for a database
 //
-//   restore a database from an existing backup
+//	restore a database from an existing backup
 type DatabaseAdminClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDatabaseAdminClient
@@ -612,30 +612,30 @@ func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.G
 //
 // While the operation is pending:
 //
-//   The database’s
-//   reconciling
-//   field is set to true.
+//	The database’s
+//	reconciling
+//	field is set to true.
 //
-//   Cancelling the operation is best-effort. If the cancellation succeeds,
-//   the operation metadata’s
-//   cancel_time
-//   is set, the updates are reverted, and the operation terminates with a
-//   CANCELLED status.
+//	Cancelling the operation is best-effort. If the cancellation succeeds,
+//	the operation metadata’s
+//	cancel_time
+//	is set, the updates are reverted, and the operation terminates with a
+//	CANCELLED status.
 //
-//   New UpdateDatabase requests will return a FAILED_PRECONDITION error
-//   until the pending operation is done (returns successfully or with
-//   error).
+//	New UpdateDatabase requests will return a FAILED_PRECONDITION error
+//	until the pending operation is done (returns successfully or with
+//	error).
 //
-//   Reading the database via the API continues to give the pre-request
-//   values.
+//	Reading the database via the API continues to give the pre-request
+//	values.
 //
 // Upon completion of the returned operation:
 //
-//   The new values are in effect and readable via the API.
+//	The new values are in effect and readable via the API.
 //
-//   The database’s
-//   reconciling
-//   field becomes false.
+//	The database’s
+//	reconciling
+//	field becomes false.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
@@ -896,17 +896,17 @@ type databaseAdminGRPCClient struct {
 // NewDatabaseAdminClient creates a new database admin client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Cloud Spanner Database Admin API
+// # Cloud Spanner Database Admin API
 //
 // The Cloud Spanner Database Admin API can be used to:
 //
-//   create, drop, and list databases
+//	create, drop, and list databases
 //
-//   update the schema of pre-existing databases
+//	update the schema of pre-existing databases
 //
-//   create, delete and list backups for a database
+//	create, delete and list backups for a database
 //
-//   restore a database from an existing backup
+//	restore a database from an existing backup
 func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
 	clientOpts := defaultDatabaseAdminGRPCClientOptions()
 	if newDatabaseAdminClientHook != nil {
@@ -992,17 +992,17 @@ type databaseAdminRESTClient struct {
 
 // NewDatabaseAdminRESTClient creates a new database admin rest client.
 //
-// Cloud Spanner Database Admin API
+// # Cloud Spanner Database Admin API
 //
 // The Cloud Spanner Database Admin API can be used to:
 //
-//   create, drop, and list databases
+//	create, drop, and list databases
 //
-//   update the schema of pre-existing databases
+//	update the schema of pre-existing databases
 //
-//   create, delete and list backups for a database
+//	create, delete and list backups for a database
 //
-//   restore a database from an existing backup
+//	restore a database from an existing backup
 func NewDatabaseAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
 	clientOpts := append(defaultDatabaseAdminRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1892,30 +1892,30 @@ func (c *databaseAdminRESTClient) GetDatabase(ctx context.Context, req *database
 //
 // While the operation is pending:
 //
-//   The database’s
-//   reconciling
-//   field is set to true.
+//	The database’s
+//	reconciling
+//	field is set to true.
 //
-//   Cancelling the operation is best-effort. If the cancellation succeeds,
-//   the operation metadata’s
-//   cancel_time
-//   is set, the updates are reverted, and the operation terminates with a
-//   CANCELLED status.
+//	Cancelling the operation is best-effort. If the cancellation succeeds,
+//	the operation metadata’s
+//	cancel_time
+//	is set, the updates are reverted, and the operation terminates with a
+//	CANCELLED status.
 //
-//   New UpdateDatabase requests will return a FAILED_PRECONDITION error
-//   until the pending operation is done (returns successfully or with
-//   error).
+//	New UpdateDatabase requests will return a FAILED_PRECONDITION error
+//	until the pending operation is done (returns successfully or with
+//	error).
 //
-//   Reading the database via the API continues to give the pre-request
-//   values.
+//	Reading the database via the API continues to give the pre-request
+//	values.
 //
 // Upon completion of the returned operation:
 //
-//   The new values are in effect and readable via the API.
+//	The new values are in effect and readable via the API.
 //
-//   The database’s
-//   reconciling
-//   field becomes false.
+//	The database’s
+//	reconciling
+//	field becomes false.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format

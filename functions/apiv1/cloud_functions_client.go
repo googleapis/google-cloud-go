@@ -344,24 +344,24 @@ func (c *CloudFunctionsClient) CallFunction(ctx context.Context, req *functionsp
 // When uploading source code to the generated signed URL, please follow
 // these restrictions:
 //
-//   Source file type should be a zip file.
+//	Source file type should be a zip file.
 //
-//   Source file size should not exceed 100MB limit.
+//	Source file size should not exceed 100MB limit.
 //
-//   No credentials should be attached - the signed URLs provide access to the
-//   target bucket using internal service identity; if credentials were
-//   attached, the identity from the credentials would be used, but that
-//   identity does not have permissions to upload files to the URL.
+//	No credentials should be attached - the signed URLs provide access to the
+//	target bucket using internal service identity; if credentials were
+//	attached, the identity from the credentials would be used, but that
+//	identity does not have permissions to upload files to the URL.
 //
 // When making an HTTP PUT request, these two headers must be specified:
 //
-//   content-type: application/zip
+//	content-type: application/zip
 //
-//   x-goog-content-length-range: 0,104857600
+//	x-goog-content-length-range: 0,104857600
 //
 // And this header must NOT be specified:
 //
-//   Authorization: Bearer YOUR_TOKEN
+//	Authorization: Bearer YOUR_TOKEN
 func (c *CloudFunctionsClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
 	return c.internalClient.GenerateUploadUrl(ctx, req, opts...)
 }
@@ -1372,24 +1372,24 @@ func (c *cloudFunctionsRESTClient) CallFunction(ctx context.Context, req *functi
 // When uploading source code to the generated signed URL, please follow
 // these restrictions:
 //
-//   Source file type should be a zip file.
+//	Source file type should be a zip file.
 //
-//   Source file size should not exceed 100MB limit.
+//	Source file size should not exceed 100MB limit.
 //
-//   No credentials should be attached - the signed URLs provide access to the
-//   target bucket using internal service identity; if credentials were
-//   attached, the identity from the credentials would be used, but that
-//   identity does not have permissions to upload files to the URL.
+//	No credentials should be attached - the signed URLs provide access to the
+//	target bucket using internal service identity; if credentials were
+//	attached, the identity from the credentials would be used, but that
+//	identity does not have permissions to upload files to the URL.
 //
 // When making an HTTP PUT request, these two headers must be specified:
 //
-//   content-type: application/zip
+//	content-type: application/zip
 //
-//   x-goog-content-length-range: 0,104857600
+//	x-goog-content-length-range: 0,104857600
 //
 // And this header must NOT be specified:
 //
-//   Authorization: Bearer YOUR_TOKEN
+//	Authorization: Bearer YOUR_TOKEN
 func (c *cloudFunctionsRESTClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
