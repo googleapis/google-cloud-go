@@ -1,5 +1,12 @@
 # Changes
 
+## [0.22.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.6...analytics/v0.22.0) (2024-01-03)
+
+
+### Features
+
+* **analytics/admin:** Add `GetSubpropertyEventFilter`, `ListSubpropertyEventFilters` methods to the Admin API v1 alpha ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
 ## [0.21.6](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.5...analytics/v0.21.6) (2023-11-01)
 
 

@@ -24,6 +24,10 @@ import (
 	"github.com/go-git/go-git/v5"
 )
 
+const (
+	maxTruncatedTitleLen = 22
+)
+
 // ChangeInfo represents a change and its associated metadata.
 type ChangeInfo struct {
 	Body           string
@@ -35,6 +39,15 @@ type ChangeInfo struct {
 // the conventional commit footer pattern. This will allow these changes to be
 // parsed into the changelog.
 func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
+	formatted := truncateAndFormatChanges(changes, onlyGapicChanges, false)
+	if len(formatted) > maxChangesLen {
+		// Retry formatting by truncating
+		return truncateAndFormatChanges(changes, onlyGapicChanges, true)
+	}
+	return formatted
+}
+
+func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate bool) string {
 	if len(changes) == 0 {
 		return ""
 	}
@@ -44,7 +57,11 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 		if onlyGapicChanges {
 			continue
 		}
-		sb.WriteString(fmt.Sprintf("%s\n", c.Title))
+		title := c.Title
+		if truncate && len(title) > maxTruncatedTitleLen {
+			title = fmt.Sprintf("%v...", title[:maxTruncatedTitleLen])
+		}
+		sb.WriteString(fmt.Sprintf("%s\n", title))
 
 		// Format the commit body to conventional commit footer standards.
 		splitBody := strings.Split(c.Body, "\n")
@@ -52,6 +69,14 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 			splitBody[i] = fmt.Sprintf("  %s", splitBody[i])
 		}
 		body := strings.Join(splitBody, "\n")
+
+		if truncate {
+			startBody := strings.Index(body, "PiperOrigin-RevId")
+			if startBody != -1 {
+				body = fmt.Sprintf("  %s", body[startBody:])
+			}
+		}
+
 		sb.WriteString(fmt.Sprintf("%s\n\n", body))
 	}
 	// If the buffer is empty except for the "Changes:" text return an empty

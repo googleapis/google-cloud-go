@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.16.0...asset/v1.17.0) (2024-01-03)
+
+
+### Features
+
+* **asset:** Added new resource references to fields in AnalyzeMoveRequest ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.15.3...asset/v1.16.0) (2023-12-13)
 
 
