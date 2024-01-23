@@ -462,15 +462,15 @@ type internalDataprocMetastoreClient interface {
 //
 // The Dataproc Metastore API defines the following resource model:
 //
-//   The service works with a collection of Google Cloud projects, named:
-//   /projects/*
+//	The service works with a collection of Google Cloud projects, named:
+//	/projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
-//   (a location must refer to a Google Cloud region)
+//	Each project has a collection of available locations, named: /locations/*
+//	(a location must refer to a Google Cloud region)
 //
-//   Each location has a collection of services, named: /services/*
+//	Each location has a collection of services, named: /services/*
 //
-//   Dataproc Metastore services are resources with names of the form:
+//	Dataproc Metastore services are resources with names of the form:
 //
 // /projects/{project_number}/locations/{location_id}/services/{service_id}.
 type DataprocMetastoreClient struct {
@@ -776,15 +776,15 @@ type dataprocMetastoreGRPCClient struct {
 //
 // The Dataproc Metastore API defines the following resource model:
 //
-//   The service works with a collection of Google Cloud projects, named:
-//   /projects/*
+//	The service works with a collection of Google Cloud projects, named:
+//	/projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
-//   (a location must refer to a Google Cloud region)
+//	Each project has a collection of available locations, named: /locations/*
+//	(a location must refer to a Google Cloud region)
 //
-//   Each location has a collection of services, named: /services/*
+//	Each location has a collection of services, named: /services/*
 //
-//   Dataproc Metastore services are resources with names of the form:
+//	Dataproc Metastore services are resources with names of the form:
 //
 // /projects/{project_number}/locations/{location_id}/services/{service_id}.
 func NewDataprocMetastoreClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreClient, error) {
@@ -883,15 +883,15 @@ type dataprocMetastoreRESTClient struct {
 //
 // The Dataproc Metastore API defines the following resource model:
 //
-//   The service works with a collection of Google Cloud projects, named:
-//   /projects/*
+//	The service works with a collection of Google Cloud projects, named:
+//	/projects/*
 //
-//   Each project has a collection of available locations, named: /locations/*
-//   (a location must refer to a Google Cloud region)
+//	Each project has a collection of available locations, named: /locations/*
+//	(a location must refer to a Google Cloud region)
 //
-//   Each location has a collection of services, named: /services/*
+//	Each location has a collection of services, named: /services/*
 //
-//   Dataproc Metastore services are resources with names of the form:
+//	Dataproc Metastore services are resources with names of the form:
 //
 // /projects/{project_number}/locations/{location_id}/services/{service_id}.
 func NewDataprocMetastoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreClient, error) {
