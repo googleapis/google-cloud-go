@@ -141,7 +141,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 }
 
 // NewClientWithConfig creates a new PubSub client.
-func NewClientWithConfig(ctx context.Context, projectID string, config *ClientConfig, opts ...option.ClientOption) (c *Client, err error) {
+func NewClientWithConfig(ctx context.Context, projectID string, config *ClientConfig, opts ...option.ClientOption) (*Client, error) {
 	if projectID == "" {
 		return nil, ErrEmptyProjectID
 	}
@@ -189,12 +189,15 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 		return nil, err
 	}
 
-	return &Client{
-		projectID:      projectID,
-		pubc:           pubc,
-		subc:           subc,
-		disableTracing: config.DisableOpenTelemetryTracing,
-	}, nil
+	c := &Client{
+		projectID: projectID,
+		pubc:      pubc,
+		subc:      subc,
+	}
+	if config != nil {
+		c.disableTracing = config.DisableOpenTelemetryTracing
+	}
+	return c, nil
 }
 
 // Project returns the project ID or number for this instance of the client, which may have
