@@ -22,6 +22,9 @@ package longrunningpb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -33,8 +36,6 @@ import (
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -518,13 +519,13 @@ func (x *WaitOperationRequest) GetTimeout() *durationpb.Duration {
 //
 // Example:
 //
-//   rpc LongRunningRecognize(LongRunningRecognizeRequest)
-//       returns (google.longrunning.Operation) {
-//     option (google.longrunning.operation_info) = {
-//       response_type: "LongRunningRecognizeResponse"
-//       metadata_type: "LongRunningRecognizeMetadata"
-//     };
-//   }
+//	rpc LongRunningRecognize(LongRunningRecognizeRequest)
+//	    returns (google.longrunning.Operation) {
+//	  option (google.longrunning.operation_info) = {
+//	    response_type: "LongRunningRecognizeResponse"
+//	    metadata_type: "LongRunningRecognizeMetadata"
+//	  };
+//	}
 type OperationInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
