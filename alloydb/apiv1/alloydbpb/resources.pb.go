@@ -21,6 +21,9 @@
 package alloydbpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	dayofweek "google.golang.org/genproto/googleapis/type/dayofweek"
 	timeofday "google.golang.org/genproto/googleapis/type/timeofday"
@@ -29,8 +32,6 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -729,9 +730,9 @@ func (Instance_InstanceType) EnumDescriptor() ([]byte, []int) {
 
 // The Availability type of an instance. Potential values:
 //
-// - ZONAL: The instance serves data from only one zone. Outages in that
+//   - ZONAL: The instance serves data from only one zone. Outages in that
 //     zone affect instance availability.
-// - REGIONAL: The instance can serve data from more than one zone in a
+//   - REGIONAL: The instance can serve data from more than one zone in a
 //     region (it is highly available).
 type Instance_AvailabilityType int32
 
