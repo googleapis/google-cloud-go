@@ -290,7 +290,7 @@ func (c *CloudFunctionsClient) GetFunction(ctx context.Context, req *functionspb
 }
 
 // CreateFunction creates a new function. If a function with the given name already exists in
-// the specified project, the long running operation returns an
+// the specified project, the long running operation will return
 // ALREADY_EXISTS error.
 func (c *CloudFunctionsClient) CreateFunction(ctx context.Context, req *functionspb.CreateFunctionRequest, opts ...gax.CallOption) (*CreateFunctionOperation, error) {
 	return c.internalClient.CreateFunction(ctx, req, opts...)
@@ -314,7 +314,7 @@ func (c *CloudFunctionsClient) UpdateFunctionOperation(name string) *UpdateFunct
 }
 
 // DeleteFunction deletes a function with the given name from the specified project. If the
-// given function is used by some trigger, the trigger is updated to
+// given function is used by some trigger, the trigger will be updated to
 // remove this function.
 func (c *CloudFunctionsClient) DeleteFunction(ctx context.Context, req *functionspb.DeleteFunctionRequest, opts ...gax.CallOption) (*DeleteFunctionOperation, error) {
 	return c.internalClient.DeleteFunction(ctx, req, opts...)
@@ -344,32 +344,32 @@ func (c *CloudFunctionsClient) CallFunction(ctx context.Context, req *functionsp
 // When uploading source code to the generated signed URL, please follow
 // these restrictions:
 //
-//	Source file type should be a zip file.
+//   Source file type should be a zip file.
 //
-//	Source file size should not exceed 100MB limit.
+//   Source file size should not exceed 100MB limit.
 //
-//	No credentials should be attached - the signed URLs provide access to the
-//	target bucket using internal service identity; if credentials were
-//	attached, the identity from the credentials would be used, but that
-//	identity does not have permissions to upload files to the URL.
+//   No credentials should be attached - the signed URLs provide access to the
+//   target bucket using internal service identity; if credentials were
+//   attached, the identity from the credentials would be used, but that
+//   identity does not have permissions to upload files to the URL.
 //
-// When making an HTTP PUT request, these two headers must be specified:
+// When making a HTTP PUT request, these two headers need to be specified:
 //
-//	content-type: application/zip
+//   content-type: application/zip
 //
-//	x-goog-content-length-range: 0,104857600
+//   x-goog-content-length-range: 0,104857600
 //
-// And this header must NOT be specified:
+// And this header SHOULD NOT be specified:
 //
-//	Authorization: Bearer YOUR_TOKEN
+//   Authorization: Bearer YOUR_TOKEN
 func (c *CloudFunctionsClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
 	return c.internalClient.GenerateUploadUrl(ctx, req, opts...)
 }
 
 // GenerateDownloadUrl returns a signed URL for downloading deployed function source code.
-// The URL is only valid for a limited period and must be used within
+// The URL is only valid for a limited period and should be used within
 // minutes after generation.
-// For more information about the signed URL usage, see:
+// For more information about the signed URL usage see:
 // https://cloud.google.com/storage/docs/access-control/signed-urls (at https://cloud.google.com/storage/docs/access-control/signed-urls)
 func (c *CloudFunctionsClient) GenerateDownloadUrl(ctx context.Context, req *functionspb.GenerateDownloadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateDownloadUrlResponse, error) {
 	return c.internalClient.GenerateDownloadUrl(ctx, req, opts...)
@@ -390,7 +390,7 @@ func (c *CloudFunctionsClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 
 // TestIamPermissions tests the specified permissions against the IAM access control policy
 // for a function.
-// If the function does not exist, this returns an empty set of
+// If the function does not exist, this will return an empty set of
 // permissions, not a NOT_FOUND error.
 func (c *CloudFunctionsClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
@@ -1026,6 +1026,9 @@ func (c *cloudFunctionsRESTClient) GetFunction(ctx context.Context, req *functio
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetVersionId() != 0 {
+		params.Add("versionId", fmt.Sprintf("%v", req.GetVersionId()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1077,7 +1080,7 @@ func (c *cloudFunctionsRESTClient) GetFunction(ctx context.Context, req *functio
 }
 
 // CreateFunction creates a new function. If a function with the given name already exists in
-// the specified project, the long running operation returns an
+// the specified project, the long running operation will return
 // ALREADY_EXISTS error.
 func (c *cloudFunctionsRESTClient) CreateFunction(ctx context.Context, req *functionspb.CreateFunctionRequest, opts ...gax.CallOption) (*CreateFunctionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1228,7 +1231,7 @@ func (c *cloudFunctionsRESTClient) UpdateFunction(ctx context.Context, req *func
 }
 
 // DeleteFunction deletes a function with the given name from the specified project. If the
-// given function is used by some trigger, the trigger is updated to
+// given function is used by some trigger, the trigger will be updated to
 // remove this function.
 func (c *cloudFunctionsRESTClient) DeleteFunction(ctx context.Context, req *functionspb.DeleteFunctionRequest, opts ...gax.CallOption) (*DeleteFunctionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1372,24 +1375,24 @@ func (c *cloudFunctionsRESTClient) CallFunction(ctx context.Context, req *functi
 // When uploading source code to the generated signed URL, please follow
 // these restrictions:
 //
-//	Source file type should be a zip file.
+//   Source file type should be a zip file.
 //
-//	Source file size should not exceed 100MB limit.
+//   Source file size should not exceed 100MB limit.
 //
-//	No credentials should be attached - the signed URLs provide access to the
-//	target bucket using internal service identity; if credentials were
-//	attached, the identity from the credentials would be used, but that
-//	identity does not have permissions to upload files to the URL.
+//   No credentials should be attached - the signed URLs provide access to the
+//   target bucket using internal service identity; if credentials were
+//   attached, the identity from the credentials would be used, but that
+//   identity does not have permissions to upload files to the URL.
 //
-// When making an HTTP PUT request, these two headers must be specified:
+// When making a HTTP PUT request, these two headers need to be specified:
 //
-//	content-type: application/zip
+//   content-type: application/zip
 //
-//	x-goog-content-length-range: 0,104857600
+//   x-goog-content-length-range: 0,104857600
 //
-// And this header must NOT be specified:
+// And this header SHOULD NOT be specified:
 //
-//	Authorization: Bearer YOUR_TOKEN
+//   Authorization: Bearer YOUR_TOKEN
 func (c *cloudFunctionsRESTClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1456,9 +1459,9 @@ func (c *cloudFunctionsRESTClient) GenerateUploadUrl(ctx context.Context, req *f
 }
 
 // GenerateDownloadUrl returns a signed URL for downloading deployed function source code.
-// The URL is only valid for a limited period and must be used within
+// The URL is only valid for a limited period and should be used within
 // minutes after generation.
-// For more information about the signed URL usage, see:
+// For more information about the signed URL usage see:
 // https://cloud.google.com/storage/docs/access-control/signed-urls (at https://cloud.google.com/storage/docs/access-control/signed-urls)
 func (c *cloudFunctionsRESTClient) GenerateDownloadUrl(ctx context.Context, req *functionspb.GenerateDownloadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateDownloadUrlResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1659,7 +1662,7 @@ func (c *cloudFunctionsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.
 
 // TestIamPermissions tests the specified permissions against the IAM access control policy
 // for a function.
-// If the function does not exist, this returns an empty set of
+// If the function does not exist, this will return an empty set of
 // permissions, not a NOT_FOUND error.
 func (c *cloudFunctionsRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}

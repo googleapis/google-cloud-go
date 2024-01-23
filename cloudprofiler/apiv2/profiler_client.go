@@ -104,9 +104,9 @@ type internalProfilerClient interface {
 //
 // General guidelines:
 //
-//	Profiles for a single deployment must be created in ascending time order.
+//   Profiles for a single deployment must be created in ascending time order.
 //
-//	Profiles can be created in either online or offline mode, see below.
+//   Profiles can be created in either online or offline mode, see below.
 type ProfilerClient struct {
 	// The internal transport-dependent client.
 	internalClient internalProfilerClient
@@ -195,9 +195,9 @@ type profilerGRPCClient struct {
 //
 // General guidelines:
 //
-//	Profiles for a single deployment must be created in ascending time order.
+//   Profiles for a single deployment must be created in ascending time order.
 //
-//	Profiles can be created in either online or offline mode, see below.
+//   Profiles can be created in either online or offline mode, see below.
 func NewProfilerClient(ctx context.Context, opts ...option.ClientOption) (*ProfilerClient, error) {
 	clientOpts := defaultProfilerGRPCClientOptions()
 	if newProfilerClientHook != nil {
@@ -271,9 +271,9 @@ type profilerRESTClient struct {
 //
 // General guidelines:
 //
-//	Profiles for a single deployment must be created in ascending time order.
+//   Profiles for a single deployment must be created in ascending time order.
 //
-//	Profiles can be created in either online or offline mode, see below.
+//   Profiles can be created in either online or offline mode, see below.
 func NewProfilerRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProfilerClient, error) {
 	clientOpts := append(defaultProfilerRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

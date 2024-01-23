@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -634,7 +633,7 @@ func (x *DetectIntentResponse) GetAllowCancellation() bool {
 //
 // Multiple request messages should be sent in order:
 //
-//  1. The first message must contain
+// 1.  The first message must contain
 //     [session][google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest.session],
 //     [query_input][google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest.query_input]
 //     plus optionally
@@ -645,21 +644,20 @@ func (x *DetectIntentResponse) GetAllowCancellation() bool {
 // 2.  If
 // [query_input][google.cloud.dialogflow.cx.v3beta1.StreamingDetectIntentRequest.query_input]
 // was set to
+//     [query_input.audio.config][google.cloud.dialogflow.cx.v3beta1.AudioInput.config],
+//     all subsequent messages must contain
+//     [query_input.audio.audio][google.cloud.dialogflow.cx.v3beta1.AudioInput.audio]
+//     to continue with Speech recognition. If you decide to rather detect an
+//     intent from text input after you already started Speech recognition,
+//     please send a message with
+//     [query_input.text][google.cloud.dialogflow.cx.v3beta1.QueryInput.text].
 //
-//	[query_input.audio.config][google.cloud.dialogflow.cx.v3beta1.AudioInput.config],
-//	all subsequent messages must contain
-//	[query_input.audio.audio][google.cloud.dialogflow.cx.v3beta1.AudioInput.audio]
-//	to continue with Speech recognition. If you decide to rather detect an
-//	intent from text input after you already started Speech recognition,
-//	please send a message with
-//	[query_input.text][google.cloud.dialogflow.cx.v3beta1.QueryInput.text].
+//     However, note that:
 //
-//	However, note that:
-//
-//	* Dialogflow will bill you for the audio duration so far.
-//	* Dialogflow discards all Speech recognition results in favor of the
-//	  input text.
-//	* Dialogflow will use the language code from the first message.
+//     * Dialogflow will bill you for the audio duration so far.
+//     * Dialogflow discards all Speech recognition results in favor of the
+//       input text.
+//     * Dialogflow will use the language code from the first message.
 //
 // After you sent all input, you must half-close or abort the request stream.
 type StreamingDetectIntentRequest struct {
@@ -996,7 +994,7 @@ func (x *CloudConversationDebuggingInfo) GetClientHalfCloseStreamingTimeOffset()
 // The first (N-1) responses set either the `recognition_result` or
 // `detect_intent_response` field, depending on the request:
 //
-//   - If the `StreamingDetectIntentRequest.query_input.audio` field was
+// *   If the `StreamingDetectIntentRequest.query_input.audio` field was
 //     set, and the `StreamingDetectIntentRequest.enable_partial_response`
 //     field was false, the `recognition_result` field is populated for each
 //     of the (N-1) responses.
@@ -1004,7 +1002,7 @@ func (x *CloudConversationDebuggingInfo) GetClientHalfCloseStreamingTimeOffset()
 //     [StreamingRecognitionResult][google.cloud.dialogflow.cx.v3beta1.StreamingRecognitionResult]
 //     message for details about the result message sequence.
 //
-//   - If the `StreamingDetectIntentRequest.enable_partial_response` field was
+// *   If the `StreamingDetectIntentRequest.enable_partial_response` field was
 //     true, the `detect_intent_response` field is populated for each
 //     of the (N-1) responses, where 1 <= N <= 4.
 //     These responses set the

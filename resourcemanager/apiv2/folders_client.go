@@ -204,16 +204,16 @@ func (c *FoldersClient) GetFolder(ctx context.Context, req *resourcemanagerpb.Ge
 // In order to succeed, the addition of this new Folder must not violate
 // the Folder naming, height or fanout constraints.
 //
-//	The Folder’s display_name must be distinct from all other Folder’s that
-//	share its parent.
+//   The Folder’s display_name must be distinct from all other Folder’s that
+//   share its parent.
 //
-//	The addition of the Folder must not cause the active Folder hierarchy
-//	to exceed a height of 4. Note, the full active + deleted Folder hierarchy
-//	is allowed to reach a height of 8; this provides additional headroom when
-//	moving folders that contain deleted folders.
+//   The addition of the Folder must not cause the active Folder hierarchy
+//   to exceed a height of 4. Note, the full active + deleted Folder hierarchy
+//   is allowed to reach a height of 8; this provides additional headroom when
+//   moving folders that contain deleted folders.
 //
-//	The addition of the Folder must not cause the total number of Folders
-//	under its parent to exceed 100.
+//   The addition of the Folder must not cause the total number of Folders
+//   under its parent to exceed 100.
 //
 // If the operation fails due to a folder constraint violation, some errors
 // may be returned by the CreateFolder request, with status code
@@ -1024,16 +1024,16 @@ func (c *foldersRESTClient) GetFolder(ctx context.Context, req *resourcemanagerp
 // In order to succeed, the addition of this new Folder must not violate
 // the Folder naming, height or fanout constraints.
 //
-//	The Folder’s display_name must be distinct from all other Folder’s that
-//	share its parent.
+//   The Folder’s display_name must be distinct from all other Folder’s that
+//   share its parent.
 //
-//	The addition of the Folder must not cause the active Folder hierarchy
-//	to exceed a height of 4. Note, the full active + deleted Folder hierarchy
-//	is allowed to reach a height of 8; this provides additional headroom when
-//	moving folders that contain deleted folders.
+//   The addition of the Folder must not cause the active Folder hierarchy
+//   to exceed a height of 4. Note, the full active + deleted Folder hierarchy
+//   is allowed to reach a height of 8; this provides additional headroom when
+//   moving folders that contain deleted folders.
 //
-//	The addition of the Folder must not cause the total number of Folders
-//	under its parent to exceed 100.
+//   The addition of the Folder must not cause the total number of Folders
+//   under its parent to exceed 100.
 //
 // If the operation fails due to a folder constraint violation, some errors
 // may be returned by the CreateFolder request, with status code
