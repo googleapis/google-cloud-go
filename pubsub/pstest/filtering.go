@@ -25,6 +25,7 @@ const (
 	hasPrefixStr  = "hasPrefix"
 )
 
+// ValidateFilter validates if the filter string is parsable.
 func ValidateFilter(filter string) error {
 	_, err := parseFilter(filter)
 	return err
