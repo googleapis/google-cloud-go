@@ -359,11 +359,11 @@ func (c *IntentsClient) DeleteIntent(ctx context.Context, req *cxpb.DeleteIntent
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	ImportIntentsMetadata
+//   metadata:
+//   ImportIntentsMetadata
 //
-//	response:
-//	ImportIntentsResponse
+//   response:
+//   ImportIntentsResponse
 func (c *IntentsClient) ImportIntents(ctx context.Context, req *cxpb.ImportIntentsRequest, opts ...gax.CallOption) (*ImportIntentsOperation, error) {
 	return c.internalClient.ImportIntents(ctx, req, opts...)
 }
@@ -380,11 +380,11 @@ func (c *IntentsClient) ImportIntentsOperation(name string) *ImportIntentsOperat
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	ExportIntentsMetadata
+//   metadata:
+//   ExportIntentsMetadata
 //
-//	response:
-//	ExportIntentsResponse
+//   response:
+//   ExportIntentsResponse
 func (c *IntentsClient) ExportIntents(ctx context.Context, req *cxpb.ExportIntentsRequest, opts ...gax.CallOption) (*ExportIntentsOperation, error) {
 	return c.internalClient.ExportIntents(ctx, req, opts...)
 }
@@ -1258,11 +1258,11 @@ func (c *intentsRESTClient) DeleteIntent(ctx context.Context, req *cxpb.DeleteIn
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	ImportIntentsMetadata
+//   metadata:
+//   ImportIntentsMetadata
 //
-//	response:
-//	ImportIntentsResponse
+//   response:
+//   ImportIntentsResponse
 func (c *intentsRESTClient) ImportIntents(ctx context.Context, req *cxpb.ImportIntentsRequest, opts ...gax.CallOption) (*ImportIntentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1338,11 +1338,11 @@ func (c *intentsRESTClient) ImportIntents(ctx context.Context, req *cxpb.ImportI
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	ExportIntentsMetadata
+//   metadata:
+//   ExportIntentsMetadata
 //
-//	response:
-//	ExportIntentsResponse
+//   response:
+//   ExportIntentsResponse
 func (c *intentsRESTClient) ExportIntents(ctx context.Context, req *cxpb.ExportIntentsRequest, opts ...gax.CallOption) (*ExportIntentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
