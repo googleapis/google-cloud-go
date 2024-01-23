@@ -23,6 +23,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal"
+	"cloud.google.com/go/pubsub/pstest"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel"
@@ -34,6 +35,8 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -135,7 +138,6 @@ func TestTrace_PublishSpan(t *testing.T) {
 	}
 
 	topic, err := c.CreateTopic(ctx, topicID)
-	topic.disableTracing = true
 	if err != nil {
 		t.Fatalf("failed to create topic: %v", err)
 	}
@@ -414,6 +416,49 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 		t.Logf("got spans: %+v\n", got)
 		t.Logf("expected spans: %+v\n", expectedSpans)
 		t.Errorf("diff: -got, +want:\n%s\n", diff)
+	}
+}
+
+func TestTrace_WithTracingDisabled(t *testing.T) {
+	ctx := context.Background()
+	srv := pstest.NewServer()
+	c, err := NewClientWithConfig(ctx, projName,
+		&ClientConfig{DisableOpenTelemetryTracing: true},
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithInsecure()),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close()
+	defer srv.Close()
+
+	e := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	defer tp.Shutdown(ctx)
+	otel.SetTracerProvider(tp)
+
+	m := &Message{
+		Data: []byte("test"),
+	}
+
+	topicID := "t"
+
+	topic, err := c.CreateTopic(ctx, topicID)
+	if err != nil {
+		t.Fatalf("failed to create topic: %v", err)
+	}
+	r := topic.Publish(ctx, m)
+	_, err = r.Get(ctx)
+	if err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+	defer topic.Stop()
+
+	got := getSpans(e)
+	if len(got) != 0 {
+		t.Fatalf("expected no spans to be exported when tracing is disabled")
 	}
 }
 
