@@ -637,6 +637,9 @@ type EmbedContentRequest struct {
 	TaskType *TaskType `protobuf:"varint,3,opt,name=task_type,json=taskType,proto3,enum=google.ai.generativelanguage.v1.TaskType,oneof" json:"task_type,omitempty"`
 	// Optional. An optional title for the text. Only applicable when TaskType is
 	// `RETRIEVAL_DOCUMENT`.
+	//
+	// Note: Specifying a `title` for `RETRIEVAL_DOCUMENT` provides better quality
+	// embeddings for retrieval.
 	Title *string `protobuf:"bytes,4,opt,name=title,proto3,oneof" json:"title,omitempty"`
 }
 
