@@ -578,6 +578,7 @@ var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, 
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	ctx, createSpan := startCreateSpan(ctx, msg, t.ID(), t.disableTracing)
+	createSpan.SetAttributes(semconv.CodeFunction("topic.Publish"))
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
@@ -779,7 +780,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 
 	topicID := strings.Split(t.name, "/")[3]
 	_, pSpan := startPublishSpan(ctx, topicID, t.disableTracing, trace.WithLinks(links...))
-	pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs))
+	pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("topic.publishMessageBundle"))
 	defer pSpan.End()
 
 	for i, bm := range bms {

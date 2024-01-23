@@ -317,7 +317,11 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
 			attribute.String(ackIDAttribute, ackID),
 			semconv.MessagingBatchMessageCount(len(pendingMessages)),
+			semconv.CodeFunction("iterator.receive"),
 		)
+		if m.DeliveryAttempt != nil {
+			span.SetAttributes(attribute.Int(deliveryAttemptAttribute, *m.DeliveryAttempt))
+		}
 		it.activeSpan.Store(ackID, span)
 	}
 	deadline := it.ackDeadline()
@@ -544,7 +548,8 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 			}
 			_, ackSpan := tracer(it.enableTracing).Start(context.Background(), fmt.Sprintf("%s %s", it.subID, ackSpanName), trace.WithLinks(links...))
 			defer ackSpan.End()
-			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch))
+			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
+				semconv.CodeFunction("messageIterator.sendAck"))
 
 			recordStat(it.ctx, AckCount, int64(len(toSend)))
 			addAcks(toSend)
@@ -634,7 +639,8 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 						attribute.Int(ackDeadlineSecAttribute, int(deadlineSec)),
 						attribute.Bool(receiptModackAttribute, isReceipt))
 				}
-				mSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch))
+				mSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
+					semconv.CodeFunction("messageIterator.sendModAck"))
 			}
 			addModAcks(toSend, deadlineSec)
 			// Use context.Background() as the call's context, not it.ctx. We don't
