@@ -77,14 +77,14 @@ func getAttrs() map[int]messageAttrs {
 			"timezone": "UTC",
 		},
 		10: {
-			"lang": "jp",
+			"lang":               "jp",
 			"\u307F\u3093\u306A": "dummy1",
 		},
 		11: {
 			"\u307F\u3093\u306A": "dummy2",
 		},
 		12: {
-			"name": "com",
+			"name":               "com",
 			"\u307F\u3093\u306A": "dummy3",
 		},
 	}
