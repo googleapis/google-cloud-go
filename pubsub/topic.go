@@ -778,7 +778,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	}
 
 	topicID := strings.Split(t.name, "/")[3]
-	_, pSpan := tracer(t.disableTracing).Start(ctx, fmt.Sprintf("%s %s", topicID, publishRPCSpanName), trace.WithLinks(links...))
+	_, pSpan := startPublishSpan(ctx, topicID, t.disableTracing, trace.WithLinks(links...))
 	pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs))
 	defer pSpan.End()
 

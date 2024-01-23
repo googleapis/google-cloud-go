@@ -340,17 +340,21 @@ const (
 	receiptModackAttribute   = pubsubPrefix + "is_receipt_modack"
 )
 
-func startCreateSpan(ctx context.Context, m *Message, topicID string, enableTracing bool) (context.Context, trace.Span) {
+func startCreateSpan(ctx context.Context, m *Message, topicID string, disableTrace bool) (context.Context, trace.Span) {
 	opts := getPublishSpanAttributes(topicID, m)
-	return tracer(enableTracing).Start(ctx, fmt.Sprintf("%s %s", topicID, publisherSpanName), opts...)
+	return tracer(disableTrace).Start(ctx, fmt.Sprintf("%s %s", topicID, publisherSpanName), opts...)
 }
 
-func startPublishFlowControlSpan(ctx context.Context, enableTracing bool) (context.Context, trace.Span) {
-	return tracer(enableTracing).Start(ctx, publishFlowControlSpanName)
+func startPublishFlowControlSpan(ctx context.Context, disableTrace bool) (context.Context, trace.Span) {
+	return tracer(disableTrace).Start(ctx, publishFlowControlSpanName)
 }
 
-func startBatcherSpan(ctx context.Context, enableTracing bool) (context.Context, trace.Span) {
-	return tracer(enableTracing).Start(ctx, publishBatcherSpanName)
+func startBatcherSpan(ctx context.Context, disableTrace bool) (context.Context, trace.Span) {
+	return tracer(disableTrace).Start(ctx, publishBatcherSpanName)
+}
+
+func startPublishSpan(ctx context.Context, topicID string, disableTrace bool, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	return tracer(disableTrace).Start(ctx, publishRPCSpanName, opts...)
 }
 
 func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
