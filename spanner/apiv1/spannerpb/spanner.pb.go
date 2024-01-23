@@ -22,6 +22,9 @@ package spannerpb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -33,8 +36,6 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -50,16 +51,16 @@ const (
 // The priority acts as a hint to the Cloud Spanner scheduler and does not
 // guarantee priority or order of execution. For example:
 //
-// * Some parts of a write operation always execute at `PRIORITY_HIGH`,
-//   regardless of the specified priority. This may cause you to see an
-//   increase in high priority workload even when executing a low priority
-//   request. This can also potentially cause a priority inversion where a
-//   lower priority request will be fulfilled ahead of a higher priority
-//   request.
-// * If a transaction contains multiple operations with different priorities,
-//   Cloud Spanner does not guarantee to process the higher priority
-//   operations first. There may be other constraints to satisfy, such as
-//   order of operations.
+//   - Some parts of a write operation always execute at `PRIORITY_HIGH`,
+//     regardless of the specified priority. This may cause you to see an
+//     increase in high priority workload even when executing a low priority
+//     request. This can also potentially cause a priority inversion where a
+//     lower priority request will be fulfilled ahead of a higher priority
+//     request.
+//   - If a transaction contains multiple operations with different priorities,
+//     Cloud Spanner does not guarantee to process the higher priority
+//     operations first. There may be other constraints to satisfy, such as
+//     order of operations.
 type RequestOptions_Priority int32
 
 const (
@@ -1253,11 +1254,12 @@ func (x *ExecuteBatchDmlRequest) GetRequestOptions() *RequestOptions {
 //
 // 1. Check the status in the response message. The
 // [google.rpc.Code][google.rpc.Code] enum
-//    value `OK` indicates that all statements were executed successfully.
-// 2. If the status was not `OK`, check the number of result sets in the
-//    response. If the response contains `N`
-//    [ResultSet][google.spanner.v1.ResultSet] messages, then statement `N+1` in
-//    the request failed.
+//
+//		value `OK` indicates that all statements were executed successfully.
+//	 2. If the status was not `OK`, check the number of result sets in the
+//	    response. If the response contains `N`
+//	    [ResultSet][google.spanner.v1.ResultSet] messages, then statement `N+1` in
+//	    the request failed.
 //
 // Example 1:
 //
@@ -1270,9 +1272,10 @@ func (x *ExecuteBatchDmlRequest) GetRequestOptions() *RequestOptions {
 // * Request: 5 DML statements. The third statement has a syntax error.
 // * Response: 2 [ResultSet][google.spanner.v1.ResultSet] messages, and a syntax
 // error (`INVALID_ARGUMENT`)
-//   status. The number of [ResultSet][google.spanner.v1.ResultSet] messages
-//   indicates that the third statement failed, and the fourth and fifth
-//   statements were not executed.
+//
+//	status. The number of [ResultSet][google.spanner.v1.ResultSet] messages
+//	indicates that the third statement failed, and the fourth and fifth
+//	statements were not executed.
 type ExecuteBatchDmlResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2365,20 +2368,22 @@ func (x *BatchWriteResponse) GetCommitTimestamp() *timestamppb.Timestamp {
 // Callers must provide one or more of the following fields for replica
 // selection:
 //
-//   * `location` - The location must be one of the regions within the
-//      multi-region configuration of your database.
-//   * `type` - The type of the replica.
+//   - `location` - The location must be one of the regions within the
+//     multi-region configuration of your database.
+//   - `type` - The type of the replica.
 //
 // Some examples of using replica_selectors are:
 //
-//   * `location:us-east1` --> The "us-east1" replica(s) of any available type
-//                             will be used to process the request.
-//   * `type:READ_ONLY`    --> The "READ_ONLY" type replica(s) in nearest
+//   - `location:us-east1` --> The "us-east1" replica(s) of any available type
+//     will be used to process the request.
+//   - `type:READ_ONLY`    --> The "READ_ONLY" type replica(s) in nearest
+//
 // .                            available location will be used to process the
-//                             request.
-//   * `location:us-east1 type:READ_ONLY` --> The "READ_ONLY" type replica(s)
-//                          in location "us-east1" will be used to process
-//                          the request.
+//
+//	                          request.
+//	* `location:us-east1 type:READ_ONLY` --> The "READ_ONLY" type replica(s)
+//	                       in location "us-east1" will be used to process
+//	                       the request.
 type DirectedReadOptions_ReplicaSelection struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
