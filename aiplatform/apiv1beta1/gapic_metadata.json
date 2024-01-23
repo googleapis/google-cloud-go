@@ -2574,6 +2574,11 @@
                 "ComputeTokens"
               ]
             },
+            "CountTokens": {
+              "methods": [
+                "CountTokens"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -2632,6 +2637,11 @@
             "ComputeTokens": {
               "methods": [
                 "ComputeTokens"
+              ]
+            },
+            "CountTokens": {
+              "methods": [
+                "CountTokens"
               ]
             },
             "DeleteOperation": {
@@ -4221,6 +4231,16 @@
                 "DeleteOperation"
               ]
             },
+            "DirectPredict": {
+              "methods": [
+                "DirectPredict"
+              ]
+            },
+            "DirectRawPredict": {
+              "methods": [
+                "DirectRawPredict"
+              ]
+            },
             "Explain": {
               "methods": [
                 "Explain"
@@ -4269,6 +4289,21 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamGenerateContent": {
+              "methods": [
+                "StreamGenerateContent"
+              ]
+            },
+            "StreamingPredict": {
+              "methods": [
+                "StreamingPredict"
+              ]
+            },
+            "StreamingRawPredict": {
+              "methods": [
+                "StreamingRawPredict"
               ]
             },
             "TestIamPermissions": {
@@ -4301,6 +4336,16 @@
                 "DeleteOperation"
               ]
             },
+            "DirectPredict": {
+              "methods": [
+                "DirectPredict"
+              ]
+            },
+            "DirectRawPredict": {
+              "methods": [
+                "DirectRawPredict"
+              ]
+            },
             "Explain": {
               "methods": [
                 "Explain"
@@ -4349,6 +4394,21 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamGenerateContent": {
+              "methods": [
+                "StreamGenerateContent"
+              ]
+            },
+            "StreamingPredict": {
+              "methods": [
+                "StreamingPredict"
+              ]
+            },
+            "StreamingRawPredict": {
+              "methods": [
+                "StreamingRawPredict"
               ]
             },
             "TestIamPermissions": {

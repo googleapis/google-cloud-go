@@ -1,5 +1,22 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.20.0...bigtable/v1.21.0) (2023-12-04)
+
+
+### Features
+
+* **bigtable:** Add support for reverse scans ([#8755](https://github.com/googleapis/google-cloud-go/issues/8755)) ([244d135](https://github.com/googleapis/google-cloud-go/commit/244d1357cb1b6ce3b971d367693f6cb6090018d4))
+* **bigtable:** Support copy backup in admin client ([#9005](https://github.com/googleapis/google-cloud-go/issues/9005)) ([834c47f](https://github.com/googleapis/google-cloud-go/commit/834c47fb3bd9e8a21082325780b2dcfd4c6d52c6))
+
+
+### Bug Fixes
+
+* **bigtable:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+* **bigtable:** Return cluster error for Update when populated ([#8657](https://github.com/googleapis/google-cloud-go/issues/8657)) ([2105434](https://github.com/googleapis/google-cloud-go/commit/2105434f27a16ac05790c40b74d3a251ec584527))
+* **bigtable:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+* **bigtable:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **bigtable:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.19.0...bigtable/v1.20.0) (2023-10-02)
 
 

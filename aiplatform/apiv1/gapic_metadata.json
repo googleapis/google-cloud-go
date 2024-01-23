@@ -154,6 +154,90 @@
         }
       }
     },
+    "DeploymentResourcePoolService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DeploymentResourcePoolClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDeploymentResourcePool": {
+              "methods": [
+                "CreateDeploymentResourcePool"
+              ]
+            },
+            "DeleteDeploymentResourcePool": {
+              "methods": [
+                "DeleteDeploymentResourcePool"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDeploymentResourcePool": {
+              "methods": [
+                "GetDeploymentResourcePool"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDeploymentResourcePools": {
+              "methods": [
+                "ListDeploymentResourcePools"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "QueryDeployedModels": {
+              "methods": [
+                "QueryDeployedModels"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "EndpointService": {
       "clients": {
         "grpc": {
@@ -1978,6 +2062,16 @@
                 "DeleteOperation"
               ]
             },
+            "DirectPredict": {
+              "methods": [
+                "DirectPredict"
+              ]
+            },
+            "DirectRawPredict": {
+              "methods": [
+                "DirectRawPredict"
+              ]
+            },
             "Explain": {
               "methods": [
                 "Explain"
@@ -2026,6 +2120,21 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamGenerateContent": {
+              "methods": [
+                "StreamGenerateContent"
+              ]
+            },
+            "StreamingPredict": {
+              "methods": [
+                "StreamingPredict"
+              ]
+            },
+            "StreamingRawPredict": {
+              "methods": [
+                "StreamingRawPredict"
               ]
             },
             "TestIamPermissions": {

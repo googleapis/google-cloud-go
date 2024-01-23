@@ -107,7 +107,7 @@ type FeatureOnlineStore struct {
 	//	*FeatureOnlineStore_Bigtable_
 	//	*FeatureOnlineStore_Optimized_
 	StorageType isFeatureOnlineStore_StorageType `protobuf_oneof:"storage_type"`
-	// Output only. Name of the FeatureOnlineStore. Format:
+	// Identifier. Name of the FeatureOnlineStore. Format:
 	// `projects/{project}/locations/{location}/featureOnlineStores/{featureOnlineStore}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Timestamp when this FeatureOnlineStore was created.
@@ -360,7 +360,9 @@ func (*FeatureOnlineStore_Optimized) Descriptor() ([]byte, []int) {
 
 // The dedicated serving endpoint for this FeatureOnlineStore. Only need to
 // set when you choose Optimized storage type or enable EmbeddingManagement.
-// Will use public endpoint by default.
+// Will use public endpoint by default. Note, for EmbeddingManagement use
+// case, only [DedicatedServingEndpoint.public_endpoint_domain_name] is
+// available now.
 type FeatureOnlineStore_DedicatedServingEndpoint struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -369,8 +371,9 @@ type FeatureOnlineStore_DedicatedServingEndpoint struct {
 	// Output only. This field will be populated with the domain name to use for
 	// this FeatureOnlineStore
 	PublicEndpointDomainName string `protobuf:"bytes,2,opt,name=public_endpoint_domain_name,json=publicEndpointDomainName,proto3" json:"public_endpoint_domain_name,omitempty"`
-	// Optional. Private service connect config.
-	// If
+	// Optional. Private service connect config. The private service connection
+	// is available only for Optimized storage type, not for embedding
+	// management now. If
 	// [PrivateServiceConnectConfig.enable_private_service_connect][google.cloud.aiplatform.v1beta1.PrivateServiceConnectConfig.enable_private_service_connect]
 	// set to true, customers will use private service connection to send
 	// request. Otherwise, the connection will set to public endpoint.
@@ -589,7 +592,7 @@ var file_google_cloud_aiplatform_v1beta1_feature_online_store_proto_rawDesc = []
 	0x74, 0x75, 0x72, 0x65, 0x4f, 0x6e, 0x6c, 0x69, 0x6e, 0x65, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x2e,
 	0x4f, 0x70, 0x74, 0x69, 0x6d, 0x69, 0x7a, 0x65, 0x64, 0x48, 0x00, 0x52, 0x09, 0x6f, 0x70, 0x74,
 	0x69, 0x6d, 0x69, 0x7a, 0x65, 0x64, 0x12, 0x17, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x08, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12,
 	0x40, 0x0a, 0x0b, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x03,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,

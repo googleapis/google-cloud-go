@@ -2098,7 +2098,7 @@ type ListFeaturesRequest struct {
 	//
 	// When paginating, all other parameters provided to
 	// [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1beta1.FeaturestoreService.ListFeatures]
-	// or or
+	// or
 	// [FeatureRegistryService.ListFeatures][google.cloud.aiplatform.v1beta1.FeatureRegistryService.ListFeatures]
 	// must match the call that provided the page token.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`

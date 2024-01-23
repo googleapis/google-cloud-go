@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ type RoutersCallOptions struct {
 	AggregatedList    []gax.CallOption
 	Delete            []gax.CallOption
 	Get               []gax.CallOption
+	GetNatIpInfo      []gax.CallOption
 	GetNatMappingInfo []gax.CallOption
 	GetRouterStatus   []gax.CallOption
 	Insert            []gax.CallOption
@@ -73,6 +74,18 @@ func defaultRoutersRESTCallOptions() *RoutersCallOptions {
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetNatIpInfo: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -143,6 +156,7 @@ type internalRoutersClient interface {
 	AggregatedList(context.Context, *computepb.AggregatedListRoutersRequest, ...gax.CallOption) *RoutersScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteRouterRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRouterRequest, ...gax.CallOption) (*computepb.Router, error)
+	GetNatIpInfo(context.Context, *computepb.GetNatIpInfoRouterRequest, ...gax.CallOption) (*computepb.NatIpInfoResponse, error)
 	GetNatMappingInfo(context.Context, *computepb.GetNatMappingInfoRoutersRequest, ...gax.CallOption) *VmEndpointNatMappingsIterator
 	GetRouterStatus(context.Context, *computepb.GetRouterStatusRouterRequest, ...gax.CallOption) (*computepb.RouterStatusResponse, error)
 	Insert(context.Context, *computepb.InsertRouterRequest, ...gax.CallOption) (*Operation, error)
@@ -200,6 +214,11 @@ func (c *RoutersClient) Delete(ctx context.Context, req *computepb.DeleteRouterR
 // Get returns the specified Router resource.
 func (c *RoutersClient) Get(ctx context.Context, req *computepb.GetRouterRequest, opts ...gax.CallOption) (*computepb.Router, error) {
 	return c.internalClient.Get(ctx, req, opts...)
+}
+
+// GetNatIpInfo retrieves runtime NAT IP information.
+func (c *RoutersClient) GetNatIpInfo(ctx context.Context, req *computepb.GetNatIpInfoRouterRequest, opts ...gax.CallOption) (*computepb.NatIpInfoResponse, error) {
+	return c.internalClient.GetNatIpInfo(ctx, req, opts...)
 }
 
 // GetNatMappingInfo retrieves runtime Nat mapping information of VM endpoints.
@@ -362,6 +381,9 @@ func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -516,6 +538,68 @@ func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterReq
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Router{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetNatIpInfo retrieves runtime NAT IP information.
+func (c *routersRESTClient) GetNatIpInfo(ctx context.Context, req *computepb.GetNatIpInfoRouterRequest, opts ...gax.CallOption) (*computepb.NatIpInfoResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getNatIpInfo", req.GetProject(), req.GetRegion(), req.GetRouter())
+
+	params := url.Values{}
+	if req != nil && req.NatName != nil {
+		params.Add("natName", fmt.Sprintf("%v", req.GetNatName()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetNatIpInfo[0:len((*c.CallOptions).GetNatIpInfo):len((*c.CallOptions).GetNatIpInfo)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.NatIpInfoResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

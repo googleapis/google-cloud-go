@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.53.0",
+    "version": "1.58.0",
     "language": "GO",
     "apis": [
       {
@@ -11068,6 +11068,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_CountTokens_sync",
+      "title": "aiplatform CountTokens Sample",
+      "description": "CountTokens perform a token counting.",
+      "file": "LlmUtilityClient/CountTokens/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CountTokens",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.CountTokens",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CountTokensRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.CountTokensResponse",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "CountTokens",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService.CountTokens",
+          "service": {
+            "shortName": "LlmUtilityService",
+            "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_DeleteOperation_sync",
       "title": "aiplatform DeleteOperation Sample",
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
@@ -18133,6 +18179,98 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_DirectPredict_sync",
+      "title": "aiplatform DirectPredict Sample",
+      "description": "DirectPredict perform an unary online prediction request for Vertex first-party products\nand frameworks.",
+      "file": "PredictionClient/DirectPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DirectPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.DirectPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DirectPredictRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.DirectPredictResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "DirectPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.DirectPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_DirectRawPredict_sync",
+      "title": "aiplatform DirectRawPredict Sample",
+      "description": "DirectRawPredict perform an online prediction request through gRPC.",
+      "file": "PredictionClient/DirectRawPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DirectRawPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.DirectRawPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DirectRawPredictRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.DirectRawPredictResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "DirectRawPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.DirectRawPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_PredictionService_Explain_sync",
       "title": "aiplatform Explain Sample",
       "description": "Explain perform an online explanation.\n\nIf\n[deployed_model_id][google.cloud.aiplatform.v1beta1.ExplainRequest.deployed_model_id]\nis specified, the corresponding DeployModel must have\n[explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec]\npopulated. If\n[deployed_model_id][google.cloud.aiplatform.v1beta1.ExplainRequest.deployed_model_id]\nis not specified, all DeployedModels must have\n[explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec]\npopulated.",
@@ -18542,6 +18680,90 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_StreamingPredict_sync",
+      "title": "aiplatform StreamingPredict Sample",
+      "description": "StreamingPredict perform a streaming online prediction request for Vertex first-party\nproducts and frameworks.\n\n\nThis method is not supported for the REST transport.",
+      "file": "PredictionClient/StreamingPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamingPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.StreamingPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.PredictionService_StreamingPredictClient",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "StreamingPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.StreamingPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_StreamingRawPredict_sync",
+      "title": "aiplatform StreamingRawPredict Sample",
+      "description": "StreamingRawPredict perform a streaming online prediction request through gRPC.\n\n\nThis method is not supported for the REST transport.",
+      "file": "PredictionClient/StreamingRawPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamingRawPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.StreamingRawPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.PredictionService_StreamingRawPredictClient",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "StreamingRawPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.StreamingRawPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]

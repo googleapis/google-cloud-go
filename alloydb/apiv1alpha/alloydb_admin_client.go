@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -79,6 +79,7 @@ type AlloyDBAdminCallOptions struct {
 	CreateUser                 []gax.CallOption
 	UpdateUser                 []gax.CallOption
 	DeleteUser                 []gax.CallOption
+	ListDatabases              []gax.CallOption
 	GetLocation                []gax.CallOption
 	ListLocations              []gax.CallOption
 	CancelOperation            []gax.CallOption
@@ -293,6 +294,18 @@ func defaultAlloyDBAdminCallOptions() *AlloyDBAdminCallOptions {
 		DeleteUser: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListDatabases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -485,6 +498,17 @@ func defaultAlloyDBAdminRESTCallOptions() *AlloyDBAdminCallOptions {
 		DeleteUser: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListDatabases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -547,6 +571,7 @@ type internalAlloyDBAdminClient interface {
 	CreateUser(context.Context, *alloydbpb.CreateUserRequest, ...gax.CallOption) (*alloydbpb.User, error)
 	UpdateUser(context.Context, *alloydbpb.UpdateUserRequest, ...gax.CallOption) (*alloydbpb.User, error)
 	DeleteUser(context.Context, *alloydbpb.DeleteUserRequest, ...gax.CallOption) error
+	ListDatabases(context.Context, *alloydbpb.ListDatabasesRequest, ...gax.CallOption) *DatabaseIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -873,6 +898,11 @@ func (c *AlloyDBAdminClient) UpdateUser(ctx context.Context, req *alloydbpb.Upda
 // DeleteUser deletes a single User.
 func (c *AlloyDBAdminClient) DeleteUser(ctx context.Context, req *alloydbpb.DeleteUserRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteUser(ctx, req, opts...)
+}
+
+// ListDatabases lists Databases in a given project and location.
+func (c *AlloyDBAdminClient) ListDatabases(ctx context.Context, req *alloydbpb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+	return c.internalClient.ListDatabases(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -1808,6 +1838,52 @@ func (c *alloyDBAdminGRPCClient) DeleteUser(ctx context.Context, req *alloydbpb.
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *alloyDBAdminGRPCClient) ListDatabases(ctx context.Context, req *alloydbpb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
+	it := &DatabaseIterator{}
+	req = proto.Clone(req).(*alloydbpb.ListDatabasesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Database, string, error) {
+		resp := &alloydbpb.ListDatabasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.alloyDBAdminClient.ListDatabases(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDatabases(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *alloyDBAdminGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -4333,6 +4409,98 @@ func (c *alloyDBAdminRESTClient) DeleteUser(ctx context.Context, req *alloydbpb.
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
+}
+
+// ListDatabases lists Databases in a given project and location.
+func (c *alloyDBAdminRESTClient) ListDatabases(ctx context.Context, req *alloydbpb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+	it := &DatabaseIterator{}
+	req = proto.Clone(req).(*alloydbpb.ListDatabasesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Database, string, error) {
+		resp := &alloydbpb.ListDatabasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/databases", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDatabases(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetLocation gets information about a location.

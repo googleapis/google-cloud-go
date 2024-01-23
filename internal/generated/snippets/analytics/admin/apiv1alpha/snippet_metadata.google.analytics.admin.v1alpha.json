@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.21.6",
+    "version": "0.22.0",
     "language": "GO",
     "apis": [
       {
@@ -3670,6 +3670,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetSubpropertyEventFilter_sync",
+      "title": "analyticsadmin GetSubpropertyEventFilter Sample",
+      "description": "GetSubpropertyEventFilter lookup for a single subproperty Event Filter.",
+      "file": "AnalyticsAdminClient/GetSubpropertyEventFilter/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSubpropertyEventFilter",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetSubpropertyEventFilter",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetSubpropertyEventFilterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SubpropertyEventFilter",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetSubpropertyEventFilter",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetSubpropertyEventFilter",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAccessBindings_sync",
       "title": "analyticsadmin ListAccessBindings Sample",
       "description": "ListAccessBindings lists all access bindings on an account or property.",
@@ -4728,6 +4774,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListSubpropertyEventFilters_sync",
+      "title": "analyticsadmin ListSubpropertyEventFilters Sample",
+      "description": "ListSubpropertyEventFilters list all subproperty Event Filters on a property.",
+      "file": "AnalyticsAdminClient/ListSubpropertyEventFilters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSubpropertyEventFilters",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListSubpropertyEventFilters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListSubpropertyEventFiltersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubpropertyEventFilterIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListSubpropertyEventFilters",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListSubpropertyEventFilters",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ProvisionAccountTicket_sync",
       "title": "analyticsadmin ProvisionAccountTicket Sample",
       "description": "ProvisionAccountTicket requests a ticket for creating an account.",
@@ -4776,7 +4868,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_RunAccessReport_sync",
       "title": "analyticsadmin RunAccessReport Sample",
-      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. The property must be\nin Google Analytics 360. This method is only available to Administrators.\n\nThese data access records include GA4 UI Reporting, GA4 UI Explorations,\nGA4 Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).",
+      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. Reports may be\nrequested for any property, but dimensions that aren't related to quota can\nonly be requested on Google Analytics 360 properties. This method is only\navailable to Administrators.\n\nThese data access records include GA4 UI Reporting, GA4 UI Explorations,\nGA4 Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).",
       "file": "AnalyticsAdminClient/RunAccessReport/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5862,6 +5954,52 @@
         "method": {
           "shortName": "UpdateSearchAds360Link",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSearchAds360Link",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateSubpropertyEventFilter_sync",
+      "title": "analyticsadmin UpdateSubpropertyEventFilter Sample",
+      "description": "UpdateSubpropertyEventFilter updates a subproperty Event Filter.",
+      "file": "AnalyticsAdminClient/UpdateSubpropertyEventFilter/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSubpropertyEventFilter",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateSubpropertyEventFilter",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateSubpropertyEventFilterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SubpropertyEventFilter",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateSubpropertyEventFilter",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertyEventFilter",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"

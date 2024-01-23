@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,26 +41,29 @@ var newAzureClustersClientHook clientHook
 
 // AzureClustersCallOptions contains the retry settings for each method of AzureClustersClient.
 type AzureClustersCallOptions struct {
-	CreateAzureClient        []gax.CallOption
-	GetAzureClient           []gax.CallOption
-	ListAzureClients         []gax.CallOption
-	DeleteAzureClient        []gax.CallOption
-	CreateAzureCluster       []gax.CallOption
-	UpdateAzureCluster       []gax.CallOption
-	GetAzureCluster          []gax.CallOption
-	ListAzureClusters        []gax.CallOption
-	DeleteAzureCluster       []gax.CallOption
-	GenerateAzureAccessToken []gax.CallOption
-	CreateAzureNodePool      []gax.CallOption
-	UpdateAzureNodePool      []gax.CallOption
-	GetAzureNodePool         []gax.CallOption
-	ListAzureNodePools       []gax.CallOption
-	DeleteAzureNodePool      []gax.CallOption
-	GetAzureServerConfig     []gax.CallOption
-	CancelOperation          []gax.CallOption
-	DeleteOperation          []gax.CallOption
-	GetOperation             []gax.CallOption
-	ListOperations           []gax.CallOption
+	CreateAzureClient              []gax.CallOption
+	GetAzureClient                 []gax.CallOption
+	ListAzureClients               []gax.CallOption
+	DeleteAzureClient              []gax.CallOption
+	CreateAzureCluster             []gax.CallOption
+	UpdateAzureCluster             []gax.CallOption
+	GetAzureCluster                []gax.CallOption
+	ListAzureClusters              []gax.CallOption
+	DeleteAzureCluster             []gax.CallOption
+	GenerateAzureClusterAgentToken []gax.CallOption
+	GenerateAzureAccessToken       []gax.CallOption
+	CreateAzureNodePool            []gax.CallOption
+	UpdateAzureNodePool            []gax.CallOption
+	GetAzureNodePool               []gax.CallOption
+	ListAzureNodePools             []gax.CallOption
+	DeleteAzureNodePool            []gax.CallOption
+	GetAzureOpenIdConfig           []gax.CallOption
+	GetAzureJsonWebKeys            []gax.CallOption
+	GetAzureServerConfig           []gax.CallOption
+	CancelOperation                []gax.CallOption
+	DeleteOperation                []gax.CallOption
+	GetOperation                   []gax.CallOption
+	ListOperations                 []gax.CallOption
 }
 
 func defaultAzureClustersGRPCClientOptions() []option.ClientOption {
@@ -140,6 +143,18 @@ func defaultAzureClustersCallOptions() *AzureClustersCallOptions {
 		DeleteAzureCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GenerateAzureClusterAgentToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GenerateAzureAccessToken: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -185,6 +200,30 @@ func defaultAzureClustersCallOptions() *AzureClustersCallOptions {
 		DeleteAzureNodePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GetAzureOpenIdConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAzureJsonWebKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetAzureServerConfig: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -223,6 +262,7 @@ type internalAzureClustersClient interface {
 	ListAzureClusters(context.Context, *gkemulticloudpb.ListAzureClustersRequest, ...gax.CallOption) *AzureClusterIterator
 	DeleteAzureCluster(context.Context, *gkemulticloudpb.DeleteAzureClusterRequest, ...gax.CallOption) (*DeleteAzureClusterOperation, error)
 	DeleteAzureClusterOperation(name string) *DeleteAzureClusterOperation
+	GenerateAzureClusterAgentToken(context.Context, *gkemulticloudpb.GenerateAzureClusterAgentTokenRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAzureClusterAgentTokenResponse, error)
 	GenerateAzureAccessToken(context.Context, *gkemulticloudpb.GenerateAzureAccessTokenRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAzureAccessTokenResponse, error)
 	CreateAzureNodePool(context.Context, *gkemulticloudpb.CreateAzureNodePoolRequest, ...gax.CallOption) (*CreateAzureNodePoolOperation, error)
 	CreateAzureNodePoolOperation(name string) *CreateAzureNodePoolOperation
@@ -232,6 +272,8 @@ type internalAzureClustersClient interface {
 	ListAzureNodePools(context.Context, *gkemulticloudpb.ListAzureNodePoolsRequest, ...gax.CallOption) *AzureNodePoolIterator
 	DeleteAzureNodePool(context.Context, *gkemulticloudpb.DeleteAzureNodePoolRequest, ...gax.CallOption) (*DeleteAzureNodePoolOperation, error)
 	DeleteAzureNodePoolOperation(name string) *DeleteAzureNodePoolOperation
+	GetAzureOpenIdConfig(context.Context, *gkemulticloudpb.GetAzureOpenIdConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AzureOpenIdConfig, error)
+	GetAzureJsonWebKeys(context.Context, *gkemulticloudpb.GetAzureJsonWebKeysRequest, ...gax.CallOption) (*gkemulticloudpb.AzureJsonWebKeys, error)
 	GetAzureServerConfig(context.Context, *gkemulticloudpb.GetAzureServerConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AzureServerConfig, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
@@ -389,6 +431,11 @@ func (c *AzureClustersClient) DeleteAzureClusterOperation(name string) *DeleteAz
 	return c.internalClient.DeleteAzureClusterOperation(name)
 }
 
+// GenerateAzureClusterAgentToken generates an access token for a cluster agent.
+func (c *AzureClustersClient) GenerateAzureClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAzureClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAzureClusterAgentTokenResponse, error) {
+	return c.internalClient.GenerateAzureClusterAgentToken(ctx, req, opts...)
+}
+
 // GenerateAzureAccessToken generates a short-lived access token to authenticate to a given
 // AzureCluster resource.
 func (c *AzureClustersClient) GenerateAzureAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAzureAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAzureAccessTokenResponse, error) {
@@ -450,6 +497,21 @@ func (c *AzureClustersClient) DeleteAzureNodePool(ctx context.Context, req *gkem
 // The name must be that of a previously created DeleteAzureNodePoolOperation, possibly from a different process.
 func (c *AzureClustersClient) DeleteAzureNodePoolOperation(name string) *DeleteAzureNodePoolOperation {
 	return c.internalClient.DeleteAzureNodePoolOperation(name)
+}
+
+// GetAzureOpenIdConfig gets the OIDC discovery document for the cluster.
+// See the
+// OpenID Connect Discovery 1.0
+// specification (at https://openid.net/specs/openid-connect-discovery-1_0.html)
+// for details.
+func (c *AzureClustersClient) GetAzureOpenIdConfig(ctx context.Context, req *gkemulticloudpb.GetAzureOpenIdConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureOpenIdConfig, error) {
+	return c.internalClient.GetAzureOpenIdConfig(ctx, req, opts...)
+}
+
+// GetAzureJsonWebKeys gets the public component of the cluster signing keys in
+// JSON Web Key format.
+func (c *AzureClustersClient) GetAzureJsonWebKeys(ctx context.Context, req *gkemulticloudpb.GetAzureJsonWebKeysRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureJsonWebKeys, error) {
+	return c.internalClient.GetAzureJsonWebKeys(ctx, req, opts...)
 }
 
 // GetAzureServerConfig returns information, such as supported Azure regions and Kubernetes
@@ -798,6 +860,24 @@ func (c *azureClustersGRPCClient) DeleteAzureCluster(ctx context.Context, req *g
 	}, nil
 }
 
+func (c *azureClustersGRPCClient) GenerateAzureClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAzureClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAzureClusterAgentTokenResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "azure_cluster", url.QueryEscape(req.GetAzureCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateAzureClusterAgentToken[0:len((*c.CallOptions).GenerateAzureClusterAgentToken):len((*c.CallOptions).GenerateAzureClusterAgentToken)], opts...)
+	var resp *gkemulticloudpb.GenerateAzureClusterAgentTokenResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.azureClustersClient.GenerateAzureClusterAgentToken(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *azureClustersGRPCClient) GenerateAzureAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAzureAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAzureAccessTokenResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "azure_cluster", url.QueryEscape(req.GetAzureCluster()))}
 
@@ -938,6 +1018,42 @@ func (c *azureClustersGRPCClient) DeleteAzureNodePool(ctx context.Context, req *
 	return &DeleteAzureNodePoolOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *azureClustersGRPCClient) GetAzureOpenIdConfig(ctx context.Context, req *gkemulticloudpb.GetAzureOpenIdConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureOpenIdConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "azure_cluster", url.QueryEscape(req.GetAzureCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAzureOpenIdConfig[0:len((*c.CallOptions).GetAzureOpenIdConfig):len((*c.CallOptions).GetAzureOpenIdConfig)], opts...)
+	var resp *gkemulticloudpb.AzureOpenIdConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.azureClustersClient.GetAzureOpenIdConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *azureClustersGRPCClient) GetAzureJsonWebKeys(ctx context.Context, req *gkemulticloudpb.GetAzureJsonWebKeysRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureJsonWebKeys, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "azure_cluster", url.QueryEscape(req.GetAzureCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAzureJsonWebKeys[0:len((*c.CallOptions).GetAzureJsonWebKeys):len((*c.CallOptions).GetAzureJsonWebKeys)], opts...)
+	var resp *gkemulticloudpb.AzureJsonWebKeys
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.azureClustersClient.GetAzureJsonWebKeys(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *azureClustersGRPCClient) GetAzureServerConfig(ctx context.Context, req *gkemulticloudpb.GetAzureServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureServerConfig, error) {

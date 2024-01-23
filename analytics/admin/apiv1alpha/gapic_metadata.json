@@ -410,6 +410,11 @@
                 "GetSearchAds360Link"
               ]
             },
+            "GetSubpropertyEventFilter": {
+              "methods": [
+                "GetSubpropertyEventFilter"
+              ]
+            },
             "ListAccessBindings": {
               "methods": [
                 "ListAccessBindings"
@@ -523,6 +528,11 @@
             "ListSearchAds360Links": {
               "methods": [
                 "ListSearchAds360Links"
+              ]
+            },
+            "ListSubpropertyEventFilters": {
+              "methods": [
+                "ListSubpropertyEventFilters"
               ]
             },
             "ProvisionAccountTicket": {
@@ -648,6 +658,11 @@
             "UpdateSearchAds360Link": {
               "methods": [
                 "UpdateSearchAds360Link"
+              ]
+            },
+            "UpdateSubpropertyEventFilter": {
+              "methods": [
+                "UpdateSubpropertyEventFilter"
               ]
             }
           }
@@ -1055,6 +1070,11 @@
                 "GetSearchAds360Link"
               ]
             },
+            "GetSubpropertyEventFilter": {
+              "methods": [
+                "GetSubpropertyEventFilter"
+              ]
+            },
             "ListAccessBindings": {
               "methods": [
                 "ListAccessBindings"
@@ -1168,6 +1188,11 @@
             "ListSearchAds360Links": {
               "methods": [
                 "ListSearchAds360Links"
+              ]
+            },
+            "ListSubpropertyEventFilters": {
+              "methods": [
+                "ListSubpropertyEventFilters"
               ]
             },
             "ProvisionAccountTicket": {
@@ -1293,6 +1318,11 @@
             "UpdateSearchAds360Link": {
               "methods": [
                 "UpdateSearchAds360Link"
+              ]
+            },
+            "UpdateSubpropertyEventFilter": {
+              "methods": [
+                "UpdateSubpropertyEventFilter"
               ]
             }
           }

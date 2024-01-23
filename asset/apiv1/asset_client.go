@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -796,7 +796,7 @@ func (c *Client) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req *as
 //
 // This RPC only returns either resources of types supported by searchable
 // asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types),
+// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types),
 // or IAM policies.
 func (c *Client) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	return c.internalClient.AnalyzeOrgPolicyGovernedAssets(ctx, req, opts...)
@@ -3342,7 +3342,7 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 //
 // This RPC only returns either resources of types supported by searchable
 // asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types),
+// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types),
 // or IAM policies.
 func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	it := &AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator{}

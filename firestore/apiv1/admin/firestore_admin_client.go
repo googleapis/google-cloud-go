@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ type FirestoreAdminCallOptions struct {
 	GetDatabase     []gax.CallOption
 	ListDatabases   []gax.CallOption
 	UpdateDatabase  []gax.CallOption
+	DeleteDatabase  []gax.CallOption
 	CancelOperation []gax.CallOption
 	DeleteOperation []gax.CallOption
 	GetOperation    []gax.CallOption
@@ -166,6 +167,7 @@ func defaultFirestoreAdminCallOptions() *FirestoreAdminCallOptions {
 		GetDatabase:     []gax.CallOption{},
 		ListDatabases:   []gax.CallOption{},
 		UpdateDatabase:  []gax.CallOption{},
+		DeleteDatabase:  []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -256,6 +258,7 @@ func defaultFirestoreAdminRESTCallOptions() *FirestoreAdminCallOptions {
 		GetDatabase:     []gax.CallOption{},
 		ListDatabases:   []gax.CallOption{},
 		UpdateDatabase:  []gax.CallOption{},
+		DeleteDatabase:  []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -287,6 +290,8 @@ type internalFirestoreAdminClient interface {
 	ListDatabases(context.Context, *adminpb.ListDatabasesRequest, ...gax.CallOption) (*adminpb.ListDatabasesResponse, error)
 	UpdateDatabase(context.Context, *adminpb.UpdateDatabaseRequest, ...gax.CallOption) (*UpdateDatabaseOperation, error)
 	UpdateDatabaseOperation(name string) *UpdateDatabaseOperation
+	DeleteDatabase(context.Context, *adminpb.DeleteDatabaseRequest, ...gax.CallOption) (*DeleteDatabaseOperation, error)
+	DeleteDatabaseOperation(name string) *DeleteDatabaseOperation
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -427,7 +432,8 @@ func (c *FirestoreAdminClient) UpdateFieldOperation(name string) *UpdateFieldOpe
 // only supports listing fields that have been explicitly overridden. To issue
 // this query, call
 // FirestoreAdmin.ListFields
-// with the filter set to indexConfig.usesAncestorConfig:false .
+// with the filter set to indexConfig.usesAncestorConfig:false or
+// ttlConfig:*.
 func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	return c.internalClient.ListFields(ctx, req, opts...)
 }
@@ -498,6 +504,17 @@ func (c *FirestoreAdminClient) UpdateDatabase(ctx context.Context, req *adminpb.
 // The name must be that of a previously created UpdateDatabaseOperation, possibly from a different process.
 func (c *FirestoreAdminClient) UpdateDatabaseOperation(name string) *UpdateDatabaseOperation {
 	return c.internalClient.UpdateDatabaseOperation(name)
+}
+
+// DeleteDatabase deletes a database.
+func (c *FirestoreAdminClient) DeleteDatabase(ctx context.Context, req *adminpb.DeleteDatabaseRequest, opts ...gax.CallOption) (*DeleteDatabaseOperation, error) {
+	return c.internalClient.DeleteDatabase(ctx, req, opts...)
+}
+
+// DeleteDatabaseOperation returns a new DeleteDatabaseOperation from a given name.
+// The name must be that of a previously created DeleteDatabaseOperation, possibly from a different process.
+func (c *FirestoreAdminClient) DeleteDatabaseOperation(name string) *DeleteDatabaseOperation {
+	return c.internalClient.DeleteDatabaseOperation(name)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -1046,6 +1063,26 @@ func (c *firestoreAdminGRPCClient) UpdateDatabase(ctx context.Context, req *admi
 	}, nil
 }
 
+func (c *firestoreAdminGRPCClient) DeleteDatabase(ctx context.Context, req *adminpb.DeleteDatabaseRequest, opts ...gax.CallOption) (*DeleteDatabaseOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDatabase[0:len((*c.CallOptions).DeleteDatabase):len((*c.CallOptions).DeleteDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.firestoreAdminClient.DeleteDatabase(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *firestoreAdminGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1566,7 +1603,8 @@ func (c *firestoreAdminRESTClient) UpdateField(ctx context.Context, req *adminpb
 // only supports listing fields that have been explicitly overridden. To issue
 // this query, call
 // FirestoreAdmin.ListFields
-// with the filter set to indexConfig.usesAncestorConfig:false .
+// with the filter set to indexConfig.usesAncestorConfig:false or
+// ttlConfig:*.
 func (c *firestoreAdminRESTClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	it := &FieldIterator{}
 	req = proto.Clone(req).(*adminpb.ListFieldsRequest)
@@ -2082,6 +2120,73 @@ func (c *firestoreAdminRESTClient) UpdateDatabase(ctx context.Context, req *admi
 	}, nil
 }
 
+// DeleteDatabase deletes a database.
+func (c *firestoreAdminRESTClient) DeleteDatabase(ctx context.Context, req *adminpb.DeleteDatabaseRequest, opts ...gax.CallOption) (*DeleteDatabaseOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *firestoreAdminRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2355,6 +2460,24 @@ func (c *firestoreAdminGRPCClient) CreateIndexOperation(name string) *CreateInde
 func (c *firestoreAdminRESTClient) CreateIndexOperation(name string) *CreateIndexOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIndexOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteDatabaseOperation returns a new DeleteDatabaseOperation from a given name.
+// The name must be that of a previously created DeleteDatabaseOperation, possibly from a different process.
+func (c *firestoreAdminGRPCClient) DeleteDatabaseOperation(name string) *DeleteDatabaseOperation {
+	return &DeleteDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteDatabaseOperation returns a new DeleteDatabaseOperation from a given name.
+// The name must be that of a previously created DeleteDatabaseOperation, possibly from a different process.
+func (c *firestoreAdminRESTClient) DeleteDatabaseOperation(name string) *DeleteDatabaseOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteDatabaseOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

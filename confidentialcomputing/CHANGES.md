@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.3.3...confidentialcomputing/v1.4.0) (2023-11-16)
+
+
+### Features
+
+* **confidentialcomputing:** Add a new field `token_type` to `TokenOptions` message proto ([f2b5cbb](https://github.com/googleapis/google-cloud-go/commit/f2b5cbb35da5a4eca937a1441b6a0f1b147e072b))
+
 ## [1.3.3](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.3.2...confidentialcomputing/v1.3.3) (2023-11-01)
 
 

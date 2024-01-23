@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -170,8 +170,11 @@ type AnalyticsAdminCallOptions struct {
 	CreateRollupPropertySourceLink               []gax.CallOption
 	DeleteRollupPropertySourceLink               []gax.CallOption
 	CreateSubproperty                            []gax.CallOption
-	DeleteSubpropertyEventFilter                 []gax.CallOption
 	CreateSubpropertyEventFilter                 []gax.CallOption
+	GetSubpropertyEventFilter                    []gax.CallOption
+	ListSubpropertyEventFilters                  []gax.CallOption
+	UpdateSubpropertyEventFilter                 []gax.CallOption
+	DeleteSubpropertyEventFilter                 []gax.CallOption
 }
 
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
@@ -1626,7 +1629,7 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
-		DeleteSubpropertyEventFilter: []gax.CallOption{
+		CreateSubpropertyEventFilter: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1639,7 +1642,46 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
-		CreateSubpropertyEventFilter: []gax.CallOption{
+		GetSubpropertyEventFilter: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSubpropertyEventFilters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSubpropertyEventFilter: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteSubpropertyEventFilter: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -2989,7 +3031,7 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
-		DeleteSubpropertyEventFilter: []gax.CallOption{
+		CreateSubpropertyEventFilter: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -3001,7 +3043,43 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
-		CreateSubpropertyEventFilter: []gax.CallOption{
+		GetSubpropertyEventFilter: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListSubpropertyEventFilters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateSubpropertyEventFilter: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteSubpropertyEventFilter: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -3147,8 +3225,11 @@ type internalAnalyticsAdminClient interface {
 	CreateRollupPropertySourceLink(context.Context, *adminpb.CreateRollupPropertySourceLinkRequest, ...gax.CallOption) (*adminpb.RollupPropertySourceLink, error)
 	DeleteRollupPropertySourceLink(context.Context, *adminpb.DeleteRollupPropertySourceLinkRequest, ...gax.CallOption) error
 	CreateSubproperty(context.Context, *adminpb.CreateSubpropertyRequest, ...gax.CallOption) (*adminpb.CreateSubpropertyResponse, error)
-	DeleteSubpropertyEventFilter(context.Context, *adminpb.DeleteSubpropertyEventFilterRequest, ...gax.CallOption) error
 	CreateSubpropertyEventFilter(context.Context, *adminpb.CreateSubpropertyEventFilterRequest, ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error)
+	GetSubpropertyEventFilter(context.Context, *adminpb.GetSubpropertyEventFilterRequest, ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error)
+	ListSubpropertyEventFilters(context.Context, *adminpb.ListSubpropertyEventFiltersRequest, ...gax.CallOption) *SubpropertyEventFilterIterator
+	UpdateSubpropertyEventFilter(context.Context, *adminpb.UpdateSubpropertyEventFilterRequest, ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error)
+	DeleteSubpropertyEventFilter(context.Context, *adminpb.DeleteSubpropertyEventFilterRequest, ...gax.CallOption) error
 }
 
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
@@ -3645,8 +3726,10 @@ func (c *AnalyticsAdminClient) UpdateAttributionSettings(ctx context.Context, re
 // records of each time a user reads Google Analytics reporting data. Access
 // records are retained for up to 2 years.
 //
-// Data Access Reports can be requested for a property. The property must be
-// in Google Analytics 360. This method is only available to Administrators.
+// Data Access Reports can be requested for a property. Reports may be
+// requested for any property, but dimensions that aren’t related to quota can
+// only be requested on Google Analytics 360 properties. This method is only
+// available to Administrators.
 //
 // These data access records include GA4 UI Reporting, GA4 UI Explorations,
 // GA4 Data API, and other products like Firebase & Admob that can retrieve
@@ -3916,14 +3999,29 @@ func (c *AnalyticsAdminClient) CreateSubproperty(ctx context.Context, req *admin
 	return c.internalClient.CreateSubproperty(ctx, req, opts...)
 }
 
-// DeleteSubpropertyEventFilter deletes a subproperty event filter.
-func (c *AnalyticsAdminClient) DeleteSubpropertyEventFilter(ctx context.Context, req *adminpb.DeleteSubpropertyEventFilterRequest, opts ...gax.CallOption) error {
-	return c.internalClient.DeleteSubpropertyEventFilter(ctx, req, opts...)
-}
-
 // CreateSubpropertyEventFilter creates a subproperty Event Filter.
 func (c *AnalyticsAdminClient) CreateSubpropertyEventFilter(ctx context.Context, req *adminpb.CreateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
 	return c.internalClient.CreateSubpropertyEventFilter(ctx, req, opts...)
+}
+
+// GetSubpropertyEventFilter lookup for a single subproperty Event Filter.
+func (c *AnalyticsAdminClient) GetSubpropertyEventFilter(ctx context.Context, req *adminpb.GetSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	return c.internalClient.GetSubpropertyEventFilter(ctx, req, opts...)
+}
+
+// ListSubpropertyEventFilters list all subproperty Event Filters on a property.
+func (c *AnalyticsAdminClient) ListSubpropertyEventFilters(ctx context.Context, req *adminpb.ListSubpropertyEventFiltersRequest, opts ...gax.CallOption) *SubpropertyEventFilterIterator {
+	return c.internalClient.ListSubpropertyEventFilters(ctx, req, opts...)
+}
+
+// UpdateSubpropertyEventFilter updates a subproperty Event Filter.
+func (c *AnalyticsAdminClient) UpdateSubpropertyEventFilter(ctx context.Context, req *adminpb.UpdateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	return c.internalClient.UpdateSubpropertyEventFilter(ctx, req, opts...)
+}
+
+// DeleteSubpropertyEventFilter deletes a subproperty event filter.
+func (c *AnalyticsAdminClient) DeleteSubpropertyEventFilter(ctx context.Context, req *adminpb.DeleteSubpropertyEventFilterRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSubpropertyEventFilter(ctx, req, opts...)
 }
 
 // analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
@@ -6855,20 +6953,6 @@ func (c *analyticsAdminGRPCClient) CreateSubproperty(ctx context.Context, req *a
 	return resp, nil
 }
 
-func (c *analyticsAdminGRPCClient) DeleteSubpropertyEventFilter(ctx context.Context, req *adminpb.DeleteSubpropertyEventFilterRequest, opts ...gax.CallOption) error {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).DeleteSubpropertyEventFilter[0:len((*c.CallOptions).DeleteSubpropertyEventFilter):len((*c.CallOptions).DeleteSubpropertyEventFilter)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.analyticsAdminClient.DeleteSubpropertyEventFilter(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
 func (c *analyticsAdminGRPCClient) CreateSubpropertyEventFilter(ctx context.Context, req *adminpb.CreateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -6885,6 +6969,102 @@ func (c *analyticsAdminGRPCClient) CreateSubpropertyEventFilter(ctx context.Cont
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetSubpropertyEventFilter(ctx context.Context, req *adminpb.GetSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSubpropertyEventFilter[0:len((*c.CallOptions).GetSubpropertyEventFilter):len((*c.CallOptions).GetSubpropertyEventFilter)], opts...)
+	var resp *adminpb.SubpropertyEventFilter
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetSubpropertyEventFilter(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListSubpropertyEventFilters(ctx context.Context, req *adminpb.ListSubpropertyEventFiltersRequest, opts ...gax.CallOption) *SubpropertyEventFilterIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSubpropertyEventFilters[0:len((*c.CallOptions).ListSubpropertyEventFilters):len((*c.CallOptions).ListSubpropertyEventFilters)], opts...)
+	it := &SubpropertyEventFilterIterator{}
+	req = proto.Clone(req).(*adminpb.ListSubpropertyEventFiltersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SubpropertyEventFilter, string, error) {
+		resp := &adminpb.ListSubpropertyEventFiltersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListSubpropertyEventFilters(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSubpropertyEventFilters(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) UpdateSubpropertyEventFilter(ctx context.Context, req *adminpb.UpdateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "subproperty_event_filter.name", url.QueryEscape(req.GetSubpropertyEventFilter().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSubpropertyEventFilter[0:len((*c.CallOptions).UpdateSubpropertyEventFilter):len((*c.CallOptions).UpdateSubpropertyEventFilter)], opts...)
+	var resp *adminpb.SubpropertyEventFilter
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateSubpropertyEventFilter(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteSubpropertyEventFilter(ctx context.Context, req *adminpb.DeleteSubpropertyEventFilterRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteSubpropertyEventFilter[0:len((*c.CallOptions).DeleteSubpropertyEventFilter):len((*c.CallOptions).DeleteSubpropertyEventFilter)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteSubpropertyEventFilter(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 // GetAccount lookup for a single Account.
@@ -12265,8 +12445,10 @@ func (c *analyticsAdminRESTClient) UpdateAttributionSettings(ctx context.Context
 // records of each time a user reads Google Analytics reporting data. Access
 // records are retained for up to 2 years.
 //
-// Data Access Reports can be requested for a property. The property must be
-// in Google Analytics 360. This method is only available to Administrators.
+// Data Access Reports can be requested for a property. Reports may be
+// requested for any property, but dimensions that aren’t related to quota can
+// only be requested on Google Analytics 360 properties. This method is only
+// available to Administrators.
 //
 // These data access records include GA4 UI Reporting, GA4 UI Explorations,
 // GA4 Data API, and other products like Firebase & Admob that can retrieve
@@ -15347,48 +15529,6 @@ func (c *analyticsAdminRESTClient) CreateSubproperty(ctx context.Context, req *a
 	return resp, nil
 }
 
-// DeleteSubpropertyEventFilter deletes a subproperty event filter.
-func (c *analyticsAdminRESTClient) DeleteSubpropertyEventFilter(ctx context.Context, req *adminpb.DeleteSubpropertyEventFilterRequest, opts ...gax.CallOption) error {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
-	}, opts...)
-}
-
 // CreateSubpropertyEventFilter creates a subproperty Event Filter.
 func (c *analyticsAdminRESTClient) CreateSubpropertyEventFilter(ctx context.Context, req *adminpb.CreateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -15454,4 +15594,269 @@ func (c *analyticsAdminRESTClient) CreateSubpropertyEventFilter(ctx context.Cont
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetSubpropertyEventFilter lookup for a single subproperty Event Filter.
+func (c *analyticsAdminRESTClient) GetSubpropertyEventFilter(ctx context.Context, req *adminpb.GetSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSubpropertyEventFilter[0:len((*c.CallOptions).GetSubpropertyEventFilter):len((*c.CallOptions).GetSubpropertyEventFilter)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SubpropertyEventFilter{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSubpropertyEventFilters list all subproperty Event Filters on a property.
+func (c *analyticsAdminRESTClient) ListSubpropertyEventFilters(ctx context.Context, req *adminpb.ListSubpropertyEventFiltersRequest, opts ...gax.CallOption) *SubpropertyEventFilterIterator {
+	it := &SubpropertyEventFilterIterator{}
+	req = proto.Clone(req).(*adminpb.ListSubpropertyEventFiltersRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SubpropertyEventFilter, string, error) {
+		resp := &adminpb.ListSubpropertyEventFiltersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/subpropertyEventFilters", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSubpropertyEventFilters(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateSubpropertyEventFilter updates a subproperty Event Filter.
+func (c *analyticsAdminRESTClient) UpdateSubpropertyEventFilter(ctx context.Context, req *adminpb.UpdateSubpropertyEventFilterRequest, opts ...gax.CallOption) (*adminpb.SubpropertyEventFilter, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSubpropertyEventFilter()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetSubpropertyEventFilter().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "subproperty_event_filter.name", url.QueryEscape(req.GetSubpropertyEventFilter().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSubpropertyEventFilter[0:len((*c.CallOptions).UpdateSubpropertyEventFilter):len((*c.CallOptions).UpdateSubpropertyEventFilter)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SubpropertyEventFilter{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteSubpropertyEventFilter deletes a subproperty event filter.
+func (c *analyticsAdminRESTClient) DeleteSubpropertyEventFilter(ctx context.Context, req *adminpb.DeleteSubpropertyEventFilterRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
 }

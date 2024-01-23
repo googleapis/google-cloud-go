@@ -340,12 +340,11 @@ type ProcessOptions struct {
 	unknownFields protoimpl.UnknownFields
 
 	// A subset of pages to process. If not specified, all pages are processed.
-	//  If a page range is set, only the given pages are extracted and processed
-	//  from the document. In the output document,
-	//  [Document.Page.page_number][google.cloud.documentai.v1.Document.Page.page_number]
-	//  refers to the page number in the original document. This configuration
-	//  only applies to sync requests. `page_range` can be only one of the
-	//  following:
+	// If a page range is set, only the given pages are extracted and processed
+	// from the document. In the output document,
+	// [Document.Page.page_number][google.cloud.documentai.v1.Document.Page.page_number]
+	// refers to the page number in the original document. This configuration
+	// only applies to sync requests.
 	//
 	// Types that are assignable to PageRange:
 	//	*ProcessOptions_IndividualPageSelector_
