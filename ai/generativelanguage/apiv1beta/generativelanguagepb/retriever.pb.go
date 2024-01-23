@@ -21,13 +21,12 @@
 package generativelanguagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -189,7 +188,7 @@ type Corpus struct {
 	// Example: `corpora/my-awesome-corpora-123a456b789c`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The human-readable display name for the `Corpus`. The display
-	// name must be no more than 128 characters in length, including spaces.
+	// name must be no more than 512 characters in length, including spaces.
 	// Example: "Docs on Semantic Retriever"
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Output only. The Timestamp of when the `Corpus` was created.
@@ -511,10 +510,9 @@ func (*CustomMetadata_NumericValue) isCustomMetadata_Value() {}
 // User provided filter to limit retrieval based on `Chunk` or `Document` level
 // metadata values.
 // Example (genre = drama OR genre = action):
-//
-//	key = "document.custom_metadata.genre"
-//	conditions = [{string_value = "drama", operation = EQUAL},
-//	              {string_value = "action", operation = EQUAL}]
+//   key = "document.custom_metadata.genre"
+//   conditions = [{string_value = "drama", operation = EQUAL},
+//                 {string_value = "action", operation = EQUAL}]
 type MetadataFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

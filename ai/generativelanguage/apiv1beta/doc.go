@@ -17,78 +17,75 @@
 // Package generativelanguage is an auto-generated package for the
 // Generative Language API.
 //
-// The PaLM API allows developers to build generative AI applications using
-// the PaLM model. Large Language Models (LLMs) are a powerful, versatile
-// type of machine learning model that enables computers to comprehend and
-// generate natural language through a series of prompts. The PaLM API is
-// based on Google’s next generation LLM, PaLM. It excels at a variety of
-// different tasks like code generation, reasoning, and writing. You can use
-// the PaLM API to build generative AI applications for use cases like
-// content generation, dialogue agents, summarization and classification
-// systems, and more.
+// The Gemini API allows developers to build generative AI applications using
+// Gemini models. Gemini is our most capable model in the world, built from
+// the ground up to be multimodal. It can generalize and seamlessly
+// understand, operate across, and combine different types of information.
+// You can use the Gemini API for use cases like reasoning across text and
+// images, content generation, dialogue agents, summarization and
+// classification systems, and more.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
-// # General documentation
+// General documentation
 //
 // For information that is relevant for all client libraries please reference
 // https://pkg.go.dev/cloud.google.com/go#pkg-overview. Some information on this
 // page includes:
 //
-//   - [Authentication and Authorization]
-//   - [Timeouts and Cancellation]
-//   - [Testing against Client Libraries]
-//   - [Debugging Client Libraries]
-//   - [Inspecting errors]
+//  - [Authentication and Authorization]
+//  - [Timeouts and Cancellation]
+//  - [Testing against Client Libraries]
+//  - [Debugging Client Libraries]
+//  - [Inspecting errors]
 //
-// # Example usage
+// Example usage
 //
 // To get started with this package, create a client.
-//
-//	ctx := context.Background()
-//	// This snippet has been automatically generated and should be regarded as a code template only.
-//	// It will require modifications to work:
-//	// - It may require correct/in-range values for request initialization.
-//	// - It may require specifying regional endpoints when creating the service client as shown in:
-//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := generativelanguage.NewDiscussClient(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	defer c.Close()
+//  ctx := context.Background()
+//  // This snippet has been automatically generated and should be regarded as a code template only.
+//  // It will require modifications to work:
+//  // - It may require correct/in-range values for request initialization.
+//  // - It may require specifying regional endpoints when creating the service client as shown in:
+//  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//  c, err := generativelanguage.NewDiscussClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
 //
 // The client will use your default application credentials. Clients should be reused instead of created as needed.
 // The methods of Client are safe for concurrent use by multiple goroutines.
 // The returned client must be Closed when it is done being used.
 //
-// # Using the Client
+// Using the Client
 //
 // The following is an example of making an API call with the newly created client.
 //
-//	ctx := context.Background()
-//	// This snippet has been automatically generated and should be regarded as a code template only.
-//	// It will require modifications to work:
-//	// - It may require correct/in-range values for request initialization.
-//	// - It may require specifying regional endpoints when creating the service client as shown in:
-//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := generativelanguage.NewDiscussClient(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	defer c.Close()
+//  ctx := context.Background()
+//  // This snippet has been automatically generated and should be regarded as a code template only.
+//  // It will require modifications to work:
+//  // - It may require correct/in-range values for request initialization.
+//  // - It may require specifying regional endpoints when creating the service client as shown in:
+//  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//  c, err := generativelanguage.NewDiscussClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
 //
-//	req := &generativelanguagepb.CountMessageTokensRequest{
-//		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb#CountMessageTokensRequest.
-//	}
-//	resp, err := c.CountMessageTokens(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	// TODO: Use resp.
-//	_ = resp
+//  req := &generativelanguagepb.CountMessageTokensRequest{
+//  	// TODO: Fill request struct fields.
+//  	// See https://pkg.go.dev/cloud.google.com/go/ai/generativelanguage/apiv1beta/generativelanguagepb#CountMessageTokensRequest.
+//  }
+//  resp, err := c.CountMessageTokens(ctx, req)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  // TODO: Use resp.
+//  _ = resp
 //
-// # Use of Context
+// Use of Context
 //
 // The ctx passed to NewDiscussClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.

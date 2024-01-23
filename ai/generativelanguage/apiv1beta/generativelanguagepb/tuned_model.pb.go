@@ -21,13 +21,12 @@
 package generativelanguagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -587,7 +586,7 @@ type Dataset_Examples struct {
 
 func (*Dataset_Examples) isDataset_Dataset() {}
 
-// A set of tuning examples. Can be training or validatation data.
+// A set of tuning examples. Can be training or validation data.
 type TuningExamples struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
