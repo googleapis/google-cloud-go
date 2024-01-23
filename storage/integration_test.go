@@ -1383,16 +1383,12 @@ func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
 		h := testHelper{t}
 		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
 
-		h.mustCreate(bkt, testutil.ProjID(), nil)
-
-		// Enable UBLA as this is necessary for managed folders.
-		if _, err := bkt.Update(ctx, BucketAttrsToUpdate{
-			UniformBucketLevelAccess: &UniformBucketLevelAccess{
+		// Create bucket with UBLA enabled as this is necessary for managed folders.
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			UniformBucketLevelAccess: UniformBucketLevelAccess{
 				Enabled: true,
 			},
-		}); err != nil {
-			t.Fatalf("setting UBLA on bucket %v: %v", newBucketName, err)
-		}
+		})
 
 		t.Cleanup(func() {
 			if err := killBucket(ctx, client, newBucketName); err != nil {
@@ -1422,6 +1418,7 @@ func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
 
 		// Create a managed folder. This requires using the Apiary client as this is not available
 		// in the veneer layer.
+		// TODO: change to use storage control client once available.
 		call := client.raw.ManagedFolders.Insert(newBucketName, &raw.ManagedFolder{Name: "mf"})
 		mf, err := call.Context(ctx).Do()
 		if err != nil {
@@ -1429,6 +1426,7 @@ func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
 		}
 
 		t.Cleanup(func() {
+			// TODO: add this cleanup logic to killBucket as well once gRPC support is available.
 			call := client.raw.ManagedFolders.Delete(newBucketName, mf.Name)
 			call.Context(ctx).Do()
 		})
