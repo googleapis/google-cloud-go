@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/url"
 	"os"
 
@@ -27,6 +28,7 @@ import (
 	"cloud.google.com/go/internal/trace"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	"cloud.google.com/go/storage/internal/codec"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -908,6 +910,9 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 	s := callSettings(c.settings, opts...)
 
+	// Use custom codec for ReadObject calls.
+	callOpts := append(s.gax, gax.WithGRPCOptions(grpc.ForceCodec(codec.ReadObjectCodec{})))
+
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
@@ -952,7 +957,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		var err error
 
 		err = run(cc, func(ctx context.Context) error {
-			stream, err = c.raw.ReadObject(cc, req, s.gax...)
+			log.Printf("opts: %+v", s.gax)
+			stream, err = c.raw.ReadObject(cc, req, callOpts...)
 			if err != nil {
 				return err
 			}
