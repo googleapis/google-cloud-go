@@ -22,9 +22,6 @@ package pubsubpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -309,8 +308,8 @@ type CreateSchemaRequest struct {
 	// The ID to use for the schema, which will become the final component of
 	// the schema's resource name.
 	//
-	// See https://cloud.google.com/pubsub/docs/admin#resource_names for resource
-	// name constraints.
+	// See https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names for
+	// resource name constraints.
 	SchemaId string `protobuf:"bytes,3,opt,name=schema_id,json=schemaId,proto3" json:"schema_id,omitempty"`
 }
 

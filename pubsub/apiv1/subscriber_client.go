@@ -582,8 +582,9 @@ func (c *SubscriberClient) GetSubscription(ctx context.Context, req *pubsubpb.Ge
 	return c.internalClient.GetSubscription(ctx, req, opts...)
 }
 
-// UpdateSubscription updates an existing subscription. Note that certain properties of a
-// subscription, such as its topic, are not modifiable.
+// UpdateSubscription updates an existing subscription by updating the fields specified in the
+// update mask. Note that certain properties of a subscription, such as its
+// topic, are not modifiable.
 func (c *SubscriberClient) UpdateSubscription(ctx context.Context, req *pubsubpb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*pubsubpb.Subscription, error) {
 	return c.internalClient.UpdateSubscription(ctx, req, opts...)
 }
@@ -687,7 +688,8 @@ func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.Cre
 	return c.internalClient.CreateSnapshot(ctx, req, opts...)
 }
 
-// UpdateSnapshot updates an existing snapshot. Snapshots are used in
+// UpdateSnapshot updates an existing snapshot by updating the fields specified in the update
+// mask. Snapshots are used in
 // Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations,
 // which allow you to manage message acknowledgments in bulk. That is, you can
 // set the acknowledgment state of messages in an existing subscription to the
@@ -1404,8 +1406,9 @@ func (c *subscriberRESTClient) GetSubscription(ctx context.Context, req *pubsubp
 	return resp, nil
 }
 
-// UpdateSubscription updates an existing subscription. Note that certain properties of a
-// subscription, such as its topic, are not modifiable.
+// UpdateSubscription updates an existing subscription by updating the fields specified in the
+// update mask. Note that certain properties of a subscription, such as its
+// topic, are not modifiable.
 func (c *subscriberRESTClient) UpdateSubscription(ctx context.Context, req *pubsubpb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*pubsubpb.Subscription, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2081,7 +2084,8 @@ func (c *subscriberRESTClient) CreateSnapshot(ctx context.Context, req *pubsubpb
 	return resp, nil
 }
 
-// UpdateSnapshot updates an existing snapshot. Snapshots are used in
+// UpdateSnapshot updates an existing snapshot by updating the fields specified in the update
+// mask. Snapshots are used in
 // Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations,
 // which allow you to manage message acknowledgments in bulk. That is, you can
 // set the acknowledgment state of messages in an existing subscription to the
