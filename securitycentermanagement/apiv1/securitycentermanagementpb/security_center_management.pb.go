@@ -1468,11 +1468,10 @@ type UpdateSecurityHealthAnalyticsCustomModuleRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Field mask is used to specify the fields to be overwritten in the
-	// SecurityHealthAnalyticsCustomModule resource by the update.
-	// The fields specified in the update_mask are relative to the resource, not
-	// the full request. A field will be overwritten if it is in the mask. If the
-	// user does not provide a mask then all fields will be overwritten.
+	// Required. The list of fields to be updated. The only fields that can be
+	// updated are `enablement_state` and `custom_config`. If empty or set to the
+	// wildcard value `*`, both `enablement_state` and `custom_config` are
+	// updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,1,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// Required. The resource being updated
 	SecurityHealthAnalyticsCustomModule *SecurityHealthAnalyticsCustomModule `protobuf:"bytes,2,opt,name=security_health_analytics_custom_module,json=securityHealthAnalyticsCustomModule,proto3" json:"security_health_analytics_custom_module,omitempty"`
@@ -5700,15 +5699,9 @@ type SecurityCenterManagementClient interface {
 	DeleteSecurityHealthAnalyticsCustomModule(ctx context.Context, in *DeleteSecurityHealthAnalyticsCustomModuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Simulates a given SecurityHealthAnalyticsCustomModule and Resource.
 	SimulateSecurityHealthAnalyticsCustomModule(ctx context.Context, in *SimulateSecurityHealthAnalyticsCustomModuleRequest, opts ...grpc.CallOption) (*SimulateSecurityHealthAnalyticsCustomModuleResponse, error)
-	// Returns a list of all EffectiveEventThreatDetectionCustomModules for the
+	// Lists all effective Event Threat Detection custom modules for the
 	// given parent. This includes resident modules defined at the scope of the
-	// parent, and inherited modules, inherited from CRM ancestors (no
-	// descendants). The difference between an EffectiveCustomModule and a
-	// CustomModule is that the fields for an EffectiveCustomModule are computed
-	// from ancestors if needed. For example, the enablement_state for a
-	// CustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the
-	// enablement_state for an EffectiveCustomModule is always computed to ENABLED
-	// or DISABLED (the effective enablement_state).
+	// parent along with modules inherited from its ancestors.
 	ListEffectiveEventThreatDetectionCustomModules(ctx context.Context, in *ListEffectiveEventThreatDetectionCustomModulesRequest, opts ...grpc.CallOption) (*ListEffectiveEventThreatDetectionCustomModulesResponse, error)
 	// Gets an effective ETD custom module. Retrieves the effective module at the
 	// given level. The difference between an EffectiveCustomModule and a
@@ -5718,32 +5711,30 @@ type SecurityCenterManagementClient interface {
 	// enablement_state for an EffectiveCustomModule is always computed to ENABLED
 	// or DISABLED (the effective enablement_state).
 	GetEffectiveEventThreatDetectionCustomModule(ctx context.Context, in *GetEffectiveEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*EffectiveEventThreatDetectionCustomModule, error)
-	// Returns a list of all EventThreatDetectionCustomModules for the given
-	// parent. This includes resident modules defined at the scope of the parent,
-	// and inherited modules, inherited from CRM ancestors (no descendants).
+	// Lists all Event Threat Detection custom modules for the given
+	// Resource Manager parent. This includes resident modules defined at the
+	// scope of the parent along with modules inherited from ancestors.
 	ListEventThreatDetectionCustomModules(ctx context.Context, in *ListEventThreatDetectionCustomModulesRequest, opts ...grpc.CallOption) (*ListEventThreatDetectionCustomModulesResponse, error)
-	// Returns a list of all resident EventThreatDetectionCustomModules under
-	// the given CRM parent and all of the parent’s CRM descendants.
+	// Lists all resident Event Threat Detection custom modules under the
+	// given Resource Manager parent and its descendants.
 	ListDescendantEventThreatDetectionCustomModules(ctx context.Context, in *ListDescendantEventThreatDetectionCustomModulesRequest, opts ...grpc.CallOption) (*ListDescendantEventThreatDetectionCustomModulesResponse, error)
-	// Gets an ETD custom module. Retrieves the module at the given level. The
-	// difference between an EffectiveCustomModule and a CustomModule is that the
-	// fields for an EffectiveCustomModule are computed from ancestors if needed.
-	// For example, the enablement_state for a CustomModule can be either ENABLED,
-	// DISABLED, or INHERITED. Where as the enablement_state for an
-	// EffectiveCustomModule is always computed to ENABLED or DISABLED (the
-	// effective enablement_state).
+	// Gets an Event Threat Detection custom module.
 	GetEventThreatDetectionCustomModule(ctx context.Context, in *GetEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*EventThreatDetectionCustomModule, error)
-	// Creates an ETD custom module at the given level. Creating a module has a
-	// side-effect of creating modules at all descendants.
+	// Creates a resident Event Threat Detection custom module at the scope of the
+	// given Resource Manager parent, and also creates inherited custom modules
+	// for all descendants of the given parent. These modules are enabled by
+	// default.
 	CreateEventThreatDetectionCustomModule(ctx context.Context, in *CreateEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*EventThreatDetectionCustomModule, error)
-	// Updates an ETD custom module at the given level. All config fields can be
-	// updated when updating the module at resident level. Only enablement state
-	// can be updated when updating the module at inherited levels. Updating the
-	// module has a side-effect that it updates all descendants that are inherited
-	// from this module.
+	// Updates the Event Threat Detection custom module with the given name based
+	// on the given update mask. Updating the enablement state is supported for
+	// both resident and inherited modules (though resident modules cannot have an
+	// enablement state of "inherited"). Updating the display name or
+	// configuration of a module is supported for resident modules only. The type
+	// of a module cannot be changed.
 	UpdateEventThreatDetectionCustomModule(ctx context.Context, in *UpdateEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*EventThreatDetectionCustomModule, error)
-	// Deletes an ETD custom module. Deletion at resident level also deletes
-	// modules at all descendants. Deletion at any other level is not supported.
+	// Deletes the specified Event Threat Detection custom module and all of its
+	// descendants in the Resource Manager hierarchy. This method is only
+	// supported for resident custom modules.
 	DeleteEventThreatDetectionCustomModule(ctx context.Context, in *DeleteEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Validates the given Event Threat Detection custom module.
 	ValidateEventThreatDetectionCustomModule(ctx context.Context, in *ValidateEventThreatDetectionCustomModuleRequest, opts ...grpc.CallOption) (*ValidateEventThreatDetectionCustomModuleResponse, error)
@@ -5954,15 +5945,9 @@ type SecurityCenterManagementServer interface {
 	DeleteSecurityHealthAnalyticsCustomModule(context.Context, *DeleteSecurityHealthAnalyticsCustomModuleRequest) (*emptypb.Empty, error)
 	// Simulates a given SecurityHealthAnalyticsCustomModule and Resource.
 	SimulateSecurityHealthAnalyticsCustomModule(context.Context, *SimulateSecurityHealthAnalyticsCustomModuleRequest) (*SimulateSecurityHealthAnalyticsCustomModuleResponse, error)
-	// Returns a list of all EffectiveEventThreatDetectionCustomModules for the
+	// Lists all effective Event Threat Detection custom modules for the
 	// given parent. This includes resident modules defined at the scope of the
-	// parent, and inherited modules, inherited from CRM ancestors (no
-	// descendants). The difference between an EffectiveCustomModule and a
-	// CustomModule is that the fields for an EffectiveCustomModule are computed
-	// from ancestors if needed. For example, the enablement_state for a
-	// CustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the
-	// enablement_state for an EffectiveCustomModule is always computed to ENABLED
-	// or DISABLED (the effective enablement_state).
+	// parent along with modules inherited from its ancestors.
 	ListEffectiveEventThreatDetectionCustomModules(context.Context, *ListEffectiveEventThreatDetectionCustomModulesRequest) (*ListEffectiveEventThreatDetectionCustomModulesResponse, error)
 	// Gets an effective ETD custom module. Retrieves the effective module at the
 	// given level. The difference between an EffectiveCustomModule and a
@@ -5972,32 +5957,30 @@ type SecurityCenterManagementServer interface {
 	// enablement_state for an EffectiveCustomModule is always computed to ENABLED
 	// or DISABLED (the effective enablement_state).
 	GetEffectiveEventThreatDetectionCustomModule(context.Context, *GetEffectiveEventThreatDetectionCustomModuleRequest) (*EffectiveEventThreatDetectionCustomModule, error)
-	// Returns a list of all EventThreatDetectionCustomModules for the given
-	// parent. This includes resident modules defined at the scope of the parent,
-	// and inherited modules, inherited from CRM ancestors (no descendants).
+	// Lists all Event Threat Detection custom modules for the given
+	// Resource Manager parent. This includes resident modules defined at the
+	// scope of the parent along with modules inherited from ancestors.
 	ListEventThreatDetectionCustomModules(context.Context, *ListEventThreatDetectionCustomModulesRequest) (*ListEventThreatDetectionCustomModulesResponse, error)
-	// Returns a list of all resident EventThreatDetectionCustomModules under
-	// the given CRM parent and all of the parent’s CRM descendants.
+	// Lists all resident Event Threat Detection custom modules under the
+	// given Resource Manager parent and its descendants.
 	ListDescendantEventThreatDetectionCustomModules(context.Context, *ListDescendantEventThreatDetectionCustomModulesRequest) (*ListDescendantEventThreatDetectionCustomModulesResponse, error)
-	// Gets an ETD custom module. Retrieves the module at the given level. The
-	// difference between an EffectiveCustomModule and a CustomModule is that the
-	// fields for an EffectiveCustomModule are computed from ancestors if needed.
-	// For example, the enablement_state for a CustomModule can be either ENABLED,
-	// DISABLED, or INHERITED. Where as the enablement_state for an
-	// EffectiveCustomModule is always computed to ENABLED or DISABLED (the
-	// effective enablement_state).
+	// Gets an Event Threat Detection custom module.
 	GetEventThreatDetectionCustomModule(context.Context, *GetEventThreatDetectionCustomModuleRequest) (*EventThreatDetectionCustomModule, error)
-	// Creates an ETD custom module at the given level. Creating a module has a
-	// side-effect of creating modules at all descendants.
+	// Creates a resident Event Threat Detection custom module at the scope of the
+	// given Resource Manager parent, and also creates inherited custom modules
+	// for all descendants of the given parent. These modules are enabled by
+	// default.
 	CreateEventThreatDetectionCustomModule(context.Context, *CreateEventThreatDetectionCustomModuleRequest) (*EventThreatDetectionCustomModule, error)
-	// Updates an ETD custom module at the given level. All config fields can be
-	// updated when updating the module at resident level. Only enablement state
-	// can be updated when updating the module at inherited levels. Updating the
-	// module has a side-effect that it updates all descendants that are inherited
-	// from this module.
+	// Updates the Event Threat Detection custom module with the given name based
+	// on the given update mask. Updating the enablement state is supported for
+	// both resident and inherited modules (though resident modules cannot have an
+	// enablement state of "inherited"). Updating the display name or
+	// configuration of a module is supported for resident modules only. The type
+	// of a module cannot be changed.
 	UpdateEventThreatDetectionCustomModule(context.Context, *UpdateEventThreatDetectionCustomModuleRequest) (*EventThreatDetectionCustomModule, error)
-	// Deletes an ETD custom module. Deletion at resident level also deletes
-	// modules at all descendants. Deletion at any other level is not supported.
+	// Deletes the specified Event Threat Detection custom module and all of its
+	// descendants in the Resource Manager hierarchy. This method is only
+	// supported for resident custom modules.
 	DeleteEventThreatDetectionCustomModule(context.Context, *DeleteEventThreatDetectionCustomModuleRequest) (*emptypb.Empty, error)
 	// Validates the given Event Threat Detection custom module.
 	ValidateEventThreatDetectionCustomModule(context.Context, *ValidateEventThreatDetectionCustomModuleRequest) (*ValidateEventThreatDetectionCustomModuleResponse, error)

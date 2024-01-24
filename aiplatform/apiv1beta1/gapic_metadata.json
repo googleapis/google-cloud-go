@@ -2574,6 +2574,11 @@
                 "ComputeTokens"
               ]
             },
+            "CountTokens": {
+              "methods": [
+                "CountTokens"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -2632,6 +2637,11 @@
             "ComputeTokens": {
               "methods": [
                 "ComputeTokens"
+              ]
+            },
+            "CountTokens": {
+              "methods": [
+                "CountTokens"
               ]
             },
             "DeleteOperation": {

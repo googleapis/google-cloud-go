@@ -57,8 +57,8 @@ type BillingAccount struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. True if the billing account is open, and will therefore be
 	// charged for any usage on associated projects. False if the billing account
-	// is closed, and therefore projects associated with it will be unable to use
-	// paid services.
+	// is closed, and therefore projects associated with it are unable to use paid
+	// services.
 	Open bool `protobuf:"varint,2,opt,name=open,proto3" json:"open,omitempty"`
 	// The display name given to the billing account, such as `My Billing
 	// Account`. This name is displayed in the Google Cloud Console.
@@ -825,7 +825,7 @@ type MoveBillingAccountRequest struct {
 	// The specified billing account cannot be a subaccount, since a subaccount
 	// always belongs to the same organization as its parent account.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. The resource name of the Organization to reparent
+	// Required. The resource name of the Organization to move
 	// the billing account under.
 	// Must be of the form `organizations/{organization_id}`.
 	DestinationParent string `protobuf:"bytes,2,opt,name=destination_parent,json=destinationParent,proto3" json:"destination_parent,omitempty"`

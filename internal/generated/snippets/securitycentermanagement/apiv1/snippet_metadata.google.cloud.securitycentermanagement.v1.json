@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securitycentermanagement/apiv1",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_CreateEventThreatDetectionCustomModule_sync",
       "title": "securitycentermanagement CreateEventThreatDetectionCustomModule Sample",
-      "description": "CreateEventThreatDetectionCustomModule creates an ETD custom module at the given level. Creating a module has a\nside-effect of creating modules at all descendants.",
+      "description": "CreateEventThreatDetectionCustomModule creates a resident Event Threat Detection custom module at the scope of the\ngiven Resource Manager parent, and also creates inherited custom modules\nfor all descendants of the given parent. These modules are enabled by\ndefault.",
       "file": "Client/CreateEventThreatDetectionCustomModule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_DeleteEventThreatDetectionCustomModule_sync",
       "title": "securitycentermanagement DeleteEventThreatDetectionCustomModule Sample",
-      "description": "DeleteEventThreatDetectionCustomModule deletes an ETD custom module. Deletion at resident level also deletes\nmodules at all descendants. Deletion at any other level is not supported.",
+      "description": "DeleteEventThreatDetectionCustomModule deletes the specified Event Threat Detection custom module and all of its\ndescendants in the Resource Manager hierarchy. This method is only\nsupported for resident custom modules.",
       "file": "Client/DeleteEventThreatDetectionCustomModule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -288,7 +288,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetEventThreatDetectionCustomModule_sync",
       "title": "securitycentermanagement GetEventThreatDetectionCustomModule Sample",
-      "description": "GetEventThreatDetectionCustomModule gets an ETD custom module. Retrieves the module at the given level. The\ndifference between an EffectiveCustomModule and a CustomModule is that the\nfields for an EffectiveCustomModule are computed from ancestors if needed.\nFor example, the enablement_state for a CustomModule can be either ENABLED,\nDISABLED, or INHERITED. Where as the enablement_state for an\nEffectiveCustomModule is always computed to ENABLED or DISABLED (the\neffective enablement_state).",
+      "description": "GetEventThreatDetectionCustomModule gets an Event Threat Detection custom module.",
       "file": "Client/GetEventThreatDetectionCustomModule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -426,7 +426,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListDescendantEventThreatDetectionCustomModules_sync",
       "title": "securitycentermanagement ListDescendantEventThreatDetectionCustomModules Sample",
-      "description": "ListDescendantEventThreatDetectionCustomModules returns a list of all resident EventThreatDetectionCustomModules under\nthe given CRM parent and all of the parent’s CRM descendants.",
+      "description": "ListDescendantEventThreatDetectionCustomModules lists all resident Event Threat Detection custom modules under the\ngiven Resource Manager parent and its descendants.",
       "file": "Client/ListDescendantEventThreatDetectionCustomModules/main.go",
       "language": "GO",
       "clientMethod": {
@@ -518,7 +518,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListEffectiveEventThreatDetectionCustomModules_sync",
       "title": "securitycentermanagement ListEffectiveEventThreatDetectionCustomModules Sample",
-      "description": "ListEffectiveEventThreatDetectionCustomModules returns a list of all EffectiveEventThreatDetectionCustomModules for the\ngiven parent. This includes resident modules defined at the scope of the\nparent, and inherited modules, inherited from CRM ancestors (no\ndescendants). The difference between an EffectiveCustomModule and a\nCustomModule is that the fields for an EffectiveCustomModule are computed\nfrom ancestors if needed. For example, the enablement_state for a\nCustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the\nenablement_state for an EffectiveCustomModule is always computed to ENABLED\nor DISABLED (the effective enablement_state).",
+      "description": "ListEffectiveEventThreatDetectionCustomModules lists all effective Event Threat Detection custom modules for the\ngiven parent. This includes resident modules defined at the scope of the\nparent along with modules inherited from its ancestors.",
       "file": "Client/ListEffectiveEventThreatDetectionCustomModules/main.go",
       "language": "GO",
       "clientMethod": {
@@ -610,7 +610,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListEventThreatDetectionCustomModules_sync",
       "title": "securitycentermanagement ListEventThreatDetectionCustomModules Sample",
-      "description": "ListEventThreatDetectionCustomModules returns a list of all EventThreatDetectionCustomModules for the given\nparent. This includes resident modules defined at the scope of the parent,\nand inherited modules, inherited from CRM ancestors (no descendants).",
+      "description": "ListEventThreatDetectionCustomModules lists all Event Threat Detection custom modules for the given\nResource Manager parent. This includes resident modules defined at the\nscope of the parent along with modules inherited from ancestors.",
       "file": "Client/ListEventThreatDetectionCustomModules/main.go",
       "language": "GO",
       "clientMethod": {
@@ -794,7 +794,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_UpdateEventThreatDetectionCustomModule_sync",
       "title": "securitycentermanagement UpdateEventThreatDetectionCustomModule Sample",
-      "description": "UpdateEventThreatDetectionCustomModule updates an ETD custom module at the given level. All config fields can be\nupdated when updating the module at resident level. Only enablement state\ncan be updated when updating the module at inherited levels. Updating the\nmodule has a side-effect that it updates all descendants that are inherited\nfrom this module.",
+      "description": "UpdateEventThreatDetectionCustomModule updates the Event Threat Detection custom module with the given name based\non the given update mask. Updating the enablement state is supported for\nboth resident and inherited modules (though resident modules cannot have an\nenablement state of \"inherited\"). Updating the display name or\nconfiguration of a module is supported for resident modules only. The type\nof a module cannot be changed.",
       "file": "Client/UpdateEventThreatDetectionCustomModule/main.go",
       "language": "GO",
       "clientMethod": {

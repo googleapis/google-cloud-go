@@ -85,7 +85,7 @@ require (
 	cloud.google.com/go/notebooks v1.11.2
 	cloud.google.com/go/optimization v1.6.2
 	cloud.google.com/go/orchestration v1.8.4
-	cloud.google.com/go/orgpolicy v1.11.4
+	cloud.google.com/go/orgpolicy v1.12.0
 	cloud.google.com/go/osconfig v1.12.4
 	cloud.google.com/go/oslogin v1.12.2
 	cloud.google.com/go/phishingprotection v0.8.4
@@ -131,7 +131,7 @@ require (
 	cloud.google.com/go/workflows v1.12.3
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.154.0
+	google.golang.org/api v0.155.0
 	google.golang.org/genproto v0.0.0-20231212172506-995d672761c0
 )
 
@@ -139,6 +139,7 @@ require (
 	cloud.google.com/go/ai v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/apps v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/cloudprofiler v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/cloudquotas v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/commerce v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/config v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/edgenetwork v0.0.0-00010101000000-000000000000
@@ -170,10 +171,10 @@ require (
 	go.opentelemetry.io/otel v1.21.0 // indirect
 	go.opentelemetry.io/otel/metric v1.21.0 // indirect
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect
-	golang.org/x/crypto v0.16.0 // indirect
+	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/oauth2 v0.15.0 // indirect
-	golang.org/x/sync v0.5.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
@@ -474,3 +475,9 @@ replace cloud.google.com/go/telcoautomation => ../../../telcoautomation
 replace cloud.google.com/go/securitycentermanagement => ../../../securitycentermanagement
 
 replace cloud.google.com/go/apps => ../../../apps
+
+replace cloud.google.com/go/cloudquotas => ../../../cloudquotas
+
+replace cloud.google.com/go/servicehealth => ../../../servicehealth
+
+replace cloud.google.com/go/securityposture => ../../../securityposture

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.0.3...vmwareengine/v1.1.0) (2024-01-22)
+
+
+### Features
+
+* **vmwareengine:** Adding ManagementDnsZoneBinding, DnsBindPermission, DnsForwarding, ExternalAccessRule, ExternalAddress, LoggingServer, NetworkPeering, Node and stretched PC features ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
 ## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.0.2...vmwareengine/v1.0.3) (2023-11-01)
 
 
