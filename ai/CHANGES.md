@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.0...ai/v0.3.1) (2024-01-22)
+
+
+### Documentation
+
+* **ai/generativelanguage:** Fixed minor documentation typos for field `function_declarations` in message `.google.ai.generativelanguage.v1beta.Tool` ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.2.0...ai/v0.3.0) (2023-12-13)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/config/v0.1.4...config/v0.2.0) (2024-01-22)
+
+
+### Features
+
+* **config:** Added Terraform Plan ([0500c7a](https://github.com/googleapis/google-cloud-go/commit/0500c7a7f9a9e8629a091558fa258ca7c5028474))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/config/v0.1.3...config/v0.1.4) (2023-11-01)
 
 
