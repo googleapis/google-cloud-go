@@ -21,12 +21,11 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -125,10 +124,12 @@ type Field struct {
 	//
 	// Examples:
 	// (Note: Comments here are written in markdown syntax, so there is an
-	//  additional layer of backticks to represent a code block)
-	// `\`address.city\`` represents a field named `address.city`, not the map key
+	//
+	//	additional layer of backticks to represent a code block)
+	//
+	// `\`address.city\“ represents a field named `address.city`, not the map key
 	// `city` in the field `address`.
-	// `\`*\`` represents a field named `*`, not any field.
+	// `\`*\“ represents a field named `*`, not any field.
 	//
 	// A special `Field` contains the default indexing settings for all fields.
 	// This field's resource name is:

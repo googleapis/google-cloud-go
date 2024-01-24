@@ -22,9 +22,6 @@ package aiplatformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -156,6 +155,7 @@ type FeatureViewDataKey struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to KeyOneof:
+	//
 	//	*FeatureViewDataKey_Key
 	KeyOneof isFeatureViewDataKey_KeyOneof `protobuf_oneof:"key_oneof"`
 }
@@ -230,6 +230,7 @@ type FetchFeatureValuesRequest struct {
 	// [FetchFeatureValuesRequest.data_key][google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest.data_key].
 	//
 	// Types that are assignable to EntityId:
+	//
 	//	*FetchFeatureValuesRequest_Id
 	EntityId isFetchFeatureValuesRequest_EntityId `protobuf_oneof:"entity_id"`
 	// Required. FeatureView resource format
@@ -347,6 +348,7 @@ type FetchFeatureValuesResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Format:
+	//
 	//	*FetchFeatureValuesResponse_KeyValues
 	//	*FetchFeatureValuesResponse_ProtoStruct
 	Format isFetchFeatureValuesResponse_Format `protobuf_oneof:"format"`
@@ -430,6 +432,7 @@ type NearestNeighborQuery struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Instance:
+	//
 	//	*NearestNeighborQuery_EntityId
 	//	*NearestNeighborQuery_Embedding_
 	Instance isNearestNeighborQuery_Instance `protobuf_oneof:"instance"`
@@ -776,6 +779,7 @@ type FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair st
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Data:
+	//
 	//	*FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair_Value
 	Data isFetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair_Data `protobuf_oneof:"data"`
 	// Feature short name.

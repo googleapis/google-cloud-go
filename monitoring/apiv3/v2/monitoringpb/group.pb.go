@@ -21,12 +21,11 @@
 package monitoringpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -69,7 +68,7 @@ type Group struct {
 
 	// Output only. The name of this group. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID]
 	//
 	// When creating a group, this field is ignored and a new name is created
 	// consisting of the project specified in the call to `CreateGroup`
@@ -79,7 +78,7 @@ type Group struct {
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// The name of the group's parent, if it has one. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/groups/[GROUP_ID]
 	//
 	// For groups with no parent, `parent_name` is the empty string, `""`.
 	ParentName string `protobuf:"bytes,3,opt,name=parent_name,json=parentName,proto3" json:"parent_name,omitempty"`

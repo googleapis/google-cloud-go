@@ -21,13 +21,12 @@
 package firestorepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -188,28 +187,28 @@ const (
 	//
 	// Requires:
 	//
-	// * That `value` is a non-empty `ArrayValue`, subject to disjunction
-	//   limits.
-	// * No `NOT_IN` filters in the same query.
+	//   - That `value` is a non-empty `ArrayValue`, subject to disjunction
+	//     limits.
+	//   - No `NOT_IN` filters in the same query.
 	StructuredQuery_FieldFilter_IN StructuredQuery_FieldFilter_Operator = 8
 	// The given `field` is an array that contains any of the values in the
 	// given array.
 	//
 	// Requires:
 	//
-	// * That `value` is a non-empty `ArrayValue`, subject to disjunction
-	//   limits.
-	// * No other `ARRAY_CONTAINS_ANY` filters within the same disjunction.
-	// * No `NOT_IN` filters in the same query.
+	//   - That `value` is a non-empty `ArrayValue`, subject to disjunction
+	//     limits.
+	//   - No other `ARRAY_CONTAINS_ANY` filters within the same disjunction.
+	//   - No `NOT_IN` filters in the same query.
 	StructuredQuery_FieldFilter_ARRAY_CONTAINS_ANY StructuredQuery_FieldFilter_Operator = 9
 	// The value of the `field` is not in the given array.
 	//
 	// Requires:
 	//
-	// * That `value` is a non-empty `ArrayValue` with at most 10 values.
-	// * No other `OR`, `IN`, `ARRAY_CONTAINS_ANY`, `NOT_IN`, `NOT_EQUAL`,
-	//   `IS_NOT_NULL`, or `IS_NOT_NAN`.
-	// * That `field` comes first in the `order_by`.
+	//   - That `value` is a non-empty `ArrayValue` with at most 10 values.
+	//   - No other `OR`, `IN`, `ARRAY_CONTAINS_ANY`, `NOT_IN`, `NOT_EQUAL`,
+	//     `IS_NOT_NULL`, or `IS_NOT_NAN`.
+	//   - That `field` comes first in the `order_by`.
 	StructuredQuery_FieldFilter_NOT_IN StructuredQuery_FieldFilter_Operator = 10
 )
 
@@ -371,19 +370,19 @@ type StructuredQuery struct {
 	// no ordering at all. In all cases, Firestore guarantees a stable ordering
 	// through the following rules:
 	//
-	//  * The `order_by` is required to reference all fields used with an
-	//    inequality filter.
-	//  * All fields that are required to be in the `order_by` but are not already
-	//    present are appended in lexicographical ordering of the field name.
-	//  * If an order on `__name__` is not specified, it is appended by default.
+	//   - The `order_by` is required to reference all fields used with an
+	//     inequality filter.
+	//   - All fields that are required to be in the `order_by` but are not already
+	//     present are appended in lexicographical ordering of the field name.
+	//   - If an order on `__name__` is not specified, it is appended by default.
 	//
 	// Fields are appended with the same sort direction as the last order
 	// specified, or 'ASCENDING' if no order was specified. For example:
 	//
-	//  * `ORDER BY a` becomes `ORDER BY a ASC, __name__ ASC`
-	//  * `ORDER BY a DESC` becomes `ORDER BY a DESC, __name__ DESC`
-	//  * `WHERE a > 1` becomes `WHERE a > 1 ORDER BY a ASC, __name__ ASC`
-	//  * `WHERE __name__ > ... AND a > 1` becomes
+	//   - `ORDER BY a` becomes `ORDER BY a ASC, __name__ ASC`
+	//   - `ORDER BY a DESC` becomes `ORDER BY a DESC, __name__ DESC`
+	//   - `WHERE a > 1` becomes `WHERE a > 1 ORDER BY a ASC, __name__ ASC`
+	//   - `WHERE __name__ > ... AND a > 1` becomes
 	//     `WHERE __name__ > ... AND a > 1 ORDER BY a ASC, __name__ ASC`
 	OrderBy []*StructuredQuery_Order `protobuf:"bytes,4,rep,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	// A potential prefix of a position in the result set to start the query at.
@@ -404,9 +403,9 @@ type StructuredQuery struct {
 	// Continuing off the example above, attaching the following start cursors
 	// will have varying impact:
 	//
-	// - `START BEFORE (2, /k/123)`: start the query right before `a = 1 AND
-	//    b > 2 AND __name__ > /k/123`.
-	// - `START AFTER (10)`: start the query right after `a = 1 AND b > 10`.
+	//   - `START BEFORE (2, /k/123)`: start the query right before `a = 1 AND
+	//     b > 2 AND __name__ > /k/123`.
+	//   - `START AFTER (10)`: start the query right after `a = 1 AND b > 10`.
 	//
 	// Unlike `OFFSET` which requires scanning over the first N results to skip,
 	// a start cursor allows the query to begin at a logical position. This
@@ -415,8 +414,8 @@ type StructuredQuery struct {
 	//
 	// Requires:
 	//
-	// * The number of values cannot be greater than the number of fields
-	//   specified in the `ORDER BY` clause.
+	//   - The number of values cannot be greater than the number of fields
+	//     specified in the `ORDER BY` clause.
 	StartAt *Cursor `protobuf:"bytes,7,opt,name=start_at,json=startAt,proto3" json:"start_at,omitempty"`
 	// A potential prefix of a position in the result set to end the query at.
 	//
@@ -425,8 +424,8 @@ type StructuredQuery struct {
 	//
 	// Requires:
 	//
-	// * The number of values cannot be greater than the number of fields
-	//   specified in the `ORDER BY` clause.
+	//   - The number of values cannot be greater than the number of fields
+	//     specified in the `ORDER BY` clause.
 	EndAt *Cursor `protobuf:"bytes,8,opt,name=end_at,json=endAt,proto3" json:"end_at,omitempty"`
 	// The number of documents to skip before returning the first result.
 	//
@@ -545,6 +544,7 @@ type StructuredAggregationQuery struct {
 	// The base query to aggregate over.
 	//
 	// Types that are assignable to QueryType:
+	//
 	//	*StructuredAggregationQuery_StructuredQuery
 	QueryType isStructuredAggregationQuery_QueryType `protobuf_oneof:"query_type"`
 	// Optional. Series of aggregations to apply over the results of the
@@ -752,6 +752,7 @@ type StructuredQuery_Filter struct {
 	// The type of filter.
 	//
 	// Types that are assignable to FilterType:
+	//
 	//	*StructuredQuery_Filter_CompositeFilter
 	//	*StructuredQuery_Filter_FieldFilter
 	//	*StructuredQuery_Filter_UnaryFilter
@@ -983,6 +984,7 @@ type StructuredQuery_UnaryFilter struct {
 	// The argument to the filter.
 	//
 	// Types that are assignable to OperandType:
+	//
 	//	*StructuredQuery_UnaryFilter_Field
 	OperandType isStructuredQuery_UnaryFilter_OperandType `protobuf_oneof:"operand_type"`
 }
@@ -1225,6 +1227,7 @@ type StructuredAggregationQuery_Aggregation struct {
 	// The type of aggregation to perform, required.
 	//
 	// Types that are assignable to Operator:
+	//
 	//	*StructuredAggregationQuery_Aggregation_Count_
 	//	*StructuredAggregationQuery_Aggregation_Sum_
 	//	*StructuredAggregationQuery_Aggregation_Avg_
@@ -1237,12 +1240,16 @@ type StructuredAggregationQuery_Aggregation struct {
 	//
 	// ```
 	// AGGREGATE
-	//   COUNT_UP_TO(1) AS count_up_to_1,
-	//   COUNT_UP_TO(2),
-	//   COUNT_UP_TO(3) AS count_up_to_3,
-	//   COUNT(*)
+	//
+	//	COUNT_UP_TO(1) AS count_up_to_1,
+	//	COUNT_UP_TO(2),
+	//	COUNT_UP_TO(3) AS count_up_to_3,
+	//	COUNT(*)
+	//
 	// OVER (
-	//   ...
+	//
+	//	...
+	//
 	// );
 	// ```
 	//
@@ -1250,12 +1257,16 @@ type StructuredAggregationQuery_Aggregation struct {
 	//
 	// ```
 	// AGGREGATE
-	//   COUNT_UP_TO(1) AS count_up_to_1,
-	//   COUNT_UP_TO(2) AS field_1,
-	//   COUNT_UP_TO(3) AS count_up_to_3,
-	//   COUNT(*) AS field_2
+	//
+	//	COUNT_UP_TO(1) AS count_up_to_1,
+	//	COUNT_UP_TO(2) AS field_1,
+	//	COUNT_UP_TO(3) AS count_up_to_3,
+	//	COUNT(*) AS field_2
+	//
 	// OVER (
-	//   ...
+	//
+	//	...
+	//
 	// );
 	// ```
 	//

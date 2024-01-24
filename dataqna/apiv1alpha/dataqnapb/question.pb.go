@@ -21,15 +21,14 @@
 package dataqnapb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -698,7 +697,8 @@ type Interpretation struct {
 	// considered a low confidence.
 	Confidence float64 `protobuf:"fixed64,2,opt,name=confidence,proto3" json:"confidence,omitempty"`
 	// A list of unused phrases. Clients should display a Did You Mean (DYM)
-	//  dialog if this is non-empty, even if this is the only interpretation.
+	//
+	//	dialog if this is non-empty, even if this is the only interpretation.
 	UnusedPhrases []string `protobuf:"bytes,3,rep,name=unused_phrases,json=unusedPhrases,proto3" json:"unused_phrases,omitempty"`
 	// Human readable representation of the query.
 	HumanReadable *HumanReadable `protobuf:"bytes,4,opt,name=human_readable,json=humanReadable,proto3" json:"human_readable,omitempty"`

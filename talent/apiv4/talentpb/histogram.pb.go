@@ -21,11 +21,10 @@
 package talentpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -104,11 +103,11 @@ type HistogramQueryResult struct {
 	//
 	// The key format is:
 	//
-	// * (for string histogram) string values stored in the field.
-	// * (for named numeric bucket) name specified in `bucket()` function, like
-	//   for `bucket(0, MAX, "non-negative")`, the key will be `non-negative`.
-	// * (for anonymous numeric bucket) range formatted as `<low>-<high>`, for
-	//   example, `0-1000`, `MIN-0`, and `0-MAX`.
+	//   - (for string histogram) string values stored in the field.
+	//   - (for named numeric bucket) name specified in `bucket()` function, like
+	//     for `bucket(0, MAX, "non-negative")`, the key will be `non-negative`.
+	//   - (for anonymous numeric bucket) range formatted as `<low>-<high>`, for
+	//     example, `0-1000`, `MIN-0`, and `0-MAX`.
 	Histogram map[string]int64 `protobuf:"bytes,2,rep,name=histogram,proto3" json:"histogram,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
 }
 

@@ -21,13 +21,12 @@
 package gkebackuppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -482,6 +481,7 @@ type BackupPlan_BackupConfig struct {
 	// Exactly one of the fields of backup_scope MUST be specified.
 	//
 	// Types that are assignable to BackupScope:
+	//
 	//	*BackupPlan_BackupConfig_AllNamespaces
 	//	*BackupPlan_BackupConfig_SelectedNamespaces
 	//	*BackupPlan_BackupConfig_SelectedApplications

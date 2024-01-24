@@ -22,9 +22,6 @@ package tracepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -317,10 +316,10 @@ type TraceSpan struct {
 	// Some predefined label keys exist, or you may create your own. When creating
 	// your own, we recommend the following formats:
 	//
-	// * `/category/product/key` for agents of well-known products (e.g.
-	//   `/db/mongodb/read_size`).
-	// * `short_host/path/key` for domain-specific keys (e.g.
-	//   `foo.com/myproduct/bar`)
+	//   - `/category/product/key` for agents of well-known products (e.g.
+	//     `/db/mongodb/read_size`).
+	//   - `short_host/path/key` for domain-specific keys (e.g.
+	//     `foo.com/myproduct/bar`)
 	//
 	// Predefined labels include:
 	//
@@ -460,39 +459,39 @@ type ListTracesRequest struct {
 	// a plus symbol (`+`) to the search term.
 	// Multiple terms are ANDed. Syntax:
 	//
-	// *   `root:NAME_PREFIX` or `NAME_PREFIX`: Return traces where any root
+	//   - `root:NAME_PREFIX` or `NAME_PREFIX`: Return traces where any root
 	//     span starts with `NAME_PREFIX`.
-	// *   `+root:NAME` or `+NAME`: Return traces where any root span's name is
+	//   - `+root:NAME` or `+NAME`: Return traces where any root span's name is
 	//     exactly `NAME`.
-	// *   `span:NAME_PREFIX`: Return traces where any span starts with
+	//   - `span:NAME_PREFIX`: Return traces where any span starts with
 	//     `NAME_PREFIX`.
-	// *   `+span:NAME`: Return traces where any span's name is exactly
+	//   - `+span:NAME`: Return traces where any span's name is exactly
 	//     `NAME`.
-	// *   `latency:DURATION`: Return traces whose overall latency is
+	//   - `latency:DURATION`: Return traces whose overall latency is
 	//     greater or equal to than `DURATION`. Accepted units are nanoseconds
 	//     (`ns`), milliseconds (`ms`), and seconds (`s`). Default is `ms`. For
 	//     example, `latency:24ms` returns traces whose overall latency
 	//     is greater than or equal to 24 milliseconds.
-	// *   `label:LABEL_KEY`: Return all traces containing the specified
+	//   - `label:LABEL_KEY`: Return all traces containing the specified
 	//     label key (exact match, case-sensitive) regardless of the key:value
 	//     pair's value (including empty values).
-	// *   `LABEL_KEY:VALUE_PREFIX`: Return all traces containing the specified
+	//   - `LABEL_KEY:VALUE_PREFIX`: Return all traces containing the specified
 	//     label key (exact match, case-sensitive) whose value starts with
 	//     `VALUE_PREFIX`. Both a key and a value must be specified.
-	// *   `+LABEL_KEY:VALUE`: Return all traces containing a key:value pair
+	//   - `+LABEL_KEY:VALUE`: Return all traces containing a key:value pair
 	//     exactly matching the specified text. Both a key and a value must be
 	//     specified.
-	// *   `method:VALUE`: Equivalent to `/http/method:VALUE`.
-	// *   `url:VALUE`: Equivalent to `/http/url:VALUE`.
+	//   - `method:VALUE`: Equivalent to `/http/method:VALUE`.
+	//   - `url:VALUE`: Equivalent to `/http/url:VALUE`.
 	Filter string `protobuf:"bytes,7,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. Field used to sort the returned traces.
 	// Can be one of the following:
 	//
-	// *   `trace_id`
-	// *   `name` (`name` field of root span in the trace)
-	// *   `duration` (difference between `end_time` and `start_time` fields of
-	//      the root span)
-	// *   `start` (`start_time` field of the root span)
+	//   - `trace_id`
+	//   - `name` (`name` field of root span in the trace)
+	//   - `duration` (difference between `end_time` and `start_time` fields of
+	//     the root span)
+	//   - `start` (`start_time` field of the root span)
 	//
 	// Descending order can be specified by appending `desc` to the sort field
 	// (for example, `name desc`).

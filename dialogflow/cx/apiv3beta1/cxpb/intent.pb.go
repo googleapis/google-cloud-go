@@ -21,11 +21,8 @@
 package cxpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -263,11 +262,11 @@ type Intent struct {
 	// The priority of this intent. Higher numbers represent higher
 	// priorities.
 	//
-	// - If the supplied value is unspecified or 0, the service
-	//   translates the value to 500,000, which corresponds to the
-	//   `Normal` priority in the console.
-	// - If the supplied value is negative, the intent is ignored
-	//   in runtime detect intent requests.
+	//   - If the supplied value is unspecified or 0, the service
+	//     translates the value to 500,000, which corresponds to the
+	//     `Normal` priority in the console.
+	//   - If the supplied value is negative, the intent is ignored
+	//     in runtime detect intent requests.
 	Priority int32 `protobuf:"varint,5,opt,name=priority,proto3" json:"priority,omitempty"`
 	// Indicates whether this is a fallback intent. Currently only default
 	// fallback intent is allowed in the agent, which is added upon agent
@@ -829,6 +828,7 @@ type ImportIntentsRequest struct {
 	// Required. The intents to import.
 	//
 	// Types that are assignable to Intents:
+	//
 	//	*ImportIntentsRequest_IntentsUri
 	//	*ImportIntentsRequest_IntentsContent
 	Intents isImportIntentsRequest_Intents `protobuf_oneof:"intents"`
@@ -1051,6 +1051,7 @@ type ExportIntentsRequest struct {
 	// The destination to export.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ExportIntentsRequest_IntentsUri
 	//	*ExportIntentsRequest_IntentsContentInline
 	Destination isExportIntentsRequest_Destination `protobuf_oneof:"destination"`
@@ -1170,6 +1171,7 @@ type ExportIntentsResponse struct {
 	// The exported intents.
 	//
 	// Types that are assignable to Intents:
+	//
 	//	*ExportIntentsResponse_IntentsUri
 	//	*ExportIntentsResponse_IntentsContent
 	Intents isExportIntentsResponse_Intents `protobuf_oneof:"intents"`
@@ -1316,8 +1318,8 @@ type Intent_TrainingPhrase struct {
 	// If you want to annotate the training phrase, you must create multiple
 	// parts, where the fields of each part are populated in one of two ways:
 	//
-	// -   `Part.text` is set to a part of the phrase that has no parameters.
-	// -   `Part.text` is set to a part of the phrase that you want to annotate,
+	//   - `Part.text` is set to a part of the phrase that has no parameters.
+	//   - `Part.text` is set to a part of the phrase that you want to annotate,
 	//     and the `parameter_id` field is set.
 	Parts []*Intent_TrainingPhrase_Part `protobuf:"bytes,2,rep,name=parts,proto3" json:"parts,omitempty"`
 	// Indicates how many times this example was added to the intent.

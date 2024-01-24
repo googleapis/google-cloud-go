@@ -21,17 +21,16 @@
 package retailpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -101,9 +100,9 @@ type CompleteQueryRequest struct {
 	//
 	// * user-data
 	//
-	// * cloud-retail:
-	//   This option requires enabling auto-learning function first. See
-	//   [guidelines](https://cloud.google.com/retail/docs/completion-overview#generated-completion-dataset).
+	//   - cloud-retail:
+	//     This option requires enabling auto-learning function first. See
+	//     [guidelines](https://cloud.google.com/retail/docs/completion-overview#generated-completion-dataset).
 	Dataset string `protobuf:"bytes,6,opt,name=dataset,proto3" json:"dataset,omitempty"`
 	// Completion max suggestions. If left unset or set to 0, then will fallback
 	// to the configured value
@@ -232,15 +231,15 @@ type CompleteQueryResponse struct {
 	// field is set and [UserEvent][google.cloud.retail.v2.UserEvent] is imported.
 	// The recent searches satisfy the follow rules:
 	//
-	//  * They are ordered from latest to oldest.
+	//   - They are ordered from latest to oldest.
 	//
-	//  * They are matched with
-	//  [CompleteQueryRequest.query][google.cloud.retail.v2.CompleteQueryRequest.query]
-	//  case insensitively.
+	//   - They are matched with
+	//     [CompleteQueryRequest.query][google.cloud.retail.v2.CompleteQueryRequest.query]
+	//     case insensitively.
 	//
-	//  * They are transformed to lower case.
+	//   - They are transformed to lower case.
 	//
-	//  * They are UTF-8 safe.
+	//   - They are UTF-8 safe.
 	//
 	// Recent searches are deduplicated. More recent searches will be reserved
 	// when duplication happens.

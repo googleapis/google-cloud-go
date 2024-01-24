@@ -22,9 +22,6 @@ package monitoringpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -52,7 +51,7 @@ type ListNotificationChannelDescriptorsRequest struct {
 	// Required. The REST resource name of the parent from which to retrieve
 	// the notification channel descriptors. The expected syntax is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	//
 	// Note that this
 	// [names](https://cloud.google.com/monitoring/api/v3#project_name) the parent
@@ -194,7 +193,7 @@ type GetNotificationChannelDescriptorRequest struct {
 
 	// Required. The channel type for which to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/notificationChannelDescriptors/[CHANNEL_TYPE]
+	//	projects/[PROJECT_ID_OR_NUMBER]/notificationChannelDescriptors/[CHANNEL_TYPE]
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -247,7 +246,7 @@ type CreateNotificationChannelRequest struct {
 	// [project](https://cloud.google.com/monitoring/api/v3#project_name) on which
 	// to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	//
 	// This names the container into which the channel will be
 	// written, this does not name the newly created channel. The resulting
@@ -314,7 +313,7 @@ type ListNotificationChannelsRequest struct {
 	// [project](https://cloud.google.com/monitoring/api/v3#project_name) on which
 	// to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	//
 	// This names the container
 	// in which to look for the notification channels; it does not name a
@@ -492,7 +491,7 @@ type GetNotificationChannelRequest struct {
 
 	// Required. The channel for which to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -604,7 +603,7 @@ type DeleteNotificationChannelRequest struct {
 
 	// Required. The channel for which to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	// If true, the notification channel will be deleted regardless of its
 	// use in alert policies (the policies will be updated to remove the

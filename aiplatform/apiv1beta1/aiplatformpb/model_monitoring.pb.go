@@ -21,12 +21,11 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -258,6 +257,7 @@ type ModelMonitoringAlertConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Alert:
+	//
 	//	*ModelMonitoringAlertConfig_EmailAlertConfig_
 	Alert isModelMonitoringAlertConfig_Alert `protobuf_oneof:"alert"`
 	// Dump the anomalies to Cloud Logging. The anomalies will be put to json
@@ -350,6 +350,7 @@ type ThresholdConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Threshold:
+	//
 	//	*ThresholdConfig_Value
 	Threshold isThresholdConfig_Threshold `protobuf_oneof:"threshold"`
 }
@@ -407,10 +408,11 @@ type isThresholdConfig_Threshold interface {
 type ThresholdConfig_Value struct {
 	// Specify a threshold value that can trigger the alert.
 	// If this threshold config is for feature distribution distance:
-	//   1. For categorical feature, the distribution distance is calculated by
-	//      L-inifinity norm.
-	//   2. For numerical feature, the distribution distance is calculated by
-	//      Jensen–Shannon divergence.
+	//  1. For categorical feature, the distribution distance is calculated by
+	//     L-inifinity norm.
+	//  2. For numerical feature, the distribution distance is calculated by
+	//     Jensen–Shannon divergence.
+	//
 	// Each feature must have a non-zero threshold if they need to be monitored.
 	// Otherwise no alert will be triggered for that feature.
 	Value float64 `protobuf:"fixed64,1,opt,name=value,proto3,oneof"`
@@ -475,6 +477,7 @@ type ModelMonitoringObjectiveConfig_TrainingDataset struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to DataSource:
+	//
 	//	*ModelMonitoringObjectiveConfig_TrainingDataset_Dataset
 	//	*ModelMonitoringObjectiveConfig_TrainingDataset_GcsSource
 	//	*ModelMonitoringObjectiveConfig_TrainingDataset_BigquerySource
@@ -833,6 +836,7 @@ type ModelMonitoringObjectiveConfig_ExplanationConfig_ExplanationBaseline struct
 	// used to generate the baseline of feature attribution scores.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ModelMonitoringObjectiveConfig_ExplanationConfig_ExplanationBaseline_Gcs
 	//	*ModelMonitoringObjectiveConfig_ExplanationConfig_ExplanationBaseline_Bigquery
 	Destination isModelMonitoringObjectiveConfig_ExplanationConfig_ExplanationBaseline_Destination `protobuf_oneof:"destination"`

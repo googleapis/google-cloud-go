@@ -21,14 +21,13 @@
 package monitoringpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	monitoredres "google.golang.org/genproto/googleapis/api/monitoredres"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -626,7 +625,7 @@ type InternalChecker struct {
 
 	// A unique resource name for this InternalChecker. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/internalCheckers/[INTERNAL_CHECKER_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/internalCheckers/[INTERNAL_CHECKER_ID]
 	//
 	// `[PROJECT_ID_OR_NUMBER]` is the Cloud Monitoring Metrics Scope project for
 	// the Uptime check config associated with the internal checker.
@@ -731,7 +730,7 @@ type UptimeCheckConfig struct {
 
 	// A unique resource name for this Uptime check configuration. The format is:
 	//
-	//      projects/[PROJECT_ID_OR_NUMBER]/uptimeCheckConfigs/[UPTIME_CHECK_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/uptimeCheckConfigs/[UPTIME_CHECK_ID]
 	//
 	// `[PROJECT_ID_OR_NUMBER]` is the Workspace host project associated with the
 	// Uptime check.
@@ -747,12 +746,14 @@ type UptimeCheckConfig struct {
 	// The resource the check is checking. Required.
 	//
 	// Types that are assignable to Resource:
+	//
 	//	*UptimeCheckConfig_MonitoredResource
 	//	*UptimeCheckConfig_ResourceGroup_
 	Resource isUptimeCheckConfig_Resource `protobuf_oneof:"resource"`
 	// The type of Uptime check request.
 	//
 	// Types that are assignable to CheckRequestType:
+	//
 	//	*UptimeCheckConfig_HttpCheck_
 	//	*UptimeCheckConfig_TcpCheck_
 	CheckRequestType isUptimeCheckConfig_CheckRequestType `protobuf_oneof:"check_request_type"`
@@ -957,14 +958,15 @@ type UptimeCheckConfig_MonitoredResource struct {
 	// resource](https://cloud.google.com/monitoring/api/resources) associated
 	// with the configuration.
 	// The following monitored resource types are valid for this field:
-	//   `uptime_url`,
-	//   `gce_instance`,
-	//   `gae_app`,
-	//   `aws_ec2_instance`,
-	//   `aws_elb_load_balancer`
-	//   `k8s_service`
-	//   `servicedirectory_service`
-	//   `cloud_run_revision`
+	//
+	//	`uptime_url`,
+	//	`gce_instance`,
+	//	`gae_app`,
+	//	`aws_ec2_instance`,
+	//	`aws_elb_load_balancer`
+	//	`k8s_service`
+	//	`servicedirectory_service`
+	//	`cloud_run_revision`
 	MonitoredResource *monitoredres.MonitoredResource `protobuf:"bytes,3,opt,name=monitored_resource,json=monitoredResource,proto3,oneof"`
 }
 
@@ -1465,6 +1467,7 @@ type UptimeCheckConfig_ContentMatcher struct {
 	// `JsonPathMatcher`; not used for other options.
 	//
 	// Types that are assignable to AdditionalMatcherInfo:
+	//
 	//	*UptimeCheckConfig_ContentMatcher_JsonPathMatcher_
 	AdditionalMatcherInfo isUptimeCheckConfig_ContentMatcher_AdditionalMatcherInfo `protobuf_oneof:"additional_matcher_info"`
 }
@@ -1612,6 +1615,7 @@ type UptimeCheckConfig_HttpCheck_ResponseStatusCode struct {
 	// Either a specific value or a class of status codes.
 	//
 	// Types that are assignable to StatusCode:
+	//
 	//	*UptimeCheckConfig_HttpCheck_ResponseStatusCode_StatusValue
 	//	*UptimeCheckConfig_HttpCheck_ResponseStatusCode_StatusClass_
 	StatusCode isUptimeCheckConfig_HttpCheck_ResponseStatusCode_StatusCode `protobuf_oneof:"status_code"`

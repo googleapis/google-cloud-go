@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -358,10 +357,12 @@ type Job struct {
 	AllocationPolicy *AllocationPolicy `protobuf:"bytes,7,opt,name=allocation_policy,json=allocationPolicy,proto3" json:"allocation_policy,omitempty"`
 	// Labels for the Job. Labels could be user provided or system generated.
 	// For example,
-	// "labels": {
-	//    "department": "finance",
-	//    "environment": "test"
-	//  }
+	//
+	//	"labels": {
+	//	   "department": "finance",
+	//	   "environment": "test"
+	//	 }
+	//
 	// You can assign up to 64 labels.  [Google Compute Engine label
 	// restrictions](https://cloud.google.com/compute/docs/labeling-resources#restrictions)
 	// apply.
@@ -1372,6 +1373,7 @@ type AllocationPolicy_Disk struct {
 	// A data source from which a PD will be created.
 	//
 	// Types that are assignable to DataSource:
+	//
 	//	*AllocationPolicy_Disk_Image
 	//	*AllocationPolicy_Disk_Snapshot
 	DataSource isAllocationPolicy_Disk_DataSource `protobuf_oneof:"data_source"`
@@ -1524,6 +1526,7 @@ type AllocationPolicy_AttachedDisk struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Attached:
+	//
 	//	*AllocationPolicy_AttachedDisk_NewDisk
 	//	*AllocationPolicy_AttachedDisk_ExistingDisk
 	Attached isAllocationPolicy_AttachedDisk_Attached `protobuf_oneof:"attached"`
@@ -1820,6 +1823,7 @@ type AllocationPolicy_InstancePolicyOrTemplate struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to PolicyTemplate:
+	//
 	//	*AllocationPolicy_InstancePolicyOrTemplate_Policy
 	//	*AllocationPolicy_InstancePolicyOrTemplate_InstanceTemplate
 	PolicyTemplate isAllocationPolicy_InstancePolicyOrTemplate_PolicyTemplate `protobuf_oneof:"policy_template"`

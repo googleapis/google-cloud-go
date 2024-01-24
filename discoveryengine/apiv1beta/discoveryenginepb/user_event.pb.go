@@ -21,14 +21,13 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -211,12 +210,12 @@ type UserEvent struct {
 	// This field needs to pass all below criteria, otherwise an
 	// `INVALID_ARGUMENT` error is returned:
 	//
-	// * The key must be a UTF-8 encoded string with a length limit of 5,000
-	//   characters.
-	// * For text attributes, at most 400 values are allowed. Empty values are not
-	//   allowed. Each value must be a UTF-8 encoded string with a length limit of
-	//   256 characters.
-	// * For number attributes, at most 400 values are allowed.
+	//   - The key must be a UTF-8 encoded string with a length limit of 5,000
+	//     characters.
+	//   - For text attributes, at most 400 values are allowed. Empty values are not
+	//     allowed. Each value must be a UTF-8 encoded string with a length limit of
+	//     256 characters.
+	//   - For number attributes, at most 400 values are allowed.
 	//
 	// For product recommendations, an example of extra user information is
 	// `traffic_channel`, which is how a user arrives at the site. Users can
@@ -796,6 +795,7 @@ type DocumentInfo struct {
 	// `{branch_id}` are used when annotating with the stored Document.
 	//
 	// Types that are assignable to DocumentDescriptor:
+	//
 	//	*DocumentInfo_Id
 	//	*DocumentInfo_Name
 	//	*DocumentInfo_Uri

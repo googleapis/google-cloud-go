@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -185,18 +184,22 @@ type ListFeatureOnlineStoresRequest struct {
 	//
 	// * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons.
 	// Values must be
-	//   in RFC 3339 format.
+	//
+	//	in RFC 3339 format.
+	//
 	// * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons.
 	// Values must be
-	//   in RFC 3339 format.
+	//
+	//	in RFC 3339 format.
+	//
 	// * `labels`: Supports key-value equality and key presence.
 	//
 	// Examples:
 	//
-	// * `create_time > "2020-01-01" OR update_time > "2020-01-01"`
-	//    FeatureOnlineStores created or updated after 2020-01-01.
-	// * `labels.env = "prod"`
-	//    FeatureOnlineStores with label "env" set to "prod".
+	//   - `create_time > "2020-01-01" OR update_time > "2020-01-01"`
+	//     FeatureOnlineStores created or updated after 2020-01-01.
+	//   - `labels.env = "prod"`
+	//     FeatureOnlineStores with label "env" set to "prod".
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The maximum number of FeatureOnlineStores to return. The service may return
 	// fewer than this value. If unspecified, at most 100 FeatureOnlineStores will
@@ -215,8 +218,8 @@ type ListFeatureOnlineStoresRequest struct {
 	// Use "desc" after a field name for descending.
 	// Supported Fields:
 	//
-	//   * `create_time`
-	//   * `update_time`
+	//   - `create_time`
+	//   - `update_time`
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 }
 
@@ -370,9 +373,9 @@ type UpdateFeatureOnlineStoreRequest struct {
 	//
 	// Updatable fields:
 	//
-	//   * `big_query_source`
-	//   * `labels`
-	//   * `sync_config`
+	//   - `big_query_source`
+	//   - `labels`
+	//   - `sync_config`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -647,13 +650,13 @@ type ListFeatureViewsRequest struct {
 	//
 	// Examples:
 	//
-	// * `create_time > \"2020-01-31T15:30:00.000000Z\" OR
-	//      update_time > \"2020-01-31T15:30:00.000000Z\"` --> FeatureViews
-	//      created or updated after 2020-01-31T15:30:00.000000Z.
-	// * `labels.active = yes AND labels.env = prod` --> FeatureViews having both
+	//   - `create_time > \"2020-01-31T15:30:00.000000Z\" OR
+	//     update_time > \"2020-01-31T15:30:00.000000Z\"` --> FeatureViews
+	//     created or updated after 2020-01-31T15:30:00.000000Z.
+	//   - `labels.active = yes AND labels.env = prod` --> FeatureViews having both
 	//     (active: yes) and (env: prod) labels.
-	// * `labels.env: *` --> Any FeatureView which has a label with 'env' as the
-	//   key.
+	//   - `labels.env: *` --> Any FeatureView which has a label with 'env' as the
+	//     key.
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The maximum number of FeatureViews to return. The service may return fewer
 	// than this value. If unspecified, at most 1000 FeatureViews will be
@@ -673,9 +676,9 @@ type ListFeatureViewsRequest struct {
 	//
 	// Supported fields:
 	//
-	//   * `feature_view_id`
-	//   * `create_time`
-	//   * `update_time`
+	//   - `feature_view_id`
+	//   - `create_time`
+	//   - `update_time`
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 }
 
@@ -829,7 +832,7 @@ type UpdateFeatureViewRequest struct {
 	//
 	// Updatable fields:
 	//
-	//   * `labels`
+	//   - `labels`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -1299,8 +1302,8 @@ type ListFeatureViewSyncsRequest struct {
 	//
 	// Examples:
 	//
-	// * `create_time > \"2020-01-31T15:30:00.000000Z\"` --> FeatureViewSyncs
-	//      created after 2020-01-31T15:30:00.000000Z.
+	//   - `create_time > \"2020-01-31T15:30:00.000000Z\"` --> FeatureViewSyncs
+	//     created after 2020-01-31T15:30:00.000000Z.
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The maximum number of FeatureViewSyncs to return. The service may return
 	// fewer than this value. If unspecified, at most 1000 FeatureViewSyncs will
@@ -1320,7 +1323,7 @@ type ListFeatureViewSyncsRequest struct {
 	//
 	// Supported fields:
 	//
-	//   * `create_time`
+	//   - `create_time`
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 }
 

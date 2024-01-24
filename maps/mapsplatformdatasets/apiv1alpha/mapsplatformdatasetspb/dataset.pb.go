@@ -21,13 +21,12 @@
 package mapsplatformdatasetspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -172,6 +171,7 @@ type Dataset struct {
 	// Details about the source of the data for the dataset.
 	//
 	// Types that are assignable to DataSource:
+	//
 	//	*Dataset_LocalFileSource
 	//	*Dataset_GcsSource
 	DataSource isDataset_DataSource `protobuf_oneof:"data_source"`

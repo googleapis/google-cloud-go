@@ -21,12 +21,11 @@
 package servicedirectorypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -53,10 +52,10 @@ type Service struct {
 	//
 	// Restrictions:
 	//
-	// *   The entire annotations dictionary may contain up to 2000 characters,
+	//   - The entire annotations dictionary may contain up to 2000 characters,
 	//     spread accoss all key-value pairs. Annotations that go beyond this
 	//     limit are rejected
-	// *   Valid annotation keys have two segments: an optional prefix and name,
+	//   - Valid annotation keys have two segments: an optional prefix and name,
 	//     separated by a slash (/). The name segment is required and must be 63
 	//     characters or less, beginning and ending with an alphanumeric character
 	//     ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and

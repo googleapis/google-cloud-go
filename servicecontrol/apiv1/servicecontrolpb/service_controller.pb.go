@@ -22,9 +22,6 @@ package servicecontrolpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -32,6 +29,8 @@ import (
 	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -367,17 +366,17 @@ type ReportResponse struct {
 	// Partial failures, one for each `Operation` in the request that failed
 	// processing. There are three possible combinations of the RPC status:
 	//
-	// 1. The combination of a successful RPC status and an empty `report_errors`
-	//    list indicates a complete success where all `Operations` in the
-	//    request are processed successfully.
-	// 2. The combination of a successful RPC status and a non-empty
-	//    `report_errors` list indicates a partial success where some
-	//    `Operations` in the request succeeded. Each
-	//    `Operation` that failed processing has a corresponding item
-	//    in this list.
-	// 3. A failed RPC status indicates a general non-deterministic failure.
-	//    When this happens, it's impossible to know which of the
-	//    'Operations' in the request succeeded or failed.
+	//  1. The combination of a successful RPC status and an empty `report_errors`
+	//     list indicates a complete success where all `Operations` in the
+	//     request are processed successfully.
+	//  2. The combination of a successful RPC status and a non-empty
+	//     `report_errors` list indicates a partial success where some
+	//     `Operations` in the request succeeded. Each
+	//     `Operation` that failed processing has a corresponding item
+	//     in this list.
+	//  3. A failed RPC status indicates a general non-deterministic failure.
+	//     When this happens, it's impossible to know which of the
+	//     'Operations' in the request succeeded or failed.
 	ReportErrors []*ReportResponse_ReportError `protobuf:"bytes,1,rep,name=report_errors,json=reportErrors,proto3" json:"report_errors,omitempty"`
 	// The actual config id used to process the request.
 	ServiceConfigId string `protobuf:"bytes,2,opt,name=service_config_id,json=serviceConfigId,proto3" json:"service_config_id,omitempty"`

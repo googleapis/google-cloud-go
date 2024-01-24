@@ -21,11 +21,8 @@
 package retailpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -183,6 +182,7 @@ type CollectUserEventRequest struct {
 	// only when the raw_json is set.
 	//
 	// Types that are assignable to ConversionRule:
+	//
 	//	*CollectUserEventRequest_PrebuiltRule
 	ConversionRule isCollectUserEventRequest_ConversionRule `protobuf_oneof:"conversion_rule"`
 	// Required. The parent catalog name, such as

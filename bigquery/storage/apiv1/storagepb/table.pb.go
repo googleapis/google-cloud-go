@@ -21,12 +21,11 @@
 package storagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -288,18 +287,18 @@ type TableFieldSchema struct {
 	//
 	// Values of this NUMERIC or BIGNUMERIC field must be in this range when:
 	//
-	// * Precision (P) and scale (S) are specified:
-	//   [-10^(P-S) + 10^(-S), 10^(P-S) - 10^(-S)]
-	// * Precision (P) is specified but not scale (and thus scale is
-	//   interpreted to be equal to zero):
-	//   [-10^P + 1, 10^P - 1].
+	//   - Precision (P) and scale (S) are specified:
+	//     [-10^(P-S) + 10^(-S), 10^(P-S) - 10^(-S)]
+	//   - Precision (P) is specified but not scale (and thus scale is
+	//     interpreted to be equal to zero):
+	//     [-10^P + 1, 10^P - 1].
 	//
 	// Acceptable values for precision and scale if both are specified:
 	//
-	// * If type = "NUMERIC":
-	//   1 <= precision - scale <= 29 and 0 <= scale <= 9.
-	// * If type = "BIGNUMERIC":
-	//   1 <= precision - scale <= 38 and 0 <= scale <= 38.
+	//   - If type = "NUMERIC":
+	//     1 <= precision - scale <= 29 and 0 <= scale <= 9.
+	//   - If type = "BIGNUMERIC":
+	//     1 <= precision - scale <= 38 and 0 <= scale <= 38.
 	//
 	// Acceptable values for precision if only precision is specified but not
 	// scale (and thus scale is interpreted to be equal to zero):

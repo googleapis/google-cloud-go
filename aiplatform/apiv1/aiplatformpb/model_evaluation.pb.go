@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -89,7 +88,6 @@ type ModelEvaluation struct {
 	// Aggregated explanation metrics for the Model's prediction output over the
 	// data this ModelEvaluation uses. This field is populated only if the Model
 	// is evaluated with explanations, and only for AutoML tabular Models.
-	//
 	ModelExplanation *ModelExplanation `protobuf:"bytes,8,opt,name=model_explanation,json=modelExplanation,proto3" json:"model_explanation,omitempty"`
 	// Describes the values of
 	// [ExplanationSpec][google.cloud.aiplatform.v1.ExplanationSpec] that are used
@@ -220,8 +218,8 @@ type ModelEvaluation_ModelEvaluationExplanationSpec struct {
 	//
 	// For AutoML Image Classification models, possible values are:
 	//
-	//   * `image-integrated-gradients`
-	//   * `image-xrai`
+	//   - `image-integrated-gradients`
+	//   - `image-xrai`
 	ExplanationType string `protobuf:"bytes,1,opt,name=explanation_type,json=explanationType,proto3" json:"explanation_type,omitempty"`
 	// Explanation spec details.
 	ExplanationSpec *ExplanationSpec `protobuf:"bytes,2,opt,name=explanation_spec,json=explanationSpec,proto3" json:"explanation_spec,omitempty"`

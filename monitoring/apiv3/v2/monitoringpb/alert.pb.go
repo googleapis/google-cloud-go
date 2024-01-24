@@ -21,15 +21,14 @@
 package monitoringpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -237,7 +236,7 @@ type AlertPolicy struct {
 	// Required if the policy exists. The resource name for this policy. The
 	// format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID]
 	//
 	// `[ALERT_POLICY_ID]` is assigned by Cloud Monitoring when the policy
 	// is created. When calling the
@@ -310,7 +309,7 @@ type AlertPolicy struct {
 	// [google.monitoring.v3.NotificationChannelService.ListNotificationChannels]
 	// method. The format of the entries in this field is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
 	NotificationChannels []string `protobuf:"bytes,14,rep,name=notification_channels,json=notificationChannels,proto3" json:"notification_channels,omitempty"`
 	// A read-only record of the creation of the alerting policy. If provided
 	// in a call to create or update, this field will be ignored.
@@ -546,7 +545,7 @@ type AlertPolicy_Condition struct {
 	// Required if the condition exists. The unique resource name for this
 	// condition. Its format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[POLICY_ID]/conditions/[CONDITION_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[POLICY_ID]/conditions/[CONDITION_ID]
 	//
 	// `[CONDITION_ID]` is assigned by Cloud Monitoring when the
 	// condition is created as part of a new or updated alerting policy.
@@ -576,6 +575,7 @@ type AlertPolicy_Condition struct {
 	// Only one of the following condition types will be specified.
 	//
 	// Types that are assignable to Condition:
+	//
 	//	*AlertPolicy_Condition_ConditionThreshold
 	//	*AlertPolicy_Condition_ConditionAbsent
 	//	*AlertPolicy_Condition_ConditionMatchedLog
@@ -795,6 +795,7 @@ type AlertPolicy_Condition_Trigger struct {
 	// A type of trigger.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*AlertPolicy_Condition_Trigger_Count
 	//	*AlertPolicy_Condition_Trigger_Percent
 	Type isAlertPolicy_Condition_Trigger_Type `protobuf_oneof:"type"`
@@ -1623,7 +1624,7 @@ type AlertPolicy_AlertStrategy_NotificationChannelStrategy struct {
 	// notification_channels field of this AlertPolicy.
 	// The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
 	NotificationChannelNames []string `protobuf:"bytes,1,rep,name=notification_channel_names,json=notificationChannelNames,proto3" json:"notification_channel_names,omitempty"`
 	// The frequency at which to send reminder notifications for open
 	// incidents.

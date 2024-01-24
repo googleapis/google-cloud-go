@@ -21,11 +21,8 @@
 package cloudtaskspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1134,7 +1133,6 @@ type LeaseTasksRequest struct {
 	// [LeaseTasks][google.cloud.tasks.v2beta2.CloudTasks.LeaseTasks] call before
 	// its [schedule_time][google.cloud.tasks.v2beta2.Task.schedule_time].
 	//
-	//
 	// After the worker has successfully finished the work associated
 	// with the task, the worker must call via
 	// [AcknowledgeTask][google.cloud.tasks.v2beta2.CloudTasks.AcknowledgeTask]
@@ -1392,7 +1390,6 @@ type RenewLeaseRequest struct {
 	// This restriction is to ensure that your worker currently holds the lease.
 	ScheduleTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=schedule_time,json=scheduleTime,proto3" json:"schedule_time,omitempty"`
 	// Required. The desired new lease duration, starting from now.
-	//
 	//
 	// The maximum lease duration is 1 week.
 	// `lease_duration` will be truncated to the nearest second.
@@ -2669,7 +2666,9 @@ type CloudTasksClient interface {
 	//
 	// * For [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget],
 	// the maximum task size is
-	//   100KB.
+	//
+	//	100KB.
+	//
 	// * For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum
 	// task size is 1MB.
 	CreateTask(ctx context.Context, in *CreateTaskRequest, opts ...grpc.CallOption) (*Task, error)
@@ -3100,7 +3099,9 @@ type CloudTasksServer interface {
 	//
 	// * For [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget],
 	// the maximum task size is
-	//   100KB.
+	//
+	//	100KB.
+	//
 	// * For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum
 	// task size is 1MB.
 	CreateTask(context.Context, *CreateTaskRequest) (*Task, error)

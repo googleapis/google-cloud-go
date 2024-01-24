@@ -21,12 +21,11 @@
 package generativelanguagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -172,8 +171,10 @@ type Permission struct {
 
 	// Output only. Identifier. The permission name. A unique name will be
 	// generated on create. Examples:
-	//     tunedModels/{tuned_model}/permissions/{permission}
-	//     corpora/{corpus}/permissions/{permission}
+	//
+	//	tunedModels/{tuned_model}/permissions/{permission}
+	//	corpora/{corpus}/permissions/{permission}
+	//
 	// Output only.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Immutable. The type of the grantee.

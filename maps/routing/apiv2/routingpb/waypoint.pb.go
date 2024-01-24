@@ -21,11 +21,10 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -45,6 +44,7 @@ type Waypoint struct {
 	// Different ways to represent a location.
 	//
 	// Types that are assignable to LocationType:
+	//
 	//	*Waypoint_Location
 	//	*Waypoint_PlaceId
 	//	*Waypoint_Address

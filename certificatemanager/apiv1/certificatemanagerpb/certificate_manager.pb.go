@@ -21,11 +21,8 @@
 package certificatemanagerpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2117,6 +2116,7 @@ type Certificate struct {
 	// Set of labels associated with a Certificate.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Types that are assignable to Type:
+	//
 	//	*Certificate_SelfManaged
 	//	*Certificate_Managed
 	Type isCertificate_Type `protobuf_oneof:"type"`
@@ -2384,6 +2384,7 @@ type CertificateMapEntry struct {
 	// Set of labels associated with a Certificate Map Entry.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Types that are assignable to Match:
+	//
 	//	*CertificateMapEntry_Hostname
 	//	*CertificateMapEntry_Matcher_
 	Match isCertificateMapEntry_Match `protobuf_oneof:"match"`
@@ -2944,6 +2945,7 @@ type CertificateMap_GclbTarget struct {
 	// A Target Proxy to which this map is attached to.
 	//
 	// Types that are assignable to TargetProxy:
+	//
 	//	*CertificateMap_GclbTarget_TargetHttpsProxy
 	//	*CertificateMap_GclbTarget_TargetSslProxy
 	TargetProxy isCertificateMap_GclbTarget_TargetProxy `protobuf_oneof:"target_proxy"`

@@ -22,15 +22,14 @@ package generativelanguagepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -49,8 +48,9 @@ type GenerateTextRequest struct {
 	// Required. The name of the `Model` or `TunedModel` to use for generating the
 	// completion.
 	// Examples:
-	//  models/text-bison-001
-	//  tunedModels/sentence-translator-u3b7m
+	//
+	//	models/text-bison-001
+	//	tunedModels/sentence-translator-u3b7m
 	Model string `protobuf:"bytes,1,opt,name=model,proto3" json:"model,omitempty"`
 	// Required. The free-form input text given to the model as a prompt.
 	//
@@ -532,7 +532,8 @@ type BatchEmbedTextRequest struct {
 
 	// Required. The name of the `Model` to use for generating the embedding.
 	// Examples:
-	//  models/embedding-gecko-001
+	//
+	//	models/embedding-gecko-001
 	Model string `protobuf:"bytes,1,opt,name=model,proto3" json:"model,omitempty"`
 	// Optional. The free-form input texts that the model will turn into an
 	// embedding. The current limit is 100 texts, over which an error will be

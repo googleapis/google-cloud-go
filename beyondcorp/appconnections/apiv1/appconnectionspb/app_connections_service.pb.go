@@ -21,11 +21,8 @@
 package appconnectionspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -432,9 +431,9 @@ type CreateAppConnectionRequest struct {
 	// form: `projects/{project_id}/locations/{location_id}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. User-settable AppConnection resource ID.
-	//  * Must start with a letter.
-	//  * Must contain between 4-63 characters from `/[a-z][0-9]-/`.
-	//  * Must end with a number or a letter.
+	//   - Must start with a letter.
+	//   - Must contain between 4-63 characters from `/[a-z][0-9]-/`.
+	//   - Must end with a number or a letter.
 	AppConnectionId string `protobuf:"bytes,2,opt,name=app_connection_id,json=appConnectionId,proto3" json:"app_connection_id,omitempty"`
 	// Required. A BeyondCorp AppConnection resource.
 	AppConnection *AppConnection `protobuf:"bytes,3,opt,name=app_connection,json=appConnection,proto3" json:"app_connection,omitempty"`

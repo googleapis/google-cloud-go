@@ -21,13 +21,12 @@
 package channelpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -264,7 +263,7 @@ type Entitlement struct {
 	//
 	// - max_units: The maximum assignable units for a flexible offer
 	//
-	// OR
+	// # OR
 	//
 	// - num_units: The total commitment for commitment-based offers
 	//

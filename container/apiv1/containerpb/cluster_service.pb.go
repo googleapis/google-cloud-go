@@ -22,9 +22,6 @@ package containerpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	code "google.golang.org/genproto/googleapis/rpc/code"
 	status "google.golang.org/genproto/googleapis/rpc/status"
@@ -37,6 +34,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3181,25 +3180,25 @@ type NodeConfig struct {
 	// Additionally, to avoid ambiguity, keys must not conflict with any other
 	// metadata keys for the project or be one of the reserved keys:
 	//
-	//  - "cluster-location"
-	//  - "cluster-name"
-	//  - "cluster-uid"
-	//  - "configure-sh"
-	//  - "containerd-configure-sh"
-	//  - "enable-os-login"
-	//  - "gci-ensure-gke-docker"
-	//  - "gci-metrics-enabled"
-	//  - "gci-update-strategy"
-	//  - "instance-template"
-	//  - "kube-env"
-	//  - "startup-script"
-	//  - "user-data"
-	//  - "disable-address-manager"
-	//  - "windows-startup-script-ps1"
-	//  - "common-psm1"
-	//  - "k8s-node-setup-psm1"
-	//  - "install-ssh-psm1"
-	//  - "user-profile-psm1"
+	//   - "cluster-location"
+	//   - "cluster-name"
+	//   - "cluster-uid"
+	//   - "configure-sh"
+	//   - "containerd-configure-sh"
+	//   - "enable-os-login"
+	//   - "gci-ensure-gke-docker"
+	//   - "gci-metrics-enabled"
+	//   - "gci-update-strategy"
+	//   - "instance-template"
+	//   - "kube-env"
+	//   - "startup-script"
+	//   - "user-data"
+	//   - "disable-address-manager"
+	//   - "windows-startup-script-ps1"
+	//   - "common-psm1"
+	//   - "k8s-node-setup-psm1"
+	//   - "install-ssh-psm1"
+	//   - "user-profile-psm1"
 	//
 	// Values are free-form strings, and only have meaning as interpreted by
 	// the image running in the instance. The only restriction placed on them is
@@ -3279,7 +3278,6 @@ type NodeConfig struct {
 	LinuxNodeConfig *LinuxNodeConfig `protobuf:"bytes,21,opt,name=linux_node_config,json=linuxNodeConfig,proto3" json:"linux_node_config,omitempty"`
 	// Node kubelet configs.
 	KubeletConfig *NodeKubeletConfig `protobuf:"bytes,22,opt,name=kubelet_config,json=kubeletConfig,proto3" json:"kubelet_config,omitempty"`
-	//
 	// The Customer Managed Encryption Key used to encrypt the boot disk attached
 	// to each node in the node pool. This should be of the form
 	// projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]/cryptoKeys/[KEY_NAME].
@@ -6289,9 +6287,9 @@ type Cluster struct {
 	//
 	// * `logging.googleapis.com/kubernetes` - The Cloud Logging
 	// service with a Kubernetes-native resource model
-	// * `logging.googleapis.com` - The legacy Cloud Logging service (no longer
-	//   available as of GKE 1.15).
-	// * `none` - no logs will be exported from the cluster.
+	//   - `logging.googleapis.com` - The legacy Cloud Logging service (no longer
+	//     available as of GKE 1.15).
+	//   - `none` - no logs will be exported from the cluster.
 	//
 	// If left as an empty string,`logging.googleapis.com/kubernetes` will be
 	// used for GKE 1.14+ or `logging.googleapis.com` for earlier versions.
@@ -6301,9 +6299,9 @@ type Cluster struct {
 	//
 	// * "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring
 	// service with a Kubernetes-native resource model
-	// * `monitoring.googleapis.com` - The legacy Cloud Monitoring service (no
-	//   longer available as of GKE 1.15).
-	// * `none` - No metrics will be exported from the cluster.
+	//   - `monitoring.googleapis.com` - The legacy Cloud Monitoring service (no
+	//     longer available as of GKE 1.15).
+	//   - `none` - No metrics will be exported from the cluster.
 	//
 	// If left as an empty string,`monitoring.googleapis.com/kubernetes` will be
 	// used for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
@@ -7333,9 +7331,9 @@ type ClusterUpdate struct {
 	//
 	// * "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring
 	// service with a Kubernetes-native resource model
-	// * `monitoring.googleapis.com` - The legacy Cloud Monitoring service (no
-	//   longer available as of GKE 1.15).
-	// * `none` - No metrics will be exported from the cluster.
+	//   - `monitoring.googleapis.com` - The legacy Cloud Monitoring service (no
+	//     longer available as of GKE 1.15).
+	//   - `none` - No metrics will be exported from the cluster.
 	//
 	// If left as an empty string,`monitoring.googleapis.com/kubernetes` will be
 	// used for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
@@ -7388,9 +7386,9 @@ type ClusterUpdate struct {
 	//
 	// * `logging.googleapis.com/kubernetes` - The Cloud Logging
 	// service with a Kubernetes-native resource model
-	// * `logging.googleapis.com` - The legacy Cloud Logging service (no longer
-	//   available as of GKE 1.15).
-	// * `none` - no logs will be exported from the cluster.
+	//   - `logging.googleapis.com` - The legacy Cloud Logging service (no longer
+	//     available as of GKE 1.15).
+	//   - `none` - no logs will be exported from the cluster.
 	//
 	// If left as an empty string,`logging.googleapis.com/kubernetes` will be
 	// used for GKE 1.14+ or `logging.googleapis.com` for earlier versions.
@@ -8217,11 +8215,14 @@ type OperationProgress struct {
 	// Unset for single-stage operations.
 	Status Operation_Status `protobuf:"varint,2,opt,name=status,proto3,enum=google.container.v1.Operation_Status" json:"status,omitempty"`
 	// Progress metric bundle, for example:
-	//   metrics: [{name: "nodes done",     int_value: 15},
-	//             {name: "nodes total",    int_value: 32}]
+	//
+	//	metrics: [{name: "nodes done",     int_value: 15},
+	//	          {name: "nodes total",    int_value: 32}]
+	//
 	// or
-	//   metrics: [{name: "progress",       double_value: 0.56},
-	//             {name: "progress scale", double_value: 1.0}]
+	//
+	//	metrics: [{name: "progress",       double_value: 0.56},
+	//	          {name: "progress scale", double_value: 1.0}]
 	Metrics []*OperationProgress_Metric `protobuf:"bytes,3,rep,name=metrics,proto3" json:"metrics,omitempty"`
 	// Substages of an operation or a stage.
 	Stages []*OperationProgress `protobuf:"bytes,4,rep,name=stages,proto3" json:"stages,omitempty"`
@@ -9063,9 +9064,9 @@ type SetLoggingServiceRequest struct {
 	//
 	// * `logging.googleapis.com/kubernetes` - The Cloud Logging
 	// service with a Kubernetes-native resource model
-	// * `logging.googleapis.com` - The legacy Cloud Logging service (no longer
-	//   available as of GKE 1.15).
-	// * `none` - no logs will be exported from the cluster.
+	//   - `logging.googleapis.com` - The legacy Cloud Logging service (no longer
+	//     available as of GKE 1.15).
+	//   - `none` - no logs will be exported from the cluster.
 	//
 	// If left as an empty string,`logging.googleapis.com/kubernetes` will be
 	// used for GKE 1.14+ or `logging.googleapis.com` for earlier versions.
@@ -9174,9 +9175,9 @@ type SetMonitoringServiceRequest struct {
 	//
 	// * "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring
 	// service with a Kubernetes-native resource model
-	// * `monitoring.googleapis.com` - The legacy Cloud Monitoring service (no
-	//   longer available as of GKE 1.15).
-	// * `none` - No metrics will be exported from the cluster.
+	//   - `monitoring.googleapis.com` - The legacy Cloud Monitoring service (no
+	//     longer available as of GKE 1.15).
+	//   - `none` - No metrics will be exported from the cluster.
 	//
 	// If left as an empty string,`monitoring.googleapis.com/kubernetes` will be
 	// used for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
@@ -10828,6 +10829,7 @@ type BlueGreenSettings struct {
 	// The rollout policy controls the general rollout progress of blue-green.
 	//
 	// Types that are assignable to RolloutPolicy:
+	//
 	//	*BlueGreenSettings_StandardRolloutPolicy_
 	RolloutPolicy isBlueGreenSettings_RolloutPolicy `protobuf_oneof:"rollout_policy"`
 	// Time needed after draining entire blue pool. After this period, blue pool
@@ -11428,6 +11430,7 @@ type MaintenanceWindow struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Policy:
+	//
 	//	*MaintenanceWindow_DailyMaintenanceWindow
 	//	*MaintenanceWindow_RecurringWindow
 	Policy isMaintenanceWindow_Policy `protobuf_oneof:"policy"`
@@ -11523,6 +11526,7 @@ type TimeWindow struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Options:
+	//
 	//	*TimeWindow_MaintenanceExclusionOptions
 	Options isTimeWindow_Options `protobuf_oneof:"options"`
 	// The time that the window first starts.
@@ -17089,6 +17093,7 @@ type OperationProgress_Metric struct {
 	// Strictly one of the values is required.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*OperationProgress_Metric_IntValue
 	//	*OperationProgress_Metric_DoubleValue
 	//	*OperationProgress_Metric_StringValue
@@ -17263,6 +17268,7 @@ type BlueGreenSettings_StandardRolloutPolicy struct {
 	// Blue pool size to drain in a batch.
 	//
 	// Types that are assignable to UpdateBatchSize:
+	//
 	//	*BlueGreenSettings_StandardRolloutPolicy_BatchPercentage
 	//	*BlueGreenSettings_StandardRolloutPolicy_BatchNodeCount
 	UpdateBatchSize isBlueGreenSettings_StandardRolloutPolicy_UpdateBatchSize `protobuf_oneof:"update_batch_size"`

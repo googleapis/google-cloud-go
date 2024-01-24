@@ -21,9 +21,6 @@
 package datatransferpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -31,6 +28,8 @@ import (
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -417,6 +416,7 @@ type TransferConfig struct {
 	// The desination of the transfer config.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*TransferConfig_DestinationDatasetId
 	Destination isTransferConfig_Destination `protobuf_oneof:"destination"`
 	// User specified display name for the data transfer.
@@ -748,6 +748,7 @@ type TransferRun struct {
 	// Data transfer destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*TransferRun_DestinationDatasetId
 	Destination isTransferRun_Destination `protobuf_oneof:"destination"`
 	// Output only. Data source id.

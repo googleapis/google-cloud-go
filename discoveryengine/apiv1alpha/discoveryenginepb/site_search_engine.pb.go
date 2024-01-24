@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -459,6 +458,7 @@ type TargetSite_FailureReason struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Failure:
+	//
 	//	*TargetSite_FailureReason_QuotaFailure_
 	Failure isTargetSite_FailureReason_Failure `protobuf_oneof:"failure"`
 }

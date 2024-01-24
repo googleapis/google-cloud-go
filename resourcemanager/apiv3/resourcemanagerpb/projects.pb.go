@@ -21,12 +21,9 @@
 package resourcemanagerpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -508,7 +507,6 @@ type SearchProjectsRequest struct {
 	// Search expressions are case insensitive.
 	//
 	// Some examples queries:
-	//
 	//
 	// - **`name:how*`**: The project's name starts with "how".
 	// - **`name:Howl`**: The project's name is `Howl` or `howl`.
@@ -1855,8 +1853,6 @@ type ProjectsClient interface {
 	// If project has no current parent, or it currently does not have an
 	// associated organization resource, you will also need the
 	// `resourcemanager.projects.setIamPolicy` permission in the project.
-	//
-	//
 	MoveProject(ctx context.Context, in *MoveProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Marks the project identified by the specified
 	// `name` (for example, `projects/415104041262`) for deletion.
@@ -2113,8 +2109,6 @@ type ProjectsServer interface {
 	// If project has no current parent, or it currently does not have an
 	// associated organization resource, you will also need the
 	// `resourcemanager.projects.setIamPolicy` permission in the project.
-	//
-	//
 	MoveProject(context.Context, *MoveProjectRequest) (*longrunningpb.Operation, error)
 	// Marks the project identified by the specified
 	// `name` (for example, `projects/415104041262`) for deletion.

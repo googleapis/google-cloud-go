@@ -21,11 +21,8 @@
 package workflowspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -262,6 +261,7 @@ type Workflow struct {
 	// revision.
 	//
 	// Types that are assignable to SourceCode:
+	//
 	//	*Workflow_SourceContents
 	SourceCode isWorkflow_SourceCode `protobuf_oneof:"source_code"`
 	// Optional. The resource name of a KMS crypto key used to encrypt or decrypt

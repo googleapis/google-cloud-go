@@ -21,11 +21,10 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -43,6 +42,7 @@ type PhysicalSchema struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Schema:
+	//
 	//	*PhysicalSchema_Avro
 	//	*PhysicalSchema_Thrift
 	//	*PhysicalSchema_Protobuf

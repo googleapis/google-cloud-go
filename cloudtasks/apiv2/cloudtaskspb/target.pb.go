@@ -21,12 +21,11 @@
 package cloudtaskspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -120,27 +119,27 @@ func (HttpMethod) EnumDescriptor() ([]byte, []int) {
 // * User-specified throttling: [retry
 // configuration][google.cloud.tasks.v2.Queue.retry_config],
 //
-//		[rate limits][google.cloud.tasks.v2.Queue.rate_limits], and the [queue's
-//		state][google.cloud.tasks.v2.Queue.state].
+//	[rate limits][google.cloud.tasks.v2.Queue.rate_limits], and the [queue's
+//	state][google.cloud.tasks.v2.Queue.state].
 //
-//	  - System throttling: To prevent the worker from overloading, Cloud Tasks may
-//	    temporarily reduce the queue's effective rate. User-specified settings
-//	    will not be changed.
+//   - System throttling: To prevent the worker from overloading, Cloud Tasks may
+//     temporarily reduce the queue's effective rate. User-specified settings
+//     will not be changed.
 //
-//	    System throttling happens because:
+//     System throttling happens because:
 //
-//	  - Cloud Tasks backs off on all errors. Normally the backoff specified in
-//	    [rate limits][google.cloud.tasks.v2.Queue.rate_limits] will be used. But
-//	    if the worker returns `429` (Too Many Requests), `503` (Service
-//	    Unavailable), or the rate of errors is high, Cloud Tasks will use a
-//	    higher backoff rate. The retry specified in the `Retry-After` HTTP
-//	    response header is considered.
+//   - Cloud Tasks backs off on all errors. Normally the backoff specified in
+//     [rate limits][google.cloud.tasks.v2.Queue.rate_limits] will be used. But
+//     if the worker returns `429` (Too Many Requests), `503` (Service
+//     Unavailable), or the rate of errors is high, Cloud Tasks will use a
+//     higher backoff rate. The retry specified in the `Retry-After` HTTP
+//     response header is considered.
 //
-//	  - To prevent traffic spikes and to smooth sudden increases in traffic,
-//	    dispatches ramp up slowly when the queue is newly created or idle and
-//	    if large numbers of tasks suddenly become available to dispatch (due to
-//	    spikes in create task rates, the queue being unpaused, or many tasks
-//	    that are scheduled at the same time).
+//   - To prevent traffic spikes and to smooth sudden increases in traffic,
+//     dispatches ramp up slowly when the queue is newly created or idle and
+//     if large numbers of tasks suddenly become available to dispatch (due to
+//     spikes in create task rates, the queue being unpaused, or many tasks
+//     that are scheduled at the same time).
 type HttpRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -169,18 +168,19 @@ type HttpRequest struct {
 	//
 	// A partial list of headers that will be ignored or replaced is:
 	//
-	// * Host: This will be computed by Cloud Tasks and derived from
-	//   [HttpRequest.url][google.cloud.tasks.v2.HttpRequest.url].
-	// * Content-Length: This will be computed by Cloud Tasks.
-	// * User-Agent: This will be set to `"Google-Cloud-Tasks"`.
-	// * `X-Google-*`: Google use only.
-	// * `X-AppEngine-*`: Google use only.
+	//   - Host: This will be computed by Cloud Tasks and derived from
+	//     [HttpRequest.url][google.cloud.tasks.v2.HttpRequest.url].
+	//   - Content-Length: This will be computed by Cloud Tasks.
+	//   - User-Agent: This will be set to `"Google-Cloud-Tasks"`.
+	//   - `X-Google-*`: Google use only.
+	//   - `X-AppEngine-*`: Google use only.
 	//
 	// `Content-Type` won't be set by Cloud Tasks. You can explicitly set
 	// `Content-Type` to a media type when the
-	//  [task is created][google.cloud.tasks.v2beta3.CloudTasks.CreateTask].
-	//  For example, `Content-Type` can be set to `"application/octet-stream"` or
-	//  `"application/json"`.
+	//
+	//	[task is created][google.cloud.tasks.v2beta3.CloudTasks.CreateTask].
+	//	For example, `Content-Type` can be set to `"application/octet-stream"` or
+	//	`"application/json"`.
 	//
 	// Headers which can have multiple values (according to RFC2616) can be
 	// specified using comma-separated values.
@@ -201,6 +201,7 @@ type HttpRequest struct {
 	// be overridden.
 	//
 	// Types that are assignable to AuthorizationHeader:
+	//
 	//	*HttpRequest_OauthToken
 	//	*HttpRequest_OidcToken
 	AuthorizationHeader isHttpRequest_AuthorizationHeader `protobuf_oneof:"authorization_header"`
@@ -397,11 +398,11 @@ type AppEngineHttpRequest struct {
 	HttpMethod HttpMethod `protobuf:"varint,1,opt,name=http_method,json=httpMethod,proto3,enum=google.cloud.tasks.v2.HttpMethod" json:"http_method,omitempty"`
 	// Task-level setting for App Engine routing.
 	//
-	// * If [app_engine_routing_override is set on the
-	//   queue][google.cloud.tasks.v2.Queue.app_engine_routing_override], this
-	//   value is used for all tasks in the queue, no matter what the setting is
-	//   for the [task-level
-	//   app_engine_routing][google.cloud.tasks.v2.AppEngineHttpRequest.app_engine_routing].
+	//   - If [app_engine_routing_override is set on the
+	//     queue][google.cloud.tasks.v2.Queue.app_engine_routing_override], this
+	//     value is used for all tasks in the queue, no matter what the setting is
+	//     for the [task-level
+	//     app_engine_routing][google.cloud.tasks.v2.AppEngineHttpRequest.app_engine_routing].
 	AppEngineRouting *AppEngineRouting `protobuf:"bytes,2,opt,name=app_engine_routing,json=appEngineRouting,proto3" json:"app_engine_routing,omitempty"`
 	// The relative URI.
 	//
@@ -419,22 +420,22 @@ type AppEngineHttpRequest struct {
 	//
 	// Cloud Tasks sets some headers to default values:
 	//
-	// * `User-Agent`: By default, this header is
-	//   `"AppEngine-Google; (+http://code.google.com/appengine)"`.
-	//   This header can be modified, but Cloud Tasks will append
-	//   `"AppEngine-Google; (+http://code.google.com/appengine)"` to the
-	//   modified `User-Agent`.
+	//   - `User-Agent`: By default, this header is
+	//     `"AppEngine-Google; (+http://code.google.com/appengine)"`.
+	//     This header can be modified, but Cloud Tasks will append
+	//     `"AppEngine-Google; (+http://code.google.com/appengine)"` to the
+	//     modified `User-Agent`.
 	//
 	// If the task has a [body][google.cloud.tasks.v2.AppEngineHttpRequest.body],
 	// Cloud Tasks sets the following headers:
 	//
-	// * `Content-Type`: By default, the `Content-Type` header is set to
-	//   `"application/octet-stream"`. The default can be overridden by explicitly
-	//   setting `Content-Type` to a particular media type when the
-	//   [task is created][google.cloud.tasks.v2.CloudTasks.CreateTask].
-	//   For example, `Content-Type` can be set to `"application/json"`.
-	// * `Content-Length`: This is computed by Cloud Tasks. This value is
-	//   output only.   It cannot be changed.
+	//   - `Content-Type`: By default, the `Content-Type` header is set to
+	//     `"application/octet-stream"`. The default can be overridden by explicitly
+	//     setting `Content-Type` to a particular media type when the
+	//     [task is created][google.cloud.tasks.v2.CloudTasks.CreateTask].
+	//     For example, `Content-Type` can be set to `"application/json"`.
+	//   - `Content-Length`: This is computed by Cloud Tasks. This value is
+	//     output only.   It cannot be changed.
 	//
 	// The headers below cannot be set or overridden:
 	//

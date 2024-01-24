@@ -21,12 +21,11 @@
 package spannerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -91,11 +90,11 @@ const (
 	// Encoded as a JSON-formatted `string` as described in RFC 7159. The
 	// following rules are applied when parsing JSON input:
 	//
-	// - Whitespace characters are not preserved.
-	// - If a JSON object has duplicate keys, only the first key is preserved.
-	// - Members of a JSON object are not guaranteed to have their order
-	//   preserved.
-	// - JSON array elements will have their order preserved.
+	//   - Whitespace characters are not preserved.
+	//   - If a JSON object has duplicate keys, only the first key is preserved.
+	//   - Members of a JSON object are not guaranteed to have their order
+	//     preserved.
+	//   - JSON array elements will have their order preserved.
 	TypeCode_JSON TypeCode = 11
 	// Encoded as a base64-encoded `string`, as described in RFC 4648,
 	// section 4.

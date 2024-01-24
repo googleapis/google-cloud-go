@@ -21,12 +21,11 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -44,10 +43,10 @@ type IdMatcher struct {
 
 	// Required. The following are accepted as `ids`:
 	//
-	//  * A single-element list containing only `*`, which selects all Features
-	//  in the target EntityType, or
-	//  * A list containing only Feature IDs, which selects only Features with
-	//  those IDs in the target EntityType.
+	//   - A single-element list containing only `*`, which selects all Features
+	//     in the target EntityType, or
+	//   - A list containing only Feature IDs, which selects only Features with
+	//     those IDs in the target EntityType.
 	Ids []string `protobuf:"bytes,1,rep,name=ids,proto3" json:"ids,omitempty"`
 }
 

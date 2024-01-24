@@ -21,15 +21,14 @@
 package livestreampb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1358,6 +1357,7 @@ type Event struct {
 	// Required. Operation to be executed by this event.
 	//
 	// Types that are assignable to Task:
+	//
 	//	*Event_InputSwitch
 	//	*Event_AdBreak
 	//	*Event_ReturnToProgram
@@ -1588,6 +1588,7 @@ type Asset struct {
 	// The maximum size of the resource is 250 MB.
 	//
 	// Types that are assignable to Resource:
+	//
 	//	*Asset_Video
 	//	*Asset_Image
 	Resource isAsset_Resource `protobuf_oneof:"resource"`
@@ -1739,6 +1740,7 @@ type Encryption struct {
 	// Defines where content keys are stored.
 	//
 	// Types that are assignable to SecretSource:
+	//
 	//	*Encryption_SecretManagerKeySource
 	SecretSource isEncryption_SecretSource `protobuf_oneof:"secret_source"`
 	// Required. Configuration for DRM systems.
@@ -1746,6 +1748,7 @@ type Encryption struct {
 	// Encryption modes for HLS and MPEG-Dash.
 	//
 	// Types that are assignable to EncryptionMode:
+	//
 	//	*Encryption_Aes128
 	//	*Encryption_SampleAes
 	//	*Encryption_MpegCenc

@@ -21,12 +21,11 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -63,6 +62,7 @@ type NotificationConfig struct {
 	// The config for triggering notifications.
 	//
 	// Types that are assignable to NotifyConfig:
+	//
 	//	*NotificationConfig_StreamingConfig_
 	NotifyConfig isNotificationConfig_NotifyConfig `protobuf_oneof:"notify_config"`
 }

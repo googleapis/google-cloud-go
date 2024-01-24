@@ -21,14 +21,13 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -295,6 +294,7 @@ type Task struct {
 	// Task template specific user-specified config.
 	//
 	// Types that are assignable to Config:
+	//
 	//	*Task_Spark
 	//	*Task_Notebook
 	Config isTask_Config `protobuf_oneof:"config"`
@@ -608,16 +608,19 @@ type Task_InfrastructureSpec struct {
 	// Hardware config.
 	//
 	// Types that are assignable to Resources:
+	//
 	//	*Task_InfrastructureSpec_Batch
 	Resources isTask_InfrastructureSpec_Resources `protobuf_oneof:"resources"`
 	// Software config.
 	//
 	// Types that are assignable to Runtime:
+	//
 	//	*Task_InfrastructureSpec_ContainerImage
 	Runtime isTask_InfrastructureSpec_Runtime `protobuf_oneof:"runtime"`
 	// Networking config.
 	//
 	// Types that are assignable to Network:
+	//
 	//	*Task_InfrastructureSpec_VpcNetwork_
 	Network isTask_InfrastructureSpec_Network `protobuf_oneof:"network"`
 }
@@ -751,6 +754,7 @@ type Task_TriggerSpec struct {
 	// Trigger only applies for RECURRING tasks.
 	//
 	// Types that are assignable to Trigger:
+	//
 	//	*Task_TriggerSpec_Schedule
 	Trigger isTask_TriggerSpec_Trigger `protobuf_oneof:"trigger"`
 }
@@ -959,6 +963,7 @@ type Task_SparkTaskConfig struct {
 	// main class name.
 	//
 	// Types that are assignable to Driver:
+	//
 	//	*Task_SparkTaskConfig_MainJarFileUri
 	//	*Task_SparkTaskConfig_MainClass
 	//	*Task_SparkTaskConfig_PythonScriptFile
@@ -1417,6 +1422,7 @@ type Task_InfrastructureSpec_VpcNetwork struct {
 	// The Cloud VPC network identifier.
 	//
 	// Types that are assignable to NetworkName:
+	//
 	//	*Task_InfrastructureSpec_VpcNetwork_Network
 	//	*Task_InfrastructureSpec_VpcNetwork_SubNetwork
 	NetworkName isTask_InfrastructureSpec_VpcNetwork_NetworkName `protobuf_oneof:"network_name"`

@@ -21,13 +21,12 @@
 package binaryauthorizationpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -605,6 +604,7 @@ type Attestor struct {
 	// The field may be displayed in chooser dialogs.
 	Description string `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
 	// Types that are assignable to AttestorType:
+	//
 	//	*Attestor_UserOwnedGrafeasNote
 	AttestorType isAttestor_AttestorType `protobuf_oneof:"attestor_type"`
 	// Output only. Time when the attestor was last updated.
@@ -864,6 +864,7 @@ type AttestorPublicKey struct {
 	// for details.
 	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 	// Types that are assignable to PublicKey:
+	//
 	//	*AttestorPublicKey_AsciiArmoredPgpPublicKey
 	//	*AttestorPublicKey_PkixPublicKey
 	PublicKey isAttestorPublicKey_PublicKey `protobuf_oneof:"public_key"`

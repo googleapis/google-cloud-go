@@ -21,11 +21,8 @@
 package automlpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -159,11 +158,11 @@ type ListDatasetsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// An expression for filtering the results of the request.
 	//
-	//   * `dataset_metadata` - for existence of the case (e.g.
-	//             `image_classification_dataset_metadata:*`). Some examples of using the filter are:
+	//   - `dataset_metadata` - for existence of the case (e.g.
+	//     `image_classification_dataset_metadata:*`). Some examples of using the filter are:
 	//
-	//   * `translation_dataset_metadata:*` --> The dataset has
-	//                                          `translation_dataset_metadata`.
+	//   - `translation_dataset_metadata:*` --> The dataset has
+	//     `translation_dataset_metadata`.
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Requested page size. Server may return fewer results than requested.
 	// If unspecified, server will pick a default size.
@@ -685,13 +684,15 @@ type ListModelsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// An expression for filtering the results of the request.
 	//
-	//   * `model_metadata` - for existence of the case (e.g.
-	//             `video_classification_model_metadata:*`).
-	//   * `dataset_id` - for = or !=. Some examples of using the filter are:
+	//   - `model_metadata` - for existence of the case (e.g.
+	//     `video_classification_model_metadata:*`).
 	//
-	//   * `image_classification_model_metadata:*` --> The model has
-	//                                      `image_classification_model_metadata`.
-	//   * `dataset_id=5` --> The model was created from a dataset with ID 5.
+	//   - `dataset_id` - for = or !=. Some examples of using the filter are:
+	//
+	//   - `image_classification_model_metadata:*` --> The model has
+	//     `image_classification_model_metadata`.
+	//
+	//   - `dataset_id=5` --> The model was created from a dataset with ID 5.
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Requested page size.
 	PageSize int32 `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -937,6 +938,7 @@ type DeployModelRequest struct {
 	// The per-domain specific deployment parameters.
 	//
 	// Types that are assignable to ModelDeploymentMetadata:
+	//
 	//	*DeployModelRequest_ImageObjectDetectionModelDeploymentMetadata
 	//	*DeployModelRequest_ImageClassificationModelDeploymentMetadata
 	ModelDeploymentMetadata isDeployModelRequest_ModelDeploymentMetadata `protobuf_oneof:"model_deployment_metadata"`
@@ -1194,15 +1196,15 @@ type ListModelEvaluationsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. An expression for filtering the results of the request.
 	//
-	//   * `annotation_spec_id` - for =, !=  or existence. See example below for
-	//                          the last.
+	//   - `annotation_spec_id` - for =, !=  or existence. See example below for
+	//     the last.
 	//
 	// Some examples of using the filter are:
 	//
-	//   * `annotation_spec_id!=4` --> The model evaluation was done for
-	//                             annotation spec with ID different than 4.
-	//   * `NOT annotation_spec_id:*` --> The model evaluation was done for
-	//                                aggregate of all annotation specs.
+	//   - `annotation_spec_id!=4` --> The model evaluation was done for
+	//     annotation spec with ID different than 4.
+	//   - `NOT annotation_spec_id:*` --> The model evaluation was done for
+	//     aggregate of all annotation specs.
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Requested page size.
 	PageSize int32 `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -2225,7 +2227,9 @@ type AutoMlClient interface {
 	// For Tables:
 	// *   A
 	// [schema_inference_version][google.cloud.automl.v1.InputConfig.params]
-	//     parameter must be explicitly set.
+	//
+	//	parameter must be explicitly set.
+	//
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
 	ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
@@ -2257,7 +2261,8 @@ type AutoMlClient interface {
 	// same parameters has no effect. Deploying with different parametrs
 	// (as e.g. changing
 	// [node_number][google.cloud.automl.v1p1beta.ImageObjectDetectionModelDeploymentMetadata.node_number])
-	//  will reset the deployment state without pausing the model's availability.
+	//
+	//	will reset the deployment state without pausing the model's availability.
 	//
 	// Only applicable for Text Classification, Image Object Detection , Tables, and Image Segmentation; all other domains manage
 	// deployment automatically.
@@ -2479,7 +2484,9 @@ type AutoMlServer interface {
 	// For Tables:
 	// *   A
 	// [schema_inference_version][google.cloud.automl.v1.InputConfig.params]
-	//     parameter must be explicitly set.
+	//
+	//	parameter must be explicitly set.
+	//
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
 	ImportData(context.Context, *ImportDataRequest) (*longrunningpb.Operation, error)
@@ -2511,7 +2518,8 @@ type AutoMlServer interface {
 	// same parameters has no effect. Deploying with different parametrs
 	// (as e.g. changing
 	// [node_number][google.cloud.automl.v1p1beta.ImageObjectDetectionModelDeploymentMetadata.node_number])
-	//  will reset the deployment state without pausing the model's availability.
+	//
+	//	will reset the deployment state without pausing the model's availability.
 	//
 	// Only applicable for Text Classification, Image Object Detection , Tables, and Image Segmentation; all other domains manage
 	// deployment automatically.

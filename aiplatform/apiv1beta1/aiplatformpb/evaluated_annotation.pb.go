@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -316,8 +315,8 @@ type EvaluatedAnnotationExplanation struct {
 	//
 	// For AutoML Image Classification models, possible values are:
 	//
-	//   * `image-integrated-gradients`
-	//   * `image-xrai`
+	//   - `image-integrated-gradients`
+	//   - `image-xrai`
 	ExplanationType string `protobuf:"bytes,1,opt,name=explanation_type,json=explanationType,proto3" json:"explanation_type,omitempty"`
 	// Explanation attribution response details.
 	Explanation *Explanation `protobuf:"bytes,2,opt,name=explanation,proto3" json:"explanation,omitempty"`

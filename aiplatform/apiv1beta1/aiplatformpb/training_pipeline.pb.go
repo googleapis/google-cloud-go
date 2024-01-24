@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -311,6 +310,7 @@ type InputDataConfig struct {
 	// is used by default.
 	//
 	// Types that are assignable to Split:
+	//
 	//	*InputDataConfig_FractionSplit
 	//	*InputDataConfig_FilterSplit
 	//	*InputDataConfig_PredefinedSplit
@@ -322,8 +322,8 @@ type InputDataConfig struct {
 	// The destination of the training data to be written to.
 	//
 	// Supported destination file formats:
-	//   * For non-tabular data: "jsonl".
-	//   * For tabular data: "csv" and "bigquery".
+	//   - For non-tabular data: "jsonl".
+	//   - For tabular data: "csv" and "bigquery".
 	//
 	// The following Vertex AI environment variables are passed to containers
 	// or python modules of the training task when this field is set:
@@ -334,6 +334,7 @@ type InputDataConfig struct {
 	// * AIP_TEST_DATA_URI : Sharded exported test data uris.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*InputDataConfig_GcsDestination
 	//	*InputDataConfig_BigqueryDestination
 	Destination isInputDataConfig_Destination `protobuf_oneof:"destination"`

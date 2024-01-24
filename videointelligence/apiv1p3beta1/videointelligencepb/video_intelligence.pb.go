@@ -21,11 +21,8 @@
 package videointelligencepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3349,6 +3348,7 @@ type ObjectTrackingAnnotation struct {
 	// and streaming modes.
 	//
 	// Types that are assignable to TrackInfo:
+	//
 	//	*ObjectTrackingAnnotation_Segment
 	//	*ObjectTrackingAnnotation_TrackId
 	TrackInfo isObjectTrackingAnnotation_TrackInfo `protobuf_oneof:"track_info"`
@@ -3544,6 +3544,7 @@ type StreamingAnnotateVideoRequest struct {
 	// video content.
 	//
 	// Types that are assignable to StreamingRequest:
+	//
 	//	*StreamingAnnotateVideoRequest_VideoConfig
 	//	*StreamingAnnotateVideoRequest_InputContent
 	StreamingRequest isStreamingAnnotateVideoRequest_StreamingRequest `protobuf_oneof:"streaming_request"`
@@ -3640,6 +3641,7 @@ type StreamingVideoConfig struct {
 	// Config for requested annotation feature.
 	//
 	// Types that are assignable to StreamingConfig:
+	//
 	//	*StreamingVideoConfig_ShotChangeDetectionConfig
 	//	*StreamingVideoConfig_LabelDetectionConfig
 	//	*StreamingVideoConfig_ExplicitContentDetectionConfig

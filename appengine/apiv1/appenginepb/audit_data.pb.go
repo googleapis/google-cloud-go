@@ -21,11 +21,10 @@
 package appenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -47,6 +46,7 @@ type AuditData struct {
 	// included in parent audit log message.
 	//
 	// Types that are assignable to Method:
+	//
 	//	*AuditData_UpdateService
 	//	*AuditData_CreateVersion
 	Method isAuditData_Method `protobuf_oneof:"method"`

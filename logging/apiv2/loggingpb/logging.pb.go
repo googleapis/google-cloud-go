@@ -22,9 +22,6 @@ package loggingpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	monitoredres "google.golang.org/genproto/googleapis/api/monitoredres"
 	status "google.golang.org/genproto/googleapis/rpc/status"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -178,8 +177,8 @@ type WriteLogEntriesRequest struct {
 	//
 	// `[LOG_ID]` must be URL-encoded. For example:
 	//
-	//     "projects/my-project-id/logs/syslog"
-	//     "organizations/123/logs/cloudaudit.googleapis.com%2Factivity"
+	//	"projects/my-project-id/logs/syslog"
+	//	"organizations/123/logs/cloudaudit.googleapis.com%2Factivity"
 	//
 	// The permission `logging.logEntries.create` is needed on each project,
 	// organization, billing account, or folder that is receiving new log
@@ -189,9 +188,9 @@ type WriteLogEntriesRequest struct {
 	// Optional. A default monitored resource object that is assigned to all log
 	// entries in `entries` that do not specify a value for `resource`. Example:
 	//
-	//     { "type": "gce_instance",
-	//       "labels": {
-	//         "zone": "us-central1-a", "instance_id": "00000000000000000000" }}
+	//	{ "type": "gce_instance",
+	//	  "labels": {
+	//	    "zone": "us-central1-a", "instance_id": "00000000000000000000" }}
 	//
 	// See [LogEntry][google.logging.v2.LogEntry].
 	Resource *monitoredres.MonitoredResource `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`
@@ -422,10 +421,10 @@ type ListLogEntriesRequest struct {
 	//
 	// May alternatively be one or more views:
 	//
-	//  * `projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
-	//  * `organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
-	//  * `billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
-	//  * `folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
 	//
 	// Projects listed in the `project_ids` field are added to this list.
 	// A maximum of 100 resources may be specified in a single request.
@@ -729,10 +728,10 @@ type ListLogsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. List of resource names to list logs for:
 	//
-	//  * `projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
-	//  * `organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
-	//  * `billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
-	//  * `folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
 	//
 	// To support legacy queries, it could also be:
 	//
@@ -891,10 +890,10 @@ type TailLogEntriesRequest struct {
 	//
 	// May alternatively be one or more views:
 	//
-	//  * `projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
-	//  * `organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
-	//  * `billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
-	//  * `folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
+	//   - `folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]`
 	ResourceNames []string `protobuf:"bytes,1,rep,name=resource_names,json=resourceNames,proto3" json:"resource_names,omitempty"`
 	// Optional. Only log entries that match the filter are returned.  An empty
 	// filter matches all log entries in the resources listed in `resource_names`.

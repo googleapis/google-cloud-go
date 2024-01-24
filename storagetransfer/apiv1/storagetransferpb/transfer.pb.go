@@ -21,11 +21,8 @@
 package storagetransferpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -367,8 +366,9 @@ type ListTransferJobsRequest struct {
 
 	// Required. A list of query parameters specified as JSON text in the form of:
 	// `{"projectId":"my_project_id",
-	//  "jobNames":["jobid1","jobid2",...],
-	//  "jobStatuses":["status1","status2",...]}`
+	//
+	//	"jobNames":["jobid1","jobid2",...],
+	//	"jobStatuses":["status1","status2",...]}`
 	//
 	// Since `jobNames` and `jobStatuses` support multiple values, their values
 	// must be specified with array notation. `projectId` is required.
@@ -670,9 +670,9 @@ type CreateAgentPoolRequest struct {
 	// *   Length of 128 characters or less.
 	// *   Not start with the string `goog`.
 	// *   Start with a lowercase ASCII character, followed by:
-	//     *   Zero or more: lowercase Latin alphabet characters, numerals,
-	//         hyphens (`-`), periods (`.`), underscores (`_`), or tildes (`~`).
-	//     *   One or more numerals or lowercase ASCII characters.
+	//   - Zero or more: lowercase Latin alphabet characters, numerals,
+	//     hyphens (`-`), periods (`.`), underscores (`_`), or tildes (`~`).
+	//   - One or more numerals or lowercase ASCII characters.
 	//
 	// As expressed by the regular expression:
 	// `^(?!goog)[a-z]([a-z0-9-._~]*[a-z0-9])?$`.

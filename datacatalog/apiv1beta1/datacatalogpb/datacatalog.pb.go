@@ -21,11 +21,8 @@
 package datacatalogpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -148,10 +147,10 @@ type SearchCatalogRequest struct {
 	// Specifies the ordering of results, currently supported case-sensitive
 	// choices are:
 	//
-	//   * `relevance`, only supports descending
-	//   * `last_modified_timestamp [asc|desc]`, defaults to descending if not
+	//   - `relevance`, only supports descending
+	//   - `last_modified_timestamp [asc|desc]`, defaults to descending if not
 	//     specified
-	//   * `default` that can only be descending
+	//   - `default` that can only be descending
 	//
 	// If not specified, defaults to `relevance` descending.
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
@@ -786,21 +785,23 @@ type UpdateEntryRequest struct {
 	// The following fields are modifiable:
 	//
 	// * For entries with type `DATA_STREAM`:
-	//    * `schema`
+	//   - `schema`
+	//
 	// * For entries with type `FILESET`:
-	//    * `schema`
-	//    * `display_name`
-	//    * `description`
-	//    * `gcs_fileset_spec`
-	//    * `gcs_fileset_spec.file_patterns`
+	//   - `schema`
+	//   - `display_name`
+	//   - `description`
+	//   - `gcs_fileset_spec`
+	//   - `gcs_fileset_spec.file_patterns`
+	//
 	// * For entries with `user_specified_type`:
-	//    * `schema`
-	//    * `display_name`
-	//    * `description`
-	//    * `user_specified_type`
-	//    * `user_specified_system`
-	//    * `linked_resource`
-	//    * `source_system_timestamps`
+	//   - `schema`
+	//   - `display_name`
+	//   - `description`
+	//   - `user_specified_type`
+	//   - `user_specified_system`
+	//   - `linked_resource`
+	//   - `source_system_timestamps`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -965,6 +966,7 @@ type LookupEntryRequest struct {
 	// for a Google Cloud Platform resource.
 	//
 	// Types that are assignable to TargetName:
+	//
 	//	*LookupEntryRequest_LinkedResource
 	//	*LookupEntryRequest_SqlResource
 	TargetName isLookupEntryRequest_TargetName `protobuf_oneof:"target_name"`
@@ -1035,8 +1037,8 @@ type LookupEntryRequest_LinkedResource struct {
 	//
 	// Examples:
 	//
-	//  * //bigquery.googleapis.com/projects/projectId/datasets/datasetId/tables/tableId
-	//  * //pubsub.googleapis.com/projects/projectId/topics/topicId
+	//   - //bigquery.googleapis.com/projects/projectId/datasets/datasetId/tables/tableId
+	//   - //pubsub.googleapis.com/projects/projectId/topics/topicId
 	LinkedResource string `protobuf:"bytes,1,opt,name=linked_resource,json=linkedResource,proto3,oneof"`
 }
 
@@ -1045,11 +1047,11 @@ type LookupEntryRequest_SqlResource struct {
 	//
 	// Examples:
 	//
-	//   * `pubsub.project_id.topic_id`
-	//   * ``pubsub.project_id.`topic.id.with.dots` ``
-	//   * `bigquery.table.project_id.dataset_id.table_id`
-	//   * `bigquery.dataset.project_id.dataset_id`
-	//   * `datacatalog.entry.project_id.location_id.entry_group_id.entry_id`
+	//   - `pubsub.project_id.topic_id`
+	//   - “pubsub.project_id.`topic.id.with.dots` “
+	//   - `bigquery.table.project_id.dataset_id.table_id`
+	//   - `bigquery.dataset.project_id.dataset_id`
+	//   - `datacatalog.entry.project_id.location_id.entry_group_id.entry_id`
 	//
 	// `*_id`s should satisfy the standard SQL rules for identifiers.
 	// https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical.
@@ -1099,18 +1101,21 @@ type Entry struct {
 	// Required. Entry type.
 	//
 	// Types that are assignable to EntryType:
+	//
 	//	*Entry_Type
 	//	*Entry_UserSpecifiedType
 	EntryType isEntry_EntryType `protobuf_oneof:"entry_type"`
 	// The source system of the entry.
 	//
 	// Types that are assignable to System:
+	//
 	//	*Entry_IntegratedSystem
 	//	*Entry_UserSpecifiedSystem
 	System isEntry_System `protobuf_oneof:"system"`
 	// Type specification information.
 	//
 	// Types that are assignable to TypeSpec:
+	//
 	//	*Entry_GcsFilesetSpec
 	//	*Entry_BigqueryTableSpec
 	//	*Entry_BigqueryDateShardedSpec
@@ -1979,9 +1984,9 @@ type UpdateTagTemplateFieldRequest struct {
 	// Optional. Names of fields whose values to overwrite on an individual field
 	// of a tag template. The following fields are modifiable:
 	//
-	//   * `display_name`
-	//   * `type.enum_type`
-	//   * `is_required`
+	//   - `display_name`
+	//   - `type.enum_type`
+	//   - `is_required`
 	//
 	// If this parameter is absent or empty, all modifiable fields
 	// are overwritten. If such fields are non-required and omitted in the request
@@ -2546,30 +2551,30 @@ type SearchCatalogRequest_Scope struct {
 	// additional information on the error.
 	//
 	// Valid locations:
-	//  * asia-east1
-	//  * asia-east2
-	//  * asia-northeast1
-	//  * asia-northeast2
-	//  * asia-northeast3
-	//  * asia-south1
-	//  * asia-southeast1
-	//  * australia-southeast1
-	//  * eu
-	//  * europe-north1
-	//  * europe-west1
-	//  * europe-west2
-	//  * europe-west3
-	//  * europe-west4
-	//  * europe-west6
-	//  * global
-	//  * northamerica-northeast1
-	//  * southamerica-east1
-	//  * us
-	//  * us-central1
-	//  * us-east1
-	//  * us-east4
-	//  * us-west1
-	//  * us-west2
+	//   - asia-east1
+	//   - asia-east2
+	//   - asia-northeast1
+	//   - asia-northeast2
+	//   - asia-northeast3
+	//   - asia-south1
+	//   - asia-southeast1
+	//   - australia-southeast1
+	//   - eu
+	//   - europe-north1
+	//   - europe-west1
+	//   - europe-west2
+	//   - europe-west3
+	//   - europe-west4
+	//   - europe-west6
+	//   - global
+	//   - northamerica-northeast1
+	//   - southamerica-east1
+	//   - us
+	//   - us-central1
+	//   - us-east1
+	//   - us-east4
+	//   - us-west1
+	//   - us-west2
 	RestrictedLocations []string `protobuf:"bytes,16,rep,name=restricted_locations,json=restrictedLocations,proto3" json:"restricted_locations,omitempty"`
 }
 
@@ -4293,6 +4298,7 @@ type DataCatalogClient interface {
 	//   - Tag templates.
 	//   - Entries.
 	//   - Entry groups.
+	//
 	// Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
 	// and any external Google Cloud Platform resources synced to Data Catalog.
 	//
@@ -4310,6 +4316,7 @@ type DataCatalogClient interface {
 	//   - Tag templates.
 	//   - Entries.
 	//   - Entry groups.
+	//
 	// Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
 	// and any external Google Cloud Platform resources synced to Data Catalog.
 	//
@@ -4327,6 +4334,7 @@ type DataCatalogClient interface {
 	//   - Tag templates.
 	//   - Entries.
 	//   - Entry groups.
+	//
 	// Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
 	// and any external Google Cloud Platform resources synced to Data Catalog.
 	//
@@ -4742,6 +4750,7 @@ type DataCatalogServer interface {
 	//   - Tag templates.
 	//   - Entries.
 	//   - Entry groups.
+	//
 	// Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
 	// and any external Google Cloud Platform resources synced to Data Catalog.
 	//
@@ -4759,6 +4768,7 @@ type DataCatalogServer interface {
 	//   - Tag templates.
 	//   - Entries.
 	//   - Entry groups.
+	//
 	// Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
 	// and any external Google Cloud Platform resources synced to Data Catalog.
 	//
@@ -4776,6 +4786,7 @@ type DataCatalogServer interface {
 	//   - Tag templates.
 	//   - Entries.
 	//   - Entry groups.
+	//
 	// Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
 	// and any external Google Cloud Platform resources synced to Data Catalog.
 	//

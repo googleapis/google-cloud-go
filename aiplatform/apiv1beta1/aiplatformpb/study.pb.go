@@ -21,9 +21,6 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -31,6 +28,8 @@ import (
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -750,7 +749,8 @@ type TrialContext struct {
 	// contexts, and if there are no matches, we generate suggestions in the
 	// subspace defined by the parameters specified here.
 	// NOTE: a Context without any Parameters matches the entire feasible search
-	//   space.
+	//
+	//	space.
 	Parameters []*Trial_Parameter `protobuf:"bytes,2,rep,name=parameters,proto3" json:"parameters,omitempty"`
 }
 
@@ -807,6 +807,7 @@ type StudyTimeConstraint struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Constraint:
+	//
 	//	*StudyTimeConstraint_MaxDuration
 	//	*StudyTimeConstraint_EndTime
 	Constraint isStudyTimeConstraint_Constraint `protobuf_oneof:"constraint"`
@@ -890,6 +891,7 @@ type StudySpec struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to AutomatedStoppingSpec:
+	//
 	//	*StudySpec_DecayCurveStoppingSpec
 	//	*StudySpec_MedianAutomatedStoppingSpec_
 	//	*StudySpec_ConvexStopConfig_
@@ -1279,6 +1281,7 @@ type StudySpec_ParameterSpec struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to ParameterValueSpec:
+	//
 	//	*StudySpec_ParameterSpec_DoubleValueSpec_
 	//	*StudySpec_ParameterSpec_IntegerValueSpec_
 	//	*StudySpec_ParameterSpec_CategoricalValueSpec_
@@ -2314,6 +2317,7 @@ type StudySpec_ParameterSpec_ConditionalParameterSpec struct {
 	// space.
 	//
 	// Types that are assignable to ParentValueCondition:
+	//
 	//	*StudySpec_ParameterSpec_ConditionalParameterSpec_ParentDiscreteValues
 	//	*StudySpec_ParameterSpec_ConditionalParameterSpec_ParentIntValues
 	//	*StudySpec_ParameterSpec_ConditionalParameterSpec_ParentCategoricalValues

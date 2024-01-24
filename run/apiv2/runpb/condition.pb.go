@@ -21,12 +21,11 @@
 package runpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -446,6 +445,7 @@ type Condition struct {
 	// Successful conditions cannot have a reason.
 	//
 	// Types that are assignable to Reasons:
+	//
 	//	*Condition_Reason
 	//	*Condition_RevisionReason_
 	//	*Condition_ExecutionReason_

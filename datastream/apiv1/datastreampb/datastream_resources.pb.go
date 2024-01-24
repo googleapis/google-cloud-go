@@ -21,14 +21,13 @@
 package datastreampb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -945,6 +944,7 @@ type ForwardSshTunnelConnectivity struct {
 	// Port for the SSH tunnel, default value is 22.
 	Port int32 `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
 	// Types that are assignable to AuthenticationMethod:
+	//
 	//	*ForwardSshTunnelConnectivity_Password
 	//	*ForwardSshTunnelConnectivity_PrivateKey
 	AuthenticationMethod isForwardSshTunnelConnectivity_AuthenticationMethod `protobuf_oneof:"authentication_method"`
@@ -1490,6 +1490,7 @@ type ConnectionProfile struct {
 	// Connection configuration for the ConnectionProfile.
 	//
 	// Types that are assignable to Profile:
+	//
 	//	*ConnectionProfile_OracleProfile
 	//	*ConnectionProfile_GcsProfile
 	//	*ConnectionProfile_MysqlProfile
@@ -1499,6 +1500,7 @@ type ConnectionProfile struct {
 	// Connectivity options used to establish a connection to the profile.
 	//
 	// Types that are assignable to Connectivity:
+	//
 	//	*ConnectionProfile_StaticServiceIpConnectivity
 	//	*ConnectionProfile_ForwardSshConnectivity
 	//	*ConnectionProfile_PrivateConnectivity
@@ -2013,6 +2015,7 @@ type OracleSourceConfig struct {
 	// The configuration for handle Oracle large objects.
 	//
 	// Types that are assignable to LargeObjectsHandling:
+	//
 	//	*OracleSourceConfig_DropLargeObjects_
 	//	*OracleSourceConfig_StreamLargeObjects_
 	LargeObjectsHandling isOracleSourceConfig_LargeObjectsHandling `protobuf_oneof:"large_objects_handling"`
@@ -2865,6 +2868,7 @@ type SourceConfig struct {
 	// Stream configuration that is specific to the data source type.
 	//
 	// Types that are assignable to SourceStreamConfig:
+	//
 	//	*SourceConfig_OracleSourceConfig
 	//	*SourceConfig_MysqlSourceConfig
 	//	*SourceConfig_PostgresqlSourceConfig
@@ -3077,6 +3081,7 @@ type GcsDestinationConfig struct {
 	// File Format that the data should be written in.
 	//
 	// Types that are assignable to FileFormat:
+	//
 	//	*GcsDestinationConfig_AvroFileFormat
 	//	*GcsDestinationConfig_JsonFileFormat
 	FileFormat isGcsDestinationConfig_FileFormat `protobuf_oneof:"file_format"`
@@ -3183,6 +3188,7 @@ type BigQueryDestinationConfig struct {
 	// Target dataset(s) configuration.
 	//
 	// Types that are assignable to DatasetConfig:
+	//
 	//	*BigQueryDestinationConfig_SingleTargetDataset_
 	//	*BigQueryDestinationConfig_SourceHierarchyDatasets_
 	DatasetConfig isBigQueryDestinationConfig_DatasetConfig `protobuf_oneof:"dataset_config"`
@@ -3284,6 +3290,7 @@ type DestinationConfig struct {
 	// Stream configuration that is specific to the data destination type.
 	//
 	// Types that are assignable to DestinationStreamConfig:
+	//
 	//	*DestinationConfig_GcsDestinationConfig
 	//	*DestinationConfig_BigqueryDestinationConfig
 	DestinationStreamConfig isDestinationConfig_DestinationStreamConfig `protobuf_oneof:"destination_stream_config"`
@@ -3392,6 +3399,7 @@ type Stream struct {
 	// Stream backfill strategy.
 	//
 	// Types that are assignable to BackfillStrategy:
+	//
 	//	*Stream_BackfillAll
 	//	*Stream_BackfillNone
 	BackfillStrategy isStream_BackfillStrategy `protobuf_oneof:"backfill_strategy"`
@@ -3658,6 +3666,7 @@ type SourceObjectIdentifier struct {
 	// The identifier for an object in the data source.
 	//
 	// Types that are assignable to SourceIdentifier:
+	//
 	//	*SourceObjectIdentifier_OracleIdentifier
 	//	*SourceObjectIdentifier_MysqlIdentifier
 	//	*SourceObjectIdentifier_PostgresqlIdentifier
@@ -4386,6 +4395,7 @@ type Stream_BackfillAllStrategy struct {
 	// List of objects to exclude.
 	//
 	// Types that are assignable to ExcludedObjects:
+	//
 	//	*Stream_BackfillAllStrategy_OracleExcludedObjects
 	//	*Stream_BackfillAllStrategy_MysqlExcludedObjects
 	//	*Stream_BackfillAllStrategy_PostgresqlExcludedObjects

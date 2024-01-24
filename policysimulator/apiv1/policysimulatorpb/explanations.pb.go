@@ -21,14 +21,13 @@
 package policysimulatorpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	expr "google.golang.org/genproto/googleapis/type/expr"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -227,10 +226,10 @@ const (
 	// The binding includes the principal. The principal can be included
 	// directly or indirectly. For example:
 	//
-	// * A principal is included directly if that principal is listed in the
-	//   binding.
-	// * A principal is included indirectly if that principal is in a Google
-	//   group or Google Workspace domain that is listed in the binding.
+	//   - A principal is included directly if that principal is listed in the
+	//     binding.
+	//   - A principal is included indirectly if that principal is in a Google
+	//     group or Google Workspace domain that is listed in the binding.
 	BindingExplanation_MEMBERSHIP_INCLUDED BindingExplanation_Membership = 1
 	// The binding does not include the principal.
 	BindingExplanation_MEMBERSHIP_NOT_INCLUDED BindingExplanation_Membership = 2

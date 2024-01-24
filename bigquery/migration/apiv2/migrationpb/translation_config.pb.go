@@ -21,11 +21,10 @@
 package migrationpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -171,17 +170,20 @@ type TranslationConfigDetails struct {
 	// The chosen path where the source for input files will be found.
 	//
 	// Types that are assignable to SourceLocation:
+	//
 	//	*TranslationConfigDetails_GcsSourcePath
 	SourceLocation isTranslationConfigDetails_SourceLocation `protobuf_oneof:"source_location"`
 	// The chosen path where the destination for output files will be found.
 	//
 	// Types that are assignable to TargetLocation:
+	//
 	//	*TranslationConfigDetails_GcsTargetPath
 	TargetLocation isTranslationConfigDetails_TargetLocation `protobuf_oneof:"target_location"`
 	// The mapping of full SQL object names from their current state to the
 	// desired output.
 	//
 	// Types that are assignable to OutputNameMapping:
+	//
 	//	*TranslationConfigDetails_NameMappingList
 	OutputNameMapping isTranslationConfigDetails_OutputNameMapping `protobuf_oneof:"output_name_mapping"`
 	// The dialect of the input files.
@@ -338,6 +340,7 @@ type Dialect struct {
 	// The possible dialect options that this message represents.
 	//
 	// Types that are assignable to DialectValue:
+	//
 	//	*Dialect_BigqueryDialect
 	//	*Dialect_HiveqlDialect
 	//	*Dialect_RedshiftDialect

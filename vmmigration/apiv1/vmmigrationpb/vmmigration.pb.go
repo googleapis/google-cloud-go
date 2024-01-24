@@ -21,11 +21,8 @@
 package vmmigrationpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	errdetails "google.golang.org/genproto/googleapis/rpc/errdetails"
 	status "google.golang.org/genproto/googleapis/rpc/status"
@@ -37,6 +34,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1749,6 +1748,7 @@ type CycleStep struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Step:
+	//
 	//	*CycleStep_InitializingReplication
 	//	*CycleStep_Replicating
 	//	*CycleStep_PostProcessing
@@ -2075,11 +2075,13 @@ type MigratingVm struct {
 	// Cloud as a result of the migration.
 	//
 	// Types that are assignable to TargetVmDefaults:
+	//
 	//	*MigratingVm_ComputeEngineTargetDefaults
 	TargetVmDefaults isMigratingVm_TargetVmDefaults `protobuf_oneof:"target_vm_defaults"`
 	// Details about the source VM.
 	//
 	// Types that are assignable to SourceVmDetails:
+	//
 	//	*MigratingVm_AwsSourceVmDetails
 	SourceVmDetails isMigratingVm_SourceVmDetails `protobuf_oneof:"source_vm_details"`
 	// Output only. The identifier of the MigratingVm.
@@ -2344,6 +2346,7 @@ type CloneJob struct {
 	// Details of the VM to create as the target of this clone job.
 	//
 	// Types that are assignable to TargetVmDetails:
+	//
 	//	*CloneJob_ComputeEngineTargetDetails
 	TargetVmDetails isCloneJob_TargetVmDetails `protobuf_oneof:"target_vm_details"`
 	// Output only. The time the clone job was created (as an API call, not when
@@ -2477,6 +2480,7 @@ type CloneStep struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Step:
+	//
 	//	*CloneStep_AdaptingOs
 	//	*CloneStep_PreparingVmDisks
 	//	*CloneStep_InstantiatingMigratedVm
@@ -2714,6 +2718,7 @@ type CutoverJob struct {
 	// Details of the VM to create as the target of this cutover job.
 	//
 	// Types that are assignable to TargetVmDetails:
+	//
 	//	*CutoverJob_ComputeEngineTargetDetails
 	TargetVmDetails isCutoverJob_TargetVmDetails `protobuf_oneof:"target_vm_details"`
 	// Output only. The time the cutover job was created (as an API call, not when
@@ -2866,6 +2871,7 @@ type CutoverStep struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Step:
+	//
 	//	*CutoverStep_PreviousReplicationCycle
 	//	*CutoverStep_ShuttingDownSourceVm
 	//	*CutoverStep_FinalSync
@@ -3437,6 +3443,7 @@ type Source struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to SourceDetails:
+	//
 	//	*Source_Vmware
 	//	*Source_Aws
 	SourceDetails isSource_SourceDetails `protobuf_oneof:"source_details"`
@@ -3644,6 +3651,7 @@ type AwsSourceDetails struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to CredentialsType:
+	//
 	//	*AwsSourceDetails_AccessKeyCreds
 	CredentialsType isAwsSourceDetails_CredentialsType `protobuf_oneof:"credentials_type"`
 	// Immutable. The AWS region that the source VMs will be migrated from.
@@ -5205,6 +5213,7 @@ type FetchInventoryResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to SourceVms:
+	//
 	//	*FetchInventoryResponse_VmwareVms
 	//	*FetchInventoryResponse_AwsVms
 	SourceVms isFetchInventoryResponse_SourceVms `protobuf_oneof:"SourceVms"`
@@ -5437,6 +5446,7 @@ type VmUtilizationInfo struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to VmDetails:
+	//
 	//	*VmUtilizationInfo_VmwareVmDetails
 	VmDetails isVmUtilizationInfo_VmDetails `protobuf_oneof:"VmDetails"`
 	// The VM's ID in the source.

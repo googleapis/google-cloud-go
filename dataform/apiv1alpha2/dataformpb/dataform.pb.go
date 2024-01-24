@@ -22,9 +22,6 @@ package dataformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	grpc "google.golang.org/grpc"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2830,6 +2829,7 @@ type CompilationResult struct {
 	// Output only. The compilation result's name.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Types that are assignable to Source:
+	//
 	//	*CompilationResult_GitCommitish
 	//	*CompilationResult_Workspace
 	Source isCompilationResult_Source `protobuf_oneof:"source"`
@@ -3347,6 +3347,7 @@ type CompilationResultAction struct {
 	// to the workspace root.
 	FilePath string `protobuf:"bytes,3,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
 	// Types that are assignable to CompiledObject:
+	//
 	//	*CompilationResultAction_Relation_
 	//	*CompilationResultAction_Operations_
 	//	*CompilationResultAction_Assertion_
@@ -4425,6 +4426,7 @@ type QueryDirectoryContentsResponse_DirectoryEntry struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Entry:
+	//
 	//	*QueryDirectoryContentsResponse_DirectoryEntry_File
 	//	*QueryDirectoryContentsResponse_DirectoryEntry_Directory
 	Entry isQueryDirectoryContentsResponse_DirectoryEntry_Entry `protobuf_oneof:"entry"`

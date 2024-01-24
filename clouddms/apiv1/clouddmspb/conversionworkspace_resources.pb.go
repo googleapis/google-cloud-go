@@ -21,15 +21,14 @@
 package clouddmspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -996,6 +995,7 @@ type BackgroundJobLogEntry struct {
 	// committed after a successful completion of the job.
 	RequestAutocommit bool `protobuf:"varint,7,opt,name=request_autocommit,json=requestAutocommit,proto3" json:"request_autocommit,omitempty"`
 	// Types that are assignable to JobDetails:
+	//
 	//	*BackgroundJobLogEntry_SeedJobDetails_
 	//	*BackgroundJobLogEntry_ImportRulesJobDetails_
 	//	*BackgroundJobLogEntry_ConvertJobDetails_
@@ -1278,6 +1278,7 @@ type MappingRule struct {
 	// The rule specific details.
 	//
 	// Types that are assignable to Details:
+	//
 	//	*MappingRule_SingleEntityRename
 	//	*MappingRule_MultiEntityRename
 	//	*MappingRule_EntityMove
@@ -1942,6 +1943,7 @@ type MultiColumnDatatypeChange struct {
 	// Filter on source column parameters.
 	//
 	// Types that are assignable to SourceFilter:
+	//
 	//	*MultiColumnDatatypeChange_SourceTextFilter
 	//	*MultiColumnDatatypeChange_SourceNumericFilter
 	SourceFilter isMultiColumnDatatypeChange_SourceFilter `protobuf_oneof:"source_filter"`
@@ -2247,6 +2249,7 @@ type ConditionalColumnSetValue struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to SourceFilter:
+	//
 	//	*ConditionalColumnSetValue_SourceTextFilter
 	//	*ConditionalColumnSetValue_SourceNumericFilter
 	SourceFilter isConditionalColumnSetValue_SourceFilter `protobuf_oneof:"source_filter"`
@@ -2351,12 +2354,14 @@ type ValueTransformation struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Filter:
+	//
 	//	*ValueTransformation_IsNull
 	//	*ValueTransformation_ValueList
 	//	*ValueTransformation_IntComparison
 	//	*ValueTransformation_DoubleComparison
 	Filter isValueTransformation_Filter `protobuf_oneof:"filter"`
 	// Types that are assignable to Action:
+	//
 	//	*ValueTransformation_AssignNull
 	//	*ValueTransformation_AssignSpecificValue
 	//	*ValueTransformation_AssignMinValue
@@ -3114,6 +3119,7 @@ type ApplyHash struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to HashFunction:
+	//
 	//	*ApplyHash_UuidFromBytes
 	HashFunction isApplyHash_HashFunction `protobuf_oneof:"hash_function"`
 }
@@ -3258,6 +3264,7 @@ type DatabaseEntity struct {
 	// The specific body for each entity type.
 	//
 	// Types that are assignable to EntityBody:
+	//
 	//	*DatabaseEntity_Database
 	//	*DatabaseEntity_Schema
 	//	*DatabaseEntity_Table

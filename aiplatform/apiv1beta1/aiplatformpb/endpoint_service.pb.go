@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -240,19 +239,19 @@ type ListEndpointsRequest struct {
 	// Optional. An expression for filtering the results of the request. For field
 	// names both snake_case and camelCase are supported.
 	//
-	//   * `endpoint` supports = and !=. `endpoint` represents the Endpoint ID,
+	//   - `endpoint` supports = and !=. `endpoint` represents the Endpoint ID,
 	//     i.e. the last segment of the Endpoint's [resource
 	//     name][google.cloud.aiplatform.v1beta1.Endpoint.name].
-	//   * `display_name` supports = and, !=
-	//   * `labels` supports general map functions that is:
-	//     * `labels.key=value` - key:value equality
-	//     * `labels.key:* or labels:key - key existence
-	//     * A key including a space must be quoted. `labels."a key"`.
+	//   - `display_name` supports = and, !=
+	//   - `labels` supports general map functions that is:
+	//   - `labels.key=value` - key:value equality
+	//   - `labels.key:* or labels:key - key existence
+	//   - A key including a space must be quoted. `labels."a key"`.
 	//
 	// Some examples:
-	//   * `endpoint=1`
-	//   * `displayName="myDisplayName"`
-	//   * `labels.myKey="myValue"`
+	//   - `endpoint=1`
+	//   - `displayName="myDisplayName"`
+	//   - `labels.myKey="myValue"`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`

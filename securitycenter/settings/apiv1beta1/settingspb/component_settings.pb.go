@@ -21,13 +21,12 @@
 package settingspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -102,12 +101,12 @@ type ComponentSettings struct {
 
 	// The relative resource name of the component settings.
 	// Formats:
-	//  * `organizations/{organization}/components/{component}/settings`
-	//  * `folders/{folder}/components/{component}/settings`
-	//  * `projects/{project}/components/{component}/settings`
-	//  * `projects/{project}/locations/{location}/clusters/{cluster}/components/{component}/settings`
-	//  * `projects/{project}/regions/{region}/clusters/{cluster}/components/{component}/settings`
-	//  * `projects/{project}/zones/{zone}/clusters/{cluster}/components/{component}/settings`
+	//   - `organizations/{organization}/components/{component}/settings`
+	//   - `folders/{folder}/components/{component}/settings`
+	//   - `projects/{project}/components/{component}/settings`
+	//   - `projects/{project}/locations/{location}/clusters/{cluster}/components/{component}/settings`
+	//   - `projects/{project}/regions/{region}/clusters/{cluster}/components/{component}/settings`
+	//   - `projects/{project}/zones/{zone}/clusters/{cluster}/components/{component}/settings`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// ENABLE to enable component, DISABLE to disable and INHERIT to inherit
 	// setting from ancestors.
@@ -128,6 +127,7 @@ type ComponentSettings struct {
 	// Component specific settings.  This must match the component value.
 	//
 	// Types that are assignable to SpecificSettings:
+	//
 	//	*ComponentSettings_ContainerThreatDetectionSettings
 	//	*ComponentSettings_EventThreatDetectionSettings
 	//	*ComponentSettings_SecurityHealthAnalyticsSettings
@@ -515,9 +515,10 @@ type SecurityHealthAnalyticsSettings_NonOrgIamMemberSettings struct {
 	// permissions on a project or the organization. Otherwise a finding will
 	// be created.
 	// A valid identity can be:
-	//   *  a domain that starts with "@", e.g. "@yourdomain.com".
-	//   *  a fully specified email address that does not start with "@", e.g.
-	//   "abc@gmail.com"
+	//   - a domain that starts with "@", e.g. "@yourdomain.com".
+	//   - a fully specified email address that does not start with "@", e.g.
+	//     "abc@gmail.com"
+	//
 	// Regular expressions are not supported.
 	// Service accounts are not examined by the scanner and will be omitted if
 	// added to the list.
@@ -574,11 +575,12 @@ type SecurityHealthAnalyticsSettings_AdminServiceAccountSettings struct {
 	// allowed to have Admin, Owner or Editor roles granted to them. Otherwise
 	// a finding will be created.
 	// A valid identity can be:
-	//   *  a partilly specified service account that starts with "@", e.g.
-	//   "@myproject.iam.gserviceaccount.com". This approves all the service
-	//   accounts suffixed with the specified identity.
-	//   *  a fully specified service account that does not start with "@", e.g.
-	//   "myadmin@myproject.iam.gserviceaccount.com".
+	//   - a partilly specified service account that starts with "@", e.g.
+	//     "@myproject.iam.gserviceaccount.com". This approves all the service
+	//     accounts suffixed with the specified identity.
+	//   - a fully specified service account that does not start with "@", e.g.
+	//     "myadmin@myproject.iam.gserviceaccount.com".
+	//
 	// Google-created service accounts are all approved.
 	ApprovedIdentities []string `protobuf:"bytes,1,rep,name=approved_identities,json=approvedIdentities,proto3" json:"approved_identities,omitempty"`
 }

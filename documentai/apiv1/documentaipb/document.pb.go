@@ -21,9 +21,6 @@
 package documentaipb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	color "google.golang.org/genproto/googleapis/type/color"
@@ -34,6 +31,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -347,6 +346,7 @@ type Document struct {
 	// Original source document from the user.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Document_Uri
 	//	*Document_Content
 	Source isDocument_Source `protobuf_oneof:"source"`
@@ -1353,6 +1353,7 @@ type Document_Revision struct {
 	// Who/what made the change
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Document_Revision_Agent
 	//	*Document_Revision_Processor
 	Source isDocument_Revision_Source `protobuf_oneof:"source"`
@@ -3188,6 +3189,7 @@ type Document_Entity_NormalizedValue struct {
 	// populated.
 	//
 	// Types that are assignable to StructuredValue:
+	//
 	//	*Document_Entity_NormalizedValue_MoneyValue
 	//	*Document_Entity_NormalizedValue_DateValue
 	//	*Document_Entity_NormalizedValue_DatetimeValue

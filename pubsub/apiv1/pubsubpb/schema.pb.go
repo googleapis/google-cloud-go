@@ -22,9 +22,6 @@ package pubsubpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -775,7 +774,7 @@ type RollbackSchemaRequest struct {
 	// Required. The revision ID to roll back to.
 	// It must be a revision of the same schema.
 	//
-	//   Example: c7cfa2a8
+	//	Example: c7cfa2a8
 	RevisionId string `protobuf:"bytes,2,opt,name=revision_id,json=revisionId,proto3" json:"revision_id,omitempty"`
 }
 
@@ -1050,6 +1049,7 @@ type ValidateMessageRequest struct {
 	// Format is `projects/{project-id}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Types that are assignable to SchemaSpec:
+	//
 	//	*ValidateMessageRequest_Name
 	//	*ValidateMessageRequest_Schema
 	SchemaSpec isValidateMessageRequest_SchemaSpec `protobuf_oneof:"schema_spec"`

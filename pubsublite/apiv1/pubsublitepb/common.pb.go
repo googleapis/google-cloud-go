@@ -21,14 +21,13 @@
 package pubsublitepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -662,6 +661,7 @@ type ExportConfig struct {
 	// The destination to export to. Required.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ExportConfig_PubsubConfig
 	Destination isExportConfig_Destination `protobuf_oneof:"destination"`
 }
@@ -755,6 +755,7 @@ type TimeTarget struct {
 	// The type of message time to query.
 	//
 	// Types that are assignable to Time:
+	//
 	//	*TimeTarget_PublishTime
 	//	*TimeTarget_EventTime
 	Time isTimeTarget_Time `protobuf_oneof:"time"`
@@ -853,6 +854,7 @@ type Topic_PartitionConfig struct {
 	// The throughput dimension of this topic.
 	//
 	// Types that are assignable to Dimension:
+	//
 	//	*Topic_PartitionConfig_Scale
 	//	*Topic_PartitionConfig_Capacity_
 	Dimension isTopic_PartitionConfig_Dimension `protobuf_oneof:"dimension"`

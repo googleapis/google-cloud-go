@@ -21,12 +21,11 @@
 package agentendpointpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -380,6 +379,7 @@ type OSPolicy_Resource struct {
 	// Resource type.
 	//
 	// Types that are assignable to ResourceType:
+	//
 	//	*OSPolicy_Resource_Pkg
 	//	*OSPolicy_Resource_Repository
 	//	*OSPolicy_Resource_Exec
@@ -502,6 +502,7 @@ type OSPolicy_Resource_File struct {
 	// A specific type of file.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*OSPolicy_Resource_File_Remote_
 	//	*OSPolicy_Resource_File_Gcs_
 	//	*OSPolicy_Resource_File_LocalPath
@@ -618,6 +619,7 @@ type OSPolicy_Resource_PackageResource struct {
 	// A system package.
 	//
 	// Types that are assignable to SystemPackage:
+	//
 	//	*OSPolicy_Resource_PackageResource_Apt
 	//	*OSPolicy_Resource_PackageResource_Deb_
 	//	*OSPolicy_Resource_PackageResource_Yum
@@ -787,6 +789,7 @@ type OSPolicy_Resource_RepositoryResource struct {
 	// A specific type of repository.
 	//
 	// Types that are assignable to Repository:
+	//
 	//	*OSPolicy_Resource_RepositoryResource_Apt
 	//	*OSPolicy_Resource_RepositoryResource_Yum
 	//	*OSPolicy_Resource_RepositoryResource_Zypper
@@ -969,6 +972,7 @@ type OSPolicy_Resource_FileResource struct {
 	// The source for the contents of the file.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*OSPolicy_Resource_FileResource_File
 	//	*OSPolicy_Resource_FileResource_Content
 	Source isOSPolicy_Resource_FileResource_Source `protobuf_oneof:"source"`
@@ -1918,6 +1922,7 @@ type OSPolicy_Resource_ExecResource_Exec struct {
 	// What to execute.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*OSPolicy_Resource_ExecResource_Exec_File
 	//	*OSPolicy_Resource_ExecResource_Exec_Script
 	Source isOSPolicy_Resource_ExecResource_Exec_Source `protobuf_oneof:"source"`

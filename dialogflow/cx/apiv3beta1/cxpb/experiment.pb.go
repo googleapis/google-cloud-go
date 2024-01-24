@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -617,6 +616,7 @@ type VariantsHistory struct {
 	// experiment.
 	//
 	// Types that are assignable to Variants:
+	//
 	//	*VariantsHistory_VersionVariants
 	Variants isVariantsHistory_Variants `protobuf_oneof:"variants"`
 	// Update time of the variants.
@@ -1168,6 +1168,7 @@ type Experiment_Definition struct {
 	// experiment.
 	//
 	// Types that are assignable to Variants:
+	//
 	//	*Experiment_Definition_VersionVariants
 	Variants isExperiment_Definition_Variants `protobuf_oneof:"variants"`
 }
@@ -1390,6 +1391,7 @@ type Experiment_Result_Metric struct {
 	// The actual value of the metric.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*Experiment_Result_Metric_Ratio
 	//	*Experiment_Result_Metric_Count
 	Value isExperiment_Result_Metric_Value `protobuf_oneof:"value"`

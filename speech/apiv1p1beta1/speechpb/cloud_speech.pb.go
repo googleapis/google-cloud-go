@@ -21,11 +21,8 @@
 package speechpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -649,6 +648,7 @@ type TranscriptOutputConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to OutputType:
+	//
 	//	*TranscriptOutputConfig_GcsUri
 	OutputType isTranscriptOutputConfig_OutputType `protobuf_oneof:"output_type"`
 }
@@ -725,6 +725,7 @@ type StreamingRecognizeRequest struct {
 	// The streaming request, which is either a streaming config or audio content.
 	//
 	// Types that are assignable to StreamingRequest:
+	//
 	//	*StreamingRecognizeRequest_StreamingConfig
 	//	*StreamingRecognizeRequest_AudioContent
 	StreamingRequest isStreamingRecognizeRequest_StreamingRequest `protobuf_oneof:"streaming_request"`
@@ -836,11 +837,11 @@ type StreamingRecognitionConfig struct {
 	// otherwise an error is thrown. The `model` field in [`RecognitionConfig`][]
 	// must be set to:
 	//
-	// * `command_and_search`
-	// * `phone_call` AND additional field `useEnhanced`=`true`
-	// * The `model` field is left undefined. In this case the API auto-selects
-	//   a model based on any other parameters that you set in
-	//   `RecognitionConfig`.
+	//   - `command_and_search`
+	//   - `phone_call` AND additional field `useEnhanced`=`true`
+	//   - The `model` field is left undefined. In this case the API auto-selects
+	//     a model based on any other parameters that you set in
+	//     `RecognitionConfig`.
 	SingleUtterance bool `protobuf:"varint,2,opt,name=single_utterance,json=singleUtterance,proto3" json:"single_utterance,omitempty"`
 	// If `true`, interim results (tentative hypotheses) may be
 	// returned as they become available (these interim results are indicated with
@@ -1066,51 +1067,53 @@ type RecognitionConfig struct {
 	// explicitly specified, then we auto-select a model based on the parameters
 	// in the RecognitionConfig.
 	// <table>
-	//   <tr>
-	//     <td><b>Model</b></td>
-	//     <td><b>Description</b></td>
-	//   </tr>
-	//   <tr>
-	//     <td><code>latest_long</code></td>
-	//     <td>Best for long form content like media or conversation.</td>
-	//   </tr>
-	//   <tr>
-	//     <td><code>latest_short</code></td>
-	//     <td>Best for short form content like commands or single shot directed
-	//     speech.</td>
-	//   </tr>
-	//   <tr>
-	//     <td><code>command_and_search</code></td>
-	//     <td>Best for short queries such as voice commands or voice search.</td>
-	//   </tr>
-	//   <tr>
-	//     <td><code>phone_call</code></td>
-	//     <td>Best for audio that originated from a phone call (typically
-	//     recorded at an 8khz sampling rate).</td>
-	//   </tr>
-	//   <tr>
-	//     <td><code>video</code></td>
-	//     <td>Best for audio that originated from video or includes multiple
-	//         speakers. Ideally the audio is recorded at a 16khz or greater
-	//         sampling rate. This is a premium model that costs more than the
-	//         standard rate.</td>
-	//   </tr>
-	//   <tr>
-	//     <td><code>default</code></td>
-	//     <td>Best for audio that is not one of the specific audio models.
-	//         For example, long-form audio. Ideally the audio is high-fidelity,
-	//         recorded at a 16khz or greater sampling rate.</td>
-	//   </tr>
-	//   <tr>
-	//     <td><code>medical_conversation</code></td>
-	//     <td>Best for audio that originated from a conversation between a
-	//         medical provider and patient.</td>
-	//   </tr>
-	//   <tr>
-	//     <td><code>medical_dictation</code></td>
-	//     <td>Best for audio that originated from dictation notes by a medical
-	//         provider.</td>
-	//   </tr>
+	//
+	//	<tr>
+	//	  <td><b>Model</b></td>
+	//	  <td><b>Description</b></td>
+	//	</tr>
+	//	<tr>
+	//	  <td><code>latest_long</code></td>
+	//	  <td>Best for long form content like media or conversation.</td>
+	//	</tr>
+	//	<tr>
+	//	  <td><code>latest_short</code></td>
+	//	  <td>Best for short form content like commands or single shot directed
+	//	  speech.</td>
+	//	</tr>
+	//	<tr>
+	//	  <td><code>command_and_search</code></td>
+	//	  <td>Best for short queries such as voice commands or voice search.</td>
+	//	</tr>
+	//	<tr>
+	//	  <td><code>phone_call</code></td>
+	//	  <td>Best for audio that originated from a phone call (typically
+	//	  recorded at an 8khz sampling rate).</td>
+	//	</tr>
+	//	<tr>
+	//	  <td><code>video</code></td>
+	//	  <td>Best for audio that originated from video or includes multiple
+	//	      speakers. Ideally the audio is recorded at a 16khz or greater
+	//	      sampling rate. This is a premium model that costs more than the
+	//	      standard rate.</td>
+	//	</tr>
+	//	<tr>
+	//	  <td><code>default</code></td>
+	//	  <td>Best for audio that is not one of the specific audio models.
+	//	      For example, long-form audio. Ideally the audio is high-fidelity,
+	//	      recorded at a 16khz or greater sampling rate.</td>
+	//	</tr>
+	//	<tr>
+	//	  <td><code>medical_conversation</code></td>
+	//	  <td>Best for audio that originated from a conversation between a
+	//	      medical provider and patient.</td>
+	//	</tr>
+	//	<tr>
+	//	  <td><code>medical_dictation</code></td>
+	//	  <td>Best for audio that originated from dictation notes by a medical
+	//	      provider.</td>
+	//	</tr>
+	//
 	// </table>
 	Model string `protobuf:"bytes,13,opt,name=model,proto3" json:"model,omitempty"`
 	// Set to true to use an enhanced model for speech recognition.
@@ -1623,6 +1626,7 @@ type RecognitionAudio struct {
 	// Storage uri.
 	//
 	// Types that are assignable to AudioSource:
+	//
 	//	*RecognitionAudio_Content
 	//	*RecognitionAudio_Uri
 	AudioSource isRecognitionAudio_AudioSource `protobuf_oneof:"audio_source"`

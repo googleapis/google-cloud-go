@@ -21,11 +21,8 @@
 package generativelanguagepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -308,9 +307,10 @@ type ListTunedModelsRequest struct {
 	//   - readers:everyone
 	//
 	// Examples:
-	//   "owner:me" returns all tuned models to which caller has owner role
-	//   "readers:me" returns all tuned models to which caller has reader role
-	//   "readers:everyone" returns all tuned models that are shared with everyone
+	//
+	//	"owner:me" returns all tuned models to which caller has owner role
+	//	"readers:me" returns all tuned models to which caller has reader role
+	//	"readers:everyone" returns all tuned models that are shared with everyone
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 
@@ -1135,7 +1135,8 @@ type ModelServiceClient interface {
 	//
 	// Status and results can be accessed through the Operations service.
 	// Example:
-	//   GET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222
+	//
+	//	GET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222
 	CreateTunedModel(ctx context.Context, in *CreateTunedModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a tuned model.
 	UpdateTunedModel(ctx context.Context, in *UpdateTunedModelRequest, opts ...grpc.CallOption) (*TunedModel, error)
@@ -1230,7 +1231,8 @@ type ModelServiceServer interface {
 	//
 	// Status and results can be accessed through the Operations service.
 	// Example:
-	//   GET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222
+	//
+	//	GET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222
 	CreateTunedModel(context.Context, *CreateTunedModelRequest) (*longrunningpb.Operation, error)
 	// Updates a tuned model.
 	UpdateTunedModel(context.Context, *UpdateTunedModelRequest) (*TunedModel, error)

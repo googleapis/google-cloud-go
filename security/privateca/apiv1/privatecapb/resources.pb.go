@@ -21,15 +21,14 @@
 package privatecapb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	expr "google.golang.org/genproto/googleapis/type/expr"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1142,7 +1141,8 @@ type CertificateRevocationList struct {
 	// Output only. The resource name for this
 	// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList]
 	// in the format `projects/*/locations/*/caPools/*certificateAuthorities/*/
-	//    certificateRevocationLists/*`.
+	//
+	//	certificateRevocationLists/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The CRL sequence number that appears in pem_crl.
 	SequenceNumber int64 `protobuf:"varint,2,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
@@ -1291,6 +1291,7 @@ type Certificate struct {
 	// The config used to create a signed X.509 certificate.
 	//
 	// Types that are assignable to CertificateConfig:
+	//
 	//	*Certificate_PemCsr
 	//	*Certificate_Config
 	CertificateConfig isCertificate_CertificateConfig `protobuf_oneof:"certificate_config"`
@@ -1756,6 +1757,7 @@ type SubordinateConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to SubordinateConfig:
+	//
 	//	*SubordinateConfig_CertificateAuthority
 	//	*SubordinateConfig_PemIssuerChain
 	SubordinateConfig isSubordinateConfig_SubordinateConfig `protobuf_oneof:"subordinate_config"`
@@ -2716,6 +2718,7 @@ type CertificateAuthority_KeyVersionSpec struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to KeyVersion:
+	//
 	//	*CertificateAuthority_KeyVersionSpec_CloudKmsKeyVersion
 	//	*CertificateAuthority_KeyVersionSpec_Algorithm
 	KeyVersion isCertificateAuthority_KeyVersionSpec_KeyVersion `protobuf_oneof:"KeyVersion"`
@@ -3025,6 +3028,7 @@ type CaPool_IssuancePolicy_AllowedKeyType struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to KeyType:
+	//
 	//	*CaPool_IssuancePolicy_AllowedKeyType_Rsa
 	//	*CaPool_IssuancePolicy_AllowedKeyType_EllipticCurve
 	KeyType isCaPool_IssuancePolicy_AllowedKeyType_KeyType `protobuf_oneof:"key_type"`

@@ -22,9 +22,6 @@ package generativelanguagepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -50,8 +49,9 @@ type CreatePermissionRequest struct {
 
 	// Required. The parent resource of the `Permission`.
 	// Formats:
-	//    `tunedModels/{tuned_model}`
-	//    `corpora/{corpus}`
+	//
+	//	`tunedModels/{tuned_model}`
+	//	`corpora/{corpus}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The permission to create.
 	Permission *Permission `protobuf:"bytes,2,opt,name=permission,proto3" json:"permission,omitempty"`
@@ -112,8 +112,9 @@ type GetPermissionRequest struct {
 	// Required. The resource name of the permission.
 	//
 	// Formats:
-	//    `tunedModels/{tuned_model}/permissions/{permission}`
-	//    `corpora/{corpus}/permissions/{permission}`
+	//
+	//	`tunedModels/{tuned_model}/permissions/{permission}`
+	//	`corpora/{corpus}/permissions/{permission}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -164,8 +165,9 @@ type ListPermissionsRequest struct {
 
 	// Required. The parent resource of the permissions.
 	// Formats:
-	//    `tunedModels/{tuned_model}`
-	//    `corpora/{corpus}`
+	//
+	//	`tunedModels/{tuned_model}`
+	//	`corpora/{corpus}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of `Permission`s to return (per page).
 	// The service may return fewer permissions.
@@ -309,7 +311,7 @@ type UpdatePermissionRequest struct {
 	// The permission's `name` field is used to identify the permission to update.
 	Permission *Permission `protobuf:"bytes,1,opt,name=permission,proto3" json:"permission,omitempty"`
 	// Required. The list of fields to update. Accepted ones:
-	//  - role (`Permission.role` field)
+	//   - role (`Permission.role` field)
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -367,8 +369,9 @@ type DeletePermissionRequest struct {
 
 	// Required. The resource name of the permission.
 	// Formats:
-	//    `tunedModels/{tuned_model}/permissions/{permission}`
-	//    `corpora/{corpus}/permissions/{permission}`
+	//
+	//	`tunedModels/{tuned_model}/permissions/{permission}`
+	//	`corpora/{corpus}/permissions/{permission}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

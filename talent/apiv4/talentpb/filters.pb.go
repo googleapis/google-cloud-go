@@ -21,15 +21,14 @@
 package talentpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
 	timeofday "google.golang.org/genproto/googleapis/type/timeofday"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -297,14 +296,15 @@ type JobQuery struct {
 	// categories are searched against.
 	JobCategories []JobCategory `protobuf:"varint,4,rep,packed,name=job_categories,json=jobCategories,proto3,enum=google.cloud.talent.v4.JobCategory" json:"job_categories,omitempty"`
 	// Allows filtering jobs by commute time with different travel methods (for
-	//  example, driving or public transit).
+	//
+	//	example, driving or public transit).
 	//
 	// Note: This only works when you specify a
 	// [CommuteMethod][google.cloud.talent.v4.CommuteMethod]. In this case,
 	// [location_filters][google.cloud.talent.v4.JobQuery.location_filters] is
 	// ignored.
 	//
-	//  Currently we don't support sorting by commute time.
+	//	Currently we don't support sorting by commute time.
 	CommuteFilter *CommuteFilter `protobuf:"bytes,5,opt,name=commute_filter,json=commuteFilter,proto3" json:"commute_filter,omitempty"`
 	// This filter specifies the company
 	// [Company.display_name][google.cloud.talent.v4.Company.display_name] of the
@@ -384,7 +384,6 @@ type JobQuery struct {
 	//
 	// If a value isn't specified, the search results can contain jobs in any
 	// locale.
-	//
 	//
 	// Language codes should be in BCP-47 format, such as "en-US" or "sr-Latn".
 	// For more information, see
@@ -758,6 +757,7 @@ type CommuteFilter struct {
 	// Traffic factor to take into account while searching by commute.
 	//
 	// Types that are assignable to TrafficOption:
+	//
 	//	*CommuteFilter_RoadTraffic_
 	//	*CommuteFilter_DepartureTime
 	TrafficOption isCommuteFilter_TrafficOption `protobuf_oneof:"traffic_option"`

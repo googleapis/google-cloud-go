@@ -21,13 +21,12 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -135,6 +134,7 @@ type Tag struct {
 	// These fields cannot be updated after creation.
 	//
 	// Types that are assignable to Scope:
+	//
 	//	*Tag_Column
 	Scope isTag_Scope `protobuf_oneof:"scope"`
 	// Required. Maps the ID of a tag field to its value and additional
@@ -246,6 +246,7 @@ type TagField struct {
 	// Required. The value of this field.
 	//
 	// Types that are assignable to Kind:
+	//
 	//	*TagField_DoubleValue
 	//	*TagField_StringValue
 	//	*TagField_BoolValue
@@ -444,7 +445,7 @@ type TagTemplate struct {
 	// [ListTags][google.cloud.datacatalog.v1.ListTags] API response.
 	//
 	// Additionally, you can search for a public tag by value with a
-	// simple search query in addition to using a ``tag:`` predicate.
+	// simple search query in addition to using a “tag:“ predicate.
 	IsPubliclyReadable bool `protobuf:"varint,5,opt,name=is_publicly_readable,json=isPubliclyReadable,proto3" json:"is_publicly_readable,omitempty"`
 	// Required. Map of tag template field IDs to the settings for the field.
 	// This map is an exhaustive list of the allowed fields. The map must contain
@@ -453,10 +454,10 @@ type TagTemplate struct {
 	// The keys to this map are tag template field IDs. The IDs have the
 	// following limitations:
 	//
-	// * Can contain uppercase and lowercase letters, numbers (0-9) and
-	//   underscores (_).
-	// * Must be at least 1 character and at most 64 characters long.
-	// * Must start with a letter or underscore.
+	//   - Can contain uppercase and lowercase letters, numbers (0-9) and
+	//     underscores (_).
+	//   - Must be at least 1 character and at most 64 characters long.
+	//   - Must start with a letter or underscore.
 	Fields map[string]*TagTemplateField `protobuf:"bytes,3,rep,name=fields,proto3" json:"fields,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -641,6 +642,7 @@ type FieldType struct {
 	// Required.
 	//
 	// Types that are assignable to TypeDecl:
+	//
 	//	*FieldType_PrimitiveType_
 	//	*FieldType_EnumType_
 	TypeDecl isFieldType_TypeDecl `protobuf_oneof:"type_decl"`

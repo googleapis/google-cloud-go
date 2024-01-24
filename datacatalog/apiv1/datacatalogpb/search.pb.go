@@ -21,13 +21,12 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -118,8 +117,8 @@ type SearchCatalogResult struct {
 	//
 	// Examples:
 	//
-	//  * `projects/{PROJECT_ID}/locations/{LOCATION_ID}/entryGroups/{ENTRY_GROUP_ID}/entries/{ENTRY_ID}`
-	//  * `projects/{PROJECT_ID}/tagTemplates/{TAG_TEMPLATE_ID}`
+	//   - `projects/{PROJECT_ID}/locations/{LOCATION_ID}/entryGroups/{ENTRY_GROUP_ID}/entries/{ENTRY_ID}`
+	//   - `projects/{PROJECT_ID}/tagTemplates/{TAG_TEMPLATE_ID}`
 	RelativeResourceName string `protobuf:"bytes,3,opt,name=relative_resource_name,json=relativeResourceName,proto3" json:"relative_resource_name,omitempty"`
 	// The full name of the Google Cloud resource the entry belongs to.
 	//
@@ -136,6 +135,7 @@ type SearchCatalogResult struct {
 	// `search_result_type` is `ENTRY`.
 	//
 	// Types that are assignable to System:
+	//
 	//	*SearchCatalogResult_IntegratedSystem
 	//	*SearchCatalogResult_UserSpecifiedSystem
 	System isSearchCatalogResult_System `protobuf_oneof:"system"`
@@ -145,11 +145,11 @@ type SearchCatalogResult struct {
 	//
 	// * For non-regionalized resources:
 	//
-	//   `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}`
+	//	`{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}`
 	//
 	// * For regionalized resources:
 	//
-	//   `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}`
+	//	`{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}`
 	//
 	// Example for a DPMS table:
 	//

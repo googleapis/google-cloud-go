@@ -21,14 +21,13 @@
 package baremetalsolutionpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -869,11 +868,13 @@ type ProvisioningQuota struct {
 	// The quota of one asset type.
 	//
 	// Types that are assignable to Quota:
+	//
 	//	*ProvisioningQuota_InstanceQuota
 	Quota isProvisioningQuota_Quota `protobuf_oneof:"quota"`
 	// Available quantity based on asset type.
 	//
 	// Types that are assignable to Availability:
+	//
 	//	*ProvisioningQuota_ServerCount
 	//	*ProvisioningQuota_NetworkBandwidth
 	//	*ProvisioningQuota_StorageGib
@@ -2035,6 +2036,7 @@ type VolumeConfig_NfsExport struct {
 	// A client object.
 	//
 	// Types that are assignable to Client:
+	//
 	//	*VolumeConfig_NfsExport_MachineId
 	//	*VolumeConfig_NfsExport_Cidr
 	Client isVolumeConfig_NfsExport_Client `protobuf_oneof:"client"`

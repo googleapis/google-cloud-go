@@ -22,13 +22,12 @@
 package datalabelingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -214,11 +213,13 @@ type InputConfig struct {
 	// Optional. The metadata associated with each data type.
 	//
 	// Types that are assignable to DataTypeMetadata:
+	//
 	//	*InputConfig_TextMetadata
 	DataTypeMetadata isInputConfig_DataTypeMetadata `protobuf_oneof:"data_type_metadata"`
 	// Required. Where the data is from.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*InputConfig_GcsSource
 	//	*InputConfig_BigquerySource
 	Source isInputConfig_Source `protobuf_oneof:"source"`
@@ -584,6 +585,7 @@ type OutputConfig struct {
 	// Required. Location to output data to.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*OutputConfig_GcsDestination
 	//	*OutputConfig_GcsFolderDestination
 	Destination isOutputConfig_Destination `protobuf_oneof:"destination"`
@@ -781,6 +783,7 @@ type DataItem struct {
 	// Output only.
 	//
 	// Types that are assignable to Payload:
+	//
 	//	*DataItem_ImagePayload
 	//	*DataItem_TextPayload
 	//	*DataItem_VideoPayload
@@ -1094,6 +1097,7 @@ type AnnotatedDatasetMetadata struct {
 	// Specific request configuration used when requesting the labeling task.
 	//
 	// Types that are assignable to AnnotationRequestConfig:
+	//
 	//	*AnnotatedDatasetMetadata_ImageClassificationConfig
 	//	*AnnotatedDatasetMetadata_BoundingPolyConfig
 	//	*AnnotatedDatasetMetadata_PolylineConfig
@@ -1319,6 +1323,7 @@ type Example struct {
 	// Output only. The data part of Example.
 	//
 	// Types that are assignable to Payload:
+	//
 	//	*Example_ImagePayload
 	//	*Example_TextPayload
 	//	*Example_VideoPayload

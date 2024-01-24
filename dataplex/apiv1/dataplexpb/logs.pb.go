@@ -21,14 +21,13 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1152,6 +1151,7 @@ type DiscoveryEvent struct {
 	// Additional details about the event.
 	//
 	// Types that are assignable to Details:
+	//
 	//	*DiscoveryEvent_Config
 	//	*DiscoveryEvent_Entity
 	//	*DiscoveryEvent_Partition
@@ -1450,6 +1450,7 @@ type SessionEvent struct {
 	// Additional information about the Query metadata.
 	//
 	// Types that are assignable to Detail:
+	//
 	//	*SessionEvent_Query
 	Detail isSessionEvent_Detail `protobuf_oneof:"detail"`
 	// The status of the event.
@@ -1668,12 +1669,14 @@ type DataScanEvent struct {
 	// The result of the data scan job.
 	//
 	// Types that are assignable to Result:
+	//
 	//	*DataScanEvent_DataProfile
 	//	*DataScanEvent_DataQuality
 	Result isDataScanEvent_Result `protobuf_oneof:"result"`
 	// The applied configs in the data scan job.
 	//
 	// Types that are assignable to AppliedConfigs:
+	//
 	//	*DataScanEvent_DataProfileConfigs
 	//	*DataScanEvent_DataQualityConfigs
 	AppliedConfigs isDataScanEvent_AppliedConfigs `protobuf_oneof:"appliedConfigs"`

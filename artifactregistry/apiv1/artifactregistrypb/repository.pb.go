@@ -21,15 +21,14 @@
 package artifactregistrypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -889,6 +888,7 @@ type CleanupPolicy struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to ConditionType:
+	//
 	//	*CleanupPolicy_Condition
 	//	*CleanupPolicy_MostRecentVersions
 	ConditionType isCleanupPolicy_ConditionType `protobuf_oneof:"condition_type"`
@@ -1043,6 +1043,7 @@ type RemoteRepositoryConfig struct {
 	// Settings specific to the remote repository.
 	//
 	// Types that are assignable to RemoteSource:
+	//
 	//	*RemoteRepositoryConfig_DockerRepository_
 	//	*RemoteRepositoryConfig_MavenRepository_
 	//	*RemoteRepositoryConfig_NpmRepository_
@@ -1206,6 +1207,7 @@ type Repository struct {
 	// Repository-specific configurations.
 	//
 	// Types that are assignable to FormatConfig:
+	//
 	//	*Repository_MavenConfig
 	//	*Repository_DockerConfig
 	FormatConfig isRepository_FormatConfig `protobuf_oneof:"format_config"`
@@ -1213,6 +1215,7 @@ type Repository struct {
 	// or Virtual)
 	//
 	// Types that are assignable to ModeConfig:
+	//
 	//	*Repository_VirtualRepositoryConfig
 	//	*Repository_RemoteRepositoryConfig
 	ModeConfig isRepository_ModeConfig `protobuf_oneof:"mode_config"`
@@ -1247,7 +1250,8 @@ type Repository struct {
 	CleanupPolicies map[string]*CleanupPolicy `protobuf:"bytes,12,rep,name=cleanup_policies,json=cleanupPolicies,proto3" json:"cleanup_policies,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Output only. The size, in bytes, of all artifact storage in this
 	// repository. Repositories that are generally available or in public preview
-	//  use this to calculate storage costs.
+	//
+	//	use this to calculate storage costs.
 	SizeBytes int64 `protobuf:"varint,13,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`
 	// Output only. If set, the repository satisfies physical zone separation.
 	SatisfiesPzs bool `protobuf:"varint,16,opt,name=satisfies_pzs,json=satisfiesPzs,proto3" json:"satisfies_pzs,omitempty"`
@@ -1812,6 +1816,7 @@ type RemoteRepositoryConfig_UpstreamCredentials struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Credentials:
+	//
 	//	*RemoteRepositoryConfig_UpstreamCredentials_UsernamePasswordCredentials_
 	Credentials isRemoteRepositoryConfig_UpstreamCredentials_Credentials `protobuf_oneof:"credentials"`
 }
@@ -1883,6 +1888,7 @@ type RemoteRepositoryConfig_DockerRepository struct {
 	// Address of the remote repository.
 	//
 	// Types that are assignable to Upstream:
+	//
 	//	*RemoteRepositoryConfig_DockerRepository_PublicRepository_
 	Upstream isRemoteRepositoryConfig_DockerRepository_Upstream `protobuf_oneof:"upstream"`
 }
@@ -1955,6 +1961,7 @@ type RemoteRepositoryConfig_MavenRepository struct {
 	// Address of the remote repository.
 	//
 	// Types that are assignable to Upstream:
+	//
 	//	*RemoteRepositoryConfig_MavenRepository_PublicRepository_
 	Upstream isRemoteRepositoryConfig_MavenRepository_Upstream `protobuf_oneof:"upstream"`
 }
@@ -2027,6 +2034,7 @@ type RemoteRepositoryConfig_NpmRepository struct {
 	// Address of the remote repository
 	//
 	// Types that are assignable to Upstream:
+	//
 	//	*RemoteRepositoryConfig_NpmRepository_PublicRepository_
 	Upstream isRemoteRepositoryConfig_NpmRepository_Upstream `protobuf_oneof:"upstream"`
 }
@@ -2099,6 +2107,7 @@ type RemoteRepositoryConfig_PythonRepository struct {
 	// Address of the remote repository.
 	//
 	// Types that are assignable to Upstream:
+	//
 	//	*RemoteRepositoryConfig_PythonRepository_PublicRepository_
 	Upstream isRemoteRepositoryConfig_PythonRepository_Upstream `protobuf_oneof:"upstream"`
 }
@@ -2171,6 +2180,7 @@ type RemoteRepositoryConfig_AptRepository struct {
 	// Address of the remote repository.
 	//
 	// Types that are assignable to Upstream:
+	//
 	//	*RemoteRepositoryConfig_AptRepository_PublicRepository_
 	Upstream isRemoteRepositoryConfig_AptRepository_Upstream `protobuf_oneof:"upstream"`
 }
@@ -2243,6 +2253,7 @@ type RemoteRepositoryConfig_YumRepository struct {
 	// Address of the remote repository.
 	//
 	// Types that are assignable to Upstream:
+	//
 	//	*RemoteRepositoryConfig_YumRepository_PublicRepository_
 	Upstream isRemoteRepositoryConfig_YumRepository_Upstream `protobuf_oneof:"upstream"`
 }

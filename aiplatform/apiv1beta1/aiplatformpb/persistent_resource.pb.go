@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -487,11 +486,12 @@ type RaySpec struct {
 	// prebuild Ray image if user need to use different images for different
 	// head/worker pools. This map needs to cover all the resource pool ids.
 	// Example:
-	// {
-	//   "ray_head_node_pool": "head image"
-	//   "ray_worker_node_pool1": "worker image"
-	//   "ray_worker_node_pool2": "another worker image"
-	// }
+	//
+	//	{
+	//	  "ray_head_node_pool": "head image"
+	//	  "ray_worker_node_pool1": "worker image"
+	//	  "ray_worker_node_pool2": "another worker image"
+	//	}
 	ResourcePoolImages map[string]string `protobuf:"bytes,6,rep,name=resource_pool_images,json=resourcePoolImages,proto3" json:"resource_pool_images,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Optional. This will be used to indicate which resource pool will serve as
 	// the Ray head node(the first node within that pool). Will use the machine
@@ -561,10 +561,11 @@ type ResourceRuntime struct {
 
 	// Output only. URIs for user to connect to the Cluster.
 	// Example:
-	// {
-	//   "RAY_HEAD_NODE_INTERNAL_IP": "head-node-IP:10001"
-	//   "RAY_DASHBOARD_URI": "ray-dashboard-address:8888"
-	// }
+	//
+	//	{
+	//	  "RAY_HEAD_NODE_INTERNAL_IP": "head-node-IP:10001"
+	//	  "RAY_DASHBOARD_URI": "ray-dashboard-address:8888"
+	//	}
 	AccessUris map[string]string `protobuf:"bytes,1,rep,name=access_uris,json=accessUris,proto3" json:"access_uris,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -621,10 +622,10 @@ type ServiceAccountSpec struct {
 	// Optional. Default service account that this PersistentResource's workloads
 	// run as. The workloads include:
 	//
-	//  * Any runtime specified via `ResourceRuntimeSpec` on creation time,
-	//    for example, Ray.
-	//  * Jobs submitted to PersistentResource, if no other service account
-	//    specified in the job specs.
+	//   - Any runtime specified via `ResourceRuntimeSpec` on creation time,
+	//     for example, Ray.
+	//   - Jobs submitted to PersistentResource, if no other service account
+	//     specified in the job specs.
 	//
 	// Only works when custom service account is enabled and users have the
 	// `iam.serviceAccounts.actAs` permission on this service account.

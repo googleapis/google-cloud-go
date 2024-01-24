@@ -22,9 +22,6 @@ package servicecontrolpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -32,6 +29,8 @@ import (
 	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -295,16 +294,17 @@ type QuotaOperation struct {
 	// (1) the quota operation is performed on non-API resources.
 	// (2) quota_metrics is set because the caller is doing quota override.
 	//
-	//
 	// Example of an RPC method name:
-	//     google.example.library.v1.LibraryService.CreateShelf
+	//
+	//	google.example.library.v1.LibraryService.CreateShelf
 	MethodName string `protobuf:"bytes,2,opt,name=method_name,json=methodName,proto3" json:"method_name,omitempty"`
 	// Identity of the consumer for whom this quota operation is being performed.
 	//
 	// This can be in one of the following formats:
-	//   project:<project_id>,
-	//   project_number:<project_number>,
-	//   api_key:<api_key>.
+	//
+	//	project:<project_id>,
+	//	project_number:<project_number>,
+	//	api_key:<api_key>.
 	ConsumerId string `protobuf:"bytes,3,opt,name=consumer_id,json=consumerId,proto3" json:"consumer_id,omitempty"`
 	// Labels describing the operation.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -415,11 +415,13 @@ type AllocateQuotaResponse struct {
 	//
 	// 1. Per quota group or per quota metric incremental usage will be specified
 	// using the following delta metric :
-	//   "serviceruntime.googleapis.com/api/consumer/quota_used_count"
+	//
+	//	"serviceruntime.googleapis.com/api/consumer/quota_used_count"
 	//
 	// 2. The quota limit reached condition will be specified using the following
 	// boolean metric :
-	//   "serviceruntime.googleapis.com/quota/exceeded"
+	//
+	//	"serviceruntime.googleapis.com/quota/exceeded"
 	QuotaMetrics []*MetricValueSet `protobuf:"bytes,3,rep,name=quota_metrics,json=quotaMetrics,proto3" json:"quota_metrics,omitempty"`
 	// ID of the actual config used to process the request.
 	ServiceConfigId string `protobuf:"bytes,4,opt,name=service_config_id,json=serviceConfigId,proto3" json:"service_config_id,omitempty"`

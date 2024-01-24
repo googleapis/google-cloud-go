@@ -21,11 +21,8 @@
 package cxpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2255,9 +2254,9 @@ type EnvironmentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
 	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified
 	// [Environment][google.cloud.dialogflow.cx.v3beta1.Environment].
@@ -2266,9 +2265,9 @@ type EnvironmentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
 	UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the specified
 	// [Environment][google.cloud.dialogflow.cx.v3beta1.Environment].
@@ -2408,9 +2407,9 @@ type EnvironmentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
 	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Updates the specified
 	// [Environment][google.cloud.dialogflow.cx.v3beta1.Environment].
@@ -2419,9 +2418,9 @@ type EnvironmentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
 	UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Deletes the specified
 	// [Environment][google.cloud.dialogflow.cx.v3beta1.Environment].

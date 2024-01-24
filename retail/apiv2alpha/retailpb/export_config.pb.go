@@ -21,14 +21,13 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -47,6 +46,7 @@ type OutputConfig struct {
 	// The configuration of destination for holding output data.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*OutputConfig_GcsDestination_
 	//	*OutputConfig_BigqueryDestination
 	Destination isOutputConfig_Destination `protobuf_oneof:"destination"`
@@ -132,6 +132,7 @@ type ExportErrorsConfig struct {
 	// Required. Errors destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ExportErrorsConfig_GcsPrefix
 	Destination isExportErrorsConfig_Destination `protobuf_oneof:"destination"`
 }
@@ -212,18 +213,18 @@ type ExportAnalyticsMetricsRequest struct {
 	// the returned metrics. Use this expression to restrict results to a
 	// specific time range.
 	//
-	//   Currently we expect only one types of fields:
+	//	Currently we expect only one types of fields:
 	//
-	//    * `timestamp`: This can be specified twice, once with a
-	//      less than operator and once with a greater than operator. The
-	//      `timestamp` restriction should result in one, contiguous, valid,
-	//      `timestamp` range.
+	//	 * `timestamp`: This can be specified twice, once with a
+	//	   less than operator and once with a greater than operator. The
+	//	   `timestamp` restriction should result in one, contiguous, valid,
+	//	   `timestamp` range.
 	//
-	//   Some examples of valid filters expressions:
+	//	Some examples of valid filters expressions:
 	//
-	//   * Example 1: `timestamp > "2012-04-23T18:25:43.511Z"
-	//             timestamp < "2012-04-23T18:30:43.511Z"`
-	//   * Example 2: `timestamp > "2012-04-23T18:25:43.511Z"`
+	//	* Example 1: `timestamp > "2012-04-23T18:25:43.511Z"
+	//	          timestamp < "2012-04-23T18:30:43.511Z"`
+	//	* Example 2: `timestamp > "2012-04-23T18:25:43.511Z"`
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 

@@ -21,12 +21,11 @@
 package dialogflowpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -287,11 +286,13 @@ type OriginalDetectIntentRequest struct {
 	//
 	// In particular, for the Dialogflow Phone Gateway integration, this field has
 	// the form:
-	// <pre>{
-	//  "telephony": {
-	//    "caller_id": "+18558363987"
-	//  }
-	// }</pre>
+	//
+	//	<pre>{
+	//	 "telephony": {
+	//	   "caller_id": "+18558363987"
+	//	 }
+	//	}</pre>
+	//
 	// Note: The caller ID field (`caller_id`) will be redacted for Trial
 	// Edition agents and populated with the caller ID in [E.164
 	// format](https://en.wikipedia.org/wiki/E.164) for Essentials Edition agents.

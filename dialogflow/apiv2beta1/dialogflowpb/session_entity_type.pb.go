@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -120,15 +119,15 @@ type SessionEntityType struct {
 
 	// Required. The unique identifier of this session entity type. Supported
 	// formats:
-	// - `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
-	//   Type Display Name>`
-	// - `projects/<Project ID>/locations/<Location ID>/agent/sessions/<Session
-	//   ID>/entityTypes/<Entity Type Display Name>`
-	// - `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
-	//   ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`
-	// - `projects/<Project ID>/locations/<Location ID>/agent/environments/
-	//   <Environment ID>/users/<User ID>/sessions/<Session
-	//   ID>/entityTypes/<Entity Type Display Name>`
+	//   - `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
+	//     Type Display Name>`
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/sessions/<Session
+	//     ID>/entityTypes/<Entity Type Display Name>`
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+	//     ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/environments/
+	//     <Environment ID>/users/<User ID>/sessions/<Session
+	//     ID>/entityTypes/<Entity Type Display Name>`
 	//
 	// If `Location ID` is not specified we assume default 'us' location. If
 	// `Environment ID` is not specified, we assume default 'draft' environment.
@@ -206,14 +205,14 @@ type ListSessionEntityTypesRequest struct {
 
 	// Required. The session to list all session entity types from.
 	// Supported formats:
-	// - `projects/<Project ID>/agent/sessions/<Session ID>,
-	// - `projects/<Project ID>/locations/<Location ID>/agent/sessions/<Session
-	//   ID>`,
-	// - `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
-	//   ID>/sessions/<Session ID>`,
-	// - `projects/<Project ID>/locations/<Location
-	//   ID>/agent/environments/<Environment ID>/users/<User ID>/sessions/<Session
-	//   ID>`,
+	//   - `projects/<Project ID>/agent/sessions/<Session ID>,
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/sessions/<Session
+	//     ID>`,
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+	//     ID>/sessions/<Session ID>`,
+	//   - `projects/<Project ID>/locations/<Location
+	//     ID>/agent/environments/<Environment ID>/users/<User ID>/sessions/<Session
+	//     ID>`,
 	//
 	// If `Location ID` is not specified we assume default 'us' location. If
 	// `Environment ID` is not specified, we assume default 'draft' environment.
@@ -348,15 +347,15 @@ type GetSessionEntityTypeRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the session entity type. Supported formats:
-	// - `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
-	//   Type Display Name>`
-	// - `projects/<Project ID>/locations/<Location ID>/agent/sessions/<Session
-	//   ID>/entityTypes/<Entity Type Display Name>`
-	// - `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
-	//   ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`
-	// - `projects/<Project ID>/locations/<Location ID>/agent/environments/
-	//   <Environment ID>/users/<User ID>/sessions/<Session
-	//   ID>/entityTypes/<Entity Type Display Name>`
+	//   - `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
+	//     Type Display Name>`
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/sessions/<Session
+	//     ID>/entityTypes/<Entity Type Display Name>`
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+	//     ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/environments/
+	//     <Environment ID>/users/<User ID>/sessions/<Session
+	//     ID>/entityTypes/<Entity Type Display Name>`
 	//
 	// If `Location ID` is not specified we assume default 'us' location. If
 	// `Environment ID` is not specified, we assume default 'draft' environment.
@@ -412,14 +411,14 @@ type CreateSessionEntityTypeRequest struct {
 
 	// Required. The session to create a session entity type for.
 	// Supported formats:
-	// - `projects/<Project ID>/agent/sessions/<Session ID>,
-	// - `projects/<Project ID>/locations/<Location ID>/agent/sessions/<Session
-	//   ID>`,
-	// - `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
-	//   ID>/sessions/<Session ID>`,
-	// - `projects/<Project ID>/locations/<Location
-	//   ID>/agent/environments/<Environment ID>/users/<User ID>/sessions/<Session
-	//   ID>`,
+	//   - `projects/<Project ID>/agent/sessions/<Session ID>,
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/sessions/<Session
+	//     ID>`,
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+	//     ID>/sessions/<Session ID>`,
+	//   - `projects/<Project ID>/locations/<Location
+	//     ID>/agent/environments/<Environment ID>/users/<User ID>/sessions/<Session
+	//     ID>`,
 	//
 	// If `Location ID` is not specified we assume default 'us' location. If
 	// `Environment ID` is not specified, we assume default 'draft' environment.
@@ -543,15 +542,15 @@ type DeleteSessionEntityTypeRequest struct {
 
 	// Required. The name of the entity type to delete.
 	// Supported formats:
-	// - `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
-	//   Type Display Name>`
-	// - `projects/<Project ID>/locations/<Location ID>/agent/sessions/<Session
-	//   ID>/entityTypes/<Entity Type Display Name>`
-	// - `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
-	//   ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`
-	// - `projects/<Project ID>/locations/<Location ID>/agent/environments/
-	//   <Environment ID>/users/<User ID>/sessions/<Session
-	//   ID>/entityTypes/<Entity Type Display Name>`
+	//   - `projects/<Project ID>/agent/sessions/<Session ID>/entityTypes/<Entity
+	//     Type Display Name>`
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/sessions/<Session
+	//     ID>/entityTypes/<Entity Type Display Name>`
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>/users/<User
+	//     ID>/sessions/<Session ID>/entityTypes/<Entity Type Display Name>`
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/environments/
+	//     <Environment ID>/users/<User ID>/sessions/<Session
+	//     ID>/entityTypes/<Entity Type Display Name>`
 	//
 	// If `Location ID` is not specified we assume default 'us' location. If
 	// `Environment ID` is not specified, we assume default 'draft' environment.

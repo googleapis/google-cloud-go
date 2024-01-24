@@ -21,9 +21,6 @@
 package clouddmspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -31,6 +28,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1366,6 +1365,7 @@ type PostgreSqlConnectionProfile struct {
 	// Connectivity options used to establish a connection to the database server.
 	//
 	// Types that are assignable to Connectivity:
+	//
 	//	*PostgreSqlConnectionProfile_StaticIpConnectivity
 	//	*PostgreSqlConnectionProfile_PrivateServiceConnectConnectivity
 	Connectivity isPostgreSqlConnectionProfile_Connectivity `protobuf_oneof:"connectivity"`
@@ -1526,12 +1526,13 @@ type OracleConnectionProfile struct {
 	DatabaseService string `protobuf:"bytes,6,opt,name=database_service,json=databaseService,proto3" json:"database_service,omitempty"`
 	// SSL configuration for the connection to the source Oracle database.
 	//
-	//  * Only `SERVER_ONLY` configuration is supported for Oracle SSL.
-	//  * SSL is supported for Oracle versions 12 and above.
+	//   - Only `SERVER_ONLY` configuration is supported for Oracle SSL.
+	//   - SSL is supported for Oracle versions 12 and above.
 	Ssl *SslConfig `protobuf:"bytes,7,opt,name=ssl,proto3" json:"ssl,omitempty"`
 	// Connectivity options used to establish a connection to the database server.
 	//
 	// Types that are assignable to Connectivity:
+	//
 	//	*OracleConnectionProfile_StaticServiceIpConnectivity
 	//	*OracleConnectionProfile_ForwardSshConnectivity
 	//	*OracleConnectionProfile_PrivateConnectivity
@@ -1833,6 +1834,7 @@ type SqlAclEntry struct {
 	// The access control entry entry expiration.
 	//
 	// Types that are assignable to Expiration:
+	//
 	//	*SqlAclEntry_ExpireTime
 	//	*SqlAclEntry_Ttl
 	Expiration isSqlAclEntry_Expiration `protobuf_oneof:"expiration"`
@@ -2605,6 +2607,7 @@ type ForwardSshTunnelConnectivity struct {
 	// Port for the SSH tunnel, default value is 22.
 	Port int32 `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
 	// Types that are assignable to AuthenticationMethod:
+	//
 	//	*ForwardSshTunnelConnectivity_Password
 	//	*ForwardSshTunnelConnectivity_PrivateKey
 	AuthenticationMethod isForwardSshTunnelConnectivity_AuthenticationMethod `protobuf_oneof:"authentication_method"`
@@ -2894,6 +2897,7 @@ type MigrationJob struct {
 	// The connectivity method.
 	//
 	// Types that are assignable to Connectivity:
+	//
 	//	*MigrationJob_ReverseSshConnectivity
 	//	*MigrationJob_VpcPeeringConnectivity
 	//	*MigrationJob_StaticIpConnectivity
@@ -3257,6 +3261,7 @@ type ConnectionProfile struct {
 	// The connection profile definition.
 	//
 	// Types that are assignable to ConnectionProfile:
+	//
 	//	*ConnectionProfile_Mysql
 	//	*ConnectionProfile_Postgresql
 	//	*ConnectionProfile_Oracle
@@ -3532,6 +3537,7 @@ type PrivateConnection struct {
 	// Output only. The error details in case of state FAILED.
 	Error *status.Status `protobuf:"bytes,7,opt,name=error,proto3" json:"error,omitempty"`
 	// Types that are assignable to Connectivity:
+	//
 	//	*PrivateConnection_VpcPeeringConfig
 	Connectivity isPrivateConnection_Connectivity `protobuf_oneof:"connectivity"`
 }

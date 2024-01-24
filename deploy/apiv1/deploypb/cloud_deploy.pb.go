@@ -21,11 +21,8 @@
 package deploypb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1301,6 +1300,7 @@ type DeliveryPipeline struct {
 	// The ordering configuration of the `DeliveryPipeline`.
 	//
 	// Types that are assignable to Pipeline:
+	//
 	//	*DeliveryPipeline_SerialPipeline
 	Pipeline isDeliveryPipeline_Pipeline `protobuf_oneof:"pipeline"`
 	// Output only. Information around the state of the Delivery Pipeline.
@@ -1643,6 +1643,7 @@ type Strategy struct {
 	// Deployment strategy details.
 	//
 	// Types that are assignable to DeploymentStrategy:
+	//
 	//	*Strategy_Standard
 	//	*Strategy_Canary
 	DeploymentStrategy isStrategy_DeploymentStrategy `protobuf_oneof:"deployment_strategy"`
@@ -1903,6 +1904,7 @@ type Canary struct {
 	// The mode to use for the canary deployment strategy.
 	//
 	// Types that are assignable to Mode:
+	//
 	//	*Canary_CanaryDeployment
 	//	*Canary_CustomCanaryDeployment
 	Mode isCanary_Mode `protobuf_oneof:"mode"`
@@ -2128,6 +2130,7 @@ type KubernetesConfig struct {
 	// The service definition configuration.
 	//
 	// Types that are assignable to ServiceDefinition:
+	//
 	//	*KubernetesConfig_GatewayServiceMesh_
 	//	*KubernetesConfig_ServiceNetworking_
 	ServiceDefinition isKubernetesConfig_ServiceDefinition `protobuf_oneof:"service_definition"`
@@ -2296,6 +2299,7 @@ type RuntimeConfig struct {
 	// The runtime configuration details.
 	//
 	// Types that are assignable to RuntimeConfig:
+	//
 	//	*RuntimeConfig_Kubernetes
 	//	*RuntimeConfig_CloudRun
 	RuntimeConfig isRuntimeConfig_RuntimeConfig `protobuf_oneof:"runtime_config"`
@@ -3422,6 +3426,7 @@ type Target struct {
 	// rollout.
 	//
 	// Types that are assignable to DeploymentTarget:
+	//
 	//	*Target_Gke
 	//	*Target_AnthosCluster
 	//	*Target_Run
@@ -3652,6 +3657,7 @@ type ExecutionConfig struct {
 	// Details of the environment.
 	//
 	// Types that are assignable to ExecutionEnvironment:
+	//
 	//	*ExecutionConfig_DefaultPool
 	//	*ExecutionConfig_PrivatePool
 	ExecutionEnvironment isExecutionConfig_ExecutionEnvironment `protobuf_oneof:"execution_environment"`
@@ -4749,6 +4755,7 @@ type CustomTargetType struct {
 	// Defines the `CustomTargetType` renderer and deployer.
 	//
 	// Types that are assignable to Definition:
+	//
 	//	*CustomTargetType_CustomActions
 	Definition isCustomTargetType_Definition `protobuf_oneof:"definition"`
 }
@@ -4956,6 +4963,7 @@ type SkaffoldModules struct {
 	// The source that contains the Skaffold Config modules.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*SkaffoldModules_Git
 	//	*SkaffoldModules_GoogleCloudStorage
 	Source isSkaffoldModules_Source `protobuf_oneof:"source"`
@@ -5950,6 +5958,7 @@ type TargetArtifact struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Uri:
+	//
 	//	*TargetArtifact_ArtifactUri
 	Uri isTargetArtifact_Uri `protobuf_oneof:"uri"`
 	// Output only. File path of the resolved Skaffold configuration relative to
@@ -7192,6 +7201,7 @@ type Phase struct {
 	// The job composition of this Phase.
 	//
 	// Types that are assignable to Jobs:
+	//
 	//	*Phase_DeploymentJobs
 	//	*Phase_ChildRolloutJobs
 	Jobs isPhase_Jobs `protobuf_oneof:"jobs"`
@@ -7442,6 +7452,7 @@ type Job struct {
 	// The type of Job.
 	//
 	// Types that are assignable to JobType:
+	//
 	//	*Job_DeployJob
 	//	*Job_VerifyJob
 	//	*Job_PredeployJob
@@ -8905,6 +8916,7 @@ type JobRun struct {
 	// The `JobRun` type and the information for that type.
 	//
 	// Types that are assignable to JobRun:
+	//
 	//	*JobRun_DeployJobRun
 	//	*JobRun_VerifyJobRun
 	//	*JobRun_PredeployJobRun
@@ -10289,6 +10301,7 @@ type AutomationRule struct {
 	// The configuration of the Automation rule.
 	//
 	// Types that are assignable to Rule:
+	//
 	//	*AutomationRule_PromoteReleaseRule
 	//	*AutomationRule_AdvanceRolloutRule
 	//	*AutomationRule_RepairRolloutRule
@@ -10668,6 +10681,7 @@ type RepairMode struct {
 	// The repair action to perform.
 	//
 	// Types that are assignable to Mode:
+	//
 	//	*RepairMode_Retry
 	//	*RepairMode_Rollback
 	Mode isRepairMode_Mode `protobuf_oneof:"mode"`
@@ -11479,6 +11493,7 @@ type AutomationRun struct {
 	// The operation that the `AutomationRun` will perform.
 	//
 	// Types that are assignable to Operation:
+	//
 	//	*AutomationRun_PromoteReleaseOperation
 	//	*AutomationRun_AdvanceRolloutOperation
 	//	*AutomationRun_RepairRolloutOperation
@@ -11894,6 +11909,7 @@ type RepairPhase struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to RepairPhase:
+	//
 	//	*RepairPhase_Retry
 	//	*RepairPhase_Rollback
 	RepairPhase isRepairPhase_RepairPhase `protobuf_oneof:"repair_phase"`

@@ -21,9 +21,6 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	money "google.golang.org/genproto/googleapis/type/money"
@@ -31,6 +28,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -156,9 +155,9 @@ type DataLabelingJob struct {
 	// System reserved label keys are prefixed with "aiplatform.googleapis.com/"
 	// and are immutable. Following system labels exist for each DataLabelingJob:
 	//
-	// * "aiplatform.googleapis.com/schema": output only, its value is the
-	//   [inputs_schema][google.cloud.aiplatform.v1beta1.DataLabelingJob.inputs_schema_uri]'s
-	//   title.
+	//   - "aiplatform.googleapis.com/schema": output only, its value is the
+	//     [inputs_schema][google.cloud.aiplatform.v1beta1.DataLabelingJob.inputs_schema_uri]'s
+	//     title.
 	Labels map[string]string `protobuf:"bytes,11,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The SpecialistPools' resource names associated with this job.
 	SpecialistPools []string `protobuf:"bytes,16,rep,name=specialist_pools,json=specialistPools,proto3" json:"specialist_pools,omitempty"`
@@ -345,6 +344,7 @@ type ActiveLearningConfig struct {
 	// machine.
 	//
 	// Types that are assignable to HumanLabelingBudget:
+	//
 	//	*ActiveLearningConfig_MaxDataItemCount
 	//	*ActiveLearningConfig_MaxDataItemPercentage
 	HumanLabelingBudget isActiveLearningConfig_HumanLabelingBudget `protobuf_oneof:"human_labeling_budget"`
@@ -453,12 +453,14 @@ type SampleConfig struct {
 	// is used by default.
 	//
 	// Types that are assignable to InitialBatchSampleSize:
+	//
 	//	*SampleConfig_InitialBatchSamplePercentage
 	InitialBatchSampleSize isSampleConfig_InitialBatchSampleSize `protobuf_oneof:"initial_batch_sample_size"`
 	// Decides sample size for the following batches.
 	// following_batch_sample_percentage is used by default.
 	//
 	// Types that are assignable to FollowingBatchSampleSize:
+	//
 	//	*SampleConfig_FollowingBatchSamplePercentage
 	FollowingBatchSampleSize isSampleConfig_FollowingBatchSampleSize `protobuf_oneof:"following_batch_sample_size"`
 	// Field to choose sampling strategy. Sampling strategy will decide which data

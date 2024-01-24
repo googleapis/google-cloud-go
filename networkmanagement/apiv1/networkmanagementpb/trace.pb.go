@@ -21,11 +21,10 @@
 package networkmanagementpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1558,6 +1557,7 @@ type Step struct {
 	// final state the configuration is cleared.
 	//
 	// Types that are assignable to StepInfo:
+	//
 	//	*Step_Instance
 	//	*Step_Firewall
 	//	*Step_Route

@@ -21,11 +21,8 @@
 package domainspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	money "google.golang.org/genproto/googleapis/type/money"
 	postaladdress "google.golang.org/genproto/googleapis/type/postaladdress"
@@ -36,6 +33,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1018,6 +1017,7 @@ type DnsSettings struct {
 	// The DNS provider of the registration.
 	//
 	// Types that are assignable to DnsProvider:
+	//
 	//	*DnsSettings_CustomDns_
 	//	*DnsSettings_GoogleDomainsDns_
 	DnsProvider isDnsSettings_DnsProvider `protobuf_oneof:"dns_provider"`
@@ -4580,13 +4580,11 @@ type DomainsClient interface {
 	// Cloud Domains. For domains managed by Google Domains, transferring to Cloud
 	// Domains is not supported.
 	//
-	//
 	// Use the returned values to call `TransferDomain`.
 	RetrieveTransferParameters(ctx context.Context, in *RetrieveTransferParametersRequest, opts ...grpc.CallOption) (*RetrieveTransferParametersResponse, error)
 	// Transfers a domain name from another registrar to Cloud Domains.  For
 	// domains managed by Google Domains, transferring to Cloud Domains is not
 	// supported.
-	//
 	//
 	// Before calling this method, go to the domain's current registrar to unlock
 	// the domain for transfer and retrieve the domain's transfer authorization
@@ -4838,13 +4836,11 @@ type DomainsServer interface {
 	// Cloud Domains. For domains managed by Google Domains, transferring to Cloud
 	// Domains is not supported.
 	//
-	//
 	// Use the returned values to call `TransferDomain`.
 	RetrieveTransferParameters(context.Context, *RetrieveTransferParametersRequest) (*RetrieveTransferParametersResponse, error)
 	// Transfers a domain name from another registrar to Cloud Domains.  For
 	// domains managed by Google Domains, transferring to Cloud Domains is not
 	// supported.
-	//
 	//
 	// Before calling this method, go to the domain's current registrar to unlock
 	// the domain for transfer and retrieve the domain's transfer authorization

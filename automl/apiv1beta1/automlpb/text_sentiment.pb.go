@@ -21,11 +21,10 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -49,7 +48,9 @@ type TextSentimentAnnotation struct {
 	// with higher value meaning more positive sentiment. They are completely
 	// relative, i.e. 0 means least positive sentiment and sentiment_max means
 	// the most positive from the sentiments present in the train data. Therefore
-	//  e.g. if train data had only negative sentiment, then sentiment_max, would
+	//
+	//	e.g. if train data had only negative sentiment, then sentiment_max, would
+	//
 	// be still negative (although least negative).
 	// The sentiment shouldn't be confused with "score" or "magnitude"
 	// from the previous Natural Language Sentiment Analysis API.

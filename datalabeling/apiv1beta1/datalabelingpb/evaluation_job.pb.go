@@ -22,14 +22,13 @@
 package datalabelingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -54,25 +53,25 @@ const (
 	// The job is currently running. When the job runs, Data Labeling Service
 	// does several things:
 	//
-	// 1. If you have configured your job to use Data Labeling Service for
-	//    ground truth labeling, the service creates a
-	//    [Dataset][google.cloud.datalabeling.v1beta1.Dataset] and a labeling task for all data sampled
-	//    since the last time the job ran. Human labelers provide ground truth
-	//    labels for your data. Human labeling may take hours, or even days,
-	//    depending on how much data has been sampled. The job remains in the
-	//    `RUNNING` state during this time, and it can even be running multiple
-	//    times in parallel if it gets triggered again (for example 24 hours
-	//    later) before the earlier run has completed. When human labelers have
-	//    finished labeling the data, the next step occurs.
-	//    <br><br>
-	//    If you have configured your job to provide your own ground truth
-	//    labels, Data Labeling Service still creates a [Dataset][google.cloud.datalabeling.v1beta1.Dataset] for newly
-	//    sampled data, but it expects that you have already added ground truth
-	//    labels to the BigQuery table by this time. The next step occurs
-	//    immediately.
+	//  1. If you have configured your job to use Data Labeling Service for
+	//     ground truth labeling, the service creates a
+	//     [Dataset][google.cloud.datalabeling.v1beta1.Dataset] and a labeling task for all data sampled
+	//     since the last time the job ran. Human labelers provide ground truth
+	//     labels for your data. Human labeling may take hours, or even days,
+	//     depending on how much data has been sampled. The job remains in the
+	//     `RUNNING` state during this time, and it can even be running multiple
+	//     times in parallel if it gets triggered again (for example 24 hours
+	//     later) before the earlier run has completed. When human labelers have
+	//     finished labeling the data, the next step occurs.
+	//     <br><br>
+	//     If you have configured your job to provide your own ground truth
+	//     labels, Data Labeling Service still creates a [Dataset][google.cloud.datalabeling.v1beta1.Dataset] for newly
+	//     sampled data, but it expects that you have already added ground truth
+	//     labels to the BigQuery table by this time. The next step occurs
+	//     immediately.
 	//
-	// 2. Data Labeling Service creates an [Evaluation][google.cloud.datalabeling.v1beta1.Evaluation] by comparing your
-	//    model version's predictions with the ground truth labels.
+	//  2. Data Labeling Service creates an [Evaluation][google.cloud.datalabeling.v1beta1.Evaluation] by comparing your
+	//     model version's predictions with the ground truth labels.
 	//
 	// If the job remains in this state for a long time, it continues to sample
 	// prediction data into your BigQuery table and will run again at the next
@@ -306,6 +305,7 @@ type EvaluationJobConfig struct {
 	// labels.
 	//
 	// Types that are assignable to HumanAnnotationRequestConfig:
+	//
 	//	*EvaluationJobConfig_ImageClassificationConfig
 	//	*EvaluationJobConfig_BoundingPolyConfig
 	//	*EvaluationJobConfig_TextClassificationConfig
@@ -313,13 +313,13 @@ type EvaluationJobConfig struct {
 	// Rquired. Details for the sampled prediction input. Within this
 	// configuration, there are requirements for several fields:
 	//
-	// * `dataType` must be one of `IMAGE`, `TEXT`, or `GENERAL_DATA`.
-	// * `annotationType` must be one of `IMAGE_CLASSIFICATION_ANNOTATION`,
-	//   `TEXT_CLASSIFICATION_ANNOTATION`, `GENERAL_CLASSIFICATION_ANNOTATION`,
-	//   or `IMAGE_BOUNDING_BOX_ANNOTATION` (image object detection).
-	// * If your machine learning model performs classification, you must specify
-	//   `classificationMetadata.isMultiLabel`.
-	// * You must specify `bigquerySource` (not `gcsSource`).
+	//   - `dataType` must be one of `IMAGE`, `TEXT`, or `GENERAL_DATA`.
+	//   - `annotationType` must be one of `IMAGE_CLASSIFICATION_ANNOTATION`,
+	//     `TEXT_CLASSIFICATION_ANNOTATION`, `GENERAL_CLASSIFICATION_ANNOTATION`,
+	//     or `IMAGE_BOUNDING_BOX_ANNOTATION` (image object detection).
+	//   - If your machine learning model performs classification, you must specify
+	//     `classificationMetadata.isMultiLabel`.
+	//   - You must specify `bigquerySource` (not `gcsSource`).
 	InputConfig *InputConfig `protobuf:"bytes,1,opt,name=input_config,json=inputConfig,proto3" json:"input_config,omitempty"`
 	// Required. Details for calculating evaluation metrics and creating
 	// [Evaulations][google.cloud.datalabeling.v1beta1.Evaluation]. If your model version performs image object
@@ -344,14 +344,14 @@ type EvaluationJobConfig struct {
 	//
 	// You can provide the following entries in this field:
 	//
-	// * `data_json_key`: the data key for prediction input. You must provide
-	//   either this key or `reference_json_key`.
-	// * `reference_json_key`: the data reference key for prediction input. You
-	//   must provide either this key or `data_json_key`.
-	// * `label_json_key`: the label key for prediction output. Required.
-	// * `label_score_json_key`: the score key for prediction output. Required.
-	// * `bounding_box_json_key`: the bounding box key for prediction output.
-	//   Required if your model version perform image object detection.
+	//   - `data_json_key`: the data key for prediction input. You must provide
+	//     either this key or `reference_json_key`.
+	//   - `reference_json_key`: the data reference key for prediction input. You
+	//     must provide either this key or `data_json_key`.
+	//   - `label_json_key`: the label key for prediction output. Required.
+	//   - `label_score_json_key`: the score key for prediction output. Required.
+	//   - `bounding_box_json_key`: the bounding box key for prediction output.
+	//     Required if your model version perform image object detection.
 	//
 	// Learn [how to configure prediction
 	// keys](/ml-engine/docs/continuous-evaluation/create-job#prediction-keys).

@@ -21,13 +21,12 @@
 package servicehealthpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1942,7 +1941,8 @@ type ListOrganizationImpactsRequest struct {
 	// Optional. The maximum number of events that should be returned. Acceptable
 	// values are `1` to `100`, inclusive. The default value is `10`.
 	//
-	//  If more results are available, the service returns a
+	//	If more results are available, the service returns a
+	//
 	// `next_page_token` that can be used to get the next page of results in
 	// subsequent list requests. The service may return fewer
 	// [impacts](/service-health/docs/reference/rest/v1beta/organizations.locations.organizationImpacts#OrganizationImpact)

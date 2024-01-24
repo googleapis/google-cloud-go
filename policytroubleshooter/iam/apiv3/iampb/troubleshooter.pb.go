@@ -21,12 +21,9 @@
 package iampb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	iampb1 "cloud.google.com/go/iam/apiv2/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	expr "google.golang.org/genproto/googleapis/type/expr"
@@ -37,6 +34,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -295,11 +294,11 @@ const (
 	// The principal in the request matches the principal in the policy. The
 	// principal can be included directly or indirectly:
 	//
-	// * A principal is included directly if that principal is listed in the
-	//   role binding.
-	// * A principal is included indirectly if that principal is in a Google
-	//   group, Google Workspace account, or Cloud Identity domain that is listed
-	//   in the policy.
+	//   - A principal is included directly if that principal is listed in the
+	//     role binding.
+	//   - A principal is included indirectly if that principal is in a Google
+	//     group, Google Workspace account, or Cloud Identity domain that is listed
+	//     in the policy.
 	MembershipMatchingState_MEMBERSHIP_MATCHED MembershipMatchingState = 1
 	// The principal in the request doesn't match the principal in the policy.
 	MembershipMatchingState_MEMBERSHIP_NOT_MATCHED MembershipMatchingState = 2

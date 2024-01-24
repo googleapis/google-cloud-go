@@ -21,13 +21,12 @@
 package artifactregistrypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -233,6 +232,7 @@ type ImportYumArtifactsRequest struct {
 	// The source location of the package binaries.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportYumArtifactsRequest_GcsSource
 	Source isImportYumArtifactsRequest_Source `protobuf_oneof:"source"`
 	// The name of the parent resource where the artifacts will be imported.
@@ -312,6 +312,7 @@ type ImportYumArtifactsErrorInfo struct {
 	// The source that was not imported.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportYumArtifactsErrorInfo_GcsSource
 	Source isImportYumArtifactsErrorInfo_Source `protobuf_oneof:"source"`
 	// The detailed error status.

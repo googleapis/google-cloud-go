@@ -21,15 +21,14 @@
 package monitoringpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	api "google.golang.org/genproto/googleapis/api"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	label "google.golang.org/genproto/googleapis/api/label"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -114,7 +113,7 @@ type NotificationChannelDescriptor struct {
 
 	// The full REST resource name for this descriptor. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/notificationChannelDescriptors/[TYPE]
+	//	projects/[PROJECT_ID_OR_NUMBER]/notificationChannelDescriptors/[TYPE]
 	//
 	// In the above, `[TYPE]` is the value of the `type` field.
 	Name string `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
@@ -243,7 +242,7 @@ type NotificationChannel struct {
 	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
 	// The full REST resource name for this channel. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/notificationChannels/[CHANNEL_ID]
 	//
 	// The `[CHANNEL_ID]` is automatically assigned by the server on creation.
 	Name string `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`

@@ -21,12 +21,11 @@
 package runpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -333,6 +332,7 @@ type BinaryAuthorization struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to BinauthzMethod:
+	//
 	//	*BinaryAuthorization_UseDefault
 	BinauthzMethod isBinaryAuthorization_BinauthzMethod `protobuf_oneof:"binauthz_method"`
 	// If present, indicates to use Breakglass using this justification.

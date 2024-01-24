@@ -21,11 +21,8 @@
 package cloudbuildpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1566,6 +1565,7 @@ type RepoSource struct {
 	// one of these ways.
 	//
 	// Types that are assignable to Revision:
+	//
 	//	*RepoSource_BranchName
 	//	*RepoSource_TagName
 	//	*RepoSource_CommitSha
@@ -1792,6 +1792,7 @@ type Source struct {
 	// Location of source.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Source_StorageSource
 	//	*Source_RepoSource
 	//	*Source_GitSource
@@ -2812,7 +2813,6 @@ type Build struct {
 	// IAM service account whose credentials will be used at build runtime.
 	// Must be of the format `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.
 	// ACCOUNT can be email address or uniqueId of the service account.
-	//
 	ServiceAccount string `protobuf:"bytes,42,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 	// Secrets and secret environment variables.
 	AvailableSecrets *Secrets `protobuf:"bytes,47,opt,name=available_secrets,json=availableSecrets,proto3" json:"available_secrets,omitempty"`
@@ -4375,6 +4375,7 @@ type GitRepoSource struct {
 	// The source of the SCM repo.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*GitRepoSource_Repository
 	Source isGitRepoSource_Source `protobuf_oneof:"source"`
 	// The branch or tag to use. Must start with "refs/" (required).
@@ -4385,6 +4386,7 @@ type GitRepoSource struct {
 	// to this source.
 	//
 	// Types that are assignable to EnterpriseConfig:
+	//
 	//	*GitRepoSource_GithubEnterpriseConfig
 	EnterpriseConfig isGitRepoSource_EnterpriseConfig `protobuf_oneof:"enterprise_config"`
 }
@@ -4513,6 +4515,7 @@ type GitFileSource struct {
 	// The source of the SCM repo.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*GitFileSource_Repository
 	Source isGitFileSource_Source `protobuf_oneof:"source"`
 	// See RepoType above.
@@ -4528,6 +4531,7 @@ type GitFileSource struct {
 	// to this source.
 	//
 	// Types that are assignable to EnterpriseConfig:
+	//
 	//	*GitFileSource_GithubEnterpriseConfig
 	EnterpriseConfig isGitFileSource_EnterpriseConfig `protobuf_oneof:"enterprise_config"`
 }
@@ -4695,6 +4699,7 @@ type BuildTrigger struct {
 	// At least one of the template fields must be provided.
 	//
 	// Types that are assignable to BuildTemplate:
+	//
 	//	*BuildTrigger_Autodetect
 	//	*BuildTrigger_Build
 	//	*BuildTrigger_Filename
@@ -4994,6 +4999,7 @@ type RepositoryEventConfig struct {
 	// The types of filter to trigger a build.
 	//
 	// Types that are assignable to Filter:
+	//
 	//	*RepositoryEventConfig_PullRequest
 	//	*RepositoryEventConfig_Push
 	Filter isRepositoryEventConfig_Filter `protobuf_oneof:"filter"`
@@ -5106,6 +5112,7 @@ type GitHubEventsConfig struct {
 	// Currently supported event types: push, pull_request.
 	//
 	// Types that are assignable to Event:
+	//
 	//	*GitHubEventsConfig_PullRequest
 	//	*GitHubEventsConfig_Push
 	Event isGitHubEventsConfig_Event `protobuf_oneof:"event"`
@@ -5294,6 +5301,7 @@ type WebhookConfig struct {
 	// Auth method specifies how the webhook authenticates with GCP.
 	//
 	// Types that are assignable to AuthMethod:
+	//
 	//	*WebhookConfig_Secret
 	AuthMethod isWebhookConfig_AuthMethod `protobuf_oneof:"auth_method"`
 	// Potential issues with the underlying Pub/Sub subscription configuration.
@@ -5376,6 +5384,7 @@ type PullRequestFilter struct {
 	// A target ref is the git reference where the pull request will be applied.
 	//
 	// Types that are assignable to GitRef:
+	//
 	//	*PullRequestFilter_Branch
 	GitRef isPullRequestFilter_GitRef `protobuf_oneof:"git_ref"`
 	// Configure builds to run whether a repository owner or collaborator need to
@@ -5469,6 +5478,7 @@ type PushFilter struct {
 	// A modified refs are the refs modified by a git push operation.
 	//
 	// Types that are assignable to GitRef:
+	//
 	//	*PushFilter_Branch
 	//	*PushFilter_Tag
 	GitRef isPushFilter_GitRef `protobuf_oneof:"git_ref"`
@@ -6576,6 +6586,7 @@ type WorkerPool struct {
 	// Configuration for the `WorkerPool`.
 	//
 	// Types that are assignable to Config:
+	//
 	//	*WorkerPool_PrivatePoolV1Config
 	Config isWorkerPool_Config `protobuf_oneof:"config"`
 	// Output only. Checksum computed by the server. May be sent on update and

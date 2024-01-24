@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -386,6 +385,7 @@ type ConversationMessage struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Message:
+	//
 	//	*ConversationMessage_UserInput
 	//	*ConversationMessage_Reply
 	Message isConversationMessage_Message `protobuf_oneof:"message"`

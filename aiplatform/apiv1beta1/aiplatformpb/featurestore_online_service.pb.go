@@ -22,9 +22,6 @@ package aiplatformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -428,6 +427,7 @@ type FeatureValue struct {
 	// Value for the feature.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*FeatureValue_BoolValue
 	//	*FeatureValue_DoubleValue
 	//	*FeatureValue_Int64Value
@@ -851,6 +851,7 @@ type ReadFeatureValuesResponse_EntityView_Data struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Data:
+	//
 	//	*ReadFeatureValuesResponse_EntityView_Data_Value
 	//	*ReadFeatureValuesResponse_EntityView_Data_Values
 	Data isReadFeatureValuesResponse_EntityView_Data_Data `protobuf_oneof:"data"`

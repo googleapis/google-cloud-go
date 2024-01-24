@@ -21,12 +21,11 @@
 package spannerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -142,60 +141,60 @@ type PartialResultSet struct {
 	// field. Two or more chunked values can be merged to form a
 	// complete value as follows:
 	//
-	//   * `bool/number/null`: cannot be chunked
-	//   * `string`: concatenate the strings
-	//   * `list`: concatenate the lists. If the last element in a list is a
+	//   - `bool/number/null`: cannot be chunked
+	//   - `string`: concatenate the strings
+	//   - `list`: concatenate the lists. If the last element in a list is a
 	//     `string`, `list`, or `object`, merge it with the first element in
 	//     the next list by applying these rules recursively.
-	//   * `object`: concatenate the (field name, field value) pairs. If a
+	//   - `object`: concatenate the (field name, field value) pairs. If a
 	//     field name is duplicated, then apply these rules recursively
 	//     to merge the field values.
 	//
 	// Some examples of merging:
 	//
-	//     # Strings are concatenated.
-	//     "foo", "bar" => "foobar"
+	//	# Strings are concatenated.
+	//	"foo", "bar" => "foobar"
 	//
-	//     # Lists of non-strings are concatenated.
-	//     [2, 3], [4] => [2, 3, 4]
+	//	# Lists of non-strings are concatenated.
+	//	[2, 3], [4] => [2, 3, 4]
 	//
-	//     # Lists are concatenated, but the last and first elements are merged
-	//     # because they are strings.
-	//     ["a", "b"], ["c", "d"] => ["a", "bc", "d"]
+	//	# Lists are concatenated, but the last and first elements are merged
+	//	# because they are strings.
+	//	["a", "b"], ["c", "d"] => ["a", "bc", "d"]
 	//
-	//     # Lists are concatenated, but the last and first elements are merged
-	//     # because they are lists. Recursively, the last and first elements
-	//     # of the inner lists are merged because they are strings.
-	//     ["a", ["b", "c"]], [["d"], "e"] => ["a", ["b", "cd"], "e"]
+	//	# Lists are concatenated, but the last and first elements are merged
+	//	# because they are lists. Recursively, the last and first elements
+	//	# of the inner lists are merged because they are strings.
+	//	["a", ["b", "c"]], [["d"], "e"] => ["a", ["b", "cd"], "e"]
 	//
-	//     # Non-overlapping object fields are combined.
-	//     {"a": "1"}, {"b": "2"} => {"a": "1", "b": 2"}
+	//	# Non-overlapping object fields are combined.
+	//	{"a": "1"}, {"b": "2"} => {"a": "1", "b": 2"}
 	//
-	//     # Overlapping object fields are merged.
-	//     {"a": "1"}, {"a": "2"} => {"a": "12"}
+	//	# Overlapping object fields are merged.
+	//	{"a": "1"}, {"a": "2"} => {"a": "12"}
 	//
-	//     # Examples of merging objects containing lists of strings.
-	//     {"a": ["1"]}, {"a": ["2"]} => {"a": ["12"]}
+	//	# Examples of merging objects containing lists of strings.
+	//	{"a": ["1"]}, {"a": ["2"]} => {"a": ["12"]}
 	//
 	// For a more complete example, suppose a streaming SQL query is
 	// yielding a result set whose rows contain a single string
 	// field. The following `PartialResultSet`s might be yielded:
 	//
-	//     {
-	//       "metadata": { ... }
-	//       "values": ["Hello", "W"]
-	//       "chunked_value": true
-	//       "resume_token": "Af65..."
-	//     }
-	//     {
-	//       "values": ["orl"]
-	//       "chunked_value": true
-	//       "resume_token": "Bqp2..."
-	//     }
-	//     {
-	//       "values": ["d"]
-	//       "resume_token": "Zx1B..."
-	//     }
+	//	{
+	//	  "metadata": { ... }
+	//	  "values": ["Hello", "W"]
+	//	  "chunked_value": true
+	//	  "resume_token": "Af65..."
+	//	}
+	//	{
+	//	  "values": ["orl"]
+	//	  "chunked_value": true
+	//	  "resume_token": "Bqp2..."
+	//	}
+	//	{
+	//	  "values": ["d"]
+	//	  "resume_token": "Zx1B..."
+	//	}
 	//
 	// This sequence of `PartialResultSet`s encodes two rows, one
 	// containing the field value `"Hello"`, and a second containing the
@@ -297,10 +296,10 @@ type ResultSetMetadata struct {
 	// set.  For example, a SQL query like `"SELECT UserId, UserName FROM
 	// Users"` could return a `row_type` value like:
 	//
-	//     "fields": [
-	//       { "name": "UserId", "type": { "code": "INT64" } },
-	//       { "name": "UserName", "type": { "code": "STRING" } },
-	//     ]
+	//	"fields": [
+	//	  { "name": "UserId", "type": { "code": "INT64" } },
+	//	  { "name": "UserName", "type": { "code": "STRING" } },
+	//	]
 	RowType *StructType `protobuf:"bytes,1,opt,name=row_type,json=rowType,proto3" json:"row_type,omitempty"`
 	// If the read or SQL query began a transaction as a side-effect, the
 	// information about the new transaction is yielded here.
@@ -311,10 +310,10 @@ type ResultSetMetadata struct {
 	// Users where UserId = @userId and UserName = @userName "` could return a
 	// `undeclared_parameters` value like:
 	//
-	//     "fields": [
-	//       { "name": "UserId", "type": { "code": "INT64" } },
-	//       { "name": "UserName", "type": { "code": "STRING" } },
-	//     ]
+	//	"fields": [
+	//	  { "name": "UserId", "type": { "code": "INT64" } },
+	//	  { "name": "UserName", "type": { "code": "STRING" } },
+	//	]
 	UndeclaredParameters *StructType `protobuf:"bytes,3,opt,name=undeclared_parameters,json=undeclaredParameters,proto3" json:"undeclared_parameters,omitempty"`
 }
 
@@ -383,15 +382,16 @@ type ResultSetStats struct {
 	// the query is profiled. For example, a query could return the statistics as
 	// follows:
 	//
-	//     {
-	//       "rows_returned": "3",
-	//       "elapsed_time": "1.22 secs",
-	//       "cpu_time": "1.19 secs"
-	//     }
+	//	{
+	//	  "rows_returned": "3",
+	//	  "elapsed_time": "1.22 secs",
+	//	  "cpu_time": "1.19 secs"
+	//	}
 	QueryStats *structpb.Struct `protobuf:"bytes,2,opt,name=query_stats,json=queryStats,proto3" json:"query_stats,omitempty"`
 	// The number of rows modified by the DML statement.
 	//
 	// Types that are assignable to RowCount:
+	//
 	//	*ResultSetStats_RowCountExact
 	//	*ResultSetStats_RowCountLowerBound
 	RowCount isResultSetStats_RowCount `protobuf_oneof:"row_count"`

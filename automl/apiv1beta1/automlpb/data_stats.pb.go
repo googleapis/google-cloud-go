@@ -21,11 +21,10 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -44,6 +43,7 @@ type DataStats struct {
 	// The data statistics specific to a DataType.
 	//
 	// Types that are assignable to Stats:
+	//
 	//	*DataStats_Float64Stats
 	//	*DataStats_StringStats
 	//	*DataStats_TimestampStats

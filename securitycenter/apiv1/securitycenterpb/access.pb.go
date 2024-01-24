@@ -21,11 +21,10 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -78,7 +77,6 @@ type Access struct {
 	// This is a scheme-less URI full resource name. For example:
 	//
 	// "//iam.googleapis.com/projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}".
-	//
 	ServiceAccountKeyName string `protobuf:"bytes,8,opt,name=service_account_key_name,json=serviceAccountKeyName,proto3" json:"service_account_key_name,omitempty"`
 	// The identity delegation history of an authenticated service account that
 	// made the request. The `serviceAccountDelegationInfo[]` object contains

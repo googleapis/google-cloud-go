@@ -21,11 +21,10 @@
 package agentendpointpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -922,6 +921,7 @@ type ExecStepConfig struct {
 	// Location of the executable.
 	//
 	// Types that are assignable to Executable:
+	//
 	//	*ExecStepConfig_LocalPath
 	//	*ExecStepConfig_GcsObject
 	Executable isExecStepConfig_Executable `protobuf_oneof:"executable"`

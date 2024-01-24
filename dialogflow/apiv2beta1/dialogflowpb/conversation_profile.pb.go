@@ -21,11 +21,8 @@
 package dialogflowpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -540,6 +539,7 @@ type HumanAgentHandoffConfig struct {
 	// Required. Specifies which agent service to connect for human agent handoff.
 	//
 	// Types that are assignable to AgentService:
+	//
 	//	*HumanAgentHandoffConfig_LivePersonConfig_
 	//	*HumanAgentHandoffConfig_SalesforceLiveAgentConfig_
 	AgentService isHumanAgentHandoffConfig_AgentService `protobuf_oneof:"agent_service"`
@@ -1660,6 +1660,7 @@ type HumanAgentAssistantConfig_SuggestionQueryConfig struct {
 	// Source of query.
 	//
 	// Types that are assignable to QuerySource:
+	//
 	//	*HumanAgentAssistantConfig_SuggestionQueryConfig_KnowledgeBaseQuerySource_
 	//	*HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource_
 	//	*HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource_
@@ -1830,11 +1831,12 @@ type HumanAgentAssistantConfig_ConversationModelConfig struct {
 	// Version of current baseline model. It will be ignored if
 	// [model][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.ConversationModelConfig.model]
 	// is set. Valid versions are:
-	//   Article Suggestion baseline model:
-	//     - 0.9
-	//     - 1.0 (default)
-	//   Summarization baseline model:
-	//     - 1.0
+	//
+	//	Article Suggestion baseline model:
+	//	  - 0.9
+	//	  - 1.0 (default)
+	//	Summarization baseline model:
+	//	  - 1.0
 	BaselineModelVersion string `protobuf:"bytes,8,opt,name=baseline_model_version,json=baselineModelVersion,proto3" json:"baseline_model_version,omitempty"`
 }
 

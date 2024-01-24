@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -362,7 +361,6 @@ type Model struct {
 	// [InputConfig][google.cloud.aiplatform.v1.BatchPredictionJob.InputConfig]
 	// object.
 	//
-	//
 	// If this Model doesn't support any of these formats it means it cannot be
 	// used with a
 	// [BatchPredictionJob][google.cloud.aiplatform.v1.BatchPredictionJob].
@@ -399,7 +397,6 @@ type Model struct {
 	// Each prediction is a single row in a BigQuery table, uses
 	// [BigQueryDestination][google.cloud.aiplatform.v1.BatchPredictionJob.OutputConfig.bigquery_destination]
 	// .
-	//
 	//
 	// If this Model doesn't support any of these formats it means it cannot be
 	// used with a
@@ -991,14 +988,16 @@ type ModelContainerSpec struct {
 	//
 	// ```json
 	// [
-	//   {
-	//     "name": "VAR_1",
-	//     "value": "foo"
-	//   },
-	//   {
-	//     "name": "VAR_2",
-	//     "value": "$(VAR_1) bar"
-	//   }
+	//
+	//	{
+	//	  "name": "VAR_1",
+	//	  "value": "foo"
+	//	},
+	//	{
+	//	  "name": "VAR_2",
+	//	  "value": "$(VAR_1) bar"
+	//	}
+	//
 	// ]
 	// ```
 	//
@@ -1020,9 +1019,11 @@ type ModelContainerSpec struct {
 	//
 	// ```json
 	// [
-	//   {
-	//     "containerPort": 8080
-	//   }
+	//
+	//	{
+	//	  "containerPort": 8080
+	//	}
+	//
 	// ]
 	// ```
 	//
@@ -1049,18 +1050,19 @@ type ModelContainerSpec struct {
 	// <code>/v1/endpoints/<var>ENDPOINT</var>/deployedModels/<var>DEPLOYED_MODEL</var>:predict</code>
 	// The placeholders in this value are replaced as follows:
 	//
-	// * <var>ENDPOINT</var>: The last segment (following `endpoints/`)of the
-	//   Endpoint.name][] field of the Endpoint where this Model has been
-	//   deployed. (Vertex AI makes this value available to your container code
-	//   as the [`AIP_ENDPOINT_ID` environment
-	//  variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
+	//   - <var>ENDPOINT</var>: The last segment (following `endpoints/`)of the
+	//     Endpoint.name][] field of the Endpoint where this Model has been
+	//     deployed. (Vertex AI makes this value available to your container code
+	//     as the [`AIP_ENDPOINT_ID` environment
+	//     variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
 	//
 	// * <var>DEPLOYED_MODEL</var>:
 	// [DeployedModel.id][google.cloud.aiplatform.v1.DeployedModel.id] of the
 	// `DeployedModel`.
-	//   (Vertex AI makes this value available to your container code
-	//   as the [`AIP_DEPLOYED_MODEL_ID` environment
-	//   variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
+	//
+	//	(Vertex AI makes this value available to your container code
+	//	as the [`AIP_DEPLOYED_MODEL_ID` environment
+	//	variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
 	PredictRoute string `protobuf:"bytes,6,opt,name=predict_route,json=predictRoute,proto3" json:"predict_route,omitempty"`
 	// Immutable. HTTP path on the container to send health checks to. Vertex AI
 	// intermittently sends GET requests to this path on the container's IP
@@ -1079,18 +1081,19 @@ type ModelContainerSpec struct {
 	// <code>/v1/endpoints/<var>ENDPOINT</var>/deployedModels/<var>DEPLOYED_MODEL</var>:predict</code>
 	// The placeholders in this value are replaced as follows:
 	//
-	// * <var>ENDPOINT</var>: The last segment (following `endpoints/`)of the
-	//   Endpoint.name][] field of the Endpoint where this Model has been
-	//   deployed. (Vertex AI makes this value available to your container code
-	//   as the [`AIP_ENDPOINT_ID` environment
-	//   variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
+	//   - <var>ENDPOINT</var>: The last segment (following `endpoints/`)of the
+	//     Endpoint.name][] field of the Endpoint where this Model has been
+	//     deployed. (Vertex AI makes this value available to your container code
+	//     as the [`AIP_ENDPOINT_ID` environment
+	//     variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
 	//
 	// * <var>DEPLOYED_MODEL</var>:
 	// [DeployedModel.id][google.cloud.aiplatform.v1.DeployedModel.id] of the
 	// `DeployedModel`.
-	//   (Vertex AI makes this value available to your container code as the
-	//   [`AIP_DEPLOYED_MODEL_ID` environment
-	//   variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
+	//
+	//	(Vertex AI makes this value available to your container code as the
+	//	[`AIP_DEPLOYED_MODEL_ID` environment
+	//	variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
 	HealthRoute string `protobuf:"bytes,7,opt,name=health_route,json=healthRoute,proto3" json:"health_route,omitempty"`
 	// Immutable. List of ports to expose from the container. Vertex AI sends gRPC
 	// prediction requests that it receives to the first port on this list. Vertex
@@ -1348,6 +1351,7 @@ type Probe struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to ProbeType:
+	//
 	//	*Probe_Exec
 	ProbeType isProbe_ProbeType `protobuf_oneof:"probe_type"`
 	// How often (in seconds) to perform the probe. Default to 10 seconds.

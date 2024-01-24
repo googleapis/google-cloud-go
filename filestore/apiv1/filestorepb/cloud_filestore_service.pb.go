@@ -21,11 +21,8 @@
 package filestorepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "google.golang.org/genproto/googleapis/cloud/common"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -731,6 +730,7 @@ type FileShareConfig struct {
 	// share is created from scratch.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*FileShareConfig_SourceBackup
 	Source isFileShareConfig_Source `protobuf_oneof:"source"`
 	// Nfs Export Options.
@@ -1289,6 +1289,7 @@ type RestoreInstanceRequest struct {
 	// is being restored to.
 	FileShare string `protobuf:"bytes,2,opt,name=file_share,json=fileShare,proto3" json:"file_share,omitempty"`
 	// Types that are assignable to Source:
+	//
 	//	*RestoreInstanceRequest_SourceBackup
 	Source isRestoreInstanceRequest_Source `protobuf_oneof:"source"`
 }

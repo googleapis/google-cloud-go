@@ -21,11 +21,10 @@
 package migrationpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -355,6 +354,7 @@ type TranslationTaskDetails struct {
 	// The language specific settings for the translation task.
 	//
 	// Types that are assignable to LanguageOptions:
+	//
 	//	*TranslationTaskDetails_TeradataOptions
 	//	*TranslationTaskDetails_BteqOptions
 	LanguageOptions isTranslationTaskDetails_LanguageOptions `protobuf_oneof:"language_options"`

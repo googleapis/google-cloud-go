@@ -21,12 +21,11 @@
 package channelpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -314,6 +313,7 @@ type SubscriberEvent struct {
 	// This is a required field.
 	//
 	// Types that are assignable to Event:
+	//
 	//	*SubscriberEvent_CustomerEvent
 	//	*SubscriberEvent_EntitlementEvent
 	Event isSubscriberEvent_Event `protobuf_oneof:"event"`

@@ -22,15 +22,14 @@ package texttospeechpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -494,6 +493,7 @@ type SynthesisInput struct {
 	// The input source, which is either plain text or SSML.
 	//
 	// Types that are assignable to InputSource:
+	//
 	//	*SynthesisInput_Text
 	//	*SynthesisInput_Ssml
 	InputSource isSynthesisInput_InputSource `protobuf_oneof:"input_source"`

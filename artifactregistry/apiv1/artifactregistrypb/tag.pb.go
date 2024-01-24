@@ -21,13 +21,12 @@
 package artifactregistrypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -116,12 +115,12 @@ type ListTagsRequest struct {
 	// An expression for filtering the results of the request. Filter rules are
 	// case insensitive. The fields eligible for filtering are:
 	//
-	//   * `version`
+	//   - `version`
 	//
-	//  An example of using a filter:
+	//     An example of using a filter:
 	//
-	//   * `version="projects/p1/locations/us-central1/repositories/repo1/packages/pkg1/versions/1.0"`
-	//   --> Tags that are applied to the version `1.0` in package `pkg1`.
+	//   - `version="projects/p1/locations/us-central1/repositories/repo1/packages/pkg1/versions/1.0"`
+	//     --> Tags that are applied to the version `1.0` in package `pkg1`.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The maximum number of tags to return. Maximum page size is 10,000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`

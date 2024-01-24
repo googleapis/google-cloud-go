@@ -21,13 +21,12 @@
 package gkebackuppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -176,6 +175,7 @@ type Backup struct {
 	// value.
 	//
 	// Types that are assignable to BackupScope:
+	//
 	//	*Backup_AllNamespaces
 	//	*Backup_SelectedNamespaces
 	//	*Backup_SelectedApplications
@@ -502,6 +502,7 @@ type Backup_ClusterMetadata struct {
 	// Platform-specific version
 	//
 	// Types that are assignable to PlatformVersion:
+	//
 	//	*Backup_ClusterMetadata_GkeVersion
 	//	*Backup_ClusterMetadata_AnthosVersion
 	PlatformVersion isBackup_ClusterMetadata_PlatformVersion `protobuf_oneof:"platform_version"`

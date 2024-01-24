@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -700,15 +699,15 @@ type DeleteEntityTypeRequest struct {
 	// This field has no effect for entity type not being used.
 	// For entity types that are used by intents or pages:
 	//
-	// *  If `force` is set to false, an error will be returned with message
-	//    indicating the referencing resources.
-	// *  If `force` is set to true, Dialogflow will remove the entity type, as
-	//    well as any references to the entity type (i.e. Page
-	//    [parameter][google.cloud.dialogflow.cx.v3beta1.Form.Parameter] of the
-	//    entity type will be changed to
-	//    '@sys.any' and intent
-	//    [parameter][google.cloud.dialogflow.cx.v3beta1.Intent.Parameter] of the
-	//    entity type will be removed).
+	//   - If `force` is set to false, an error will be returned with message
+	//     indicating the referencing resources.
+	//   - If `force` is set to true, Dialogflow will remove the entity type, as
+	//     well as any references to the entity type (i.e. Page
+	//     [parameter][google.cloud.dialogflow.cx.v3beta1.Form.Parameter] of the
+	//     entity type will be changed to
+	//     '@sys.any' and intent
+	//     [parameter][google.cloud.dialogflow.cx.v3beta1.Intent.Parameter] of the
+	//     entity type will be removed).
 	Force bool `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"`
 }
 
@@ -774,7 +773,7 @@ type EntityType_Entity struct {
 	//
 	// For `KIND_LIST` entity types:
 	//
-	// *   A string that can contain references to other entity types (with or
+	//   - A string that can contain references to other entity types (with or
 	//     without aliases).
 	Value string `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
 	// Required. A collection of value synonyms. For example, if the entity type

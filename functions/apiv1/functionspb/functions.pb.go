@@ -21,12 +21,9 @@
 package functionspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -37,6 +34,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -364,6 +363,7 @@ type CloudFunction struct {
 	// The location of the function source code.
 	//
 	// Types that are assignable to SourceCode:
+	//
 	//	*CloudFunction_SourceArchiveUrl
 	//	*CloudFunction_SourceRepository
 	//	*CloudFunction_SourceUploadUrl
@@ -371,6 +371,7 @@ type CloudFunction struct {
 	// An event that triggers the function.
 	//
 	// Types that are assignable to Trigger:
+	//
 	//	*CloudFunction_HttpsTrigger
 	//	*CloudFunction_EventTrigger
 	Trigger isCloudFunction_Trigger `protobuf_oneof:"trigger"`
@@ -458,17 +459,17 @@ type CloudFunction struct {
 	// CryptoKey Encrypter/Decrypter (roles/cloudkms.cryptoKeyEncrypterDecrypter)'
 	// on the Key/KeyRing/Project/Organization (least access preferred).
 	//
-	// 1. Google Cloud Functions service account
-	//    (service-{project_number}@gcf-admin-robot.iam.gserviceaccount.com) -
-	//    Required to protect the function's image.
-	// 2. Google Storage service account
-	//    (service-{project_number}@gs-project-accounts.iam.gserviceaccount.com) -
-	//    Required to protect the function's source code.
-	//    If this service account does not exist, deploying a function without a
-	//    KMS key or retrieving the service agent name provisions it. For more
-	//    information, see
-	//    https://cloud.google.com/storage/docs/projects#service-agents and
-	//    https://cloud.google.com/storage/docs/getting-service-agent#gsutil.
+	//  1. Google Cloud Functions service account
+	//     (service-{project_number}@gcf-admin-robot.iam.gserviceaccount.com) -
+	//     Required to protect the function's image.
+	//  2. Google Storage service account
+	//     (service-{project_number}@gs-project-accounts.iam.gserviceaccount.com) -
+	//     Required to protect the function's source code.
+	//     If this service account does not exist, deploying a function without a
+	//     KMS key or retrieving the service agent name provisions it. For more
+	//     information, see
+	//     https://cloud.google.com/storage/docs/projects#service-agents and
+	//     https://cloud.google.com/storage/docs/getting-service-agent#gsutil.
 	//
 	// Google Cloud Functions delegates access to service agents to protect
 	// function resources in internal projects that are not accessible by the
@@ -523,6 +524,7 @@ type CloudFunction struct {
 	// Runtime update policy can be one of the following.
 	//
 	// Types that are assignable to RuntimeUpdatePolicy:
+	//
 	//	*CloudFunction_AutomaticUpdatePolicy_
 	//	*CloudFunction_OnDeployUpdatePolicy_
 	RuntimeUpdatePolicy isCloudFunction_RuntimeUpdatePolicy `protobuf_oneof:"runtime_update_policy"`
@@ -1041,12 +1043,13 @@ type EventTrigger struct {
 	// Event types match pattern `providers/*/eventTypes/*.*`.
 	// The pattern contains:
 	//
-	// 1. namespace: For example, `cloud.storage` and
-	//    `google.firebase.analytics`.
-	// 2. resource type: The type of resource on which event occurs. For
-	//    example, the Google Cloud Storage API includes the type `object`.
-	// 3. action: The action that generates the event. For example, action for
-	//    a Google Cloud Storage Object is 'change'.
+	//  1. namespace: For example, `cloud.storage` and
+	//     `google.firebase.analytics`.
+	//  2. resource type: The type of resource on which event occurs. For
+	//     example, the Google Cloud Storage API includes the type `object`.
+	//  3. action: The action that generates the event. For example, action for
+	//     a Google Cloud Storage Object is 'change'.
+	//
 	// These parts are lower case.
 	EventType string `protobuf:"bytes,1,opt,name=event_type,json=eventType,proto3" json:"event_type,omitempty"`
 	// Required. The resource(s) from which to observe events, for example,
@@ -1055,13 +1058,13 @@ type EventTrigger struct {
 	// Not all syntactically correct values are accepted by all services. For
 	// example:
 	//
-	// 1. The authorization model must support it. Google Cloud Functions
-	//    only allows EventTriggers to be deployed that observe resources in the
-	//    same project as the `CloudFunction`.
-	// 2. The resource type must match the pattern expected for an
-	//    `event_type`. For example, an `EventTrigger` that has an
-	//    `event_type` of "google.pubsub.topic.publish" should have a resource
-	//    that matches Google Cloud Pub/Sub topics.
+	//  1. The authorization model must support it. Google Cloud Functions
+	//     only allows EventTriggers to be deployed that observe resources in the
+	//     same project as the `CloudFunction`.
+	//  2. The resource type must match the pattern expected for an
+	//     `event_type`. For example, an `EventTrigger` that has an
+	//     `event_type` of "google.pubsub.topic.publish" should have a resource
+	//     that matches Google Cloud Pub/Sub topics.
 	//
 	// Additionally, some services may support short names when creating an
 	// `EventTrigger`. These will always be returned in the normalized "long"
@@ -1149,6 +1152,7 @@ type FailurePolicy struct {
 	// Defines the action taken in case of a function execution failure.
 	//
 	// Types that are assignable to Action:
+	//
 	//	*FailurePolicy_Retry_
 	Action isFailurePolicy_Action `protobuf_oneof:"action"`
 }
@@ -3338,12 +3342,12 @@ type CloudFunctionsServiceClient interface {
 	// When uploading source code to the generated signed URL, please follow
 	// these restrictions:
 	//
-	// * Source file type should be a zip file.
-	// * Source file size should not exceed 100MB limit.
-	// * No credentials should be attached - the signed URLs provide access to the
-	//   target bucket using internal service identity; if credentials were
-	//   attached, the identity from the credentials would be used, but that
-	//   identity does not have permissions to upload files to the URL.
+	//   - Source file type should be a zip file.
+	//   - Source file size should not exceed 100MB limit.
+	//   - No credentials should be attached - the signed URLs provide access to the
+	//     target bucket using internal service identity; if credentials were
+	//     attached, the identity from the credentials would be used, but that
+	//     identity does not have permissions to upload files to the URL.
 	//
 	// When making a HTTP PUT request, these two headers need to be specified:
 	//
@@ -3512,12 +3516,12 @@ type CloudFunctionsServiceServer interface {
 	// When uploading source code to the generated signed URL, please follow
 	// these restrictions:
 	//
-	// * Source file type should be a zip file.
-	// * Source file size should not exceed 100MB limit.
-	// * No credentials should be attached - the signed URLs provide access to the
-	//   target bucket using internal service identity; if credentials were
-	//   attached, the identity from the credentials would be used, but that
-	//   identity does not have permissions to upload files to the URL.
+	//   - Source file type should be a zip file.
+	//   - Source file size should not exceed 100MB limit.
+	//   - No credentials should be attached - the signed URLs provide access to the
+	//     target bucket using internal service identity; if credentials were
+	//     attached, the identity from the credentials would be used, but that
+	//     identity does not have permissions to upload files to the URL.
 	//
 	// When making a HTTP PUT request, these two headers need to be specified:
 	//

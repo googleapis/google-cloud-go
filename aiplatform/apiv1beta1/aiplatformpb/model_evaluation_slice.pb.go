@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -152,12 +151,12 @@ type ModelEvaluationSlice_Slice struct {
 
 	// Output only. The dimension of the slice.
 	// Well-known dimensions are:
-	//   * `annotationSpec`: This slice is on the test data that has either
+	//   - `annotationSpec`: This slice is on the test data that has either
 	//     ground truth or prediction with
 	//     [AnnotationSpec.display_name][google.cloud.aiplatform.v1beta1.AnnotationSpec.display_name]
 	//     equals to
 	//     [value][google.cloud.aiplatform.v1beta1.ModelEvaluationSlice.Slice.value].
-	//   * `slice`: This slice is a user customized slice defined by its
+	//   - `slice`: This slice is a user customized slice defined by its
 	//     SliceSpec.
 	Dimension string `protobuf:"bytes,1,opt,name=dimension,proto3" json:"dimension,omitempty"`
 	// Output only. The value of the dimension in this slice.
@@ -332,6 +331,7 @@ type ModelEvaluationSlice_Slice_SliceSpec_SliceConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Kind:
+	//
 	//	*ModelEvaluationSlice_Slice_SliceSpec_SliceConfig_Value
 	//	*ModelEvaluationSlice_Slice_SliceSpec_SliceConfig_Range
 	//	*ModelEvaluationSlice_Slice_SliceSpec_SliceConfig_AllValues
@@ -497,6 +497,7 @@ type ModelEvaluationSlice_Slice_SliceSpec_Value struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Kind:
+	//
 	//	*ModelEvaluationSlice_Slice_SliceSpec_Value_StringValue
 	//	*ModelEvaluationSlice_Slice_SliceSpec_Value_FloatValue
 	Kind isModelEvaluationSlice_Slice_SliceSpec_Value_Kind `protobuf_oneof:"kind"`

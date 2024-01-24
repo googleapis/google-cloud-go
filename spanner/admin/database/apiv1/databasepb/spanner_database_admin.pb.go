@@ -21,12 +21,9 @@
 package databasepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -229,6 +228,7 @@ type RestoreInfo struct {
 	// Information about the source used to restore the database.
 	//
 	// Types that are assignable to SourceInfo:
+	//
 	//	*RestoreInfo_BackupInfo
 	SourceInfo isRestoreInfo_SourceInfo `protobuf_oneof:"source_info"`
 }
@@ -621,7 +621,7 @@ type CreateDatabaseRequest struct {
 	// new database.  The database ID must conform to the regular expression
 	// `[a-z][a-z0-9_\-]*[a-z0-9]` and be between 2 and 30 characters in length.
 	// If the database ID is a reserved word or if it contains a hyphen, the
-	// database ID must be enclosed in backticks (`` ` ``).
+	// database ID must be enclosed in backticks (“ ` “).
 	CreateStatement string `protobuf:"bytes,2,opt,name=create_statement,json=createStatement,proto3" json:"create_statement,omitempty"`
 	// Optional. A list of DDL statements to run inside the newly created
 	// database. Statements can create tables, indexes, etc. These
@@ -1391,17 +1391,17 @@ type ListDatabaseOperationsRequest struct {
 	// The following fields in the [Operation][google.longrunning.Operation]
 	// are eligible for filtering:
 	//
-	//   * `name` - The name of the long-running operation
-	//   * `done` - False if the operation is in progress, else true.
-	//   * `metadata.@type` - the type of metadata. For example, the type string
-	//      for [RestoreDatabaseMetadata][google.spanner.admin.database.v1.RestoreDatabaseMetadata] is
-	//      `type.googleapis.com/google.spanner.admin.database.v1.RestoreDatabaseMetadata`.
-	//   * `metadata.<field_name>` - any field in metadata.value.
-	//      `metadata.@type` must be specified first, if filtering on metadata
-	//      fields.
-	//   * `error` - Error associated with the long-running operation.
-	//   * `response.@type` - the type of response.
-	//   * `response.<field_name>` - any field in response.value.
+	//   - `name` - The name of the long-running operation
+	//   - `done` - False if the operation is in progress, else true.
+	//   - `metadata.@type` - the type of metadata. For example, the type string
+	//     for [RestoreDatabaseMetadata][google.spanner.admin.database.v1.RestoreDatabaseMetadata] is
+	//     `type.googleapis.com/google.spanner.admin.database.v1.RestoreDatabaseMetadata`.
+	//   - `metadata.<field_name>` - any field in metadata.value.
+	//     `metadata.@type` must be specified first, if filtering on metadata
+	//     fields.
+	//   - `error` - Error associated with the long-running operation.
+	//   - `response.@type` - the type of response.
+	//   - `response.<field_name>` - any field in response.value.
 	//
 	// You can combine multiple expressions by enclosing each expression in
 	// parentheses. By default, expressions are combined with AND logic. However,
@@ -1409,19 +1409,19 @@ type ListDatabaseOperationsRequest struct {
 	//
 	// Here are a few examples:
 	//
-	//   * `done:true` - The operation is complete.
-	//   * `(metadata.@type=type.googleapis.com/google.spanner.admin.database.v1.RestoreDatabaseMetadata) AND` \
+	//   - `done:true` - The operation is complete.
+	//   - `(metadata.@type=type.googleapis.com/google.spanner.admin.database.v1.RestoreDatabaseMetadata) AND` \
 	//     `(metadata.source_type:BACKUP) AND` \
 	//     `(metadata.backup_info.backup:backup_howl) AND` \
 	//     `(metadata.name:restored_howl) AND` \
 	//     `(metadata.progress.start_time < \"2018-03-28T14:50:00Z\") AND` \
 	//     `(error:*)` - Return operations where:
-	//     * The operation's metadata type is [RestoreDatabaseMetadata][google.spanner.admin.database.v1.RestoreDatabaseMetadata].
-	//     * The database is restored from a backup.
-	//     * The backup name contains "backup_howl".
-	//     * The restored database's name contains "restored_howl".
-	//     * The operation started before 2018-03-28T14:50:00Z.
-	//     * The operation resulted in an error.
+	//   - The operation's metadata type is [RestoreDatabaseMetadata][google.spanner.admin.database.v1.RestoreDatabaseMetadata].
+	//   - The database is restored from a backup.
+	//   - The backup name contains "backup_howl".
+	//   - The restored database's name contains "restored_howl".
+	//   - The operation started before 2018-03-28T14:50:00Z.
+	//   - The operation resulted in an error.
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Number of operations to be returned in the response. If 0 or
 	// less, defaults to the server's maximum allowed page size.
@@ -1579,6 +1579,7 @@ type RestoreDatabaseRequest struct {
 	// Required. The source from which to restore.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*RestoreDatabaseRequest_Backup
 	Source isRestoreDatabaseRequest_Source `protobuf_oneof:"source"`
 	// Optional. An encryption configuration describing the encryption type and key
@@ -1746,6 +1747,7 @@ type RestoreDatabaseMetadata struct {
 	// `source` in [RestoreDatabaseRequest][google.spanner.admin.database.v1.RestoreDatabaseRequest].
 	//
 	// Types that are assignable to SourceInfo:
+	//
 	//	*RestoreDatabaseMetadata_BackupInfo
 	SourceInfo isRestoreDatabaseMetadata_SourceInfo `protobuf_oneof:"source_info"`
 	// The progress of the
@@ -3335,24 +3337,24 @@ type DatabaseAdminClient interface {
 	//
 	// While the operation is pending:
 	//
-	//   * The database's
+	//   - The database's
 	//     [reconciling][google.spanner.admin.database.v1.Database.reconciling]
 	//     field is set to true.
-	//   * Cancelling the operation is best-effort. If the cancellation succeeds,
+	//   - Cancelling the operation is best-effort. If the cancellation succeeds,
 	//     the operation metadata's
 	//     [cancel_time][google.spanner.admin.database.v1.UpdateDatabaseMetadata.cancel_time]
 	//     is set, the updates are reverted, and the operation terminates with a
 	//     `CANCELLED` status.
-	//   * New UpdateDatabase requests will return a `FAILED_PRECONDITION` error
+	//   - New UpdateDatabase requests will return a `FAILED_PRECONDITION` error
 	//     until the pending operation is done (returns successfully or with
 	//     error).
-	//   * Reading the database via the API continues to give the pre-request
+	//   - Reading the database via the API continues to give the pre-request
 	//     values.
 	//
 	// Upon completion of the returned operation:
 	//
-	//   * The new values are in effect and readable via the API.
-	//   * The database's
+	//   - The new values are in effect and readable via the API.
+	//   - The database's
 	//     [reconciling][google.spanner.admin.database.v1.Database.reconciling]
 	//     field becomes false.
 	//
@@ -3699,24 +3701,24 @@ type DatabaseAdminServer interface {
 	//
 	// While the operation is pending:
 	//
-	//   * The database's
+	//   - The database's
 	//     [reconciling][google.spanner.admin.database.v1.Database.reconciling]
 	//     field is set to true.
-	//   * Cancelling the operation is best-effort. If the cancellation succeeds,
+	//   - Cancelling the operation is best-effort. If the cancellation succeeds,
 	//     the operation metadata's
 	//     [cancel_time][google.spanner.admin.database.v1.UpdateDatabaseMetadata.cancel_time]
 	//     is set, the updates are reverted, and the operation terminates with a
 	//     `CANCELLED` status.
-	//   * New UpdateDatabase requests will return a `FAILED_PRECONDITION` error
+	//   - New UpdateDatabase requests will return a `FAILED_PRECONDITION` error
 	//     until the pending operation is done (returns successfully or with
 	//     error).
-	//   * Reading the database via the API continues to give the pre-request
+	//   - Reading the database via the API continues to give the pre-request
 	//     values.
 	//
 	// Upon completion of the returned operation:
 	//
-	//   * The new values are in effect and readable via the API.
-	//   * The database's
+	//   - The new values are in effect and readable via the API.
+	//   - The database's
 	//     [reconciling][google.spanner.admin.database.v1.Database.reconciling]
 	//     field becomes false.
 	//

@@ -21,13 +21,12 @@
 package recommendationenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -105,22 +104,22 @@ type UserEvent struct {
 
 	// Required. User event type. Allowed values are:
 	//
-	// * `add-to-cart` Products being added to cart.
-	// * `add-to-list` Items being added to a list (shopping list, favorites
-	//   etc).
-	// * `category-page-view` Special pages such as sale or promotion pages
-	//   viewed.
-	// * `checkout-start` User starting a checkout process.
-	// * `detail-page-view` Products detail page viewed.
-	// * `home-page-view` Homepage viewed.
-	// * `page-visit` Generic page visits not included in the event types above.
-	// * `purchase-complete` User finishing a purchase.
-	// * `refund` Purchased items being refunded or returned.
-	// * `remove-from-cart` Products being removed from cart.
-	// * `remove-from-list` Items being removed from a list.
-	// * `search` Product search.
-	// * `shopping-cart-page-view` User viewing a shopping cart.
-	// * `impression` List of items displayed. Used by Google Tag Manager.
+	//   - `add-to-cart` Products being added to cart.
+	//   - `add-to-list` Items being added to a list (shopping list, favorites
+	//     etc).
+	//   - `category-page-view` Special pages such as sale or promotion pages
+	//     viewed.
+	//   - `checkout-start` User starting a checkout process.
+	//   - `detail-page-view` Products detail page viewed.
+	//   - `home-page-view` Homepage viewed.
+	//   - `page-visit` Generic page visits not included in the event types above.
+	//   - `purchase-complete` User finishing a purchase.
+	//   - `refund` Purchased items being refunded or returned.
+	//   - `remove-from-cart` Products being removed from cart.
+	//   - `remove-from-list` Items being removed from a list.
+	//   - `search` Product search.
+	//   - `shopping-cart-page-view` User viewing a shopping cart.
+	//   - `impression` List of items displayed. Used by Google Tag Manager.
 	EventType string `protobuf:"bytes,1,opt,name=event_type,json=eventType,proto3" json:"event_type,omitempty"`
 	// Required. User information.
 	UserInfo *UserInfo `protobuf:"bytes,2,opt,name=user_info,json=userInfo,proto3" json:"user_info,omitempty"`
@@ -144,9 +143,9 @@ type UserEvent struct {
 	//
 	// This field is optional for the following event types:
 	//
-	// * `page-visit`
-	// * `shopping-cart-page-view` - note that 'product_event_detail' should be
-	//   set for this unless the shopping cart is empty.
+	//   - `page-visit`
+	//   - `shopping-cart-page-view` - note that 'product_event_detail' should be
+	//     set for this unless the shopping cart is empty.
 	//
 	// This field is not allowed for the following event types:
 	//
@@ -496,9 +495,9 @@ type ProductEventDetail struct {
 	//
 	// This field is optional for the following event types:
 	//
-	// * `page-visit`
-	// * `shopping-cart-page-view` - note that 'product_details' should be set for
-	//   this unless the shopping cart is empty.
+	//   - `page-visit`
+	//   - `shopping-cart-page-view` - note that 'product_details' should be set for
+	//     this unless the shopping cart is empty.
 	//
 	// This field is not allowed for the following event types:
 	//
@@ -616,9 +615,12 @@ type PurchaseTransaction struct {
 	// other costs.
 	//
 	// Total product cost such that
-	//   profit = revenue - (sum(taxes) + sum(costs))
+	//
+	//	profit = revenue - (sum(taxes) + sum(costs))
+	//
 	// If product_cost is not set, then
-	//   profit = revenue - tax - shipping - sum(CatalogItem.costs).
+	//
+	//	profit = revenue - tax - shipping - sum(CatalogItem.costs).
 	//
 	// If CatalogItem.cost is not specified for one of the items, CatalogItem.cost
 	// based profit *cannot* be calculated for this Transaction.

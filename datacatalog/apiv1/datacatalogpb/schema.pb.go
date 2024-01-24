@@ -21,12 +21,11 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -253,6 +252,7 @@ type ColumnSchema struct {
 	// Information only applying for columns in Entries from a specific system.
 	//
 	// Types that are assignable to SystemSpec:
+	//
 	//	*ColumnSchema_LookerColumnSpec_
 	SystemSpec isColumnSchema_SystemSpec `protobuf_oneof:"system_spec"`
 	// Optional. Garbage collection policy for the column or column family.

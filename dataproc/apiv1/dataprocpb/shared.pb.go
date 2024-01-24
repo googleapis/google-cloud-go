@@ -21,14 +21,13 @@
 package dataprocpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -405,6 +404,7 @@ type ExecutionConfig struct {
 	// Network configuration for workload execution.
 	//
 	// Types that are assignable to Network:
+	//
 	//	*ExecutionConfig_NetworkUri
 	//	*ExecutionConfig_SubnetworkUri
 	Network isExecutionConfig_Network `protobuf_oneof:"network"`
@@ -956,6 +956,7 @@ type KubernetesClusterConfig struct {
 	// specified, the name of the Dataproc Cluster is used.
 	KubernetesNamespace string `protobuf:"bytes,1,opt,name=kubernetes_namespace,json=kubernetesNamespace,proto3" json:"kubernetes_namespace,omitempty"`
 	// Types that are assignable to Config:
+	//
 	//	*KubernetesClusterConfig_GkeClusterConfig
 	Config isKubernetesClusterConfig_Config `protobuf_oneof:"config"`
 	// Optional. The software configuration for this Dataproc cluster running on

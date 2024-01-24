@@ -22,9 +22,6 @@ package monitoringpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -52,7 +51,7 @@ type ListUptimeCheckConfigsRequest struct {
 	// [project](https://cloud.google.com/monitoring/api/v3#project_name) whose
 	// Uptime check configurations are listed. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// If provided, this field specifies the criteria that must be met by
 	// uptime checks to be included in the response.
@@ -211,7 +210,7 @@ type GetUptimeCheckConfigRequest struct {
 
 	// Required. The Uptime check configuration to retrieve. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/uptimeCheckConfigs/[UPTIME_CHECK_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/uptimeCheckConfigs/[UPTIME_CHECK_ID]
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -264,7 +263,7 @@ type CreateUptimeCheckConfigRequest struct {
 	// [project](https://cloud.google.com/monitoring/api/v3#project_name) in which
 	// to create the Uptime check. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The new Uptime check configuration.
 	UptimeCheckConfig *UptimeCheckConfig `protobuf:"bytes,2,opt,name=uptime_check_config,json=uptimeCheckConfig,proto3" json:"uptime_check_config,omitempty"`
@@ -395,7 +394,7 @@ type DeleteUptimeCheckConfigRequest struct {
 
 	// Required. The Uptime check configuration to delete. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/uptimeCheckConfigs/[UPTIME_CHECK_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/uptimeCheckConfigs/[UPTIME_CHECK_ID]
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -69,10 +68,10 @@ type TensorboardExperiment struct {
 	// System reserved label keys are prefixed with `aiplatform.googleapis.com/`
 	// and are immutable. The following system labels exist for each Dataset:
 	//
-	// * `aiplatform.googleapis.com/dataset_metadata_schema`: output only. Its
-	//    value is the
-	//    [metadata_schema's][google.cloud.aiplatform.v1beta1.Dataset.metadata_schema_uri]
-	//    title.
+	//   - `aiplatform.googleapis.com/dataset_metadata_schema`: output only. Its
+	//     value is the
+	//     [metadata_schema's][google.cloud.aiplatform.v1beta1.Dataset.metadata_schema_uri]
+	//     title.
 	Labels map[string]string `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Used to perform consistent read-modify-write updates. If not set, a blind
 	// "overwrite" update happens.

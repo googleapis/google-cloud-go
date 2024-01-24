@@ -22,15 +22,14 @@ package languagepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -357,6 +356,7 @@ type Document struct {
 	// Google Cloud Storage URI.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Document_Content
 	//	*Document_GcsContentUri
 	Source isDocument_Source `protobuf_oneof:"source"`

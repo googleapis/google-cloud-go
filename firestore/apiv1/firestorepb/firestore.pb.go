@@ -22,9 +22,6 @@ package firestorepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -135,6 +134,7 @@ type GetDocumentRequest struct {
 	// If not set, defaults to strong consistency.
 	//
 	// Types that are assignable to ConsistencySelector:
+	//
 	//	*GetDocumentRequest_Transaction
 	//	*GetDocumentRequest_ReadTime
 	ConsistencySelector isGetDocumentRequest_ConsistencySelector `protobuf_oneof:"consistency_selector"`
@@ -278,6 +278,7 @@ type ListDocumentsRequest struct {
 	// If not set, defaults to strong consistency.
 	//
 	// Types that are assignable to ConsistencySelector:
+	//
 	//	*ListDocumentsRequest_Transaction
 	//	*ListDocumentsRequest_ReadTime
 	ConsistencySelector isListDocumentsRequest_ConsistencySelector `protobuf_oneof:"consistency_selector"`
@@ -745,6 +746,7 @@ type BatchGetDocumentsRequest struct {
 	// If not set, defaults to strong consistency.
 	//
 	// Types that are assignable to ConsistencySelector:
+	//
 	//	*BatchGetDocumentsRequest_Transaction
 	//	*BatchGetDocumentsRequest_NewTransaction
 	//	*BatchGetDocumentsRequest_ReadTime
@@ -875,6 +877,7 @@ type BatchGetDocumentsResponse struct {
 	// This can be empty if the server is just returning a transaction.
 	//
 	// Types that are assignable to Result:
+	//
 	//	*BatchGetDocumentsResponse_Found
 	//	*BatchGetDocumentsResponse_Missing
 	Result isBatchGetDocumentsResponse_Result `protobuf_oneof:"result"`
@@ -1294,12 +1297,14 @@ type RunQueryRequest struct {
 	// The query to run.
 	//
 	// Types that are assignable to QueryType:
+	//
 	//	*RunQueryRequest_StructuredQuery
 	QueryType isRunQueryRequest_QueryType `protobuf_oneof:"query_type"`
 	// The consistency mode for this transaction.
 	// If not set, defaults to strong consistency.
 	//
 	// Types that are assignable to ConsistencySelector:
+	//
 	//	*RunQueryRequest_Transaction
 	//	*RunQueryRequest_NewTransaction
 	//	*RunQueryRequest_ReadTime
@@ -1474,6 +1479,7 @@ type RunQueryResponse struct {
 	// `document` present, but when set, no more results are returned.
 	//
 	// Types that are assignable to ContinuationSelector:
+	//
 	//	*RunQueryResponse_Done
 	ContinuationSelector isRunQueryResponse_ContinuationSelector `protobuf_oneof:"continuation_selector"`
 	// Query plan and execution statistics. Note that the returned stats are
@@ -1594,11 +1600,13 @@ type RunAggregationQueryRequest struct {
 	// The query to run.
 	//
 	// Types that are assignable to QueryType:
+	//
 	//	*RunAggregationQueryRequest_StructuredAggregationQuery
 	QueryType isRunAggregationQueryRequest_QueryType `protobuf_oneof:"query_type"`
 	// The consistency mode for the query, defaults to strong consistency.
 	//
 	// Types that are assignable to ConsistencySelector:
+	//
 	//	*RunAggregationQueryRequest_Transaction
 	//	*RunAggregationQueryRequest_NewTransaction
 	//	*RunAggregationQueryRequest_ReadTime
@@ -1852,6 +1860,7 @@ type PartitionQueryRequest struct {
 	// The query to partition.
 	//
 	// Types that are assignable to QueryType:
+	//
 	//	*PartitionQueryRequest_StructuredQuery
 	QueryType isPartitionQueryRequest_QueryType `protobuf_oneof:"query_type"`
 	// The desired maximum number of partition points.
@@ -1870,8 +1879,8 @@ type PartitionQueryRequest struct {
 	//
 	// For example, two subsequent calls using a page_token may return:
 	//
-	//  * cursor B, cursor M, cursor Q
-	//  * cursor A, cursor U, cursor W
+	//   - cursor B, cursor M, cursor Q
+	//   - cursor A, cursor U, cursor W
 	//
 	// To obtain a complete result set ordered with respect to the results of the
 	// query supplied to PartitionQuery, the results sets should be merged:
@@ -1889,6 +1898,7 @@ type PartitionQueryRequest struct {
 	// If not set, defaults to strong consistency.
 	//
 	// Types that are assignable to ConsistencySelector:
+	//
 	//	*PartitionQueryRequest_ReadTime
 	ConsistencySelector isPartitionQueryRequest_ConsistencySelector `protobuf_oneof:"consistency_selector"`
 }
@@ -2028,9 +2038,9 @@ type PartitionQueryResponse struct {
 	// running the following three queries will return the entire result set of
 	// the original query:
 	//
-	//  * query, end_at A
-	//  * query, start_at A, end_at B
-	//  * query, start_at B
+	//   - query, end_at A
+	//   - query, start_at A, end_at B
+	//   - query, start_at B
 	//
 	// An empty result may indicate that the query has too few results to be
 	// partitioned, or that the query is not yet supported for partitioning.
@@ -2299,6 +2309,7 @@ type ListenRequest struct {
 	// The supported target changes.
 	//
 	// Types that are assignable to TargetChange:
+	//
 	//	*ListenRequest_AddTarget
 	//	*ListenRequest_RemoveTarget
 	TargetChange isListenRequest_TargetChange `protobuf_oneof:"target_change"`
@@ -2400,6 +2411,7 @@ type ListenResponse struct {
 	// The supported responses.
 	//
 	// Types that are assignable to ResponseType:
+	//
 	//	*ListenResponse_TargetChange
 	//	*ListenResponse_DocumentChange
 	//	*ListenResponse_DocumentDelete
@@ -2535,6 +2547,7 @@ type Target struct {
 	// The type of target to listen to.
 	//
 	// Types that are assignable to TargetType:
+	//
 	//	*Target_Query
 	//	*Target_Documents
 	TargetType isTarget_TargetType `protobuf_oneof:"target_type"`
@@ -2545,6 +2558,7 @@ type Target struct {
 	// Documents are returned before any subsequent changes.
 	//
 	// Types that are assignable to ResumeType:
+	//
 	//	*Target_ResumeToken
 	//	*Target_ReadTime
 	ResumeType isTarget_ResumeType `protobuf_oneof:"resume_type"`
@@ -2835,6 +2849,7 @@ type ListCollectionIdsRequest struct {
 	// If not set, defaults to strong consistency.
 	//
 	// Types that are assignable to ConsistencySelector:
+	//
 	//	*ListCollectionIdsRequest_ReadTime
 	ConsistencySelector isListCollectionIdsRequest_ConsistencySelector `protobuf_oneof:"consistency_selector"`
 }
@@ -3186,6 +3201,7 @@ type Target_QueryTarget struct {
 	// The query to run.
 	//
 	// Types that are assignable to QueryType:
+	//
 	//	*Target_QueryTarget_StructuredQuery
 	QueryType isTarget_QueryTarget_QueryType `protobuf_oneof:"query_type"`
 }

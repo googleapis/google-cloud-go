@@ -21,13 +21,12 @@
 package talentpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -214,6 +213,7 @@ type ClientEvent struct {
 	// The detail information of a specific event type.
 	//
 	// Types that are assignable to Event:
+	//
 	//	*ClientEvent_JobEvent
 	Event isClientEvent_Event `protobuf_oneof:"event"`
 	// Notes about the event provided by recruiters or other users, for example,

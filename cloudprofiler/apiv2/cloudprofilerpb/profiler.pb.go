@@ -22,9 +22,6 @@ package cloudprofilerpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1058,7 +1057,6 @@ type ProfilerServiceClient interface {
 	// status. To a gRPC client, the extension will be return as a
 	// binary-serialized proto in the trailing metadata item named
 	// "google.rpc.retryinfo-bin".
-	//
 	CreateProfile(ctx context.Context, in *CreateProfileRequest, opts ...grpc.CallOption) (*Profile, error)
 	// CreateOfflineProfile creates a new profile resource in the offline mode.
 	// The client provides the profile to create along with the profile bytes, the
@@ -1121,7 +1119,6 @@ type ProfilerServiceServer interface {
 	// status. To a gRPC client, the extension will be return as a
 	// binary-serialized proto in the trailing metadata item named
 	// "google.rpc.retryinfo-bin".
-	//
 	CreateProfile(context.Context, *CreateProfileRequest) (*Profile, error)
 	// CreateOfflineProfile creates a new profile resource in the offline mode.
 	// The client provides the profile to create along with the profile bytes, the

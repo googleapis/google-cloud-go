@@ -21,11 +21,8 @@
 package datastreampb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -55,16 +54,19 @@ type DiscoverConnectionProfileRequest struct {
 	// The connection profile on which to run discover.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*DiscoverConnectionProfileRequest_ConnectionProfile
 	//	*DiscoverConnectionProfileRequest_ConnectionProfileName
 	Target isDiscoverConnectionProfileRequest_Target `protobuf_oneof:"target"`
 	// Types that are assignable to Depth:
+	//
 	//	*DiscoverConnectionProfileRequest_Recursive
 	//	*DiscoverConnectionProfileRequest_RecursionDepth
 	Depth isDiscoverConnectionProfileRequest_Depth `protobuf_oneof:"depth"`
 	// The data object to enrich with child data objects and metadata.
 	//
 	// Types that are assignable to DataObject:
+	//
 	//	*DiscoverConnectionProfileRequest_OracleRdbms
 	//	*DiscoverConnectionProfileRequest_MysqlRdbms
 	DataObject isDiscoverConnectionProfileRequest_DataObject `protobuf_oneof:"data_object"`
@@ -238,6 +240,7 @@ type DiscoverConnectionProfileResponse struct {
 	// The data object that has been enriched by the discover API call.
 	//
 	// Types that are assignable to DataObject:
+	//
 	//	*DiscoverConnectionProfileResponse_OracleRdbms
 	//	*DiscoverConnectionProfileResponse_MysqlRdbms
 	DataObject isDiscoverConnectionProfileResponse_DataObject `protobuf_oneof:"data_object"`

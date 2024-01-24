@@ -21,13 +21,12 @@
 package generativelanguagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -103,6 +102,7 @@ type TunedModel struct {
 	// The model used as the starting point for tuning.
 	//
 	// Types that are assignable to SourceModel:
+	//
 	//	*TunedModel_TunedModelSource
 	//	*TunedModel_BaseModel
 	SourceModel isTunedModel_SourceModel `protobuf_oneof:"source_model"`
@@ -111,8 +111,9 @@ type TunedModel struct {
 	// create, the id portion of the name will be set by concatenating the words
 	// of the display_name with hyphens and adding a random portion for
 	// uniqueness. Example:
-	//     display_name = "Sentence Translator"
-	//     name = "tunedModels/sentence-translator-u3b7m"
+	//
+	//	display_name = "Sentence Translator"
+	//	name = "tunedModels/sentence-translator-u3b7m"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The name to display for this model in user interfaces.
 	// The display name must be up to 40 characters including spaces.
@@ -526,6 +527,7 @@ type Dataset struct {
 	// Inline data or a reference to the data.
 	//
 	// Types that are assignable to Dataset:
+	//
 	//	*Dataset_Examples
 	Dataset isDataset_Dataset `protobuf_oneof:"dataset"`
 }
@@ -646,6 +648,7 @@ type TuningExample struct {
 	// The input to the model for this example.
 	//
 	// Types that are assignable to ModelInput:
+	//
 	//	*TuningExample_TextInput
 	ModelInput isTuningExample_ModelInput `protobuf_oneof:"model_input"`
 	// Required. The expected model output.

@@ -21,11 +21,8 @@
 package migrationcenterpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	money "google.golang.org/genproto/googleapis/type/money"
@@ -37,6 +34,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2085,6 +2084,7 @@ type Asset struct {
 	// with different attributes based on the type of the asset.
 	//
 	// Types that are assignable to AssetDetails:
+	//
 	//	*Asset_MachineDetails
 	AssetDetails isAsset_AssetDetails `protobuf_oneof:"AssetDetails"`
 	// Output only. The list of insights associated with the asset.
@@ -2337,6 +2337,7 @@ type ImportJob struct {
 	// Holds the various report types of an import job.
 	//
 	// Types that are assignable to Report:
+	//
 	//	*ImportJob_ValidationReport
 	//	*ImportJob_ExecutionReport
 	Report isImportJob_Report `protobuf_oneof:"report"`
@@ -2486,6 +2487,7 @@ type ImportDataFile struct {
 	// Output only. The state of the import data file.
 	State ImportDataFile_State `protobuf:"varint,4,opt,name=state,proto3,enum=google.cloud.migrationcenter.v1.ImportDataFile_State" json:"state,omitempty"`
 	// Types that are assignable to FileInfo:
+	//
 	//	*ImportDataFile_UploadFileInfo
 	FileInfo isImportDataFile_FileInfo `protobuf_oneof:"file_info"`
 }
@@ -7649,6 +7651,7 @@ type AssetFrame struct {
 	// of asset information in the frame.
 	//
 	// Types that are assignable to FrameData:
+	//
 	//	*AssetFrame_MachineDetails
 	FrameData isAssetFrame_FrameData `protobuf_oneof:"FrameData"`
 	// The time the data was reported.
@@ -8572,6 +8575,7 @@ type DiskEntry struct {
 	// Additional details for specific platforms.
 	//
 	// Types that are assignable to PlatformSpecific:
+	//
 	//	*DiskEntry_Vmware
 	PlatformSpecific isDiskEntry_PlatformSpecific `protobuf_oneof:"platform_specific"`
 }
@@ -10311,6 +10315,7 @@ type PlatformDetails struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to VendorDetails:
+	//
 	//	*PlatformDetails_VmwareDetails
 	//	*PlatformDetails_AwsEc2Details
 	//	*PlatformDetails_AzureVmDetails
@@ -11249,6 +11254,7 @@ type Insight struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Insight:
+	//
 	//	*Insight_MigrationInsight
 	//	*Insight_GenericInsight
 	Insight isInsight_Insight `protobuf_oneof:"insight"`
@@ -11409,6 +11415,7 @@ type MigrationInsight struct {
 	// A target for the migration.
 	//
 	// Types that are assignable to MigrationTarget:
+	//
 	//	*MigrationInsight_ComputeEngineTarget
 	MigrationTarget isMigrationInsight_MigrationTarget `protobuf_oneof:"migration_target"`
 }
@@ -11737,6 +11744,7 @@ type Aggregation struct {
 	// The name of the field on which to aggregate.
 	Field string `protobuf:"bytes,1,opt,name=field,proto3" json:"field,omitempty"`
 	// Types that are assignable to AggregationFunction:
+	//
 	//	*Aggregation_Count_
 	//	*Aggregation_Sum_
 	//	*Aggregation_Histogram_
@@ -11858,6 +11866,7 @@ type AggregationResult struct {
 
 	Field string `protobuf:"bytes,1,opt,name=field,proto3" json:"field,omitempty"`
 	// Types that are assignable to Result:
+	//
 	//	*AggregationResult_Count_
 	//	*AggregationResult_Sum_
 	//	*AggregationResult_Histogram_

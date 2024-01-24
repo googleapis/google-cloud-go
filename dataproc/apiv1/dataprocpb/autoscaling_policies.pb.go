@@ -22,9 +22,6 @@ package dataprocpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -53,22 +52,22 @@ type AutoscalingPolicy struct {
 	// The id must contain only letters (a-z, A-Z), numbers (0-9),
 	// underscores (_), and hyphens (-). Cannot begin or end with underscore
 	// or hyphen. Must consist of between 3 and 50 characters.
-	//
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Output only. The "resource name" of the autoscaling policy, as described
 	// in https://cloud.google.com/apis/design/resource_names.
 	//
-	// * For `projects.regions.autoscalingPolicies`, the resource name of the
-	//   policy has the following format:
-	//   `projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}`
+	//   - For `projects.regions.autoscalingPolicies`, the resource name of the
+	//     policy has the following format:
+	//     `projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}`
 	//
-	// * For `projects.locations.autoscalingPolicies`, the resource name of the
-	//   policy has the following format:
-	//   `projects/{project_id}/locations/{location}/autoscalingPolicies/{policy_id}`
+	//   - For `projects.locations.autoscalingPolicies`, the resource name of the
+	//     policy has the following format:
+	//     `projects/{project_id}/locations/{location}/autoscalingPolicies/{policy_id}`
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// Autoscaling algorithm for policy.
 	//
 	// Types that are assignable to Algorithm:
+	//
 	//	*AutoscalingPolicy_BasicAlgorithm
 	Algorithm isAutoscalingPolicy_Algorithm `protobuf_oneof:"algorithm"`
 	// Required. Describes how the autoscaler will operate for primary workers.
@@ -183,6 +182,7 @@ type BasicAutoscalingAlgorithm struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Config:
+	//
 	//	*BasicAutoscalingAlgorithm_YarnConfig
 	Config isBasicAutoscalingAlgorithm_Config `protobuf_oneof:"config"`
 	// Optional. Duration between scaling events. A scaling period starts after
@@ -478,13 +478,13 @@ type CreateAutoscalingPolicyRequest struct {
 	// Required. The "resource name" of the region or location, as described
 	// in https://cloud.google.com/apis/design/resource_names.
 	//
-	// * For `projects.regions.autoscalingPolicies.create`, the resource name
-	//   of the region has the following format:
-	//   `projects/{project_id}/regions/{region}`
+	//   - For `projects.regions.autoscalingPolicies.create`, the resource name
+	//     of the region has the following format:
+	//     `projects/{project_id}/regions/{region}`
 	//
-	// * For `projects.locations.autoscalingPolicies.create`, the resource name
-	//   of the location has the following format:
-	//   `projects/{project_id}/locations/{location}`
+	//   - For `projects.locations.autoscalingPolicies.create`, the resource name
+	//     of the location has the following format:
+	//     `projects/{project_id}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The autoscaling policy to create.
 	Policy *AutoscalingPolicy `protobuf:"bytes,2,opt,name=policy,proto3" json:"policy,omitempty"`
@@ -545,13 +545,13 @@ type GetAutoscalingPolicyRequest struct {
 	// Required. The "resource name" of the autoscaling policy, as described
 	// in https://cloud.google.com/apis/design/resource_names.
 	//
-	// * For `projects.regions.autoscalingPolicies.get`, the resource name
-	//   of the policy has the following format:
-	//   `projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}`
+	//   - For `projects.regions.autoscalingPolicies.get`, the resource name
+	//     of the policy has the following format:
+	//     `projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}`
 	//
-	// * For `projects.locations.autoscalingPolicies.get`, the resource name
-	//   of the policy has the following format:
-	//   `projects/{project_id}/locations/{location}/autoscalingPolicies/{policy_id}`
+	//   - For `projects.locations.autoscalingPolicies.get`, the resource name
+	//     of the policy has the following format:
+	//     `projects/{project_id}/locations/{location}/autoscalingPolicies/{policy_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -654,13 +654,13 @@ type DeleteAutoscalingPolicyRequest struct {
 	// Required. The "resource name" of the autoscaling policy, as described
 	// in https://cloud.google.com/apis/design/resource_names.
 	//
-	// * For `projects.regions.autoscalingPolicies.delete`, the resource name
-	//   of the policy has the following format:
-	//   `projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}`
+	//   - For `projects.regions.autoscalingPolicies.delete`, the resource name
+	//     of the policy has the following format:
+	//     `projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}`
 	//
-	// * For `projects.locations.autoscalingPolicies.delete`, the resource name
-	//   of the policy has the following format:
-	//   `projects/{project_id}/locations/{location}/autoscalingPolicies/{policy_id}`
+	//   - For `projects.locations.autoscalingPolicies.delete`, the resource name
+	//     of the policy has the following format:
+	//     `projects/{project_id}/locations/{location}/autoscalingPolicies/{policy_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -712,13 +712,13 @@ type ListAutoscalingPoliciesRequest struct {
 	// Required. The "resource name" of the region or location, as described
 	// in https://cloud.google.com/apis/design/resource_names.
 	//
-	// * For `projects.regions.autoscalingPolicies.list`, the resource name
-	//   of the region has the following format:
-	//   `projects/{project_id}/regions/{region}`
+	//   - For `projects.regions.autoscalingPolicies.list`, the resource name
+	//     of the region has the following format:
+	//     `projects/{project_id}/regions/{region}`
 	//
-	// * For `projects.locations.autoscalingPolicies.list`, the resource name
-	//   of the location has the following format:
-	//   `projects/{project_id}/locations/{location}`
+	//   - For `projects.locations.autoscalingPolicies.list`, the resource name
+	//     of the location has the following format:
+	//     `projects/{project_id}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to return in each response.
 	// Must be less than or equal to 1000. Defaults to 100.

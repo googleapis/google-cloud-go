@@ -21,11 +21,8 @@
 package clouddmspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -961,6 +960,7 @@ type GenerateSshScriptRequest struct {
 	// The VM configuration
 	//
 	// Types that are assignable to VmConfig:
+	//
 	//	*GenerateSshScriptRequest_VmCreationConfig
 	//	*GenerateSshScriptRequest_VmSelectionConfig
 	VmConfig isGenerateSshScriptRequest_VmConfig `protobuf_oneof:"vm_config"`
@@ -2886,7 +2886,8 @@ type ApplyConversionWorkspaceRequest struct {
 
 	// Required. The name of the conversion workspace resource for which to apply
 	// the draft tree. Must be in the form of:
-	//  projects/{project}/locations/{location}/conversionWorkspaces/{conversion_workspace}.
+	//
+	//	projects/{project}/locations/{location}/conversionWorkspaces/{conversion_workspace}.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Filter which entities to apply. Leaving this field empty will apply all of
 	// the entities. Supports Google AIP 160 based filtering.
@@ -2901,6 +2902,7 @@ type ApplyConversionWorkspaceRequest struct {
 	// Which destination to use when applying the conversion workspace.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ApplyConversionWorkspaceRequest_ConnectionProfile
 	Destination isApplyConversionWorkspaceRequest_Destination `protobuf_oneof:"destination"`
 }
@@ -3198,6 +3200,7 @@ type SeedConversionWorkspaceRequest struct {
 	// through a connection profile or a DDL file.
 	//
 	// Types that are assignable to SeedFrom:
+	//
 	//	*SeedConversionWorkspaceRequest_SourceConnectionProfile
 	//	*SeedConversionWorkspaceRequest_DestinationConnectionProfile
 	SeedFrom isSeedConversionWorkspaceRequest_SeedFrom `protobuf_oneof:"seed_from"`

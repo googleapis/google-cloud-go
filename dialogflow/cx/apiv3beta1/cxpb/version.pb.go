@@ -21,11 +21,8 @@
 package cxpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1370,10 +1369,10 @@ type VersionsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	LoadVersion(ctx context.Context, in *LoadVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Compares the specified base version with target version.
 	CompareVersions(ctx context.Context, in *CompareVersionsRequest, opts ...grpc.CallOption) (*CompareVersionsResponse, error)
@@ -1481,10 +1480,10 @@ type VersionsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	LoadVersion(context.Context, *LoadVersionRequest) (*longrunningpb.Operation, error)
 	// Compares the specified base version with target version.
 	CompareVersions(context.Context, *CompareVersionsRequest) (*CompareVersionsResponse, error)

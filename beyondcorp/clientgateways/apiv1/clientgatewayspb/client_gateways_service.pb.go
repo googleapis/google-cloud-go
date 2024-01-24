@@ -21,11 +21,8 @@
 package clientgatewayspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -130,7 +129,8 @@ type ClientGateway struct {
 	Id string `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
 	// Output only. The client connector service name that the client gateway is
 	// associated to. Client Connector Services, named as follows:
-	//   `projects/{project_id}/locations/{location_id}/client_connector_services/{client_connector_service_id}`.
+	//
+	//	`projects/{project_id}/locations/{location_id}/client_connector_services/{client_connector_service_id}`.
 	ClientConnectorService string `protobuf:"bytes,6,opt,name=client_connector_service,json=clientConnectorService,proto3" json:"client_connector_service,omitempty"`
 }
 
@@ -419,9 +419,9 @@ type CreateClientGatewayRequest struct {
 	// Required. Value for parent.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. User-settable client gateway resource ID.
-	//  * Must start with a letter.
-	//  * Must contain between 4-63 characters from `/[a-z][0-9]-/`.
-	//  * Must end with a number or a letter.
+	//   - Must start with a letter.
+	//   - Must contain between 4-63 characters from `/[a-z][0-9]-/`.
+	//   - Must end with a number or a letter.
 	ClientGatewayId string `protobuf:"bytes,2,opt,name=client_gateway_id,json=clientGatewayId,proto3" json:"client_gateway_id,omitempty"`
 	// Required. The resource being created.
 	ClientGateway *ClientGateway `protobuf:"bytes,3,opt,name=client_gateway,json=clientGateway,proto3" json:"client_gateway,omitempty"`

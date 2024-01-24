@@ -21,13 +21,12 @@
 package accesscontextmanagerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -508,6 +507,7 @@ type ServicePerimeterConfig_MethodSelector struct {
 	// The API method name or Cloud IAM permission name to allow.
 	//
 	// Types that are assignable to Kind:
+	//
 	//	*ServicePerimeterConfig_MethodSelector_Method
 	//	*ServicePerimeterConfig_MethodSelector_Permission
 	Kind isServicePerimeterConfig_MethodSelector_Kind `protobuf_oneof:"kind"`
@@ -673,6 +673,7 @@ type ServicePerimeterConfig_IngressSource struct {
 	// Cloud resource.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ServicePerimeterConfig_IngressSource_AccessLevel
 	//	*ServicePerimeterConfig_IngressSource_Resource
 	Source isServicePerimeterConfig_IngressSource_Source `protobuf_oneof:"source"`

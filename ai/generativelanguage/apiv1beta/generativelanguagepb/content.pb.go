@@ -21,13 +21,12 @@
 package generativelanguagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -186,6 +185,7 @@ type Part struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Data:
+	//
 	//	*Part_Text
 	//	*Part_InlineData
 	//	*Part_FunctionCall
@@ -638,8 +638,9 @@ type Schema struct {
 	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=google.ai.generativelanguage.v1beta.Type" json:"type,omitempty"`
 	// Optional. The format of the data. This is used only for primitive
 	// datatypes. Supported formats:
-	//  for NUMBER type: float, double
-	//  for INTEGER type: int32, int64
+	//
+	//	for NUMBER type: float, double
+	//	for INTEGER type: int32, int64
 	Format string `protobuf:"bytes,2,opt,name=format,proto3" json:"format,omitempty"`
 	// Optional. A brief description of the parameter. This could contain examples
 	// of use. Parameter description may be formatted as Markdown.

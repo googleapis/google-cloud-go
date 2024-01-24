@@ -21,11 +21,8 @@
 package functionspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1016,6 +1015,7 @@ type RepoSource struct {
 	// one of these ways.
 	//
 	// Types that are assignable to Revision:
+	//
 	//	*RepoSource_BranchName
 	//	*RepoSource_TagName
 	//	*RepoSource_CommitSha
@@ -1165,6 +1165,7 @@ type Source struct {
 	// At least one source needs to be provided for the deployment to succeed.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Source_StorageSource
 	//	*Source_RepoSource
 	Source isSource_Source `protobuf_oneof:"source"`
@@ -4544,11 +4545,11 @@ type FunctionServiceClient interface {
 	// When uploading source code to the generated signed URL, please follow
 	// these restrictions:
 	//
-	// * Source file type should be a zip file.
-	// * No credentials should be attached - the signed URLs provide access to the
-	//   target bucket using internal service identity; if credentials were
-	//   attached, the identity from the credentials would be used, but that
-	//   identity does not have permissions to upload files to the URL.
+	//   - Source file type should be a zip file.
+	//   - No credentials should be attached - the signed URLs provide access to the
+	//     target bucket using internal service identity; if credentials were
+	//     attached, the identity from the credentials would be used, but that
+	//     identity does not have permissions to upload files to the URL.
 	//
 	// When making a HTTP PUT request, these two headers need to be specified:
 	//
@@ -4674,11 +4675,11 @@ type FunctionServiceServer interface {
 	// When uploading source code to the generated signed URL, please follow
 	// these restrictions:
 	//
-	// * Source file type should be a zip file.
-	// * No credentials should be attached - the signed URLs provide access to the
-	//   target bucket using internal service identity; if credentials were
-	//   attached, the identity from the credentials would be used, but that
-	//   identity does not have permissions to upload files to the URL.
+	//   - Source file type should be a zip file.
+	//   - No credentials should be attached - the signed URLs provide access to the
+	//     target bucket using internal service identity; if credentials were
+	//     attached, the identity from the credentials would be used, but that
+	//     identity does not have permissions to upload files to the URL.
 	//
 	// When making a HTTP PUT request, these two headers need to be specified:
 	//

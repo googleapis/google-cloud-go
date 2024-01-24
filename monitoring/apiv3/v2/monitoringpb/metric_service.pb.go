@@ -22,9 +22,6 @@ package monitoringpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	metric "google.golang.org/genproto/googleapis/api/metric"
 	monitoredres "google.golang.org/genproto/googleapis/api/monitoredres"
@@ -35,6 +32,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -104,14 +103,14 @@ type ListMonitoredResourceDescriptorsRequest struct {
 	// Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) on
 	// which to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	Name string `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
 	// An optional [filter](https://cloud.google.com/monitoring/api/v3/filters)
 	// describing the descriptors to be returned.  The filter can reference the
 	// descriptor's type and labels. For example, the following filter returns
 	// only Google Compute Engine descriptors that have an `id` label:
 	//
-	//     resource.type = starts_with("gce_") AND resource.label:id
+	//	resource.type = starts_with("gce_") AND resource.label:id
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// A positive number that is the maximum number of results to return.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -250,7 +249,7 @@ type GetMonitoredResourceDescriptorRequest struct {
 
 	// Required. The monitored resource descriptor to get.  The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/monitoredResourceDescriptors/[RESOURCE_TYPE]
+	//	projects/[PROJECT_ID_OR_NUMBER]/monitoredResourceDescriptors/[RESOURCE_TYPE]
 	//
 	// The `[RESOURCE_TYPE]` is a predefined type, such as
 	// `cloudsql_database`.
@@ -305,7 +304,7 @@ type ListMetricDescriptorsRequest struct {
 	// Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) on
 	// which to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	Name string `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
 	// If this field is empty, all custom and
 	// system-defined metric descriptors are returned.
@@ -314,7 +313,7 @@ type ListMetricDescriptorsRequest struct {
 	// returned. For example, the following filter matches all
 	// [custom metrics](https://cloud.google.com/monitoring/custom-metrics):
 	//
-	//     metric.type = starts_with("custom.googleapis.com/")
+	//	metric.type = starts_with("custom.googleapis.com/")
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// A positive number that is the maximum number of results to return.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -453,7 +452,7 @@ type GetMetricDescriptorRequest struct {
 
 	// Required. The metric descriptor on which to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/metricDescriptors/[METRIC_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/metricDescriptors/[METRIC_ID]
 	//
 	// An example value of `[METRIC_ID]` is
 	// `"compute.googleapis.com/instance/disk/read_bytes_count"`.
@@ -508,7 +507,8 @@ type CreateMetricDescriptorRequest struct {
 	// Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) on
 	// which to execute the request. The format is:
 	// 4
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The new [custom metric](https://cloud.google.com/monitoring/custom-metrics)
 	// descriptor.
@@ -569,7 +569,7 @@ type DeleteMetricDescriptorRequest struct {
 
 	// Required. The metric descriptor on which to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/metricDescriptors/[METRIC_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/metricDescriptors/[METRIC_ID]
 	//
 	// An example of `[METRIC_ID]` is:
 	// `"custom.googleapis.com/my_test_metric"`.
@@ -624,17 +624,17 @@ type ListTimeSeriesRequest struct {
 	// Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name),
 	// organization or folder on which to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
-	//     organizations/[ORGANIZATION_ID]
-	//     folders/[FOLDER_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]
+	//	organizations/[ORGANIZATION_ID]
+	//	folders/[FOLDER_ID]
 	Name string `protobuf:"bytes,10,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. A [monitoring filter](https://cloud.google.com/monitoring/api/v3/filters)
 	// that specifies which time series should be returned.  The filter must
 	// specify a single metric type, and can additionally specify metric labels
 	// and other information. For example:
 	//
-	//     metric.type = "compute.googleapis.com/instance/cpu/usage_time" AND
-	//         metric.labels.instance_name = "my-instance-name"
+	//	metric.type = "compute.googleapis.com/instance/cpu/usage_time" AND
+	//	    metric.labels.instance_name = "my-instance-name"
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Required. The time interval for which results should be returned. Only time series
 	// that contain data points in the specified interval are included
@@ -854,7 +854,7 @@ type CreateTimeSeriesRequest struct {
 	// Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) on
 	// which to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The new data to be added to a list of time series.
 	// Adds at most one data point to each of several time series.  The new data
@@ -1052,7 +1052,7 @@ type QueryTimeSeriesRequest struct {
 	// Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) on
 	// which to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The query in the [Monitoring Query
 	// Language](https://cloud.google.com/monitoring/mql/reference) format.

@@ -21,9 +21,6 @@
 package loggingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	monitoredres "google.golang.org/genproto/googleapis/api/monitoredres"
 	_type "google.golang.org/genproto/googleapis/logging/type"
@@ -32,6 +29,8 @@ import (
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -49,10 +48,10 @@ type LogEntry struct {
 
 	// Required. The resource name of the log to which this log entry belongs:
 	//
-	//     "projects/[PROJECT_ID]/logs/[LOG_ID]"
-	//     "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
-	//     "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
-	//     "folders/[FOLDER_ID]/logs/[LOG_ID]"
+	//	"projects/[PROJECT_ID]/logs/[LOG_ID]"
+	//	"organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
+	//	"billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
+	//	"folders/[FOLDER_ID]/logs/[LOG_ID]"
 	//
 	// A project number may be used in place of PROJECT_ID. The project number is
 	// translated to its corresponding PROJECT_ID internally and the `log_name`
@@ -80,6 +79,7 @@ type LogEntry struct {
 	// The log entry payload, which can be one of multiple types.
 	//
 	// Types that are assignable to Payload:
+	//
 	//	*LogEntry_ProtoPayload
 	//	*LogEntry_TextPayload
 	//	*LogEntry_JsonPayload
@@ -361,8 +361,8 @@ type LogEntry_ProtoPayload struct {
 	// The following protocol buffer types are supported; user-defined types
 	// are not supported:
 	//
-	//   "type.googleapis.com/google.cloud.audit.AuditLog"
-	//   "type.googleapis.com/google.appengine.logging.v1.RequestLog"
+	//	"type.googleapis.com/google.cloud.audit.AuditLog"
+	//	"type.googleapis.com/google.appengine.logging.v1.RequestLog"
 	ProtoPayload *anypb.Any `protobuf:"bytes,2,opt,name=proto_payload,json=protoPayload,proto3,oneof"`
 }
 

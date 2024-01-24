@@ -21,11 +21,8 @@
 package metastorepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -319,9 +318,10 @@ type BackendMetastore struct {
 	// metastores are listed below:
 	//
 	// * BigQuery
-	//     * `projects/{project_id}`
+	//   - `projects/{project_id}`
+	//
 	// * Dataproc Metastore
-	//     * `projects/{project_id}/locations/{location}/services/{service_id}`
+	//   - `projects/{project_id}/locations/{location}/services/{service_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The type of the backend metastore.
 	MetastoreType BackendMetastore_MetastoreType `protobuf:"varint,2,opt,name=metastore_type,json=metastoreType,proto3,enum=google.cloud.metastore.v1beta.BackendMetastore_MetastoreType" json:"metastore_type,omitempty"`

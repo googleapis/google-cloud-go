@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -437,13 +436,13 @@ type Attribution struct {
 	//
 	// The format of the value is determined by the feature's input format:
 	//
-	//   * If the feature is a scalar value, the attribution value is a
+	//   - If the feature is a scalar value, the attribution value is a
 	//     [floating number][google.protobuf.Value.number_value].
 	//
-	//   * If the feature is an array of scalar values, the attribution value is
+	//   - If the feature is an array of scalar values, the attribution value is
 	//     an [array][google.protobuf.Value.list_value].
 	//
-	//   * If the feature is a struct, the attribution value is a
+	//   - If the feature is a struct, the attribution value is a
 	//     [struct][google.protobuf.Value.struct_value]. The keys in the
 	//     attribution value struct are the same as the keys in the feature
 	//     struct. The formats of the values in the attribution struct are
@@ -707,6 +706,7 @@ type ExplanationParameters struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Method:
+	//
 	//	*ExplanationParameters_SampledShapleyAttribution
 	//	*ExplanationParameters_IntegratedGradientsAttribution
 	//	*ExplanationParameters_XraiAttribution
@@ -1098,6 +1098,7 @@ type SmoothGradConfig struct {
 	// prior to computing gradients.
 	//
 	// Types that are assignable to GradientNoiseSigma:
+	//
 	//	*SmoothGradConfig_NoiseSigma
 	//	*SmoothGradConfig_FeatureNoiseSigma
 	GradientNoiseSigma isSmoothGradConfig_GradientNoiseSigma `protobuf_oneof:"GradientNoiseSigma"`
@@ -1321,9 +1322,11 @@ type Examples struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Source:
+	//
 	//	*Examples_ExampleGcsSource_
 	Source isExamples_Source `protobuf_oneof:"source"`
 	// Types that are assignable to Config:
+	//
 	//	*Examples_NearestNeighborSearchConfig
 	//	*Examples_Presets
 	Config isExamples_Config `protobuf_oneof:"config"`

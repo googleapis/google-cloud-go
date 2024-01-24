@@ -21,12 +21,11 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -51,6 +50,7 @@ type Control struct {
 	// INVALID_ARGUMENT will be returned if either condition is violated.
 	//
 	// Types that are assignable to Control:
+	//
 	//	*Control_Rule
 	Control isControl_Control `protobuf_oneof:"control"`
 	// Immutable. Fully qualified name

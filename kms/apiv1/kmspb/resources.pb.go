@@ -21,15 +21,14 @@
 package kmspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -933,6 +932,7 @@ type CryptoKey struct {
 	// Controls the rate of automatic rotation.
 	//
 	// Types that are assignable to RotationSchedule:
+	//
 	//	*CryptoKey_RotationPeriod
 	RotationSchedule isCryptoKey_RotationSchedule `protobuf_oneof:"rotation_schedule"`
 	// A template describing settings for new

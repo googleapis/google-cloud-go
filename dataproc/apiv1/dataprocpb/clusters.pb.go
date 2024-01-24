@@ -21,11 +21,8 @@
 package dataprocpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	grpc "google.golang.org/grpc"
@@ -38,6 +35,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	_ "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -718,13 +717,13 @@ type ClusterConfig struct {
 	// a master or worker node, as shown below using `curl` (you can also use
 	// `wget`):
 	//
-	//     ROLE=$(curl -H Metadata-Flavor:Google
-	//     http://metadata/computeMetadata/v1/instance/attributes/dataproc-role)
-	//     if [[ "${ROLE}" == 'Master' ]]; then
-	//       ... master specific actions ...
-	//     else
-	//       ... worker specific actions ...
-	//     fi
+	//	ROLE=$(curl -H Metadata-Flavor:Google
+	//	http://metadata/computeMetadata/v1/instance/attributes/dataproc-role)
+	//	if [[ "${ROLE}" == 'Master' ]]; then
+	//	  ... master specific actions ...
+	//	else
+	//	  ... worker specific actions ...
+	//	fi
 	InitializationActions []*NodeInitializationAction `protobuf:"bytes,11,rep,name=initialization_actions,json=initializationActions,proto3" json:"initialization_actions,omitempty"`
 	// Optional. Encryption settings for the cluster.
 	EncryptionConfig *EncryptionConfig `protobuf:"bytes,15,opt,name=encryption_config,json=encryptionConfig,proto3" json:"encryption_config,omitempty"`
@@ -910,6 +909,7 @@ type VirtualClusterConfig struct {
 	// a Cloud Storage bucket.**
 	StagingBucket string `protobuf:"bytes,1,opt,name=staging_bucket,json=stagingBucket,proto3" json:"staging_bucket,omitempty"`
 	// Types that are assignable to InfrastructureConfig:
+	//
 	//	*VirtualClusterConfig_KubernetesClusterConfig
 	InfrastructureConfig isVirtualClusterConfig_InfrastructureConfig `protobuf_oneof:"infrastructure_config"`
 	// Optional. Configuration of auxiliary services used by this cluster.
@@ -1694,12 +1694,12 @@ type InstanceGroupConfig struct {
 	// Example: Cluster creation request with `num_instances` = `5` and
 	// `min_num_instances` = `3`:
 	//
-	// *  If 4 VMs are created and 1 instance fails,
-	//    the failed VM is deleted. The cluster is
-	//    resized to 4 instances and placed in a `RUNNING` state.
-	// *  If 2 instances are created and 3 instances fail,
-	//    the cluster in placed in an `ERROR` state. The failed VMs
-	//    are not deleted.
+	//   - If 4 VMs are created and 1 instance fails,
+	//     the failed VM is deleted. The cluster is
+	//     resized to 4 instances and placed in a `RUNNING` state.
+	//   - If 2 instances are created and 3 instances fail,
+	//     the cluster in placed in an `ERROR` state. The failed VMs
+	//     are not deleted.
 	MinNumInstances int32 `protobuf:"varint,12,opt,name=min_num_instances,json=minNumInstances,proto3" json:"min_num_instances,omitempty"`
 	// Optional. Instance flexibility Policy allowing a mixture of VM shapes and
 	// provisioning models.
@@ -2345,12 +2345,12 @@ type NodeGroup struct {
 	NodeGroupConfig *InstanceGroupConfig `protobuf:"bytes,3,opt,name=node_group_config,json=nodeGroupConfig,proto3" json:"node_group_config,omitempty"`
 	// Optional. Node group labels.
 	//
-	// * Label **keys** must consist of from 1 to 63 characters and conform to
-	//   [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt).
-	// * Label **values** can be empty. If specified, they must consist of from
-	//   1 to 63 characters and conform to [RFC 1035]
-	//   (https://www.ietf.org/rfc/rfc1035.txt).
-	// * The node group must have no more than 32 labels.
+	//   - Label **keys** must consist of from 1 to 63 characters and conform to
+	//     [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt).
+	//   - Label **values** can be empty. If specified, they must consist of from
+	//     1 to 63 characters and conform to [RFC 1035]
+	//     (https://www.ietf.org/rfc/rfc1035.txt).
+	//   - The node group must have no more than 32 labels.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -2969,6 +2969,7 @@ type LifecycleConfig struct {
 	// the cluster maximum age.
 	//
 	// Types that are assignable to Ttl:
+	//
 	//	*LifecycleConfig_AutoDeleteTime
 	//	*LifecycleConfig_AutoDeleteTtl
 	Ttl isLifecycleConfig_Ttl `protobuf_oneof:"ttl"`
@@ -3360,51 +3361,53 @@ type UpdateClusterRequest struct {
 	// specified as `config.worker_config.num_instances`,
 	// and the `PATCH` request body would specify the new value, as follows:
 	//
-	//     {
-	//       "config":{
-	//         "workerConfig":{
-	//           "numInstances":"5"
-	//         }
-	//       }
-	//     }
+	//	{
+	//	  "config":{
+	//	    "workerConfig":{
+	//	      "numInstances":"5"
+	//	    }
+	//	  }
+	//	}
+	//
 	// Similarly, to change the number of preemptible workers in a cluster to 5,
 	// the `update_mask` parameter would be
 	// `config.secondary_worker_config.num_instances`, and the `PATCH` request
 	// body would be set as follows:
 	//
-	//     {
-	//       "config":{
-	//         "secondaryWorkerConfig":{
-	//           "numInstances":"5"
-	//         }
-	//       }
-	//     }
+	//	{
+	//	  "config":{
+	//	    "secondaryWorkerConfig":{
+	//	      "numInstances":"5"
+	//	    }
+	//	  }
+	//	}
+	//
 	// <strong>Note:</strong> Currently, only the following fields can be updated:
 	//
-	//  <table>
-	//  <tbody>
-	//  <tr>
-	//  <td><strong>Mask</strong></td>
-	//  <td><strong>Purpose</strong></td>
-	//  </tr>
-	//  <tr>
-	//  <td><strong><em>labels</em></strong></td>
-	//  <td>Update labels</td>
-	//  </tr>
-	//  <tr>
-	//  <td><strong><em>config.worker_config.num_instances</em></strong></td>
-	//  <td>Resize primary worker group</td>
-	//  </tr>
-	//  <tr>
-	//  <td><strong><em>config.secondary_worker_config.num_instances</em></strong></td>
-	//  <td>Resize secondary worker group</td>
-	//  </tr>
-	//  <tr>
-	//  <td>config.autoscaling_config.policy_uri</td><td>Use, stop using, or
-	//  change autoscaling policies</td>
-	//  </tr>
-	//  </tbody>
-	//  </table>
+	//	<table>
+	//	<tbody>
+	//	<tr>
+	//	<td><strong>Mask</strong></td>
+	//	<td><strong>Purpose</strong></td>
+	//	</tr>
+	//	<tr>
+	//	<td><strong><em>labels</em></strong></td>
+	//	<td>Update labels</td>
+	//	</tr>
+	//	<tr>
+	//	<td><strong><em>config.worker_config.num_instances</em></strong></td>
+	//	<td>Resize primary worker group</td>
+	//	</tr>
+	//	<tr>
+	//	<td><strong><em>config.secondary_worker_config.num_instances</em></strong></td>
+	//	<td>Resize secondary worker group</td>
+	//	</tr>
+	//	<tr>
+	//	<td>config.autoscaling_config.policy_uri</td><td>Use, stop using, or
+	//	change autoscaling policies</td>
+	//	</tr>
+	//	</tbody>
+	//	</table>
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,4,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// Optional. A unique ID used to identify the request. If the server
 	// receives two
@@ -4409,13 +4412,13 @@ type DataprocMetricConfig_Metric struct {
 	//
 	// Notes:
 	//
-	// * Only the specified overridden metrics are collected for the
-	//   metric source. For example, if one or more `spark:executive` metrics
-	//   are listed as metric overrides, other `SPARK` metrics are not
-	//   collected. The collection of the metrics for other enabled custom
-	//   metric sources is unaffected. For example, if both `SPARK` andd `YARN`
-	//   metric sources are enabled, and overrides are provided for Spark
-	//   metrics only, all YARN metrics are collected.
+	//   - Only the specified overridden metrics are collected for the
+	//     metric source. For example, if one or more `spark:executive` metrics
+	//     are listed as metric overrides, other `SPARK` metrics are not
+	//     collected. The collection of the metrics for other enabled custom
+	//     metric sources is unaffected. For example, if both `SPARK` andd `YARN`
+	//     metric sources are enabled, and overrides are provided for Spark
+	//     metrics only, all YARN metrics are collected.
 	MetricOverrides []string `protobuf:"bytes,2,rep,name=metric_overrides,json=metricOverrides,proto3" json:"metric_overrides,omitempty"`
 }
 

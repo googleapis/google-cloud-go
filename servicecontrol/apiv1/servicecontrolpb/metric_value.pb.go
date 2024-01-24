@@ -21,12 +21,11 @@
 package servicecontrolpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -62,6 +61,7 @@ type MetricValue struct {
 	// the MetricValue is rejected.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*MetricValue_BoolValue
 	//	*MetricValue_Int64Value
 	//	*MetricValue_DoubleValue

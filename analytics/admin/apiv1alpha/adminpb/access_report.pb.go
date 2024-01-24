@@ -21,11 +21,10 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -414,6 +413,7 @@ type AccessFilterExpression struct {
 	// Specify one type of filter expression for `FilterExpression`.
 	//
 	// Types that are assignable to OneExpression:
+	//
 	//	*AccessFilterExpression_AndGroup
 	//	*AccessFilterExpression_OrGroup
 	//	*AccessFilterExpression_NotExpression
@@ -579,6 +579,7 @@ type AccessFilter struct {
 	// Specify one type of filter for `Filter`.
 	//
 	// Types that are assignable to OneFilter:
+	//
 	//	*AccessFilter_StringFilter
 	//	*AccessFilter_InListFilter
 	//	*AccessFilter_NumericFilter
@@ -944,6 +945,7 @@ type NumericValue struct {
 	// One of a numeric value
 	//
 	// Types that are assignable to OneValue:
+	//
 	//	*NumericValue_Int64Value
 	//	*NumericValue_DoubleValue
 	OneValue isNumericValue_OneValue `protobuf_oneof:"one_value"`
@@ -1031,6 +1033,7 @@ type AccessOrderBy struct {
 	// Specify one type of order by for `OrderBy`.
 	//
 	// Types that are assignable to OneOrderBy:
+	//
 	//	*AccessOrderBy_Metric
 	//	*AccessOrderBy_Dimension
 	OneOrderBy isAccessOrderBy_OneOrderBy `protobuf_oneof:"one_order_by"`

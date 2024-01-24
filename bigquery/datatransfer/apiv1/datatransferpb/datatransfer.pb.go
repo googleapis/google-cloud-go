@@ -22,9 +22,6 @@ package datatransferpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2011,6 +2010,7 @@ type StartManualTransferRunsRequest struct {
 	// run_time.
 	//
 	// Types that are assignable to Time:
+	//
 	//	*StartManualTransferRunsRequest_RequestedTimeRange
 	//	*StartManualTransferRunsRequest_RequestedRunTime
 	Time isStartManualTransferRunsRequest_Time `protobuf_oneof:"time"`

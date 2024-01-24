@@ -21,15 +21,14 @@
 package migrationpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	distribution "google.golang.org/genproto/googleapis/api/distribution"
 	metric "google.golang.org/genproto/googleapis/api/metric"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -266,6 +265,7 @@ type TypedValue struct {
 	// The typed value field.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*TypedValue_BoolValue
 	//	*TypedValue_Int64Value
 	//	*TypedValue_DoubleValue

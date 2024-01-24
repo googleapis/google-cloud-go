@@ -22,9 +22,6 @@ package spannerpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -416,11 +415,11 @@ type Session struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The labels for the session.
 	//
-	//  * Label keys must be between 1 and 63 characters long and must conform to
-	//    the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.
-	//  * Label values must be between 0 and 63 characters long and must conform
-	//    to the regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.
-	//  * No more than 64 labels can be associated with a given session.
+	//   - Label keys must be between 1 and 63 characters long and must conform to
+	//     the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.
+	//   - Label values must be between 0 and 63 characters long and must conform
+	//     to the regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.
+	//   - No more than 64 labels can be associated with a given session.
 	//
 	// See https://goo.gl/xmQnxf for more information on and examples of labels.
 	Labels map[string]string `protobuf:"bytes,2,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -568,13 +567,13 @@ type ListSessionsRequest struct {
 	// An expression for filtering the results of the request. Filter rules are
 	// case insensitive. The fields eligible for filtering are:
 	//
-	//   * `labels.key` where key is the name of a label
+	//   - `labels.key` where key is the name of a label
 	//
 	// Some examples of using filters are:
 	//
-	//   * `labels.env:*` --> The session has the label "env".
-	//   * `labels.env:dev` --> The session has the label "env" and the value of
-	//                        the label contains the string "dev".
+	//   - `labels.env:*` --> The session has the label "env".
+	//   - `labels.env:dev` --> The session has the label "env" and the value of
+	//     the label contains the string "dev".
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 
@@ -848,6 +847,7 @@ type DirectedReadOptions struct {
 	// should be present in the message.
 	//
 	// Types that are assignable to Replicas:
+	//
 	//	*DirectedReadOptions_IncludeReplicas_
 	//	*DirectedReadOptions_ExcludeReplicas_
 	Replicas isDirectedReadOptions_Replicas `protobuf_oneof:"replicas"`
@@ -1255,11 +1255,11 @@ func (x *ExecuteBatchDmlRequest) GetRequestOptions() *RequestOptions {
 // 1. Check the status in the response message. The
 // [google.rpc.Code][google.rpc.Code] enum
 //
-//		value `OK` indicates that all statements were executed successfully.
-//	 2. If the status was not `OK`, check the number of result sets in the
-//	    response. If the response contains `N`
-//	    [ResultSet][google.spanner.v1.ResultSet] messages, then statement `N+1` in
-//	    the request failed.
+//	value `OK` indicates that all statements were executed successfully.
+//  2. If the status was not `OK`, check the number of result sets in the
+//     response. If the response contains `N`
+//     [ResultSet][google.spanner.v1.ResultSet] messages, then statement `N+1` in
+//     the request failed.
 //
 // Example 1:
 //
@@ -2035,6 +2035,7 @@ type CommitRequest struct {
 	// Required. The transaction in which to commit.
 	//
 	// Types that are assignable to Transaction:
+	//
 	//	*CommitRequest_TransactionId
 	//	*CommitRequest_SingleUseTransaction
 	Transaction isCommitRequest_Transaction `protobuf_oneof:"transaction"`

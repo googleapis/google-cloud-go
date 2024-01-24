@@ -21,12 +21,11 @@
 package documentaipb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -273,6 +272,7 @@ type BatchDocumentsInputConfig struct {
 	// The source.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*BatchDocumentsInputConfig_GcsPrefix
 	//	*BatchDocumentsInputConfig_GcsDocuments
 	Source isBatchDocumentsInputConfig_Source `protobuf_oneof:"source"`
@@ -359,6 +359,7 @@ type DocumentOutputConfig struct {
 	// The destination of the results.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*DocumentOutputConfig_GcsOutputConfig_
 	Destination isDocumentOutputConfig_Destination `protobuf_oneof:"destination"`
 }

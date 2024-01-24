@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -369,6 +368,7 @@ type Part struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Data:
+	//
 	//	*Part_Text
 	//	*Part_InlineData
 	//	*Part_FileData
@@ -376,6 +376,7 @@ type Part struct {
 	//	*Part_FunctionResponse
 	Data isPart_Data `protobuf_oneof:"data"`
 	// Types that are assignable to Metadata:
+	//
 	//	*Part_VideoMetadata
 	Metadata isPart_Metadata `protobuf_oneof:"metadata"`
 }

@@ -21,11 +21,8 @@
 package storagepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2016,6 +2015,7 @@ type WriteObjectRequest struct {
 	// The first message of each stream should set one of the following.
 	//
 	// Types that are assignable to FirstMessage:
+	//
 	//	*WriteObjectRequest_UploadId
 	//	*WriteObjectRequest_WriteObjectSpec
 	FirstMessage isWriteObjectRequest_FirstMessage `protobuf_oneof:"first_message"`
@@ -2036,6 +2036,7 @@ type WriteObjectRequest struct {
 	// A portion of the data for the object.
 	//
 	// Types that are assignable to Data:
+	//
 	//	*WriteObjectRequest_ChecksummedData
 	Data isWriteObjectRequest_Data `protobuf_oneof:"data"`
 	// Checksums for the complete object. If the checksums computed by the service
@@ -2190,6 +2191,7 @@ type WriteObjectResponse struct {
 	// The response will set one of the following.
 	//
 	// Types that are assignable to WriteStatus:
+	//
 	//	*WriteObjectResponse_PersistedSize
 	//	*WriteObjectResponse_Resource
 	WriteStatus isWriteObjectResponse_WriteStatus `protobuf_oneof:"write_status"`
@@ -2277,6 +2279,7 @@ type BidiWriteObjectRequest struct {
 	// The first message of each stream should set one of the following.
 	//
 	// Types that are assignable to FirstMessage:
+	//
 	//	*BidiWriteObjectRequest_UploadId
 	//	*BidiWriteObjectRequest_WriteObjectSpec
 	FirstMessage isBidiWriteObjectRequest_FirstMessage `protobuf_oneof:"first_message"`
@@ -2297,6 +2300,7 @@ type BidiWriteObjectRequest struct {
 	// A portion of the data for the object.
 	//
 	// Types that are assignable to Data:
+	//
 	//	*BidiWriteObjectRequest_ChecksummedData
 	Data isBidiWriteObjectRequest_Data `protobuf_oneof:"data"`
 	// Checksums for the complete object. If the checksums computed by the service
@@ -2478,6 +2482,7 @@ type BidiWriteObjectResponse struct {
 	// The response will set one of the following.
 	//
 	// Types that are assignable to WriteStatus:
+	//
 	//	*BidiWriteObjectResponse_PersistedSize
 	//	*BidiWriteObjectResponse_Resource
 	WriteStatus isBidiWriteObjectResponse_WriteStatus `protobuf_oneof:"write_status"`
@@ -2799,6 +2804,7 @@ type QueryWriteStatusResponse struct {
 	// The response will set one of the following.
 	//
 	// Types that are assignable to WriteStatus:
+	//
 	//	*QueryWriteStatusResponse_PersistedSize
 	//	*QueryWriteStatusResponse_Resource
 	WriteStatus isQueryWriteStatusResponse_WriteStatus `protobuf_oneof:"write_status"`

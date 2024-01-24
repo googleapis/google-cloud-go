@@ -21,11 +21,10 @@
 package stitcherpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -159,6 +158,7 @@ type Companion struct {
 	// Ad resource associated with the companion ad.
 	//
 	// Types that are assignable to AdResource:
+	//
 	//	*Companion_IframeAdResource
 	//	*Companion_StaticAdResource
 	//	*Companion_HtmlAdResource

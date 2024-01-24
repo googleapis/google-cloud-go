@@ -21,9 +21,6 @@
 package talentpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
 	money "google.golang.org/genproto/googleapis/type/money"
@@ -32,6 +29,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2131,6 +2130,7 @@ type CompensationInfo_CompensationEntry struct {
 	// Compensation amount. It could be a fixed amount or a floating range.
 	//
 	// Types that are assignable to CompensationAmount:
+	//
 	//	*CompensationInfo_CompensationEntry_Amount
 	//	*CompensationInfo_CompensationEntry_Range
 	CompensationAmount isCompensationInfo_CompensationEntry_CompensationAmount `protobuf_oneof:"compensation_amount"`

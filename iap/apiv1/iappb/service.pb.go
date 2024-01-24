@@ -21,11 +21,8 @@
 package iappb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1451,26 +1450,26 @@ type AttributePropagationSettings struct {
 	// types from `attributes`: `attributes.saml_attributes`,
 	// `attributes.iap_attributes`. The following functions are supported:
 	//
-	//  - filter `<list>.filter(<iter_var>, <predicate>)`: Returns a subset of
-	//  `<list>` where `<predicate>` is true for every item.
+	//   - filter `<list>.filter(<iter_var>, <predicate>)`: Returns a subset of
+	//     `<list>` where `<predicate>` is true for every item.
 	//
-	//  - in `<var> in <list>`: Returns true if `<list>` contains `<var>`.
+	//   - in `<var> in <list>`: Returns true if `<list>` contains `<var>`.
 	//
-	//  - selectByName `<list>.selectByName(<string>)`: Returns the attribute
-	//  in
-	//  `<list>` with the given `<string>` name, otherwise returns empty.
+	//   - selectByName `<list>.selectByName(<string>)`: Returns the attribute
+	//     in
+	//     `<list>` with the given `<string>` name, otherwise returns empty.
 	//
-	//  - emitAs `<attribute>.emitAs(<string>)`: Sets the `<attribute>` name
-	//  field to the given `<string>` for propagation in selected output
-	//  credentials.
+	//   - emitAs `<attribute>.emitAs(<string>)`: Sets the `<attribute>` name
+	//     field to the given `<string>` for propagation in selected output
+	//     credentials.
 	//
-	//  - strict `<attribute>.strict()`: Ignores the `x-goog-iap-attr-` prefix
-	//  for the provided `<attribute>` when propagating with the `HEADER` output
-	//  credential, such as request headers.
+	//   - strict `<attribute>.strict()`: Ignores the `x-goog-iap-attr-` prefix
+	//     for the provided `<attribute>` when propagating with the `HEADER` output
+	//     credential, such as request headers.
 	//
-	//  - append `<target_list>.append(<attribute>)` OR
-	//  `<target_list>.append(<list>)`: Appends the provided `<attribute>` or
-	//  `<list>` to the end of `<target_list>`.
+	//   - append `<target_list>.append(<attribute>)` OR
+	//     `<target_list>.append(<list>)`: Appends the provided `<attribute>` or
+	//     `<list>` to the end of `<target_list>`.
 	//
 	// Example expression: `attributes.saml_attributes.filter(x, x.name in
 	// ['test']).append(attributes.iap_attributes.selectByName('exact').emitAs('custom').strict())`

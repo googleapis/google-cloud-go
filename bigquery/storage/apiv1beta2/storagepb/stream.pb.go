@@ -21,13 +21,12 @@
 package storagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -169,6 +168,7 @@ type ReadSession struct {
 	// the selected fields.
 	//
 	// Types that are assignable to Schema:
+	//
 	//	*ReadSession_AvroSchema
 	//	*ReadSession_ArrowSchema
 	Schema isReadSession_Schema `protobuf_oneof:"schema"`
@@ -517,10 +517,11 @@ type ReadSession_TableReadOptions struct {
 	// Aggregates are not supported.
 	//
 	// Examples: "int_field > 5"
-	//           "date_field = CAST('2014-9-27' as DATE)"
-	//           "nullable_field is not NULL"
-	//           "st_equals(geo_field, st_geofromtext("POINT(2, 2)"))"
-	//           "numeric_field BETWEEN 1.0 AND 5.0"
+	//
+	//	"date_field = CAST('2014-9-27' as DATE)"
+	//	"nullable_field is not NULL"
+	//	"st_equals(geo_field, st_geofromtext("POINT(2, 2)"))"
+	//	"numeric_field BETWEEN 1.0 AND 5.0"
 	//
 	// Restricted to a maximum length for 1 MB.
 	RowRestriction string `protobuf:"bytes,2,opt,name=row_restriction,json=rowRestriction,proto3" json:"row_restriction,omitempty"`

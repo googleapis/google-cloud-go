@@ -21,14 +21,13 @@
 package certificatemanagerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -553,6 +552,7 @@ type CertificateIssuanceConfig_CertificateAuthorityConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Kind:
+	//
 	//	*CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig_
 	Kind isCertificateIssuanceConfig_CertificateAuthorityConfig_Kind `protobuf_oneof:"kind"`
 }

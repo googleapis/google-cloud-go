@@ -21,15 +21,14 @@
 package servicecontrolpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_type "google.golang.org/genproto/googleapis/logging/type"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -71,6 +70,7 @@ type LogEntry struct {
 	// The log entry payload, which can be one of multiple types.
 	//
 	// Types that are assignable to Payload:
+	//
 	//	*LogEntry_ProtoPayload
 	//	*LogEntry_TextPayload
 	//	*LogEntry_StructPayload

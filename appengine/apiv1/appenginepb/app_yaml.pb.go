@@ -21,12 +21,11 @@
 package appenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -515,6 +514,7 @@ type UrlMap struct {
 	// Type of handler for this URL pattern.
 	//
 	// Types that are assignable to HandlerType:
+	//
 	//	*UrlMap_StaticFiles
 	//	*UrlMap_Script
 	//	*UrlMap_ApiEndpoint

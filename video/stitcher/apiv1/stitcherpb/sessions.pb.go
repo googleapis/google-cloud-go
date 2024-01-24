@@ -21,13 +21,12 @@
 package stitcherpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -113,12 +112,12 @@ type VodSession struct {
 	// Macros are designated by square brackets.
 	// For example:
 	//
-	//   Ad tag URI: `"https://doubleclick.google.com/ad/1?geo_id=[geoId]"`
+	//	Ad tag URI: `"https://doubleclick.google.com/ad/1?geo_id=[geoId]"`
 	//
-	//   Ad tag macro map: `{"geoId": "123"}`
+	//	Ad tag macro map: `{"geoId": "123"}`
 	//
-	//   Fully qualified ad tag:
-	//   `"`https://doubleclick.google.com/ad/1?geo_id=123"`
+	//	Fully qualified ad tag:
+	//	`"`https://doubleclick.google.com/ad/1?geo_id=123"`
 	AdTagMacroMap map[string]string `protobuf:"bytes,7,rep,name=ad_tag_macro_map,json=adTagMacroMap,proto3" json:"ad_tag_macro_map,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Additional options that affect the output of the manifest.
 	ManifestOptions *ManifestOptions `protobuf:"bytes,9,opt,name=manifest_options,json=manifestOptions,proto3" json:"manifest_options,omitempty"`
@@ -507,12 +506,12 @@ type LiveSession struct {
 	//
 	// For example:
 	//
-	//   Ad tag URI: "https://doubleclick.google.com/ad/1?geo_id=[geoId]"
+	//	Ad tag URI: "https://doubleclick.google.com/ad/1?geo_id=[geoId]"
 	//
-	//   Ad tag macros: `{"geoId": "123"}`
+	//	Ad tag macros: `{"geoId": "123"}`
 	//
-	//   Fully qualified ad tag:
-	//   `"https://doubleclick.google.com/ad/1?geo_id=123"`
+	//	Fully qualified ad tag:
+	//	`"https://doubleclick.google.com/ad/1?geo_id=123"`
 	AdTagMacros map[string]string `protobuf:"bytes,6,rep,name=ad_tag_macros,json=adTagMacros,proto3" json:"ad_tag_macros,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Additional options that affect the output of the manifest.
 	ManifestOptions *ManifestOptions `protobuf:"bytes,10,opt,name=manifest_options,json=manifestOptions,proto3" json:"manifest_options,omitempty"`

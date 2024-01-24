@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -53,24 +52,24 @@ type ListChangelogsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The filter string. Supports filter by user_email, resource, type and
 	// create_time. Some examples:
-	//   1. By user email:
-	//        user_email = "someone@google.com"
-	//   2. By resource name:
-	//        resource = "projects/123/locations/global/agents/456/flows/789"
-	//   3. By resource display name:
-	//        display_name = "my agent"
-	//   4. By action:
-	//        action = "Create"
-	//   5. By type:
-	//        type = "flows"
-	//   6. By create time. Currently predicates on `create_time` and
-	//      `create_time_epoch_seconds` are supported:
-	//        create_time_epoch_seconds > 1551790877 AND create_time <=
-	//        2017-01-15T01:30:15.01Z
-	//   7. Combination of above filters:
-	//        resource = "projects/123/locations/global/agents/456/flows/789"
-	//          AND user_email = "someone@google.com"
-	//          AND create_time <= 2017-01-15T01:30:15.01Z
+	//  1. By user email:
+	//     user_email = "someone@google.com"
+	//  2. By resource name:
+	//     resource = "projects/123/locations/global/agents/456/flows/789"
+	//  3. By resource display name:
+	//     display_name = "my agent"
+	//  4. By action:
+	//     action = "Create"
+	//  5. By type:
+	//     type = "flows"
+	//  6. By create time. Currently predicates on `create_time` and
+	//     `create_time_epoch_seconds` are supported:
+	//     create_time_epoch_seconds > 1551790877 AND create_time <=
+	//     2017-01-15T01:30:15.01Z
+	//  7. Combination of above filters:
+	//     resource = "projects/123/locations/global/agents/456/flows/789"
+	//     AND user_email = "someone@google.com"
+	//     AND create_time <= 2017-01-15T01:30:15.01Z
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The maximum number of items to return in a single page. By default 100 and
 	// at most 1000.

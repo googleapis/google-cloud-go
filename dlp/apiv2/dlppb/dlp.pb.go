@@ -22,9 +22,6 @@ package dlppb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -39,6 +36,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2883,6 +2882,7 @@ type ExclusionRule struct {
 	// Exclusion rule types.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*ExclusionRule_Dictionary
 	//	*ExclusionRule_Regex
 	//	*ExclusionRule_ExcludeInfoTypes
@@ -3009,6 +3009,7 @@ type InspectionRule struct {
 	// Inspection rule types.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*InspectionRule_HotwordRule
 	//	*InspectionRule_ExclusionRule
 	Type isInspectionRule_Type `protobuf_oneof:"type"`
@@ -3372,6 +3373,7 @@ type ContentItem struct {
 	// Data of the item either in the byte array or UTF-8 string form, or table.
 	//
 	// Types that are assignable to DataItem:
+	//
 	//	*ContentItem_Value
 	//	*ContentItem_Table
 	//	*ContentItem_ByteItem
@@ -3870,6 +3872,7 @@ type ContentLocation struct {
 	// Type of the container within the file with location of the finding.
 	//
 	// Types that are assignable to Location:
+	//
 	//	*ContentLocation_RecordLocation
 	//	*ContentLocation_ImageLocation
 	//	*ContentLocation_DocumentLocation
@@ -4017,6 +4020,7 @@ type MetadataLocation struct {
 	// latitude, author, caption.
 	//
 	// Types that are assignable to Label:
+	//
 	//	*MetadataLocation_StorageLabel
 	Label isMetadataLocation_Label `protobuf_oneof:"label"`
 }
@@ -4324,18 +4328,18 @@ type Container struct {
 	// The root of the container.
 	// Examples:
 	//
-	// - For BigQuery table `project_id:dataset_id.table_id`, the root is
-	//  `dataset_id`
-	// - For Cloud Storage file `gs://bucket/folder/filename.txt`, the root
-	//  is `gs://bucket`
+	//   - For BigQuery table `project_id:dataset_id.table_id`, the root is
+	//     `dataset_id`
+	//   - For Cloud Storage file `gs://bucket/folder/filename.txt`, the root
+	//     is `gs://bucket`
 	RootPath string `protobuf:"bytes,4,opt,name=root_path,json=rootPath,proto3" json:"root_path,omitempty"`
 	// The rest of the path after the root.
 	// Examples:
 	//
-	// - For BigQuery table `project_id:dataset_id.table_id`, the relative path is
-	//  `table_id`
-	// - For Cloud Storage file `gs://bucket/folder/filename.txt`, the relative
-	//  path is `folder/filename.txt`
+	//   - For BigQuery table `project_id:dataset_id.table_id`, the relative path is
+	//     `table_id`
+	//   - For Cloud Storage file `gs://bucket/folder/filename.txt`, the relative
+	//     path is `folder/filename.txt`
 	RelativePath string `protobuf:"bytes,5,opt,name=relative_path,json=relativePath,proto3" json:"relative_path,omitempty"`
 	// Findings container modification timestamp, if applicable. For Cloud
 	// Storage, this field contains the last file modification timestamp. For a
@@ -4624,16 +4628,16 @@ type RedactImageRequest struct {
 	// processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Deprecated. This field has no effect.
 	LocationId string `protobuf:"bytes,8,opt,name=location_id,json=locationId,proto3" json:"location_id,omitempty"`
@@ -4870,16 +4874,16 @@ type DeidentifyContentRequest struct {
 	// processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Configuration for the de-identification of the content item.
 	// Items specified here will override the template referenced by the
@@ -5065,16 +5069,16 @@ type ReidentifyContentRequest struct {
 	// processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Configuration for the re-identification of the content item.
 	// This field shares the same proto message type that is used for
@@ -5084,8 +5088,8 @@ type ReidentifyContentRequest struct {
 	// reverse. This requires that only reversible transformations
 	// be provided here. The reversible transformations are:
 	//
-	//  - `CryptoDeterministicConfig`
-	//  - `CryptoReplaceFfxFpeConfig`
+	//   - `CryptoDeterministicConfig`
+	//   - `CryptoReplaceFfxFpeConfig`
 	ReidentifyConfig *DeidentifyConfig `protobuf:"bytes,2,opt,name=reidentify_config,json=reidentifyConfig,proto3" json:"reidentify_config,omitempty"`
 	// Configuration for the inspector.
 	InspectConfig *InspectConfig `protobuf:"bytes,3,opt,name=inspect_config,json=inspectConfig,proto3" json:"inspect_config,omitempty"`
@@ -5260,16 +5264,16 @@ type InspectContentRequest struct {
 	// processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Configuration for the inspector. What specified here will override
 	// the template referenced by the inspect_template_name argument.
@@ -5411,6 +5415,7 @@ type OutputStorageConfig struct {
 	// Output storage types.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*OutputStorageConfig_Table
 	Type isOutputStorageConfig_Type `protobuf_oneof:"type"`
 	// Schema used for writing the findings for Inspect jobs. This field is only
@@ -5627,6 +5632,7 @@ type DataProfileBigQueryRowSchema struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to DataProfile:
+	//
 	//	*DataProfileBigQueryRowSchema_TableProfile
 	//	*DataProfileBigQueryRowSchema_ColumnProfile
 	DataProfile isDataProfileBigQueryRowSchema_DataProfile `protobuf_oneof:"data_profile"`
@@ -5784,6 +5790,7 @@ type ActionDetails struct {
 	// Summary of what occurred in the actions.
 	//
 	// Types that are assignable to Details:
+	//
 	//	*ActionDetails_DeidentifyDetails
 	Details isActionDetails_Details `protobuf_oneof:"details"`
 }
@@ -6083,6 +6090,7 @@ type InfoTypeCategory struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Category:
+	//
 	//	*InfoTypeCategory_LocationCategory_
 	//	*InfoTypeCategory_IndustryCategory_
 	//	*InfoTypeCategory_TypeCategory_
@@ -6243,7 +6251,7 @@ type ListInfoTypesRequest struct {
 	//
 	// The format of this value is as follows:
 	//
-	//     locations/<var>LOCATION_ID</var>
+	//	locations/<var>LOCATION_ID</var>
 	Parent string `protobuf:"bytes,4,opt,name=parent,proto3" json:"parent,omitempty"`
 	// BCP-47 language code for localized infoType friendly
 	// names. If omitted, or if localized strings are not available,
@@ -6447,6 +6455,7 @@ type QuasiId struct {
 	// value. [required]
 	//
 	// Types that are assignable to Tag:
+	//
 	//	*QuasiId_InfoType
 	//	*QuasiId_CustomTag
 	//	*QuasiId_Inferred
@@ -6635,6 +6644,7 @@ type PrivacyMetric struct {
 	// Types of analysis.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*PrivacyMetric_NumericalStatsConfig_
 	//	*PrivacyMetric_CategoricalStatsConfig_
 	//	*PrivacyMetric_KAnonymityConfig_
@@ -6784,6 +6794,7 @@ type AnalyzeDataSourceRiskDetails struct {
 	// Values associated with this metric.
 	//
 	// Types that are assignable to Result:
+	//
 	//	*AnalyzeDataSourceRiskDetails_NumericalStatsResult_
 	//	*AnalyzeDataSourceRiskDetails_CategoricalStatsResult_
 	//	*AnalyzeDataSourceRiskDetails_KAnonymityResult_
@@ -7017,6 +7028,7 @@ type Value struct {
 	// Value types
 	//
 	// Types that are assignable to Type:
+	//
 	//	*Value_IntegerValue
 	//	*Value_FloatValue
 	//	*Value_StringValue
@@ -7192,6 +7204,7 @@ type QuoteInfo struct {
 	// Object representation of the quote.
 	//
 	// Types that are assignable to ParsedQuote:
+	//
 	//	*QuoteInfo_DateTime
 	ParsedQuote isQuoteInfo_ParsedQuote `protobuf_oneof:"parsed_quote"`
 }
@@ -7338,6 +7351,7 @@ type DeidentifyConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Transformation:
+	//
 	//	*DeidentifyConfig_InfoTypeTransformations
 	//	*DeidentifyConfig_RecordTransformations
 	//	*DeidentifyConfig_ImageTransformations
@@ -7506,6 +7520,7 @@ type TransformationErrorHandling struct {
 	// How transformation errors should be handled.
 	//
 	// Types that are assignable to Mode:
+	//
 	//	*TransformationErrorHandling_ThrowError_
 	//	*TransformationErrorHandling_LeaveUntransformed_
 	Mode isTransformationErrorHandling_Mode `protobuf_oneof:"mode"`
@@ -7589,6 +7604,7 @@ type PrimitiveTransformation struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Transformation:
+	//
 	//	*PrimitiveTransformation_ReplaceConfig
 	//	*PrimitiveTransformation_RedactConfig
 	//	*PrimitiveTransformation_CharacterMaskConfig
@@ -8098,6 +8114,7 @@ type ReplaceDictionaryConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Type:
+	//
 	//	*ReplaceDictionaryConfig_WordList
 	Type isReplaceDictionaryConfig_Type `protobuf_oneof:"type"`
 }
@@ -8249,6 +8266,7 @@ type CharsToIgnore struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Characters:
+	//
 	//	*CharsToIgnore_CharactersToSkip
 	//	*CharsToIgnore_CommonCharactersToIgnore
 	Characters isCharsToIgnore_Characters `protobuf_oneof:"characters"`
@@ -8623,6 +8641,7 @@ type CryptoReplaceFfxFpeConfig struct {
 	// Choose an alphabet which the data being transformed will be made up of.
 	//
 	// Types that are assignable to Alphabet:
+	//
 	//	*CryptoReplaceFfxFpeConfig_CommonAlphabet
 	//	*CryptoReplaceFfxFpeConfig_CustomAlphabet
 	//	*CryptoReplaceFfxFpeConfig_Radix
@@ -8784,6 +8803,7 @@ type CryptoKey struct {
 	// Sources of crypto keys.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*CryptoKey_Transient
 	//	*CryptoKey_Unwrapped
 	//	*CryptoKey_KmsWrapped
@@ -9073,6 +9093,7 @@ type DateShiftConfig struct {
 	// set, must also set context. Can only be applied to table items.
 	//
 	// Types that are assignable to Method:
+	//
 	//	*DateShiftConfig_CryptoKey
 	Method isDateShiftConfig_Method `protobuf_oneof:"method"`
 }
@@ -9234,6 +9255,7 @@ type FieldTransformation struct {
 	// Transformation to apply. [required]
 	//
 	// Types that are assignable to Transformation:
+	//
 	//	*FieldTransformation_PrimitiveTransformation
 	//	*FieldTransformation_InfoTypeTransformations
 	Transformation isFieldTransformation_Transformation `protobuf_oneof:"transformation"`
@@ -9670,11 +9692,11 @@ type TransformationDescription struct {
 	// to determine whether or not to apply this transformation.
 	//
 	// Examples:
-	//     * (age_field > 85)
-	//     * (age_field <= 18)
-	//     * (zip_field exists)
-	//     * (zip_field == 01234) && (city_field != "Springville")
-	//     * (zip_field == 01234) && (age_field <= 18) && (city_field exists)
+	//   - (age_field > 85)
+	//   - (age_field <= 18)
+	//   - (zip_field exists)
+	//   - (zip_field == 01234) && (city_field != "Springville")
+	//   - (zip_field == 01234) && (age_field <= 18) && (city_field exists)
 	Condition string `protobuf:"bytes,3,opt,name=condition,proto3" json:"condition,omitempty"`
 	// Set if the transformation was limited to a specific `InfoType`.
 	InfoType *InfoType `protobuf:"bytes,4,opt,name=info_type,json=infoType,proto3" json:"info_type,omitempty"`
@@ -9853,6 +9875,7 @@ type TransformationLocation struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to LocationType:
+	//
 	//	*TransformationLocation_FindingId
 	//	*TransformationLocation_RecordTransformation
 	LocationType isTransformationLocation_LocationType `protobuf_oneof:"location_type"`
@@ -10076,6 +10099,7 @@ type TransformationDetailsStorageConfig struct {
 	// Location to store the transformation summary.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*TransformationDetailsStorageConfig_Table
 	Type isTransformationDetailsStorageConfig_Type `protobuf_oneof:"type"`
 }
@@ -10149,6 +10173,7 @@ type Schedule struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Option:
+	//
 	//	*Schedule_RecurrencePeriodDuration
 	Option isSchedule_Option `protobuf_oneof:"option"`
 }
@@ -10535,6 +10560,7 @@ type JobTrigger struct {
 	// The configuration details for the specific type of job to run.
 	//
 	// Types that are assignable to Job:
+	//
 	//	*JobTrigger_InspectJob
 	Job isJobTrigger_Job `protobuf_oneof:"job"`
 	// A list of triggers which will be OR'ed together. Only one in the list
@@ -10684,6 +10710,7 @@ type Action struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Action:
+	//
 	//	*Action_SaveFindings_
 	//	*Action_PubSub
 	//	*Action_PublishSummaryToCscc_
@@ -10932,20 +10959,20 @@ type CreateInspectTemplateRequest struct {
 	// (project or organization) and whether you have [specified a processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
-	// + Organizations scope, location specified:<br/>
-	//   `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Organizations scope, no location specified (defaults to global):<br/>
-	//   `organizations/`<var>ORG_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
+	//   - Organizations scope, location specified:<br/>
+	//     `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Organizations scope, no location specified (defaults to global):<br/>
+	//     `organizations/`<var>ORG_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The InspectTemplate to create.
 	InspectTemplate *InspectTemplate `protobuf:"bytes,2,opt,name=inspect_template,json=inspectTemplate,proto3" json:"inspect_template,omitempty"`
@@ -11150,20 +11177,20 @@ type ListInspectTemplatesRequest struct {
 	// (project or organization) and whether you have [specified a processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
-	// + Organizations scope, location specified:<br/>
-	//   `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Organizations scope, no location specified (defaults to global):<br/>
-	//   `organizations/`<var>ORG_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
+	//   - Organizations scope, location specified:<br/>
+	//     `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Organizations scope, no location specified (defaults to global):<br/>
+	//     `organizations/`<var>ORG_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Page token to continue retrieval. Comes from the previous call
 	// to `ListInspectTemplates`.
@@ -11378,16 +11405,16 @@ type CreateJobTriggerRequest struct {
 	// processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The JobTrigger to create.
 	JobTrigger *JobTrigger `protobuf:"bytes,2,opt,name=job_trigger,json=jobTrigger,proto3" json:"job_trigger,omitempty"`
@@ -11643,7 +11670,7 @@ type CreateDiscoveryConfigRequest struct {
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The DiscoveryConfig to create.
 	DiscoveryConfig *DiscoveryConfig `protobuf:"bytes,2,opt,name=discovery_config,json=discoveryConfig,proto3" json:"discovery_config,omitempty"`
@@ -11840,7 +11867,7 @@ type ListDiscoveryConfigsRequest struct {
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Page token to continue retrieval. Comes from the previous call
 	// to ListDiscoveryConfigs. `order_by` field must not
@@ -12046,20 +12073,21 @@ type CreateDlpJobRequest struct {
 	// processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The configuration details for the specific type of job to run.
 	//
 	// Types that are assignable to Job:
+	//
 	//	*CreateDlpJobRequest_InspectJob
 	//	*CreateDlpJobRequest_RiskJob
 	Job isCreateDlpJobRequest_Job `protobuf_oneof:"job"`
@@ -12177,16 +12205,16 @@ type ListJobTriggersRequest struct {
 	// processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Page token to continue retrieval. Comes from the previous call
 	// to ListJobTriggers. `order_by` field must not
@@ -12219,11 +12247,12 @@ type ListJobTriggersRequest struct {
 	// sequence of restrictions implicitly uses `AND`.
 	// * A restriction has the form of `{field} {operator} {value}`.
 	// * Supported fields/values for inspect triggers:
-	//     - `status` - HEALTHY|PAUSED|CANCELLED
-	//     - `inspected_storage` - DATASTORE|CLOUD_STORAGE|BIGQUERY
-	//     - 'last_run_time` - RFC 3339 formatted timestamp, surrounded by
+	//   - `status` - HEALTHY|PAUSED|CANCELLED
+	//   - `inspected_storage` - DATASTORE|CLOUD_STORAGE|BIGQUERY
+	//   - 'last_run_time` - RFC 3339 formatted timestamp, surrounded by
 	//     quotation marks. Nanoseconds are ignored.
-	//     - 'error_count' - Number of errors that have occurred while running.
+	//   - 'error_count' - Number of errors that have occurred while running.
+	//
 	// * The operator must be `=` or `!=` for status and inspected_storage.
 	//
 	// Examples:
@@ -12516,6 +12545,7 @@ type DataProfileAction struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Action:
+	//
 	//	*DataProfileAction_ExportData
 	//	*DataProfileAction_PubSubNotification_
 	Action isDataProfileAction_Action `protobuf_oneof:"action"`
@@ -12911,6 +12941,7 @@ type DataProfileLocation struct {
 	// The location to be scanned.
 	//
 	// Types that are assignable to Location:
+	//
 	//	*DataProfileLocation_OrganizationId
 	//	*DataProfileLocation_FolderId
 	Location isDataProfileLocation_Location `protobuf_oneof:"location"`
@@ -13161,6 +13192,7 @@ type DiscoveryTarget struct {
 	// A target to match against for Discovery.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*DiscoveryTarget_BigQueryTarget
 	Target isDiscoveryTarget_Target `protobuf_oneof:"target"`
 }
@@ -13240,6 +13272,7 @@ type BigQueryDiscoveryTarget struct {
 	// update no more than once a month if new columns appear in the table.
 	//
 	// Types that are assignable to Frequency:
+	//
 	//	*BigQueryDiscoveryTarget_Cadence
 	//	*BigQueryDiscoveryTarget_Disabled
 	Frequency isBigQueryDiscoveryTarget_Frequency `protobuf_oneof:"frequency"`
@@ -13346,6 +13379,7 @@ type DiscoveryBigQueryFilter struct {
 	// `other_tables`.
 	//
 	// Types that are assignable to Filter:
+	//
 	//	*DiscoveryBigQueryFilter_Tables
 	//	*DiscoveryBigQueryFilter_OtherTables
 	Filter isDiscoveryBigQueryFilter_Filter `protobuf_oneof:"filter"`
@@ -13438,6 +13472,7 @@ type BigQueryTableCollection struct {
 	// The first filter containing a pattern that matches a table will be used.
 	//
 	// Types that are assignable to Pattern:
+	//
 	//	*BigQueryTableCollection_IncludeRegexes
 	Pattern isBigQueryTableCollection_Pattern `protobuf_oneof:"pattern"`
 }
@@ -13517,6 +13552,7 @@ type DiscoveryBigQueryConditions struct {
 	// for all unsupported tables.
 	//
 	// Types that are assignable to IncludedTypes:
+	//
 	//	*DiscoveryBigQueryConditions_Types
 	//	*DiscoveryBigQueryConditions_TypeCollection
 	IncludedTypes isDiscoveryBigQueryConditions_IncludedTypes `protobuf_oneof:"included_types"`
@@ -13802,6 +13838,7 @@ type DiscoveryStartingLocation struct {
 	// The location to be scanned.
 	//
 	// Types that are assignable to Location:
+	//
 	//	*DiscoveryStartingLocation_OrganizationId
 	//	*DiscoveryStartingLocation_FolderId
 	Location isDiscoveryStartingLocation_Location `protobuf_oneof:"location"`
@@ -13891,6 +13928,7 @@ type DlpJob struct {
 	// State of a job.
 	State DlpJob_JobState `protobuf:"varint,3,opt,name=state,proto3,enum=google.privacy.dlp.v2.DlpJob_JobState" json:"state,omitempty"`
 	// Types that are assignable to Details:
+	//
 	//	*DlpJob_RiskDetails
 	//	*DlpJob_InspectDetails
 	Details isDlpJob_Details `protobuf_oneof:"details"`
@@ -14113,16 +14151,16 @@ type ListDlpJobsRequest struct {
 	// processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,4,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Allows filtering.
 	//
@@ -14133,15 +14171,17 @@ type ListDlpJobsRequest struct {
 	// sequence of restrictions implicitly uses `AND`.
 	// * A restriction has the form of `{field} {operator} {value}`.
 	// * Supported fields/values for inspect jobs:
-	//     - `state` - PENDING|RUNNING|CANCELED|FINISHED|FAILED
-	//     - `inspected_storage` - DATASTORE|CLOUD_STORAGE|BIGQUERY
-	//     - `trigger_name` - The name of the trigger that created the job.
-	//     - 'end_time` - Corresponds to the time the job finished.
-	//     - 'start_time` - Corresponds to the time the job finished.
+	//   - `state` - PENDING|RUNNING|CANCELED|FINISHED|FAILED
+	//   - `inspected_storage` - DATASTORE|CLOUD_STORAGE|BIGQUERY
+	//   - `trigger_name` - The name of the trigger that created the job.
+	//   - 'end_time` - Corresponds to the time the job finished.
+	//   - 'start_time` - Corresponds to the time the job finished.
+	//
 	// * Supported fields for risk analysis jobs:
-	//     - `state` - RUNNING|CANCELED|FINISHED|FAILED
-	//     - 'end_time` - Corresponds to the time the job finished.
-	//     - 'start_time` - Corresponds to the time the job finished.
+	//   - `state` - RUNNING|CANCELED|FINISHED|FAILED
+	//   - 'end_time` - Corresponds to the time the job finished.
+	//   - 'start_time` - Corresponds to the time the job finished.
+	//
 	// * The operator must be `=` or `!=`.
 	//
 	// Examples:
@@ -14475,20 +14515,20 @@ type CreateDeidentifyTemplateRequest struct {
 	// (project or organization) and whether you have [specified a processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
-	// + Organizations scope, location specified:<br/>
-	//   `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Organizations scope, no location specified (defaults to global):<br/>
-	//   `organizations/`<var>ORG_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
+	//   - Organizations scope, location specified:<br/>
+	//     `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Organizations scope, no location specified (defaults to global):<br/>
+	//     `organizations/`<var>ORG_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The DeidentifyTemplate to create.
 	DeidentifyTemplate *DeidentifyTemplate `protobuf:"bytes,2,opt,name=deidentify_template,json=deidentifyTemplate,proto3" json:"deidentify_template,omitempty"`
@@ -14694,20 +14734,20 @@ type ListDeidentifyTemplatesRequest struct {
 	// (project or organization) and whether you have [specified a processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
-	// + Organizations scope, location specified:<br/>
-	//   `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Organizations scope, no location specified (defaults to global):<br/>
-	//   `organizations/`<var>ORG_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
+	//   - Organizations scope, location specified:<br/>
+	//     `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Organizations scope, no location specified (defaults to global):<br/>
+	//     `organizations/`<var>ORG_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Page token to continue retrieval. Comes from the previous call
 	// to `ListDeidentifyTemplates`.
@@ -14929,6 +14969,7 @@ type LargeCustomDictionaryConfig struct {
 	// longer be used.
 	OutputPath *CloudStoragePath `protobuf:"bytes,1,opt,name=output_path,json=outputPath,proto3" json:"output_path,omitempty"`
 	// Types that are assignable to Source:
+	//
 	//	*LargeCustomDictionaryConfig_CloudStorageFileSet
 	//	*LargeCustomDictionaryConfig_BigQueryField
 	Source isLargeCustomDictionaryConfig_Source `protobuf_oneof:"source"`
@@ -15076,6 +15117,7 @@ type StoredInfoTypeConfig struct {
 	// Stored infotype types.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*StoredInfoTypeConfig_LargeCustomDictionary
 	//	*StoredInfoTypeConfig_Dictionary
 	//	*StoredInfoTypeConfig_Regex
@@ -15190,6 +15232,7 @@ type StoredInfoTypeStats struct {
 	// Stat types
 	//
 	// Types that are assignable to Type:
+	//
 	//	*StoredInfoTypeStats_LargeCustomDictionary
 	Type isStoredInfoTypeStats_Type `protobuf_oneof:"type"`
 }
@@ -15432,20 +15475,20 @@ type CreateStoredInfoTypeRequest struct {
 	// (project or organization) and whether you have [specified a processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
-	// + Organizations scope, location specified:<br/>
-	//   `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Organizations scope, no location specified (defaults to global):<br/>
-	//   `organizations/`<var>ORG_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
+	//   - Organizations scope, location specified:<br/>
+	//     `organizations/`<var>ORG_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Organizations scope, no location specified (defaults to global):<br/>
+	//     `organizations/`<var>ORG_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Configuration of the storedInfoType to create.
 	Config *StoredInfoTypeConfig `protobuf:"bytes,2,opt,name=config,proto3" json:"config,omitempty"`
@@ -15652,16 +15695,16 @@ type ListStoredInfoTypesRequest struct {
 	// (project or organization) and whether you have [specified a processing
 	// location](https://cloud.google.com/dlp/docs/specifying-location):
 	//
-	// + Projects scope, location specified:<br/>
-	//   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-	// + Projects scope, no location specified (defaults to global):<br/>
-	//   `projects/`<var>PROJECT_ID</var>
+	//   - Projects scope, location specified:<br/>
+	//     `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
+	//   - Projects scope, no location specified (defaults to global):<br/>
+	//     `projects/`<var>PROJECT_ID</var>
 	//
 	// The following example `parent` string specifies a parent project with the
 	// identifier `example-project`, and specifies the `europe-west3` location
 	// for processing data:
 	//
-	//     parent=projects/example-project/locations/europe-west3
+	//	parent=projects/example-project/locations/europe-west3
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Page token to continue retrieval. Comes from the previous call
 	// to `ListStoredInfoTypes`.
@@ -17374,6 +17417,7 @@ type RedactImageRequest_ImageRedactionConfig struct {
 	// Type of information to redact from images.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*RedactImageRequest_ImageRedactionConfig_InfoType
 	//	*RedactImageRequest_ImageRedactionConfig_RedactAllText
 	Target isRedactImageRequest_ImageRedactionConfig_Target `protobuf_oneof:"target"`
@@ -18134,6 +18178,7 @@ type PrivacyMetric_KMapEstimationConfig_TaggedField struct {
 	// value. [required]
 	//
 	// Types that are assignable to Tag:
+	//
 	//	*PrivacyMetric_KMapEstimationConfig_TaggedField_InfoType
 	//	*PrivacyMetric_KMapEstimationConfig_TaggedField_CustomTag
 	//	*PrivacyMetric_KMapEstimationConfig_TaggedField_Inferred
@@ -18600,9 +18645,11 @@ type AnalyzeDataSourceRiskDetails_KMapEstimationResult struct {
 	// The intervals [min_anonymity, max_anonymity] do not overlap. If a value
 	// doesn't correspond to any such interval, the associated frequency is
 	// zero. For example, the following records:
-	//   {min_anonymity: 1, max_anonymity: 1, frequency: 17}
-	//   {min_anonymity: 2, max_anonymity: 3, frequency: 42}
-	//   {min_anonymity: 5, max_anonymity: 10, frequency: 99}
+	//
+	//	{min_anonymity: 1, max_anonymity: 1, frequency: 17}
+	//	{min_anonymity: 2, max_anonymity: 3, frequency: 42}
+	//	{min_anonymity: 5, max_anonymity: 10, frequency: 99}
+	//
 	// mean that there are no record with an estimated anonymity of 4, 5, or
 	// larger than 10.
 	KMapEstimationHistogram []*AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogramBucket `protobuf:"bytes,1,rep,name=k_map_estimation_histogram,json=kMapEstimationHistogram,proto3" json:"k_map_estimation_histogram,omitempty"`
@@ -18657,9 +18704,11 @@ type AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult struct {
 	// The intervals [min_probability, max_probability) do not overlap. If a
 	// value doesn't correspond to any such interval, the associated frequency
 	// is zero. For example, the following records:
-	//   {min_probability: 0, max_probability: 0.1, frequency: 17}
-	//   {min_probability: 0.2, max_probability: 0.3, frequency: 42}
-	//   {min_probability: 0.3, max_probability: 0.4, frequency: 99}
+	//
+	//	{min_probability: 0, max_probability: 0.1, frequency: 17}
+	//	{min_probability: 0.2, max_probability: 0.3, frequency: 42}
+	//	{min_probability: 0.3, max_probability: 0.4, frequency: 99}
+	//
 	// mean that there are no record with an estimated probability in [0.1, 0.2)
 	// nor larger or equal to 0.4.
 	DeltaPresenceEstimationHistogram []*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationHistogramBucket `protobuf:"bytes,1,rep,name=delta_presence_estimation_histogram,json=deltaPresenceEstimationHistogram,proto3" json:"delta_presence_estimation_histogram,omitempty"`
@@ -19527,6 +19576,7 @@ type ImageTransformations_ImageTransformation struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Target:
+	//
 	//	*ImageTransformations_ImageTransformation_SelectedInfoTypes_
 	//	*ImageTransformations_ImageTransformation_AllInfoTypes_
 	//	*ImageTransformations_ImageTransformation_AllText_
@@ -20118,6 +20168,7 @@ type RecordCondition_Expressions struct {
 	// Expression types.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*RecordCondition_Expressions_Conditions
 	Type isRecordCondition_Expressions_Type `protobuf_oneof:"type"`
 }
@@ -20262,6 +20313,7 @@ type JobTrigger_Trigger struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Trigger:
+	//
 	//	*JobTrigger_Trigger_Schedule
 	//	*JobTrigger_Trigger_Manual
 	Trigger isJobTrigger_Trigger_Trigger `protobuf_oneof:"trigger"`
@@ -20579,6 +20631,7 @@ type Action_Deidentify struct {
 	// message for more information about what is noted).
 	TransformationDetailsStorageConfig *TransformationDetailsStorageConfig `protobuf:"bytes,3,opt,name=transformation_details_storage_config,json=transformationDetailsStorageConfig,proto3" json:"transformation_details_storage_config,omitempty"`
 	// Types that are assignable to Output:
+	//
 	//	*Action_Deidentify_CloudStorageOutput
 	Output isAction_Deidentify_Output `protobuf_oneof:"output"`
 	// List of user-specified file type groups to transform. If specified, only
@@ -21064,6 +21117,7 @@ type DataProfilePubSubCondition_PubSubCondition struct {
 	// The value for the condition to trigger.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*DataProfilePubSubCondition_PubSubCondition_MinimumRiskScore
 	//	*DataProfilePubSubCondition_PubSubCondition_MinimumSensitivityScore
 	Value isDataProfilePubSubCondition_PubSubCondition_Value `protobuf_oneof:"value"`

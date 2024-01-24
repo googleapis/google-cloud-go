@@ -21,12 +21,9 @@
 package securitycenterpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -39,6 +36,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1218,17 +1217,17 @@ type GroupAssetsRequest struct {
 	// * name: `=`
 	// * update_time: `=`, `>`, `<`, `>=`, `<=`
 	//
-	//   Usage: This should be milliseconds since epoch or an RFC3339 string.
-	//   Examples:
-	//     `update_time = "2019-06-10T16:07:18-07:00"`
-	//     `update_time = 1560208038000`
+	//	Usage: This should be milliseconds since epoch or an RFC3339 string.
+	//	Examples:
+	//	  `update_time = "2019-06-10T16:07:18-07:00"`
+	//	  `update_time = 1560208038000`
 	//
 	// * create_time: `=`, `>`, `<`, `>=`, `<=`
 	//
-	//   Usage: This should be milliseconds since epoch or an RFC3339 string.
-	//   Examples:
-	//     `create_time = "2019-06-10T16:07:18-07:00"`
-	//     `create_time = 1560208038000`
+	//	Usage: This should be milliseconds since epoch or an RFC3339 string.
+	//	Examples:
+	//	  `create_time = "2019-06-10T16:07:18-07:00"`
+	//	  `create_time = 1560208038000`
 	//
 	// * iam_policy.policy_blob: `=`, `:`
 	// * resource_properties: `=`, `:`, `>`, `<`, `>=`, `<=`
@@ -1282,13 +1281,13 @@ type GroupAssetsRequest struct {
 	//
 	// Possible "state_change" values when compare_duration is specified:
 	//
-	// * "ADDED":   indicates that the asset was not present at the start of
-	//                compare_duration, but present at reference_time.
-	// * "REMOVED": indicates that the asset was present at the start of
-	//                compare_duration, but not present at reference_time.
-	// * "ACTIVE":  indicates that the asset was present at both the
-	//                start and the end of the time period defined by
-	//                compare_duration and reference_time.
+	//   - "ADDED":   indicates that the asset was not present at the start of
+	//     compare_duration, but present at reference_time.
+	//   - "REMOVED": indicates that the asset was present at the start of
+	//     compare_duration, but not present at reference_time.
+	//   - "ACTIVE":  indicates that the asset was present at both the
+	//     start and the end of the time period defined by
+	//     compare_duration and reference_time.
 	//
 	// If compare_duration is not specified, then the only possible state_change
 	// is "UNUSED", which will be the state_change set for all assets present at
@@ -1493,9 +1492,9 @@ type GroupFindingsRequest struct {
 	// Restrictions have the form `<field> <operator> <value>` and may have a `-`
 	// character in front of them to indicate negation. Examples include:
 	//
-	//  * name
-	//  * source_properties.a_property
-	//  * security_marks.marks.marka
+	//   - name
+	//   - source_properties.a_property
+	//   - security_marks.marks.marka
 	//
 	// The supported operators are:
 	//
@@ -1519,31 +1518,31 @@ type GroupFindingsRequest struct {
 	// * external_uri: `=`, `:`
 	// * event_time: `=`, `>`, `<`, `>=`, `<=`
 	//
-	//   Usage: This should be milliseconds since epoch or an RFC3339 string.
-	//   Examples:
-	//     `event_time = "2019-06-10T16:07:18-07:00"`
-	//     `event_time = 1560208038000`
+	//	Usage: This should be milliseconds since epoch or an RFC3339 string.
+	//	Examples:
+	//	  `event_time = "2019-06-10T16:07:18-07:00"`
+	//	  `event_time = 1560208038000`
 	//
 	// * severity: `=`, `:`
 	// * workflow_state: `=`, `:`
 	// * security_marks.marks: `=`, `:`
 	// * source_properties: `=`, `:`, `>`, `<`, `>=`, `<=`
 	//
-	//   For example, `source_properties.size = 100` is a valid filter string.
+	//	For example, `source_properties.size = 100` is a valid filter string.
 	//
-	//   Use a partial match on the empty string to filter based on a property
-	//   existing: `source_properties.my_property : ""`
+	//	Use a partial match on the empty string to filter based on a property
+	//	existing: `source_properties.my_property : ""`
 	//
-	//   Use a negated partial match on the empty string to filter based on a
-	//   property not existing: `-source_properties.my_property : ""`
+	//	Use a negated partial match on the empty string to filter based on a
+	//	property not existing: `-source_properties.my_property : ""`
 	//
 	// * resource:
-	//   * resource.name: `=`, `:`
-	//   * resource.parent_name: `=`, `:`
-	//   * resource.parent_display_name: `=`, `:`
-	//   * resource.project_name: `=`, `:`
-	//   * resource.project_display_name: `=`, `:`
-	//   * resource.type: `=`, `:`
+	//   - resource.name: `=`, `:`
+	//   - resource.parent_name: `=`, `:`
+	//   - resource.parent_display_name: `=`, `:`
+	//   - resource.project_name: `=`, `:`
+	//   - resource.project_display_name: `=`, `:`
+	//   - resource.type: `=`, `:`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Required. Expression that defines what assets fields to use for grouping
 	// (including `state_change`). The string value should follow SQL syntax:
@@ -1579,18 +1578,18 @@ type GroupFindingsRequest struct {
 	//
 	// Possible "state_change" values when compare_duration is specified:
 	//
-	// * "CHANGED":   indicates that the finding was present and matched the given
-	//                  filter at the start of compare_duration, but changed its
-	//                  state at read_time.
-	// * "UNCHANGED": indicates that the finding was present and matched the given
-	//                  filter at the start of compare_duration and did not change
-	//                  state at read_time.
-	// * "ADDED":     indicates that the finding did not match the given filter or
-	//                  was not present at the start of compare_duration, but was
-	//                  present at read_time.
-	// * "REMOVED":   indicates that the finding was present and matched the
-	//                  filter at the start of compare_duration, but did not match
-	//                  the filter at read_time.
+	//   - "CHANGED":   indicates that the finding was present and matched the given
+	//     filter at the start of compare_duration, but changed its
+	//     state at read_time.
+	//   - "UNCHANGED": indicates that the finding was present and matched the given
+	//     filter at the start of compare_duration and did not change
+	//     state at read_time.
+	//   - "ADDED":     indicates that the finding did not match the given filter or
+	//     was not present at the start of compare_duration, but was
+	//     present at read_time.
+	//   - "REMOVED":   indicates that the finding was present and matched the
+	//     filter at the start of compare_duration, but did not match
+	//     the filter at read_time.
 	//
 	// If compare_duration is not specified, then the only possible state_change
 	// is "UNUSED",  which will be the state_change set for all findings present
@@ -2661,17 +2660,17 @@ type ListAssetsRequest struct {
 	// * name: `=`
 	// * update_time: `=`, `>`, `<`, `>=`, `<=`
 	//
-	//   Usage: This should be milliseconds since epoch or an RFC3339 string.
-	//   Examples:
-	//     `update_time = "2019-06-10T16:07:18-07:00"`
-	//     `update_time = 1560208038000`
+	//	Usage: This should be milliseconds since epoch or an RFC3339 string.
+	//	Examples:
+	//	  `update_time = "2019-06-10T16:07:18-07:00"`
+	//	  `update_time = 1560208038000`
 	//
 	// * create_time: `=`, `>`, `<`, `>=`, `<=`
 	//
-	//   Usage: This should be milliseconds since epoch or an RFC3339 string.
-	//   Examples:
-	//     `create_time = "2019-06-10T16:07:18-07:00"`
-	//     `create_time = 1560208038000`
+	//	Usage: This should be milliseconds since epoch or an RFC3339 string.
+	//	Examples:
+	//	  `create_time = "2019-06-10T16:07:18-07:00"`
+	//	  `create_time = 1560208038000`
 	//
 	// * iam_policy.policy_blob: `=`, `:`
 	// * resource_properties: `=`, `:`, `>`, `<`, `>=`, `<=`
@@ -2733,13 +2732,13 @@ type ListAssetsRequest struct {
 	//
 	// Possible "state_change" values when compare_duration is specified:
 	//
-	// * "ADDED":   indicates that the asset was not present at the start of
-	//                compare_duration, but present at read_time.
-	// * "REMOVED": indicates that the asset was present at the start of
-	//                compare_duration, but not present at read_time.
-	// * "ACTIVE":  indicates that the asset was present at both the
-	//                start and the end of the time period defined by
-	//                compare_duration and read_time.
+	//   - "ADDED":   indicates that the asset was not present at the start of
+	//     compare_duration, but present at read_time.
+	//   - "REMOVED": indicates that the asset was present at the start of
+	//     compare_duration, but not present at read_time.
+	//   - "ACTIVE":  indicates that the asset was present at both the
+	//     start and the end of the time period defined by
+	//     compare_duration and read_time.
 	//
 	// If compare_duration is not specified, then the only possible state_change
 	// is "UNUSED",  which will be the state_change set for all assets present at
@@ -2945,9 +2944,9 @@ type ListFindingsRequest struct {
 	// Restrictions have the form `<field> <operator> <value>` and may have a `-`
 	// character in front of them to indicate negation. Examples include:
 	//
-	//  * name
-	//  * source_properties.a_property
-	//  * security_marks.marks.marka
+	//   - name
+	//   - source_properties.a_property
+	//   - security_marks.marks.marka
 	//
 	// The supported operators are:
 	//
@@ -2971,33 +2970,33 @@ type ListFindingsRequest struct {
 	// * external_uri: `=`, `:`
 	// * event_time: `=`, `>`, `<`, `>=`, `<=`
 	//
-	//   Usage: This should be milliseconds since epoch or an RFC3339 string.
-	//   Examples:
-	//     `event_time = "2019-06-10T16:07:18-07:00"`
-	//     `event_time = 1560208038000`
+	//	Usage: This should be milliseconds since epoch or an RFC3339 string.
+	//	Examples:
+	//	  `event_time = "2019-06-10T16:07:18-07:00"`
+	//	  `event_time = 1560208038000`
 	//
 	// * severity: `=`, `:`
 	// * workflow_state: `=`, `:`
 	// * security_marks.marks: `=`, `:`
 	// * source_properties: `=`, `:`, `>`, `<`, `>=`, `<=`
 	//
-	//   For example, `source_properties.size = 100` is a valid filter string.
+	//	For example, `source_properties.size = 100` is a valid filter string.
 	//
-	//   Use a partial match on the empty string to filter based on a property
-	//   existing: `source_properties.my_property : ""`
+	//	Use a partial match on the empty string to filter based on a property
+	//	existing: `source_properties.my_property : ""`
 	//
-	//   Use a negated partial match on the empty string to filter based on a
-	//   property not existing: `-source_properties.my_property : ""`
+	//	Use a negated partial match on the empty string to filter based on a
+	//	property not existing: `-source_properties.my_property : ""`
 	//
 	// * resource:
-	//   * resource.name: `=`, `:`
-	//   * resource.parent_name: `=`, `:`
-	//   * resource.parent_display_name: `=`, `:`
-	//   * resource.project_name: `=`, `:`
-	//   * resource.project_display_name: `=`, `:`
-	//   * resource.type: `=`, `:`
-	//   * resource.folders.resource_folder: `=`, `:`
-	//   * resource.display_name: `=`, `:`
+	//   - resource.name: `=`, `:`
+	//   - resource.parent_name: `=`, `:`
+	//   - resource.parent_display_name: `=`, `:`
+	//   - resource.project_name: `=`, `:`
+	//   - resource.project_display_name: `=`, `:`
+	//   - resource.type: `=`, `:`
+	//   - resource.folders.resource_folder: `=`, `:`
+	//   - resource.display_name: `=`, `:`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Expression that defines what fields and order to use for sorting. The
 	// string value should follow SQL syntax: comma separated list of fields. For
@@ -3037,18 +3036,18 @@ type ListFindingsRequest struct {
 	//
 	// Possible "state_change" values when compare_duration is specified:
 	//
-	// * "CHANGED":   indicates that the finding was present and matched the given
-	//                  filter at the start of compare_duration, but changed its
-	//                  state at read_time.
-	// * "UNCHANGED": indicates that the finding was present and matched the given
-	//                  filter at the start of compare_duration and did not change
-	//                  state at read_time.
-	// * "ADDED":     indicates that the finding did not match the given filter or
-	//                  was not present at the start of compare_duration, but was
-	//                  present at read_time.
-	// * "REMOVED":   indicates that the finding was present and matched the
-	//                  filter at the start of compare_duration, but did not match
-	//                  the filter at read_time.
+	//   - "CHANGED":   indicates that the finding was present and matched the given
+	//     filter at the start of compare_duration, but changed its
+	//     state at read_time.
+	//   - "UNCHANGED": indicates that the finding was present and matched the given
+	//     filter at the start of compare_duration and did not change
+	//     state at read_time.
+	//   - "ADDED":     indicates that the finding did not match the given filter or
+	//     was not present at the start of compare_duration, but was
+	//     present at read_time.
+	//   - "REMOVED":   indicates that the finding was present and matched the
+	//     filter at the start of compare_duration, but did not match
+	//     the filter at read_time.
 	//
 	// If compare_duration is not specified, then the only possible state_change
 	// is "UNUSED", which will be the state_change set for all findings present at
@@ -4675,6 +4674,7 @@ type SimulateSecurityHealthAnalyticsCustomModuleResponse_SimulatedResult struct 
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Result:
+	//
 	//	*SimulateSecurityHealthAnalyticsCustomModuleResponse_SimulatedResult_Finding
 	//	*SimulateSecurityHealthAnalyticsCustomModuleResponse_SimulatedResult_NoViolation
 	//	*SimulateSecurityHealthAnalyticsCustomModuleResponse_SimulatedResult_Error
@@ -7781,7 +7781,6 @@ type SecurityCenterClient interface {
 	UpdateFinding(ctx context.Context, in *UpdateFindingRequest, opts ...grpc.CallOption) (*Finding, error)
 	// Updates a mute config.
 	UpdateMuteConfig(ctx context.Context, in *UpdateMuteConfigRequest, opts ...grpc.CallOption) (*MuteConfig, error)
-	//
 	// Updates a notification config. The following update
 	// fields are allowed: description, pubsub_topic, streaming_config.filter
 	UpdateNotificationConfig(ctx context.Context, in *UpdateNotificationConfigRequest, opts ...grpc.CallOption) (*NotificationConfig, error)
@@ -8333,7 +8332,6 @@ type SecurityCenterServer interface {
 	UpdateFinding(context.Context, *UpdateFindingRequest) (*Finding, error)
 	// Updates a mute config.
 	UpdateMuteConfig(context.Context, *UpdateMuteConfigRequest) (*MuteConfig, error)
-	//
 	// Updates a notification config. The following update
 	// fields are allowed: description, pubsub_topic, streaming_config.filter
 	UpdateNotificationConfig(context.Context, *UpdateNotificationConfigRequest) (*NotificationConfig, error)

@@ -21,11 +21,8 @@
 package networkconnectivitypb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -216,10 +215,12 @@ type PolicyBasedRoute struct {
 	// network endpoints (e.g. VMs, VPNs, and Interconnects) in the VPC.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*PolicyBasedRoute_VirtualMachine_
 	//	*PolicyBasedRoute_InterconnectAttachment_
 	Target isPolicyBasedRoute_Target `protobuf_oneof:"target"`
 	// Types that are assignable to NextHop:
+	//
 	//	*PolicyBasedRoute_NextHopIlbIp
 	//	*PolicyBasedRoute_NextHopOtherRoutes
 	NextHop isPolicyBasedRoute_NextHop `protobuf_oneof:"next_hop"`

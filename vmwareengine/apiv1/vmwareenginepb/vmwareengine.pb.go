@@ -21,11 +21,8 @@
 package vmwareenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -650,7 +649,6 @@ type ListClustersRequest struct {
 	// When paginating, all other parameters provided to `ListClusters`
 	// must match the call that provided the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	//
 	// To filter on multiple expressions, provide each separate expression within
 	// parentheses. For example:
 	// ```
@@ -5362,7 +5360,8 @@ type CreateNetworkPolicyRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	//  `projects/my-project/locations/us-central1`
+	//
+	//	`projects/my-project/locations/us-central1`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The user-provided identifier of the network policy to be created.
 	// This identifier must be unique within parent

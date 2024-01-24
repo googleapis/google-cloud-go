@@ -22,15 +22,14 @@ package pubsublitepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -230,6 +229,7 @@ type SeekRequest struct {
 	// The target to seek to. Must be set.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*SeekRequest_NamedTarget_
 	//	*SeekRequest_Cursor
 	Target isSeekRequest_Target `protobuf_oneof:"target"`
@@ -424,6 +424,7 @@ type SubscribeRequest struct {
 	// The type of request this is.
 	//
 	// Types that are assignable to Request:
+	//
 	//	*SubscribeRequest_Initial
 	//	*SubscribeRequest_Seek
 	//	*SubscribeRequest_FlowControl
@@ -578,6 +579,7 @@ type SubscribeResponse struct {
 	// The type of response this is.
 	//
 	// Types that are assignable to Response:
+	//
 	//	*SubscribeResponse_Initial
 	//	*SubscribeResponse_Seek
 	//	*SubscribeResponse_Messages
@@ -840,6 +842,7 @@ type PartitionAssignmentRequest struct {
 	// The type of request this is.
 	//
 	// Types that are assignable to Request:
+	//
 	//	*PartitionAssignmentRequest_Initial
 	//	*PartitionAssignmentRequest_Ack
 	Request isPartitionAssignmentRequest_Request `protobuf_oneof:"request"`

@@ -21,11 +21,8 @@
 package talentpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -934,78 +933,99 @@ type SearchJobsRequest struct {
 	// * employment_type: histogram by
 	// [Job.employment_types][google.cloud.talent.v4.Job.employment_types], for
 	// example,
-	//   "FULL_TIME", "PART_TIME".
+	//
+	//	"FULL_TIME", "PART_TIME".
+	//
 	// * company_size (DEPRECATED): histogram by
 	// [CompanySize][google.cloud.talent.v4.CompanySize], for example, "SMALL",
 	// "MEDIUM", "BIG".
 	// * publish_time_in_day: histogram by the
 	// [Job.posting_publish_time][google.cloud.talent.v4.Job.posting_publish_time]
-	//   in days.
-	//   Must specify list of numeric buckets in spec.
+	//
+	//	in days.
+	//	Must specify list of numeric buckets in spec.
+	//
 	// * publish_time_in_month: histogram by the
 	// [Job.posting_publish_time][google.cloud.talent.v4.Job.posting_publish_time]
-	//   in months.
-	//   Must specify list of numeric buckets in spec.
+	//
+	//	in months.
+	//	Must specify list of numeric buckets in spec.
+	//
 	// * publish_time_in_year: histogram by the
 	// [Job.posting_publish_time][google.cloud.talent.v4.Job.posting_publish_time]
-	//   in years.
-	//   Must specify list of numeric buckets in spec.
+	//
+	//	in years.
+	//	Must specify list of numeric buckets in spec.
+	//
 	// * degree_types: histogram by the
 	// [Job.degree_types][google.cloud.talent.v4.Job.degree_types], for example,
-	//   "Bachelors", "Masters".
+	//
+	//	"Bachelors", "Masters".
+	//
 	// * job_level: histogram by the
 	// [Job.job_level][google.cloud.talent.v4.Job.job_level], for example, "Entry
-	//   Level".
-	// * country: histogram by the country code of jobs, for example, "US", "FR".
-	// * admin1: histogram by the admin1 code of jobs, which is a global
-	//   placeholder referring to the state, province, or the particular term a
-	//   country uses to define the geographic structure below the country level,
-	//   for example, "CA", "IL".
-	// * city: histogram by a combination of the "city name, admin1 code". For
-	//   example,  "Mountain View, CA", "New York, NY".
-	// * admin1_country: histogram by a combination of the "admin1 code, country",
-	//   for example, "CA, US", "IL, US".
-	// * city_coordinate: histogram by the city center's GPS coordinates (latitude
-	//   and longitude), for example, 37.4038522,-122.0987765. Since the
-	//   coordinates of a city center can change, customers may need to refresh
-	//   them periodically.
-	// * locale: histogram by the
+	//
+	//	Level".
+	//   - country: histogram by the country code of jobs, for example, "US", "FR".
+	//   - admin1: histogram by the admin1 code of jobs, which is a global
+	//     placeholder referring to the state, province, or the particular term a
+	//     country uses to define the geographic structure below the country level,
+	//     for example, "CA", "IL".
+	//   - city: histogram by a combination of the "city name, admin1 code". For
+	//     example,  "Mountain View, CA", "New York, NY".
+	//   - admin1_country: histogram by a combination of the "admin1 code, country",
+	//     for example, "CA, US", "IL, US".
+	//   - city_coordinate: histogram by the city center's GPS coordinates (latitude
+	//     and longitude), for example, 37.4038522,-122.0987765. Since the
+	//     coordinates of a city center can change, customers may need to refresh
+	//     them periodically.
+	//   - locale: histogram by the
+	//
 	// [Job.language_code][google.cloud.talent.v4.Job.language_code], for example,
 	// "en-US",
-	//   "fr-FR".
+	//
+	//	"fr-FR".
+	//
 	// * language: histogram by the language subtag of the
 	// [Job.language_code][google.cloud.talent.v4.Job.language_code],
-	//   for example, "en", "fr".
+	//
+	//	for example, "en", "fr".
+	//
 	// * category: histogram by the
 	// [JobCategory][google.cloud.talent.v4.JobCategory], for example,
-	//   "COMPUTER_AND_IT", "HEALTHCARE".
-	// * base_compensation_unit: histogram by the
-	//   [CompensationInfo.CompensationUnit][google.cloud.talent.v4.CompensationInfo.CompensationUnit]
-	//   of base salary, for example, "WEEKLY", "MONTHLY".
-	// * base_compensation: histogram by the base salary. Must specify list of
-	//   numeric buckets to group results by.
-	// * annualized_base_compensation: histogram by the base annualized salary.
-	//   Must specify list of numeric buckets to group results by.
-	// * annualized_total_compensation: histogram by the total annualized salary.
-	//   Must specify list of numeric buckets to group results by.
-	// * string_custom_attribute: histogram by string
+	//
+	//	"COMPUTER_AND_IT", "HEALTHCARE".
+	//   - base_compensation_unit: histogram by the
+	//     [CompensationInfo.CompensationUnit][google.cloud.talent.v4.CompensationInfo.CompensationUnit]
+	//     of base salary, for example, "WEEKLY", "MONTHLY".
+	//   - base_compensation: histogram by the base salary. Must specify list of
+	//     numeric buckets to group results by.
+	//   - annualized_base_compensation: histogram by the base annualized salary.
+	//     Must specify list of numeric buckets to group results by.
+	//   - annualized_total_compensation: histogram by the total annualized salary.
+	//     Must specify list of numeric buckets to group results by.
+	//   - string_custom_attribute: histogram by string
+	//
 	// [Job.custom_attributes][google.cloud.talent.v4.Job.custom_attributes].
-	//   Values can be accessed via square bracket notations like
-	//   string_custom_attribute["key1"].
+	//
+	//	Values can be accessed via square bracket notations like
+	//	string_custom_attribute["key1"].
+	//
 	// * numeric_custom_attribute: histogram by numeric
 	// [Job.custom_attributes][google.cloud.talent.v4.Job.custom_attributes].
-	//   Values can be accessed via square bracket notations like
-	//   numeric_custom_attribute["key1"]. Must specify list of numeric buckets to
-	//   group results by.
+	//
+	//	Values can be accessed via square bracket notations like
+	//	numeric_custom_attribute["key1"]. Must specify list of numeric buckets to
+	//	group results by.
 	//
 	// Example expressions:
 	//
 	// * `count(admin1)`
 	// * `count(base_compensation, [bucket(1000, 10000), bucket(10000, 100000),
 	// bucket(100000, MAX)])`
-	// * `count(string_custom_attribute["some-string-custom-attribute"])`
-	// * `count(numeric_custom_attribute["some-numeric-custom-attribute"],
-	//   [bucket(MIN, 0, "negative"), bucket(0, MAX, "non-negative")])`
+	//   - `count(string_custom_attribute["some-string-custom-attribute"])`
+	//   - `count(numeric_custom_attribute["some-numeric-custom-attribute"],
+	//     [bucket(MIN, 0, "negative"), bucket(0, MAX, "non-negative")])`
 	HistogramQueries []*HistogramQuery `protobuf:"bytes,7,rep,name=histogram_queries,json=histogramQueries,proto3" json:"histogram_queries,omitempty"`
 	// The desired job attributes returned for jobs in the search response.
 	// Defaults to
@@ -1038,54 +1058,59 @@ type SearchJobsRequest struct {
 	//
 	// Supported options are:
 	//
-	// * `"relevance desc"`: By relevance descending, as determined by the API
-	//   algorithms. Relevance thresholding of query results is only available
-	//   with this ordering.
-	// * `"posting_publish_time desc"`: By
+	//   - `"relevance desc"`: By relevance descending, as determined by the API
+	//     algorithms. Relevance thresholding of query results is only available
+	//     with this ordering.
+	//   - `"posting_publish_time desc"`: By
+	//
 	// [Job.posting_publish_time][google.cloud.talent.v4.Job.posting_publish_time]
-	//   descending.
+	//
+	//	descending.
+	//
 	// * `"posting_update_time desc"`: By
 	// [Job.posting_update_time][google.cloud.talent.v4.Job.posting_update_time]
-	//   descending.
+	//
+	//	descending.
+	//
 	// * `"title"`: By [Job.title][google.cloud.talent.v4.Job.title] ascending.
 	// * `"title desc"`: By [Job.title][google.cloud.talent.v4.Job.title]
 	// descending.
-	// * `"annualized_base_compensation"`: By job's
-	//   [CompensationInfo.annualized_base_compensation_range][google.cloud.talent.v4.CompensationInfo.annualized_base_compensation_range]
-	//   ascending. Jobs whose annualized base compensation is unspecified are put
-	//   at the end of search results.
-	// * `"annualized_base_compensation desc"`: By job's
-	//   [CompensationInfo.annualized_base_compensation_range][google.cloud.talent.v4.CompensationInfo.annualized_base_compensation_range]
-	//   descending. Jobs whose annualized base compensation is unspecified are
-	//   put at the end of search results.
-	// * `"annualized_total_compensation"`: By job's
-	//   [CompensationInfo.annualized_total_compensation_range][google.cloud.talent.v4.CompensationInfo.annualized_total_compensation_range]
-	//   ascending. Jobs whose annualized base compensation is unspecified are put
-	//   at the end of search results.
-	// * `"annualized_total_compensation desc"`: By job's
-	//   [CompensationInfo.annualized_total_compensation_range][google.cloud.talent.v4.CompensationInfo.annualized_total_compensation_range]
-	//   descending. Jobs whose annualized base compensation is unspecified are
-	//   put at the end of search results.
-	// * `"custom_ranking desc"`: By the relevance score adjusted to the
-	//   [SearchJobsRequest.CustomRankingInfo.ranking_expression][google.cloud.talent.v4.SearchJobsRequest.CustomRankingInfo.ranking_expression]
-	//   with weight factor assigned by
-	//   [SearchJobsRequest.CustomRankingInfo.importance_level][google.cloud.talent.v4.SearchJobsRequest.CustomRankingInfo.importance_level]
-	//   in descending order.
-	// * Location sorting: Use the special syntax to order jobs by distance:<br>
-	//   `"distance_from('Hawaii')"`: Order by distance from Hawaii.<br>
-	//   `"distance_from(19.89, 155.5)"`: Order by distance from a coordinate.<br>
-	//   `"distance_from('Hawaii'), distance_from('Puerto Rico')"`: Order by
-	//   multiple locations. See details below.<br>
-	//   `"distance_from('Hawaii'), distance_from(19.89, 155.5)"`: Order by
-	//   multiple locations. See details below.<br>
-	//   The string can have a maximum of 256 characters. When multiple distance
-	//   centers are provided, a job that is close to any of the distance centers
-	//   would have a high rank. When a job has multiple locations, the job
-	//   location closest to one of the distance centers will be used. Jobs that
-	//   don't have locations will be ranked at the bottom. Distance is calculated
-	//   with a precision of 11.3 meters (37.4 feet). Diversification strategy is
-	//   still applied unless explicitly disabled in
-	//   [diversification_level][google.cloud.talent.v4.SearchJobsRequest.diversification_level].
+	//   - `"annualized_base_compensation"`: By job's
+	//     [CompensationInfo.annualized_base_compensation_range][google.cloud.talent.v4.CompensationInfo.annualized_base_compensation_range]
+	//     ascending. Jobs whose annualized base compensation is unspecified are put
+	//     at the end of search results.
+	//   - `"annualized_base_compensation desc"`: By job's
+	//     [CompensationInfo.annualized_base_compensation_range][google.cloud.talent.v4.CompensationInfo.annualized_base_compensation_range]
+	//     descending. Jobs whose annualized base compensation is unspecified are
+	//     put at the end of search results.
+	//   - `"annualized_total_compensation"`: By job's
+	//     [CompensationInfo.annualized_total_compensation_range][google.cloud.talent.v4.CompensationInfo.annualized_total_compensation_range]
+	//     ascending. Jobs whose annualized base compensation is unspecified are put
+	//     at the end of search results.
+	//   - `"annualized_total_compensation desc"`: By job's
+	//     [CompensationInfo.annualized_total_compensation_range][google.cloud.talent.v4.CompensationInfo.annualized_total_compensation_range]
+	//     descending. Jobs whose annualized base compensation is unspecified are
+	//     put at the end of search results.
+	//   - `"custom_ranking desc"`: By the relevance score adjusted to the
+	//     [SearchJobsRequest.CustomRankingInfo.ranking_expression][google.cloud.talent.v4.SearchJobsRequest.CustomRankingInfo.ranking_expression]
+	//     with weight factor assigned by
+	//     [SearchJobsRequest.CustomRankingInfo.importance_level][google.cloud.talent.v4.SearchJobsRequest.CustomRankingInfo.importance_level]
+	//     in descending order.
+	//   - Location sorting: Use the special syntax to order jobs by distance:<br>
+	//     `"distance_from('Hawaii')"`: Order by distance from Hawaii.<br>
+	//     `"distance_from(19.89, 155.5)"`: Order by distance from a coordinate.<br>
+	//     `"distance_from('Hawaii'), distance_from('Puerto Rico')"`: Order by
+	//     multiple locations. See details below.<br>
+	//     `"distance_from('Hawaii'), distance_from(19.89, 155.5)"`: Order by
+	//     multiple locations. See details below.<br>
+	//     The string can have a maximum of 256 characters. When multiple distance
+	//     centers are provided, a job that is close to any of the distance centers
+	//     would have a high rank. When a job has multiple locations, the job
+	//     location closest to one of the distance centers will be used. Jobs that
+	//     don't have locations will be ranked at the bottom. Distance is calculated
+	//     with a precision of 11.3 meters (37.4 feet). Diversification strategy is
+	//     still applied unless explicitly disabled in
+	//     [diversification_level][google.cloud.talent.v4.SearchJobsRequest.diversification_level].
 	OrderBy string `protobuf:"bytes,12,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	// Controls whether highly similar jobs are returned next to each other in
 	// the search results. Jobs are identified as highly similar based on
@@ -1966,7 +1991,8 @@ type SearchJobsResponse_MatchingJob struct {
 	// field, and matching query keywords are enclosed in HTML bold tags.
 	SearchTextSnippet string `protobuf:"bytes,4,opt,name=search_text_snippet,json=searchTextSnippet,proto3" json:"search_text_snippet,omitempty"`
 	// Commute information which is generated based on specified
-	//  [CommuteFilter][google.cloud.talent.v4.CommuteFilter].
+	//
+	//	[CommuteFilter][google.cloud.talent.v4.CommuteFilter].
 	CommuteInfo *SearchJobsResponse_CommuteInfo `protobuf:"bytes,5,opt,name=commute_info,json=commuteInfo,proto3" json:"commute_info,omitempty"`
 }
 

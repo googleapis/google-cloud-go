@@ -21,12 +21,11 @@
 package firestorepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -101,6 +100,7 @@ type Precondition struct {
 	// The type of precondition.
 	//
 	// Types that are assignable to ConditionType:
+	//
 	//	*Precondition_Exists
 	//	*Precondition_UpdateTime
 	ConditionType isPrecondition_ConditionType `protobuf_oneof:"condition_type"`
@@ -188,6 +188,7 @@ type TransactionOptions struct {
 	// The mode of the transaction.
 	//
 	// Types that are assignable to Mode:
+	//
 	//	*TransactionOptions_ReadOnly_
 	//	*TransactionOptions_ReadWrite_
 	Mode isTransactionOptions_Mode `protobuf_oneof:"mode"`
@@ -326,6 +327,7 @@ type TransactionOptions_ReadOnly struct {
 	// consistency.
 	//
 	// Types that are assignable to ConsistencySelector:
+	//
 	//	*TransactionOptions_ReadOnly_ReadTime
 	ConsistencySelector isTransactionOptions_ReadOnly_ConsistencySelector `protobuf_oneof:"consistency_selector"`
 }

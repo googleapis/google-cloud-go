@@ -21,15 +21,14 @@
 package osconfigpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -253,8 +252,9 @@ type OSPolicyAssignment struct {
 	// 1) OSPolicyAssignment is created.
 	// 2) OSPolicyAssignment is updated and the update contains changes to one of
 	// the following fields:
-	//    - instance_filter
-	//    - os_policies
+	//   - instance_filter
+	//   - os_policies
+	//
 	// 3) OSPolicyAssignment is deleted.
 	Rollout *OSPolicyAssignment_Rollout `protobuf:"bytes,5,opt,name=rollout,proto3" json:"rollout,omitempty"`
 	// Output only. The assignment revision ID

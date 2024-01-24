@@ -21,11 +21,8 @@
 package dialogflowpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -105,6 +104,7 @@ type InputConfig struct {
 	// Required. Where the data is from.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*InputConfig_GcsSource
 	Source isInputConfig_Source `protobuf_oneof:"source"`
 }
@@ -1424,8 +1424,8 @@ type ConversationDatasetsClient interface {
 	//
 	// - `metadata`:
 	// [DeleteConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationDatasetOperationMetadata]
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeleteConversationDataset(ctx context.Context, in *DeleteConversationDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Import data into the specified conversation dataset. Note that it
 	// is not allowed to import data to a conversation dataset that
@@ -1521,8 +1521,8 @@ type ConversationDatasetsServer interface {
 	//
 	// - `metadata`:
 	// [DeleteConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationDatasetOperationMetadata]
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeleteConversationDataset(context.Context, *DeleteConversationDatasetRequest) (*longrunningpb.Operation, error)
 	// Import data into the specified conversation dataset. Note that it
 	// is not allowed to import data to a conversation dataset that

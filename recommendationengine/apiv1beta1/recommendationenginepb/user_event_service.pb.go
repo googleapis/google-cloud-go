@@ -21,11 +21,8 @@
 package recommendationenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -34,6 +31,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -410,34 +409,35 @@ type ListUserEventsRequest struct {
 	// returned events. This is a sequence of terms, where each term applies some
 	// kind of a restriction to the returned user events. Use this expression to
 	// restrict results to a specific time range, or filter events by eventType.
-	//    eg: eventTime > "2012-04-23T18:25:43.511Z" eventsMissingCatalogItems
-	//    eventTime<"2012-04-23T18:25:43.511Z" eventType=search
 	//
-	//   We expect only 3 types of fields:
+	//	 eg: eventTime > "2012-04-23T18:25:43.511Z" eventsMissingCatalogItems
+	//	 eventTime<"2012-04-23T18:25:43.511Z" eventType=search
 	//
-	//    * eventTime: this can be specified a maximum of 2 times, once with a
-	//      less than operator and once with a greater than operator. The
-	//      eventTime restrict should result in one contiguous valid eventTime
-	//      range.
+	//	We expect only 3 types of fields:
 	//
-	//    * eventType: only 1 eventType restriction can be specified.
+	//	 * eventTime: this can be specified a maximum of 2 times, once with a
+	//	   less than operator and once with a greater than operator. The
+	//	   eventTime restrict should result in one contiguous valid eventTime
+	//	   range.
 	//
-	//    * eventsMissingCatalogItems: specififying this will restrict results
-	//      to events for which catalog items were not found in the catalog. The
-	//      default behavior is to return only those events for which catalog
-	//      items were found.
+	//	 * eventType: only 1 eventType restriction can be specified.
 	//
-	//   Some examples of valid filters expressions:
+	//	 * eventsMissingCatalogItems: specififying this will restrict results
+	//	   to events for which catalog items were not found in the catalog. The
+	//	   default behavior is to return only those events for which catalog
+	//	   items were found.
 	//
-	//   * Example 1: eventTime > "2012-04-23T18:25:43.511Z"
-	//             eventTime < "2012-04-23T18:30:43.511Z"
-	//   * Example 2: eventTime > "2012-04-23T18:25:43.511Z"
-	//             eventType = detail-page-view
-	//   * Example 3: eventsMissingCatalogItems
-	//             eventType = search eventTime < "2018-04-23T18:30:43.511Z"
-	//   * Example 4: eventTime > "2012-04-23T18:25:43.511Z"
-	//   * Example 5: eventType = search
-	//   * Example 6: eventsMissingCatalogItems
+	//	Some examples of valid filters expressions:
+	//
+	//	* Example 1: eventTime > "2012-04-23T18:25:43.511Z"
+	//	          eventTime < "2012-04-23T18:30:43.511Z"
+	//	* Example 2: eventTime > "2012-04-23T18:25:43.511Z"
+	//	          eventType = detail-page-view
+	//	* Example 3: eventsMissingCatalogItems
+	//	          eventType = search eventTime < "2018-04-23T18:30:43.511Z"
+	//	* Example 4: eventTime > "2012-04-23T18:25:43.511Z"
+	//	* Example 5: eventType = search
+	//	* Example 6: eventsMissingCatalogItems
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 

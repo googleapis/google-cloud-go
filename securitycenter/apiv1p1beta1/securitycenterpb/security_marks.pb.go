@@ -21,12 +21,11 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -54,10 +53,10 @@ type SecurityMarks struct {
 	// Mutable user specified security marks belonging to the parent resource.
 	// Constraints are as follows:
 	//
-	//   * Keys and values are treated as case insensitive
-	//   * Keys must be between 1 - 256 characters (inclusive)
-	//   * Keys must be letters, numbers, underscores, or dashes
-	//   * Values have leading and trailing whitespace trimmed, remaining
+	//   - Keys and values are treated as case insensitive
+	//   - Keys must be between 1 - 256 characters (inclusive)
+	//   - Keys must be letters, numbers, underscores, or dashes
+	//   - Values have leading and trailing whitespace trimmed, remaining
 	//     characters must be between 1 - 4096 characters (inclusive)
 	Marks map[string]string `protobuf:"bytes,2,rep,name=marks,proto3" json:"marks,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The canonical name of the marks.

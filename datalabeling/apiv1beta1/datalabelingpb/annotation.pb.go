@@ -22,12 +22,11 @@
 package datalabelingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -332,6 +331,7 @@ type AnnotationValue struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to ValueType:
+	//
 	//	*AnnotationValue_ImageClassificationAnnotation
 	//	*AnnotationValue_ImageBoundingPolyAnnotation
 	//	*AnnotationValue_ImagePolylineAnnotation
@@ -794,6 +794,7 @@ type ImageBoundingPolyAnnotation struct {
 	// four points.
 	//
 	// Types that are assignable to BoundedArea:
+	//
 	//	*ImageBoundingPolyAnnotation_BoundingPoly
 	//	*ImageBoundingPolyAnnotation_NormalizedBoundingPoly
 	BoundedArea isImageBoundingPolyAnnotation_BoundedArea `protobuf_oneof:"bounded_area"`
@@ -983,6 +984,7 @@ type ImagePolylineAnnotation struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Poly:
+	//
 	//	*ImagePolylineAnnotation_Polyline
 	//	*ImagePolylineAnnotation_NormalizedPolyline
 	Poly isImagePolylineAnnotation_Poly `protobuf_oneof:"poly"`
@@ -1427,6 +1429,7 @@ type ObjectTrackingFrame struct {
 	// The bounding box location of this object track for the frame.
 	//
 	// Types that are assignable to BoundedArea:
+	//
 	//	*ObjectTrackingFrame_BoundingPoly
 	//	*ObjectTrackingFrame_NormalizedBoundingPoly
 	BoundedArea isObjectTrackingFrame_BoundedArea `protobuf_oneof:"bounded_area"`

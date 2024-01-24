@@ -21,12 +21,11 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -46,6 +45,7 @@ type TaggedEntry struct {
 	// Required. Entry to be ingested.
 	//
 	// Types that are assignable to Entry:
+	//
 	//	*TaggedEntry_V1Entry
 	Entry isTaggedEntry_Entry `protobuf_oneof:"entry"`
 	// Optional. Tags that should be ingested into the Data Catalog.
@@ -134,6 +134,7 @@ type DumpItem struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Item:
+	//
 	//	*DumpItem_TaggedEntry
 	Item isDumpItem_Item `protobuf_oneof:"item"`
 }

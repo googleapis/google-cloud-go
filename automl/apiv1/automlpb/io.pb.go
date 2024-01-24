@@ -21,12 +21,11 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -67,16 +66,16 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
-//	    30MB in size. Supported extensions: .JPEG, .GIF, .PNG, .WEBP, .BMP,
-//	    .TIFF, .ICO.
+//   - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
+//     30MB in size. Supported extensions: .JPEG, .GIF, .PNG, .WEBP, .BMP,
+//     .TIFF, .ICO.
 //
 // *   `LABEL` - A label that identifies the object in the image.
 //
@@ -103,26 +102,26 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
-//	    30MB in size. Supported extensions: .JPEG, .GIF, .PNG. Each image
-//	    is assumed to be exhaustively labeled.
+//   - `GCS_FILE_PATH` - The Google Cloud Storage location of an image of up to
+//     30MB in size. Supported extensions: .JPEG, .GIF, .PNG. Each image
+//     is assumed to be exhaustively labeled.
 //
-//	  - `LABEL` - A label that identifies the object in the image specified by the
-//	    `BOUNDING_BOX`.
+//   - `LABEL` - A label that identifies the object in the image specified by the
+//     `BOUNDING_BOX`.
 //
-//	  - `BOUNDING BOX` - The vertices of an object in the example image.
-//	    The minimum allowed `BOUNDING_BOX` edge length is 0.01, and no more than
-//	    500 `BOUNDING_BOX` instances per image are allowed (one `BOUNDING_BOX`
-//	    per line). If an image has no looked for objects then it should be
-//	    mentioned just once with no LABEL and the ",,,,,,," in place of the
-//	    `BOUNDING_BOX`.
+//   - `BOUNDING BOX` - The vertices of an object in the example image.
+//     The minimum allowed `BOUNDING_BOX` edge length is 0.01, and no more than
+//     500 `BOUNDING_BOX` instances per image are allowed (one `BOUNDING_BOX`
+//     per line). If an image has no looked for objects then it should be
+//     mentioned just once with no LABEL and the ",,,,,,," in place of the
+//     `BOUNDING_BOX`.
 //
 // **Four sample rows:**
 //
@@ -247,16 +246,16 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing..
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing..
 //
-//	  - `GCS_FILE_PATH` - a Identifies JSON Lines (.JSONL) file stored in
-//	    Google Cloud Storage that contains in-line text in-line as documents
-//	    for model training.
+//   - `GCS_FILE_PATH` - a Identifies JSON Lines (.JSONL) file stored in
+//     Google Cloud Storage that contains in-line text in-line as documents
+//     for model training.
 //
 // After the training data set has been determined from the `TRAIN` and
 // `UNASSIGNED` CSV files, the training data is divided into train and
@@ -428,29 +427,29 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
-//	    the column content is a valid Google Cloud Storage file path, that is,
-//	    prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
-//	    the content is enclosed in double quotes (""), it is treated as a
-//	    `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
-//	    file with supported extension and UTF-8 encoding, for example,
-//	    "gs://folder/content.txt" AutoML imports the file content
-//	    as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
-//	    excluding quotes. In both cases, size of the content must be 10MB or
-//	    less in size. For zip files, the size of each file inside the zip must be
-//	    10MB or less in size.
+//   - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
+//     the column content is a valid Google Cloud Storage file path, that is,
+//     prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
+//     the content is enclosed in double quotes (""), it is treated as a
+//     `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
+//     file with supported extension and UTF-8 encoding, for example,
+//     "gs://folder/content.txt" AutoML imports the file content
+//     as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
+//     excluding quotes. In both cases, size of the content must be 10MB or
+//     less in size. For zip files, the size of each file inside the zip must be
+//     10MB or less in size.
 //
-//	    For the `MULTICLASS` classification type, at most one `LABEL` is allowed.
+//     For the `MULTICLASS` classification type, at most one `LABEL` is allowed.
 //
-//	    The `ML_USE` and `LABEL` columns are optional.
-//	    Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
+//     The `ML_USE` and `LABEL` columns are optional.
+//     Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
 //
 // A maximum of 100 unique labels are allowed per CSV row.
 //
@@ -474,44 +473,44 @@ const (
 // *   `ML_USE` - Identifies the data set that the current row (file) applies
 // to.
 //
-//		This value can be one of the following:
-//		* `TRAIN` - Rows in this file are used to train the model.
-//		* `TEST` - Rows in this file are used to test the model during training.
-//		* `UNASSIGNED` - Rows in this file are not categorized. They are
-//		   Automatically divided into train and test data. 80% for training and
-//		   20% for testing.
+//	This value can be one of the following:
+//	* `TRAIN` - Rows in this file are used to train the model.
+//	* `TEST` - Rows in this file are used to test the model during training.
+//	* `UNASSIGNED` - Rows in this file are not categorized. They are
+//	   Automatically divided into train and test data. 80% for training and
+//	   20% for testing.
 //
-//	  - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
-//	    the column content is a valid  Google Cloud Storage file path, that is,
-//	    prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
-//	    the content is enclosed in double quotes (""), it is treated as a
-//	    `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
-//	    file with supported extension and UTF-8 encoding, for example,
-//	    "gs://folder/content.txt" AutoML imports the file content
-//	    as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
-//	    excluding quotes. In both cases, size of the content must be 128kB or
-//	    less in size. For zip files, the size of each file inside the zip must be
-//	    128kB or less in size.
+//   - `TEXT_SNIPPET` and `GCS_FILE_PATH` are distinguished by a pattern. If
+//     the column content is a valid  Google Cloud Storage file path, that is,
+//     prefixed by "gs://", it is treated as a `GCS_FILE_PATH`. Otherwise, if
+//     the content is enclosed in double quotes (""), it is treated as a
+//     `TEXT_SNIPPET`. For `GCS_FILE_PATH`, the path must lead to a
+//     file with supported extension and UTF-8 encoding, for example,
+//     "gs://folder/content.txt" AutoML imports the file content
+//     as a text snippet. For `TEXT_SNIPPET`, AutoML imports the column content
+//     excluding quotes. In both cases, size of the content must be 128kB or
+//     less in size. For zip files, the size of each file inside the zip must be
+//     128kB or less in size.
 //
-//	    The `ML_USE` and `SENTIMENT` columns are optional.
-//	    Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
+//     The `ML_USE` and `SENTIMENT` columns are optional.
+//     Supported file extensions: .TXT, .PDF, .TIF, .TIFF, .ZIP
 //
-//	  - `SENTIMENT` - An integer between 0 and
-//	    Dataset.text_sentiment_dataset_metadata.sentiment_max
-//	    (inclusive). Describes the ordinal of the sentiment - higher
-//	    value means a more positive sentiment. All the values are
-//	    completely relative, i.e. neither 0 needs to mean a negative or
-//	    neutral sentiment nor sentiment_max needs to mean a positive one -
-//	    it is just required that 0 is the least positive sentiment
-//	    in the data, and sentiment_max is the  most positive one.
-//	    The SENTIMENT shouldn't be confused with "score" or "magnitude"
-//	    from the previous Natural Language Sentiment Analysis API.
-//	    All SENTIMENT values between 0 and sentiment_max must be
-//	    represented in the imported data. On prediction the same 0 to
-//	    sentiment_max range will be used. The difference between
-//	    neighboring sentiment values needs not to be uniform, e.g. 1 and
-//	    2 may be similar whereas the difference between 2 and 3 may be
-//	    large.
+//   - `SENTIMENT` - An integer between 0 and
+//     Dataset.text_sentiment_dataset_metadata.sentiment_max
+//     (inclusive). Describes the ordinal of the sentiment - higher
+//     value means a more positive sentiment. All the values are
+//     completely relative, i.e. neither 0 needs to mean a negative or
+//     neutral sentiment nor sentiment_max needs to mean a positive one -
+//     it is just required that 0 is the least positive sentiment
+//     in the data, and sentiment_max is the  most positive one.
+//     The SENTIMENT shouldn't be confused with "score" or "magnitude"
+//     from the previous Natural Language Sentiment Analysis API.
+//     All SENTIMENT values between 0 and sentiment_max must be
+//     represented in the imported data. On prediction the same 0 to
+//     sentiment_max range will be used. The difference between
+//     neighboring sentiment values needs not to be uniform, e.g. 1 and
+//     2 may be similar whereas the difference between 2 and 3 may be
+//     large.
 //
 // Sample rows:
 //
@@ -660,6 +659,7 @@ type InputConfig struct {
 	// The source of the input.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*InputConfig_GcsSource
 	Source isInputConfig_Source `protobuf_oneof:"source"`
 	// Additional domain-specific parameters describing the semantic of the
@@ -670,9 +670,10 @@ type InputConfig struct {
 	//
 	// `schema_inference_version`
 	// : (integer) This value must be supplied.
-	//   The version of the
-	//   algorithm to use for the initial inference of the
-	//   column data types of the imported table. Allowed values: "1".
+	//
+	//	The version of the
+	//	algorithm to use for the initial inference of the
+	//	column data types of the imported table. Allowed values: "1".
 	Params map[string]string `protobuf:"bytes,2,rep,name=params,proto3" json:"params,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -1032,6 +1033,7 @@ type BatchPredictInputConfig struct {
 	// The source of the input.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*BatchPredictInputConfig_GcsSource
 	Source isBatchPredictInputConfig_Source `protobuf_oneof:"source"`
 }
@@ -1183,6 +1185,7 @@ type OutputConfig struct {
 	// The destination of the output.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*OutputConfig_GcsDestination
 	Destination isOutputConfig_Destination `protobuf_oneof:"destination"`
 }
@@ -1508,6 +1511,7 @@ type BatchPredictOutputConfig struct {
 	// The destination of the output.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*BatchPredictOutputConfig_GcsDestination
 	Destination isBatchPredictOutputConfig_Destination `protobuf_oneof:"destination"`
 }
@@ -1579,6 +1583,7 @@ type ModelExportOutputConfig struct {
 	// The destination of the output.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ModelExportOutputConfig_GcsDestination
 	Destination isModelExportOutputConfig_Destination `protobuf_oneof:"destination"`
 	// The format in which the model must be exported. The available, and default,
@@ -1586,38 +1591,39 @@ type ModelExportOutputConfig struct {
 	// combination doesn't have a format listed, it means its models are not
 	// exportable):
 	//
-	// *  For Image Classification mobile-low-latency-1, mobile-versatile-1,
-	//        mobile-high-accuracy-1:
-	//      "tflite" (default), "edgetpu_tflite", "tf_saved_model", "tf_js",
-	//      "docker".
+	//   - For Image Classification mobile-low-latency-1, mobile-versatile-1,
+	//     mobile-high-accuracy-1:
+	//     "tflite" (default), "edgetpu_tflite", "tf_saved_model", "tf_js",
+	//     "docker".
 	//
-	// *  For Image Classification mobile-core-ml-low-latency-1,
-	//        mobile-core-ml-versatile-1, mobile-core-ml-high-accuracy-1:
-	//      "core_ml" (default).
+	//   - For Image Classification mobile-core-ml-low-latency-1,
+	//     mobile-core-ml-versatile-1, mobile-core-ml-high-accuracy-1:
+	//     "core_ml" (default).
 	//
-	// *  For Image Object Detection mobile-low-latency-1, mobile-versatile-1,
-	//        mobile-high-accuracy-1:
-	//      "tflite", "tf_saved_model", "tf_js".
+	//   - For Image Object Detection mobile-low-latency-1, mobile-versatile-1,
+	//     mobile-high-accuracy-1:
+	//     "tflite", "tf_saved_model", "tf_js".
+	//
 	// Formats description:
 	//
-	// * tflite - Used for Android mobile devices.
-	// * edgetpu_tflite - Used for [Edge TPU](https://cloud.google.com/edge-tpu/)
-	//                    devices.
-	// * tf_saved_model - A tensorflow model in SavedModel format.
-	// * tf_js - A [TensorFlow.js](https://www.tensorflow.org/js) model that can
-	//           be used in the browser and in Node.js using JavaScript.
-	// * docker - Used for Docker containers. Use the params field to customize
-	//            the container. The container is verified to work correctly on
-	//            ubuntu 16.04 operating system. See more at
-	//            [containers
-	//            quickstart](https://cloud.google.com/vision/automl/docs/containers-gcs-quickstart)
-	// * core_ml - Used for iOS mobile devices.
+	//   - tflite - Used for Android mobile devices.
+	//   - edgetpu_tflite - Used for [Edge TPU](https://cloud.google.com/edge-tpu/)
+	//     devices.
+	//   - tf_saved_model - A tensorflow model in SavedModel format.
+	//   - tf_js - A [TensorFlow.js](https://www.tensorflow.org/js) model that can
+	//     be used in the browser and in Node.js using JavaScript.
+	//   - docker - Used for Docker containers. Use the params field to customize
+	//     the container. The container is verified to work correctly on
+	//     ubuntu 16.04 operating system. See more at
+	//     [containers
+	//     quickstart](https://cloud.google.com/vision/automl/docs/containers-gcs-quickstart)
+	//   - core_ml - Used for iOS mobile devices.
 	ModelFormat string `protobuf:"bytes,4,opt,name=model_format,json=modelFormat,proto3" json:"model_format,omitempty"`
 	// Additional model-type and format specific parameters describing the
 	// requirements for the to be exported model files, any string must be up to
 	// 25000 characters long.
 	//
-	//  * For `docker` format:
+	//   - For `docker` format:
 	//     `cpu_architecture` - (string) "x86_64" (default).
 	//     `gpu_architecture` - (string) "none" (default), "nvidia".
 	Params map[string]string `protobuf:"bytes,2,rep,name=params,proto3" json:"params,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -1690,13 +1696,14 @@ type isModelExportOutputConfig_Destination interface {
 type ModelExportOutputConfig_GcsDestination struct {
 	// Required. The Google Cloud Storage location where the model is to be written to.
 	// This location may only be set for the following model formats:
-	//   "tflite", "edgetpu_tflite", "tf_saved_model", "tf_js", "core_ml".
 	//
-	//  Under the directory given as the destination a new one with name
-	//  "model-export-<model-display-name>-<timestamp-of-export-call>",
-	//  where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format,
-	//  will be created. Inside the model and any of its supporting files
-	//  will be written.
+	//	 "tflite", "edgetpu_tflite", "tf_saved_model", "tf_js", "core_ml".
+	//
+	//	Under the directory given as the destination a new one with name
+	//	"model-export-<model-display-name>-<timestamp-of-export-call>",
+	//	where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format,
+	//	will be created. Inside the model and any of its supporting files
+	//	will be written.
 	GcsDestination *GcsDestination `protobuf:"bytes,1,opt,name=gcs_destination,json=gcsDestination,proto3,oneof"`
 }
 

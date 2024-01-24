@@ -21,11 +21,8 @@
 package cxpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -553,13 +552,13 @@ type DeleteFlowRequest struct {
 	// This field has no effect for flows with no incoming transitions.
 	// For flows with incoming transitions:
 	//
-	// *  If `force` is set to false, an error will be returned with message
-	//    indicating the incoming transitions.
-	// *  If `force` is set to true, Dialogflow will remove the flow, as well as
-	//    any transitions to the flow (i.e. [Target
-	//    flow][EventHandler.target_flow] in event handlers or [Target
-	//    flow][TransitionRoute.target_flow] in transition routes that point to
-	//    this flow will be cleared).
+	//   - If `force` is set to false, an error will be returned with message
+	//     indicating the incoming transitions.
+	//   - If `force` is set to true, Dialogflow will remove the flow, as well as
+	//     any transitions to the flow (i.e. [Target
+	//     flow][EventHandler.target_flow] in event handlers or [Target
+	//     flow][TransitionRoute.target_flow] in transition routes that point to
+	//     this flow will be cleared).
 	Force bool `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"`
 }
 
@@ -1171,6 +1170,7 @@ type ImportFlowRequest struct {
 	// Required. The flow to import.
 	//
 	// Types that are assignable to Flow:
+	//
 	//	*ImportFlowRequest_FlowUri
 	//	*ImportFlowRequest_FlowContent
 	Flow isImportFlowRequest_Flow `protobuf_oneof:"flow"`
@@ -1477,6 +1477,7 @@ type ExportFlowResponse struct {
 	// The exported flow.
 	//
 	// Types that are assignable to Flow:
+	//
 	//	*ExportFlowResponse_FlowUri
 	//	*ExportFlowResponse_FlowContent
 	Flow isExportFlowResponse_Flow `protobuf_oneof:"flow"`
@@ -2360,10 +2361,10 @@ type FlowsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train a flow prior to sending it queries. See the
 	// [training
@@ -2382,9 +2383,10 @@ type FlowsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [ImportFlowResponse][google.cloud.dialogflow.cx.v3beta1.ImportFlowResponse]
 	//
 	// Note: You should always train a flow prior to sending it queries. See the
@@ -2397,9 +2399,10 @@ type FlowsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [ExportFlowResponse][google.cloud.dialogflow.cx.v3beta1.ExportFlowResponse]
 	//
 	// Note that resources (e.g. intents, entities, webhooks) that the flow
@@ -2532,10 +2535,10 @@ type FlowsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train a flow prior to sending it queries. See the
 	// [training
@@ -2554,9 +2557,10 @@ type FlowsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [ImportFlowResponse][google.cloud.dialogflow.cx.v3beta1.ImportFlowResponse]
 	//
 	// Note: You should always train a flow prior to sending it queries. See the
@@ -2569,9 +2573,10 @@ type FlowsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [ExportFlowResponse][google.cloud.dialogflow.cx.v3beta1.ExportFlowResponse]
 	//
 	// Note that resources (e.g. intents, entities, webhooks) that the flow

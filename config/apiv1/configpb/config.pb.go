@@ -21,11 +21,8 @@
 package configpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -988,6 +987,7 @@ type Deployment struct {
 	// Blueprint to deploy.
 	//
 	// Types that are assignable to Blueprint:
+	//
 	//	*Deployment_TerraformBlueprint
 	Blueprint isDeployment_Blueprint `protobuf_oneof:"blueprint"`
 	// Resource name of the deployment.
@@ -1250,6 +1250,7 @@ type TerraformBlueprint struct {
 	// Location of the source configs.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*TerraformBlueprint_GcsSource
 	//	*TerraformBlueprint_GitSource
 	Source isTerraformBlueprint_Source `protobuf_oneof:"source"`
@@ -1541,8 +1542,8 @@ type ListDeploymentsRequest struct {
 	// snake_case.
 	//
 	// Examples:
-	// - Filter by name:
-	//   name = "projects/foo/locations/us-central1/deployments/bar
+	//   - Filter by name:
+	//     name = "projects/foo/locations/us-central1/deployments/bar
 	//
 	// - Filter by labels:
 	//   - Resources that have a key called 'foo'
@@ -1767,8 +1768,8 @@ type ListRevisionsRequest struct {
 	// snake_case.
 	//
 	// Examples:
-	// - Filter by name:
-	//   name = "projects/foo/locations/us-central1/deployments/dep/revisions/bar
+	//   - Filter by name:
+	//     name = "projects/foo/locations/us-central1/deployments/dep/revisions/bar
 	//
 	// - Filter by labels:
 	//   - Resources that have a key called 'foo'
@@ -2248,6 +2249,7 @@ type OperationMetadata struct {
 	// resource.
 	//
 	// Types that are assignable to ResourceMetadata:
+	//
 	//	*OperationMetadata_DeploymentMetadata
 	//	*OperationMetadata_PreviewMetadata
 	ResourceMetadata isOperationMetadata_ResourceMetadata `protobuf_oneof:"resource_metadata"`
@@ -2402,6 +2404,7 @@ type Revision struct {
 	// Blueprint that was deployed.
 	//
 	// Types that are assignable to Blueprint:
+	//
 	//	*Revision_TerraformBlueprint
 	Blueprint isRevision_Blueprint `protobuf_oneof:"blueprint"`
 	// Revision name. Format:
@@ -3128,9 +3131,9 @@ type ListResourcesRequest struct {
 	// field, or a synthetic field. Field names can be camelCase or snake_case.
 	//
 	// Examples:
-	// - Filter by name:
-	//   name =
-	//   "projects/foo/locations/us-central1/deployments/dep/revisions/bar/resources/baz
+	//   - Filter by name:
+	//     name =
+	//     "projects/foo/locations/us-central1/deployments/dep/revisions/bar/resources/baz
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Field to use to sort the list.
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
@@ -3831,6 +3834,7 @@ type Preview struct {
 	// Blueprint to preview.
 	//
 	// Types that are assignable to Blueprint:
+	//
 	//	*Preview_TerraformBlueprint
 	Blueprint isPreview_Blueprint `protobuf_oneof:"blueprint"`
 	// Identifier. Resource name of the preview. Resource name can be user
@@ -4361,8 +4365,8 @@ type ListPreviewsRequest struct {
 	// snake_case.
 	//
 	// Examples:
-	// - Filter by name:
-	//   name = "projects/foo/locations/us-central1/deployments/bar
+	//   - Filter by name:
+	//     name = "projects/foo/locations/us-central1/deployments/bar
 	//
 	// - Filter by labels:
 	//   - Resources that have a key called 'foo'

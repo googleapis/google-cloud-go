@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -87,11 +86,11 @@ type Page struct {
 	// transition route groups, the flow-level ones will have higher priority and
 	// will be put before the agent-level ones.
 	//
-	// *   If multiple transition routes within a page scope refer to the same
+	//   - If multiple transition routes within a page scope refer to the same
 	//     intent, then the precedence order is: page's transition route -> page's
 	//     transition route group -> flow's transition routes.
 	//
-	// *   If multiple transition route groups within a page contain the same
+	//   - If multiple transition route groups within a page contain the same
 	//     intent, then the first group in the ordered list takes precedence.
 	//
 	// Format:`projects/<Project ID>/locations/<Location ID>/agents/<Agent
@@ -107,18 +106,18 @@ type Page struct {
 	// When we are in a certain page, the TransitionRoutes are evalauted in the
 	// following order:
 	//
-	// *   TransitionRoutes defined in the page with intent specified.
-	// *   TransitionRoutes defined in the
+	//   - TransitionRoutes defined in the page with intent specified.
+	//   - TransitionRoutes defined in the
 	//     [transition route
 	//     groups][google.cloud.dialogflow.cx.v3beta1.Page.transition_route_groups]
 	//     with intent specified.
-	// *   TransitionRoutes defined in flow with intent specified.
-	// *   TransitionRoutes defined in the
+	//   - TransitionRoutes defined in flow with intent specified.
+	//   - TransitionRoutes defined in the
 	//     [transition route
 	//     groups][google.cloud.dialogflow.cx.v3beta1.Flow.transition_route_groups]
 	//     with intent specified.
-	// *   TransitionRoutes defined in the page with only condition specified.
-	// *   TransitionRoutes defined in the
+	//   - TransitionRoutes defined in the page with only condition specified.
+	//   - TransitionRoutes defined in the
 	//     [transition route
 	//     groups][google.cloud.dialogflow.cx.v3beta1.Page.transition_route_groups]
 	//     with only condition specified.
@@ -318,6 +317,7 @@ type EventHandler struct {
 	// another flow in the same agent.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*EventHandler_TargetPage
 	//	*EventHandler_TargetFlow
 	Target isEventHandler_Target `protobuf_oneof:"target"`
@@ -475,6 +475,7 @@ type TransitionRoute struct {
 	// another flow in the same agent.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*TransitionRoute_TargetPage
 	//	*TransitionRoute_TargetFlow
 	Target isTransitionRoute_Target `protobuf_oneof:"target"`
@@ -1023,13 +1024,13 @@ type DeletePageRequest struct {
 	// This field has no effect for pages with no incoming transitions.
 	// For pages with incoming transitions:
 	//
-	// *  If `force` is set to false, an error will be returned with message
-	//    indicating the incoming transitions.
-	// *  If `force` is set to true, Dialogflow will remove the page, as well as
-	//    any transitions to the page (i.e. [Target
-	//    page][EventHandler.target_page] in event handlers or [Target
-	//    page][TransitionRoute.target_page] in transition routes that point to
-	//    this page will be cleared).
+	//   - If `force` is set to false, an error will be returned with message
+	//     indicating the incoming transitions.
+	//   - If `force` is set to true, Dialogflow will remove the page, as well as
+	//     any transitions to the page (i.e. [Target
+	//     page][EventHandler.target_page] in event handlers or [Target
+	//     page][TransitionRoute.target_page] in transition routes that point to
+	//     this page will be cleared).
 	Force bool `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"`
 }
 
@@ -1103,6 +1104,7 @@ type KnowledgeConnectorSettings struct {
 	// or another flow in the same agent.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*KnowledgeConnectorSettings_TargetPage
 	//	*KnowledgeConnectorSettings_TargetFlow
 	Target isKnowledgeConnectorSettings_Target `protobuf_oneof:"target"`

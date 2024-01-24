@@ -21,13 +21,12 @@
 package baremetalsolutionpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -825,7 +824,8 @@ type UpdateNetworkRequest struct {
 	Network *Network `protobuf:"bytes,1,opt,name=network,proto3" json:"network,omitempty"`
 	// The list of fields to update.
 	// The only currently supported fields are:
-	//   `labels`, `reservations`, `vrf.vlan_attachments`
+	//
+	//	`labels`, `reservations`, `vrf.vlan_attachments`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

@@ -21,12 +21,11 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -47,6 +46,7 @@ type Trigger struct {
 	// If not specified, the default is `onDemand`.
 	//
 	// Types that are assignable to Mode:
+	//
 	//	*Trigger_OnDemand_
 	//	*Trigger_Schedule_
 	Mode isTrigger_Mode `protobuf_oneof:"mode"`
@@ -133,6 +133,7 @@ type DataSource struct {
 	// to others.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*DataSource_Entity
 	//	*DataSource_Resource
 	Source isDataSource_Source `protobuf_oneof:"source"`
@@ -223,6 +224,7 @@ type ScannedData struct {
 	// The range of scanned data
 	//
 	// Types that are assignable to DataRange:
+	//
 	//	*ScannedData_IncrementalField_
 	DataRange isScannedData_DataRange `protobuf_oneof:"data_range"`
 }

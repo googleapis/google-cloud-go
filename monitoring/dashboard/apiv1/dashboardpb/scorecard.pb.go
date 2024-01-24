@@ -21,13 +21,12 @@
 package dashboardpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -51,6 +50,7 @@ type Scorecard struct {
 	// neither is included - then a default scorecard is shown.
 	//
 	// Types that are assignable to DataView:
+	//
 	//	*Scorecard_GaugeView_
 	//	*Scorecard_SparkChartView_
 	DataView isScorecard_DataView `protobuf_oneof:"data_view"`
@@ -65,26 +65,31 @@ type Scorecard struct {
 	// As an example, consider a scorecard with the following four thresholds:
 	//
 	// ```
-	// {
-	//   value: 90,
-	//   category: 'DANGER',
-	//   trigger: 'ABOVE',
-	// },
-	// {
-	//   value: 70,
-	//   category: 'WARNING',
-	//   trigger: 'ABOVE',
-	// },
-	// {
-	//   value: 10,
-	//   category: 'DANGER',
-	//   trigger: 'BELOW',
-	// },
-	// {
-	//   value: 20,
-	//   category: 'WARNING',
-	//   trigger: 'BELOW',
-	// }
+	//
+	//	{
+	//	  value: 90,
+	//	  category: 'DANGER',
+	//	  trigger: 'ABOVE',
+	//	},
+	//
+	//	{
+	//	  value: 70,
+	//	  category: 'WARNING',
+	//	  trigger: 'ABOVE',
+	//	},
+	//
+	//	{
+	//	  value: 10,
+	//	  category: 'DANGER',
+	//	  trigger: 'BELOW',
+	//	},
+	//
+	//	{
+	//	  value: 20,
+	//	  category: 'WARNING',
+	//	  trigger: 'BELOW',
+	//	}
+	//
 	// ```
 	//
 	// Then: values less than or equal to 10 would put the scorecard in a DANGER

@@ -22,9 +22,6 @@ package discoveryenginepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -275,7 +274,8 @@ type SearchRequest struct {
 	// When paginating, all other parameters provided to
 	// [SearchService.Search][google.cloud.discoveryengine.v1.SearchService.Search]
 	// must match the call that provided the page token. Otherwise, an
-	//  `INVALID_ARGUMENT`  error is returned.
+	//
+	//	`INVALID_ARGUMENT`  error is returned.
 	PageToken string `protobuf:"bytes,5,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// A 0-indexed integer that specifies the current offset (that is, starting
 	// result location, amongst the
@@ -315,11 +315,11 @@ type SearchRequest struct {
 	//
 	// For public website search only, supported values are:
 	//
-	// * `user_country_code`: string. Default empty. If set to non-empty, results
-	//    are restricted or boosted based on the location provided.
-	// * `search_type`: double. Default empty. Enables non-webpage searching
-	//   depending on the value. The only valid non-default value is 1,
-	//   which enables image searching.
+	//   - `user_country_code`: string. Default empty. If set to non-empty, results
+	//     are restricted or boosted based on the location provided.
+	//   - `search_type`: double. Default empty. Enables non-webpage searching
+	//     depending on the value. The only valid non-default value is 1,
+	//     which enables image searching.
 	Params map[string]*structpb.Value `protobuf:"bytes,11,rep,name=params,proto3" json:"params,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The query expansion specification that specifies the conditions under which
 	// query expansion occurs.
@@ -349,17 +349,17 @@ type SearchRequest struct {
 	SafeSearch bool `protobuf:"varint,20,opt,name=safe_search,json=safeSearch,proto3" json:"safe_search,omitempty"`
 	// The user labels applied to a resource must meet the following requirements:
 	//
-	// * Each resource can have multiple labels, up to a maximum of 64.
-	// * Each label must be a key-value pair.
-	// * Keys have a minimum length of 1 character and a maximum length of 63
-	//   characters and cannot be empty. Values can be empty and have a maximum
-	//   length of 63 characters.
-	// * Keys and values can contain only lowercase letters, numeric characters,
-	//   underscores, and dashes. All characters must use UTF-8 encoding, and
-	//   international characters are allowed.
-	// * The key portion of a label must be unique. However, you can use the same
-	//   key with multiple resources.
-	// * Keys must start with a lowercase letter or international character.
+	//   - Each resource can have multiple labels, up to a maximum of 64.
+	//   - Each label must be a key-value pair.
+	//   - Keys have a minimum length of 1 character and a maximum length of 63
+	//     characters and cannot be empty. Values can be empty and have a maximum
+	//     length of 63 characters.
+	//   - Keys and values can contain only lowercase letters, numeric characters,
+	//     underscores, and dashes. All characters must use UTF-8 encoding, and
+	//     international characters are allowed.
+	//   - The key portion of a label must be unique. However, you can use the same
+	//     key with multiple resources.
+	//   - Keys must start with a lowercase letter or international character.
 	//
 	// See [Google Cloud
 	// Document](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
@@ -682,6 +682,7 @@ type SearchRequest_ImageQuery struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Image:
+	//
 	//	*SearchRequest_ImageQuery_ImageBytes
 	Image isSearchRequest_ImageQuery_Image `protobuf_oneof:"image"`
 }
@@ -759,7 +760,6 @@ type SearchRequest_FacetSpec struct {
 	// If this field is negative, an  `INVALID_ARGUMENT`  is returned.
 	Limit int32 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
 	// List of keys to exclude when faceting.
-	//
 	//
 	// By default,
 	// [FacetKey.key][google.cloud.discoveryengine.v1.SearchRequest.FacetSpec.FacetKey.key]
@@ -1150,7 +1150,8 @@ type SearchRequest_FacetSpec_FacetKey struct {
 	// * "value desc", which means order by
 	// [SearchResponse.Facet.values.value][google.cloud.discoveryengine.v1.SearchResponse.Facet.FacetValue.value]
 	// descending.
-	//   Only applies to textual facets.
+	//
+	//	Only applies to textual facets.
 	//
 	// If not set, textual values are sorted in [natural
 	// order](https://en.wikipedia.org/wiki/Natural_sort_order); numerical
@@ -1255,8 +1256,9 @@ type SearchRequest_BoostSpec_ConditionBoostSpec struct {
 	//
 	// * To boost documents with document ID "doc_1" or "doc_2", and
 	// color
-	//   "Red" or "Blue":
-	//     * (id: ANY("doc_1", "doc_2")) AND (color: ANY("Red","Blue"))
+	//
+	//	"Red" or "Blue":
+	//	  * (id: ANY("doc_1", "doc_2")) AND (color: ANY("Red","Blue"))
 	Condition string `protobuf:"bytes,1,opt,name=condition,proto3" json:"condition,omitempty"`
 	// Strength of the condition boost, which should be in [-1, 1]. Negative
 	// boost means demotion. Default is 0.0.
@@ -1796,6 +1798,7 @@ type SearchResponse_Facet_FacetValue struct {
 	// A facet value which contains values.
 	//
 	// Types that are assignable to FacetValue:
+	//
 	//	*SearchResponse_Facet_FacetValue_Value
 	//	*SearchResponse_Facet_FacetValue_Interval
 	FacetValue isSearchResponse_Facet_FacetValue_FacetValue `protobuf_oneof:"facet_value"`

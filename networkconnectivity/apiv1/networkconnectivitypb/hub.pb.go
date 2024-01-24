@@ -21,11 +21,8 @@
 package networkconnectivitypb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -425,7 +424,8 @@ type Hub struct {
 
 	// Immutable. The name of the hub. Hub names must be unique. They use the
 	// following form:
-	//     `projects/{project_number}/locations/global/hubs/{hub_id}`
+	//
+	//	`projects/{project_number}/locations/global/hubs/{hub_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The time the hub was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -450,7 +450,8 @@ type Hub struct {
 	RoutingVpcs []*RoutingVPC `protobuf:"bytes,10,rep,name=routing_vpcs,json=routingVpcs,proto3" json:"routing_vpcs,omitempty"`
 	// Output only. The route tables that belong to this hub. They use the
 	// following form:
-	//    `projects/{project_number}/locations/global/hubs/{hub_id}/routeTables/{route_table_id}`
+	//
+	//	`projects/{project_number}/locations/global/hubs/{hub_id}/routeTables/{route_table_id}`
 	//
 	// This field is read-only. Network Connectivity Center automatically
 	// populates it based on the route tables nested under the hub.
@@ -645,7 +646,8 @@ type Spoke struct {
 
 	// Immutable. The name of the spoke. Spoke names must be unique. They use the
 	// following form:
-	//     `projects/{project_number}/locations/{region}/spokes/{spoke_id}`
+	//
+	//	`projects/{project_number}/locations/{region}/spokes/{spoke_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The time the spoke was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -826,7 +828,8 @@ type RouteTable struct {
 
 	// Immutable. The name of the route table. Route table names must be unique.
 	// They use the following form:
-	//      `projects/{project_number}/locations/global/hubs/{hub}/routeTables/{route_table_id}`
+	//
+	//	`projects/{project_number}/locations/global/hubs/{hub}/routeTables/{route_table_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The time the route table was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -937,7 +940,8 @@ type Route struct {
 
 	// Immutable. The name of the route. Route names must be unique. Route names
 	// use the following form:
-	//      `projects/{project_number}/locations/global/hubs/{hub}/routeTables/{route_table_id}/routes/{route_id}`
+	//
+	//	`projects/{project_number}/locations/global/hubs/{hub}/routeTables/{route_table_id}/routes/{route_id}`
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The time the route was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -1096,7 +1100,8 @@ type Group struct {
 
 	// Immutable. The name of the group. Group names must be unique. They
 	// use the following form:
-	//      `projects/{project_number}/locations/global/hubs/{hub}/groups/{group_id}`
+	//
+	//	`projects/{project_number}/locations/global/hubs/{hub}/groups/{group_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The time the group was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`

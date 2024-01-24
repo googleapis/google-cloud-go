@@ -21,12 +21,11 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -371,7 +370,7 @@ type DataQualityRuleResult struct {
 	//
 	// This field is only valid for row-level type rules.
 	//
-	// Evaluated count can be configured to either
+	// # Evaluated count can be configured to either
 	//
 	// * include all rows (default) - with `null` rows automatically failing rule
 	// evaluation, or
@@ -608,6 +607,7 @@ type DataQualityRule struct {
 	// The rule-specific configuration.
 	//
 	// Types that are assignable to RuleType:
+	//
 	//	*DataQualityRule_RangeExpectation_
 	//	*DataQualityRule_NonNullExpectation_
 	//	*DataQualityRule_SetExpectation_

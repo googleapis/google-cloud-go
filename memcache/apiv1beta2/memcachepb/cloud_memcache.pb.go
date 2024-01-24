@@ -21,11 +21,8 @@
 package memcachepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	dayofweek "google.golang.org/genproto/googleapis/type/dayofweek"
 	timeofday "google.golang.org/genproto/googleapis/type/timeofday"
@@ -37,6 +34,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -335,7 +334,8 @@ type Instance struct {
 
 	// Required. Unique name of the resource in this scope including project and
 	// location using the form:
-	//     `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+	//
+	//	`projects/{project_id}/locations/{location_id}/instances/{instance_id}`
 	//
 	// Note: Memcached instances are managed and addressed at the regional level
 	// so `location_id` here refers to a Google Cloud region; however, users may
@@ -786,7 +786,9 @@ type ListInstancesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the instance location using the form:
-	//     `projects/{project_id}/locations/{location_id}`
+	//
+	//	`projects/{project_id}/locations/{location_id}`
+	//
 	// where `location_id` refers to a GCP region
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return.
@@ -952,7 +954,9 @@ type GetInstanceRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Memcached instance resource name in the format:
-	//     `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+	//
+	//	`projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+	//
 	// where `location_id` refers to a GCP region
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -1003,7 +1007,9 @@ type CreateInstanceRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the instance location using the form:
-	//     `projects/{project_id}/locations/{location_id}`
+	//
+	//	`projects/{project_id}/locations/{location_id}`
+	//
 	// where `location_id` refers to a GCP region
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The logical name of the Memcached instance in the user
@@ -1082,7 +1088,7 @@ type UpdateInstanceRequest struct {
 
 	// Required. Mask of fields to update.
 	//
-	//  *  `displayName`
+	//   - `displayName`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,1,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// Required. A Memcached [Instance] resource.
 	// Only fields specified in update_mask are updated.
@@ -1142,7 +1148,9 @@ type DeleteInstanceRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Memcached instance resource name in the format:
-	//     `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+	//
+	//	`projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+	//
 	// where `location_id` refers to a GCP region
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -1193,7 +1201,9 @@ type RescheduleMaintenanceRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Memcache instance resource name using the form:
-	//     `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+	//
+	//	`projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+	//
 	// where `location_id` refers to a GCP region.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. If reschedule type is SPECIFIC_TIME, must set up schedule_time as well.

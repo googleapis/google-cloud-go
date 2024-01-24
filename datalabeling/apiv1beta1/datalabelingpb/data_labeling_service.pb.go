@@ -22,11 +22,8 @@
 package datalabelingpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1129,6 +1128,7 @@ type LabelImageRequest struct {
 	// match the selected feature.
 	//
 	// Types that are assignable to RequestConfig:
+	//
 	//	*LabelImageRequest_ImageClassificationConfig
 	//	*LabelImageRequest_BoundingPolyConfig
 	//	*LabelImageRequest_PolylineConfig
@@ -1281,6 +1281,7 @@ type LabelVideoRequest struct {
 	// match the selected feature.
 	//
 	// Types that are assignable to RequestConfig:
+	//
 	//	*LabelVideoRequest_VideoClassificationConfig
 	//	*LabelVideoRequest_ObjectDetectionConfig
 	//	*LabelVideoRequest_ObjectTrackingConfig
@@ -1433,6 +1434,7 @@ type LabelTextRequest struct {
 	// match the selected feature.
 	//
 	// Types that are assignable to RequestConfig:
+	//
 	//	*LabelTextRequest_TextClassificationConfig
 	//	*LabelTextRequest_TextEntityExtractionConfig
 	RequestConfig isLabelTextRequest_RequestConfig `protobuf_oneof:"request_config"`
@@ -2407,22 +2409,22 @@ type SearchEvaluationsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. To search evaluations, you can filter by the following:
 	//
-	// * evaluation<span>_</span>job.evaluation_job_id (the last part of
-	//   [EvaluationJob.name][google.cloud.datalabeling.v1beta1.EvaluationJob.name])
-	// * evaluation<span>_</span>job.model_id (the <var>{model_name}</var> portion
-	//   of [EvaluationJob.modelVersion][google.cloud.datalabeling.v1beta1.EvaluationJob.model_version])
-	// * evaluation<span>_</span>job.evaluation_job_run_time_start (Minimum
-	//   threshold for the
-	//   [evaluationJobRunTime][google.cloud.datalabeling.v1beta1.Evaluation.evaluation_job_run_time] that created
-	//   the evaluation)
-	// * evaluation<span>_</span>job.evaluation_job_run_time_end (Maximum
-	//   threshold for the
-	//   [evaluationJobRunTime][google.cloud.datalabeling.v1beta1.Evaluation.evaluation_job_run_time] that created
-	//   the evaluation)
-	// * evaluation<span>_</span>job.job_state ([EvaluationJob.state][google.cloud.datalabeling.v1beta1.EvaluationJob.state])
-	// * annotation<span>_</span>spec.display_name (the Evaluation contains a
-	//   metric for the annotation spec with this
-	//   [displayName][google.cloud.datalabeling.v1beta1.AnnotationSpec.display_name])
+	//   - evaluation<span>_</span>job.evaluation_job_id (the last part of
+	//     [EvaluationJob.name][google.cloud.datalabeling.v1beta1.EvaluationJob.name])
+	//   - evaluation<span>_</span>job.model_id (the <var>{model_name}</var> portion
+	//     of [EvaluationJob.modelVersion][google.cloud.datalabeling.v1beta1.EvaluationJob.model_version])
+	//   - evaluation<span>_</span>job.evaluation_job_run_time_start (Minimum
+	//     threshold for the
+	//     [evaluationJobRunTime][google.cloud.datalabeling.v1beta1.Evaluation.evaluation_job_run_time] that created
+	//     the evaluation)
+	//   - evaluation<span>_</span>job.evaluation_job_run_time_end (Maximum
+	//     threshold for the
+	//     [evaluationJobRunTime][google.cloud.datalabeling.v1beta1.Evaluation.evaluation_job_run_time] that created
+	//     the evaluation)
+	//   - evaluation<span>_</span>job.job_state ([EvaluationJob.state][google.cloud.datalabeling.v1beta1.EvaluationJob.state])
+	//   - annotation<span>_</span>spec.display_name (the Evaluation contains a
+	//     metric for the annotation spec with this
+	//     [displayName][google.cloud.datalabeling.v1beta1.AnnotationSpec.display_name])
 	//
 	// To filter by multiple critiera, use the `AND` operator or the `OR`
 	// operator. The following examples shows a string that filters by several

@@ -21,14 +21,13 @@
 package livestreampb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	datetime "google.golang.org/genproto/googleapis/type/datetime"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -157,6 +156,7 @@ type ElementaryStream struct {
 	// Required. Encoding of an audio, video, or text track.
 	//
 	// Types that are assignable to ElementaryStream:
+	//
 	//	*ElementaryStream_VideoStream
 	//	*ElementaryStream_AudioStream
 	//	*ElementaryStream_TextStream
@@ -672,6 +672,7 @@ type VideoStream struct {
 	// Codec settings.
 	//
 	// Types that are assignable to CodecSettings:
+	//
 	//	*VideoStream_H264
 	CodecSettings isVideoStream_CodecSettings `protobuf_oneof:"codec_settings"`
 }
@@ -980,6 +981,7 @@ type TimecodeConfig struct {
 	// and no date). We assume all inputs are live.
 	//
 	// Types that are assignable to TimeOffset:
+	//
 	//	*TimecodeConfig_UtcOffset
 	//	*TimecodeConfig_TimeZone
 	TimeOffset isTimecodeConfig_TimeOffset `protobuf_oneof:"time_offset"`
@@ -1307,6 +1309,7 @@ type VideoStream_H264CodecSettings struct {
 	// GOP mode can be either by frame count or duration.
 	//
 	// Types that are assignable to GopMode:
+	//
 	//	*VideoStream_H264CodecSettings_GopFrameCount
 	//	*VideoStream_H264CodecSettings_GopDuration
 	GopMode isVideoStream_H264CodecSettings_GopMode `protobuf_oneof:"gop_mode"`

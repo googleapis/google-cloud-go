@@ -21,11 +21,8 @@
 package notebookspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1492,13 +1491,14 @@ type GetInstanceHealthResponse struct {
 	HealthState GetInstanceHealthResponse_HealthState `protobuf:"varint,1,opt,name=health_state,json=healthState,proto3,enum=google.cloud.notebooks.v1.GetInstanceHealthResponse_HealthState" json:"health_state,omitempty"`
 	// Output only. Additional information about instance health.
 	// Example:
-	//     healthInfo": {
-	//       "docker_proxy_agent_status": "1",
-	//       "docker_status": "1",
-	//       "jupyterlab_api_status": "-1",
-	//       "jupyterlab_status": "-1",
-	//       "updated": "2020-10-18 09:40:03.573409"
-	//     }
+	//
+	//	healthInfo": {
+	//	  "docker_proxy_agent_status": "1",
+	//	  "docker_status": "1",
+	//	  "jupyterlab_api_status": "-1",
+	//	  "jupyterlab_status": "-1",
+	//	  "updated": "2020-10-18 09:40:03.573409"
+	//	}
 	HealthInfo map[string]string `protobuf:"bytes,2,rep,name=health_info,json=healthInfo,proto3" json:"health_info,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -2203,8 +2203,8 @@ type ListSchedulesResponse struct {
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	// Schedules that could not be reached. For example:
 	//
-	//     ['projects/{project_id}/location/{location}/schedules/monthly_digest',
-	//      'projects/{project_id}/location/{location}/schedules/weekly_sentiment']
+	//	['projects/{project_id}/location/{location}/schedules/monthly_digest',
+	//	 'projects/{project_id}/location/{location}/schedules/weekly_sentiment']
 	Unreachable []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
 }
 
@@ -2581,8 +2581,8 @@ type ListExecutionsResponse struct {
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	// Executions IDs that could not be reached. For example:
 	//
-	//     ['projects/{project_id}/location/{location}/executions/imagenet_test1',
-	//      'projects/{project_id}/location/{location}/executions/classifier_train1']
+	//	['projects/{project_id}/location/{location}/executions/imagenet_test1',
+	//	 'projects/{project_id}/location/{location}/executions/classifier_train1']
 	Unreachable []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
 }
 

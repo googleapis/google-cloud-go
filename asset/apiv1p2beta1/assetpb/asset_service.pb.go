@@ -22,9 +22,6 @@ package assetpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -557,6 +556,7 @@ type OutputConfig struct {
 	// Asset export destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*OutputConfig_GcsDestination
 	Destination isOutputConfig_Destination `protobuf_oneof:"destination"`
 }
@@ -627,6 +627,7 @@ type GcsDestination struct {
 	// Required.
 	//
 	// Types that are assignable to ObjectUri:
+	//
 	//	*GcsDestination_Uri
 	ObjectUri isGcsDestination_ObjectUri `protobuf_oneof:"object_uri"`
 }
@@ -751,6 +752,7 @@ type FeedOutputConfig struct {
 	// Asset feed destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*FeedOutputConfig_PubsubDestination
 	Destination isFeedOutputConfig_Destination `protobuf_oneof:"destination"`
 }

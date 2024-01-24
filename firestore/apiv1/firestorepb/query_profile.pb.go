@@ -21,12 +21,11 @@
 package firestorepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -99,12 +98,12 @@ type QueryPlan struct {
 
 	// Planning phase information for the query. It will include:
 	//
-	// {
-	//   "indexes_used": [
-	//     {"query_scope": "Collection", "properties": "(foo ASC, __name__ ASC)"},
-	//     {"query_scope": "Collection", "properties": "(bar ASC, __name__ ASC)"}
-	//   ]
-	// }
+	//	{
+	//	  "indexes_used": [
+	//	    {"query_scope": "Collection", "properties": "(foo ASC, __name__ ASC)"},
+	//	    {"query_scope": "Collection", "properties": "(bar ASC, __name__ ASC)"}
+	//	  ]
+	//	}
 	PlanInfo *structpb.Struct `protobuf:"bytes,1,opt,name=plan_info,json=planInfo,proto3" json:"plan_info,omitempty"`
 }
 
@@ -160,12 +159,12 @@ type ResultSetStats struct {
 	// This will only be present when the request specifies `PROFILE` mode.
 	// For example, a query will return the statistics including:
 	//
-	// {
-	//   "results_returned": "20",
-	//   "documents_scanned": "20",
-	//   "indexes_entries_scanned": "10050",
-	//   "total_execution_time": "100.7 msecs"
-	// }
+	//	{
+	//	  "results_returned": "20",
+	//	  "documents_scanned": "20",
+	//	  "indexes_entries_scanned": "10050",
+	//	  "total_execution_time": "100.7 msecs"
+	//	}
 	QueryStats *structpb.Struct `protobuf:"bytes,2,opt,name=query_stats,json=queryStats,proto3" json:"query_stats,omitempty"`
 }
 

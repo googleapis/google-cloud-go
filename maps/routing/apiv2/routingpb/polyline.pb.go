@@ -21,12 +21,11 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -158,6 +157,7 @@ type Polyline struct {
 	// Encapsulates the type of polyline. Defaults to encoded_polyline.
 	//
 	// Types that are assignable to PolylineType:
+	//
 	//	*Polyline_EncodedPolyline
 	//	*Polyline_GeoJsonLinestring
 	PolylineType isPolyline_PolylineType `protobuf_oneof:"polyline_type"`

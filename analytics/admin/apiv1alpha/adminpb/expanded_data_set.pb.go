@@ -21,13 +21,12 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -99,6 +98,7 @@ type ExpandedDataSetFilter struct {
 	// One of the above filters.
 	//
 	// Types that are assignable to OneFilter:
+	//
 	//	*ExpandedDataSetFilter_StringFilter_
 	//	*ExpandedDataSetFilter_InListFilter_
 	OneFilter isExpandedDataSetFilter_OneFilter `protobuf_oneof:"one_filter"`
@@ -194,6 +194,7 @@ type ExpandedDataSetFilterExpression struct {
 	// The expression applied to a filter.
 	//
 	// Types that are assignable to Expr:
+	//
 	//	*ExpandedDataSetFilterExpression_AndGroup
 	//	*ExpandedDataSetFilterExpression_NotExpression
 	//	*ExpandedDataSetFilterExpression_Filter

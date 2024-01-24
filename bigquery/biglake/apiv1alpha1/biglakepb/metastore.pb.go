@@ -22,9 +22,6 @@ package biglakepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -398,6 +397,7 @@ type Database struct {
 	// Options specified for the database type.
 	//
 	// Types that are assignable to Options:
+	//
 	//	*Database_HiveOptions
 	Options isDatabase_Options `protobuf_oneof:"options"`
 	// Output only. The resource name.
@@ -526,6 +526,7 @@ type Table struct {
 	// Options specified for the table type.
 	//
 	// Types that are assignable to Options:
+	//
 	//	*Table_HiveOptions
 	Options isTable_Options `protobuf_oneof:"options"`
 	// Output only. The resource name.
@@ -666,6 +667,7 @@ type Lock struct {
 	// The resource that the lock will be created on.
 	//
 	// Types that are assignable to Resources:
+	//
 	//	*Lock_TableId
 	Resources isLock_Resources `protobuf_oneof:"resources"`
 	// Output only. The resource name.

@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -115,6 +114,7 @@ type TimeSeriesDataPoint struct {
 	// Value of this time series data point.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*TimeSeriesDataPoint_Scalar
 	//	*TimeSeriesDataPoint_Tensor
 	//	*TimeSeriesDataPoint_Blobs

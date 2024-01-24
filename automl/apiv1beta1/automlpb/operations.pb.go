@@ -21,13 +21,12 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -47,6 +46,7 @@ type OperationMetadata struct {
 	// the presence allows to distinguish different types of operations.
 	//
 	// Types that are assignable to Details:
+	//
 	//	*OperationMetadata_DeleteDetails
 	//	*OperationMetadata_DeployModelDetails
 	//	*OperationMetadata_UndeployModelDetails
@@ -682,6 +682,7 @@ type ExportDataOperationMetadata_ExportDataOutputInfo struct {
 	// The output location to which the exported data is written.
 	//
 	// Types that are assignable to OutputLocation:
+	//
 	//	*ExportDataOperationMetadata_ExportDataOutputInfo_GcsOutputDirectory
 	//	*ExportDataOperationMetadata_ExportDataOutputInfo_BigqueryOutputDataset
 	OutputLocation isExportDataOperationMetadata_ExportDataOutputInfo_OutputLocation `protobuf_oneof:"output_location"`
@@ -774,6 +775,7 @@ type BatchPredictOperationMetadata_BatchPredictOutputInfo struct {
 	// The output location into which prediction output is written.
 	//
 	// Types that are assignable to OutputLocation:
+	//
 	//	*BatchPredictOperationMetadata_BatchPredictOutputInfo_GcsOutputDirectory
 	//	*BatchPredictOperationMetadata_BatchPredictOutputInfo_BigqueryOutputDataset
 	OutputLocation isBatchPredictOperationMetadata_BatchPredictOutputInfo_OutputLocation `protobuf_oneof:"output_location"`

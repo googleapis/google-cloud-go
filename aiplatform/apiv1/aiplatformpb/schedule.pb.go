@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -109,6 +108,7 @@ type Schedule struct {
 	// The time specification to launch scheduled runs.
 	//
 	// Types that are assignable to TimeSpecification:
+	//
 	//	*Schedule_Cron
 	TimeSpecification isSchedule_TimeSpecification `protobuf_oneof:"time_specification"`
 	// Required.
@@ -116,6 +116,7 @@ type Schedule struct {
 	// User-specified ID is not supported in the request template.
 	//
 	// Types that are assignable to Request:
+	//
 	//	*Schedule_CreatePipelineJobRequest
 	Request isSchedule_Request `protobuf_oneof:"request"`
 	// Immutable. The resource name of the Schedule.

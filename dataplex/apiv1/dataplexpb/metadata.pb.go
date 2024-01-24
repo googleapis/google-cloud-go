@@ -22,9 +22,6 @@ package dataplexpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1108,17 +1107,18 @@ type ListPartitionsRequest struct {
 	// - LIKE operators:
 	//   - The right hand of a LIKE operator supports "." and
 	//     "*" for wildcard searches, for example "value1 LIKE ".*oo.*"
+	//
 	// - parenthetical grouping: ( )
 	//
 	// Sample filter expression: `?filter="key1 < value1 OR key2 > value2"
 	//
 	// **Notes:**
 	//
-	// - Keys to the left of operators are case insensitive.
-	// - Partition results are sorted first by creation time, then by
-	//   lexicographic order.
-	// - Up to 20 key value filter pairs are allowed, but due to performance
-	//   considerations, only the first 10 will be used as a filter.
+	//   - Keys to the left of operators are case insensitive.
+	//   - Partition results are sorted first by creation time, then by
+	//     lexicographic order.
+	//   - Up to 20 key value filter pairs are allowed, but due to performance
+	//     considerations, only the first 10 will be used as a filter.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 
@@ -1744,16 +1744,16 @@ type Schema struct {
 	// Required. Set to `true` if user-managed or `false` if managed by Dataplex.
 	// The default is `false` (managed by Dataplex).
 	//
-	// - Set to `false`to enable Dataplex discovery to update the schema.
-	//   including new data discovery, schema inference, and schema evolution.
-	//   Users retain the ability to input and edit the schema. Dataplex
-	//   treats schema input by the user as though produced
-	//   by a previous Dataplex discovery operation, and it will
-	//   evolve the schema and take action based on that treatment.
+	//   - Set to `false`to enable Dataplex discovery to update the schema.
+	//     including new data discovery, schema inference, and schema evolution.
+	//     Users retain the ability to input and edit the schema. Dataplex
+	//     treats schema input by the user as though produced
+	//     by a previous Dataplex discovery operation, and it will
+	//     evolve the schema and take action based on that treatment.
 	//
-	// - Set to `true` to fully manage the entity
-	//   schema. This setting guarantees that Dataplex will not
-	//   change schema fields.
+	//   - Set to `true` to fully manage the entity
+	//     schema. This setting guarantees that Dataplex will not
+	//     change schema fields.
 	UserManaged bool `protobuf:"varint,1,opt,name=user_managed,json=userManaged,proto3" json:"user_managed,omitempty"`
 	// Optional. The sequence of fields describing data in table entities.
 	// **Note:** BigQuery SchemaFields are immutable.
@@ -1859,6 +1859,7 @@ type StorageFormat struct {
 	// Additional format-specific options.
 	//
 	// Types that are assignable to Options:
+	//
 	//	*StorageFormat_Csv
 	//	*StorageFormat_Json
 	//	*StorageFormat_Iceberg
@@ -2305,7 +2306,7 @@ type StorageFormat_CsvOptions struct {
 	// Optional. The delimiter used to separate values. Defaults to ','.
 	Delimiter string `protobuf:"bytes,3,opt,name=delimiter,proto3" json:"delimiter,omitempty"`
 	// Optional. The character used to quote column values. Accepts '"'
-	// (double quotation mark) or ''' (single quotation mark). Defaults to
+	// (double quotation mark) or ”' (single quotation mark). Defaults to
 	// '"' (double quotation mark) if unspecified.
 	Quote string `protobuf:"bytes,4,opt,name=quote,proto3" json:"quote,omitempty"`
 }

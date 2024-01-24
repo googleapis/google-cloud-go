@@ -21,14 +21,13 @@
 package monitoringpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	label "google.golang.org/genproto/googleapis/api/label"
 	metric "google.golang.org/genproto/googleapis/api/metric"
 	monitoredres "google.golang.org/genproto/googleapis/api/monitoredres"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -367,6 +366,7 @@ type LabelValue struct {
 	// The label value can be a bool, int64, or string.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*LabelValue_BoolValue
 	//	*LabelValue_Int64Value
 	//	*LabelValue_StringValue

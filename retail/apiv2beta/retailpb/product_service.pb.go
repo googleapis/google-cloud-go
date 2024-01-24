@@ -21,11 +21,8 @@
 package retailpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -393,19 +392,24 @@ type ListProductsRequest struct {
 	// * List
 	// [Product.Type.VARIANT][google.cloud.retail.v2beta.Product.Type.VARIANT]
 	// [Product][google.cloud.retail.v2beta.Product]s sharing the same
-	//   [Product.Type.PRIMARY][google.cloud.retail.v2beta.Product.Type.PRIMARY]
-	//   [Product][google.cloud.retail.v2beta.Product]. For example:
-	//     `primary_product_id = "some_product_id"`
+	//
+	//	[Product.Type.PRIMARY][google.cloud.retail.v2beta.Product.Type.PRIMARY]
+	//	[Product][google.cloud.retail.v2beta.Product]. For example:
+	//	  `primary_product_id = "some_product_id"`
+	//
 	// * List [Product][google.cloud.retail.v2beta.Product]s bundled in a
 	// [Product.Type.COLLECTION][google.cloud.retail.v2beta.Product.Type.COLLECTION]
 	// [Product][google.cloud.retail.v2beta.Product].
-	//   For example:
-	//     `collection_product_id = "some_product_id"`
+	//
+	//	For example:
+	//	  `collection_product_id = "some_product_id"`
+	//
 	// * List [Product][google.cloud.retail.v2beta.Product]s with a partibular
 	// type. For example:
-	//     `type = "PRIMARY"`
-	//     `type = "VARIANT"`
-	//     `type = "COLLECTION"`
+	//
+	//	`type = "PRIMARY"`
+	//	`type = "VARIANT"`
+	//	`type = "COLLECTION"`
 	//
 	// If the field is unrecognizable, an INVALID_ARGUMENT error is returned.
 	//

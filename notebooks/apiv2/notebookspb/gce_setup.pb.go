@@ -21,12 +21,11 @@
 package notebookspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -375,6 +374,7 @@ type VmImage struct {
 	// The reference to an external Compute Engine VM image.
 	//
 	// Types that are assignable to Image:
+	//
 	//	*VmImage_Name
 	//	*VmImage_Family
 	Image isVmImage_Image `protobuf_oneof:"image"`
@@ -971,6 +971,7 @@ type GceSetup struct {
 	// Type of the image; can be one of VM image, or container image.
 	//
 	// Types that are assignable to Image:
+	//
 	//	*GceSetup_VmImage
 	//	*GceSetup_ContainerImage
 	Image isGceSetup_Image `protobuf_oneof:"image"`

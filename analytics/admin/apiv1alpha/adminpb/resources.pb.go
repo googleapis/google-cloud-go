@@ -21,14 +21,13 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1660,7 +1659,6 @@ type Property struct {
 	TimeZone string `protobuf:"bytes,7,opt,name=time_zone,json=timeZone,proto3" json:"time_zone,omitempty"`
 	// The currency type used in reports involving monetary values.
 	//
-	//
 	// Format: https://en.wikipedia.org/wiki/ISO_4217
 	// Examples: "USD", "EUR", "JPY"
 	CurrencyCode string `protobuf:"bytes,8,opt,name=currency_code,json=currencyCode,proto3" json:"currency_code,omitempty"`
@@ -1813,6 +1811,7 @@ type DataStream struct {
 	// set corresponds to the type of this stream.
 	//
 	// Types that are assignable to StreamData:
+	//
 	//	*DataStream_WebStreamData_
 	//	*DataStream_AndroidAppStreamData_
 	//	*DataStream_IosAppStreamData_
@@ -4092,6 +4091,7 @@ type AccessBinding struct {
 	// The target for which to set roles for.
 	//
 	// Types that are assignable to AccessTarget:
+	//
 	//	*AccessBinding_User
 	AccessTarget isAccessBinding_AccessTarget `protobuf_oneof:"access_target"`
 	// Output only. Resource name of this binding.
@@ -4950,6 +4950,7 @@ type ChangeHistoryChange_ChangeHistoryResource struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Resource:
+	//
 	//	*ChangeHistoryChange_ChangeHistoryResource_Account
 	//	*ChangeHistoryChange_ChangeHistoryResource_Property
 	//	*ChangeHistoryChange_ChangeHistoryResource_FirebaseLink

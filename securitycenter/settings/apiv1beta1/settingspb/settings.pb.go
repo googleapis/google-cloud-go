@@ -21,13 +21,12 @@
 package settingspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -119,12 +118,12 @@ type Settings struct {
 
 	// The relative resource name of the settings resource.
 	// Formats:
-	//  * `organizations/{organization}/settings`
-	//  * `folders/{folder}/settings`
-	//  * `projects/{project}/settings`
-	//  * `projects/{project}/locations/{location}/clusters/{cluster}/settings`
-	//  * `projects/{project}/regions/{region}/clusters/{cluster}/settings`
-	//  * `projects/{project}/zones/{zone}/clusters/{cluster}/settings`
+	//   - `organizations/{organization}/settings`
+	//   - `folders/{folder}/settings`
+	//   - `projects/{project}/settings`
+	//   - `projects/{project}/locations/{location}/clusters/{cluster}/settings`
+	//   - `projects/{project}/regions/{region}/clusters/{cluster}/settings`
+	//   - `projects/{project}/zones/{zone}/clusters/{cluster}/settings`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Billing settings
 	BillingSettings *BillingSettings `protobuf:"bytes,2,opt,name=billing_settings,json=billingSettings,proto3" json:"billing_settings,omitempty"`

@@ -21,12 +21,11 @@
 package agentendpointpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -503,6 +502,7 @@ type Task struct {
 	// Specific details about the current task to perform.
 	//
 	// Types that are assignable to TaskDetails:
+	//
 	//	*Task_ApplyPatchesTask
 	//	*Task_ExecStepTask
 	//	*Task_ApplyConfigTask

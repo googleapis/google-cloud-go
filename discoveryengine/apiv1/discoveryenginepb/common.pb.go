@@ -21,12 +21,11 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -49,6 +48,7 @@ type Interval struct {
 	// Otherwise, an `INVALID_ARGUMENT` error is returned.
 	//
 	// Types that are assignable to Min:
+	//
 	//	*Interval_Minimum
 	//	*Interval_ExclusiveMinimum
 	Min isInterval_Min `protobuf_oneof:"min"`
@@ -59,6 +59,7 @@ type Interval struct {
 	// Otherwise, an `INVALID_ARGUMENT` error is returned.
 	//
 	// Types that are assignable to Max:
+	//
 	//	*Interval_Maximum
 	//	*Interval_ExclusiveMaximum
 	Max isInterval_Max `protobuf_oneof:"max"`

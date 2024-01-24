@@ -21,11 +21,10 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -182,8 +181,8 @@ type TextExtractionModelMetadata struct {
 	//
 	// * `default`: Use to train a general text extraction model. Default value.
 	//
-	// * `health_care`: Use to train a text extraction model that is tuned for
-	//   healthcare applications.
+	//   - `health_care`: Use to train a text extraction model that is tuned for
+	//     healthcare applications.
 	ModelHint string `protobuf:"bytes,3,opt,name=model_hint,json=modelHint,proto3" json:"model_hint,omitempty"`
 }
 

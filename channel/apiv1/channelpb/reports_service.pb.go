@@ -21,11 +21,8 @@
 package channelpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	datetime "google.golang.org/genproto/googleapis/type/datetime"
@@ -37,6 +34,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1048,6 +1047,7 @@ type ReportValue struct {
 	// A single report value.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*ReportValue_StringValue
 	//	*ReportValue_IntValue
 	//	*ReportValue_DecimalValue
@@ -1922,14 +1922,14 @@ type CloudChannelReportsServiceClient interface {
 	//
 	// Possible error codes:
 	//
-	// * PERMISSION_DENIED: The user doesn't have access to this report.
-	// * INVALID_ARGUMENT: Required request parameters are missing
-	//   or invalid.
-	// * NOT_FOUND: The report identifier was not found.
-	// * INTERNAL: Any non-user error related to a technical issue
-	//   in the backend. Contact Cloud Channel support.
-	// * UNKNOWN: Any non-user error related to a technical issue
-	//   in the backend. Contact Cloud Channel support.
+	//   - PERMISSION_DENIED: The user doesn't have access to this report.
+	//   - INVALID_ARGUMENT: Required request parameters are missing
+	//     or invalid.
+	//   - NOT_FOUND: The report identifier was not found.
+	//   - INTERNAL: Any non-user error related to a technical issue
+	//     in the backend. Contact Cloud Channel support.
+	//   - UNKNOWN: Any non-user error related to a technical issue
+	//     in the backend. Contact Cloud Channel support.
 	//
 	// Return value:
 	// The ID of a long-running operation.
@@ -2014,14 +2014,14 @@ type CloudChannelReportsServiceServer interface {
 	//
 	// Possible error codes:
 	//
-	// * PERMISSION_DENIED: The user doesn't have access to this report.
-	// * INVALID_ARGUMENT: Required request parameters are missing
-	//   or invalid.
-	// * NOT_FOUND: The report identifier was not found.
-	// * INTERNAL: Any non-user error related to a technical issue
-	//   in the backend. Contact Cloud Channel support.
-	// * UNKNOWN: Any non-user error related to a technical issue
-	//   in the backend. Contact Cloud Channel support.
+	//   - PERMISSION_DENIED: The user doesn't have access to this report.
+	//   - INVALID_ARGUMENT: Required request parameters are missing
+	//     or invalid.
+	//   - NOT_FOUND: The report identifier was not found.
+	//   - INTERNAL: Any non-user error related to a technical issue
+	//     in the backend. Contact Cloud Channel support.
+	//   - UNKNOWN: Any non-user error related to a technical issue
+	//     in the backend. Contact Cloud Channel support.
 	//
 	// Return value:
 	// The ID of a long-running operation.

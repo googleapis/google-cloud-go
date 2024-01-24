@@ -22,9 +22,6 @@ package retailpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -297,7 +296,7 @@ type ListControlsRequest struct {
 	//
 	// * List all the products under the parent branch if
 	// [filter][google.cloud.retail.v2.ListControlsRequest.filter] is unset.
-	// * List controls that are used in a single ServingConfig:
+	//   - List controls that are used in a single ServingConfig:
 	//     'serving_config = "boosted_home_page_cvr"'
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 }

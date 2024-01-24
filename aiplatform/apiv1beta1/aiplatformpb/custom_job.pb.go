@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -273,17 +272,17 @@ type CustomJobSpec struct {
 	// The following Vertex AI environment variables will be passed to
 	// containers or python modules when this field is set:
 	//
-	//   For CustomJob:
+	//	For CustomJob:
 	//
-	//   * AIP_MODEL_DIR = `<base_output_directory>/model/`
-	//   * AIP_CHECKPOINT_DIR = `<base_output_directory>/checkpoints/`
-	//   * AIP_TENSORBOARD_LOG_DIR = `<base_output_directory>/logs/`
+	//	* AIP_MODEL_DIR = `<base_output_directory>/model/`
+	//	* AIP_CHECKPOINT_DIR = `<base_output_directory>/checkpoints/`
+	//	* AIP_TENSORBOARD_LOG_DIR = `<base_output_directory>/logs/`
 	//
-	//   For CustomJob backing a Trial of HyperparameterTuningJob:
+	//	For CustomJob backing a Trial of HyperparameterTuningJob:
 	//
-	//   * AIP_MODEL_DIR = `<base_output_directory>/<trial_id>/model/`
-	//   * AIP_CHECKPOINT_DIR = `<base_output_directory>/<trial_id>/checkpoints/`
-	//   * AIP_TENSORBOARD_LOG_DIR = `<base_output_directory>/<trial_id>/logs/`
+	//	* AIP_MODEL_DIR = `<base_output_directory>/<trial_id>/model/`
+	//	* AIP_CHECKPOINT_DIR = `<base_output_directory>/<trial_id>/checkpoints/`
+	//	* AIP_TENSORBOARD_LOG_DIR = `<base_output_directory>/<trial_id>/logs/`
 	BaseOutputDirectory *GcsDestination `protobuf:"bytes,6,opt,name=base_output_directory,json=baseOutputDirectory,proto3" json:"base_output_directory,omitempty"`
 	// The ID of the location to store protected artifacts. e.g. us-central1.
 	// Populate only when the location is different than CustomJob location.
@@ -332,9 +331,11 @@ type CustomJobSpec struct {
 	//
 	// In order to retrieve a specific version of the model, also provide
 	// the version ID or version alias.
-	//   Example: `projects/{project}/locations/{location}/models/{model}@2`
-	//              or
-	//            `projects/{project}/locations/{location}/models/{model}@golden`
+	//
+	//	Example: `projects/{project}/locations/{location}/models/{model}@2`
+	//	           or
+	//	         `projects/{project}/locations/{location}/models/{model}@golden`
+	//
 	// If no version ID or alias is specified, the "default" version will be
 	// returned. The "default" version alias is created for the first version of
 	// the model, and can be moved to other versions later on. There will be
@@ -481,6 +482,7 @@ type WorkerPoolSpec struct {
 	// The custom task to be executed in this worker pool.
 	//
 	// Types that are assignable to Task:
+	//
 	//	*WorkerPoolSpec_ContainerSpec
 	//	*WorkerPoolSpec_PythonPackageSpec
 	Task isWorkerPoolSpec_Task `protobuf_oneof:"task"`

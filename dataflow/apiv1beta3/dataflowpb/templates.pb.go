@@ -22,9 +22,6 @@ package dataflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -32,6 +29,8 @@ import (
 	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -412,6 +411,7 @@ type LaunchFlexTemplateParameter struct {
 	// Launch Mechanism.
 	//
 	// Types that are assignable to Template:
+	//
 	//	*LaunchFlexTemplateParameter_ContainerSpec
 	//	*LaunchFlexTemplateParameter_ContainerSpecGcsPath
 	Template isLaunchFlexTemplateParameter_Template `protobuf_oneof:"template"`
@@ -1425,6 +1425,7 @@ type CreateJobFromTemplateRequest struct {
 	// The template from which to create the job.
 	//
 	// Types that are assignable to Template:
+	//
 	//	*CreateJobFromTemplateRequest_GcsPath
 	Template isCreateJobFromTemplateRequest_Template `protobuf_oneof:"template"`
 	// The runtime parameters to pass to the job.
@@ -1542,6 +1543,7 @@ type GetTemplateRequest struct {
 	// The template from which to create the job.
 	//
 	// Types that are assignable to Template:
+	//
 	//	*GetTemplateRequest_GcsPath
 	Template isGetTemplateRequest_Template `protobuf_oneof:"template"`
 	// The view to retrieve. Defaults to METADATA_ONLY.
@@ -1811,6 +1813,7 @@ type LaunchTemplateRequest struct {
 	// The template from which to create the job.
 	//
 	// Types that are assignable to Template:
+	//
 	//	*LaunchTemplateRequest_GcsPath
 	//	*LaunchTemplateRequest_DynamicTemplate
 	Template isLaunchTemplateRequest_Template `protobuf_oneof:"template"`

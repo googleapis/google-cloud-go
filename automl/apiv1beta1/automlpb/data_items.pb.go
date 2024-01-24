@@ -21,12 +21,11 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -197,6 +196,7 @@ type Image struct {
 	// uploaded image by using the [content_uri][google.cloud.automl.v1beta1.Image.content_uri] field.
 	//
 	// Types that are assignable to Data:
+	//
 	//	*Image_ImageBytes
 	//	*Image_InputConfig
 	Data isImage_Data `protobuf_oneof:"data"`
@@ -586,6 +586,7 @@ type ExamplePayload struct {
 	// Required. Input only. The example data.
 	//
 	// Types that are assignable to Payload:
+	//
 	//	*ExamplePayload_Image
 	//	*ExamplePayload_TextSnippet
 	//	*ExamplePayload_Document

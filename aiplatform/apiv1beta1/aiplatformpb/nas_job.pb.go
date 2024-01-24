@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -478,6 +477,7 @@ type NasJobSpec struct {
 	// The Neural Architecture Search (NAS) algorithm specification.
 	//
 	// Types that are assignable to NasAlgorithmSpec:
+	//
 	//	*NasJobSpec_MultiTrialAlgorithmSpec_
 	NasAlgorithmSpec isNasJobSpec_NasAlgorithmSpec `protobuf_oneof:"nas_algorithm_spec"`
 	// The ID of the existing NasJob in the same Project and Location
@@ -569,6 +569,7 @@ type NasJobOutput struct {
 	// The output of this Neural Architecture Search (NAS) job.
 	//
 	// Types that are assignable to Output:
+	//
 	//	*NasJobOutput_MultiTrialJobOutput_
 	Output isNasJobOutput_Output `protobuf_oneof:"output"`
 }

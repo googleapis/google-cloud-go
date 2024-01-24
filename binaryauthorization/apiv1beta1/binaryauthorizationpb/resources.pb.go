@@ -21,13 +21,12 @@
 package binaryauthorizationpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -337,7 +336,8 @@ type Policy struct {
 	// https://cloud.google.com/container-engine/reference/rest/v1/projects.zones.clusters.
 	ClusterAdmissionRules map[string]*AdmissionRule `protobuf:"bytes,3,rep,name=cluster_admission_rules,json=clusterAdmissionRules,proto3" json:"cluster_admission_rules,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Optional. Per-kubernetes-namespace admission rules. K8s namespace spec format:
-	//   `[a-z.-]+`, e.g. `some-namespace`
+	//
+	//	`[a-z.-]+`, e.g. `some-namespace`
 	KubernetesNamespaceAdmissionRules map[string]*AdmissionRule `protobuf:"bytes,10,rep,name=kubernetes_namespace_admission_rules,json=kubernetesNamespaceAdmissionRules,proto3" json:"kubernetes_namespace_admission_rules,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Optional. Per-kubernetes-service-account admission rules. Service account
 	// spec format: `namespace:serviceaccount`. e.g. `test-ns:default`
@@ -614,6 +614,7 @@ type Attestor struct {
 	// attestor fields may be updated.
 	//
 	// Types that are assignable to AttestorType:
+	//
 	//	*Attestor_UserOwnedDrydockNote
 	AttestorType isAttestor_AttestorType `protobuf_oneof:"attestor_type"`
 	// Output only. Time when the attestor was last updated.
@@ -875,6 +876,7 @@ type AttestorPublicKey struct {
 	// updated.
 	//
 	// Types that are assignable to PublicKey:
+	//
 	//	*AttestorPublicKey_AsciiArmoredPgpPublicKey
 	//	*AttestorPublicKey_PkixPublicKey
 	PublicKey isAttestorPublicKey_PublicKey `protobuf_oneof:"public_key"`

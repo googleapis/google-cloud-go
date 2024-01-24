@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -218,21 +217,21 @@ type ListIndexEndpointsRequest struct {
 	// Optional. An expression for filtering the results of the request. For field
 	// names both snake_case and camelCase are supported.
 	//
-	//   * `index_endpoint` supports = and !=. `index_endpoint` represents the
-	//      IndexEndpoint ID, ie. the last segment of the IndexEndpoint's
-	//      [resourcename][google.cloud.aiplatform.v1.IndexEndpoint.name].
-	//   * `display_name` supports =, != and regex()
-	//             (uses [re2](https://github.com/google/re2/wiki/Syntax) syntax)
-	//   * `labels` supports general map functions that is:
-	//             `labels.key=value` - key:value equality
-	//             `labels.key:* or labels:key - key existence
-	//              A key including a space must be quoted. `labels."a key"`.
+	//   - `index_endpoint` supports = and !=. `index_endpoint` represents the
+	//     IndexEndpoint ID, ie. the last segment of the IndexEndpoint's
+	//     [resourcename][google.cloud.aiplatform.v1.IndexEndpoint.name].
+	//   - `display_name` supports =, != and regex()
+	//     (uses [re2](https://github.com/google/re2/wiki/Syntax) syntax)
+	//   - `labels` supports general map functions that is:
+	//     `labels.key=value` - key:value equality
+	//     `labels.key:* or labels:key - key existence
+	//     A key including a space must be quoted. `labels."a key"`.
 	//
 	// Some examples:
-	//   * `index_endpoint="1"`
-	//   * `display_name="myDisplayName"`
-	//   * `regex(display_name, "^A") -> The display name starts with an A.
-	//   * `labels.myKey="myValue"`
+	//   - `index_endpoint="1"`
+	//   - `display_name="myDisplayName"`
+	//   - `regex(display_name, "^A") -> The display name starts with an A.
+	//   - `labels.myKey="myValue"`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`

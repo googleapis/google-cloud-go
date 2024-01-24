@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -213,6 +212,7 @@ type Engine struct {
 	// Additional config specs that defines the behavior of the engine.
 	//
 	// Types that are assignable to EngineConfig:
+	//
 	//	*Engine_SimilarDocumentsConfig
 	//	*Engine_ChatEngineConfig_
 	//	*Engine_SearchEngineConfig_
@@ -221,6 +221,7 @@ type Engine struct {
 	// Engine metadata to monitor the status of the engine.
 	//
 	// Types that are assignable to EngineMetadata:
+	//
 	//	*Engine_RecommendationMetadata_
 	//	*Engine_ChatEngineMetadata_
 	EngineMetadata isEngine_EngineMetadata `protobuf_oneof:"engine_metadata"`
@@ -616,7 +617,8 @@ type Engine_MediaRecommendationEngineConfig struct {
 	// Currently supported
 	// values: `ctr`, `cvr`.
 	//
-	//  If not specified, we choose default based on engine type.
+	//	If not specified, we choose default based on engine type.
+	//
 	// Default depends on type of recommendation:
 	//
 	// `recommended-for-you` => `ctr`

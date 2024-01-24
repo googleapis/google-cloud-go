@@ -21,12 +21,9 @@
 package policysimulatorpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -36,6 +33,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -183,18 +182,19 @@ const (
 	AccessStateDiff_ACCESS_GAINED AccessStateDiff_AccessChangeType = 4
 	// This result can occur for the following reasons:
 	//
-	// * The principal had access under the current policies (`GRANTED`), but
-	//   their access after the proposed changes is `UNKNOWN`.
+	//   - The principal had access under the current policies (`GRANTED`), but
+	//     their access after the proposed changes is `UNKNOWN`.
 	//
 	// * The principal's access under the current policies is `UNKNOWN`, but
 	// they
-	//   will not have access after the proposed changes (`NOT_GRANTED`).
+	//
+	//	will not have access after the proposed changes (`NOT_GRANTED`).
 	AccessStateDiff_ACCESS_MAYBE_REVOKED AccessStateDiff_AccessChangeType = 5
 	// This result can occur for the following reasons:
 	//
-	// * The principal did not have access under the current policies
-	//   (`NOT_GRANTED`), but their access after the proposed changes is
-	//   `UNKNOWN`.
+	//   - The principal did not have access under the current policies
+	//     (`NOT_GRANTED`), but their access after the proposed changes is
+	//     `UNKNOWN`.
 	//
 	// * The principal's access under the current policies is `UNKNOWN`, but
 	// they will have access after the proposed changes (`GRANTED`).
@@ -343,6 +343,7 @@ type ReplayResult struct {
 	// The result of replaying the access tuple.
 	//
 	// Types that are assignable to Result:
+	//
 	//	*ReplayResult_Diff
 	//	*ReplayResult_Error
 	Result isReplayResult_Result `protobuf_oneof:"result"`

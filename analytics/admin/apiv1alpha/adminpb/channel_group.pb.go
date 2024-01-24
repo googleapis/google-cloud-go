@@ -21,12 +21,11 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -114,6 +113,7 @@ type ChannelGroupFilter struct {
 	// A StringFilter or InListFilter that defines this filters behavior.
 	//
 	// Types that are assignable to ValueFilter:
+	//
 	//	*ChannelGroupFilter_StringFilter_
 	//	*ChannelGroupFilter_InListFilter_
 	ValueFilter isChannelGroupFilter_ValueFilter `protobuf_oneof:"value_filter"`
@@ -209,6 +209,7 @@ type ChannelGroupFilterExpression struct {
 	// The expression applied to a filter.
 	//
 	// Types that are assignable to Expr:
+	//
 	//	*ChannelGroupFilterExpression_AndGroup
 	//	*ChannelGroupFilterExpression_OrGroup
 	//	*ChannelGroupFilterExpression_NotExpression

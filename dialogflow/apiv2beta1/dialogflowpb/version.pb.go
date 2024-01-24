@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -125,9 +124,9 @@ type Version struct {
 
 	// Output only. The unique identifier of this agent version.
 	// Supported formats:
-	// - `projects/<Project ID>/agent/versions/<Version ID>`
-	// - `projects/<Project ID>/locations/<Location ID>/agent/versions/<Version
-	//   ID>`
+	//   - `projects/<Project ID>/agent/versions/<Version ID>`
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/versions/<Version
+	//     ID>`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The developer-provided description of this version.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
@@ -351,9 +350,9 @@ type GetVersionRequest struct {
 
 	// Required. The name of the version.
 	// Supported formats:
-	// - `projects/<Project ID>/agent/versions/<Version ID>`
-	// - `projects/<Project ID>/locations/<Location ID>/agent/versions/<Version
-	//   ID>`
+	//   - `projects/<Project ID>/agent/versions/<Version ID>`
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/versions/<Version
+	//     ID>`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -467,9 +466,9 @@ type UpdateVersionRequest struct {
 
 	// Required. The version to update.
 	// Supported formats:
-	// - `projects/<Project ID>/agent/versions/<Version ID>`
-	// - `projects/<Project ID>/locations/<Location ID>/agent/versions/<Version
-	//   ID>`
+	//   - `projects/<Project ID>/agent/versions/<Version ID>`
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/versions/<Version
+	//     ID>`
 	Version *Version `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
 	// Required. The mask to control which fields get updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
@@ -530,9 +529,9 @@ type DeleteVersionRequest struct {
 
 	// Required. The name of the version to delete.
 	// Supported formats:
-	// - `projects/<Project ID>/agent/versions/<Version ID>`
-	// - `projects/<Project ID>/locations/<Location ID>/agent/versions/<Version
-	//   ID>`
+	//   - `projects/<Project ID>/agent/versions/<Version ID>`
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/versions/<Version
+	//     ID>`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

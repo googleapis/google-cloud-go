@@ -21,13 +21,12 @@
 package notebookspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -511,6 +510,7 @@ type Runtime struct {
 	// Type of the runtime; currently only supports Compute Engine VM.
 	//
 	// Types that are assignable to RuntimeType:
+	//
 	//	*Runtime_VirtualMachine
 	RuntimeType isRuntime_RuntimeType `protobuf_oneof:"runtime_type"`
 	// Output only. Runtime state.
@@ -1560,14 +1560,14 @@ type VirtualMachineConfig struct {
 	//
 	// Example: managed-notebooks-range-c
 	//
-	//     PEERING_RANGE_NAME_3=managed-notebooks-range-c
-	//     gcloud compute addresses create $PEERING_RANGE_NAME_3 \
-	//       --global \
-	//       --prefix-length=24 \
-	//       --description="Google Cloud Managed Notebooks Range 24 c" \
-	//       --network=$NETWORK \
-	//       --addresses=192.168.0.0 \
-	//       --purpose=VPC_PEERING
+	//	PEERING_RANGE_NAME_3=managed-notebooks-range-c
+	//	gcloud compute addresses create $PEERING_RANGE_NAME_3 \
+	//	  --global \
+	//	  --prefix-length=24 \
+	//	  --description="Google Cloud Managed Notebooks Range 24 c" \
+	//	  --network=$NETWORK \
+	//	  --addresses=192.168.0.0 \
+	//	  --purpose=VPC_PEERING
 	//
 	// Field value will be: `managed-notebooks-range-c`
 	ReservedIpRange string `protobuf:"bytes,18,opt,name=reserved_ip_range,json=reservedIpRange,proto3" json:"reserved_ip_range,omitempty"`

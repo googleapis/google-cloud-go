@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -90,10 +89,12 @@ const (
 	// ```
 	// input = ["This", "is", "a", "test", "."]
 	// encoded = [[0.1, 0.2, 0.3, 0.4, 0.5],
-	//            [0.2, 0.1, 0.4, 0.3, 0.5],
-	//            [0.5, 0.1, 0.3, 0.5, 0.4],
-	//            [0.5, 0.3, 0.1, 0.2, 0.4],
-	//            [0.4, 0.3, 0.2, 0.5, 0.1]]
+	//
+	//	[0.2, 0.1, 0.4, 0.3, 0.5],
+	//	[0.5, 0.1, 0.3, 0.5, 0.4],
+	//	[0.5, 0.3, 0.1, 0.2, 0.4],
+	//	[0.4, 0.3, 0.2, 0.5, 0.1]]
+	//
 	// ```
 	ExplanationMetadata_InputMetadata_CONCAT_EMBEDDING ExplanationMetadata_InputMetadata_Encoding = 6
 )
@@ -719,6 +720,7 @@ type ExplanationMetadata_OutputMetadata struct {
 	// will not be populated.
 	//
 	// Types that are assignable to DisplayNameMapping:
+	//
 	//	*ExplanationMetadata_OutputMetadata_IndexDisplayNameMapping
 	//	*ExplanationMetadata_OutputMetadata_DisplayNameMappingKey
 	DisplayNameMapping isExplanationMetadata_OutputMetadata_DisplayNameMapping `protobuf_oneof:"display_name_mapping"`

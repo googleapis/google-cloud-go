@@ -21,11 +21,10 @@
 package dataflowpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -398,6 +397,7 @@ type StreamLocation struct {
 	// A specification of a stream's location.
 	//
 	// Types that are assignable to Location:
+	//
 	//	*StreamLocation_StreamingStageLocation
 	//	*StreamLocation_PubsubLocation
 	//	*StreamLocation_SideInputLocation

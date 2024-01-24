@@ -22,9 +22,6 @@ package settingspb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -50,7 +49,7 @@ type GetServiceAccountRequest struct {
 
 	// Required. The relative resource name of the service account resource.
 	// Format:
-	//  * `organizations/{organization}/serviceAccount`
+	//   - `organizations/{organization}/serviceAccount`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -102,7 +101,7 @@ type ServiceAccount struct {
 
 	// The relative resource name of the service account resource.
 	// Format:
-	//  * `organizations/{organization}/serviceAccount`
+	//   - `organizations/{organization}/serviceAccount`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Security Center managed service account for the organization
 	// example service-org-1234@scc.iam.gserviceaccount.com
@@ -165,12 +164,12 @@ type GetSettingsRequest struct {
 
 	// Required. The name of the settings to retrieve.
 	// Formats:
-	//  * `organizations/{organization}/settings`
-	//  * `folders/{folder}/settings`
-	//  * `projects/{project}/settings`
-	//  * `projects/{project}/locations/{location}/clusters/{cluster}/settings`
-	//  * `projects/{project}/regions/{region}/clusters/{cluster}/settings`
-	//  * `projects/{project}/zones/{zone}/clusters/{cluster}/settings`
+	//   - `organizations/{organization}/settings`
+	//   - `folders/{folder}/settings`
+	//   - `projects/{project}/settings`
+	//   - `projects/{project}/locations/{location}/clusters/{cluster}/settings`
+	//   - `projects/{project}/regions/{region}/clusters/{cluster}/settings`
+	//   - `projects/{project}/zones/{zone}/clusters/{cluster}/settings`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -223,12 +222,12 @@ type UpdateSettingsRequest struct {
 	//
 	// The settings' `name` field is used to identify the settings to be updated.
 	// Formats:
-	//  * `organizations/{organization}/settings`
-	//  * `folders/{folder}/settings`
-	//  * `projects/{project}/settings`
-	//  * `projects/{project}/locations/{location}/clusters/{cluster}/settings`
-	//  * `projects/{project}/regions/{region}/clusters/{cluster}/settings`
-	//  * `projects/{project}/zones/{zone}/clusters/{cluster}/settings`
+	//   - `organizations/{organization}/settings`
+	//   - `folders/{folder}/settings`
+	//   - `projects/{project}/settings`
+	//   - `projects/{project}/locations/{location}/clusters/{cluster}/settings`
+	//   - `projects/{project}/regions/{region}/clusters/{cluster}/settings`
+	//   - `projects/{project}/zones/{zone}/clusters/{cluster}/settings`
 	Settings *Settings `protobuf:"bytes,1,opt,name=settings,proto3" json:"settings,omitempty"`
 	// The list of fields to be updated on the settings.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
@@ -288,12 +287,12 @@ type ResetSettingsRequest struct {
 
 	// Required. The name of the settings to reset.
 	// Formats:
-	//  * `organizations/{organization}/settings`
-	//  * `folders/{folder}/settings`
-	//  * `projects/{project}/settings`
-	//  * `projects/{project}/locations/{location}/clusters/{cluster}/settings`
-	//  * `projects/{project}/regions/{region}/clusters/{cluster}/settings`
-	//  * `projects/{project}/zones/{zone}/clusters/{cluster}/settings`
+	//   - `organizations/{organization}/settings`
+	//   - `folders/{folder}/settings`
+	//   - `projects/{project}/settings`
+	//   - `projects/{project}/locations/{location}/clusters/{cluster}/settings`
+	//   - `projects/{project}/regions/{region}/clusters/{cluster}/settings`
+	//   - `projects/{project}/zones/{zone}/clusters/{cluster}/settings`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// A fingerprint used for optimistic concurrency. If none is provided,
 	// then the existing settings will be blindly overwritten.
@@ -355,17 +354,17 @@ type BatchGetSettingsRequest struct {
 	// Required. The relative resource name of the organization shared by all of the
 	// settings being retrieved.
 	// Format:
-	//  * `organizations/{organization}`
+	//   - `organizations/{organization}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The names of the settings to retrieve.
 	// A maximum of 1000 settings can be retrieved in a batch.
 	// Formats:
-	//  * `organizations/{organization}/settings`
-	//  * `folders/{folder}/settings`
-	//  * `projects/{project}/settings`
-	//  * `projects/{project}/locations/{location}/clusters/{cluster}/settings`
-	//  * `projects/{project}/regions/{region}/clusters/{cluster}/settings`
-	//  * `projects/{project}/zones/{zone}/clusters/{cluster}/settings`
+	//   - `organizations/{organization}/settings`
+	//   - `folders/{folder}/settings`
+	//   - `projects/{project}/settings`
+	//   - `projects/{project}/locations/{location}/clusters/{cluster}/settings`
+	//   - `projects/{project}/regions/{region}/clusters/{cluster}/settings`
+	//   - `projects/{project}/zones/{zone}/clusters/{cluster}/settings`
 	Names []string `protobuf:"bytes,2,rep,name=names,proto3" json:"names,omitempty"`
 }
 
@@ -472,12 +471,12 @@ type CalculateEffectiveSettingsRequest struct {
 
 	// Required. The name of the effective settings to retrieve.
 	// Formats:
-	//  * `organizations/{organization}/effectiveSettings`
-	//  * `folders/{folder}/effectiveSettings`
-	//  * `projects/{project}/effectiveSettings`
-	//  * `projects/{project}/locations/{location}/clusters/{cluster}/effectiveSettings`
-	//  * `projects/{project}/regions/{region}/clusters/{cluster}/effectiveSettings`
-	//  * `projects/{project}/zones/{zone}/clusters/{cluster}/effectiveSettings`
+	//   - `organizations/{organization}/effectiveSettings`
+	//   - `folders/{folder}/effectiveSettings`
+	//   - `projects/{project}/effectiveSettings`
+	//   - `projects/{project}/locations/{location}/clusters/{cluster}/effectiveSettings`
+	//   - `projects/{project}/regions/{region}/clusters/{cluster}/effectiveSettings`
+	//   - `projects/{project}/zones/{zone}/clusters/{cluster}/effectiveSettings`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -529,7 +528,7 @@ type BatchCalculateEffectiveSettingsRequest struct {
 	// Required. The relative resource name of the organization shared by all of the
 	// settings being retrieved.
 	// Format:
-	//  * `organizations/{organization}`
+	//   - `organizations/{organization}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The requests specifying the effective settings to retrieve.
 	// A maximum of 1000 effective settings can be retrieved in a batch.
@@ -640,12 +639,12 @@ type GetComponentSettingsRequest struct {
 	// Required. The component settings to retrieve.
 	//
 	// Formats:
-	//  * `organizations/{organization}/components/{component}/settings`
-	//  * `folders/{folder}/components/{component}/settings`
-	//  * `projects/{project}/components/{component}/settings`
-	//  * `projects/{project}/locations/{location}/clusters/{cluster}/components/{component}/settings`
-	//  * `projects/{project}/regions/{region}/clusters/{cluster}/components/{component}/settings`
-	//  * `projects/{project}/zones/{zone}/clusters/{cluster}/components/{component}/settings`
+	//   - `organizations/{organization}/components/{component}/settings`
+	//   - `folders/{folder}/components/{component}/settings`
+	//   - `projects/{project}/components/{component}/settings`
+	//   - `projects/{project}/locations/{location}/clusters/{cluster}/components/{component}/settings`
+	//   - `projects/{project}/regions/{region}/clusters/{cluster}/components/{component}/settings`
+	//   - `projects/{project}/zones/{zone}/clusters/{cluster}/components/{component}/settings`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -698,12 +697,12 @@ type UpdateComponentSettingsRequest struct {
 	//
 	// The component settings' `name` field is used to identify the component
 	// settings to be updated. Formats:
-	//  * `organizations/{organization}/components/{component}/settings`
-	//  * `folders/{folder}/components/{component}/settings`
-	//  * `projects/{project}/components/{component}/settings`
-	//  * `projects/{project}/locations/{location}/clusters/{cluster}/components/{component}/settings`
-	//  * `projects/{project}/regions/{region}/clusters/{cluster}/components/{component}/settings`
-	//  * `projects/{project}/zones/{zone}/clusters/{cluster}/components/{component}/settings`
+	//   - `organizations/{organization}/components/{component}/settings`
+	//   - `folders/{folder}/components/{component}/settings`
+	//   - `projects/{project}/components/{component}/settings`
+	//   - `projects/{project}/locations/{location}/clusters/{cluster}/components/{component}/settings`
+	//   - `projects/{project}/regions/{region}/clusters/{cluster}/components/{component}/settings`
+	//   - `projects/{project}/zones/{zone}/clusters/{cluster}/components/{component}/settings`
 	ComponentSettings *ComponentSettings `protobuf:"bytes,1,opt,name=component_settings,json=componentSettings,proto3" json:"component_settings,omitempty"`
 	// The list of fields to be updated on the component settings resource.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
@@ -764,12 +763,12 @@ type ResetComponentSettingsRequest struct {
 	// Required. The component settings to reset.
 	//
 	// Formats:
-	//  * `organizations/{organization}/components/{component}/settings`
-	//  * `folders/{folder}/components/{component}/settings`
-	//  * `projects/{project}/components/{component}/settings`
-	//  * `projects/{project}/locations/{location}/clusters/{cluster}/components/{component}/settings`
-	//  * `projects/{project}/regions/{region}/clusters/{cluster}/components/{component}/settings`
-	//  * `projects/{project}/zones/{zone}/clusters/{cluster}/components/{component}/settings`
+	//   - `organizations/{organization}/components/{component}/settings`
+	//   - `folders/{folder}/components/{component}/settings`
+	//   - `projects/{project}/components/{component}/settings`
+	//   - `projects/{project}/locations/{location}/clusters/{cluster}/components/{component}/settings`
+	//   - `projects/{project}/regions/{region}/clusters/{cluster}/components/{component}/settings`
+	//   - `projects/{project}/zones/{zone}/clusters/{cluster}/components/{component}/settings`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// An fingerprint used for optimistic concurrency. If none is provided,
 	// then the existing settings will be blindly overwritten.
@@ -831,12 +830,12 @@ type CalculateEffectiveComponentSettingsRequest struct {
 	// Required. The effective component settings to retrieve.
 	//
 	// Formats:
-	//  * `organizations/{organization}/components/{component}/settings`
-	//  * `folders/{folder}/components/{component}/settings`
-	//  * `projects/{project}/components/{component}/settings`
-	//  * `projects/{project}/locations/{location}/clusters/{cluster}/components/{component}/settings`
-	//  * `projects/{project}/regions/{region}/clusters/{cluster}/components/{component}/settings`
-	//  * `projects/{project}/zones/{zone}/clusters/{cluster}/components/{component}/settings`
+	//   - `organizations/{organization}/components/{component}/settings`
+	//   - `folders/{folder}/components/{component}/settings`
+	//   - `projects/{project}/components/{component}/settings`
+	//   - `projects/{project}/locations/{location}/clusters/{cluster}/components/{component}/settings`
+	//   - `projects/{project}/regions/{region}/clusters/{cluster}/components/{component}/settings`
+	//   - `projects/{project}/zones/{zone}/clusters/{cluster}/components/{component}/settings`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -887,12 +886,12 @@ type ListDetectorsRequest struct {
 
 	// Required. The parent, which owns this collection of detectors.
 	// Format:
-	//  * `organizations/{organization}`
+	//   - `organizations/{organization}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Filters to apply on the response. Filters can be applied on:
-	//  * components
-	//  * labels
-	//  * billing tiers
+	//   - components
+	//   - labels
+	//   - billing tiers
 	//
 	// Component filters will retrieve only detectors for the components
 	// specified. Label filters will retrieve only detectors that match one of the
@@ -1040,7 +1039,7 @@ type ListComponentsRequest struct {
 
 	// Required. The parent, which owns this collection of components.
 	// Format:
-	//  * `organizations/{organization}`
+	//   - `organizations/{organization}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of components to return. The service may return fewer
 	// than this value. If unspecified, at most 100 components will be returned.
@@ -2161,14 +2160,14 @@ type SecurityCenterSettingsServiceClient interface {
 	// CalculateEffectiveSettings looks up all of the Security Center
 	// Settings resources in the GCP resource hierarchy, and calculates the
 	// effective settings on that resource by applying the following rules:
-	//  * Settings provided closer to the target resource take precedence over
-	//    those further away (e.g. folder will override organization level
-	//    settings).
-	//  * Product defaults can be overridden at org, folder, project, and cluster
-	//  levels.
-	//  * Detectors will be filtered out if they belong to a billing tier the
-	//  customer
-	//    has not configured.
+	//   - Settings provided closer to the target resource take precedence over
+	//     those further away (e.g. folder will override organization level
+	//     settings).
+	//   - Product defaults can be overridden at org, folder, project, and cluster
+	//     levels.
+	//   - Detectors will be filtered out if they belong to a billing tier the
+	//     customer
+	//     has not configured.
 	CalculateEffectiveSettings(ctx context.Context, in *CalculateEffectiveSettingsRequest, opts ...grpc.CallOption) (*Settings, error)
 	// Gets a list of effective settings.
 	BatchCalculateEffectiveSettings(ctx context.Context, in *BatchCalculateEffectiveSettingsRequest, opts ...grpc.CallOption) (*BatchCalculateEffectiveSettingsResponse, error)
@@ -2348,14 +2347,14 @@ type SecurityCenterSettingsServiceServer interface {
 	// CalculateEffectiveSettings looks up all of the Security Center
 	// Settings resources in the GCP resource hierarchy, and calculates the
 	// effective settings on that resource by applying the following rules:
-	//  * Settings provided closer to the target resource take precedence over
-	//    those further away (e.g. folder will override organization level
-	//    settings).
-	//  * Product defaults can be overridden at org, folder, project, and cluster
-	//  levels.
-	//  * Detectors will be filtered out if they belong to a billing tier the
-	//  customer
-	//    has not configured.
+	//   - Settings provided closer to the target resource take precedence over
+	//     those further away (e.g. folder will override organization level
+	//     settings).
+	//   - Product defaults can be overridden at org, folder, project, and cluster
+	//     levels.
+	//   - Detectors will be filtered out if they belong to a billing tier the
+	//     customer
+	//     has not configured.
 	CalculateEffectiveSettings(context.Context, *CalculateEffectiveSettingsRequest) (*Settings, error)
 	// Gets a list of effective settings.
 	BatchCalculateEffectiveSettings(context.Context, *BatchCalculateEffectiveSettingsRequest) (*BatchCalculateEffectiveSettingsResponse, error)

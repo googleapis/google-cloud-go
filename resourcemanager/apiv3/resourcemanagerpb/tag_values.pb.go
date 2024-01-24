@@ -21,12 +21,9 @@
 package resourcemanagerpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -362,13 +361,13 @@ type GetNamespacedTagValueRequest struct {
 
 	// Required. A namespaced tag value name in the following format:
 	//
-	//   `{parentId}/{tagKeyShort}/{tagValueShort}`
+	//	`{parentId}/{tagKeyShort}/{tagValueShort}`
 	//
 	// Examples:
-	// - `42/foo/abc` for a value with short name "abc" under the key with short
-	//   name "foo" under the organization with ID 42
-	// - `r2-d2/bar/xyz` for a value with short name "xyz" under the key with
-	//    short name "bar" under the project with ID "r2-d2"
+	//   - `42/foo/abc` for a value with short name "abc" under the key with short
+	//     name "foo" under the organization with ID 42
+	//   - `r2-d2/bar/xyz` for a value with short name "xyz" under the key with
+	//     short name "bar" under the project with ID "r2-d2"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

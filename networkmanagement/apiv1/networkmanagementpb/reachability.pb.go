@@ -21,11 +21,8 @@
 package networkmanagementpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -50,7 +49,8 @@ type ListConnectivityTestsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The parent resource of the Connectivity Tests:
-	//     `projects/{project_id}/locations/global`
+	//
+	//	`projects/{project_id}/locations/global`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Number of `ConnectivityTests` to return.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -66,8 +66,8 @@ type ListConnectivityTestsRequest struct {
 	// field, or a synthetic field. Field names can be camelCase or snake_case.
 	//
 	// Examples:
-	// - Filter by name:
-	//   name = "projects/proj-1/locations/global/connectivityTests/test-1
+	//   - Filter by name:
+	//     name = "projects/proj-1/locations/global/connectivityTests/test-1
 	//
 	// - Filter by labels:
 	//   - Resources that have a key called `foo`
@@ -220,7 +220,8 @@ type GetConnectivityTestRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. `ConnectivityTest` resource name using the form:
-	//     `projects/{project_id}/locations/global/connectivityTests/{test_id}`
+	//
+	//	`projects/{project_id}/locations/global/connectivityTests/{test_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -270,7 +271,8 @@ type CreateConnectivityTestRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The parent resource of the Connectivity Test to create:
-	//     `projects/{project_id}/locations/global`
+	//
+	//	`projects/{project_id}/locations/global`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The logical name of the Connectivity Test in your project
 	// with the following restrictions:
@@ -404,7 +406,8 @@ type DeleteConnectivityTestRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Connectivity Test resource name using the form:
-	//     `projects/{project_id}/locations/global/connectivityTests/{test_id}`
+	//
+	//	`projects/{project_id}/locations/global/connectivityTests/{test_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -454,7 +457,8 @@ type RerunConnectivityTestRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Connectivity Test resource name using the form:
-	//     `projects/{project_id}/locations/global/connectivityTests/{test_id}`
+	//
+	//	`projects/{project_id}/locations/global/connectivityTests/{test_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

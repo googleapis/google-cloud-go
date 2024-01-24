@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -533,11 +532,11 @@ type DeleteGeneratorRequest struct {
 	// This field has no effect for generators not being used.
 	// For generators that are used by pages/flows/transition route groups:
 	//
-	// *  If `force` is set to false, an error will be returned with message
-	//    indicating the referenced resources.
-	// *  If `force` is set to true, Dialogflow will remove the generator, as well
-	//    as any references to the generator (i.e.
-	//    [Generator][Fulfillment.generator]) in fulfillments.
+	//   - If `force` is set to false, an error will be returned with message
+	//     indicating the referenced resources.
+	//   - If `force` is set to true, Dialogflow will remove the generator, as well
+	//     as any references to the generator (i.e.
+	//     [Generator][Fulfillment.generator]) in fulfillments.
 	Force bool `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"`
 }
 

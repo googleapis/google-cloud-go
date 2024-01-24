@@ -21,15 +21,14 @@
 package assuredworkloadspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -777,6 +776,7 @@ type AnalyzeWorkloadMoveRequest struct {
 	// an existing project or a project-based workload.
 	//
 	// Types that are assignable to ProjectOrWorkloadResource:
+	//
 	//	*AnalyzeWorkloadMoveRequest_Source
 	//	*AnalyzeWorkloadMoveRequest_Project
 	ProjectOrWorkloadResource isAnalyzeWorkloadMoveRequest_ProjectOrWorkloadResource `protobuf_oneof:"projectOrWorkloadResource"`
@@ -1105,6 +1105,7 @@ type Workload struct {
 	// Settings specific to the selected [compliance_regime]
 	//
 	// Types that are assignable to ComplianceRegimeSettings:
+	//
 	//	*Workload_Il4Settings
 	//	*Workload_CjisSettings
 	//	*Workload_FedrampHighSettings_

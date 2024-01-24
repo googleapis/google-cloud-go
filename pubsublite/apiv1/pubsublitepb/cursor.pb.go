@@ -22,15 +22,14 @@ package pubsublitepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -250,6 +249,7 @@ type StreamingCommitCursorRequest struct {
 	// The type of request this is.
 	//
 	// Types that are assignable to Request:
+	//
 	//	*StreamingCommitCursorRequest_Initial
 	//	*StreamingCommitCursorRequest_Commit
 	Request isStreamingCommitCursorRequest_Request `protobuf_oneof:"request"`
@@ -335,6 +335,7 @@ type StreamingCommitCursorResponse struct {
 	// The type of request this is.
 	//
 	// Types that are assignable to Request:
+	//
 	//	*StreamingCommitCursorResponse_Initial
 	//	*StreamingCommitCursorResponse_Commit
 	Request isStreamingCommitCursorResponse_Request `protobuf_oneof:"request"`

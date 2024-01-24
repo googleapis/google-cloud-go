@@ -21,12 +21,11 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -261,14 +260,18 @@ type FeaturestoreMonitoringConfig_SnapshotAnalysis struct {
 
 	// The monitoring schedule for snapshot analysis.
 	// For EntityType-level config:
-	//   unset / disabled = true indicates disabled by
-	//   default for Features under it; otherwise by default enable snapshot
-	//   analysis monitoring with monitoring_interval for Features under it.
+	//
+	//	unset / disabled = true indicates disabled by
+	//	default for Features under it; otherwise by default enable snapshot
+	//	analysis monitoring with monitoring_interval for Features under it.
+	//
 	// Feature-level config:
-	//   disabled = true indicates disabled regardless of the EntityType-level
-	//   config; unset monitoring_interval indicates going with EntityType-level
-	//   config; otherwise run snapshot analysis monitoring with
-	//   monitoring_interval regardless of the EntityType-level config.
+	//
+	//	disabled = true indicates disabled regardless of the EntityType-level
+	//	config; unset monitoring_interval indicates going with EntityType-level
+	//	config; otherwise run snapshot analysis monitoring with
+	//	monitoring_interval regardless of the EntityType-level config.
+	//
 	// Explicitly Disable the snapshot analysis based monitoring.
 	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
 	// Configuration of the snapshot analysis based monitoring pipeline running
@@ -423,6 +426,7 @@ type FeaturestoreMonitoringConfig_ThresholdConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Threshold:
+	//
 	//	*FeaturestoreMonitoringConfig_ThresholdConfig_Value
 	Threshold isFeaturestoreMonitoringConfig_ThresholdConfig_Threshold `protobuf_oneof:"threshold"`
 }

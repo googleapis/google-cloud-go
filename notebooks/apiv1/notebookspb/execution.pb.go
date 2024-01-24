@@ -21,13 +21,12 @@
 package notebookspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -59,7 +58,7 @@ const (
 	// own cluster specification. When you use this tier, set values to
 	// configure your processing cluster according to these guidelines:
 	//
-	// *   You _must_ set `ExecutionTemplate.masterType` to specify the type
+	//   - You _must_ set `ExecutionTemplate.masterType` to specify the type
 	//     of machine to use for your master node. This is the only required
 	//     setting.
 	ExecutionTemplate_CUSTOM ExecutionTemplate_ScaleTier = 6
@@ -367,7 +366,6 @@ type ExecutionTemplate struct {
 	// - `n1-highcpu-64`
 	// - `n1-highcpu-96`
 	//
-	//
 	// Alternatively, you can use the following legacy machine types:
 	//
 	// - `standard`
@@ -384,7 +382,6 @@ type ExecutionTemplate struct {
 	// - `large_model_v100`
 	// - `complex_model_m_v100`
 	// - `complex_model_l_v100`
-	//
 	//
 	// Finally, if you want to use a TPU for training, specify `cloud_tpu` in this
 	// field. Learn more about the [special configuration options for training
@@ -433,6 +430,7 @@ type ExecutionTemplate struct {
 	// NOTE: There are currently no extra parameters for VertexAI jobs.
 	//
 	// Types that are assignable to JobParameters:
+	//
 	//	*ExecutionTemplate_DataprocParameters_
 	//	*ExecutionTemplate_VertexAiParameters
 	JobParameters isExecutionTemplate_JobParameters `protobuf_oneof:"job_parameters"`

@@ -22,15 +22,14 @@ package datacatalogpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -214,6 +213,7 @@ type ImportTaxonomiesRequest struct {
 	// Source taxonomies to be imported.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportTaxonomiesRequest_InlineSource
 	Source isImportTaxonomiesRequest_Source `protobuf_oneof:"source"`
 }
@@ -396,6 +396,7 @@ type ExportTaxonomiesRequest struct {
 	// Required. Taxonomies export destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ExportTaxonomiesRequest_SerializedTaxonomies
 	Destination isExportTaxonomiesRequest_Destination `protobuf_oneof:"destination"`
 }

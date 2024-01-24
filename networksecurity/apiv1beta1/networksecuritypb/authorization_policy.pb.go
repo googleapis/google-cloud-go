@@ -21,14 +21,13 @@
 package networksecuritypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -795,6 +794,7 @@ type AuthorizationPolicy_Rule_Destination_HttpHeaderMatch struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Type:
+	//
 	//	*AuthorizationPolicy_Rule_Destination_HttpHeaderMatch_RegexMatch
 	Type isAuthorizationPolicy_Rule_Destination_HttpHeaderMatch_Type `protobuf_oneof:"type"`
 	// Required. The name of the HTTP header to match. For matching

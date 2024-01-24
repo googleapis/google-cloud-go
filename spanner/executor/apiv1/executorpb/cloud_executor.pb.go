@@ -21,14 +21,11 @@
 package executorpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	databasepb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	instancepb "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
 	spannerpb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -294,6 +293,7 @@ type SpannerAction struct {
 	// per SpannerAction.
 	//
 	// Types that are assignable to Action:
+	//
 	//	*SpannerAction_Start
 	//	*SpannerAction_Finish
 	//	*SpannerAction_Read
@@ -849,6 +849,7 @@ type Value struct {
 	// Exactly one of the following fields will be present.
 	//
 	// Types that are assignable to ValueType:
+	//
 	//	*Value_IsNull
 	//	*Value_IntValue
 	//	*Value_BoolValue
@@ -1517,6 +1518,7 @@ type Concurrency struct {
 	// should be set.
 	//
 	// Types that are assignable to ConcurrencyMode:
+	//
 	//	*Concurrency_StalenessSeconds
 	//	*Concurrency_MinReadTimestampMicros
 	//	*Concurrency_MaxStalenessSeconds
@@ -1919,6 +1921,7 @@ type AdminAction struct {
 	// Exactly one of the actions below will be performed in AdminAction.
 	//
 	// Types that are assignable to Action:
+	//
 	//	*AdminAction_CreateUserInstanceConfig
 	//	*AdminAction_UpdateUserInstanceConfig
 	//	*AdminAction_DeleteUserInstanceConfig
@@ -4585,6 +4588,7 @@ type StartBatchTransactionAction struct {
 	// set.
 	//
 	// Types that are assignable to Param:
+	//
 	//	*StartBatchTransactionAction_BatchTxnTime
 	//	*StartBatchTransactionAction_Tid
 	Param isStartBatchTransactionAction_Param `protobuf_oneof:"param"`
@@ -5859,6 +5863,7 @@ type ChangeStreamRecord struct {
 	// Record represents one type of the change stream record.
 	//
 	// Types that are assignable to Record:
+	//
 	//	*ChangeStreamRecord_DataChange
 	//	*ChangeStreamRecord_ChildPartition
 	//	*ChangeStreamRecord_Heartbeat

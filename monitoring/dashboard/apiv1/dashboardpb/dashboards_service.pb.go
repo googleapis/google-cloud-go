@@ -22,9 +22,6 @@ package dashboardpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -49,7 +48,7 @@ type CreateDashboardRequest struct {
 
 	// Required. The project on which to execute the request. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	//
 	// The `[PROJECT_ID_OR_NUMBER]` must match the dashboard resource name.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
@@ -121,7 +120,7 @@ type ListDashboardsRequest struct {
 
 	// Required. The scope of the dashboards to list. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// A positive number that is the maximum number of results to return.
 	// If unspecified, a default of 1000 is used.
@@ -253,9 +252,9 @@ type GetDashboardRequest struct {
 
 	// Required. The resource name of the Dashboard. The format is one of:
 	//
-	//  -  `dashboards/[DASHBOARD_ID]` (for system dashboards)
-	//  -  `projects/[PROJECT_ID_OR_NUMBER]/dashboards/[DASHBOARD_ID]`
-	//       (for custom dashboards).
+	//   - `dashboards/[DASHBOARD_ID]` (for system dashboards)
+	//   - `projects/[PROJECT_ID_OR_NUMBER]/dashboards/[DASHBOARD_ID]`
+	//     (for custom dashboards).
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -306,7 +305,7 @@ type DeleteDashboardRequest struct {
 
 	// Required. The resource name of the Dashboard. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/dashboards/[DASHBOARD_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/dashboards/[DASHBOARD_ID]
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

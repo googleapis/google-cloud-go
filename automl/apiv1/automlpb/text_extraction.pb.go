@@ -21,11 +21,10 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -45,6 +44,7 @@ type TextExtractionAnnotation struct {
 	// text relation.
 	//
 	// Types that are assignable to Annotation:
+	//
 	//	*TextExtractionAnnotation_TextSegment
 	Annotation isTextExtractionAnnotation_Annotation `protobuf_oneof:"annotation"`
 	// Output only. A confidence estimate between 0.0 and 1.0. A higher value

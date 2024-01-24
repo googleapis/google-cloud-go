@@ -21,15 +21,14 @@
 package cloudtaskspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -124,23 +123,24 @@ type Task struct {
 	// The task name must have the following format:
 	// `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID`
 	//
-	// * `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),
-	//    hyphens (-), colons (:), or periods (.).
-	//    For more information, see
-	//    [Identifying
-	//    projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects)
-	// * `LOCATION_ID` is the canonical ID for the task's location.
-	//    The list of available locations can be obtained by calling
-	//    [ListLocations][google.cloud.location.Locations.ListLocations].
-	//    For more information, see https://cloud.google.com/about/locations/.
-	// * `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or
-	//   hyphens (-). The maximum length is 100 characters.
-	// * `TASK_ID` can contain only letters ([A-Za-z]), numbers ([0-9]),
-	//   hyphens (-), or underscores (_). The maximum length is 500 characters.
+	//   - `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),
+	//     hyphens (-), colons (:), or periods (.).
+	//     For more information, see
+	//     [Identifying
+	//     projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects)
+	//   - `LOCATION_ID` is the canonical ID for the task's location.
+	//     The list of available locations can be obtained by calling
+	//     [ListLocations][google.cloud.location.Locations.ListLocations].
+	//     For more information, see https://cloud.google.com/about/locations/.
+	//   - `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or
+	//     hyphens (-). The maximum length is 100 characters.
+	//   - `TASK_ID` can contain only letters ([A-Za-z]), numbers ([0-9]),
+	//     hyphens (-), or underscores (_). The maximum length is 500 characters.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The message to send to the worker.
 	//
 	// Types that are assignable to MessageType:
+	//
 	//	*Task_AppEngineHttpRequest
 	//	*Task_HttpRequest
 	MessageType isTask_MessageType `protobuf_oneof:"message_type"`
@@ -166,22 +166,24 @@ type Task struct {
 	//
 	// * For [HTTP tasks][google.cloud.tasks.v2.HttpRequest], the default is 10
 	// minutes. The deadline
-	//   must be in the interval [15 seconds, 30 minutes].
+	//
+	//	must be in the interval [15 seconds, 30 minutes].
 	//
 	// * For [App Engine tasks][google.cloud.tasks.v2.AppEngineHttpRequest], 0
 	// indicates that the
-	//   request has the default deadline. The default deadline depends on the
-	//   [scaling
-	//   type](https://cloud.google.com/appengine/docs/standard/go/how-instances-are-managed#instance_scaling)
-	//   of the service: 10 minutes for standard apps with automatic scaling, 24
-	//   hours for standard apps with manual and basic scaling, and 60 minutes for
-	//   flex apps. If the request deadline is set, it must be in the interval [15
-	//   seconds, 24 hours 15 seconds]. Regardless of the task's
-	//   `dispatch_deadline`, the app handler will not run for longer than than
-	//   the service's timeout. We recommend setting the `dispatch_deadline` to
-	//   at most a few seconds more than the app handler's timeout. For more
-	//   information see
-	//   [Timeouts](https://cloud.google.com/tasks/docs/creating-appengine-handlers#timeouts).
+	//
+	//	request has the default deadline. The default deadline depends on the
+	//	[scaling
+	//	type](https://cloud.google.com/appengine/docs/standard/go/how-instances-are-managed#instance_scaling)
+	//	of the service: 10 minutes for standard apps with automatic scaling, 24
+	//	hours for standard apps with manual and basic scaling, and 60 minutes for
+	//	flex apps. If the request deadline is set, it must be in the interval [15
+	//	seconds, 24 hours 15 seconds]. Regardless of the task's
+	//	`dispatch_deadline`, the app handler will not run for longer than than
+	//	the service's timeout. We recommend setting the `dispatch_deadline` to
+	//	at most a few seconds more than the app handler's timeout. For more
+	//	information see
+	//	[Timeouts](https://cloud.google.com/tasks/docs/creating-appengine-handlers#timeouts).
 	//
 	// `dispatch_deadline` will be truncated to the nearest millisecond. The
 	// deadline is an approximate deadline.

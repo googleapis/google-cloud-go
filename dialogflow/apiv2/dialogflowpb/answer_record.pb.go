@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -304,6 +303,7 @@ type AnswerRecord struct {
 	// The record for this answer.
 	//
 	// Types that are assignable to Record:
+	//
 	//	*AnswerRecord_AgentAssistantRecord
 	Record isAnswerRecord_Record `protobuf_oneof:"record"`
 }
@@ -606,6 +606,7 @@ type AnswerFeedback struct {
 	// Normally, detail feedback is provided when answer is not fully correct.
 	//
 	// Types that are assignable to DetailFeedback:
+	//
 	//	*AnswerFeedback_AgentAssistantDetailFeedback
 	DetailFeedback isAnswerFeedback_DetailFeedback `protobuf_oneof:"detail_feedback"`
 	// Indicates whether the answer/item was clicked by the human agent
@@ -724,20 +725,20 @@ type AgentAssistantFeedback struct {
 	//
 	// For example:
 	//
-	// * Query: "Can I change my mailing address?"
-	// * Suggested document says: "Items must be returned/exchanged within 60
-	//   days of the purchase date."
-	// * [answer_relevance][google.cloud.dialogflow.v2.AgentAssistantFeedback.answer_relevance]: [AnswerRelevance.IRRELEVANT][google.cloud.dialogflow.v2.AgentAssistantFeedback.AnswerRelevance.IRRELEVANT]
+	//   - Query: "Can I change my mailing address?"
+	//   - Suggested document says: "Items must be returned/exchanged within 60
+	//     days of the purchase date."
+	//   - [answer_relevance][google.cloud.dialogflow.v2.AgentAssistantFeedback.answer_relevance]: [AnswerRelevance.IRRELEVANT][google.cloud.dialogflow.v2.AgentAssistantFeedback.AnswerRelevance.IRRELEVANT]
 	AnswerRelevance AgentAssistantFeedback_AnswerRelevance `protobuf:"varint,1,opt,name=answer_relevance,json=answerRelevance,proto3,enum=google.cloud.dialogflow.v2.AgentAssistantFeedback_AnswerRelevance" json:"answer_relevance,omitempty"`
 	// Optional. Whether or not the information in the document is correct.
 	//
 	// For example:
 	//
-	// * Query: "Can I return the package in 2 days once received?"
-	// * Suggested document says: "Items must be returned/exchanged within 60
-	//   days of the purchase date."
-	// * Ground truth: "No return or exchange is allowed."
-	// * [document_correctness]: INCORRECT
+	//   - Query: "Can I return the package in 2 days once received?"
+	//   - Suggested document says: "Items must be returned/exchanged within 60
+	//     days of the purchase date."
+	//   - Ground truth: "No return or exchange is allowed."
+	//   - [document_correctness]: INCORRECT
 	DocumentCorrectness AgentAssistantFeedback_DocumentCorrectness `protobuf:"varint,2,opt,name=document_correctness,json=documentCorrectness,proto3,enum=google.cloud.dialogflow.v2.AgentAssistantFeedback_DocumentCorrectness" json:"document_correctness,omitempty"`
 	// Optional. Whether or not the suggested document is efficient. For example,
 	// if the document is poorly written, hard to understand, hard to use or
@@ -828,6 +829,7 @@ type AgentAssistantRecord struct {
 	// Output only. The agent assist answer.
 	//
 	// Types that are assignable to Answer:
+	//
 	//	*AgentAssistantRecord_ArticleSuggestionAnswer
 	//	*AgentAssistantRecord_FaqAnswer
 	//	*AgentAssistantRecord_DialogflowAssistAnswer

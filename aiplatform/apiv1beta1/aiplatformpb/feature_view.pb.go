@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -107,6 +106,7 @@ type FeatureView struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Source:
+	//
 	//	*FeatureView_BigQuerySource_
 	//	*FeatureView_FeatureRegistrySource_
 	Source isFeatureView_Source `protobuf_oneof:"source"`
@@ -388,6 +388,7 @@ type FeatureView_VectorSearchConfig struct {
 	// search.
 	//
 	// Types that are assignable to AlgorithmConfig:
+	//
 	//	*FeatureView_VectorSearchConfig_TreeAhConfig
 	//	*FeatureView_VectorSearchConfig_BruteForceConfig_
 	AlgorithmConfig isFeatureView_VectorSearchConfig_AlgorithmConfig `protobuf_oneof:"algorithm_config"`

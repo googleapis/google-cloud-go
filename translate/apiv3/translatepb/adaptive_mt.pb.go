@@ -21,13 +21,12 @@
 package translatepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -822,6 +821,7 @@ type ImportAdaptiveMtFileRequest struct {
 	// The source for the document.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportAdaptiveMtFileRequest_FileInputSource
 	//	*ImportAdaptiveMtFileRequest_GcsInputSource
 	Source isImportAdaptiveMtFileRequest_Source `protobuf_oneof:"source"`

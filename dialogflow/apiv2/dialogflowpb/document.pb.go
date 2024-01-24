@@ -21,11 +21,8 @@
 package dialogflowpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -264,6 +263,7 @@ type Document struct {
 	// Required. The source of this document.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Document_ContentUri
 	//	*Document_RawContent
 	Source isDocument_Source `protobuf_oneof:"source"`
@@ -504,7 +504,7 @@ type ListDocumentsRequest struct {
 	// The filter expression used to filter documents returned by the list method.
 	// The expression has the following syntax:
 	//
-	//   <field> <operator> <value> [AND <field> <operator> <value>] ...
+	//	<field> <operator> <value> [AND <field> <operator> <value>] ...
 	//
 	// The following fields and operators are supported:
 	//
@@ -514,11 +514,11 @@ type ListDocumentsRequest struct {
 	//
 	// Examples:
 	//
-	// * "knowledge_types:FAQ" matches documents with FAQ knowledge type.
-	// * "display_name:customer" matches documents whose display name contains
-	//   "customer".
-	// * "state=ACTIVE" matches documents with ACTIVE state.
-	// * "knowledge_types:FAQ AND state=ACTIVE" matches all active FAQ documents.
+	//   - "knowledge_types:FAQ" matches documents with FAQ knowledge type.
+	//   - "display_name:customer" matches documents whose display name contains
+	//     "customer".
+	//   - "state=ACTIVE" matches documents with ACTIVE state.
+	//   - "knowledge_types:FAQ AND state=ACTIVE" matches all active FAQ documents.
 	//
 	// For more information about filtering, see
 	// [API Filtering](https://aip.dev/160).
@@ -727,6 +727,7 @@ type ImportDocumentsRequest struct {
 	// import more, Dialogflow will return an error.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportDocumentsRequest_GcsSource
 	Source isImportDocumentsRequest_Source `protobuf_oneof:"source"`
 	// Required. Document template used for importing all the documents.
@@ -1073,6 +1074,7 @@ type ReloadDocumentRequest struct {
 	// please delete the existing document and create a new one instead.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ReloadDocumentRequest_ContentUri
 	Source isReloadDocumentRequest_Source `protobuf_oneof:"source"`
 	// Optional. Whether to import custom metadata from Google Cloud Storage.
@@ -1179,6 +1181,7 @@ type ExportDocumentRequest struct {
 	// Required. The destination for the export.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ExportDocumentRequest_GcsDestination
 	Destination isExportDocumentRequest_Destination `protobuf_oneof:"destination"`
 	// When enabled, export the full content of the document including empirical
@@ -1329,6 +1332,7 @@ type KnowledgeOperationMetadata struct {
 	// Additional metadata for the Knowledge operation.
 	//
 	// Types that are assignable to OperationMetadata:
+	//
 	//	*KnowledgeOperationMetadata_ExportOperationMetadata
 	OperationMetadata isKnowledgeOperationMetadata_OperationMetadata `protobuf_oneof:"operation_metadata"`
 }
@@ -2281,8 +2285,8 @@ type DocumentsClient interface {
 	//
 	// - `metadata`:
 	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeleteDocument(ctx context.Context, in *DeleteDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified document.
 	//
@@ -2440,8 +2444,8 @@ type DocumentsServer interface {
 	//
 	// - `metadata`:
 	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeleteDocument(context.Context, *DeleteDocumentRequest) (*longrunningpb.Operation, error)
 	// Updates the specified document.
 	//

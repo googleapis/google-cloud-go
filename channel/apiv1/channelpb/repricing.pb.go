@@ -21,15 +21,14 @@
 package channelpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	decimal "google.golang.org/genproto/googleapis/type/decimal"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -251,6 +250,7 @@ type RepricingConfig struct {
 	// Required. Defines the granularity for repricing.
 	//
 	// Types that are assignable to Granularity:
+	//
 	//	*RepricingConfig_EntitlementGranularity_
 	//	*RepricingConfig_ChannelPartnerGranularity_
 	Granularity isRepricingConfig_Granularity `protobuf_oneof:"granularity"`
@@ -398,6 +398,7 @@ type RepricingAdjustment struct {
 	// A oneof that represents the different types for this adjustment.
 	//
 	// Types that are assignable to Adjustment:
+	//
 	//	*RepricingAdjustment_PercentageAdjustment
 	Adjustment isRepricingAdjustment_Adjustment `protobuf_oneof:"adjustment"`
 }
@@ -591,6 +592,7 @@ type RepricingCondition struct {
 	// Represents the types of existing conditional statements.
 	//
 	// Types that are assignable to Condition:
+	//
 	//	*RepricingCondition_SkuGroupCondition
 	Condition isRepricingCondition_Condition `protobuf_oneof:"condition"`
 }

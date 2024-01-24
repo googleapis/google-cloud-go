@@ -22,9 +22,6 @@ package kmspb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -57,12 +56,13 @@ const (
 	// * When creating a
 	// [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] associated with
 	// this
-	//   [EkmConnection][google.cloud.kms.v1.EkmConnection], the caller must
-	//   supply the key path of pre-existing external key material that will be
-	//   linked to the [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion].
-	// * Destruction of external key material cannot be requested via the
-	//   Cloud KMS API and must be performed directly in the EKM.
-	// * Automatic rotation of key material is not supported.
+	//
+	//	[EkmConnection][google.cloud.kms.v1.EkmConnection], the caller must
+	//	supply the key path of pre-existing external key material that will be
+	//	linked to the [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion].
+	//   - Destruction of external key material cannot be requested via the
+	//     Cloud KMS API and must be performed directly in the EKM.
+	//   - Automatic rotation of key material is not supported.
 	EkmConnection_MANUAL EkmConnection_KeyManagementMode = 1
 	// All [CryptoKeys][google.cloud.kms.v1.CryptoKey] created with this
 	// [EkmConnection][google.cloud.kms.v1.EkmConnection] use EKM-side key
@@ -70,13 +70,14 @@ const (
 	// * When a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]
 	// associated with this [EkmConnection][google.cloud.kms.v1.EkmConnection]
 	// is
-	//   created, the EKM automatically generates new key material and a new
-	//   key path. The caller cannot supply the key path of pre-existing
-	//   external key material.
-	// * Destruction of external key material associated with this
-	//   [EkmConnection][google.cloud.kms.v1.EkmConnection] can be requested by
-	//   calling [DestroyCryptoKeyVersion][EkmService.DestroyCryptoKeyVersion].
-	// * Automatic rotation of key material is supported.
+	//
+	//	created, the EKM automatically generates new key material and a new
+	//	key path. The caller cannot supply the key path of pre-existing
+	//	external key material.
+	//   - Destruction of external key material associated with this
+	//     [EkmConnection][google.cloud.kms.v1.EkmConnection] can be requested by
+	//     calling [DestroyCryptoKeyVersion][EkmService.DestroyCryptoKeyVersion].
+	//   - Automatic rotation of key material is supported.
 	EkmConnection_CLOUD_KMS EkmConnection_KeyManagementMode = 2
 )
 

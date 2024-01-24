@@ -21,12 +21,11 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -631,6 +630,7 @@ type DataProfileResult_Profile_Field_ProfileInfo struct {
 	// available, if mode is REPEATABLE.
 	//
 	// Types that are assignable to FieldInfo:
+	//
 	//	*DataProfileResult_Profile_Field_ProfileInfo_StringProfile
 	//	*DataProfileResult_Profile_Field_ProfileInfo_IntegerProfile
 	//	*DataProfileResult_Profile_Field_ProfileInfo_DoubleProfile

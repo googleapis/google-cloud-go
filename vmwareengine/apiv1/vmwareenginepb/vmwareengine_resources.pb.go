@@ -21,13 +21,12 @@
 package vmwareenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -4071,6 +4070,7 @@ type ManagementDnsZoneBinding struct {
 	// VMware engine network.
 	//
 	// Types that are assignable to BindNetwork:
+	//
 	//	*ManagementDnsZoneBinding_VpcNetwork
 	//	*ManagementDnsZoneBinding_VmwareEngineNetwork
 	BindNetwork isManagementDnsZoneBinding_BindNetwork `protobuf_oneof:"bind_network"`
@@ -4642,6 +4642,7 @@ type Principal struct {
 	// consumer project.
 	//
 	// Types that are assignable to Principal:
+	//
 	//	*Principal_User
 	//	*Principal_ServiceAccount
 	Principal isPrincipal_Principal `protobuf_oneof:"principal"`
@@ -4802,6 +4803,7 @@ type ExternalAccessRule_IpRange struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to IpRange:
+	//
 	//	*ExternalAccessRule_IpRange_IpAddress
 	//	*ExternalAccessRule_IpRange_IpAddressRange
 	//	*ExternalAccessRule_IpRange_ExternalAddress

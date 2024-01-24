@@ -22,9 +22,6 @@ package kmspb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1285,14 +1284,16 @@ type ImportCryptoKeyVersionRequest struct {
 	//
 	// this field must contain the concatenation of:
 	// <ol>
-	//   <li>An ephemeral AES-256 wrapping key wrapped with the
-	//       [public_key][google.cloud.kms.v1.ImportJob.public_key] using
-	//       RSAES-OAEP with SHA-1/SHA-256, MGF1 with SHA-1/SHA-256, and an empty
-	//       label.
-	//   </li>
-	//   <li>The formatted key to be imported, wrapped with the ephemeral AES-256
-	//       key using AES-KWP (RFC 5649).
-	//   </li>
+	//
+	//	<li>An ephemeral AES-256 wrapping key wrapped with the
+	//	    [public_key][google.cloud.kms.v1.ImportJob.public_key] using
+	//	    RSAES-OAEP with SHA-1/SHA-256, MGF1 with SHA-1/SHA-256, and an empty
+	//	    label.
+	//	</li>
+	//	<li>The formatted key to be imported, wrapped with the ephemeral AES-256
+	//	    key using AES-KWP (RFC 5649).
+	//	</li>
+	//
 	// </ol>
 	//
 	// This format is the same as the format produced by PKCS#11 mechanism
@@ -1312,6 +1313,7 @@ type ImportCryptoKeyVersionRequest struct {
 	// instead.
 	//
 	// Types that are assignable to WrappedKeyMaterial:
+	//
 	//	*ImportCryptoKeyVersionRequest_RsaAesWrappedKey
 	WrappedKeyMaterial isImportCryptoKeyVersionRequest_WrappedKeyMaterial `protobuf_oneof:"wrapped_key_material"`
 }
@@ -4029,6 +4031,7 @@ type Digest struct {
 	// Required. The message digest.
 	//
 	// Types that are assignable to Digest:
+	//
 	//	*Digest_Sha256
 	//	*Digest_Sha384
 	//	*Digest_Sha512

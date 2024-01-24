@@ -21,9 +21,6 @@
 package assetpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	orgpolicypb "cloud.google.com/go/orgpolicy/apiv1/orgpolicypb"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -360,6 +359,7 @@ type Asset struct {
 	// policy](https://cloud.google.com/access-context-manager/docs/overview#access-policies).
 	//
 	// Types that are assignable to AccessContextPolicy:
+	//
 	//	*Asset_AccessPolicy
 	//	*Asset_AccessLevel
 	//	*Asset_ServicePerimeter
@@ -1146,9 +1146,10 @@ type ResourceSearchResult struct {
 	// To search against the `labels`:
 	//
 	// * Use a field query:
-	//     - query on any label's key or value. Example: `labels:prod`
-	//     - query by a given label. Example: `labels.env:prod`
-	//     - query by a given label's existence. Example: `labels.env:*`
+	//   - query on any label's key or value. Example: `labels:prod`
+	//   - query by a given label. Example: `labels.env:prod`
+	//   - query by a given label's existence. Example: `labels.env:*`
+	//
 	// * Use a free text query. Example: `prod`
 	Labels map[string]string `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Network tags associated with this resource. Like labels, network tags are a
@@ -1202,9 +1203,9 @@ type ResourceSearchResult struct {
 	// To search against `create_time`:
 	//
 	// * Use a field query.
-	//     - value in seconds since unix epoch. Example: `createTime > 1609459200`
-	//     - value in date string. Example: `createTime > 2021-01-01`
-	//     - value in date-time string (must be quoted). Example: `createTime >
+	//   - value in seconds since unix epoch. Example: `createTime > 1609459200`
+	//   - value in date string. Example: `createTime > 2021-01-01`
+	//   - value in date-time string (must be quoted). Example: `createTime >
 	//     "2021-01-01T00:00:00"`
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// The last update timestamp of this resource, at which the resource was last
@@ -1215,9 +1216,9 @@ type ResourceSearchResult struct {
 	// To search against `update_time`:
 	//
 	// * Use a field query.
-	//     - value in seconds since unix epoch. Example: `updateTime < 1609459200`
-	//     - value in date string. Example: `updateTime < 2021-01-01`
-	//     - value in date-time string (must be quoted). Example: `updateTime <
+	//   - value in seconds since unix epoch. Example: `updateTime < 1609459200`
+	//   - value in date string. Example: `updateTime < 2021-01-01`
+	//   - value in date-time string (must be quoted). Example: `updateTime <
 	//     "2021-01-01T00:00:00"`
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// The state of this resource. Different resources types have different state
@@ -1257,9 +1258,9 @@ type ResourceSearchResult struct {
 	//
 	// To search against the `additional_attributes`:
 	//
-	// * Use a free text query to match the attributes values. Example: to search
-	//   `additional_attributes = { dnsName: "foobar" }`, you can issue a query
-	//   `foobar`.
+	//   - Use a free text query to match the attributes values. Example: to search
+	//     `additional_attributes = { dnsName: "foobar" }`, you can issue a query
+	//     `foobar`.
 	AdditionalAttributes *structpb.Struct `protobuf:"bytes,9,opt,name=additional_attributes,json=additionalAttributes,proto3" json:"additional_attributes,omitempty"`
 	// The full resource name of this resource's parent, if it has one.
 	// To search against the `parent_full_resource_name`:
@@ -1299,12 +1300,12 @@ type ResourceSearchResult struct {
 	// To search against the `tagKeys`:
 	//
 	// * Use a field query. Example:
-	//     - `tagKeys:"123456789/env*"`
-	//     - `tagKeys="123456789/env"`
-	//     - `tagKeys:"env"`
+	//   - `tagKeys:"123456789/env*"`
+	//   - `tagKeys="123456789/env"`
+	//   - `tagKeys:"env"`
 	//
 	// * Use a free text query. Example:
-	//     - `env`
+	//   - `env`
 	//
 	// Deprecated: Marked as deprecated in google/cloud/asset/v1/assets.proto.
 	TagKeys []string `protobuf:"bytes,23,rep,name=tag_keys,json=tagKeys,proto3" json:"tag_keys,omitempty"`
@@ -1316,13 +1317,13 @@ type ResourceSearchResult struct {
 	// To search against the `tagValues`:
 	//
 	// * Use a field query. Example:
-	//     - `tagValues:"env"`
-	//     - `tagValues:"env/prod"`
-	//     - `tagValues:"123456789/env/prod*"`
-	//     - `tagValues="123456789/env/prod"`
+	//   - `tagValues:"env"`
+	//   - `tagValues:"env/prod"`
+	//   - `tagValues:"123456789/env/prod*"`
+	//   - `tagValues="123456789/env/prod"`
 	//
 	// * Use a free text query. Example:
-	//     - `prod`
+	//   - `prod`
 	//
 	// Deprecated: Marked as deprecated in google/cloud/asset/v1/assets.proto.
 	TagValues []string `protobuf:"bytes,25,rep,name=tag_values,json=tagValues,proto3" json:"tag_values,omitempty"`
@@ -1333,10 +1334,10 @@ type ResourceSearchResult struct {
 	// To search against the `tagValueIds`:
 	//
 	// * Use a field query. Example:
-	//     - `tagValueIds="tagValues/456"`
+	//   - `tagValueIds="tagValues/456"`
 	//
 	// * Use a free text query. Example:
-	//     - `456`
+	//   - `456`
 	//
 	// Deprecated: Marked as deprecated in google/cloud/asset/v1/assets.proto.
 	TagValueIds []string `protobuf:"bytes,26,rep,name=tag_value_ids,json=tagValueIds,proto3" json:"tag_value_ids,omitempty"`
@@ -1345,17 +1346,17 @@ type ResourceSearchResult struct {
 	// To search against the `tags`:
 	//
 	// * Use a field query. Example:
-	//     - `tagKeys:"123456789/env*"`
-	//     - `tagKeys="123456789/env"`
-	//     - `tagKeys:"env"`
-	//     - `tagValues:"env"`
-	//     - `tagValues:"env/prod"`
-	//     - `tagValues:"123456789/env/prod*"`
-	//     - `tagValues="123456789/env/prod"`
-	//     - `tagValueIds="tagValues/456"`
+	//   - `tagKeys:"123456789/env*"`
+	//   - `tagKeys="123456789/env"`
+	//   - `tagKeys:"env"`
+	//   - `tagValues:"env"`
+	//   - `tagValues:"env/prod"`
+	//   - `tagValues:"123456789/env/prod*"`
+	//   - `tagValues="123456789/env/prod"`
+	//   - `tagValueIds="tagValues/456"`
 	//
 	// * Use a free text query. Example:
-	//     - `env/prod`
+	//   - `env/prod`
 	Tags []*Tag `protobuf:"bytes,29,rep,name=tags,proto3" json:"tags,omitempty"`
 	// The effective tags on this resource. All of the tags that are both attached
 	// to and inherited by a resource are collectively called the effective
@@ -1365,14 +1366,14 @@ type ResourceSearchResult struct {
 	// To search against the `effective_tags`:
 	//
 	// * Use a field query. Example:
-	//     - `effectiveTagKeys:"123456789/env*"`
-	//     - `effectiveTagKeys="123456789/env"`
-	//     - `effectiveTagKeys:"env"`
-	//     - `effectiveTagValues:"env"`
-	//     - `effectiveTagValues:"env/prod"`
-	//     - `effectiveTagValues:"123456789/env/prod*"`
-	//     - `effectiveTagValues="123456789/env/prod"`
-	//     - `effectiveTagValueIds="tagValues/456"`
+	//   - `effectiveTagKeys:"123456789/env*"`
+	//   - `effectiveTagKeys="123456789/env"`
+	//   - `effectiveTagKeys:"env"`
+	//   - `effectiveTagValues:"env"`
+	//   - `effectiveTagValues:"env/prod"`
+	//   - `effectiveTagValues:"123456789/env/prod*"`
+	//   - `effectiveTagValues="123456789/env/prod"`
+	//   - `effectiveTagValueIds="tagValues/456"`
 	EffectiveTags []*EffectiveTagDetails `protobuf:"bytes,30,rep,name=effective_tags,json=effectiveTags,proto3" json:"effective_tags,omitempty"`
 	// The type of this resource's immediate parent, if there is one.
 	//
@@ -1386,12 +1387,11 @@ type ResourceSearchResult struct {
 	// The actual content of Security Command Center security marks associated
 	// with the asset.
 	//
-	//
 	// To search against SCC SecurityMarks field:
 	//
-	//   * Use a field query:
-	//     - query by a given key value pair. Example: `sccSecurityMarks.foo=bar`
-	//     - query by a given key's existence. Example: `sccSecurityMarks.foo:*`
+	//   - Use a field query:
+	//   - query by a given key value pair. Example: `sccSecurityMarks.foo=bar`
+	//   - query by a given key's existence. Example: `sccSecurityMarks.foo:*`
 	SccSecurityMarks map[string]string `protobuf:"bytes,32,rep,name=scc_security_marks,json=sccSecurityMarks,proto3" json:"scc_security_marks,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -1932,12 +1932,12 @@ type IamPolicySearchResult struct {
 	// To search against the `policy` bindings:
 	//
 	// * use a field query:
-	//     - query by the policy contained members. Example:
-	//       `policy:amy@gmail.com`
-	//     - query by the policy contained roles. Example:
-	//       `policy:roles/compute.admin`
-	//     - query by the policy contained roles' included permissions. Example:
-	//       `policy.role.permissions:compute.instances.create`
+	//   - query by the policy contained members. Example:
+	//     `policy:amy@gmail.com`
+	//   - query by the policy contained roles. Example:
+	//     `policy:roles/compute.admin`
+	//   - query by the policy contained roles' included permissions. Example:
+	//     `policy.role.permissions:compute.instances.create`
 	Policy *iampb.Policy `protobuf:"bytes,3,opt,name=policy,proto3" json:"policy,omitempty"`
 	// Explanation about the IAM policy search result. It contains additional
 	// information to explain why the search result matches the query.
@@ -2405,6 +2405,7 @@ type IamPolicyAnalysisResult_Access struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to OneofAccess:
+	//
 	//	*IamPolicyAnalysisResult_Access_Role
 	//	*IamPolicyAnalysisResult_Access_Permission
 	OneofAccess isIamPolicyAnalysisResult_Access_OneofAccess `protobuf_oneof:"oneof_access"`

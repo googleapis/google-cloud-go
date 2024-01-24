@@ -22,9 +22,6 @@ package aiplatformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -912,10 +911,10 @@ type ExplainRequest struct {
 	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
 	// of the DeployedModel. Can be used for explaining prediction results with
 	// different configurations, such as:
-	//  - Explaining top-5 predictions results as opposed to top-1;
-	//  - Increasing path count or step count of the attribution methods to reduce
-	//    approximate errors;
-	//  - Using different baselines for explaining the prediction results.
+	//   - Explaining top-5 predictions results as opposed to top-1;
+	//   - Increasing path count or step count of the attribution methods to reduce
+	//     approximate errors;
+	//   - Using different baselines for explaining the prediction results.
 	ExplanationSpecOverride *ExplanationSpecOverride `protobuf:"bytes,5,opt,name=explanation_spec_override,json=explanationSpecOverride,proto3" json:"explanation_spec_override,omitempty"`
 	// If specified, this ExplainRequest will be served by the chosen
 	// DeployedModel, overriding

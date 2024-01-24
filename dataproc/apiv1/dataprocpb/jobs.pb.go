@@ -21,11 +21,8 @@
 package dataprocpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -478,6 +477,7 @@ type HadoopJob struct {
 	// the main class name in this property.
 	//
 	// Types that are assignable to Driver:
+	//
 	//	*HadoopJob_MainJarFileUri
 	//	*HadoopJob_MainClass
 	Driver isHadoopJob_Driver `protobuf_oneof:"driver"`
@@ -608,9 +608,10 @@ type isHadoopJob_Driver interface {
 type HadoopJob_MainJarFileUri struct {
 	// The HCFS URI of the jar file containing the main class.
 	// Examples:
-	//     'gs://foo-bucket/analytics-binaries/extract-useful-metrics-mr.jar'
-	//     'hdfs:/tmp/test-samples/custom-wordcount.jar'
-	//     'file:///home/usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar'
+	//
+	//	'gs://foo-bucket/analytics-binaries/extract-useful-metrics-mr.jar'
+	//	'hdfs:/tmp/test-samples/custom-wordcount.jar'
+	//	'file:///home/usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar'
 	MainJarFileUri string `protobuf:"bytes,1,opt,name=main_jar_file_uri,json=mainJarFileUri,proto3,oneof"`
 }
 
@@ -638,6 +639,7 @@ type SparkJob struct {
 	// `main_class`.
 	//
 	// Types that are assignable to Driver:
+	//
 	//	*SparkJob_MainJarFileUri
 	//	*SparkJob_MainClass
 	Driver isSparkJob_Driver `protobuf_oneof:"driver"`
@@ -915,15 +917,15 @@ type QueryList struct {
 	// string by separating each with a semicolon. Here is an example of a
 	// Dataproc API snippet that uses a QueryList to specify a HiveJob:
 	//
-	//     "hiveJob": {
-	//       "queryList": {
-	//         "queries": [
-	//           "query1",
-	//           "query2",
-	//           "query3;query4",
-	//         ]
-	//       }
-	//     }
+	//	"hiveJob": {
+	//	  "queryList": {
+	//	    "queries": [
+	//	      "query1",
+	//	      "query2",
+	//	      "query3;query4",
+	//	    ]
+	//	  }
+	//	}
 	Queries []string `protobuf:"bytes,1,rep,name=queries,proto3" json:"queries,omitempty"`
 }
 
@@ -977,6 +979,7 @@ type HiveJob struct {
 	// an HCFS file URI or a list of queries.
 	//
 	// Types that are assignable to Queries:
+	//
 	//	*HiveJob_QueryFileUri
 	//	*HiveJob_QueryList
 	Queries isHiveJob_Queries `protobuf_oneof:"queries"`
@@ -1108,6 +1111,7 @@ type SparkSqlJob struct {
 	// either an HCFS file URI or as a list of queries.
 	//
 	// Types that are assignable to Queries:
+	//
 	//	*SparkSqlJob_QueryFileUri
 	//	*SparkSqlJob_QueryList
 	Queries isSparkSqlJob_Queries `protobuf_oneof:"queries"`
@@ -1234,6 +1238,7 @@ type PigJob struct {
 	// file URI or a list of queries.
 	//
 	// Types that are assignable to Queries:
+	//
 	//	*PigJob_QueryFileUri
 	//	*PigJob_QueryList
 	Queries isPigJob_Queries `protobuf_oneof:"queries"`
@@ -1481,6 +1486,7 @@ type PrestoJob struct {
 	// either an HCFS file URI or as a list of queries.
 	//
 	// Types that are assignable to Queries:
+	//
 	//	*PrestoJob_QueryFileUri
 	//	*PrestoJob_QueryList
 	Queries isPrestoJob_Queries `protobuf_oneof:"queries"`
@@ -1621,6 +1627,7 @@ type TrinoJob struct {
 	// either an HCFS file URI or as a list of queries.
 	//
 	// Types that are assignable to Queries:
+	//
 	//	*TrinoJob_QueryFileUri
 	//	*TrinoJob_QueryList
 	Queries isTrinoJob_Queries `protobuf_oneof:"queries"`
@@ -2058,6 +2065,7 @@ type Job struct {
 	// Required. The application/framework-specific portion of the job.
 	//
 	// Types that are assignable to TypeJob:
+	//
 	//	*Job_HadoopJob
 	//	*Job_SparkJob
 	//	*Job_PysparkJob

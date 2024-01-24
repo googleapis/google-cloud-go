@@ -21,11 +21,10 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -127,6 +126,7 @@ type DataType struct {
 	// Details of DataType-s that need additional specification.
 	//
 	// Types that are assignable to Details:
+	//
 	//	*DataType_ListElementType
 	//	*DataType_StructType
 	//	*DataType_TimeFormat

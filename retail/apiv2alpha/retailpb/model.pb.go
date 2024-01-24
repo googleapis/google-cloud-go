@@ -21,13 +21,12 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -286,21 +285,22 @@ const (
 	//
 	// `Panel2 candidates`: home_page_ctr_no_diversity,
 	// home_page_ctr_diversity,
-	//  pdp_cvr_no_diversity
+	//
+	//	pdp_cvr_no_diversity
 	//
 	// `Restriction` = NO_RESTRICTION
 	//
 	// `Valid combinations`:
 	//
-	//   * <i> (pdp_ctr, home_page_ctr_no_diversity)
-	//   * (pdp_ctr, home_page_ctr_diversity)
-	//   * (pdp_ctr, pdp_cvr_no_diversity)
-	//   * (pdp_cvr, home_page_ctr_no_diversity)
-	//   * (pdp_cvr, home_page_ctr_diversity)
-	//   * (pdp_cvr, pdp_cvr_no_diversity)
-	//   * (home_page_ctr_no_diversity, home_page_ctr_no_diversity)
-	//   * (home_page_ctr_no_diversity, home_page_ctr_diversity)
-	//   * (home_page_ctr_no_diversity, pdp_cvr_no_diversity) </i>
+	//   - <i> (pdp_ctr, home_page_ctr_no_diversity)
+	//   - (pdp_ctr, home_page_ctr_diversity)
+	//   - (pdp_ctr, pdp_cvr_no_diversity)
+	//   - (pdp_cvr, home_page_ctr_no_diversity)
+	//   - (pdp_cvr, home_page_ctr_diversity)
+	//   - (pdp_cvr, pdp_cvr_no_diversity)
+	//   - (home_page_ctr_no_diversity, home_page_ctr_no_diversity)
+	//   - (home_page_ctr_no_diversity, home_page_ctr_diversity)
+	//   - (home_page_ctr_no_diversity, pdp_cvr_no_diversity) </i>
 	//
 	// `Invalid combinations`: []
 	Model_PageOptimizationConfig_NO_RESTRICTION Model_PageOptimizationConfig_Restriction = 1
@@ -315,25 +315,26 @@ const (
 	//
 	// `Panel2 candidates`: <i> home_page_ctr_no_diversity,
 	// home_page_ctr_diversity_low,
-	//    pdp_cvr_no_diversity </i>
+	//
+	//	pdp_cvr_no_diversity </i>
 	//
 	// `Restriction` = `UNIQUE_SERVING_CONFIG_RESTRICTION`
 	//
 	// `Valid combinations`:
 	//
-	//   * <i> (pdp_ctr, home_page_ctr_no_diversity)
-	//   * (pdp_ctr, home_page_ctr_diversity_low)
-	//   * (pdp_ctr, pdp_cvr_no_diversity)
-	//   * (pdp_ctr, pdp_cvr_no_diversity)
-	//   * (pdp_cvr, home_page_ctr_no_diversity)
-	//   * (pdp_cvr, home_page_ctr_diversity_low)
-	//   * (pdp_cvr, pdp_cvr_no_diversity)
-	//   * (home_page_ctr_no_diversity, home_page_ctr_diversity_low)
-	//   * (home_page_ctr_no_diversity, pdp_cvr_no_diversity) </i>
+	//   - <i> (pdp_ctr, home_page_ctr_no_diversity)
+	//   - (pdp_ctr, home_page_ctr_diversity_low)
+	//   - (pdp_ctr, pdp_cvr_no_diversity)
+	//   - (pdp_ctr, pdp_cvr_no_diversity)
+	//   - (pdp_cvr, home_page_ctr_no_diversity)
+	//   - (pdp_cvr, home_page_ctr_diversity_low)
+	//   - (pdp_cvr, pdp_cvr_no_diversity)
+	//   - (home_page_ctr_no_diversity, home_page_ctr_diversity_low)
+	//   - (home_page_ctr_no_diversity, pdp_cvr_no_diversity) </i>
 	//
 	// `Invalid combinations`:
 	//
-	//  * <i> (home_page_ctr_no_diversity, home_page_ctr_no_diversity) </i>
+	//   - <i> (home_page_ctr_no_diversity, home_page_ctr_no_diversity) </i>
 	Model_PageOptimizationConfig_UNIQUE_SERVING_CONFIG_RESTRICTION Model_PageOptimizationConfig_Restriction = 2
 	// Do not allow multiple
 	// [ServingConfigs][google.cloud.retail.v2alpha.ServingConfig] with same
@@ -347,24 +348,25 @@ const (
 	//
 	// `Panel2 candidates`: <i> home_page_ctr_no_diversity,
 	// home_page_ctr_diversity_low,
-	//  pdp_cvr_no_diversity </i>
+	//
+	//	pdp_cvr_no_diversity </i>
 	//
 	// `Restriction` = `UNIQUE_MODEL_RESTRICTION`
 	//
 	// `Valid combinations`:
 	//
-	//  * <i> (pdp_ctr, home_page_ctr_no_diversity)
-	//  * (pdp_ctr, home_page_ctr_diversity)
-	//  * (pdp_ctr, pdp_cvr_no_diversity)
-	//  * (pdp_ctr, pdp_cvr_no_diversity)
-	//  * (pdp_cvr, home_page_ctr_no_diversity)
-	//  * (pdp_cvr, home_page_ctr_diversity_low)
-	//  * (home_page_ctr_no_diversity, pdp_cvr_no_diversity) </i>
+	//   - <i> (pdp_ctr, home_page_ctr_no_diversity)
+	//   - (pdp_ctr, home_page_ctr_diversity)
+	//   - (pdp_ctr, pdp_cvr_no_diversity)
+	//   - (pdp_ctr, pdp_cvr_no_diversity)
+	//   - (pdp_cvr, home_page_ctr_no_diversity)
+	//   - (pdp_cvr, home_page_ctr_diversity_low)
+	//   - (home_page_ctr_no_diversity, pdp_cvr_no_diversity) </i>
 	//
 	// `Invalid combinations`:
 	//
-	//  *  <i> (home_page_ctr_no_diversity, home_page_ctr_no_diversity)
-	//  * (pdp_cvr, pdp_cvr_no_diversity) </i>
+	//   - <i> (home_page_ctr_no_diversity, home_page_ctr_no_diversity)
+	//   - (pdp_cvr, pdp_cvr_no_diversity) </i>
 	Model_PageOptimizationConfig_UNIQUE_MODEL_RESTRICTION Model_PageOptimizationConfig_Restriction = 3
 	// Do not allow multiple
 	// [ServingConfigs][google.cloud.retail.v2alpha.ServingConfig] with same
@@ -378,7 +380,8 @@ const (
 	//
 	// `Panel2 candidates`: <i> home_page_ctr_no_diversity,
 	// home_page_ctr_diversity_low,
-	//  pdp_cvr_no_diversity </i>
+	//
+	//	pdp_cvr_no_diversity </i>
 	//
 	// `Restriction` = `UNIQUE_MODEL_RESTRICTION`
 	//
@@ -392,11 +395,11 @@ const (
 	//
 	// `Invalid combinations`:
 	//
-	//  *  <i> (pdp_ctr, pdp_cvr_no_diversity)
-	//  * (pdp_ctr, pdp_cvr_no_diversity)
-	//  * (pdp_cvr, pdp_cvr_no_diversity)
-	//  * (home_page_ctr_no_diversity, home_page_ctr_no_diversity)
-	//  *  (home_page_ctr_no_diversity, home_page_ctr_diversity) </i>
+	//   - <i> (pdp_ctr, pdp_cvr_no_diversity)
+	//   - (pdp_ctr, pdp_cvr_no_diversity)
+	//   - (pdp_cvr, pdp_cvr_no_diversity)
+	//   - (home_page_ctr_no_diversity, home_page_ctr_no_diversity)
+	//   - (home_page_ctr_no_diversity, home_page_ctr_diversity) </i>
 	Model_PageOptimizationConfig_UNIQUE_MODEL_TYPE_RESTRICTION Model_PageOptimizationConfig_Restriction = 4
 )
 
@@ -460,6 +463,7 @@ type Model struct {
 	// page optimization.
 	//
 	// Types that are assignable to TrainingConfig:
+	//
 	//	*Model_PageOptimizationConfig_
 	TrainingConfig isModel_TrainingConfig `protobuf_oneof:"training_config"`
 	// Required. The fully qualified resource name of the model.
@@ -498,7 +502,6 @@ type Model struct {
 	// `frequently-bought-together`, `page-optimization`, `similar-items`,
 	// `buy-it-again`, `on-sale-items`, and `recently-viewed`(readonly value).
 	//
-	//
 	// This field together with
 	// [optimization_objective][google.cloud.retail.v2alpha.Model.optimization_objective]
 	// describe model metadata to use to control model training and serving.
@@ -514,7 +517,8 @@ type Model struct {
 	// Currently supported
 	// values: `ctr`, `cvr`, `revenue-per-order`.
 	//
-	//  If not specified, we choose default based on model type.
+	//	If not specified, we choose default based on model type.
+	//
 	// Default depends on type of recommendation:
 	//
 	// `recommended-for-you` => `ctr`
@@ -874,6 +878,7 @@ type Model_PageOptimizationConfig_Candidate struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Candidate:
+	//
 	//	*Model_PageOptimizationConfig_Candidate_ServingConfigId
 	Candidate isModel_PageOptimizationConfig_Candidate_Candidate `protobuf_oneof:"candidate"`
 }

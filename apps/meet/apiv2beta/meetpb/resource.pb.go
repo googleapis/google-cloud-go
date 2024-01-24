@@ -21,13 +21,12 @@
 package meetpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -573,6 +572,7 @@ type Participant struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to User:
+	//
 	//	*Participant_SignedinUser
 	//	*Participant_AnonymousUser
 	//	*Participant_PhoneUser
@@ -938,6 +938,7 @@ type Recording struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Destination:
+	//
 	//	*Recording_DriveDestination
 	Destination isRecording_Destination `protobuf_oneof:"destination"`
 	// Output only. Resource name of the recording.
@@ -1112,6 +1113,7 @@ type Transcript struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Destination:
+	//
 	//	*Transcript_DocsDestination
 	Destination isTranscript_Destination `protobuf_oneof:"destination"`
 	// Output only. Resource name of the transcript.

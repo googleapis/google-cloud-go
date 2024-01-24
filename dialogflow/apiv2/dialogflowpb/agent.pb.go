@@ -21,11 +21,8 @@
 package dialogflowpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -819,6 +818,7 @@ type ExportAgentResponse struct {
 	// The exported agent.
 	//
 	// Types that are assignable to Agent:
+	//
 	//	*ExportAgentResponse_AgentUri
 	//	*ExportAgentResponse_AgentContent
 	Agent isExportAgentResponse_Agent `protobuf_oneof:"agent"`
@@ -909,6 +909,7 @@ type ImportAgentRequest struct {
 	// Required. The agent to import.
 	//
 	// Types that are assignable to Agent:
+	//
 	//	*ImportAgentRequest_AgentUri
 	//	*ImportAgentRequest_AgentContent
 	Agent isImportAgentRequest_Agent `protobuf_oneof:"agent"`
@@ -1012,6 +1013,7 @@ type RestoreAgentRequest struct {
 	// Required. The agent to restore.
 	//
 	// Types that are assignable to Agent:
+	//
 	//	*RestoreAgentRequest_AgentUri
 	//	*RestoreAgentRequest_AgentContent
 	Agent isRestoreAgentRequest_Agent `protobuf_oneof:"agent"`
@@ -1786,10 +1788,10 @@ type AgentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
@@ -1801,9 +1803,10 @@ type AgentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [ExportAgentResponse][google.cloud.dialogflow.v2.ExportAgentResponse]
 	ExportAgent(ctx context.Context, in *ExportAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports the specified agent from a ZIP file.
@@ -1822,10 +1825,10 @@ type AgentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// The operation only tracks when importing is complete, not when it is done
 	// training.
@@ -1848,10 +1851,10 @@ type AgentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// The operation only tracks when restoring is complete, not when it is done
 	// training.
@@ -1980,10 +1983,10 @@ type AgentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
@@ -1995,9 +1998,10 @@ type AgentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [ExportAgentResponse][google.cloud.dialogflow.v2.ExportAgentResponse]
 	ExportAgent(context.Context, *ExportAgentRequest) (*longrunningpb.Operation, error)
 	// Imports the specified agent from a ZIP file.
@@ -2016,10 +2020,10 @@ type AgentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// The operation only tracks when importing is complete, not when it is done
 	// training.
@@ -2042,10 +2046,10 @@ type AgentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// The operation only tracks when restoring is complete, not when it is done
 	// training.

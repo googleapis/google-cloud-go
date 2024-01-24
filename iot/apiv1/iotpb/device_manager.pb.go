@@ -21,11 +21,8 @@
 package iotpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -764,6 +763,7 @@ type GatewayListOptions struct {
 	// filtered based on gateway type and associations.
 	//
 	// Types that are assignable to Filter:
+	//
 	//	*GatewayListOptions_GatewayType
 	//	*GatewayListOptions_AssociationsGatewayId
 	//	*GatewayListOptions_AssociationsDeviceId
@@ -2585,12 +2585,13 @@ type DeviceManagerClient interface {
 	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	// Sends a command to the specified device. In order for a device to be able
 	// to receive commands, it must:
-	// 1) be connected to Cloud IoT Core using the MQTT protocol, and
-	// 2) be subscribed to the group of MQTT topics specified by
-	//    /devices/{device-id}/commands/#. This subscription will receive commands
-	//    at the top-level topic /devices/{device-id}/commands as well as commands
-	//    for subfolders, like /devices/{device-id}/commands/subfolder.
-	//    Note that subscribing to specific subfolders is not supported.
+	//  1. be connected to Cloud IoT Core using the MQTT protocol, and
+	//  2. be subscribed to the group of MQTT topics specified by
+	//     /devices/{device-id}/commands/#. This subscription will receive commands
+	//     at the top-level topic /devices/{device-id}/commands as well as commands
+	//     for subfolders, like /devices/{device-id}/commands/subfolder.
+	//     Note that subscribing to specific subfolders is not supported.
+	//
 	// If the command could not be delivered to the device, this method will
 	// return an error; in particular, if the device is not subscribed, this
 	// method will return FAILED_PRECONDITION. Otherwise, this method will
@@ -2827,12 +2828,13 @@ type DeviceManagerServer interface {
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 	// Sends a command to the specified device. In order for a device to be able
 	// to receive commands, it must:
-	// 1) be connected to Cloud IoT Core using the MQTT protocol, and
-	// 2) be subscribed to the group of MQTT topics specified by
-	//    /devices/{device-id}/commands/#. This subscription will receive commands
-	//    at the top-level topic /devices/{device-id}/commands as well as commands
-	//    for subfolders, like /devices/{device-id}/commands/subfolder.
-	//    Note that subscribing to specific subfolders is not supported.
+	//  1. be connected to Cloud IoT Core using the MQTT protocol, and
+	//  2. be subscribed to the group of MQTT topics specified by
+	//     /devices/{device-id}/commands/#. This subscription will receive commands
+	//     at the top-level topic /devices/{device-id}/commands as well as commands
+	//     for subfolders, like /devices/{device-id}/commands/subfolder.
+	//     Note that subscribing to specific subfolders is not supported.
+	//
 	// If the command could not be delivered to the device, this method will
 	// return an error; in particular, if the device is not subscribed, this
 	// method will return FAILED_PRECONDITION. Otherwise, this method will

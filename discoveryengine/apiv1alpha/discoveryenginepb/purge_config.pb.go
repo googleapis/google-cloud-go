@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -53,23 +52,23 @@ type PurgeUserEventsRequest struct {
 	// * `eventType`: Double quoted
 	// [UserEvent.event_type][google.cloud.discoveryengine.v1alpha.UserEvent.event_type]
 	// string.
-	// * `eventTime`: in ISO 8601 "zulu" format.
-	// * `userPseudoId`: Double quoted string. Specifying this will delete all
-	//   events associated with a visitor.
-	// * `userId`: Double quoted string. Specifying this will delete all events
-	//   associated with a user.
+	//   - `eventTime`: in ISO 8601 "zulu" format.
+	//   - `userPseudoId`: Double quoted string. Specifying this will delete all
+	//     events associated with a visitor.
+	//   - `userId`: Double quoted string. Specifying this will delete all events
+	//     associated with a user.
 	//
 	// Examples:
 	//
-	// * Deleting all events in a time range:
-	//   `eventTime > "2012-04-23T18:25:43.511Z"
-	//   eventTime < "2012-04-23T18:30:43.511Z"`
-	// * Deleting specific eventType:
-	//   `eventType = "search"`
-	// * Deleting all events for a specific visitor:
-	//   `userPseudoId = "visitor1024"`
-	// * Deleting all events inside a DataStore:
-	//   `*`
+	//   - Deleting all events in a time range:
+	//     `eventTime > "2012-04-23T18:25:43.511Z"
+	//     eventTime < "2012-04-23T18:30:43.511Z"`
+	//   - Deleting specific eventType:
+	//     `eventType = "search"`
+	//   - Deleting all events for a specific visitor:
+	//     `userPseudoId = "visitor1024"`
+	//   - Deleting all events inside a DataStore:
+	//     `*`
 	//
 	// The filtering fields are assumed to have an implicit AND.
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`

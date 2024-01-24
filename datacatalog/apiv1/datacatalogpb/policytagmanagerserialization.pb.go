@@ -22,15 +22,14 @@ package datacatalogpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -274,6 +273,7 @@ type ImportTaxonomiesRequest struct {
 	// Source taxonomies to import.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportTaxonomiesRequest_InlineSource
 	//	*ImportTaxonomiesRequest_CrossRegionalSource
 	Source isImportTaxonomiesRequest_Source `protobuf_oneof:"source"`
@@ -521,6 +521,7 @@ type ExportTaxonomiesRequest struct {
 	// Required. Export destination for taxonomies.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ExportTaxonomiesRequest_SerializedTaxonomies
 	Destination isExportTaxonomiesRequest_Destination `protobuf_oneof:"destination"`
 }
@@ -1042,11 +1043,11 @@ type PolicyTagManagerSerializationClient interface {
 	//
 	// This operation automatically does the following:
 	//
-	// - Deletes the existing policy tags that are missing from the
-	//   `SerializedPolicyTag`.
-	// - Creates policy tags that don't have resource names. They are considered
-	//   new.
-	// - Updates policy tags with valid resources names accordingly.
+	//   - Deletes the existing policy tags that are missing from the
+	//     `SerializedPolicyTag`.
+	//   - Creates policy tags that don't have resource names. They are considered
+	//     new.
+	//   - Updates policy tags with valid resources names accordingly.
 	ReplaceTaxonomy(ctx context.Context, in *ReplaceTaxonomyRequest, opts ...grpc.CallOption) (*Taxonomy, error)
 	// Creates new taxonomies (including their policy tags) in a given project
 	// by importing from inlined or cross-regional sources.
@@ -1111,11 +1112,11 @@ type PolicyTagManagerSerializationServer interface {
 	//
 	// This operation automatically does the following:
 	//
-	// - Deletes the existing policy tags that are missing from the
-	//   `SerializedPolicyTag`.
-	// - Creates policy tags that don't have resource names. They are considered
-	//   new.
-	// - Updates policy tags with valid resources names accordingly.
+	//   - Deletes the existing policy tags that are missing from the
+	//     `SerializedPolicyTag`.
+	//   - Creates policy tags that don't have resource names. They are considered
+	//     new.
+	//   - Updates policy tags with valid resources names accordingly.
 	ReplaceTaxonomy(context.Context, *ReplaceTaxonomyRequest) (*Taxonomy, error)
 	// Creates new taxonomies (including their policy tags) in a given project
 	// by importing from inlined or cross-regional sources.

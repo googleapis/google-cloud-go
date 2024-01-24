@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -130,9 +129,9 @@ type Environment struct {
 	// Output only. The unique identifier of this agent environment.
 	// Supported formats:
 	//
-	// - `projects/<Project ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project ID>/locations/<Location
-	//   ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/locations/<Location
+	//     ID>/agent/environments/<Environment ID>`
 	//
 	// The environment ID for the default environment is `-`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -142,9 +141,9 @@ type Environment struct {
 	// Optional. The agent version loaded into this environment.
 	// Supported formats:
 	//
-	// - `projects/<Project ID>/agent/versions/<Version ID>`
-	// - `projects/<Project ID>/locations/<Location ID>/agent/versions/<Version
-	//   ID>`
+	//   - `projects/<Project ID>/agent/versions/<Version ID>`
+	//   - `projects/<Project ID>/locations/<Location ID>/agent/versions/<Version
+	//     ID>`
 	AgentVersion string `protobuf:"bytes,3,opt,name=agent_version,json=agentVersion,proto3" json:"agent_version,omitempty"`
 	// Output only. The state of this environment. This field is read-only, i.e.,
 	// it cannot be set by create and update methods.
@@ -466,9 +465,9 @@ type GetEnvironmentRequest struct {
 	// Required. The name of the environment.
 	// Supported formats:
 	//
-	// - `projects/<Project ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project ID>/locations/<Location
-	//   ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/locations/<Location
+	//     ID>/agent/environments/<Environment ID>`
 	//
 	// The environment ID for the default environment is `-`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -666,9 +665,9 @@ type DeleteEnvironmentRequest struct {
 	// Required. The name of the environment to delete.
 	// / Format:
 	//
-	// - `projects/<Project ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project ID>/locations/<Location
-	//   ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/locations/<Location
+	//     ID>/agent/environments/<Environment ID>`
 	//
 	// The environment ID for the default environment is `-`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -723,9 +722,9 @@ type GetEnvironmentHistoryRequest struct {
 	// Required. The name of the environment to retrieve history for.
 	// Supported formats:
 	//
-	// - `projects/<Project ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project ID>/locations/<Location
-	//   ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/locations/<Location
+	//     ID>/agent/environments/<Environment ID>`
 	//
 	// The environment ID for the default environment is `-`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
@@ -799,9 +798,9 @@ type EnvironmentHistory struct {
 	// Output only. The name of the environment this history is for.
 	// Supported formats:
 	//
-	// - `projects/<Project ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project ID>/locations/<Location
-	//    ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/locations/<Location
+	//     ID>/agent/environments/<Environment ID>`
 	//
 	// The environment ID for the default environment is `-`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`

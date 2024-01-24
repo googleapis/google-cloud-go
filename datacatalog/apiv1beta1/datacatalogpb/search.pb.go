@@ -21,13 +21,12 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -112,14 +111,14 @@ type SearchCatalogResult struct {
 	// The relative resource name of the resource in URL format.
 	// Examples:
 	//
-	//  * `projects/{project_id}/locations/{location_id}/entryGroups/{entry_group_id}/entries/{entry_id}`
-	//  * `projects/{project_id}/tagTemplates/{tag_template_id}`
+	//   - `projects/{project_id}/locations/{location_id}/entryGroups/{entry_group_id}/entries/{entry_id}`
+	//   - `projects/{project_id}/tagTemplates/{tag_template_id}`
 	RelativeResourceName string `protobuf:"bytes,3,opt,name=relative_resource_name,json=relativeResourceName,proto3" json:"relative_resource_name,omitempty"`
 	// The full name of the cloud resource the entry belongs to. See:
 	// https://cloud.google.com/apis/design/resource_names#full_resource_name.
 	// Example:
 	//
-	//  * `//bigquery.googleapis.com/projects/projectId/datasets/datasetId/tables/tableId`
+	//   - `//bigquery.googleapis.com/projects/projectId/datasets/datasetId/tables/tableId`
 	LinkedResource string `protobuf:"bytes,4,opt,name=linked_resource,json=linkedResource,proto3" json:"linked_resource,omitempty"`
 	// Last-modified timestamp of the entry from the managing system.
 	ModifyTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=modify_time,json=modifyTime,proto3" json:"modify_time,omitempty"`

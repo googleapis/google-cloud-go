@@ -21,14 +21,13 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1133,6 +1132,7 @@ type Action struct {
 	// Additional details about the action based on the action category.
 	//
 	// Types that are assignable to Details:
+	//
 	//	*Action_InvalidDataFormat_
 	//	*Action_IncompatibleDataSchema_
 	//	*Action_InvalidDataPartition_
@@ -1726,6 +1726,7 @@ type Zone_DiscoverySpec struct {
 	// Determines when discovery is triggered.
 	//
 	// Types that are assignable to Trigger:
+	//
 	//	*Zone_DiscoverySpec_Schedule
 	Trigger isZone_DiscoverySpec_Trigger `protobuf_oneof:"trigger"`
 }
@@ -2479,6 +2480,7 @@ type Asset_DiscoverySpec struct {
 	// Determines when discovery is triggered.
 	//
 	// Types that are assignable to Trigger:
+	//
 	//	*Asset_DiscoverySpec_Schedule
 	Trigger isAsset_DiscoverySpec_Trigger `protobuf_oneof:"trigger"`
 }
@@ -2590,8 +2592,9 @@ type Asset_ResourceSpec struct {
 
 	// Immutable. Relative name of the cloud resource that contains the data
 	// that is being managed within a lake. For example:
-	//   `projects/{project_number}/buckets/{bucket_id}`
-	//   `projects/{project_number}/datasets/{dataset_id}`
+	//
+	//	`projects/{project_number}/buckets/{bucket_id}`
+	//	`projects/{project_number}/datasets/{dataset_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Immutable. Type of resource.
 	Type Asset_ResourceSpec_Type `protobuf:"varint,2,opt,name=type,proto3,enum=google.cloud.dataplex.v1.Asset_ResourceSpec_Type" json:"type,omitempty"`

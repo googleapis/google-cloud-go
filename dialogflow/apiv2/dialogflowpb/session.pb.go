@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -490,6 +489,7 @@ type QueryInput struct {
 	// Required. The input specification.
 	//
 	// Types that are assignable to Input:
+	//
 	//	*QueryInput_AudioConfig
 	//	*QueryInput_Text
 	//	*QueryInput_Event
@@ -590,13 +590,13 @@ type QueryResult struct {
 
 	// The original conversational query text:
 	//
-	// - If natural language text was provided as input, `query_text` contains
-	//   a copy of the input.
-	// - If natural language speech audio was provided as input, `query_text`
-	//   contains the speech recognition result. If speech recognizer produced
-	//   multiple alternatives, a particular one is picked.
-	// - If automatic spell correction is enabled, `query_text` will contain the
-	//   corrected user input.
+	//   - If natural language text was provided as input, `query_text` contains
+	//     a copy of the input.
+	//   - If natural language speech audio was provided as input, `query_text`
+	//     contains the speech recognition result. If speech recognizer produced
+	//     multiple alternatives, a particular one is picked.
+	//   - If automatic spell correction is enabled, `query_text` will contain the
+	//     corrected user input.
 	QueryText string `protobuf:"bytes,1,opt,name=query_text,json=queryText,proto3" json:"query_text,omitempty"`
 	// The language that was triggered during intent detection.
 	// See [Language
@@ -632,10 +632,10 @@ type QueryResult struct {
 	Parameters *structpb.Struct `protobuf:"bytes,4,opt,name=parameters,proto3" json:"parameters,omitempty"`
 	// This field is set to:
 	//
-	// - `false` if the matched intent has required parameters and not all of
-	//    the required parameter values have been collected.
-	// - `true` if all required parameter values have been collected, or if the
-	//    matched intent doesn't contain any required parameters.
+	//   - `false` if the matched intent has required parameters and not all of
+	//     the required parameter values have been collected.
+	//   - `true` if all required parameter values have been collected, or if the
+	//     matched intent doesn't contain any required parameters.
 	AllRequiredParamsPresent bool `protobuf:"varint,5,opt,name=all_required_params_present,json=allRequiredParamsPresent,proto3" json:"all_required_params_present,omitempty"`
 	// Indicates whether the conversational query triggers a cancellation for slot
 	// filling. For more information, see the [cancel slot filling

@@ -21,11 +21,8 @@
 package servicemanagementpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	serviceconfig "google.golang.org/genproto/googleapis/api/serviceconfig"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	_ "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -947,13 +946,13 @@ type ListServiceRolloutsRequest struct {
 	// Required. Use `filter` to return subset of rollouts.
 	// The following filters are supported:
 	//
-	//  -- By [status]
-	//  [google.api.servicemanagement.v1.Rollout.RolloutStatus]. For example,
-	//  `filter='status=SUCCESS'`
+	//	-- By [status]
+	//	[google.api.servicemanagement.v1.Rollout.RolloutStatus]. For example,
+	//	`filter='status=SUCCESS'`
 	//
-	//  -- By [strategy]
-	//  [google.api.servicemanagement.v1.Rollout.strategy]. For example,
-	//  `filter='strategy=TrafficPercentStrategy'`
+	//	-- By [strategy]
+	//	[google.api.servicemanagement.v1.Rollout.strategy]. For example,
+	//	`filter='strategy=TrafficPercentStrategy'`
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 

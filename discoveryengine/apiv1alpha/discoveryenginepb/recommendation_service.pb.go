@@ -22,9 +22,6 @@ package discoveryenginepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -85,19 +84,18 @@ type RecommendRequest struct {
 	// characters. Currently, only filter expressions on the `filter_tags`
 	// attribute is supported.
 	//
-	//
 	// Examples:
 	//
-	//  * `(filter_tags: ANY("Red", "Blue") OR filter_tags: ANY("Hot", "Cold"))`
-	//  * `(filter_tags: ANY("Red", "Blue")) AND NOT (filter_tags: ANY("Green"))`
+	//   - `(filter_tags: ANY("Red", "Blue") OR filter_tags: ANY("Hot", "Cold"))`
+	//   - `(filter_tags: ANY("Red", "Blue")) AND NOT (filter_tags: ANY("Green"))`
 	//
 	// If `attributeFilteringSyntax` is set to true under the `params` field, then
 	// attribute-based expressions are expected instead of the above described
 	// tag-based syntax. Examples:
 	//
-	//  * (launguage: ANY("en", "es")) AND NOT (categories: ANY("Movie"))
-	//  * (available: true) AND
-	//    (launguage: ANY("en", "es")) OR (categories: ANY("Movie"))
+	//   - (launguage: ANY("en", "es")) AND NOT (categories: ANY("Movie"))
+	//   - (available: true) AND
+	//     (launguage: ANY("en", "es")) OR (categories: ANY("Movie"))
 	//
 	// If your filter blocks all results, the API will return generic
 	// (unfiltered) popular Documents. If you only want results strictly matching
@@ -118,43 +116,43 @@ type RecommendRequest struct {
 	//
 	// Allowed values:
 	//
-	// * `returnDocument`: Boolean. If set to true, the associated Document
-	//    object will be returned in
-	//    [RecommendResponse.RecommendationResult.document][google.cloud.discoveryengine.v1alpha.RecommendResponse.RecommendationResult.document].
-	// * `returnScore`: Boolean. If set to true, the recommendation 'score'
-	//    corresponding to each returned Document will be set in
-	//    [RecommendResponse.RecommendationResult.metadata][google.cloud.discoveryengine.v1alpha.RecommendResponse.RecommendationResult.metadata].
-	//    The given 'score' indicates the probability of a Document conversion
-	//    given the user's context and history.
-	// * `strictFiltering`: Boolean. True by default. If set to false, the service
-	//    will return generic (unfiltered) popular Documents instead of empty if
-	//    your filter blocks all recommendation results.
-	// * `diversityLevel`: String. Default empty. If set to be non-empty, then
-	//    it needs to be one of:
-	//     *  `no-diversity`
-	//     *  `low-diversity`
-	//     *  `medium-diversity`
-	//     *  `high-diversity`
-	//     *  `auto-diversity`
-	//    This gives request-level control and adjusts recommendation results
-	//    based on Document category.
-	// * `attributeFilteringSyntax`: Boolean. False by default. If set to true,
-	//    the `filter` field is interpreted according to the new,
-	//    attribute-based syntax.
+	//   - `returnDocument`: Boolean. If set to true, the associated Document
+	//     object will be returned in
+	//     [RecommendResponse.RecommendationResult.document][google.cloud.discoveryengine.v1alpha.RecommendResponse.RecommendationResult.document].
+	//   - `returnScore`: Boolean. If set to true, the recommendation 'score'
+	//     corresponding to each returned Document will be set in
+	//     [RecommendResponse.RecommendationResult.metadata][google.cloud.discoveryengine.v1alpha.RecommendResponse.RecommendationResult.metadata].
+	//     The given 'score' indicates the probability of a Document conversion
+	//     given the user's context and history.
+	//   - `strictFiltering`: Boolean. True by default. If set to false, the service
+	//     will return generic (unfiltered) popular Documents instead of empty if
+	//     your filter blocks all recommendation results.
+	//   - `diversityLevel`: String. Default empty. If set to be non-empty, then
+	//     it needs to be one of:
+	//   - `no-diversity`
+	//   - `low-diversity`
+	//   - `medium-diversity`
+	//   - `high-diversity`
+	//   - `auto-diversity`
+	//     This gives request-level control and adjusts recommendation results
+	//     based on Document category.
+	//   - `attributeFilteringSyntax`: Boolean. False by default. If set to true,
+	//     the `filter` field is interpreted according to the new,
+	//     attribute-based syntax.
 	Params map[string]*structpb.Value `protobuf:"bytes,6,rep,name=params,proto3" json:"params,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The user labels applied to a resource must meet the following requirements:
 	//
-	// * Each resource can have multiple labels, up to a maximum of 64.
-	// * Each label must be a key-value pair.
-	// * Keys have a minimum length of 1 character and a maximum length of 63
-	//   characters and cannot be empty. Values can be empty and have a maximum
-	//   length of 63 characters.
-	// * Keys and values can contain only lowercase letters, numeric characters,
-	//   underscores, and dashes. All characters must use UTF-8 encoding, and
-	//   international characters are allowed.
-	// * The key portion of a label must be unique. However, you can use the same
-	//   key with multiple resources.
-	// * Keys must start with a lowercase letter or international character.
+	//   - Each resource can have multiple labels, up to a maximum of 64.
+	//   - Each label must be a key-value pair.
+	//   - Keys have a minimum length of 1 character and a maximum length of 63
+	//     characters and cannot be empty. Values can be empty and have a maximum
+	//     length of 63 characters.
+	//   - Keys and values can contain only lowercase letters, numeric characters,
+	//     underscores, and dashes. All characters must use UTF-8 encoding, and
+	//     international characters are allowed.
+	//   - The key portion of a label must be unique. However, you can use the same
+	//     key with multiple resources.
+	//   - Keys must start with a lowercase letter or international character.
 	//
 	// See [Requirements for
 	// labels](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
@@ -342,9 +340,9 @@ type RecommendResponse_RecommendationResult struct {
 	//
 	// Possible values:
 	//
-	// * `score`: Recommendation score in double value. Is set if
-	//   `returnScore` is set to true in
-	//   [RecommendRequest.params][google.cloud.discoveryengine.v1alpha.RecommendRequest.params].
+	//   - `score`: Recommendation score in double value. Is set if
+	//     `returnScore` is set to true in
+	//     [RecommendRequest.params][google.cloud.discoveryengine.v1alpha.RecommendRequest.params].
 	Metadata map[string]*structpb.Value `protobuf:"bytes,3,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 

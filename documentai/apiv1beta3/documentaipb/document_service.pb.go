@@ -21,11 +21,8 @@
 package documentaipb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -34,6 +31,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -596,12 +595,12 @@ type ListDocumentsRequest struct {
 	// - `TagName=\"auto-labeling-running\"|\"sampled\"`
 	//
 	// Note:
-	// - Only `AND`, `=` and `!=` are supported.
+	//   - Only `AND`, `=` and `!=` are supported.
 	//     e.g. `DisplayName=file_name AND EntityType!=abc` IS supported.
-	// - Wildcard `*` is supported only in `DisplayName` filter
-	// - No duplicate filter keys are allowed,
+	//   - Wildcard `*` is supported only in `DisplayName` filter
+	//   - No duplicate filter keys are allowed,
 	//     e.g. `EntityType=a AND EntityType=b` is NOT supported.
-	// - String match is case sensitive (for filter `DisplayName` & `EntityType`).
+	//   - String match is case sensitive (for filter `DisplayName` & `EntityType`).
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. Controls if the ListDocuments request requires a total size
 	// of matched documents. See ListDocumentsResponse.total_size.
@@ -1206,6 +1205,7 @@ type ImportDocumentsRequest_BatchDocumentsImportConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to SplitTypeConfig:
+	//
 	//	*ImportDocumentsRequest_BatchDocumentsImportConfig_DatasetSplit
 	//	*ImportDocumentsRequest_BatchDocumentsImportConfig_AutoSplitConfig_
 	SplitTypeConfig isImportDocumentsRequest_BatchDocumentsImportConfig_SplitTypeConfig `protobuf_oneof:"split_type_config"`

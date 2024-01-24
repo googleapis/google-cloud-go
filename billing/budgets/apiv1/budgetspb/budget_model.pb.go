@@ -21,15 +21,14 @@
 package budgetspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	money "google.golang.org/genproto/googleapis/type/money"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -354,6 +353,7 @@ type BudgetAmount struct {
 	// Specification for what amount to use as the budget.
 	//
 	// Types that are assignable to BudgetAmount:
+	//
 	//	*BudgetAmount_SpecifiedAmount
 	//	*BudgetAmount_LastPeriodAmount
 	BudgetAmount isBudgetAmount_BudgetAmount `protobuf_oneof:"budget_amount"`
@@ -764,14 +764,15 @@ type Filter struct {
 	// An object containing a single `"key": value` pair. Example: `{ "name":
 	// "wrench" }`.
 	//
-	//  _Currently, multiple entries or multiple values per entry are not
-	//  allowed._
+	//	_Currently, multiple entries or multiple values per entry are not
+	//	allowed._
 	Labels map[string]*structpb.ListValue `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Multiple options to choose the budget's time period, specifying that only
 	// usage that occurs during this time period should be included in the budget.
 	// If not set, the <code>usage_period</code> defaults to CalendarPeriod.MONTH.
 	//
 	// Types that are assignable to UsagePeriod:
+	//
 	//	*Filter_CalendarPeriod
 	//	*Filter_CustomPeriod
 	UsagePeriod isFilter_UsagePeriod `protobuf_oneof:"usage_period"`

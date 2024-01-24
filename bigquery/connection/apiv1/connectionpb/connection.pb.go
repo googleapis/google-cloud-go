@@ -21,11 +21,8 @@
 package connectionpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -480,6 +479,7 @@ type Connection struct {
 	// Properties specific to the underlying data source.
 	//
 	// Types that are assignable to Properties:
+	//
 	//	*Connection_CloudSql
 	//	*Connection_Aws
 	//	*Connection_Azure
@@ -955,6 +955,7 @@ type AwsProperties struct {
 	// Authentication method chosen at connection creation.
 	//
 	// Types that are assignable to AuthenticationMethod:
+	//
 	//	*AwsProperties_CrossAccountRole
 	//	*AwsProperties_AccessRole
 	AuthenticationMethod isAwsProperties_AuthenticationMethod `protobuf_oneof:"authentication_method"`
@@ -1294,7 +1295,8 @@ type CloudResourceProperties struct {
 	// desired resources in GCP.
 	//
 	// The account ID is in the form of:
-	//   <service-1234>@gcp-sa-bigquery-cloudresource.iam.gserviceaccount.com
+	//
+	//	<service-1234>@gcp-sa-bigquery-cloudresource.iam.gserviceaccount.com
 	ServiceAccountId string `protobuf:"bytes,1,opt,name=service_account_id,json=serviceAccountId,proto3" json:"service_account_id,omitempty"`
 }
 

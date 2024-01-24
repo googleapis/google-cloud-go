@@ -21,12 +21,11 @@
 package dashboardpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -263,6 +262,7 @@ type TimeSeriesQuery struct {
 	// Parameters needed to obtain data for the chart.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*TimeSeriesQuery_TimeSeriesFilter
 	//	*TimeSeriesQuery_TimeSeriesFilterRatio
 	//	*TimeSeriesQuery_TimeSeriesQueryLanguage
@@ -404,6 +404,7 @@ type TimeSeriesFilter struct {
 	// Selects an optional time series filter.
 	//
 	// Types that are assignable to OutputFilter:
+	//
 	//	*TimeSeriesFilter_PickTimeSeriesFilter
 	//	*TimeSeriesFilter_StatisticalTimeSeriesFilter
 	OutputFilter isTimeSeriesFilter_OutputFilter `protobuf_oneof:"output_filter"`
@@ -523,6 +524,7 @@ type TimeSeriesFilterRatio struct {
 	// computing the ratio.
 	//
 	// Types that are assignable to OutputFilter:
+	//
 	//	*TimeSeriesFilterRatio_PickTimeSeriesFilter
 	//	*TimeSeriesFilterRatio_StatisticalTimeSeriesFilter
 	OutputFilter isTimeSeriesFilterRatio_OutputFilter `protobuf_oneof:"output_filter"`

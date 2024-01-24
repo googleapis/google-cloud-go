@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -187,20 +186,24 @@ type ListFeaturestoresRequest struct {
 	//
 	// * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons.
 	// Values must be
-	//   in RFC 3339 format.
+	//
+	//	in RFC 3339 format.
+	//
 	// * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons.
 	// Values must be
-	//   in RFC 3339 format.
+	//
+	//	in RFC 3339 format.
+	//
 	// * `online_serving_config.fixed_node_count`: Supports `=`, `!=`, `<`, `>`,
 	// `<=`, and `>=` comparisons.
 	// * `labels`: Supports key-value equality and key presence.
 	//
 	// Examples:
 	//
-	// * `create_time > "2020-01-01" OR update_time > "2020-01-01"`
-	//    Featurestores created or updated after 2020-01-01.
-	// * `labels.env = "prod"`
-	//    Featurestores with label "env" set to "prod".
+	//   - `create_time > "2020-01-01" OR update_time > "2020-01-01"`
+	//     Featurestores created or updated after 2020-01-01.
+	//   - `labels.env = "prod"`
+	//     Featurestores with label "env" set to "prod".
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The maximum number of Featurestores to return. The service may return fewer
 	// than this value. If unspecified, at most 100 Featurestores will be
@@ -219,9 +222,9 @@ type ListFeaturestoresRequest struct {
 	// Use "desc" after a field name for descending.
 	// Supported Fields:
 	//
-	//   * `create_time`
-	//   * `update_time`
-	//   * `online_serving_config.fixed_node_count`
+	//   - `create_time`
+	//   - `update_time`
+	//   - `online_serving_config.fixed_node_count`
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	// Mask specifying which fields to read.
 	ReadMask *fieldmaskpb.FieldMask `protobuf:"bytes,6,opt,name=read_mask,json=readMask,proto3" json:"read_mask,omitempty"`
@@ -384,10 +387,10 @@ type UpdateFeaturestoreRequest struct {
 	//
 	// Updatable fields:
 	//
-	//   * `labels`
-	//   * `online_serving_config.fixed_node_count`
-	//   * `online_serving_config.scaling`
-	//   * `online_storage_ttl_days`
+	//   - `labels`
+	//   - `online_serving_config.fixed_node_count`
+	//   - `online_serving_config.scaling`
+	//   - `online_storage_ttl_days`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -511,6 +514,7 @@ type ImportFeatureValuesRequest struct {
 	// the format.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportFeatureValuesRequest_AvroSource
 	//	*ImportFeatureValuesRequest_BigquerySource
 	//	*ImportFeatureValuesRequest_CsvSource
@@ -519,6 +523,7 @@ type ImportFeatureValuesRequest struct {
 	// Timestamps must be millisecond-aligned.
 	//
 	// Types that are assignable to FeatureTimeSource:
+	//
 	//	*ImportFeatureValuesRequest_FeatureTimeField
 	//	*ImportFeatureValuesRequest_FeatureTime
 	FeatureTimeSource isImportFeatureValuesRequest_FeatureTimeSource `protobuf_oneof:"feature_time_source"`
@@ -804,6 +809,7 @@ type BatchReadFeatureValuesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to ReadOption:
+	//
 	//	*BatchReadFeatureValuesRequest_CsvReadInstances
 	//	*BatchReadFeatureValuesRequest_BigqueryReadInstances
 	ReadOption isBatchReadFeatureValuesRequest_ReadOption `protobuf_oneof:"read_option"`
@@ -941,7 +947,8 @@ type BatchReadFeatureValuesRequest_CsvReadInstances struct {
 	//
 	// `csv_read_instances` are read instances stored in a plain-text CSV file.
 	// The header should be:
-	//     [ENTITY_TYPE_ID1], [ENTITY_TYPE_ID2], ..., timestamp
+	//
+	//	[ENTITY_TYPE_ID1], [ENTITY_TYPE_ID2], ..., timestamp
 	//
 	// The columns can be in any order.
 	//
@@ -970,6 +977,7 @@ type ExportFeatureValuesRequest struct {
 	// Required. The mode in which Feature values are exported.
 	//
 	// Types that are assignable to Mode:
+	//
 	//	*ExportFeatureValuesRequest_SnapshotExport_
 	//	*ExportFeatureValuesRequest_FullExport_
 	Mode isExportFeatureValuesRequest_Mode `protobuf_oneof:"mode"`
@@ -1151,6 +1159,7 @@ type FeatureValueDestination struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Destination:
+	//
 	//	*FeatureValueDestination_BigqueryDestination
 	//	*FeatureValueDestination_TfrecordDestination
 	//	*FeatureValueDestination_CsvDestination
@@ -1236,12 +1245,12 @@ type FeatureValueDestination_TfrecordDestination struct {
 	// Below are the mapping from Feature value type
 	// in Featurestore to Feature value type in TFRecord:
 	//
-	//     Value type in Featurestore                 | Value type in TFRecord
-	//     DOUBLE, DOUBLE_ARRAY                       | FLOAT_LIST
-	//     INT64, INT64_ARRAY                         | INT64_LIST
-	//     STRING, STRING_ARRAY, BYTES                | BYTES_LIST
-	//     true -> byte_string("true"), false -> byte_string("false")
-	//     BOOL, BOOL_ARRAY (true, false)             | BYTES_LIST
+	//	Value type in Featurestore                 | Value type in TFRecord
+	//	DOUBLE, DOUBLE_ARRAY                       | FLOAT_LIST
+	//	INT64, INT64_ARRAY                         | INT64_LIST
+	//	STRING, STRING_ARRAY, BYTES                | BYTES_LIST
+	//	true -> byte_string("true"), false -> byte_string("false")
+	//	BOOL, BOOL_ARRAY (true, false)             | BYTES_LIST
 	TfrecordDestination *TFRecordDestination `protobuf:"bytes,2,opt,name=tfrecord_destination,json=tfrecordDestination,proto3,oneof"`
 }
 
@@ -1487,13 +1496,13 @@ type ListEntityTypesRequest struct {
 	//
 	// Examples:
 	//
-	// * `create_time > \"2020-01-31T15:30:00.000000Z\" OR
-	//      update_time > \"2020-01-31T15:30:00.000000Z\"` --> EntityTypes created
-	//      or updated after 2020-01-31T15:30:00.000000Z.
-	// * `labels.active = yes AND labels.env = prod` --> EntityTypes having both
+	//   - `create_time > \"2020-01-31T15:30:00.000000Z\" OR
+	//     update_time > \"2020-01-31T15:30:00.000000Z\"` --> EntityTypes created
+	//     or updated after 2020-01-31T15:30:00.000000Z.
+	//   - `labels.active = yes AND labels.env = prod` --> EntityTypes having both
 	//     (active: yes) and (env: prod) labels.
-	// * `labels.env: *` --> Any EntityType which has a label with 'env' as the
-	//   key.
+	//   - `labels.env: *` --> Any EntityType which has a label with 'env' as the
+	//     key.
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The maximum number of EntityTypes to return. The service may return fewer
 	// than this value. If unspecified, at most 1000 EntityTypes will be returned.
@@ -1513,9 +1522,9 @@ type ListEntityTypesRequest struct {
 	//
 	// Supported fields:
 	//
-	//   * `entity_type_id`
-	//   * `create_time`
-	//   * `update_time`
+	//   - `entity_type_id`
+	//   - `create_time`
+	//   - `update_time`
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	// Mask specifying which fields to read.
 	ReadMask *fieldmaskpb.FieldMask `protobuf:"bytes,6,opt,name=read_mask,json=readMask,proto3" json:"read_mask,omitempty"`
@@ -1678,16 +1687,16 @@ type UpdateEntityTypeRequest struct {
 	//
 	// Updatable fields:
 	//
-	//   * `description`
-	//   * `labels`
-	//   * `monitoring_config.snapshot_analysis.disabled`
-	//   * `monitoring_config.snapshot_analysis.monitoring_interval_days`
-	//   * `monitoring_config.snapshot_analysis.staleness_days`
-	//   * `monitoring_config.import_features_analysis.state`
-	//   * `monitoring_config.import_features_analysis.anomaly_detection_baseline`
-	//   * `monitoring_config.numerical_threshold_config.value`
-	//   * `monitoring_config.categorical_threshold_config.value`
-	//   * `offline_storage_ttl_days`
+	//   - `description`
+	//   - `labels`
+	//   - `monitoring_config.snapshot_analysis.disabled`
+	//   - `monitoring_config.snapshot_analysis.monitoring_interval_days`
+	//   - `monitoring_config.snapshot_analysis.staleness_days`
+	//   - `monitoring_config.import_features_analysis.state`
+	//   - `monitoring_config.import_features_analysis.anomaly_detection_baseline`
+	//   - `monitoring_config.numerical_threshold_config.value`
+	//   - `monitoring_config.categorical_threshold_config.value`
+	//   - `offline_storage_ttl_days`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -2076,14 +2085,14 @@ type ListFeaturesRequest struct {
 	//
 	// Examples:
 	//
-	// * `value_type = DOUBLE` --> Features whose type is DOUBLE.
-	// * `create_time > \"2020-01-31T15:30:00.000000Z\" OR
-	//      update_time > \"2020-01-31T15:30:00.000000Z\"` --> EntityTypes created
-	//      or updated after 2020-01-31T15:30:00.000000Z.
-	// * `labels.active = yes AND labels.env = prod` --> Features having both
+	//   - `value_type = DOUBLE` --> Features whose type is DOUBLE.
+	//   - `create_time > \"2020-01-31T15:30:00.000000Z\" OR
+	//     update_time > \"2020-01-31T15:30:00.000000Z\"` --> EntityTypes created
+	//     or updated after 2020-01-31T15:30:00.000000Z.
+	//   - `labels.active = yes AND labels.env = prod` --> Features having both
 	//     (active: yes) and (env: prod) labels.
-	// * `labels.env: *` --> Any Feature which has a label with 'env' as the
-	//   key.
+	//   - `labels.env: *` --> Any Feature which has a label with 'env' as the
+	//     key.
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The maximum number of Features to return. The service may return fewer
 	// than this value. If unspecified, at most 1000 Features will be returned.
@@ -2106,10 +2115,10 @@ type ListFeaturesRequest struct {
 	// Use "desc" after a field name for descending.
 	// Supported fields:
 	//
-	//   * `feature_id`
-	//   * `value_type` (Not supported for FeatureRegistry Feature)
-	//   * `create_time`
-	//   * `update_time`
+	//   - `feature_id`
+	//   - `value_type` (Not supported for FeatureRegistry Feature)
+	//   - `create_time`
+	//   - `update_time`
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	// Mask specifying which fields to read.
 	ReadMask *fieldmaskpb.FieldMask `protobuf:"bytes,6,opt,name=read_mask,json=readMask,proto3" json:"read_mask,omitempty"`
@@ -2288,13 +2297,13 @@ type SearchFeaturesRequest struct {
 	// and the FIELD are converted to a sequence of words (i.e. tokens) for
 	// comparison. This is done by:
 	//
-	//   * Removing leading/trailing whitespace and tokenizing the search value.
-	//   Characters that are not one of alphanumeric `[a-zA-Z0-9]`, underscore
-	//   `_`, or asterisk `*` are treated as delimiters for tokens. `*` is treated
-	//   as a wildcard that matches characters within a token.
-	//   * Ignoring case.
-	//   * Prepending an asterisk to the first and appending an asterisk to the
-	//   last token in QUERY.
+	//   - Removing leading/trailing whitespace and tokenizing the search value.
+	//     Characters that are not one of alphanumeric `[a-zA-Z0-9]`, underscore
+	//     `_`, or asterisk `*` are treated as delimiters for tokens. `*` is treated
+	//     as a wildcard that matches characters within a token.
+	//   - Ignoring case.
+	//   - Prepending an asterisk to the first and appending an asterisk to the
+	//     last token in QUERY.
 	//
 	// A QUERY must be either a singular token or a phrase. A phrase is one or
 	// multiple words enclosed in double quotation marks ("). With phrases, the
@@ -2317,7 +2326,6 @@ type SearchFeaturesRequest struct {
 	// containing the substring `foo` and description containing the substring
 	// `bar`.
 	//
-	//
 	// Besides field queries, the following exact-match filters are
 	// supported. The exact-match filters do not support wildcards. Unlike
 	// field-restricted queries, exact-match filters are case-sensitive.
@@ -2334,11 +2342,11 @@ type SearchFeaturesRequest struct {
 	//
 	// * `description = "foo bar"` --> Any Feature with description exactly equal
 	// to `foo bar`
-	// * `value_type = DOUBLE` --> Features whose type is DOUBLE.
-	// * `labels.active = yes AND labels.env = prod` --> Features having both
+	//   - `value_type = DOUBLE` --> Features whose type is DOUBLE.
+	//   - `labels.active = yes AND labels.env = prod` --> Features having both
 	//     (active: yes) and (env: prod) labels.
-	// * `labels.env: *` --> Any Feature which has a label with `env` as the
-	//   key.
+	//   - `labels.env: *` --> Any Feature which has a label with `env` as the
+	//     key.
 	Query string `protobuf:"bytes,3,opt,name=query,proto3" json:"query,omitempty"`
 	// The maximum number of Features to return. The service may return fewer
 	// than this value. If unspecified, at most 100 Features will be returned.
@@ -2426,11 +2434,11 @@ type SearchFeaturesResponse struct {
 	//
 	// Fields returned:
 	//
-	//  * `name`
-	//  * `description`
-	//  * `labels`
-	//  * `create_time`
-	//  * `update_time`
+	//   - `name`
+	//   - `description`
+	//   - `labels`
+	//   - `create_time`
+	//   - `update_time`
 	Features []*Feature `protobuf:"bytes,1,rep,name=features,proto3" json:"features,omitempty"`
 	// A token, which can be sent as
 	// [SearchFeaturesRequest.page_token][google.cloud.aiplatform.v1beta1.SearchFeaturesRequest.page_token]
@@ -2510,9 +2518,9 @@ type UpdateFeatureRequest struct {
 	//
 	// Updatable fields:
 	//
-	//   * `description`
-	//   * `labels`
-	//   * `disable_monitoring` (Not supported for FeatureRegistry Feature)
+	//   - `description`
+	//   - `labels`
+	//   - `disable_monitoring` (Not supported for FeatureRegistry Feature)
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -3128,6 +3136,7 @@ type DeleteFeatureValuesRequest struct {
 	// Defines options to select feature values to be deleted.
 	//
 	// Types that are assignable to DeleteOption:
+	//
 	//	*DeleteFeatureValuesRequest_SelectEntity_
 	//	*DeleteFeatureValuesRequest_SelectTimeRangeAndFeature_
 	DeleteOption isDeleteFeatureValuesRequest_DeleteOption `protobuf_oneof:"DeleteOption"`
@@ -3228,6 +3237,7 @@ type DeleteFeatureValuesResponse struct {
 	// request
 	//
 	// Types that are assignable to Response:
+	//
 	//	*DeleteFeatureValuesResponse_SelectEntity_
 	//	*DeleteFeatureValuesResponse_SelectTimeRangeAndFeature_
 	Response isDeleteFeatureValuesResponse_Response `protobuf_oneof:"response"`
@@ -3315,6 +3325,7 @@ type EntityIdSelector struct {
 	// the format.
 	//
 	// Types that are assignable to EntityIdsSource:
+	//
 	//	*EntityIdSelector_CsvSource
 	EntityIdsSource isEntityIdSelector_EntityIdsSource `protobuf_oneof:"EntityIdsSource"`
 	// Source column that holds entity IDs. If not provided, entity IDs are
@@ -5958,13 +5969,13 @@ type FeaturestoreServiceClient interface {
 	//
 	// There are also scenarios where the caller can cause inconsistency.
 	//
-	//  - Source data for import contains multiple distinct Feature values for
-	//    the same entity ID and timestamp.
-	//  - Source is modified during an import. This includes adding, updating, or
-	//  removing source data and/or metadata. Examples of updating metadata
-	//  include but are not limited to changing storage location, storage class,
-	//  or retention policy.
-	//  - Online serving cluster is under-provisioned.
+	//   - Source data for import contains multiple distinct Feature values for
+	//     the same entity ID and timestamp.
+	//   - Source is modified during an import. This includes adding, updating, or
+	//     removing source data and/or metadata. Examples of updating metadata
+	//     include but are not limited to changing storage location, storage class,
+	//     or retention policy.
+	//   - Online serving cluster is under-provisioned.
 	ImportFeatureValues(ctx context.Context, in *ImportFeatureValuesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Batch reads Feature values from a Featurestore.
 	//
@@ -6236,13 +6247,13 @@ type FeaturestoreServiceServer interface {
 	//
 	// There are also scenarios where the caller can cause inconsistency.
 	//
-	//  - Source data for import contains multiple distinct Feature values for
-	//    the same entity ID and timestamp.
-	//  - Source is modified during an import. This includes adding, updating, or
-	//  removing source data and/or metadata. Examples of updating metadata
-	//  include but are not limited to changing storage location, storage class,
-	//  or retention policy.
-	//  - Online serving cluster is under-provisioned.
+	//   - Source data for import contains multiple distinct Feature values for
+	//     the same entity ID and timestamp.
+	//   - Source is modified during an import. This includes adding, updating, or
+	//     removing source data and/or metadata. Examples of updating metadata
+	//     include but are not limited to changing storage location, storage class,
+	//     or retention policy.
+	//   - Online serving cluster is under-provisioned.
 	ImportFeatureValues(context.Context, *ImportFeatureValuesRequest) (*longrunningpb.Operation, error)
 	// Batch reads Feature values from a Featurestore.
 	//

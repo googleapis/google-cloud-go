@@ -22,9 +22,6 @@ package monitoringpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -52,7 +51,7 @@ type CreateAlertPolicyRequest struct {
 	// [project](https://cloud.google.com/monitoring/api/v3#project_name) in which
 	// to create the alerting policy. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	//
 	// Note that this field names the parent container in which the alerting
 	// policy will be written, not the name of the created policy. |name| must be
@@ -122,7 +121,7 @@ type GetAlertPolicyRequest struct {
 
 	// Required. The alerting policy to retrieve. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID]
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -175,7 +174,7 @@ type ListAlertPoliciesRequest struct {
 	// [project](https://cloud.google.com/monitoring/api/v3#project_name) whose
 	// alert policies are to be listed. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]
+	//	projects/[PROJECT_ID_OR_NUMBER]
 	//
 	// Note that this field names the parent container in which the alerting
 	// policies to be listed are stored. To retrieve a single alerting policy
@@ -361,10 +360,10 @@ type UpdateAlertPolicyRequest struct {
 	// existing policy. It is the same as deleting the existing policy and
 	// adding the supplied policy, except for the following:
 	//
-	// +   The new policy will have the same `[ALERT_POLICY_ID]` as the former
+	//   - The new policy will have the same `[ALERT_POLICY_ID]` as the former
 	//     policy. This gives you continuity with the former policy in your
 	//     notifications and incidents.
-	// +   Conditions in the new policy will keep their former `[CONDITION_ID]` if
+	//   - Conditions in the new policy will keep their former `[CONDITION_ID]` if
 	//     the supplied condition includes the `name` field with that
 	//     `[CONDITION_ID]`. If the supplied condition omits the `name` field,
 	//     then a new `[CONDITION_ID]` is created.
@@ -430,7 +429,7 @@ type DeleteAlertPolicyRequest struct {
 
 	// Required. The alerting policy to delete. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID]
 	//
 	// For more information, see [AlertPolicy][google.monitoring.v3.AlertPolicy].
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`

@@ -21,9 +21,6 @@
 package fleetenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -31,6 +28,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -359,6 +358,7 @@ type TerminalPointId struct {
 	// Deprecated.
 	//
 	// Types that are assignable to Id:
+	//
 	//	*TerminalPointId_PlaceId
 	//	*TerminalPointId_GeneratedId
 	Id isTerminalPointId_Id `protobuf_oneof:"Id"`
@@ -689,6 +689,7 @@ type VehicleAttribute struct {
 	// The attribute's value, can be in string, bool, or double type.
 	//
 	// Types that are assignable to VehicleAttributeValue:
+	//
 	//	*VehicleAttribute_StringValue
 	//	*VehicleAttribute_BoolValue
 	//	*VehicleAttribute_NumberValue

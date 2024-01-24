@@ -21,9 +21,6 @@
 package recommenderpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	money "google.golang.org/genproto/googleapis/type/money"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -31,6 +28,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -327,8 +326,9 @@ type Recommendation struct {
 	// to see a list of subtypes for a given Recommender.
 	//
 	// Examples:
-	//   For recommender = "google.iam.policy.Recommender",
-	//   recommender_subtype can be one of "REMOVE_ROLE"/"REPLACE_ROLE"
+	//
+	//	For recommender = "google.iam.policy.Recommender",
+	//	recommender_subtype can be one of "REMOVE_ROLE"/"REPLACE_ROLE"
 	RecommenderSubtype string `protobuf:"bytes,12,opt,name=recommender_subtype,json=recommenderSubtype,proto3" json:"recommender_subtype,omitempty"`
 	// Last time this recommendation was refreshed by the system that created it
 	// in the first place.
@@ -626,6 +626,7 @@ type Operation struct {
 	// describe a value for 'path' field.
 	//
 	// Types that are assignable to PathValue:
+	//
 	//	*Operation_Value
 	//	*Operation_ValueMatcher
 	PathValue isOperation_PathValue `protobuf_oneof:"path_value"`
@@ -637,24 +638,30 @@ type Operation struct {
 	//
 	// * Example:
 	// ```
-	// {
-	//   "/versions/*/name" : "it-123"
-	//   "/versions/*/targetSize/percent": 20
-	// }
+	//
+	//	{
+	//	  "/versions/*/name" : "it-123"
+	//	  "/versions/*/targetSize/percent": 20
+	//	}
+	//
 	// ```
 	// * Example:
 	// ```
-	// {
-	//   "/bindings/*/role": "roles/owner"
-	//   "/bindings/*/condition" : null
-	// }
+	//
+	//	{
+	//	  "/bindings/*/role": "roles/owner"
+	//	  "/bindings/*/condition" : null
+	//	}
+	//
 	// ```
 	// * Example:
 	// ```
-	// {
-	//   "/bindings/*/role": "roles/owner"
-	//   "/bindings/*/members/*" : ["x@example.com", "y@example.com"]
-	// }
+	//
+	//	{
+	//	  "/bindings/*/role": "roles/owner"
+	//	  "/bindings/*/members/*" : ["x@example.com", "y@example.com"]
+	//	}
+	//
 	// ```
 	// When both path_filters and path_value_matchers are set, an implicit AND
 	// must be performed.
@@ -804,6 +811,7 @@ type ValueMatcher struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to MatchVariant:
+	//
 	//	*ValueMatcher_MatchesPattern
 	MatchVariant isValueMatcher_MatchVariant `protobuf_oneof:"match_variant"`
 }
@@ -1117,6 +1125,7 @@ type Impact struct {
 	// Contains projections (if any) for this category.
 	//
 	// Types that are assignable to Projection:
+	//
 	//	*Impact_CostProjection
 	//	*Impact_SecurityProjection
 	//	*Impact_SustainabilityProjection

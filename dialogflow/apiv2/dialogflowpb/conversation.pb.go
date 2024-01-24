@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -433,11 +432,13 @@ type ListConversationsRequest struct {
 	// general, the expression must specify the field name, a comparison operator,
 	// and the value to use for filtering:
 	// <ul>
-	//   <li>The value must be a string, a number, or a boolean.</li>
-	//   <li>The comparison operator must be either `=`,`!=`, `>`, or `<`.</li>
-	//   <li>To filter on multiple expressions, separate the
-	//       expressions with `AND` or `OR` (omitting both implies `AND`).</li>
-	//   <li>For clarity, expressions can be enclosed in parentheses.</li>
+	//
+	//	<li>The value must be a string, a number, or a boolean.</li>
+	//	<li>The comparison operator must be either `=`,`!=`, `>`, or `<`.</li>
+	//	<li>To filter on multiple expressions, separate the
+	//	    expressions with `AND` or `OR` (omitting both implies `AND`).</li>
+	//	<li>For clarity, expressions can be enclosed in parentheses.</li>
+	//
 	// </ul>
 	// Only `lifecycle_state` can be filtered on in this way. For example,
 	// the following expression only returns `COMPLETED` conversations:

@@ -21,12 +21,11 @@
 package appenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -74,6 +73,7 @@ type OperationMetadataV1 struct {
 	// @OutputOnly
 	//
 	// Types that are assignable to MethodMetadata:
+	//
 	//	*OperationMetadataV1_CreateVersionMetadata
 	MethodMetadata isOperationMetadataV1_MethodMetadata `protobuf_oneof:"method_metadata"`
 }

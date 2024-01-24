@@ -21,11 +21,8 @@
 package dialogflowpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -232,7 +231,8 @@ type Agent struct {
 
 	// Required. The project of this agent.
 	// Format: `projects/<Project ID>` or
-	//         `projects/<Project ID>/locations/<Location ID>`
+	//
+	//	`projects/<Project ID>/locations/<Location ID>`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The name of this agent.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -407,7 +407,8 @@ type GetAgentRequest struct {
 
 	// Required. The project that the agent to fetch is associated with.
 	// Format: `projects/<Project ID>` or
-	//         `projects/<Project ID>/locations/<Location ID>`.
+	//
+	//	`projects/<Project ID>/locations/<Location ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 }
 
@@ -518,7 +519,8 @@ type DeleteAgentRequest struct {
 
 	// Required. The project that the agent to delete is associated with.
 	// Format: `projects/<Project ID>` or
-	//         `projects/<Project ID>/locations/<Location ID>`.
+	//
+	//	`projects/<Project ID>/locations/<Location ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 }
 
@@ -569,7 +571,8 @@ type SubAgent struct {
 
 	// Required. The project of this agent.
 	// Format: `projects/<Project ID>` or
-	//         `projects/<Project ID>/locations/<Location ID>`.
+	//
+	//	`projects/<Project ID>/locations/<Location ID>`.
 	Project string `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
 	// Optional. The unique identifier (`environment name` in dialogflow console)
 	// of this sub-agent environment. Assumes draft environment if `environment`
@@ -632,7 +635,8 @@ type SearchAgentsRequest struct {
 
 	// Required. The project to list agents from.
 	// Format: `projects/<Project ID or '-'>` or
-	//         `projects/<Project ID or '-'>/locations/<Location ID>`.
+	//
+	//	`projects/<Project ID or '-'>/locations/<Location ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of items to return in a single page. By
 	// default 100 and at most 1000.
@@ -764,7 +768,8 @@ type TrainAgentRequest struct {
 
 	// Required. The project that the agent to train is associated with.
 	// Format: `projects/<Project ID>` or
-	//         `projects/<Project ID>/locations/<Location ID>`.
+	//
+	//	`projects/<Project ID>/locations/<Location ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 }
 
@@ -816,7 +821,8 @@ type ExportAgentRequest struct {
 
 	// Required. The project that the agent to export is associated with.
 	// Format: `projects/<Project ID>` or
-	//         `projects/<Project ID>/locations/<Location ID>`.
+	//
+	//	`projects/<Project ID>/locations/<Location ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The
 	// [Google Cloud Storage](https://cloud.google.com/storage/docs/)
@@ -888,6 +894,7 @@ type ExportAgentResponse struct {
 	// The exported agent.
 	//
 	// Types that are assignable to Agent:
+	//
 	//	*ExportAgentResponse_AgentUri
 	//	*ExportAgentResponse_AgentContent
 	Agent isExportAgentResponse_Agent `protobuf_oneof:"agent"`
@@ -974,11 +981,13 @@ type ImportAgentRequest struct {
 
 	// Required. The project that the agent to import is associated with.
 	// Format: `projects/<Project ID>` or
-	//         `projects/<Project ID>/locations/<Location ID>`.
+	//
+	//	`projects/<Project ID>/locations/<Location ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The agent to import.
 	//
 	// Types that are assignable to Agent:
+	//
 	//	*ImportAgentRequest_AgentUri
 	//	*ImportAgentRequest_AgentContent
 	Agent isImportAgentRequest_Agent `protobuf_oneof:"agent"`
@@ -1078,11 +1087,13 @@ type RestoreAgentRequest struct {
 
 	// Required. The project that the agent to restore is associated with.
 	// Format: `projects/<Project ID>` or
-	//         `projects/<Project ID>/locations/<Location ID>`.
+	//
+	//	`projects/<Project ID>/locations/<Location ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The agent to restore.
 	//
 	// Types that are assignable to Agent:
+	//
 	//	*RestoreAgentRequest_AgentUri
 	//	*RestoreAgentRequest_AgentContent
 	Agent isRestoreAgentRequest_Agent `protobuf_oneof:"agent"`
@@ -1182,7 +1193,8 @@ type GetValidationResultRequest struct {
 
 	// Required. The project that the agent is associated with.
 	// Format: `projects/<Project ID>` or
-	//         `projects/<Project ID>/locations/<Location ID>`.
+	//
+	//	`projects/<Project ID>/locations/<Location ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The language for which you want a validation result. If not
 	// specified, the agent's default language is used. [Many
@@ -1884,10 +1896,10 @@ type AgentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
@@ -1899,9 +1911,10 @@ type AgentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [ExportAgentResponse][google.cloud.dialogflow.v2beta1.ExportAgentResponse]
 	ExportAgent(ctx context.Context, in *ExportAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports the specified agent from a ZIP file.
@@ -1920,10 +1933,10 @@ type AgentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// The operation only tracks when importing is complete, not when it is done
 	// training.
@@ -1946,10 +1959,10 @@ type AgentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// The operation only tracks when restoring is complete, not when it is done
 	// training.
@@ -2077,10 +2090,10 @@ type AgentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
@@ -2092,9 +2105,10 @@ type AgentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [ExportAgentResponse][google.cloud.dialogflow.v2beta1.ExportAgentResponse]
 	ExportAgent(context.Context, *ExportAgentRequest) (*longrunningpb.Operation, error)
 	// Imports the specified agent from a ZIP file.
@@ -2113,10 +2127,10 @@ type AgentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// The operation only tracks when importing is complete, not when it is done
 	// training.
@@ -2139,10 +2153,10 @@ type AgentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// The operation only tracks when restoring is complete, not when it is done
 	// training.

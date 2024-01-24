@@ -22,9 +22,6 @@ package recaptchaenterprisepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1330,6 +1329,7 @@ type EndpointVerificationInfo struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Endpoint:
+	//
 	//	*EndpointVerificationInfo_EmailAddress
 	//	*EndpointVerificationInfo_PhoneNumber
 	Endpoint isEndpointVerificationInfo_Endpoint `protobuf_oneof:"endpoint"`
@@ -2170,6 +2170,7 @@ type UserId struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to IdOneof:
+	//
 	//	*UserId_Email
 	//	*UserId_PhoneNumber
 	//	*UserId_Username
@@ -3640,6 +3641,7 @@ type Key struct {
 	// platform for which the settings are enabled.
 	//
 	// Types that are assignable to PlatformSettings:
+	//
 	//	*Key_WebSettings
 	//	*Key_AndroidSettings
 	//	*Key_IosSettings
@@ -4405,6 +4407,7 @@ type FirewallAction struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to FirewallActionOneof:
+	//
 	//	*FirewallAction_Allow
 	//	*FirewallAction_Block
 	//	*FirewallAction_Redirect

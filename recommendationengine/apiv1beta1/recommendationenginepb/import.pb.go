@@ -21,14 +21,13 @@
 package recommendationenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -202,6 +201,7 @@ type ImportErrorsConfig struct {
 	// Required. Errors destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ImportErrorsConfig_GcsPrefix
 	Destination isImportErrorsConfig_Destination `protobuf_oneof:"destination"`
 }
@@ -436,6 +436,7 @@ type InputConfig struct {
 	// Required. The source of the input.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*InputConfig_CatalogInlineSource
 	//	*InputConfig_GcsSource
 	//	*InputConfig_UserEventInlineSource

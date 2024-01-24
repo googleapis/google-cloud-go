@@ -21,13 +21,12 @@
 package orgpolicypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -257,6 +256,7 @@ type Constraint struct {
 	// Immutable after creation.
 	//
 	// Types that are assignable to ConstraintType:
+	//
 	//	*Constraint_ListConstraint_
 	//	*Constraint_BooleanConstraint_
 	ConstraintType isConstraint_ConstraintType `protobuf_oneof:"constraint_type"`
@@ -394,7 +394,7 @@ type CustomConstraint struct {
 	// Immutable. The resource instance type on which this policy applies. Format
 	// will be of the form : `<canonical service name>/<type>` Example:
 	//
-	//  * `compute.googleapis.com/Instance`.
+	//   - `compute.googleapis.com/Instance`.
 	ResourceTypes []string `protobuf:"bytes,2,rep,name=resource_types,json=resourceTypes,proto3" json:"resource_types,omitempty"`
 	// All the operations being applied for this constraint.
 	MethodTypes []CustomConstraint_MethodType `protobuf:"varint,3,rep,packed,name=method_types,json=methodTypes,proto3,enum=google.cloud.orgpolicy.v2.CustomConstraint_MethodType" json:"method_types,omitempty"`

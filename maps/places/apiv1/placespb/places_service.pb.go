@@ -22,9 +22,6 @@ package placespb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	grpc "google.golang.org/grpc"
@@ -32,6 +29,8 @@ import (
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -169,7 +168,6 @@ type SearchNearbyRequest struct {
 	//
 	// For more information, see
 	// https://www.unicode.org/cldr/charts/latest/supplemental/territory_language_information.html.
-	//
 	//
 	// Note that 3-digit region codes are not currently supported.
 	RegionCode string `protobuf:"bytes,2,opt,name=region_code,json=regionCode,proto3" json:"region_code,omitempty"`
@@ -426,7 +424,6 @@ type SearchTextRequest struct {
 	//
 	// For more information, see
 	// https://www.unicode.org/cldr/charts/latest/supplemental/territory_language_information.html.
-	//
 	//
 	// Note that 3-digit region codes are not currently supported.
 	RegionCode string `protobuf:"bytes,3,opt,name=region_code,json=regionCode,proto3" json:"region_code,omitempty"`
@@ -819,7 +816,6 @@ type GetPlaceRequest struct {
 	// For more information, see
 	// https://www.unicode.org/cldr/charts/latest/supplemental/territory_language_information.html.
 	//
-	//
 	// Note that 3-digit region codes are not currently supported.
 	RegionCode string `protobuf:"bytes,3,opt,name=region_code,json=regionCode,proto3" json:"region_code,omitempty"`
 }
@@ -884,6 +880,7 @@ type SearchNearbyRequest_LocationRestriction struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Type:
+	//
 	//	*SearchNearbyRequest_LocationRestriction_Circle
 	Type isSearchNearbyRequest_LocationRestriction_Type `protobuf_oneof:"type"`
 }
@@ -954,6 +951,7 @@ type SearchTextRequest_LocationBias struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Type:
+	//
 	//	*SearchTextRequest_LocationBias_Rectangle
 	//	*SearchTextRequest_LocationBias_Circle
 	Type isSearchTextRequest_LocationBias_Type `protobuf_oneof:"type"`
@@ -1043,6 +1041,7 @@ type SearchTextRequest_LocationRestriction struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Type:
+	//
 	//	*SearchTextRequest_LocationRestriction_Rectangle
 	Type isSearchTextRequest_LocationRestriction_Type `protobuf_oneof:"type"`
 }

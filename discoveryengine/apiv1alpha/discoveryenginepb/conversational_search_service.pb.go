@@ -22,9 +22,6 @@ package discoveryenginepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -71,17 +70,17 @@ type ConverseConversationRequest struct {
 	SafeSearch bool `protobuf:"varint,6,opt,name=safe_search,json=safeSearch,proto3" json:"safe_search,omitempty"`
 	// The user labels applied to a resource must meet the following requirements:
 	//
-	// * Each resource can have multiple labels, up to a maximum of 64.
-	// * Each label must be a key-value pair.
-	// * Keys have a minimum length of 1 character and a maximum length of 63
-	//   characters and cannot be empty. Values can be empty and have a maximum
-	//   length of 63 characters.
-	// * Keys and values can contain only lowercase letters, numeric characters,
-	//   underscores, and dashes. All characters must use UTF-8 encoding, and
-	//   international characters are allowed.
-	// * The key portion of a label must be unique. However, you can use the same
-	//   key with multiple resources.
-	// * Keys must start with a lowercase letter or international character.
+	//   - Each resource can have multiple labels, up to a maximum of 64.
+	//   - Each label must be a key-value pair.
+	//   - Keys have a minimum length of 1 character and a maximum length of 63
+	//     characters and cannot be empty. Values can be empty and have a maximum
+	//     length of 63 characters.
+	//   - Keys and values can contain only lowercase letters, numeric characters,
+	//     underscores, and dashes. All characters must use UTF-8 encoding, and
+	//     international characters are allowed.
+	//   - The key portion of a label must be unique. However, you can use the same
+	//     key with multiple resources.
+	//   - Keys must start with a lowercase letter or international character.
 	//
 	// See [Google Cloud
 	// Document](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
@@ -521,9 +520,9 @@ type ListConversationsRequest struct {
 	// A comma-separated list of fields to order by, sorted in ascending order.
 	// Use "desc" after a field name for descending.
 	// Supported fields:
-	//   * `update_time`
-	//   * `create_time`
-	//   * `conversation_name`
+	//   - `update_time`
+	//   - `create_time`
+	//   - `conversation_name`
 	//
 	// Example:
 	// "update_time desc"

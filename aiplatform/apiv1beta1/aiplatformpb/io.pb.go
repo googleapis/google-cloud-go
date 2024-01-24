@@ -21,12 +21,11 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -456,11 +455,11 @@ type ContainerRegistryDestination struct {
 	// Only Google Container Registry and Artifact Registry are supported now.
 	// Accepted forms:
 	//
-	// *  Google Container Registry path. For example:
-	//    `gcr.io/projectId/imageName:tag`.
+	//   - Google Container Registry path. For example:
+	//     `gcr.io/projectId/imageName:tag`.
 	//
-	// *  Artifact Registry path. For example:
-	//    `us-central1-docker.pkg.dev/projectId/repoName/imageName:tag`.
+	//   - Artifact Registry path. For example:
+	//     `us-central1-docker.pkg.dev/projectId/repoName/imageName:tag`.
 	//
 	// If a tag is not specified, "latest" will be used as the default tag.
 	OutputUri string `protobuf:"bytes,1,opt,name=output_uri,json=outputUri,proto3" json:"output_uri,omitempty"`

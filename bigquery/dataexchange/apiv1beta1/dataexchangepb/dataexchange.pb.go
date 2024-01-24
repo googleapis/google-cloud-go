@@ -21,11 +21,8 @@
 package dataexchangepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -595,6 +594,7 @@ type Listing struct {
 	// Listing source.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Listing_BigqueryDataset
 	Source isListing_Source `protobuf_oneof:"source"`
 	// Output only. The resource name of the listing.
@@ -1631,6 +1631,7 @@ type SubscribeListingRequest struct {
 	// Resulting destination of the listing that you subscribed to.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*SubscribeListingRequest_DestinationDataset
 	Destination isSubscribeListingRequest_Destination `protobuf_oneof:"destination"`
 	// Required. Resource name of the listing that you want to subscribe to.

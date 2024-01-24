@@ -21,14 +21,13 @@
 package contactcenterinsightspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -677,6 +676,7 @@ type Conversation struct {
 	// Metadata that applies to the conversation.
 	//
 	// Types that are assignable to Metadata:
+	//
 	//	*Conversation_CallMetadata_
 	Metadata isConversation_Metadata `protobuf_oneof:"metadata"`
 	// A time to live expiration setting, can be either a specified timestamp or a
@@ -685,6 +685,7 @@ type Conversation struct {
 	// the specified time.
 	//
 	// Types that are assignable to Expiration:
+	//
 	//	*Conversation_ExpireTime
 	//	*Conversation_Ttl
 	Expiration isConversation_Expiration `protobuf_oneof:"expiration"`
@@ -1048,6 +1049,7 @@ type ConversationDataSource struct {
 	// The source of the conversation.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ConversationDataSource_GcsSource
 	//	*ConversationDataSource_DialogflowSource
 	Source isConversationDataSource_Source `protobuf_oneof:"source"`
@@ -1254,6 +1256,7 @@ type AnalysisResult struct {
 	// Metadata discovered during analysis.
 	//
 	// Types that are assignable to Metadata:
+	//
 	//	*AnalysisResult_CallAnalysisMetadata_
 	Metadata isAnalysisResult_Metadata `protobuf_oneof:"metadata"`
 	// The time at which the analysis ended.
@@ -1519,6 +1522,7 @@ type CallAnnotation struct {
 	// The data in the annotation.
 	//
 	// Types that are assignable to Data:
+	//
 	//	*CallAnnotation_InterruptionData
 	//	*CallAnnotation_SentimentData
 	//	*CallAnnotation_SilenceData
@@ -1722,6 +1726,7 @@ type AnnotationBoundary struct {
 	// A detailed boundary, which describes a more specific point.
 	//
 	// Types that are assignable to DetailedBoundary:
+	//
 	//	*AnnotationBoundary_WordIndex
 	DetailedBoundary isAnnotationBoundary_DetailedBoundary `protobuf_oneof:"detailed_boundary"`
 	// The index in the sequence of transcribed pieces of the conversation where
@@ -2979,6 +2984,7 @@ type PhraseMatchRuleConfig struct {
 	// The configuration of the phrase match rule.
 	//
 	// Types that are assignable to Config:
+	//
 	//	*PhraseMatchRuleConfig_ExactMatchConfig
 	Config isPhraseMatchRuleConfig_Config `protobuf_oneof:"config"`
 }
@@ -3355,6 +3361,7 @@ type RuntimeAnnotation struct {
 	// The data in the annotation.
 	//
 	// Types that are assignable to Data:
+	//
 	//	*RuntimeAnnotation_ArticleSuggestion
 	//	*RuntimeAnnotation_FaqAnswer
 	//	*RuntimeAnnotation_SmartReply
@@ -4139,6 +4146,7 @@ type ConversationParticipant struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Participant:
+	//
 	//	*ConversationParticipant_DialogflowParticipantName
 	//	*ConversationParticipant_UserId
 	Participant isConversationParticipant_Participant `protobuf_oneof:"participant"`
@@ -5162,6 +5170,7 @@ type AnnotatorSelector_SummarizationConfig struct {
 	// of the supported default models.
 	//
 	// Types that are assignable to ModelSource:
+	//
 	//	*AnnotatorSelector_SummarizationConfig_ConversationProfile
 	//	*AnnotatorSelector_SummarizationConfig_SummarizationModel_
 	ModelSource isAnnotatorSelector_SummarizationConfig_ModelSource `protobuf_oneof:"model_source"`

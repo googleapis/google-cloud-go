@@ -21,11 +21,8 @@
 package clientconnectorservicespb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -481,9 +480,9 @@ type CreateClientConnectorServiceRequest struct {
 	// Required. Value for parent.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. User-settable client connector service resource ID.
-	//  * Must start with a letter.
-	//  * Must contain between 4-63 characters from `/[a-z][0-9]-/`.
-	//  * Must end with a number or a letter.
+	//   - Must start with a letter.
+	//   - Must contain between 4-63 characters from `/[a-z][0-9]-/`.
+	//   - Must end with a number or a letter.
 	//
 	// A random system generated name will be assigned
 	// if not specified by the user.
@@ -875,6 +874,7 @@ type ClientConnectorService_Ingress struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to IngressConfig:
+	//
 	//	*ClientConnectorService_Ingress_Config_
 	IngressConfig isClientConnectorService_Ingress_IngressConfig `protobuf_oneof:"ingress_config"`
 }
@@ -943,6 +943,7 @@ type ClientConnectorService_Egress struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to DestinationType:
+	//
 	//	*ClientConnectorService_Egress_PeeredVpc_
 	DestinationType isClientConnectorService_Egress_DestinationType `protobuf_oneof:"destination_type"`
 }

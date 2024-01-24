@@ -21,11 +21,8 @@
 package assuredworkloadspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1800,10 +1799,11 @@ type Violation struct {
 	AuditLogLink string `protobuf:"bytes,11,opt,name=audit_log_link,json=auditLogLink,proto3" json:"audit_log_link,omitempty"`
 	// Output only. Immutable. Name of the OrgPolicy which was modified with non-compliant change and
 	// resulted this violation.
-	//  Format:
-	//  projects/{project_number}/policies/{constraint_name}
-	//  folders/{folder_id}/policies/{constraint_name}
-	//  organizations/{organization_id}/policies/{constraint_name}
+	//
+	//	Format:
+	//	projects/{project_number}/policies/{constraint_name}
+	//	folders/{folder_id}/policies/{constraint_name}
+	//	organizations/{organization_id}/policies/{constraint_name}
 	NonCompliantOrgPolicy string `protobuf:"bytes,12,opt,name=non_compliant_org_policy,json=nonCompliantOrgPolicy,proto3" json:"non_compliant_org_policy,omitempty"`
 	// Output only. Compliance violation remediation
 	Remediation *Violation_Remediation `protobuf:"bytes,13,opt,name=remediation,proto3" json:"remediation,omitempty"`

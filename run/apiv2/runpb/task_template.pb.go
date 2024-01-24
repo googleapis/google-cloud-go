@@ -21,13 +21,12 @@
 package runpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -50,6 +49,7 @@ type TaskTemplate struct {
 	// A list of Volumes to make available to containers.
 	Volumes []*Volume `protobuf:"bytes,2,rep,name=volumes,proto3" json:"volumes,omitempty"`
 	// Types that are assignable to Retries:
+	//
 	//	*TaskTemplate_MaxRetries
 	Retries isTaskTemplate_Retries `protobuf_oneof:"retries"`
 	// Max allowed time duration the Task may be active before the system will

@@ -21,13 +21,12 @@
 package cxpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -62,6 +61,7 @@ type ResponseMessage struct {
 	// Required. The rich response message.
 	//
 	// Types that are assignable to Message:
+	//
 	//	*ResponseMessage_Text_
 	//	*ResponseMessage_Payload
 	//	*ResponseMessage_ConversationSuccess_
@@ -357,10 +357,10 @@ func (x *ResponseMessage_Text) GetAllowPlaybackInterruption() bool {
 // [entry_fulfillment][google.cloud.dialogflow.cx.v3beta1.Page.entry_fulfillment]
 // of a [Page][google.cloud.dialogflow.cx.v3beta1.Page] if
 //
-//		entering the page indicates something went extremely wrong in the
-//		conversation.
-//	  - In a webhook response when you determine that the customer issue can only
-//	    be handled by a human.
+//	entering the page indicates something went extremely wrong in the
+//	conversation.
+//   - In a webhook response when you determine that the customer issue can only
+//     be handled by a human.
 type ResponseMessage_LiveAgentHandoff struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -424,9 +424,9 @@ func (x *ResponseMessage_LiveAgentHandoff) GetMetadata() *structpb.Struct {
 // [entry_fulfillment][google.cloud.dialogflow.cx.v3beta1.Page.entry_fulfillment]
 // of a [Page][google.cloud.dialogflow.cx.v3beta1.Page] if
 //
-//		entering the page indicates that the conversation succeeded.
-//	  - In a webhook response when you determine that you handled the customer
-//	    issue.
+//	entering the page indicates that the conversation succeeded.
+//   - In a webhook response when you determine that you handled the customer
+//     issue.
 type ResponseMessage_ConversationSuccess struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -485,6 +485,7 @@ type ResponseMessage_OutputAudioText struct {
 	// The source, which is either plain text or SSML.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ResponseMessage_OutputAudioText_Text
 	//	*ResponseMessage_OutputAudioText_Ssml
 	Source isResponseMessage_OutputAudioText_Source `protobuf_oneof:"source"`
@@ -740,6 +741,7 @@ type ResponseMessage_TelephonyTransferCall struct {
 	// Endpoint to transfer the call to.
 	//
 	// Types that are assignable to Endpoint:
+	//
 	//	*ResponseMessage_TelephonyTransferCall_PhoneNumber
 	Endpoint isResponseMessage_TelephonyTransferCall_Endpoint `protobuf_oneof:"endpoint"`
 }
@@ -855,6 +857,7 @@ type ResponseMessage_MixedAudio_Segment struct {
 	// Content of the segment.
 	//
 	// Types that are assignable to Content:
+	//
 	//	*ResponseMessage_MixedAudio_Segment_Audio
 	//	*ResponseMessage_MixedAudio_Segment_Uri
 	Content isResponseMessage_MixedAudio_Segment_Content `protobuf_oneof:"content"`

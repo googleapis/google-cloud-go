@@ -22,15 +22,14 @@ package apigeeconnectpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -47,7 +46,8 @@ type ListConnectionsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Parent name of the form:
-	//     `projects/{project_number or project_id}/endpoints/{endpoint}`.
+	//
+	//	`projects/{project_number or project_id}/endpoints/{endpoint}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of connections to return. The service may return fewer
 	// than this value. If unspecified, at most 100 connections will be returned.

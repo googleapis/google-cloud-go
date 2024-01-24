@@ -21,11 +21,8 @@
 package resourcemanagerpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -119,6 +118,7 @@ type Organization struct {
 	// descendants will be deleted.
 	//
 	// Types that are assignable to Owner:
+	//
 	//	*Organization_DirectoryCustomerId
 	Owner isOrganization_Owner `protobuf_oneof:"owner"`
 	// Output only. The organization's current lifecycle state.
@@ -308,7 +308,6 @@ type SearchOrganizationsRequest struct {
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. An optional query string used to filter the Organizations to
 	// return in the response. Query rules are case-insensitive.
-	//
 	//
 	// ```
 	// | Field            | Description                                |

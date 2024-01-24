@@ -21,13 +21,12 @@
 package generativelanguagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -408,6 +407,7 @@ type CustomMetadata struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Value:
+	//
 	//	*CustomMetadata_StringValue
 	//	*CustomMetadata_StringListValue
 	//	*CustomMetadata_NumericValue
@@ -587,6 +587,7 @@ type Condition struct {
 	// set.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*Condition_StringValue
 	//	*Condition_NumericValue
 	Value isCondition_Value `protobuf_oneof:"value"`
@@ -783,6 +784,7 @@ type ChunkData struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Data:
+	//
 	//	*ChunkData_StringValue
 	Data isChunkData_Data `protobuf_oneof:"data"`
 }

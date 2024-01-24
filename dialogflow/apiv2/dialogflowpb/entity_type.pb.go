@@ -21,11 +21,8 @@
 package dialogflowpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -691,6 +690,7 @@ type BatchUpdateEntityTypesRequest struct {
 	// *   If `name` is not specified, we create a new entity type.
 	//
 	// Types that are assignable to EntityTypeBatch:
+	//
 	//	*BatchUpdateEntityTypesRequest_EntityTypeBatchUri
 	//	*BatchUpdateEntityTypesRequest_EntityTypeBatchInline
 	EntityTypeBatch isBatchUpdateEntityTypesRequest_EntityTypeBatch `protobuf_oneof:"entity_type_batch"`
@@ -1207,7 +1207,7 @@ type EntityType_Entity struct {
 	//
 	// For `KIND_LIST` entity types:
 	//
-	// *   A string that can contain references to other entity types (with or
+	//   - A string that can contain references to other entity types (with or
 	//     without aliases).
 	Value string `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
 	// Required. A collection of value synonyms. For example, if the entity type
@@ -2041,9 +2041,10 @@ type EntityTypesClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [BatchUpdateEntityTypesResponse][google.cloud.dialogflow.v2.BatchUpdateEntityTypesResponse]
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
@@ -2056,10 +2057,10 @@ type EntityTypesClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
@@ -2071,10 +2072,10 @@ type EntityTypesClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
@@ -2088,15 +2089,14 @@ type EntityTypesClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	//
 	BatchUpdateEntities(ctx context.Context, in *BatchUpdateEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes entities in the specified entity type.
 	//
@@ -2104,10 +2104,10 @@ type EntityTypesClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
@@ -2243,9 +2243,10 @@ type EntityTypesServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [BatchUpdateEntityTypesResponse][google.cloud.dialogflow.v2.BatchUpdateEntityTypesResponse]
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
@@ -2258,10 +2259,10 @@ type EntityTypesServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
@@ -2273,10 +2274,10 @@ type EntityTypesServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
@@ -2290,15 +2291,14 @@ type EntityTypesServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	//
 	BatchUpdateEntities(context.Context, *BatchUpdateEntitiesRequest) (*longrunningpb.Operation, error)
 	// Deletes entities in the specified entity type.
 	//
@@ -2306,10 +2306,10 @@ type EntityTypesServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training

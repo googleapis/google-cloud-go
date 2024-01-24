@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -469,6 +468,7 @@ type Runnable struct {
 	// The script or container to run.
 	//
 	// Types that are assignable to Executable:
+	//
 	//	*Runnable_Container_
 	//	*Runnable_Script_
 	//	*Runnable_Barrier_
@@ -1130,6 +1130,7 @@ type Runnable_Script struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Command:
+	//
 	//	*Runnable_Script_Path
 	//	*Runnable_Script_Text
 	Command isRunnable_Script_Command `protobuf_oneof:"command"`

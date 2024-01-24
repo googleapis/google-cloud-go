@@ -21,11 +21,8 @@
 package dialogflowpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -340,6 +339,7 @@ type ConversationModel struct {
 	// Must match the metadata type of the dataset used to train the model.
 	//
 	// Types that are assignable to ModelMetadata:
+	//
 	//	*ConversationModel_ArticleSuggestionModelMetadata
 	//	*ConversationModel_SmartReplyModelMetadata
 	ModelMetadata isConversationModel_ModelMetadata `protobuf_oneof:"model_metadata"`
@@ -477,6 +477,7 @@ type ConversationModelEvaluation struct {
 	// Metrics details.
 	//
 	// Types that are assignable to Metrics:
+	//
 	//	*ConversationModelEvaluation_SmartReplyMetrics
 	Metrics isConversationModelEvaluation_Metrics `protobuf_oneof:"metrics"`
 	// Output only. Human eval template in csv format.
@@ -600,6 +601,7 @@ type EvaluationConfig struct {
 	// Specific configurations for different models in order to do evaluation.
 	//
 	// Types that are assignable to ModelSpecificConfig:
+	//
 	//	*EvaluationConfig_SmartReplyConfig_
 	//	*EvaluationConfig_SmartComposeConfig_
 	ModelSpecificConfig isEvaluationConfig_ModelSpecificConfig `protobuf_oneof:"model_specific_config"`
@@ -3130,8 +3132,8 @@ type ConversationModelsClient interface {
 	//
 	// - `metadata`:
 	// [DeleteConversationModelOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationModelOperationMetadata]
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeleteConversationModel(ctx context.Context, in *DeleteConversationModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deploys a model. If a model is already deployed, deploying it
 	// has no effect. A model can only serve prediction requests after it gets
@@ -3144,8 +3146,8 @@ type ConversationModelsClient interface {
 	//
 	// - `metadata`:
 	// [DeployConversationModelOperationMetadata][google.cloud.dialogflow.v2.DeployConversationModelOperationMetadata]
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeployConversationModel(ctx context.Context, in *DeployConversationModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeploys a model. If the model is not deployed this method has no effect.
 	// If the model is currently being used:
@@ -3158,8 +3160,8 @@ type ConversationModelsClient interface {
 	//
 	// - `metadata`:
 	// [UndeployConversationModelOperationMetadata][google.cloud.dialogflow.v2.UndeployConversationModelOperationMetadata]
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	UndeployConversationModel(ctx context.Context, in *UndeployConversationModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an evaluation of conversation model.
 	GetConversationModelEvaluation(ctx context.Context, in *GetConversationModelEvaluationRequest, opts ...grpc.CallOption) (*ConversationModelEvaluation, error)
@@ -3283,8 +3285,8 @@ type ConversationModelsServer interface {
 	//
 	// - `metadata`:
 	// [DeleteConversationModelOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationModelOperationMetadata]
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeleteConversationModel(context.Context, *DeleteConversationModelRequest) (*longrunningpb.Operation, error)
 	// Deploys a model. If a model is already deployed, deploying it
 	// has no effect. A model can only serve prediction requests after it gets
@@ -3297,8 +3299,8 @@ type ConversationModelsServer interface {
 	//
 	// - `metadata`:
 	// [DeployConversationModelOperationMetadata][google.cloud.dialogflow.v2.DeployConversationModelOperationMetadata]
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeployConversationModel(context.Context, *DeployConversationModelRequest) (*longrunningpb.Operation, error)
 	// Undeploys a model. If the model is not deployed this method has no effect.
 	// If the model is currently being used:
@@ -3311,8 +3313,8 @@ type ConversationModelsServer interface {
 	//
 	// - `metadata`:
 	// [UndeployConversationModelOperationMetadata][google.cloud.dialogflow.v2.UndeployConversationModelOperationMetadata]
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	UndeployConversationModel(context.Context, *UndeployConversationModelRequest) (*longrunningpb.Operation, error)
 	// Gets an evaluation of conversation model.
 	GetConversationModelEvaluation(context.Context, *GetConversationModelEvaluationRequest) (*ConversationModelEvaluation, error)

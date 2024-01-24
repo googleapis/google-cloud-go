@@ -21,11 +21,8 @@
 package contactcenterinsightspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1054,11 +1053,13 @@ type IngestConversationsRequest struct {
 	// be converted to conversations.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*IngestConversationsRequest_GcsSource_
 	Source isIngestConversationsRequest_Source `protobuf_oneof:"source"`
 	// Configuration for converting individual `source` objects to conversations.
 	//
 	// Types that are assignable to ObjectConfig:
+	//
 	//	*IngestConversationsRequest_TranscriptObjectConfig_
 	ObjectConfig isIngestConversationsRequest_ObjectConfig `protobuf_oneof:"object_config"`
 	// Required. The parent resource for new conversations.
@@ -2053,6 +2054,7 @@ type ExportInsightsDataRequest struct {
 	// Exporter destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ExportInsightsDataRequest_BigQueryDestination_
 	Destination isExportInsightsDataRequest_Destination `protobuf_oneof:"destination"`
 	// Required. The parent resource to export data from.

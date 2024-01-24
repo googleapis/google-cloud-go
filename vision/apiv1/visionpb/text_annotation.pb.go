@@ -21,11 +21,10 @@
 package visionpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -336,17 +335,17 @@ type Block struct {
 	//
 	// * when the text is horizontal it might look like:
 	//
-	//         0----1
-	//         |    |
-	//         3----2
+	//	0----1
+	//	|    |
+	//	3----2
 	//
 	// * when it's rotated 180 degrees around the top-left corner it becomes:
 	//
-	//         2----3
-	//         |    |
-	//         1----0
+	//	      2----3
+	//	      |    |
+	//	      1----0
 	//
-	//   and the vertex order will still be (0, 1, 2, 3).
+	//	and the vertex order will still be (0, 1, 2, 3).
 	BoundingBox *BoundingPoly `protobuf:"bytes,2,opt,name=bounding_box,json=boundingBox,proto3" json:"bounding_box,omitempty"`
 	// List of paragraphs in this block (if this blocks is of type text).
 	Paragraphs []*Paragraph `protobuf:"bytes,3,rep,name=paragraphs,proto3" json:"paragraphs,omitempty"`
@@ -437,15 +436,15 @@ type Paragraph struct {
 	// is represented as around the top-left corner as defined when the text is
 	// read in the 'natural' orientation.
 	// For example:
-	//   * when the text is horizontal it might look like:
-	//      0----1
-	//      |    |
-	//      3----2
-	//   * when it's rotated 180 degrees around the top-left corner it becomes:
-	//      2----3
-	//      |    |
-	//      1----0
-	//   and the vertex order will still be (0, 1, 2, 3).
+	//   - when the text is horizontal it might look like:
+	//     0----1
+	//     |    |
+	//     3----2
+	//   - when it's rotated 180 degrees around the top-left corner it becomes:
+	//     2----3
+	//     |    |
+	//     1----0
+	//     and the vertex order will still be (0, 1, 2, 3).
 	BoundingBox *BoundingPoly `protobuf:"bytes,2,opt,name=bounding_box,json=boundingBox,proto3" json:"bounding_box,omitempty"`
 	// List of all words in this paragraph.
 	Words []*Word `protobuf:"bytes,3,rep,name=words,proto3" json:"words,omitempty"`
@@ -527,15 +526,15 @@ type Word struct {
 	// is represented as around the top-left corner as defined when the text is
 	// read in the 'natural' orientation.
 	// For example:
-	//   * when the text is horizontal it might look like:
-	//      0----1
-	//      |    |
-	//      3----2
-	//   * when it's rotated 180 degrees around the top-left corner it becomes:
-	//      2----3
-	//      |    |
-	//      1----0
-	//   and the vertex order will still be (0, 1, 2, 3).
+	//   - when the text is horizontal it might look like:
+	//     0----1
+	//     |    |
+	//     3----2
+	//   - when it's rotated 180 degrees around the top-left corner it becomes:
+	//     2----3
+	//     |    |
+	//     1----0
+	//     and the vertex order will still be (0, 1, 2, 3).
 	BoundingBox *BoundingPoly `protobuf:"bytes,2,opt,name=bounding_box,json=boundingBox,proto3" json:"bounding_box,omitempty"`
 	// List of symbols in the word.
 	// The order of the symbols follows the natural reading order.
@@ -618,15 +617,15 @@ type Symbol struct {
 	// is represented as around the top-left corner as defined when the text is
 	// read in the 'natural' orientation.
 	// For example:
-	//   * when the text is horizontal it might look like:
-	//      0----1
-	//      |    |
-	//      3----2
-	//   * when it's rotated 180 degrees around the top-left corner it becomes:
-	//      2----3
-	//      |    |
-	//      1----0
-	//   and the vertex order will still be (0, 1, 2, 3).
+	//   - when the text is horizontal it might look like:
+	//     0----1
+	//     |    |
+	//     3----2
+	//   - when it's rotated 180 degrees around the top-left corner it becomes:
+	//     2----3
+	//     |    |
+	//     1----0
+	//     and the vertex order will still be (0, 1, 2, 3).
 	BoundingBox *BoundingPoly `protobuf:"bytes,2,opt,name=bounding_box,json=boundingBox,proto3" json:"bounding_box,omitempty"`
 	// The actual UTF-8 representation of the symbol.
 	Text string `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`

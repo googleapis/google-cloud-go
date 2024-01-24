@@ -21,14 +21,13 @@
 package cloudtaskspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -127,19 +126,19 @@ type Task struct {
 	// The task name must have the following format:
 	// `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID`
 	//
-	// * `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),
-	//    hyphens (-), colons (:), or periods (.).
-	//    For more information, see
-	//    [Identifying
-	//    projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects)
-	// * `LOCATION_ID` is the canonical ID for the task's location.
-	//    The list of available locations can be obtained by calling
-	//    [ListLocations][google.cloud.location.Locations.ListLocations].
-	//    For more information, see https://cloud.google.com/about/locations/.
-	// * `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or
-	//   hyphens (-). The maximum length is 100 characters.
-	// * `TASK_ID` can contain only letters ([A-Za-z]), numbers ([0-9]),
-	//   hyphens (-), or underscores (_). The maximum length is 500 characters.
+	//   - `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),
+	//     hyphens (-), colons (:), or periods (.).
+	//     For more information, see
+	//     [Identifying
+	//     projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects)
+	//   - `LOCATION_ID` is the canonical ID for the task's location.
+	//     The list of available locations can be obtained by calling
+	//     [ListLocations][google.cloud.location.Locations.ListLocations].
+	//     For more information, see https://cloud.google.com/about/locations/.
+	//   - `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or
+	//     hyphens (-). The maximum length is 100 characters.
+	//   - `TASK_ID` can contain only letters ([A-Za-z]), numbers ([0-9]),
+	//     hyphens (-), or underscores (_). The maximum length is 500 characters.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required.
 	//
@@ -147,6 +146,7 @@ type Task struct {
 	// A payload is valid only if it is compatible with the queue's target.
 	//
 	// Types that are assignable to PayloadType:
+	//
 	//	*Task_AppEngineHttpRequest
 	//	*Task_PullMessage
 	//	*Task_HttpRequest

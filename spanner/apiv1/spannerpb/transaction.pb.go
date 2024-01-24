@@ -21,13 +21,12 @@
 package spannerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -431,6 +430,7 @@ type TransactionOptions struct {
 	// Required. The type of transaction.
 	//
 	// Types that are assignable to Mode:
+	//
 	//	*TransactionOptions_ReadWrite_
 	//	*TransactionOptions_PartitionedDml_
 	//	*TransactionOptions_ReadOnly_
@@ -619,6 +619,7 @@ type TransactionSelector struct {
 	// with strong concurrency.
 	//
 	// Types that are assignable to Selector:
+	//
 	//	*TransactionSelector_SingleUse
 	//	*TransactionSelector_Id
 	//	*TransactionSelector_Begin
@@ -813,6 +814,7 @@ type TransactionOptions_ReadOnly struct {
 	// How to choose the timestamp for the read-only transaction.
 	//
 	// Types that are assignable to TimestampBound:
+	//
 	//	*TransactionOptions_ReadOnly_Strong
 	//	*TransactionOptions_ReadOnly_MinReadTimestamp
 	//	*TransactionOptions_ReadOnly_MaxStaleness

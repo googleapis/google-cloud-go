@@ -21,11 +21,8 @@
 package documentaipb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -347,6 +346,7 @@ type ProcessOptions struct {
 	// only applies to sync requests.
 	//
 	// Types that are assignable to PageRange:
+	//
 	//	*ProcessOptions_IndividualPageSelector_
 	//	*ProcessOptions_FromStart
 	//	*ProcessOptions_FromEnd
@@ -460,6 +460,7 @@ type ProcessRequest struct {
 	// The document payload.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ProcessRequest_InlineDocument
 	//	*ProcessRequest_RawDocument
 	//	*ProcessRequest_GcsDocument
@@ -2618,6 +2619,7 @@ type TrainProcessorVersionRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to ProcessorFlags:
+	//
 	//	*TrainProcessorVersionRequest_CustomDocumentExtractionOptions_
 	ProcessorFlags isTrainProcessorVersionRequest_ProcessorFlags `protobuf_oneof:"processor_flags"`
 	// Required. The parent (project, location and processor) to create the new
@@ -2858,6 +2860,7 @@ type ReviewDocumentRequest struct {
 	// The document payload.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ReviewDocumentRequest_InlineDocument
 	Source isReviewDocumentRequest_Source `protobuf_oneof:"source"`
 	// Required. The resource name of the

@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -141,7 +140,6 @@ type ListTransitionRouteGroupsRequest struct {
 	// *  `TransitionRouteGroup.transition_routes.trigger_fulfillment.messages`
 	// *
 	// `TransitionRouteGroup.transition_routes.trigger_fulfillment.conditional_cases`
-	//
 	//
 	// If not specified, the agent's default language is used.
 	// [Many
@@ -527,10 +525,10 @@ type DeleteTransitionRouteGroupRequest struct {
 	// This field has no effect for transition route group that no page is using.
 	// If the transition route group is referenced by any page:
 	//
-	// *  If `force` is set to false, an error will be returned with message
-	//    indicating pages that reference the transition route group.
-	// *  If `force` is set to true, Dialogflow will remove the transition route
-	//    group, as well as any reference to it.
+	//   - If `force` is set to false, an error will be returned with message
+	//     indicating pages that reference the transition route group.
+	//   - If `force` is set to true, Dialogflow will remove the transition route
+	//     group, as well as any reference to it.
 	Force bool `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"`
 }
 

@@ -22,9 +22,6 @@ package dataformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	interval "google.golang.org/genproto/googleapis/type/interval"
@@ -36,6 +33,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2936,6 +2935,7 @@ type DirectoryEntry struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Entry:
+	//
 	//	*DirectoryEntry_File
 	//	*DirectoryEntry_Directory
 	Entry isDirectoryEntry_Entry `protobuf_oneof:"entry"`
@@ -4242,6 +4242,7 @@ type CompilationResult struct {
 	// Output only. The compilation result's name.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Types that are assignable to Source:
+	//
 	//	*CompilationResult_GitCommitish
 	//	*CompilationResult_Workspace
 	//	*CompilationResult_ReleaseConfig
@@ -4903,6 +4904,7 @@ type CompilationResultAction struct {
 	// to the workspace root.
 	FilePath string `protobuf:"bytes,3,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
 	// Types that are assignable to CompiledObject:
+	//
 	//	*CompilationResultAction_Relation_
 	//	*CompilationResultAction_Operations_
 	//	*CompilationResultAction_Assertion_
@@ -5751,6 +5753,7 @@ type WorkflowInvocation struct {
 	// Output only. The workflow invocation's name.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Types that are assignable to CompilationSource:
+	//
 	//	*WorkflowInvocation_CompilationResult
 	//	*WorkflowInvocation_WorkflowConfig
 	CompilationSource isWorkflowInvocation_CompilationSource `protobuf_oneof:"compilation_source"`
@@ -6703,6 +6706,7 @@ type CommitRepositoryChangesRequest_FileOperation struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Operation:
+	//
 	//	*CommitRepositoryChangesRequest_FileOperation_WriteFile_
 	//	*CommitRepositoryChangesRequest_FileOperation_DeleteFile_
 	Operation isCommitRepositoryChangesRequest_FileOperation_Operation `protobuf_oneof:"operation"`
@@ -6937,6 +6941,7 @@ type ReleaseConfig_ScheduledReleaseRecord struct {
 	// The timestamp of this release attempt.
 	ReleaseTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=release_time,json=releaseTime,proto3" json:"release_time,omitempty"`
 	// Types that are assignable to Result:
+	//
 	//	*ReleaseConfig_ScheduledReleaseRecord_CompilationResult
 	//	*ReleaseConfig_ScheduledReleaseRecord_ErrorStatus
 	Result isReleaseConfig_ScheduledReleaseRecord_Result `protobuf_oneof:"result"`
@@ -7699,6 +7704,7 @@ type WorkflowConfig_ScheduledExecutionRecord struct {
 	// The timestamp of this execution attempt.
 	ExecutionTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=execution_time,json=executionTime,proto3" json:"execution_time,omitempty"`
 	// Types that are assignable to Result:
+	//
 	//	*WorkflowConfig_ScheduledExecutionRecord_WorkflowInvocation
 	//	*WorkflowConfig_ScheduledExecutionRecord_ErrorStatus
 	Result isWorkflowConfig_ScheduledExecutionRecord_Result `protobuf_oneof:"result"`

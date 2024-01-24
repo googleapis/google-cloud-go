@@ -21,15 +21,14 @@
 package deliverypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -199,6 +198,7 @@ type DeliveryVehicleAttribute struct {
 	// The attribute's value, can be in string, bool, or double type.
 	//
 	// Types that are assignable to DeliveryVehicleAttributeValue:
+	//
 	//	*DeliveryVehicleAttribute_StringValue
 	//	*DeliveryVehicleAttribute_BoolValue
 	//	*DeliveryVehicleAttribute_NumberValue
@@ -706,6 +706,7 @@ type TaskAttribute struct {
 	// set the TaskAttribute string_value will be stored as the empty string "".
 	//
 	// Types that are assignable to TaskAttributeValue:
+	//
 	//	*TaskAttribute_StringValue
 	//	*TaskAttribute_BoolValue
 	//	*TaskAttribute_NumberValue

@@ -21,11 +21,10 @@
 package agentendpointpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -302,6 +301,7 @@ type OSPolicyResourceCompliance struct {
 	// Resource specific output.
 	//
 	// Types that are assignable to Output:
+	//
 	//	*OSPolicyResourceCompliance_ExecResourceOutput_
 	Output isOSPolicyResourceCompliance_Output `protobuf_oneof:"output"`
 }

@@ -21,11 +21,10 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -46,6 +45,7 @@ type NotificationMessage struct {
 	// Notification Event.
 	//
 	// Types that are assignable to Event:
+	//
 	//	*NotificationMessage_Finding
 	Event isNotificationMessage_Event `protobuf_oneof:"event"`
 	// The Cloud resource tied to the notification.

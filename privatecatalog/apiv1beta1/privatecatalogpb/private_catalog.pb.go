@@ -21,11 +21,8 @@
 package privatecatalogpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -642,43 +641,45 @@ type Product struct {
 	// "$schema": http://json-schema.org/draft-04/schema#
 	// type: object
 	// properties:
-	//   name:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 64
-	//   description:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 2048
-	//   tagline:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 100
-	//   support_info:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 2048
-	//   creator:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 100
-	//   documentations:
-	//     type: array
-	//     items:
-	//       type: object
-	//       properties:
-	//         url:
-	//           type: string
-	//           pattern:
-	//           "^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"
-	//         title:
-	//           type: string
-	//           minLength: 1
-	//           maxLength: 64
-	//         description:
-	//           type: string
-	//           minLength: 1
-	//           maxLength: 2048
+	//
+	//	name:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 64
+	//	description:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 2048
+	//	tagline:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 100
+	//	support_info:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 2048
+	//	creator:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 100
+	//	documentations:
+	//	  type: array
+	//	  items:
+	//	    type: object
+	//	    properties:
+	//	      url:
+	//	        type: string
+	//	        pattern:
+	//	        "^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"
+	//	      title:
+	//	        type: string
+	//	        minLength: 1
+	//	        maxLength: 64
+	//	      description:
+	//	        type: string
+	//	        minLength: 1
+	//	        maxLength: 2048
+	//
 	// required:
 	// - name
 	// - description
@@ -693,47 +694,49 @@ type Product struct {
 	// "$schema": http://json-schema.org/draft-04/schema#
 	// type: object
 	// properties:
-	//   name:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 64
-	//   description:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 2048
-	//   tagline:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 100
-	//   support_info:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 2048
-	//   creator:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 100
-	//   documentations:
-	//     type: array
-	//     items:
-	//       type: object
-	//       properties:
-	//         url:
-	//           type: string
-	//           pattern:
-	//           "^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"
-	//         title:
-	//           type: string
-	//           minLength: 1
-	//           maxLength: 64
-	//         description:
-	//           type: string
-	//           minLength: 1
-	//           maxLength: 2048
-	//   signup_url:
-	//     type: string
-	//     pattern:
-	//     "^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"
+	//
+	//	name:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 64
+	//	description:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 2048
+	//	tagline:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 100
+	//	support_info:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 2048
+	//	creator:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 100
+	//	documentations:
+	//	  type: array
+	//	  items:
+	//	    type: object
+	//	    properties:
+	//	      url:
+	//	        type: string
+	//	        pattern:
+	//	        "^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"
+	//	      title:
+	//	        type: string
+	//	        minLength: 1
+	//	        maxLength: 64
+	//	      description:
+	//	        type: string
+	//	        minLength: 1
+	//	        maxLength: 2048
+	//	signup_url:
+	//	  type: string
+	//	  pattern:
+	//	  "^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"
+	//
 	// required:
 	// - name
 	// - description
@@ -749,43 +752,45 @@ type Product struct {
 	// "$schema": http://json-schema.org/draft-04/schema#
 	// type: object
 	// properties:
-	//   name:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 64
-	//   description:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 2048
-	//   tagline:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 100
-	//   support_info:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 2048
-	//   creator:
-	//     type: string
-	//     minLength: 1
-	//     maxLength: 100
-	//   documentations:
-	//     type: array
-	//     items:
-	//       type: object
-	//       properties:
-	//         url:
-	//           type: string
-	//           pattern:
-	//           "^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"
-	//         title:
-	//           type: string
-	//           minLength: 1
-	//           maxLength: 64
-	//         description:
-	//           type: string
-	//           minLength: 1
-	//           maxLength: 2048
+	//
+	//	name:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 64
+	//	description:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 2048
+	//	tagline:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 100
+	//	support_info:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 2048
+	//	creator:
+	//	  type: string
+	//	  minLength: 1
+	//	  maxLength: 100
+	//	documentations:
+	//	  type: array
+	//	  items:
+	//	    type: object
+	//	    properties:
+	//	      url:
+	//	        type: string
+	//	        pattern:
+	//	        "^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"
+	//	      title:
+	//	        type: string
+	//	        minLength: 1
+	//	        maxLength: 64
+	//	      description:
+	//	        type: string
+	//	        minLength: 1
+	//	        maxLength: 2048
+	//
 	// required:
 	// - name
 	// - description
@@ -903,6 +908,7 @@ type AssetReference struct {
 	// The destination of the asset.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*AssetReference_Asset
 	//	*AssetReference_GcsPath
 	//	*AssetReference_GitSource
@@ -1205,6 +1211,7 @@ type GitSource struct {
 	// commit SHA, or any Git ref.
 	//
 	// Types that are assignable to Ref:
+	//
 	//	*GitSource_Commit
 	//	*GitSource_Branch
 	//	*GitSource_Tag

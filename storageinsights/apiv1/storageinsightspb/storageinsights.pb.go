@@ -22,9 +22,6 @@ package storageinsightspb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -37,6 +34,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1273,11 +1272,13 @@ type ObjectMetadataReportOptions struct {
 	// Filter options for storage systems.
 	//
 	// Types that are assignable to Filter:
+	//
 	//	*ObjectMetadataReportOptions_StorageFilters
 	Filter isObjectMetadataReportOptions_Filter `protobuf_oneof:"filter"`
 	// Options on destination for storage systems.
 	//
 	// Types that are assignable to DestinationOptions:
+	//
 	//	*ObjectMetadataReportOptions_StorageDestinationOptions
 	DestinationOptions isObjectMetadataReportOptions_DestinationOptions `protobuf_oneof:"destination_options"`
 }
@@ -1395,12 +1396,14 @@ type ReportConfig struct {
 	// Format in which report will be published.
 	//
 	// Types that are assignable to ReportFormat:
+	//
 	//	*ReportConfig_CsvOptions
 	//	*ReportConfig_ParquetOptions
 	ReportFormat isReportConfig_ReportFormat `protobuf_oneof:"report_format"`
 	// Configuration options for report contents.
 	//
 	// Types that are assignable to ReportKind:
+	//
 	//	*ReportConfig_ObjectMetadataReportOptions
 	ReportKind isReportConfig_ReportKind `protobuf_oneof:"report_kind"`
 	// Labels as key value pairs

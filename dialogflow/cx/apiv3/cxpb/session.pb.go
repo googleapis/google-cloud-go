@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1023,6 +1022,7 @@ type StreamingDetectIntentResponse struct {
 	// The output response.
 	//
 	// Types that are assignable to Response:
+	//
 	//	*StreamingDetectIntentResponse_RecognitionResult
 	//	*StreamingDetectIntentResponse_DetectIntentResponse
 	Response isStreamingDetectIntentResponse_Response `protobuf_oneof:"response"`
@@ -1172,11 +1172,11 @@ type StreamingRecognitionResult struct {
 	Confidence float32 `protobuf:"fixed32,4,opt,name=confidence,proto3" json:"confidence,omitempty"`
 	// An estimate of the likelihood that the speech recognizer will
 	// not change its guess about this interim recognition result:
-	// * If the value is unspecified or 0.0, Dialogflow didn't compute the
-	//   stability. In particular, Dialogflow will only provide stability for
-	//   `TRANSCRIPT` results with `is_final = false`.
-	// * Otherwise, the value is in (0.0, 1.0] where 0.0 means completely
-	//   unstable and 1.0 means completely stable.
+	//   - If the value is unspecified or 0.0, Dialogflow didn't compute the
+	//     stability. In particular, Dialogflow will only provide stability for
+	//     `TRANSCRIPT` results with `is_final = false`.
+	//   - Otherwise, the value is in (0.0, 1.0] where 0.0 means completely
+	//     unstable and 1.0 means completely stable.
 	Stability float32 `protobuf:"fixed32,6,opt,name=stability,proto3" json:"stability,omitempty"`
 	// Word-specific information for the words recognized by Speech in
 	// [transcript][google.cloud.dialogflow.cx.v3.StreamingRecognitionResult.transcript].
@@ -1303,11 +1303,13 @@ type QueryParameters struct {
 	// In particular, for the Dialogflow Phone Gateway integration, this field has
 	// the form:
 	// ```
-	// {
-	//  "telephony": {
-	//    "caller_id": "+18558363987"
-	//  }
-	// }
+	//
+	//	{
+	//	 "telephony": {
+	//	   "caller_id": "+18558363987"
+	//	 }
+	//	}
+	//
 	// ```
 	Payload *structpb.Struct `protobuf:"bytes,4,opt,name=payload,proto3" json:"payload,omitempty"`
 	// Additional parameters to be put into [session
@@ -1396,13 +1398,15 @@ type QueryParameters struct {
 	// Example:
 	//
 	// ```json
-	// {
-	//   "subscription plan": "Business Premium Plus",
-	//   "devices owned": [
-	//     {"model": "Google Pixel 7"},
-	//     {"model": "Google Pixel Tablet"}
-	//   ]
-	// }
+	//
+	//	{
+	//	  "subscription plan": "Business Premium Plus",
+	//	  "devices owned": [
+	//	    {"model": "Google Pixel 7"},
+	//	    {"model": "Google Pixel Tablet"}
+	//	  ]
+	//	}
+	//
 	// ```
 	EndUserMetadata *structpb.Struct `protobuf:"bytes,18,opt,name=end_user_metadata,json=endUserMetadata,proto3" json:"end_user_metadata,omitempty"`
 	// Optional. Search configuration for UCS search queries.
@@ -1795,6 +1799,7 @@ type QueryInput struct {
 	// Required. The input specification.
 	//
 	// Types that are assignable to Input:
+	//
 	//	*QueryInput_Text
 	//	*QueryInput_Intent
 	//	*QueryInput_Audio
@@ -1937,6 +1942,7 @@ type QueryResult struct {
 	// The original conversational query.
 	//
 	// Types that are assignable to Query:
+	//
 	//	*QueryResult_Text
 	//	*QueryResult_TriggerIntent
 	//	*QueryResult_Transcript
@@ -2009,16 +2015,16 @@ type QueryResult struct {
 	// One of the fields is called "Alternative Matched Intents", which may
 	// aid with debugging. The following describes these intent results:
 	//
-	// - The list is empty if no intent was matched to end-user input.
-	// - Only intents that are referenced in the currently active flow are
-	//   included.
-	// - The matched intent is included.
-	// - Other intents that could have matched end-user input, but did not match
-	//   because they are referenced by intent routes that are out of
-	//   [scope](https://cloud.google.com/dialogflow/cx/docs/concept/handler#scope),
-	//   are included.
-	// - Other intents referenced by intent routes in scope that matched end-user
-	//   input, but had a lower confidence score.
+	//   - The list is empty if no intent was matched to end-user input.
+	//   - Only intents that are referenced in the currently active flow are
+	//     included.
+	//   - The matched intent is included.
+	//   - Other intents that could have matched end-user input, but did not match
+	//     because they are referenced by intent routes that are out of
+	//     [scope](https://cloud.google.com/dialogflow/cx/docs/concept/handler#scope),
+	//     are included.
+	//   - Other intents referenced by intent routes in scope that matched end-user
+	//     input, but had a lower confidence score.
 	DiagnosticInfo *structpb.Struct `protobuf:"bytes,10,opt,name=diagnostic_info,json=diagnosticInfo,proto3" json:"diagnostic_info,omitempty"`
 	// The sentiment analyss result, which depends on
 	// [`analyze_query_text_sentiment`]
@@ -2743,6 +2749,7 @@ type MatchIntentResponse struct {
 	// The original conversational query.
 	//
 	// Types that are assignable to Query:
+	//
 	//	*MatchIntentResponse_Text
 	//	*MatchIntentResponse_TriggerIntent
 	//	*MatchIntentResponse_Transcript
@@ -3167,8 +3174,9 @@ type BoostSpec_ConditionBoostSpec struct {
 	//
 	// * To boost documents with document ID "doc_1" or "doc_2", and
 	// color
-	//   "Red" or "Blue":
-	//     * (id: ANY("doc_1", "doc_2")) AND (color: ANY("Red","Blue"))
+	//
+	//	"Red" or "Blue":
+	//	  * (id: ANY("doc_1", "doc_2")) AND (color: ANY("Red","Blue"))
 	Condition string `protobuf:"bytes,1,opt,name=condition,proto3" json:"condition,omitempty"`
 	// Optional. Strength of the condition boost, which should be in [-1, 1].
 	// Negative boost means demotion. Default is 0.0.

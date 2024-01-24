@@ -21,13 +21,12 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -48,6 +47,7 @@ type Dataset struct {
 	// The dataset metadata that is specific to the problem type.
 	//
 	// Types that are assignable to DatasetMetadata:
+	//
 	//	*Dataset_TranslationDatasetMetadata
 	//	*Dataset_ImageClassificationDatasetMetadata
 	//	*Dataset_TextClassificationDatasetMetadata

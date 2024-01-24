@@ -21,13 +21,12 @@
 package websecurityscannerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -380,6 +379,7 @@ type ScanConfig_Authentication struct {
 	// Authentication configuration
 	//
 	// Types that are assignable to Authentication:
+	//
 	//	*ScanConfig_Authentication_GoogleAccount_
 	//	*ScanConfig_Authentication_CustomAccount_
 	//	*ScanConfig_Authentication_IapCredential_
@@ -673,6 +673,7 @@ type ScanConfig_Authentication_IapCredential struct {
 	// Identity-Aware-Proxy (IAP) Authentication Configuration
 	//
 	// Types that are assignable to IapCredentials:
+	//
 	//	*ScanConfig_Authentication_IapCredential_IapTestServiceAccountInfo_
 	IapCredentials isScanConfig_Authentication_IapCredential_IapCredentials `protobuf_oneof:"iap_credentials"`
 }

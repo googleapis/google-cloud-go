@@ -21,12 +21,11 @@
 package networksecuritypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -96,6 +95,7 @@ type ValidationCA struct {
 	// The type of certificate provider which provides the CA certificate.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*ValidationCA_GrpcEndpoint
 	//	*ValidationCA_CertificateProviderInstance
 	Type isValidationCA_Type `protobuf_oneof:"type"`
@@ -240,6 +240,7 @@ type CertificateProvider struct {
 	// private keys.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*CertificateProvider_GrpcEndpoint
 	//	*CertificateProvider_CertificateProviderInstance
 	Type isCertificateProvider_Type `protobuf_oneof:"type"`

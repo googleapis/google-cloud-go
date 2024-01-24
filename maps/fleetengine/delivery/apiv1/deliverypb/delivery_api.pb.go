@@ -22,9 +22,6 @@ package deliverypb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -923,11 +922,11 @@ type UpdateTaskRequest struct {
 	// The following fields are maintained by Fleet Engine. Do not update
 	// them using `Task.update`.
 	//
-	//   * `last_location`.
-	//   * `last_location_snappable`.
-	//   * `name`.
-	//   * `remaining_vehicle_journey_segments`.
-	//   * `task_outcome_location_source`.
+	//   - `last_location`.
+	//   - `last_location_snappable`.
+	//   - `name`.
+	//   - `remaining_vehicle_journey_segments`.
+	//   - `task_outcome_location_source`.
 	//
 	// Note: You cannot change the value of `task_outcome` once you set it.
 	//

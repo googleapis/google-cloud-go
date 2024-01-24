@@ -21,14 +21,13 @@
 package artifactregistrypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -171,6 +170,7 @@ type Repository struct {
 	// Repository-specific configurations.
 	//
 	// Types that are assignable to FormatConfig:
+	//
 	//	*Repository_MavenConfig
 	FormatConfig isRepository_FormatConfig `protobuf_oneof:"format_config"`
 	// The name of the repository, for example:

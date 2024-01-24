@@ -21,9 +21,6 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	localized_text "google.golang.org/genproto/googleapis/type/localized_text"
 	money "google.golang.org/genproto/googleapis/type/money"
@@ -31,6 +28,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -248,8 +247,8 @@ type RouteTravelAdvisory struct {
 	//
 	// Example:
 	//
-	//     polyline: A ---- B ---- C ---- D ---- E ---- F ---- G
-	//     speed_reading_intervals: [A,C), [C,D), [D,G).
+	//	polyline: A ---- B ---- C ---- D ---- E ---- F ---- G
+	//	speed_reading_intervals: [A,C), [C,D), [D,G).
 	SpeedReadingIntervals []*SpeedReadingInterval `protobuf:"bytes,3,rep,name=speed_reading_intervals,json=speedReadingIntervals,proto3" json:"speed_reading_intervals,omitempty"`
 	// The predicted fuel consumption in microliters.
 	FuelConsumptionMicroliters int64 `protobuf:"varint,5,opt,name=fuel_consumption_microliters,json=fuelConsumptionMicroliters,proto3" json:"fuel_consumption_microliters,omitempty"`
@@ -351,8 +350,8 @@ type RouteLegTravelAdvisory struct {
 	//
 	// Example:
 	//
-	//     polyline: A ---- B ---- C ---- D ---- E ---- F ---- G
-	//     speed_reading_intervals: [A,C), [C,D), [D,G).
+	//	polyline: A ---- B ---- C ---- D ---- E ---- F ---- G
+	//	speed_reading_intervals: [A,C), [C,D), [D,G).
 	SpeedReadingIntervals []*SpeedReadingInterval `protobuf:"bytes,2,rep,name=speed_reading_intervals,json=speedReadingIntervals,proto3" json:"speed_reading_intervals,omitempty"`
 }
 

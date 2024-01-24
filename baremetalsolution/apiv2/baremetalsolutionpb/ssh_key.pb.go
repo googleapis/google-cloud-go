@@ -21,12 +21,11 @@
 package baremetalsolutionpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -236,7 +235,8 @@ type CreateSSHKeyRequest struct {
 	// of the key's resource name.
 	//
 	// This value must match the regex:
-	//   [a-zA-Z0-9@.\-_]{1,64}
+	//
+	//	[a-zA-Z0-9@.\-_]{1,64}
 	SshKeyId string `protobuf:"bytes,3,opt,name=ssh_key_id,json=sshKeyId,proto3" json:"ssh_key_id,omitempty"`
 }
 

@@ -21,13 +21,12 @@
 package dashboardpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -49,6 +48,7 @@ type Widget struct {
 	// Content defines the component used to populate the widget.
 	//
 	// Types that are assignable to Content:
+	//
 	//	*Widget_XyChart
 	//	*Widget_Scorecard
 	//	*Widget_Text

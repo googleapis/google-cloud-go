@@ -21,12 +21,11 @@
 package dashboardpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -116,6 +115,7 @@ type DashboardFilter struct {
 	// The default value used in the filter comparison
 	//
 	// Types that are assignable to DefaultValue:
+	//
 	//	*DashboardFilter_StringValue
 	DefaultValue isDashboardFilter_DefaultValue `protobuf_oneof:"default_value"`
 	// The specified filter type

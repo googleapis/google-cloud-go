@@ -21,14 +21,13 @@
 package secretmanagerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -155,6 +154,7 @@ type Secret struct {
 	// can be reversed.
 	//
 	// Types that are assignable to Expiration:
+	//
 	//	*Secret_ExpireTime
 	//	*Secret_Ttl
 	Expiration isSecret_Expiration `protobuf_oneof:"expiration"`
@@ -460,6 +460,7 @@ type Replication struct {
 	// The replication policy for this secret.
 	//
 	// Types that are assignable to Replication:
+	//
 	//	*Replication_Automatic_
 	//	*Replication_UserManaged_
 	Replication isReplication_Replication `protobuf_oneof:"replication"`
@@ -611,6 +612,7 @@ type ReplicationStatus struct {
 	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	//
 	// Types that are assignable to ReplicationStatus:
+	//
 	//	*ReplicationStatus_Automatic
 	//	*ReplicationStatus_UserManaged
 	ReplicationStatus isReplicationStatus_ReplicationStatus `protobuf_oneof:"replication_status"`

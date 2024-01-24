@@ -21,11 +21,10 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -44,6 +43,7 @@ type Volume struct {
 	// The source for the volume.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Volume_Nfs
 	//	*Volume_Gcs
 	//	*Volume_DeviceName

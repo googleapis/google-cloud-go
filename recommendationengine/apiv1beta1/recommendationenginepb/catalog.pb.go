@@ -21,12 +21,11 @@
 package recommendationenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -119,10 +118,10 @@ type CatalogItem struct {
 	// ["Sports & Fitness" -> "Athletic Clothing" -> "Shoes"], it could be
 	// represented as:
 	//
-	//      "categoryHierarchies": [
-	//        { "categories": ["Shoes & Accessories", "Shoes"]},
-	//        { "categories": ["Sports & Fitness", "Athletic Clothing", "Shoes"] }
-	//      ]
+	//	"categoryHierarchies": [
+	//	  { "categories": ["Shoes & Accessories", "Shoes"]},
+	//	  { "categories": ["Sports & Fitness", "Athletic Clothing", "Shoes"] }
+	//	]
 	CategoryHierarchies []*CatalogItem_CategoryHierarchy `protobuf:"bytes,2,rep,name=category_hierarchies,json=categoryHierarchies,proto3" json:"category_hierarchies,omitempty"`
 	// Required. Catalog item title. UTF-8 encoded string with a length limit of 1
 	// KiB.
@@ -157,6 +156,7 @@ type CatalogItem struct {
 	// Extra catalog item metadata for different recommendation types.
 	//
 	// Types that are assignable to RecommendationType:
+	//
 	//	*CatalogItem_ProductMetadata
 	RecommendationType isCatalogItem_RecommendationType `protobuf_oneof:"recommendation_type"`
 }
@@ -283,6 +283,7 @@ type ProductCatalogItem struct {
 	// Product price. Only one of 'exactPrice'/'priceRange' can be provided.
 	//
 	// Types that are assignable to Price:
+	//
 	//	*ProductCatalogItem_ExactPrice_
 	//	*ProductCatalogItem_PriceRange_
 	Price isProductCatalogItem_Price `protobuf_oneof:"price"`

@@ -21,12 +21,11 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -147,6 +146,7 @@ type BigQueryConnectionSpec struct {
 	// The type of the BigQuery connection.
 	ConnectionType BigQueryConnectionSpec_ConnectionType `protobuf:"varint,1,opt,name=connection_type,json=connectionType,proto3,enum=google.cloud.datacatalog.v1.BigQueryConnectionSpec_ConnectionType" json:"connection_type,omitempty"`
 	// Types that are assignable to ConnectionSpec:
+	//
 	//	*BigQueryConnectionSpec_CloudSql
 	ConnectionSpec isBigQueryConnectionSpec_ConnectionSpec `protobuf_oneof:"connection_spec"`
 	// True if there are credentials attached to the BigQuery connection; false

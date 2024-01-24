@@ -21,14 +21,13 @@
 package firestorepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -63,16 +62,16 @@ type Document struct {
 	// dot-delimited (`.`) string of segments. Each segment is either a simple
 	// field name (defined below) or a quoted field name. For example, the
 	// structured field `"foo" : { map_value: { "x&y" : { string_value: "hello"
-	// }}}` would be represented by the field path `` foo.`x&y` ``.
+	// }}}` would be represented by the field path “ foo.`x&y` “.
 	//
 	// A simple field name contains only characters `a` to `z`, `A` to `Z`,
 	// `0` to `9`, or `_`, and must not start with `0` to `9`. For example,
 	// `foo_bar_17`.
 	//
-	// A quoted field name starts and ends with `` ` `` and
-	// may contain any character. Some characters, including `` ` ``, must be
-	// escaped using a `\`. For example, `` `x&y` `` represents `x&y` and
-	// `` `bak\`tik` `` represents `` bak`tik ``.
+	// A quoted field name starts and ends with “ ` “ and
+	// may contain any character. Some characters, including “ ` “, must be
+	// escaped using a `\`. For example, “ `x&y` “ represents `x&y` and
+	// “ `bak\`tik` “ represents “ bak`tik “.
 	Fields map[string]*Value `protobuf:"bytes,2,rep,name=fields,proto3" json:"fields,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Output only. The time at which the document was created.
 	//
@@ -157,6 +156,7 @@ type Value struct {
 	// Must have a value set.
 	//
 	// Types that are assignable to ValueType:
+	//
 	//	*Value_NullValue
 	//	*Value_BooleanValue
 	//	*Value_IntegerValue

@@ -21,11 +21,8 @@
 package clusterpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -219,7 +218,9 @@ type CreateClusterRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the cluster location using the form:
-	//     `projects/{project_id}/locations/{location_id}`
+	//
+	//	`projects/{project_id}/locations/{location_id}`
+	//
 	// where `location_id` refers to a GCP region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The logical name of the Redis cluster in the customer project
@@ -304,7 +305,9 @@ type ListClustersRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the cluster location using the form:
-	//     `projects/{project_id}/locations/{location_id}`
+	//
+	//	`projects/{project_id}/locations/{location_id}`
+	//
 	// where `location_id` refers to a GCP region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return.
@@ -461,8 +464,8 @@ type UpdateClusterRequest struct {
 	// this field. The elements of the repeated paths field may only include these
 	// fields from [Cluster][google.cloud.redis.cluster.v1.Cluster]:
 	//
-	//  *   `size_gb`
-	//  *   `replica_count`
+	//   - `size_gb`
+	//   - `replica_count`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,1,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// Required. Update description.
 	// Only fields specified in update_mask are updated.
@@ -531,7 +534,9 @@ type GetClusterRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Redis cluster resource name using the form:
-	//     `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+	//
+	//	`projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+	//
 	// where `location_id` refers to a GCP region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -582,7 +587,9 @@ type DeleteClusterRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Redis cluster resource name using the form:
-	//     `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+	//
+	//	`projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+	//
 	// where `location_id` refers to a GCP region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Idempotent request UUID.
@@ -643,7 +650,8 @@ type Cluster struct {
 
 	// Required. Unique name of the resource in this scope including project and
 	// location using the form:
-	//     `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+	//
+	//	`projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The timestamp associated with the cluster creation request.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -1125,6 +1133,7 @@ type Cluster_StateInfo struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Info:
+	//
 	//	*Cluster_StateInfo_UpdateInfo_
 	Info isCluster_StateInfo_Info `protobuf_oneof:"info"`
 }

@@ -22,9 +22,6 @@ package retailpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1764,11 +1763,11 @@ type CatalogServiceClient interface {
 	//
 	// More specifically:
 	//
-	// * PredictionService will only return product IDs from branch {newBranch}.
-	// * SearchService will only return product IDs from branch {newBranch}
-	//   (if branch is not explicitly set).
-	// * UserEventService will only join events with products from branch
-	//   {newBranch}.
+	//   - PredictionService will only return product IDs from branch {newBranch}.
+	//   - SearchService will only return product IDs from branch {newBranch}
+	//     (if branch is not explicitly set).
+	//   - UserEventService will only join events with products from branch
+	//     {newBranch}.
 	SetDefaultBranch(ctx context.Context, in *SetDefaultBranchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Get which branch is currently default branch set by
 	// [CatalogService.SetDefaultBranch][google.cloud.retail.v2alpha.CatalogService.SetDefaultBranch]
@@ -1971,11 +1970,11 @@ type CatalogServiceServer interface {
 	//
 	// More specifically:
 	//
-	// * PredictionService will only return product IDs from branch {newBranch}.
-	// * SearchService will only return product IDs from branch {newBranch}
-	//   (if branch is not explicitly set).
-	// * UserEventService will only join events with products from branch
-	//   {newBranch}.
+	//   - PredictionService will only return product IDs from branch {newBranch}.
+	//   - SearchService will only return product IDs from branch {newBranch}
+	//     (if branch is not explicitly set).
+	//   - UserEventService will only join events with products from branch
+	//     {newBranch}.
 	SetDefaultBranch(context.Context, *SetDefaultBranchRequest) (*emptypb.Empty, error)
 	// Get which branch is currently default branch set by
 	// [CatalogService.SetDefaultBranch][google.cloud.retail.v2alpha.CatalogService.SetDefaultBranch]

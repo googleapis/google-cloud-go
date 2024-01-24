@@ -21,13 +21,12 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -101,6 +100,7 @@ type Model struct {
 	// Must match the metadata type of the dataset used to train the model.
 	//
 	// Types that are assignable to ModelMetadata:
+	//
 	//	*Model_TranslationModelMetadata
 	//	*Model_ImageClassificationModelMetadata
 	//	*Model_TextClassificationModelMetadata

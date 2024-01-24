@@ -22,9 +22,6 @@ package apigeeregistrypb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1496,7 +1495,7 @@ type RollbackApiSpecRequest struct {
 	// Required. The revision ID to roll back to.
 	// It must be a revision of the same spec.
 	//
-	//   Example: `c7cfa2a8`
+	//	Example: `c7cfa2a8`
 	RevisionId string `protobuf:"bytes,2,opt,name=revision_id,json=revisionId,proto3" json:"revision_id,omitempty"`
 }
 
@@ -2198,7 +2197,7 @@ type RollbackApiDeploymentRequest struct {
 	// Required. The revision ID to roll back to.
 	// It must be a revision of the same deployment.
 	//
-	//   Example: `c7cfa2a8`
+	//	Example: `c7cfa2a8`
 	RevisionId string `protobuf:"bytes,2,opt,name=revision_id,json=revisionId,proto3" json:"revision_id,omitempty"`
 }
 

@@ -22,9 +22,6 @@ package dataflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -524,8 +523,8 @@ type Job struct {
 	//
 	// Google Cloud Storage:
 	//
-	//    storage.googleapis.com/{bucket}/{object}
-	//    bucket.storage.googleapis.com/{object}
+	//	storage.googleapis.com/{bucket}/{object}
+	//	bucket.storage.googleapis.com/{object}
 	TempFiles []string `protobuf:"bytes,16,rep,name=temp_files,json=tempFiles,proto3" json:"temp_files,omitempty"`
 	// User-defined labels for this job.
 	//
@@ -1684,6 +1683,7 @@ type DisplayData struct {
 	// set.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*DisplayData_StrValue
 	//	*DisplayData_Int64Value
 	//	*DisplayData_FloatValue

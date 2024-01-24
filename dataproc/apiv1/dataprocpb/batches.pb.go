@@ -21,11 +21,8 @@
 package dataprocpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -483,6 +482,7 @@ type Batch struct {
 	// The application/framework-specific portion of the batch configuration.
 	//
 	// Types that are assignable to BatchConfig:
+	//
 	//	*Batch_PysparkBatch
 	//	*Batch_SparkBatch
 	//	*Batch_SparkRBatch
@@ -826,6 +826,7 @@ type SparkBatch struct {
 	// name in `main_class`.
 	//
 	// Types that are assignable to Driver:
+	//
 	//	*SparkBatch_MainJarFileUri
 	//	*SparkBatch_MainClass
 	Driver isSparkBatch_Driver `protobuf_oneof:"driver"`

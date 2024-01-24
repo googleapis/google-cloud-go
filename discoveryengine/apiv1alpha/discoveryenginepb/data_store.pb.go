@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -119,9 +118,9 @@ type DataStore struct {
 	// The solutions that the data store enrolls. Available solutions for each
 	// [industry_vertical][google.cloud.discoveryengine.v1alpha.DataStore.industry_vertical]:
 	//
-	// * `MEDIA`: `SOLUTION_TYPE_RECOMMENDATION` and `SOLUTION_TYPE_SEARCH`.
-	// * `SITE_SEARCH`: `SOLUTION_TYPE_SEARCH` is automatically enrolled. Other
-	//   solutions cannot be enrolled.
+	//   - `MEDIA`: `SOLUTION_TYPE_RECOMMENDATION` and `SOLUTION_TYPE_SEARCH`.
+	//   - `SITE_SEARCH`: `SOLUTION_TYPE_SEARCH` is automatically enrolled. Other
+	//     solutions cannot be enrolled.
 	SolutionTypes []SolutionType `protobuf:"varint,5,rep,packed,name=solution_types,json=solutionTypes,proto3,enum=google.cloud.discoveryengine.v1alpha.SolutionType" json:"solution_types,omitempty"`
 	// Output only. The id of the default
 	// [Schema][google.cloud.discoveryengine.v1alpha.Schema] asscociated to this

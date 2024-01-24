@@ -21,11 +21,8 @@
 package gkehubpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -243,9 +242,9 @@ type Membership struct {
 	//
 	// `membership_id` must be a valid RFC 1123 compliant DNS label:
 	//
-	//   1. At most 63 characters in length
-	//   2. It must consist of lower case alphanumeric characters or `-`
-	//   3. It must start and end with an alphanumeric character
+	//  1. At most 63 characters in length
+	//  2. It must consist of lower case alphanumeric characters or `-`
+	//  3. It must start and end with an alphanumeric character
 	//
 	// Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`,
 	// with a maximum length of 63 characters.
@@ -258,6 +257,7 @@ type Membership struct {
 	// Type of resource represented by this Membership
 	//
 	// Types that are assignable to Type:
+	//
 	//	*Membership_Endpoint
 	Type isMembership_Type `protobuf_oneof:"type"`
 	// Output only. State of the Membership resource.
@@ -456,6 +456,7 @@ type MembershipEndpoint struct {
 	// Cluster information of the registered cluster.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*MembershipEndpoint_GkeCluster
 	//	*MembershipEndpoint_OnPremCluster
 	//	*MembershipEndpoint_MultiCloudCluster
@@ -467,11 +468,11 @@ type MembershipEndpoint struct {
 	// Optional. The in-cluster Kubernetes Resources that should be applied for a
 	// correctly registered cluster, in the steady state. These resources:
 	//
-	//   * Ensure that the cluster is exclusively registered to one and only one
+	//   - Ensure that the cluster is exclusively registered to one and only one
 	//     Hub Membership.
-	//   * Propagate Workload Pool Information available in the Membership
+	//   - Propagate Workload Pool Information available in the Membership
 	//     Authority field.
-	//   * Ensure proper initial configuration of default Hub Features.
+	//   - Ensure proper initial configuration of default Hub Features.
 	KubernetesResource *KubernetesResource `protobuf:"bytes,6,opt,name=kubernetes_resource,json=kubernetesResource,proto3" json:"kubernetes_resource,omitempty"`
 }
 
@@ -846,7 +847,7 @@ type GkeCluster struct {
 
 	// Immutable. Self-link of the GCP resource for the GKE cluster. For example:
 	//
-	//     //container.googleapis.com/projects/my-project/locations/us-west1-a/clusters/my-cluster
+	//	//container.googleapis.com/projects/my-project/locations/us-west1-a/clusters/my-cluster
 	//
 	// Zonal clusters are also supported.
 	ResourceLink string `protobuf:"bytes,1,opt,name=resource_link,json=resourceLink,proto3" json:"resource_link,omitempty"`
@@ -910,8 +911,8 @@ type OnPremCluster struct {
 	// Immutable. Self-link of the GCP resource for the GKE On-Prem cluster. For
 	// example:
 	//
-	//  //gkeonprem.googleapis.com/projects/my-project/locations/us-west1-a/vmwareClusters/my-cluster
-	//  //gkeonprem.googleapis.com/projects/my-project/locations/us-west1-a/bareMetalClusters/my-cluster
+	//	//gkeonprem.googleapis.com/projects/my-project/locations/us-west1-a/vmwareClusters/my-cluster
+	//	//gkeonprem.googleapis.com/projects/my-project/locations/us-west1-a/bareMetalClusters/my-cluster
 	ResourceLink string `protobuf:"bytes,1,opt,name=resource_link,json=resourceLink,proto3" json:"resource_link,omitempty"`
 	// Output only. If cluster_missing is set then it denotes that
 	// API(gkeonprem.googleapis.com) resource for this GKE On-Prem cluster no
@@ -992,9 +993,9 @@ type MultiCloudCluster struct {
 	// Immutable. Self-link of the GCP resource for the GKE Multi-Cloud cluster.
 	// For example:
 	//
-	//  //gkemulticloud.googleapis.com/projects/my-project/locations/us-west1-a/awsClusters/my-cluster
-	//  //gkemulticloud.googleapis.com/projects/my-project/locations/us-west1-a/azureClusters/my-cluster
-	//  //gkemulticloud.googleapis.com/projects/my-project/locations/us-west1-a/attachedClusters/my-cluster
+	//	//gkemulticloud.googleapis.com/projects/my-project/locations/us-west1-a/awsClusters/my-cluster
+	//	//gkemulticloud.googleapis.com/projects/my-project/locations/us-west1-a/azureClusters/my-cluster
+	//	//gkemulticloud.googleapis.com/projects/my-project/locations/us-west1-a/attachedClusters/my-cluster
 	ResourceLink string `protobuf:"bytes,1,opt,name=resource_link,json=resourceLink,proto3" json:"resource_link,omitempty"`
 	// Output only. If cluster_missing is set then it denotes that
 	// API(gkemulticloud.googleapis.com) resource for this GKE Multi-Cloud cluster
@@ -1547,19 +1548,19 @@ type ListMembershipsRequest struct {
 	//
 	//   - Name is `bar` in project `foo-proj` and location `global`:
 	//
-	//       name = "projects/foo-proj/locations/global/membership/bar"
+	//     name = "projects/foo-proj/locations/global/membership/bar"
 	//
 	//   - Memberships that have a label called `foo`:
 	//
-	//       labels.foo:*
+	//     labels.foo:*
 	//
 	//   - Memberships that have a label called `foo` whose value is `bar`:
 	//
-	//       labels.foo = bar
+	//     labels.foo = bar
 	//
 	//   - Memberships in the CREATING state:
 	//
-	//       state = CREATING
+	//     state = CREATING
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. One or more fields to compare and use to sort the output.
 	// See https://google.aip.dev/132#ordering.
@@ -1764,9 +1765,9 @@ type CreateMembershipRequest struct {
 	// Required. Client chosen ID for the membership. `membership_id` must be a
 	// valid RFC 1123 compliant DNS label:
 	//
-	//   1. At most 63 characters in length
-	//   2. It must consist of lower case alphanumeric characters or `-`
-	//   3. It must start and end with an alphanumeric character
+	//  1. At most 63 characters in length
+	//  2. It must consist of lower case alphanumeric characters or `-`
+	//  3. It must start and end with an alphanumeric character
 	//
 	// Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`,
 	// with a maximum length of 63 characters.
@@ -2455,10 +2456,10 @@ type ValidateExclusivityResponse struct {
 
 	// The validation result.
 	//
-	// * `OK` means that exclusivity is validated, assuming the manifest produced
-	//    by GenerateExclusivityManifest is successfully applied.
-	// * `ALREADY_EXISTS` means that the Membership CRD is already owned by
-	//    another Hub. See `status.message` for more information.
+	//   - `OK` means that exclusivity is validated, assuming the manifest produced
+	//     by GenerateExclusivityManifest is successfully applied.
+	//   - `ALREADY_EXISTS` means that the Membership CRD is already owned by
+	//     another Hub. See `status.message` for more information.
 	Status *status.Status `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
 }
 

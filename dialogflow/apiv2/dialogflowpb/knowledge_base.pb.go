@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -142,7 +141,7 @@ type ListKnowledgeBasesRequest struct {
 	// The filter expression used to filter knowledge bases returned by the list
 	// method. The expression has the following syntax:
 	//
-	//   <field> <operator> <value> [AND <field> <operator> <value>] ...
+	//	<field> <operator> <value> [AND <field> <operator> <value>] ...
 	//
 	// The following fields and operators are supported:
 	//
@@ -151,14 +150,14 @@ type ListKnowledgeBasesRequest struct {
 	//
 	// Examples:
 	//
-	// * 'language_code=en-us' matches knowledge bases with en-us language code.
-	// * 'display_name:articles' matches knowledge bases whose display name
-	//   contains "articles".
-	// * 'display_name:"Best Articles"' matches knowledge bases whose display
-	//   name contains "Best Articles".
-	// * 'language_code=en-gb AND display_name=articles' matches all knowledge
-	//   bases whose display name contains "articles" and whose language code is
-	//   "en-gb".
+	//   - 'language_code=en-us' matches knowledge bases with en-us language code.
+	//   - 'display_name:articles' matches knowledge bases whose display name
+	//     contains "articles".
+	//   - 'display_name:"Best Articles"' matches knowledge bases whose display
+	//     name contains "Best Articles".
+	//   - 'language_code=en-gb AND display_name=articles' matches all knowledge
+	//     bases whose display name contains "articles" and whose language code is
+	//     "en-gb".
 	//
 	// Note: An empty filter string (i.e. "") is a no-op and will result in no
 	// filtering.

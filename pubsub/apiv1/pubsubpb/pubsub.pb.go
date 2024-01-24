@@ -22,9 +22,6 @@ package pubsubpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -499,6 +498,7 @@ type IngestionDataSourceSettings struct {
 	// Only one source type can have settings set.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*IngestionDataSourceSettings_AwsKinesis_
 	Source isIngestionDataSourceSettings_Source `protobuf_oneof:"source"`
 }
@@ -2094,12 +2094,14 @@ type PushConfig struct {
 	// authenticated push.
 	//
 	// Types that are assignable to AuthenticationMethod:
+	//
 	//	*PushConfig_OidcToken_
 	AuthenticationMethod isPushConfig_AuthenticationMethod `protobuf_oneof:"authentication_method"`
 	// The format of the delivered message to the push endpoint is defined by
 	// the chosen wrapper. When unset, `PubsubWrapper` is used.
 	//
 	// Types that are assignable to Wrapper:
+	//
 	//	*PushConfig_PubsubWrapper_
 	//	*PushConfig_NoWrapper_
 	Wrapper isPushConfig_Wrapper `protobuf_oneof:"wrapper"`
@@ -2347,6 +2349,7 @@ type CloudStorageConfig struct {
 	// Defaults to text format.
 	//
 	// Types that are assignable to OutputFormat:
+	//
 	//	*CloudStorageConfig_TextConfig_
 	//	*CloudStorageConfig_AvroConfig_
 	OutputFormat isCloudStorageConfig_OutputFormat `protobuf_oneof:"output_format"`
@@ -3432,12 +3435,14 @@ type CreateSnapshotRequest struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The subscription whose backlog the snapshot retains.
 	// Specifically, the created snapshot is guaranteed to retain:
-	//  (a) The existing backlog on the subscription. More precisely, this is
-	//      defined as the messages in the subscription's backlog that are
-	//      unacknowledged upon the successful completion of the
-	//      `CreateSnapshot` request; as well as:
-	//  (b) Any messages published to the subscription's topic following the
-	//      successful completion of the CreateSnapshot request.
+	//
+	//	(a) The existing backlog on the subscription. More precisely, this is
+	//	    defined as the messages in the subscription's backlog that are
+	//	    unacknowledged upon the successful completion of the
+	//	    `CreateSnapshot` request; as well as:
+	//	(b) Any messages published to the subscription's topic following the
+	//	    successful completion of the CreateSnapshot request.
+	//
 	// Format is `projects/{project}/subscriptions/{sub}`.
 	Subscription string `protobuf:"bytes,2,opt,name=subscription,proto3" json:"subscription,omitempty"`
 	// See [Creating and managing
@@ -3885,6 +3890,7 @@ type SeekRequest struct {
 	// Required. The subscription to affect.
 	Subscription string `protobuf:"bytes,1,opt,name=subscription,proto3" json:"subscription,omitempty"`
 	// Types that are assignable to Target:
+	//
 	//	*SeekRequest_Time
 	//	*SeekRequest_Snapshot
 	Target isSeekRequest_Target `protobuf_oneof:"target"`

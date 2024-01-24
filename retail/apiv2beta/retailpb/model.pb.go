@@ -21,13 +21,12 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -317,7 +316,6 @@ type Model struct {
 	// `frequently-bought-together`, `page-optimization`, `similar-items`,
 	// `buy-it-again`, `on-sale-items`, and `recently-viewed`(readonly value).
 	//
-	//
 	// This field together with
 	// [optimization_objective][google.cloud.retail.v2beta.Model.optimization_objective]
 	// describe model metadata to use to control model training and serving.
@@ -333,7 +331,8 @@ type Model struct {
 	// Currently supported
 	// values: `ctr`, `cvr`, `revenue-per-order`.
 	//
-	//  If not specified, we choose default based on model type.
+	//	If not specified, we choose default based on model type.
+	//
 	// Default depends on type of recommendation:
 	//
 	// `recommended-for-you` => `ctr`
