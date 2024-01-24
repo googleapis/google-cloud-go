@@ -1661,7 +1661,7 @@ type BoostSpecs struct {
 	// Optional. Data Stores where the boosting configuration is applied. The full
 	// names of the referenced data stores. Formats:
 	// `projects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}`
-	// `projects/{project}/locations/{location}/dataStores/{data_store}
+	// `projects/{project}/locations/{location}/dataStores/{data_store}`
 	DataStores []string `protobuf:"bytes,1,rep,name=data_stores,json=dataStores,proto3" json:"data_stores,omitempty"`
 	// Optional. A list of boosting specifications.
 	Spec []*BoostSpec `protobuf:"bytes,2,rep,name=spec,proto3" json:"spec,omitempty"`
@@ -1722,7 +1722,7 @@ type FilterSpecs struct {
 	// Optional. Data Stores where the boosting configuration is applied. The full
 	// names of the referenced data stores. Formats:
 	// `projects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}`
-	// `projects/{project}/locations/{location}/dataStores/{data_store}
+	// `projects/{project}/locations/{location}/dataStores/{data_store}`
 	DataStores []string `protobuf:"bytes,1,rep,name=data_stores,json=dataStores,proto3" json:"data_stores,omitempty"`
 	// Optional. The filter expression to be applied.
 	// Expression syntax is documented at

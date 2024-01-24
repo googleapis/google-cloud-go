@@ -12,6 +12,144 @@
   },
   "snippets": [
     {
+      "regionTag": "retail_v2alpha_generated_AnalyticsService_ExportAnalyticsMetrics_sync",
+      "title": "retail ExportAnalyticsMetrics Sample",
+      "description": "ExportAnalyticsMetrics exports analytics metrics.\n\n`Operation.response` is of type `ExportAnalyticsMetricsResponse`.\n`Operation.metadata` is of type `ExportMetadata`.",
+      "file": "AnalyticsClient/ExportAnalyticsMetrics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportAnalyticsMetrics",
+        "fullName": "google.cloud.retail.v2alpha.AnalyticsClient.ExportAnalyticsMetrics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.ExportAnalyticsMetricsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportAnalyticsMetricsOperation",
+        "client": {
+          "shortName": "AnalyticsClient",
+          "fullName": "google.cloud.retail.v2alpha.AnalyticsClient"
+        },
+        "method": {
+          "shortName": "ExportAnalyticsMetrics",
+          "fullName": "google.cloud.retail.v2alpha.AnalyticsService.ExportAnalyticsMetrics",
+          "service": {
+            "shortName": "AnalyticsService",
+            "fullName": "google.cloud.retail.v2alpha.AnalyticsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2alpha_generated_AnalyticsService_GetOperation_sync",
+      "title": "retail GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AnalyticsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.retail.v2alpha.AnalyticsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "AnalyticsClient",
+          "fullName": "google.cloud.retail.v2alpha.AnalyticsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2alpha_generated_AnalyticsService_ListOperations_sync",
+      "title": "retail ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "AnalyticsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.retail.v2alpha.AnalyticsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "AnalyticsClient",
+          "fullName": "google.cloud.retail.v2alpha.AnalyticsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "retail_v2alpha_generated_CatalogService_AddCatalogAttribute_sync",
       "title": "retail AddCatalogAttribute Sample",
       "description": "AddCatalogAttribute adds the specified\n[CatalogAttribute][google.cloud.retail.v2alpha.CatalogAttribute] to the\n[AttributesConfig][google.cloud.retail.v2alpha.AttributesConfig].\n\nIf the [CatalogAttribute][google.cloud.retail.v2alpha.CatalogAttribute] to\nadd already exists, an ALREADY_EXISTS error is returned.",

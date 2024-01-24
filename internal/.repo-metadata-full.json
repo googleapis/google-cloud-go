@@ -2159,6 +2159,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/securityposture/apiv1": {
+    "api_shortname": "securityposture",
+    "distribution_name": "cloud.google.com/go/securityposture/apiv1",
+    "description": "Security Posture API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/securityposture/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/servicecontrol/apiv1": {
     "api_shortname": "servicecontrol",
     "distribution_name": "cloud.google.com/go/servicecontrol/apiv1",
@@ -2186,6 +2196,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/servicedirectory/latest/apiv1beta1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/servicehealth/apiv1": {
+    "api_shortname": "servicehealth",
+    "distribution_name": "cloud.google.com/go/servicehealth/apiv1",
+    "description": "Service Health API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/servicehealth/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },

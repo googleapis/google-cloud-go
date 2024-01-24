@@ -379,7 +379,7 @@ type Tool struct {
 	// [FunctionCall][content.part.function_call] in the response. The next
 	// conversation turn may contain a
 	// [FunctionResponse][content.part.function_response]
-	// with the [conent.role] "function" generation context for the next model
+	// with the [content.role] "function" generation context for the next model
 	// turn.
 	FunctionDeclarations []*FunctionDeclaration `protobuf:"bytes,1,rep,name=function_declarations,json=functionDeclarations,proto3" json:"function_declarations,omitempty"`
 }
