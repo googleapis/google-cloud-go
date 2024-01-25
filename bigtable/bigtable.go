@@ -278,6 +278,18 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 		return err
 	}, retryOptions...)
 
+	// Convert error to grpc status error
+	if err != nil {
+		if errStatus, ok := status.FromError(err); ok {
+			return status.Error(errStatus.Code(), errStatus.Message())
+		}
+
+		ctxStatus := status.FromContextError(err)
+		if ctxStatus.Code() != codes.Unknown {
+			return status.Error(ctxStatus.Code(), ctxStatus.Message())
+		}
+	}
+
 	return err
 }
 
@@ -285,6 +297,8 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 // A missing row will return nil for both Row and error.
 func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
 	var r Row
+
+	opts = append([]ReadOption{LimitRows(1)}, opts...)
 	err := t.ReadRows(ctx, SingleRow(row), func(rr Row) bool {
 		r = rr
 		return true
