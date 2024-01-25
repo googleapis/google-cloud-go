@@ -121,11 +121,15 @@ func TokenSourceEnv(ctx context.Context, envVar string, scopes ...string) oauth2
 		}
 		return ts
 	}
-	conf, err := jwtConfigFromFile(key, scopes)
+
+	creds, err := credsFromFile(ctx, key, scopes)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return conf.TokenSource(ctx)
+	if creds == nil {
+		log.Fatal("credential generation yielded nil creds")
+	}
+	return creds.TokenSource
 }
 
 func impersonatedTokenSource(ctx context.Context, scopes []string) oauth2.TokenSource {
@@ -163,6 +167,20 @@ func jwtConfigFromFile(filename string, scopes []string) (*jwt.Config, error) {
 		return nil, fmt.Errorf("google.JWTConfigFromJSON: %v", err)
 	}
 	return conf, nil
+}
+
+// credsFromFile reads the given JSON private key file, and returns the credentials
+// built from the file.
+// If the filename is empty, it returns (nil, nil).
+func credsFromFile(ctx context.Context, filename string, scopes []string) (*google.Credentials, error) {
+	if filename == "" {
+		return nil, nil
+	}
+	jsonKey, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("cannot read the JSON key file, err: %v", err)
+	}
+	return google.CredentialsFromJSON(ctx, jsonKey, scopes...)
 }
 
 // CanReplay reports whether an integration test can be run in replay mode.
