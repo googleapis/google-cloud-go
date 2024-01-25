@@ -1020,10 +1020,16 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
-	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, p string, client *Client) {
 		h := testHelper{t}
 		// Use a larger blob to test chunking logic. This is a little over 5MB.
 		content := bytes.Repeat([]byte("a"), 5<<20)
+
+		name := p + "-" + bucketIDs.New()
+		err := client.Bucket(name).Create(ctx, testutil.ProjID(), nil)
+		if err != nil {
+			t.Fatalf("Create Bucket: %v", err)
+		}
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
@@ -1034,7 +1040,7 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 
 		r, err := obj.NewReader(ctx)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("NewReader: %v", err)
 		}
 		defer r.Close()
 

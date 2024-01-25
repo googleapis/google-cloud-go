@@ -20,7 +20,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/url"
 	"os"
 
@@ -28,7 +27,6 @@ import (
 	"cloud.google.com/go/internal/trace"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
-	"cloud.google.com/go/storage/internal/codec"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -38,8 +36,47 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+
+	//"google.golang.org/protobuf/proto"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+
+	"github.com/golang/protobuf/proto"
 )
+
+const Name = ""
+
+// func init() {
+// 	encoding.RegisterCodec(ReadObjectCodec{})
+// }
+
+// codec is a Codec implementation with protobuf. It is the default codec for gRPC.
+type ReadObjectCodec struct{}
+
+func (ReadObjectCodec) Marshal(v any) ([]byte, error) {
+	vv, ok := v.(proto.Message)
+	if !ok {
+		return nil, fmt.Errorf("failed to marshal, message is %T, want proto.Message", v)
+	}
+	return proto.Marshal(vv)
+}
+
+func (ReadObjectCodec) Unmarshal(data []byte, v any) error {
+	fmt.Println("helloworld")
+	vv, ok := v.(proto.Message)
+	if !ok {
+		return fmt.Errorf("failed to unmarshal, message is %T, want proto.Message", v)
+	}
+
+	if err := proto.Unmarshal(data, vv); err != nil {
+		return fmt.Errorf("failed to unmarshal: %v\n", err)
+	}
+
+	return nil
+}
+
+func (ReadObjectCodec) Name() string {
+	return Name
+}
 
 const (
 	// defaultConnPoolSize is the default number of channels
@@ -169,6 +206,9 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 		b.Location = "US"
 	}
 
+	callopts := s.gax
+	callopts = append(s.gax, gax.WithGRPCOptions(grpc.ForceCodec(ReadObjectCodec{})))
+
 	req := &storagepb.CreateBucketRequest{
 		Parent:   fmt.Sprintf("projects/%s", globalProjectAlias),
 		Bucket:   b,
@@ -181,7 +221,7 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 
 	var battrs *BucketAttrs
 	err := run(ctx, func(ctx context.Context) error {
-		res, err := c.raw.CreateBucket(ctx, req, s.gax...)
+		res, err := c.raw.CreateBucket(ctx, req, callopts...)
 
 		battrs = newBucketFromProto(res)
 
@@ -910,9 +950,6 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 	s := callSettings(c.settings, opts...)
 
-	// Use custom codec for ReadObject calls.
-	callOpts := append(s.gax, gax.WithGRPCOptions(grpc.ForceCodec(codec.ReadObjectCodec{})))
-
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
@@ -957,10 +994,13 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		var err error
 
 		err = run(cc, func(ctx context.Context) error {
-			log.Printf("opts: %+v", s.gax)
+			callOpts := s.gax
+			//callOpts = append(callOpts, gax.WithGRPCOptions(grpc.ForceCodec(ReadObjectCodec{}), grpc.CallContentSubtype("ReadObjectCodec")))
+			callOpts = append(callOpts, gax.WithGRPCOptions(grpc.ForceCodec(ReadObjectCodec{})))
+
 			stream, err = c.raw.ReadObject(cc, req, callOpts...)
 			if err != nil {
-				return err
+				return fmt.Errorf("readobject %v", err)
 			}
 
 			msg, err = stream.Recv()
