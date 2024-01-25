@@ -1019,8 +1019,19 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 	})
 }
 
+func TestIntegration_Codec(t *testing.T) {
+	client, err := NewGRPCClient(context.Background())
+	if err != nil {
+		t.Fatalf("creating client: %v", err)
+	}
+	h := testHelper{t}
+
+	h.mustCreate(client.Bucket(grpcTestPrefix+uidSpace.New()), testutil.ProjID(), nil)
+
+}
+
 func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
-	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		h := testHelper{t}
 		// Use a larger blob to test chunking logic. This is a little over 5MB.
 		content := bytes.Repeat([]byte("a"), 5<<20)

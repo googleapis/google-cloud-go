@@ -2,8 +2,9 @@ package codec
 
 import (
 	"fmt"
+	"log"
 
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 // Custom codec for readObject to reduce data copies during download.
@@ -21,6 +22,7 @@ type ReadObjectCodec struct{}
 
 func (ReadObjectCodec) Marshal(v any) ([]byte, error) {
 	vv, ok := v.(proto.Message)
+	log.Printf("marshaling %v", vv.ProtoReflect().Descriptor())
 	if !ok {
 		return nil, fmt.Errorf("failed to marshal, message is %T, want proto.Message", v)
 	}
@@ -29,6 +31,8 @@ func (ReadObjectCodec) Marshal(v any) ([]byte, error) {
 
 func (ReadObjectCodec) Unmarshal(data []byte, v any) error {
 	vv, ok := v.(proto.Message)
+	log.Printf("marshaling %v", vv.ProtoReflect().Descriptor())
+
 	if !ok {
 		return fmt.Errorf("failed to unmarshal, message is %T, want proto.Message", v)
 	}

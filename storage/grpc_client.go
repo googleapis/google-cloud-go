@@ -161,6 +161,7 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 	}
 
 	s := callSettings(c.settings, opts...)
+	s.gax = append(s.gax, gax.WithGRPCOptions(grpc.ForceCodec(codec.ReadObjectCodec{})))
 	b := attrs.toProtoBucket()
 	b.Project = toProjectResource(project)
 	// If there is lifecycle information but no location, explicitly set
