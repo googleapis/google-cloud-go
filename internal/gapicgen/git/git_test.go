@@ -37,36 +37,36 @@ func TestParseConventionalCommitPkg(t *testing.T) {
 
 func TestFormatChanges(t *testing.T) {
 	tests := []struct {
-		name          string
-		changes       []*ChangeInfo
-		onlyGapics    bool
-		want          string
+		name       string
+		changes    []*ChangeInfo
+		onlyGapics bool
+		want       string
 	}{
 		{
-			name:          "basic",
-			changes:       []*ChangeInfo{{Title: "fix: foo", Body: "bar"}},
-			want:          "\nChanges:\n\nfix: foo\n  bar\n\n",
+			name:    "basic",
+			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar"}},
+			want:    "\nChanges:\n\nfix: foo\n  bar\n\n",
 		},
 		{
-			name:          "breaking change",
-			changes:       []*ChangeInfo{{Title: "feat!: breaking change", Body: "BREAKING CHANGE: The world is breaking."}},
-			want:          "\nChanges:\n\nfeat!: breaking change\n  BREAKING CHANGE: The world is breaking.\n\n",
+			name:    "breaking change",
+			changes: []*ChangeInfo{{Title: "feat!: breaking change", Body: "BREAKING CHANGE: The world is breaking."}},
+			want:    "\nChanges:\n\nfeat!: breaking change\n  BREAKING CHANGE: The world is breaking.\n\n",
 		},
 		{
-			name:          "multi-lined body indented",
-			changes:       []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}},
-			want:          "\nChanges:\n\nfix: foo\n  bar\n  baz\n\n",
+			name:    "multi-lined body indented",
+			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}},
+			want:    "\nChanges:\n\nfix: foo\n  bar\n  baz\n\n",
 		},
 		{
-			name:          "multi-lined body indented, multiple changes",
-			changes:       []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}, {Title: "fix: baz", Body: "foo\nbar"}},
-			want:          "\nChanges:\n\nfix: foo\n  bar\n  baz\n\nfix: baz\n  foo\n  bar\n\n",
+			name:    "multi-lined body indented, multiple changes",
+			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}, {Title: "fix: baz", Body: "foo\nbar"}},
+			want:    "\nChanges:\n\nfix: foo\n  bar\n  baz\n\nfix: baz\n  foo\n  bar\n\n",
 		},
 		{
-			name:          "no package, filtered",
-			changes:       []*ChangeInfo{{Title: "fix: foo", Body: "bar"}},
-			onlyGapics:    true,
-			want:          "",
+			name:       "no package, filtered",
+			changes:    []*ChangeInfo{{Title: "fix: foo", Body: "bar"}},
+			onlyGapics: true,
+			want:       "",
 		},
 	}
 
