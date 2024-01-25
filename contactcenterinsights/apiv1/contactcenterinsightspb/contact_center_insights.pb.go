@@ -21,11 +21,8 @@
 package contactcenterinsightspb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -4428,13 +4427,13 @@ type IngestConversationsRequest_ConversationConfig struct {
 	// An opaque, user-specified string representing the human agent who handled
 	// the conversations.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// Optional. For audio conversations, this field indicates which of the
-	// channels, 1 or 2, contains the agent. Note that this must be set for
-	// audio conversations to be properly displayed and analyzed.
+	// Optional. Indicates which of the channels, 1 or 2, contains the agent.
+	// Note that this must be set for conversations to be properly displayed and
+	// analyzed.
 	AgentChannel int32 `protobuf:"varint,2,opt,name=agent_channel,json=agentChannel,proto3" json:"agent_channel,omitempty"`
-	// Optional. For audio conversations, this field indicates which of the
-	// channels, 1 or 2, contains the customer. Note that this must be set for
-	// audio conversations to be properly displayed and analyzed.
+	// Optional. Indicates which of the channels, 1 or 2, contains the agent.
+	// Note that this must be set for conversations to be properly displayed and
+	// analyzed.
 	CustomerChannel int32 `protobuf:"varint,3,opt,name=customer_channel,json=customerChannel,proto3" json:"customer_channel,omitempty"`
 }
 
