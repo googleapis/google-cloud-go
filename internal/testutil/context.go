@@ -32,6 +32,7 @@ const (
 	envProjID      = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
 	envPrivateKey  = "GCLOUD_TESTS_GOLANG_KEY"
 	envImpersonate = "GCLOUD_TESTS_IMPERSONATE_CREDENTIALS"
+	envUniverse    = "GCLOUD_TESTS_UNIVERSE_DOMAIN"
 )
 
 // ProjID returns the project ID to use in integration tests, or the empty
@@ -45,6 +46,19 @@ func ProjID() string {
 // this repo.
 func Credentials(ctx context.Context, scopes ...string) *google.Credentials {
 	return CredentialsEnv(ctx, envPrivateKey, scopes...)
+}
+
+// UniverseFromEnv will try to extract the universe to use in integrations tests,
+// using the standard environment variables for tests in this repo.
+func UniverseFromEnv(ctx context.Context, scopes ...string) (string, error) {
+	if v, ok := os.LookupEnv(envUniverse); ok && v != "" {
+		return v, nil
+	}
+	ce := CredentialsEnv(ctx, envPrivateKey, scopes...)
+	if ce == nil {
+		return "", errors.New("no credentials returned")
+	}
+	return ce.GetUniverseDomain()
 }
 
 // CredentialsEnv returns the credentials to use in integration tests, or nil
