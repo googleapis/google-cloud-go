@@ -22,9 +22,6 @@ package fleetenginepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -37,6 +34,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1426,7 +1425,9 @@ func (x *ListVehiclesResponse) GetTotalSize() int64 {
 	return 0
 }
 
-// Describes intermediate points along a route.
+// Describes intermediate points along a route for a `VehicleMatch` in a
+// `SearchVehiclesResponse`. This concept is represented as a `TripWaypoint` in
+// all other endpoints.
 type Waypoint struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
