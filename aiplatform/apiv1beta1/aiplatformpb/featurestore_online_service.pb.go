@@ -428,6 +428,7 @@ type FeatureValue struct {
 	// Value for the feature.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*FeatureValue_BoolValue
 	//	*FeatureValue_DoubleValue
 	//	*FeatureValue_Int64Value
@@ -851,6 +852,7 @@ type ReadFeatureValuesResponse_EntityView_Data struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Data:
+	//
 	//	*ReadFeatureValuesResponse_EntityView_Data_Value
 	//	*ReadFeatureValuesResponse_EntityView_Data_Values
 	Data isReadFeatureValuesResponse_EntityView_Data_Data `protobuf_oneof:"data"`

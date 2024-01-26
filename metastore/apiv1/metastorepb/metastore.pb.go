@@ -872,6 +872,7 @@ type Service struct {
 	// technology (the software that serves metastore queries).
 	//
 	// Types that are assignable to MetastoreConfig:
+	//
 	//	*Service_HiveMetastoreConfig
 	MetastoreConfig isService_MetastoreConfig `protobuf_oneof:"metastore_config"`
 	// Immutable. The relative resource name of the metastore service, in the
@@ -1370,6 +1371,7 @@ type Secret struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Value:
+	//
 	//	*Secret_CloudSecret
 	Value isSecret_Value `protobuf_oneof:"value"`
 }
@@ -1727,6 +1729,7 @@ type MetadataImport struct {
 	// The metadata to be imported.
 	//
 	// Types that are assignable to Metadata:
+	//
 	//	*MetadataImport_DatabaseDump_
 	Metadata isMetadataImport_Metadata `protobuf_oneof:"metadata"`
 	// Immutable. The relative resource name of the metadata import, of the form:
@@ -1851,6 +1854,7 @@ type MetadataExport struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Destination:
+	//
 	//	*MetadataExport_DestinationGcsUri
 	Destination isMetadataExport_Destination `protobuf_oneof:"destination"`
 	// Output only. The time when the export started.
@@ -2164,6 +2168,7 @@ type ScalingConfig struct {
 	// scaling factor.
 	//
 	// Types that are assignable to ScalingModel:
+	//
 	//	*ScalingConfig_InstanceSize_
 	//	*ScalingConfig_ScalingFactor
 	ScalingModel isScalingConfig_ScalingModel `protobuf_oneof:"scaling_model"`
@@ -3533,6 +3538,7 @@ type ExportMetadataRequest struct {
 	// Required. Destination that metadata is exported to.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ExportMetadataRequest_DestinationGcsFolder
 	Destination isExportMetadataRequest_Destination `protobuf_oneof:"destination"`
 	// Required. The relative resource name of the metastore service to run
@@ -4343,6 +4349,7 @@ type NetworkConfig_Consumer struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to VpcResource:
+	//
 	//	*NetworkConfig_Consumer_Subnetwork
 	VpcResource isNetworkConfig_Consumer_VpcResource `protobuf_oneof:"vpc_resource"`
 	// Output only. The URI of the endpoint used to access the metastore

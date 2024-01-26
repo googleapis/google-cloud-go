@@ -195,6 +195,7 @@ type Restrictions struct {
 	// restrictions per key.
 	//
 	// Types that are assignable to ClientRestrictions:
+	//
 	//	*Restrictions_BrowserKeyRestrictions
 	//	*Restrictions_ServerKeyRestrictions
 	//	*Restrictions_AndroidKeyRestrictions
@@ -589,10 +590,11 @@ type ApiTarget struct {
 	// If empty, all methods for the service are allowed. A wildcard
 	// (*) can be used as the last symbol.
 	// Valid examples:
-	//   `google.cloud.translate.v2.TranslateService.GetSupportedLanguage`
-	//   `TranslateText`
-	//   `Get*`
-	//   `translate.googleapis.com.Get*`
+	//
+	//	`google.cloud.translate.v2.TranslateService.GetSupportedLanguage`
+	//	`TranslateText`
+	//	`Get*`
+	//	`translate.googleapis.com.Get*`
 	Methods []string `protobuf:"bytes,2,rep,name=methods,proto3" json:"methods,omitempty"`
 }
 

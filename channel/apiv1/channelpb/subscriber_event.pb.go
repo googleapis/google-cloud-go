@@ -314,6 +314,7 @@ type SubscriberEvent struct {
 	// This is a required field.
 	//
 	// Types that are assignable to Event:
+	//
 	//	*SubscriberEvent_CustomerEvent
 	//	*SubscriberEvent_EntitlementEvent
 	Event isSubscriberEvent_Event `protobuf_oneof:"event"`

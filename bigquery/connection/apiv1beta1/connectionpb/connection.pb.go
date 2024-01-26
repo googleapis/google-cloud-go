@@ -541,6 +541,7 @@ type Connection struct {
 	// Properties specific to the underlying data source.
 	//
 	// Types that are assignable to Properties:
+	//
 	//	*Connection_CloudSql
 	Properties isConnection_Properties `protobuf_oneof:"properties"`
 	// Output only. The creation timestamp of the connection.
@@ -659,6 +660,7 @@ type ConnectionCredential struct {
 	// Credential specific to the underlying data source.
 	//
 	// Types that are assignable to Credential:
+	//
 	//	*ConnectionCredential_CloudSql
 	Credential isConnectionCredential_Credential `protobuf_oneof:"credential"`
 }

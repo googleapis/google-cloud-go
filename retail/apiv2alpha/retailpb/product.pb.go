@@ -189,6 +189,7 @@ type Product struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Expiration:
+	//
 	//	*Product_ExpireTime
 	//	*Product_Ttl
 	Expiration isProduct_Expiration `protobuf_oneof:"expiration"`
@@ -267,7 +268,6 @@ type Product struct {
 	// belonging to several parallel categories. Strongly recommended using the
 	// full path for better search / recommendation quality.
 	//
-	//
 	// To represent full path of category, use '>' sign to separate different
 	// hierarchies. If '>' is part of the category name, replace it with
 	// other character(s).
@@ -277,10 +277,10 @@ type Product struct {
 	// ["Sports & Fitness" -> "Athletic Clothing" -> "Shoes"], it could be
 	// represented as:
 	//
-	//      "categories": [
-	//        "Shoes & Accessories > Shoes",
-	//        "Sports & Fitness > Athletic Clothing > Shoes"
-	//      ]
+	//	"categories": [
+	//	  "Shoes & Accessories > Shoes",
+	//	  "Sports & Fitness > Athletic Clothing > Shoes"
+	//	]
 	//
 	// Must be set for
 	// [Type.PRIMARY][google.cloud.retail.v2alpha.Product.Type.PRIMARY]
@@ -358,16 +358,16 @@ type Product struct {
 	// This field needs to pass all below criteria, otherwise an INVALID_ARGUMENT
 	// error is returned:
 	//
-	// * Max entries count: 200.
-	// * The key must be a UTF-8 encoded string with a length limit of 128
-	//   characters.
-	// * For indexable attribute, the key must match the pattern:
-	//   `[a-zA-Z0-9][a-zA-Z0-9_]*`. For example, `key0LikeThis` or
-	//   `KEY_1_LIKE_THIS`.
-	// * For text attributes, at most 400 values are allowed. Empty values are not
-	//   allowed. Each value must be a non-empty UTF-8 encoded string with a
-	//   length limit of 256 characters.
-	// * For number attributes, at most 400 values are allowed.
+	//   - Max entries count: 200.
+	//   - The key must be a UTF-8 encoded string with a length limit of 128
+	//     characters.
+	//   - For indexable attribute, the key must match the pattern:
+	//     `[a-zA-Z0-9][a-zA-Z0-9_]*`. For example, `key0LikeThis` or
+	//     `KEY_1_LIKE_THIS`.
+	//   - For text attributes, at most 400 values are allowed. Empty values are not
+	//     allowed. Each value must be a non-empty UTF-8 encoded string with a
+	//     length limit of 256 characters.
+	//   - For number attributes, at most 400 values are allowed.
 	Attributes map[string]*CustomAttribute `protobuf:"bytes,12,rep,name=attributes,proto3" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Custom tags associated with the product.
 	//

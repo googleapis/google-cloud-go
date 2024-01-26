@@ -355,6 +355,7 @@ type TranslationTaskDetails struct {
 	// The language specific settings for the translation task.
 	//
 	// Types that are assignable to LanguageOptions:
+	//
 	//	*TranslationTaskDetails_TeradataOptions
 	//	*TranslationTaskDetails_BteqOptions
 	LanguageOptions isTranslationTaskDetails_LanguageOptions `protobuf_oneof:"language_options"`

@@ -123,6 +123,7 @@ type Indicator_ProcessSignature struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Signature:
+	//
 	//	*Indicator_ProcessSignature_MemoryHashSignature_
 	//	*Indicator_ProcessSignature_YaraRuleSignature_
 	Signature isIndicator_ProcessSignature_Signature `protobuf_oneof:"signature"`

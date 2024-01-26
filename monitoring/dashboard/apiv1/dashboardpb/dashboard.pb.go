@@ -58,6 +58,7 @@ type Dashboard struct {
 	// A dashboard's root container element that defines the layout style.
 	//
 	// Types that are assignable to Layout:
+	//
 	//	*Dashboard_GridLayout
 	//	*Dashboard_MosaicLayout
 	//	*Dashboard_RowLayout

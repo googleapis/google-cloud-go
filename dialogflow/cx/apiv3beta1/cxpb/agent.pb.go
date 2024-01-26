@@ -922,6 +922,7 @@ type ExportAgentResponse struct {
 	// The exported agent.
 	//
 	// Types that are assignable to Agent:
+	//
 	//	*ExportAgentResponse_AgentUri
 	//	*ExportAgentResponse_AgentContent
 	//	*ExportAgentResponse_CommitSha
@@ -1032,6 +1033,7 @@ type RestoreAgentRequest struct {
 	// Required. The agent to restore.
 	//
 	// Types that are assignable to Agent:
+	//
 	//	*RestoreAgentRequest_AgentUri
 	//	*RestoreAgentRequest_AgentContent
 	//	*RestoreAgentRequest_GitSource_
@@ -1460,6 +1462,7 @@ type Agent_GitIntegrationSettings struct {
 	// The git settings to specific systems.
 	//
 	// Types that are assignable to GitSettings:
+	//
 	//	*Agent_GitIntegrationSettings_GithubSettings_
 	GitSettings isAgent_GitIntegrationSettings_GitSettings `protobuf_oneof:"git_settings"`
 }
@@ -2779,9 +2782,10 @@ type AgentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [ExportAgentResponse][google.cloud.dialogflow.cx.v3beta1.ExportAgentResponse]
 	ExportAgent(ctx context.Context, in *ExportAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Restores the specified agent from a binary file.
@@ -2793,10 +2797,10 @@ type AgentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train a flow prior to sending it queries. See the
 	// [training
@@ -2948,9 +2952,10 @@ type AgentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`:
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`:
+	//
 	// [ExportAgentResponse][google.cloud.dialogflow.cx.v3beta1.ExportAgentResponse]
 	ExportAgent(context.Context, *ExportAgentRequest) (*longrunningpb.Operation, error)
 	// Restores the specified agent from a binary file.
@@ -2962,10 +2967,10 @@ type AgentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	//
 	// Note: You should always train a flow prior to sending it queries. See the
 	// [training

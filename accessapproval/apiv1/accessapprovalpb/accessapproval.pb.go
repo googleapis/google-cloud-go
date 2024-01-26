@@ -101,12 +101,12 @@ const (
 	// Customer made a request or raised an issue that required the principal to
 	// access customer data. `detail` is of the form ("#####" is the issue ID):
 	//
-	//   * "Feedback Report: #####"
-	//   * "Case Number: #####"
-	//   * "Case ID: #####"
-	//   * "E-PIN Reference: #####"
-	//   * "Google-#####"
-	//   * "T-#####"
+	//   - "Feedback Report: #####"
+	//   - "Case Number: #####"
+	//   - "Case ID: #####"
+	//   - "E-PIN Reference: #####"
+	//   - "Google-#####"
+	//   - "T-#####"
 	AccessReason_CUSTOMER_INITIATED_SUPPORT AccessReason_Type = 1
 	// The principal accessed customer data in order to diagnose or resolve a
 	// suspected issue in services. Often this access is used to confirm that
@@ -184,14 +184,14 @@ type AccessLocations struct {
 	// of a country code.
 	// Possible Region Codes:
 	//
-	//   * ASI: Asia
-	//   * EUR: Europe
-	//   * OCE: Oceania
-	//   * AFR: Africa
-	//   * NAM: North America
-	//   * SAM: South America
-	//   * ANT: Antarctica
-	//   * ANY: Any location
+	//   - ASI: Asia
+	//   - EUR: Europe
+	//   - OCE: Oceania
+	//   - AFR: Africa
+	//   - NAM: North America
+	//   - SAM: South America
+	//   - ANT: Antarctica
+	//   - ANY: Any location
 	PrincipalOfficeCountry string `protobuf:"bytes,1,opt,name=principal_office_country,json=principalOfficeCountry,proto3" json:"principal_office_country,omitempty"`
 	// Physical location of the principal at the time of the access. A
 	// two-letter country code (ISO 3166-1 alpha-2), such as "US", "DE" or "GB" or
@@ -199,14 +199,14 @@ type AccessLocations struct {
 	// a region code instead of a country code.
 	// Possible Region Codes:
 	//
-	//   * ASI: Asia
-	//   * EUR: Europe
-	//   * OCE: Oceania
-	//   * AFR: Africa
-	//   * NAM: North America
-	//   * SAM: South America
-	//   * ANT: Antarctica
-	//   * ANY: Any location
+	//   - ASI: Asia
+	//   - EUR: Europe
+	//   - OCE: Oceania
+	//   - AFR: Africa
+	//   - NAM: North America
+	//   - SAM: South America
+	//   - ANT: Antarctica
+	//   - ANY: Any location
 	PrincipalPhysicalLocationCountry string `protobuf:"bytes,2,opt,name=principal_physical_location_country,json=principalPhysicalLocationCountry,proto3" json:"principal_physical_location_country,omitempty"`
 }
 
@@ -324,6 +324,7 @@ type SignatureInfo struct {
 	// How this signature may be verified.
 	//
 	// Types that are assignable to VerificationInfo:
+	//
 	//	*SignatureInfo_GooglePublicKeyPem
 	//	*SignatureInfo_CustomerKmsKeyVersion
 	VerificationInfo isSignatureInfo_VerificationInfo `protobuf_oneof:"verification_info"`
@@ -635,6 +636,7 @@ type ApprovalRequest struct {
 	// The current decision on the approval request.
 	//
 	// Types that are assignable to Decision:
+	//
 	//	*ApprovalRequest_Approve
 	//	*ApprovalRequest_Dismiss
 	Decision isApprovalRequest_Decision `protobuf_oneof:"decision"`
@@ -769,55 +771,55 @@ type EnrolledService struct {
 	// The product for which Access Approval will be enrolled. Allowed values are
 	// listed below (case-sensitive):
 	//
-	//   * all
-	//   * GA
-	//   * App Engine
-	//   * BigQuery
-	//   * Cloud Bigtable
-	//   * Cloud Key Management Service
-	//   * Compute Engine
-	//   * Cloud Dataflow
-	//   * Cloud Dataproc
-	//   * Cloud DLP
-	//   * Cloud EKM
-	//   * Cloud HSM
-	//   * Cloud Identity and Access Management
-	//   * Cloud Logging
-	//   * Cloud Pub/Sub
-	//   * Cloud Spanner
-	//   * Cloud SQL
-	//   * Cloud Storage
-	//   * Google Kubernetes Engine
-	//   * Organization Policy Serivice
-	//   * Persistent Disk
-	//   * Resource Manager
-	//   * Secret Manager
-	//   * Speaker ID
+	//   - all
+	//   - GA
+	//   - App Engine
+	//   - BigQuery
+	//   - Cloud Bigtable
+	//   - Cloud Key Management Service
+	//   - Compute Engine
+	//   - Cloud Dataflow
+	//   - Cloud Dataproc
+	//   - Cloud DLP
+	//   - Cloud EKM
+	//   - Cloud HSM
+	//   - Cloud Identity and Access Management
+	//   - Cloud Logging
+	//   - Cloud Pub/Sub
+	//   - Cloud Spanner
+	//   - Cloud SQL
+	//   - Cloud Storage
+	//   - Google Kubernetes Engine
+	//   - Organization Policy Serivice
+	//   - Persistent Disk
+	//   - Resource Manager
+	//   - Secret Manager
+	//   - Speaker ID
 	//
 	// Note: These values are supported as input for legacy purposes, but will not
 	// be returned from the API.
 	//
-	//   * all
-	//   * ga-only
-	//   * appengine.googleapis.com
-	//   * bigquery.googleapis.com
-	//   * bigtable.googleapis.com
-	//   * container.googleapis.com
-	//   * cloudkms.googleapis.com
-	//   * cloudresourcemanager.googleapis.com
-	//   * cloudsql.googleapis.com
-	//   * compute.googleapis.com
-	//   * dataflow.googleapis.com
-	//   * dataproc.googleapis.com
-	//   * dlp.googleapis.com
-	//   * iam.googleapis.com
-	//   * logging.googleapis.com
-	//   * orgpolicy.googleapis.com
-	//   * pubsub.googleapis.com
-	//   * spanner.googleapis.com
-	//   * secretmanager.googleapis.com
-	//   * speakerid.googleapis.com
-	//   * storage.googleapis.com
+	//   - all
+	//   - ga-only
+	//   - appengine.googleapis.com
+	//   - bigquery.googleapis.com
+	//   - bigtable.googleapis.com
+	//   - container.googleapis.com
+	//   - cloudkms.googleapis.com
+	//   - cloudresourcemanager.googleapis.com
+	//   - cloudsql.googleapis.com
+	//   - compute.googleapis.com
+	//   - dataflow.googleapis.com
+	//   - dataproc.googleapis.com
+	//   - dlp.googleapis.com
+	//   - iam.googleapis.com
+	//   - logging.googleapis.com
+	//   - orgpolicy.googleapis.com
+	//   - pubsub.googleapis.com
+	//   - spanner.googleapis.com
+	//   - secretmanager.googleapis.com
+	//   - speakerid.googleapis.com
+	//   - storage.googleapis.com
 	//
 	// Calls to UpdateAccessApprovalSettings using 'all' or any of the
 	// XXX.googleapis.com will be translated to the associated product name
@@ -887,9 +889,9 @@ type AccessApprovalSettings struct {
 
 	// The resource name of the settings. Format is one of:
 	//
-	//   * "projects/{project}/accessApprovalSettings"
-	//   * "folders/{folder}/accessApprovalSettings"
-	//   * "organizations/{organization}/accessApprovalSettings"
+	//   - "projects/{project}/accessApprovalSettings"
+	//   - "folders/{folder}/accessApprovalSettings"
+	//   - "organizations/{organization}/accessApprovalSettings"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// A list of email addresses to which notifications relating to approval
 	// requests should be sent. Notifications relating to a resource will be sent
@@ -1023,9 +1025,9 @@ type AccessApprovalServiceAccount struct {
 
 	// The resource name of the Access Approval service account. Format is one of:
 	//
-	//   * "projects/{project}/serviceAccount"
-	//   * "folders/{folder}/serviceAccount"
-	//   * "organizations/{organization}/serviceAccount"
+	//   - "projects/{project}/serviceAccount"
+	//   - "folders/{folder}/serviceAccount"
+	//   - "organizations/{organization}/serviceAccount"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Email address of the service account.
 	AccountEmail string `protobuf:"bytes,2,opt,name=account_email,json=accountEmail,proto3" json:"account_email,omitempty"`
@@ -1089,15 +1091,15 @@ type ListApprovalRequestsMessage struct {
 	// A filter on the type of approval requests to retrieve. Must be one of the
 	// following values:
 	//
-	//   * [not set]: Requests that are pending or have active approvals.
-	//   * ALL: All requests.
-	//   * PENDING: Only pending requests.
-	//   * ACTIVE: Only active (i.e. currently approved) requests.
-	//   * DISMISSED: Only requests that have been dismissed, or requests that
+	//   - [not set]: Requests that are pending or have active approvals.
+	//   - ALL: All requests.
+	//   - PENDING: Only pending requests.
+	//   - ACTIVE: Only active (i.e. currently approved) requests.
+	//   - DISMISSED: Only requests that have been dismissed, or requests that
 	//     are not approved and past expiration.
-	//   * EXPIRED: Only requests that have been approved, and the approval has
+	//   - EXPIRED: Only requests that have been approved, and the approval has
 	//     expired.
-	//   * HISTORY: Active, dismissed and expired requests.
+	//   - HISTORY: Active, dismissed and expired requests.
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Requested page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`

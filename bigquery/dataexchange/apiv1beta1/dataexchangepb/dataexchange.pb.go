@@ -595,6 +595,7 @@ type Listing struct {
 	// Listing source.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Listing_BigqueryDataset
 	Source isListing_Source `protobuf_oneof:"source"`
 	// Output only. The resource name of the listing.
@@ -1631,6 +1632,7 @@ type SubscribeListingRequest struct {
 	// Resulting destination of the listing that you subscribed to.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*SubscribeListingRequest_DestinationDataset
 	Destination isSubscribeListingRequest_Destination `protobuf_oneof:"destination"`
 	// Required. Resource name of the listing that you want to subscribe to.

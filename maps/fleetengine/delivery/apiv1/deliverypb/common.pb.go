@@ -199,6 +199,7 @@ type DeliveryVehicleAttribute struct {
 	// The attribute's value, can be in string, bool, or double type.
 	//
 	// Types that are assignable to DeliveryVehicleAttributeValue:
+	//
 	//	*DeliveryVehicleAttribute_StringValue
 	//	*DeliveryVehicleAttribute_BoolValue
 	//	*DeliveryVehicleAttribute_NumberValue
@@ -706,6 +707,7 @@ type TaskAttribute struct {
 	// set the TaskAttribute string_value will be stored as the empty string "".
 	//
 	// Types that are assignable to TaskAttributeValue:
+	//
 	//	*TaskAttribute_StringValue
 	//	*TaskAttribute_BoolValue
 	//	*TaskAttribute_NumberValue

@@ -172,8 +172,10 @@ type Permission struct {
 
 	// Output only. Identifier. The permission name. A unique name will be
 	// generated on create. Examples:
-	//     tunedModels/{tuned_model}/permissions/{permission}
-	//     corpora/{corpus}/permissions/{permission}
+	//
+	//	tunedModels/{tuned_model}/permissions/{permission}
+	//	corpora/{corpus}/permissions/{permission}
+	//
 	// Output only.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Immutable. The type of the grantee.

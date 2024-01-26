@@ -351,6 +351,7 @@ type MigrationTask struct {
 	// The details of the task.
 	//
 	// Types that are assignable to TaskDetails:
+	//
 	//	*MigrationTask_AssessmentTaskDetails
 	//	*MigrationTask_TranslationTaskDetails
 	TaskDetails isMigrationTask_TaskDetails `protobuf_oneof:"task_details"`
@@ -653,6 +654,7 @@ type MigrationTaskOrchestrationResult struct {
 	// Details specific to the task type.
 	//
 	// Types that are assignable to Details:
+	//
 	//	*MigrationTaskOrchestrationResult_AssessmentDetails
 	Details isMigrationTaskOrchestrationResult_Details `protobuf_oneof:"details"`
 }

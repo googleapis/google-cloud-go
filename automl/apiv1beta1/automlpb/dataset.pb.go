@@ -48,6 +48,7 @@ type Dataset struct {
 	// The dataset metadata that is specific to the problem type.
 	//
 	// Types that are assignable to DatasetMetadata:
+	//
 	//	*Dataset_TranslationDatasetMetadata
 	//	*Dataset_ImageClassificationDatasetMetadata
 	//	*Dataset_TextClassificationDatasetMetadata

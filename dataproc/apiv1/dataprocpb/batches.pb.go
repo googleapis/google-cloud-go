@@ -483,6 +483,7 @@ type Batch struct {
 	// The application/framework-specific portion of the batch configuration.
 	//
 	// Types that are assignable to BatchConfig:
+	//
 	//	*Batch_PysparkBatch
 	//	*Batch_SparkBatch
 	//	*Batch_SparkRBatch
@@ -826,6 +827,7 @@ type SparkBatch struct {
 	// name in `main_class`.
 	//
 	// Types that are assignable to Driver:
+	//
 	//	*SparkBatch_MainJarFileUri
 	//	*SparkBatch_MainClass
 	Driver isSparkBatch_Driver `protobuf_oneof:"driver"`

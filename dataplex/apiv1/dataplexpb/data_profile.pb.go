@@ -631,6 +631,7 @@ type DataProfileResult_Profile_Field_ProfileInfo struct {
 	// available, if mode is REPEATABLE.
 	//
 	// Types that are assignable to FieldInfo:
+	//
 	//	*DataProfileResult_Profile_Field_ProfileInfo_StringProfile
 	//	*DataProfileResult_Profile_Field_ProfileInfo_IntegerProfile
 	//	*DataProfileResult_Profile_Field_ProfileInfo_DoubleProfile

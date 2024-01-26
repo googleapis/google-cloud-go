@@ -127,6 +127,7 @@ type DataType struct {
 	// Details of DataType-s that need additional specification.
 	//
 	// Types that are assignable to Details:
+	//
 	//	*DataType_ListElementType
 	//	*DataType_StructType
 	//	*DataType_TimeFormat

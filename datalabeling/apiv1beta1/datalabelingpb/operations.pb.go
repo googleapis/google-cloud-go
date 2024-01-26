@@ -341,6 +341,7 @@ type LabelOperationMetadata struct {
 	// Ouptut only. Details of specific label operation.
 	//
 	// Types that are assignable to Details:
+	//
 	//	*LabelOperationMetadata_ImageClassificationDetails
 	//	*LabelOperationMetadata_ImageBoundingBoxDetails
 	//	*LabelOperationMetadata_ImageBoundingPolyDetails

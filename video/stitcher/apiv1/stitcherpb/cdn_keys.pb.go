@@ -47,6 +47,7 @@ type CdnKey struct {
 	// Configuration associated with the CDN key.
 	//
 	// Types that are assignable to CdnKeyConfig:
+	//
 	//	*CdnKey_GoogleCdnKey
 	//	*CdnKey_AkamaiCdnKey
 	//	*CdnKey_MediaCdnKey

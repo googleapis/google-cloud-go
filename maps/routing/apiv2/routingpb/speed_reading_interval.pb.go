@@ -106,6 +106,7 @@ type SpeedReadingInterval struct {
 	// The ending index of this interval in the polyline.
 	EndPolylinePointIndex *int32 `protobuf:"varint,2,opt,name=end_polyline_point_index,json=endPolylinePointIndex,proto3,oneof" json:"end_polyline_point_index,omitempty"`
 	// Types that are assignable to SpeedType:
+	//
 	//	*SpeedReadingInterval_Speed_
 	SpeedType isSpeedReadingInterval_SpeedType `protobuf_oneof:"speed_type"`
 }

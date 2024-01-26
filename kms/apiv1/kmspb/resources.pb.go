@@ -933,6 +933,7 @@ type CryptoKey struct {
 	// Controls the rate of automatic rotation.
 	//
 	// Types that are assignable to RotationSchedule:
+	//
 	//	*CryptoKey_RotationPeriod
 	RotationSchedule isCryptoKey_RotationSchedule `protobuf_oneof:"rotation_schedule"`
 	// A template describing settings for new

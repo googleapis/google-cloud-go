@@ -104,6 +104,7 @@ type BigQueryTableSpec struct {
 	// Output only.
 	//
 	// Types that are assignable to TypeSpec:
+	//
 	//	*BigQueryTableSpec_ViewSpec
 	//	*BigQueryTableSpec_TableSpec
 	TypeSpec isBigQueryTableSpec_TypeSpec `protobuf_oneof:"type_spec"`

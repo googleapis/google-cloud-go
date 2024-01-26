@@ -264,6 +264,7 @@ type ReportTaskProgressRequest struct {
 	// Intermediate progress of the current task.
 	//
 	// Types that are assignable to Progress:
+	//
 	//	*ReportTaskProgressRequest_ApplyPatchesTaskProgress
 	//	*ReportTaskProgressRequest_ExecStepTaskProgress
 	Progress isReportTaskProgressRequest_Progress `protobuf_oneof:"progress"`
@@ -435,6 +436,7 @@ type ReportTaskCompleteRequest struct {
 	// Final output details of the current task.
 	//
 	// Types that are assignable to Output:
+	//
 	//	*ReportTaskCompleteRequest_ApplyPatchesTaskOutput
 	//	*ReportTaskCompleteRequest_ExecStepTaskOutput
 	Output isReportTaskCompleteRequest_Output `protobuf_oneof:"output"`

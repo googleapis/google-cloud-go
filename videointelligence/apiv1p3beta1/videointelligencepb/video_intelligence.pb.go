@@ -3349,6 +3349,7 @@ type ObjectTrackingAnnotation struct {
 	// and streaming modes.
 	//
 	// Types that are assignable to TrackInfo:
+	//
 	//	*ObjectTrackingAnnotation_Segment
 	//	*ObjectTrackingAnnotation_TrackId
 	TrackInfo isObjectTrackingAnnotation_TrackInfo `protobuf_oneof:"track_info"`
@@ -3544,6 +3545,7 @@ type StreamingAnnotateVideoRequest struct {
 	// video content.
 	//
 	// Types that are assignable to StreamingRequest:
+	//
 	//	*StreamingAnnotateVideoRequest_VideoConfig
 	//	*StreamingAnnotateVideoRequest_InputContent
 	StreamingRequest isStreamingAnnotateVideoRequest_StreamingRequest `protobuf_oneof:"streaming_request"`
@@ -3640,6 +3642,7 @@ type StreamingVideoConfig struct {
 	// Config for requested annotation feature.
 	//
 	// Types that are assignable to StreamingConfig:
+	//
 	//	*StreamingVideoConfig_ShotChangeDetectionConfig
 	//	*StreamingVideoConfig_LabelDetectionConfig
 	//	*StreamingVideoConfig_ExplicitContentDetectionConfig

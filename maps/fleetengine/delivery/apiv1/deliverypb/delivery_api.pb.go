@@ -923,11 +923,11 @@ type UpdateTaskRequest struct {
 	// The following fields are maintained by Fleet Engine. Do not update
 	// them using `Task.update`.
 	//
-	//   * `last_location`.
-	//   * `last_location_snappable`.
-	//   * `name`.
-	//   * `remaining_vehicle_journey_segments`.
-	//   * `task_outcome_location_source`.
+	//   - `last_location`.
+	//   - `last_location_snappable`.
+	//   - `name`.
+	//   - `remaining_vehicle_journey_segments`.
+	//   - `task_outcome_location_source`.
 	//
 	// Note: You cannot change the value of `task_outcome` once you set it.
 	//

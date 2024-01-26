@@ -367,6 +367,7 @@ type LabelValue struct {
 	// The label value can be a bool, int64, or string.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*LabelValue_BoolValue
 	//	*LabelValue_Int64Value
 	//	*LabelValue_StringValue

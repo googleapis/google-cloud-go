@@ -44,6 +44,7 @@ type FeatureGroup struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Source:
+	//
 	//	*FeatureGroup_BigQuery_
 	Source isFeatureGroup_Source `protobuf_oneof:"source"`
 	// Identifier. Name of the FeatureGroup. Format:

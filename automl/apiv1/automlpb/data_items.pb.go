@@ -194,6 +194,7 @@ type Image struct {
 	// For Predict calls [image_bytes][google.cloud.automl.v1.Image.image_bytes] must be set .
 	//
 	// Types that are assignable to Data:
+	//
 	//	*Image_ImageBytes
 	Data isImage_Data `protobuf_oneof:"data"`
 	// Output only. HTTP URI to the thumbnail image.
@@ -498,6 +499,7 @@ type ExamplePayload struct {
 	// Required. The example data.
 	//
 	// Types that are assignable to Payload:
+	//
 	//	*ExamplePayload_Image
 	//	*ExamplePayload_TextSnippet
 	//	*ExamplePayload_Document

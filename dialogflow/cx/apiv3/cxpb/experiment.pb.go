@@ -475,6 +475,7 @@ type VariantsHistory struct {
 	// experiment.
 	//
 	// Types that are assignable to Variants:
+	//
 	//	*VariantsHistory_VersionVariants
 	Variants isVariantsHistory_Variants `protobuf_oneof:"variants"`
 	// Update time of the variants.
@@ -1168,6 +1169,7 @@ type Experiment_Definition struct {
 	// experiment.
 	//
 	// Types that are assignable to Variants:
+	//
 	//	*Experiment_Definition_VersionVariants
 	Variants isExperiment_Definition_Variants `protobuf_oneof:"variants"`
 }
@@ -1390,6 +1392,7 @@ type Experiment_Result_Metric struct {
 	// The actual value of the metric.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*Experiment_Result_Metric_Ratio
 	//	*Experiment_Result_Metric_Count
 	Value isExperiment_Result_Metric_Value `protobuf_oneof:"value"`

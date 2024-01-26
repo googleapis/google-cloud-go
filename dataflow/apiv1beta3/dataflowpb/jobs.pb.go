@@ -524,8 +524,8 @@ type Job struct {
 	//
 	// Google Cloud Storage:
 	//
-	//    storage.googleapis.com/{bucket}/{object}
-	//    bucket.storage.googleapis.com/{object}
+	//	storage.googleapis.com/{bucket}/{object}
+	//	bucket.storage.googleapis.com/{object}
 	TempFiles []string `protobuf:"bytes,16,rep,name=temp_files,json=tempFiles,proto3" json:"temp_files,omitempty"`
 	// User-defined labels for this job.
 	//
@@ -1684,6 +1684,7 @@ type DisplayData struct {
 	// set.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*DisplayData_StrValue
 	//	*DisplayData_Int64Value
 	//	*DisplayData_FloatValue

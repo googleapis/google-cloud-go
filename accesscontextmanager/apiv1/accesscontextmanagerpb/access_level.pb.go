@@ -109,6 +109,7 @@ type AccessLevel struct {
 	// Required. Describes the necessary conditions for the level to apply.
 	//
 	// Types that are assignable to Level:
+	//
 	//	*AccessLevel_Basic
 	//	*AccessLevel_Custom
 	Level isAccessLevel_Level `protobuf_oneof:"level"`

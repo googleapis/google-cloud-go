@@ -947,13 +947,13 @@ type ListServiceRolloutsRequest struct {
 	// Required. Use `filter` to return subset of rollouts.
 	// The following filters are supported:
 	//
-	//  -- By [status]
-	//  [google.api.servicemanagement.v1.Rollout.RolloutStatus]. For example,
-	//  `filter='status=SUCCESS'`
+	//	-- By [status]
+	//	[google.api.servicemanagement.v1.Rollout.RolloutStatus]. For example,
+	//	`filter='status=SUCCESS'`
 	//
-	//  -- By [strategy]
-	//  [google.api.servicemanagement.v1.Rollout.strategy]. For example,
-	//  `filter='strategy=TrafficPercentStrategy'`
+	//	-- By [strategy]
+	//	[google.api.servicemanagement.v1.Rollout.strategy]. For example,
+	//	`filter='strategy=TrafficPercentStrategy'`
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 

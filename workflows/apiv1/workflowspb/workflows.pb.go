@@ -262,6 +262,7 @@ type Workflow struct {
 	// revision.
 	//
 	// Types that are assignable to SourceCode:
+	//
 	//	*Workflow_SourceContents
 	SourceCode isWorkflow_SourceCode `protobuf_oneof:"source_code"`
 	// Optional. The resource name of a KMS crypto key used to encrypt or decrypt

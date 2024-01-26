@@ -417,6 +417,7 @@ type TransferConfig struct {
 	// The desination of the transfer config.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*TransferConfig_DestinationDatasetId
 	Destination isTransferConfig_Destination `protobuf_oneof:"destination"`
 	// User specified display name for the data transfer.
@@ -748,6 +749,7 @@ type TransferRun struct {
 	// Data transfer destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*TransferRun_DestinationDatasetId
 	Destination isTransferRun_Destination `protobuf_oneof:"destination"`
 	// Output only. Data source id.

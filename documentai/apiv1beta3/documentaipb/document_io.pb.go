@@ -273,6 +273,7 @@ type BatchDocumentsInputConfig struct {
 	// The source.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*BatchDocumentsInputConfig_GcsPrefix
 	//	*BatchDocumentsInputConfig_GcsDocuments
 	Source isBatchDocumentsInputConfig_Source `protobuf_oneof:"source"`
@@ -359,6 +360,7 @@ type DocumentOutputConfig struct {
 	// The destination of the results.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*DocumentOutputConfig_GcsOutputConfig_
 	Destination isDocumentOutputConfig_Destination `protobuf_oneof:"destination"`
 }

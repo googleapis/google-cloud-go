@@ -102,11 +102,13 @@ type Dataset struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to StorageSource:
+	//
 	//	*Dataset_GcsManagedConfig
 	//	*Dataset_DocumentWarehouseConfig_
 	//	*Dataset_UnmanagedDatasetConfig_
 	StorageSource isDataset_StorageSource `protobuf_oneof:"storage_source"`
 	// Types that are assignable to IndexingSource:
+	//
 	//	*Dataset_SpannerIndexingConfig_
 	IndexingSource isDataset_IndexingSource `protobuf_oneof:"indexing_source"`
 	// Dataset resource name.
@@ -254,6 +256,7 @@ type DocumentId struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Type:
+	//
 	//	*DocumentId_GcsManagedDocId
 	//	*DocumentId_UnmanagedDocId
 	Type isDocumentId_Type `protobuf_oneof:"type"`
@@ -406,6 +409,7 @@ type BatchDatasetDocuments struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Criteria:
+	//
 	//	*BatchDatasetDocuments_IndividualDocumentIds_
 	//	*BatchDatasetDocuments_Filter
 	Criteria isBatchDatasetDocuments_Criteria `protobuf_oneof:"criteria"`

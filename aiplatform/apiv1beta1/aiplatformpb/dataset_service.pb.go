@@ -225,9 +225,9 @@ type UpdateDatasetRequest struct {
 	// For the `FieldMask` definition, see
 	// [google.protobuf.FieldMask][google.protobuf.FieldMask]. Updatable fields:
 	//
-	//   * `display_name`
-	//   * `description`
-	//   * `labels`
+	//   - `display_name`
+	//   - `description`
+	//   - `labels`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -290,17 +290,17 @@ type ListDatasetsRequest struct {
 	// An expression for filtering the results of the request. For field names
 	// both snake_case and camelCase are supported.
 	//
-	//   * `display_name`: supports = and !=
-	//   * `metadata_schema_uri`: supports = and !=
-	//   * `labels` supports general map functions that is:
-	//     * `labels.key=value` - key:value equality
-	//     * `labels.key:* or labels:key - key existence
-	//     * A key including a space must be quoted. `labels."a key"`.
+	//   - `display_name`: supports = and !=
+	//   - `metadata_schema_uri`: supports = and !=
+	//   - `labels` supports general map functions that is:
+	//   - `labels.key=value` - key:value equality
+	//   - `labels.key:* or labels:key - key existence
+	//   - A key including a space must be quoted. `labels."a key"`.
 	//
 	// Some examples:
 	//
-	//   * `displayName="myDisplayName"`
-	//   * `labels.myKey="myValue"`
+	//   - `displayName="myDisplayName"`
+	//   - `labels.myKey="myValue"`
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The standard list page size.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -312,9 +312,9 @@ type ListDatasetsRequest struct {
 	// Use "desc" after a field name for descending.
 	// Supported fields:
 	//
-	//   * `display_name`
-	//   * `create_time`
-	//   * `update_time`
+	//   - `display_name`
+	//   - `create_time`
+	//   - `update_time`
 	OrderBy string `protobuf:"bytes,6,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 }
 
@@ -1479,6 +1479,7 @@ type SearchDataItemsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Order:
+	//
 	//	*SearchDataItemsRequest_OrderByDataItem
 	//	*SearchDataItemsRequest_OrderByAnnotation_
 	Order isSearchDataItemsRequest_Order `protobuf_oneof:"order"`
@@ -1501,9 +1502,9 @@ type SearchDataItemsRequest struct {
 	DataLabelingJob string `protobuf:"bytes,3,opt,name=data_labeling_job,json=dataLabelingJob,proto3" json:"data_labeling_job,omitempty"`
 	// An expression for filtering the DataItem that will be returned.
 	//
-	//   * `data_item_id` - for = or !=.
-	//   * `labeled` - for = or !=.
-	//   * `has_annotation(ANNOTATION_SPEC_ID)` - true only for DataItem that
+	//   - `data_item_id` - for = or !=.
+	//   - `labeled` - for = or !=.
+	//   - `has_annotation(ANNOTATION_SPEC_ID)` - true only for DataItem that
 	//     have at least one annotation with annotation_spec_id =
 	//     `ANNOTATION_SPEC_ID` in the context of SavedQuery or DataLabelingJob.
 	//
@@ -1514,13 +1515,14 @@ type SearchDataItemsRequest struct {
 	DataItemFilter string `protobuf:"bytes,4,opt,name=data_item_filter,json=dataItemFilter,proto3" json:"data_item_filter,omitempty"`
 	// An expression for filtering the Annotations that will be returned per
 	// DataItem.
-	//   * `annotation_spec_id` - for = or !=.
+	//   - `annotation_spec_id` - for = or !=.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1beta1/dataset_service.proto.
 	AnnotationsFilter string `protobuf:"bytes,5,opt,name=annotations_filter,json=annotationsFilter,proto3" json:"annotations_filter,omitempty"`
 	// An expression that specifies what Annotations will be returned per
 	// DataItem. Annotations satisfied either of the conditions will be returned.
-	//   * `annotation_spec_id` - for = or !=.
+	//   - `annotation_spec_id` - for = or !=.
+	//
 	// Must specify `saved_query_id=` - saved query id that annotations should
 	// belong to.
 	AnnotationFilters []string `protobuf:"bytes,11,rep,name=annotation_filters,json=annotationFilters,proto3" json:"annotation_filters,omitempty"`

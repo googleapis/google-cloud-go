@@ -62,6 +62,7 @@ type MetricValue struct {
 	// the MetricValue is rejected.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*MetricValue_BoolValue
 	//	*MetricValue_Int64Value
 	//	*MetricValue_DoubleValue

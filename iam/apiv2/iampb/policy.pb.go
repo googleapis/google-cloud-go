@@ -51,7 +51,6 @@ type Policy struct {
 	// Immutable. The resource name of the `Policy`, which must be unique. Format:
 	// `policies/{attachment_point}/denypolicies/{policy_id}`
 	//
-	//
 	// The attachment point is identified by its URL-encoded full resource name,
 	// which means that the forward-slash character, `/`, must be written as
 	// `%2F`. For example,
@@ -209,6 +208,7 @@ type PolicyRule struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Kind:
+	//
 	//	*PolicyRule_DenyRule
 	Kind isPolicyRule_Kind `protobuf_oneof:"kind"`
 	// A user-specified description of the rule. This value can be up to 256
@@ -289,7 +289,6 @@ type ListPoliciesRequest struct {
 	// Required. The resource that the policy is attached to, along with the kind of policy
 	// to list. Format:
 	// `policies/{attachment_point}/denypolicies`
-	//
 	//
 	// The attachment point is identified by its URL-encoded full resource name,
 	// which means that the forward-slash character, `/`, must be written as
@@ -428,7 +427,6 @@ type GetPolicyRequest struct {
 	// Required. The resource name of the policy to retrieve. Format:
 	// `policies/{attachment_point}/denypolicies/{policy_id}`
 	//
-	//
 	// Use the URL-encoded full resource name, which means that the forward-slash
 	// character, `/`, must be written as `%2F`. For example,
 	// `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-project/denypolicies/my-policy`.
@@ -485,7 +483,6 @@ type CreatePolicyRequest struct {
 
 	// Required. The resource that the policy is attached to, along with the kind of policy
 	// to create. Format: `policies/{attachment_point}/denypolicies`
-	//
 	//
 	// The attachment point is identified by its URL-encoded full resource name,
 	// which means that the forward-slash character, `/`, must be written as
@@ -618,7 +615,6 @@ type DeletePolicyRequest struct {
 
 	// Required. The resource name of the policy to delete. Format:
 	// `policies/{attachment_point}/denypolicies/{policy_id}`
-	//
 	//
 	// Use the URL-encoded full resource name, which means that the forward-slash
 	// character, `/`, must be written as `%2F`. For example,

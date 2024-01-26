@@ -312,6 +312,7 @@ type OSPolicyResourceCompliance struct {
 	// Resource specific output.
 	//
 	// Types that are assignable to Output:
+	//
 	//	*OSPolicyResourceCompliance_ExecResourceOutput_
 	Output isOSPolicyResourceCompliance_Output `protobuf_oneof:"output"`
 }

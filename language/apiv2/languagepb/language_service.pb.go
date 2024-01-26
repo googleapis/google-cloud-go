@@ -357,6 +357,7 @@ type Document struct {
 	// Google Cloud Storage URI.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Document_Content
 	//	*Document_GcsContentUri
 	Source isDocument_Source `protobuf_oneof:"source"`

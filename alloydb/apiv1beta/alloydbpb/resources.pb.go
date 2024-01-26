@@ -680,9 +680,9 @@ const (
 	Instance_PRIMARY Instance_InstanceType = 1
 	// READ POOL instances support read operations only. Each read pool instance
 	// consists of one or more homogeneous nodes.
-	//  * Read pool of size 1 can only have zonal availability.
-	//  * Read pools with node count of 2 or more can have regional
-	//    availability (nodes are present in 2 or more zones in a region).
+	//   - Read pool of size 1 can only have zonal availability.
+	//   - Read pools with node count of 2 or more can have regional
+	//     availability (nodes are present in 2 or more zones in a region).
 	Instance_READ_POOL Instance_InstanceType = 2
 	// SECONDARY instances support read operations only. SECONDARY instance
 	// is a cross-region read replica
@@ -1401,6 +1401,7 @@ type AutomatedBackupPolicy struct {
 	// per day and a start time chosen arbitrarily.
 	//
 	// Types that are assignable to Schedule:
+	//
 	//	*AutomatedBackupPolicy_WeeklySchedule_
 	Schedule isAutomatedBackupPolicy_Schedule `protobuf_oneof:"schedule"`
 	// The retention policy for automated backups.
@@ -1412,6 +1413,7 @@ type AutomatedBackupPolicy struct {
 	// If no retention policy is set, a default of 14 days is used.
 	//
 	// Types that are assignable to Retention:
+	//
 	//	*AutomatedBackupPolicy_TimeBasedRetention_
 	//	*AutomatedBackupPolicy_QuantityBasedRetention_
 	Retention isAutomatedBackupPolicy_Retention `protobuf_oneof:"retention"`
@@ -1735,7 +1737,7 @@ type BackupSource struct {
 	// it is retained until the backup is deleted.
 	BackupUid string `protobuf:"bytes,2,opt,name=backup_uid,json=backupUid,proto3" json:"backup_uid,omitempty"`
 	// Required. The name of the backup resource with the format:
-	//  * projects/{project}/locations/{region}/backups/{backup_id}
+	//   - projects/{project}/locations/{region}/backups/{backup_id}
 	BackupName string `protobuf:"bytes,1,opt,name=backup_name,json=backupName,proto3" json:"backup_name,omitempty"`
 }
 
@@ -1857,15 +1859,17 @@ type Cluster struct {
 	// source this cluster was imported from.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Cluster_BackupSource
 	//	*Cluster_MigrationSource
 	Source isCluster_Source `protobuf_oneof:"source"`
 	// Output only. The name of the cluster resource with the format:
-	//  * projects/{project}/locations/{region}/clusters/{cluster_id}
+	//   - projects/{project}/locations/{region}/clusters/{cluster_id}
+	//
 	// where the cluster ID segment should satisfy the regex expression
 	// `[a-z0-9-]+`. For more details see https://google.aip.dev/122.
 	// The prefix of the cluster resource name is the name of the parent resource:
-	//  * projects/{project}/locations/{region}
+	//   - projects/{project}/locations/{region}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// User-settable and human-readable display name for the Cluster.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -2195,14 +2199,15 @@ type Instance struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. The name of the instance resource with the format:
-	//  * projects/{project}/locations/{region}/clusters/{cluster_id}/instances/{instance_id}
+	//   - projects/{project}/locations/{region}/clusters/{cluster_id}/instances/{instance_id}
+	//
 	// where the cluster and instance ID segments should satisfy the regex
 	// expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters of
 	// lowercase letters, numbers, and dashes, starting with a letter, and ending
 	// with a letter or number. For more details see https://google.aip.dev/122.
 	// The prefix of the instance resource name is the name of the parent
 	// resource:
-	//  * projects/{project}/locations/{region}/clusters/{cluster_id}
+	//   - projects/{project}/locations/{region}/clusters/{cluster_id}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// User-settable and human-readable display name for the Instance.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -2239,11 +2244,10 @@ type Instance struct {
 	// zone with available capacity.
 	GceZone string `protobuf:"bytes,12,opt,name=gce_zone,json=gceZone,proto3" json:"gce_zone,omitempty"`
 	// Database flags. Set at instance level.
-	//  * They are copied from primary instance on read instance creation.
-	//  * Read instances can set new or override existing flags that are relevant
-	//    for reads, e.g. for enabling columnar cache on a read instance. Flags
-	//    set on read instance may or may not be present on primary.
-	//
+	//   - They are copied from primary instance on read instance creation.
+	//   - Read instances can set new or override existing flags that are relevant
+	//     for reads, e.g. for enabling columnar cache on a read instance. Flags
+	//     set on read instance may or may not be present on primary.
 	//
 	// This is a list of "key": "value" pairs.
 	// "key": The name of the flag. These flags are passed at instance setup time,
@@ -2572,14 +2576,15 @@ type Backup struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. The name of the backup resource with the format:
-	//  * projects/{project}/locations/{region}/backups/{backup_id}
+	//   - projects/{project}/locations/{region}/backups/{backup_id}
+	//
 	// where the cluster and backup ID segments should satisfy the regex
 	// expression `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`, e.g. 1-63 characters of
 	// lowercase letters, numbers, and dashes, starting with a letter, and ending
 	// with a letter or number. For more details see https://google.aip.dev/122.
 	// The prefix of the backup resource name is the name of the parent
 	// resource:
-	//  * projects/{project}/locations/{region}
+	//   - projects/{project}/locations/{region}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// User-settable and human-readable display name for the Backup.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -2832,11 +2837,13 @@ type SupportedDatabaseFlag struct {
 	// The restrictions on the flag value per type.
 	//
 	// Types that are assignable to Restrictions:
+	//
 	//	*SupportedDatabaseFlag_StringRestrictions_
 	//	*SupportedDatabaseFlag_IntegerRestrictions_
 	Restrictions isSupportedDatabaseFlag_Restrictions `protobuf_oneof:"restrictions"`
 	// The name of the flag resource, following Google Cloud conventions, e.g.:
-	//  * projects/{project}/locations/{location}/flags/{flag}
+	//   - projects/{project}/locations/{location}/flags/{flag}
+	//
 	// This field currently has no semantic meaning.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The name of the database flag, e.g. "max_allowed_packets".

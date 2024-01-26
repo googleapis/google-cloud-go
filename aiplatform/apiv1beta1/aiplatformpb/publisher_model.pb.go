@@ -363,6 +363,7 @@ type PublisherModel_ResourceReference struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Reference:
+	//
 	//	*PublisherModel_ResourceReference_Uri
 	//	*PublisherModel_ResourceReference_ResourceName
 	//	*PublisherModel_ResourceReference_UseCase
@@ -846,6 +847,7 @@ type PublisherModel_CallToAction_Deploy struct {
 	// DeployedModel uses.
 	//
 	// Types that are assignable to PredictionResources:
+	//
 	//	*PublisherModel_CallToAction_Deploy_DedicatedResources
 	//	*PublisherModel_CallToAction_Deploy_AutomaticResources
 	//	*PublisherModel_CallToAction_Deploy_SharedResources

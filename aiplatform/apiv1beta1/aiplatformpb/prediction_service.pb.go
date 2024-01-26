@@ -916,10 +916,10 @@ type ExplainRequest struct {
 	// [explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec]
 	// of the DeployedModel. Can be used for explaining prediction results with
 	// different configurations, such as:
-	//  - Explaining top-5 predictions results as opposed to top-1;
-	//  - Increasing path count or step count of the attribution methods to reduce
-	//    approximate errors;
-	//  - Using different baselines for explaining the prediction results.
+	//   - Explaining top-5 predictions results as opposed to top-1;
+	//   - Increasing path count or step count of the attribution methods to reduce
+	//     approximate errors;
+	//   - Using different baselines for explaining the prediction results.
 	ExplanationSpecOverride *ExplanationSpecOverride `protobuf:"bytes,5,opt,name=explanation_spec_override,json=explanationSpecOverride,proto3" json:"explanation_spec_override,omitempty"`
 	// Optional. This field is the same as the one above, but supports multiple
 	// explanations to occur in parallel. The key can be any string. Each override

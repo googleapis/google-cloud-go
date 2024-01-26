@@ -295,11 +295,11 @@ const (
 	// The principal in the request matches the principal in the policy. The
 	// principal can be included directly or indirectly:
 	//
-	// * A principal is included directly if that principal is listed in the
-	//   role binding.
-	// * A principal is included indirectly if that principal is in a Google
-	//   group, Google Workspace account, or Cloud Identity domain that is listed
-	//   in the policy.
+	//   - A principal is included directly if that principal is listed in the
+	//     role binding.
+	//   - A principal is included indirectly if that principal is in a Google
+	//     group, Google Workspace account, or Cloud Identity domain that is listed
+	//     in the policy.
 	MembershipMatchingState_MEMBERSHIP_MATCHED MembershipMatchingState = 1
 	// The principal in the request doesn't match the principal in the policy.
 	MembershipMatchingState_MEMBERSHIP_NOT_MATCHED MembershipMatchingState = 2

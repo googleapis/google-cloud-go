@@ -45,6 +45,7 @@ type FixedOrPercent struct {
 	// Type of the value.
 	//
 	// Types that are assignable to Mode:
+	//
 	//	*FixedOrPercent_Fixed
 	//	*FixedOrPercent_Percent
 	Mode isFixedOrPercent_Mode `protobuf_oneof:"mode"`

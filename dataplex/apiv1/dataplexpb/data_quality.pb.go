@@ -371,7 +371,7 @@ type DataQualityRuleResult struct {
 	//
 	// This field is only valid for row-level type rules.
 	//
-	// Evaluated count can be configured to either
+	// # Evaluated count can be configured to either
 	//
 	// * include all rows (default) - with `null` rows automatically failing rule
 	// evaluation, or
@@ -608,6 +608,7 @@ type DataQualityRule struct {
 	// The rule-specific configuration.
 	//
 	// Types that are assignable to RuleType:
+	//
 	//	*DataQualityRule_RangeExpectation_
 	//	*DataQualityRule_NonNullExpectation_
 	//	*DataQualityRule_SetExpectation_

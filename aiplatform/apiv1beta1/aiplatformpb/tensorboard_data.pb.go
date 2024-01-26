@@ -115,6 +115,7 @@ type TimeSeriesDataPoint struct {
 	// Value of this time series data point.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*TimeSeriesDataPoint_Scalar
 	//	*TimeSeriesDataPoint_Tensor
 	//	*TimeSeriesDataPoint_Blobs

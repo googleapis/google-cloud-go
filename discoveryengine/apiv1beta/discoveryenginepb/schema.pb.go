@@ -49,6 +49,7 @@ type Schema struct {
 	// should be provided otherwise an `INVALID_ARGUMENT` error is thrown.
 	//
 	// Types that are assignable to Schema:
+	//
 	//	*Schema_StructSchema
 	//	*Schema_JsonSchema
 	Schema isSchema_Schema `protobuf_oneof:"schema"`

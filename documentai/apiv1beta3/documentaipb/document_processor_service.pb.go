@@ -405,14 +405,16 @@ type ProcessOptions struct {
 	unknownFields protoimpl.UnknownFields
 
 	// A subset of pages to process. If not specified, all pages are processed.
-	//  If a page range is set, only the given pages are extracted and processed
-	//  from the document. In the output document,
-	//  [Document.Page.page_number][google.cloud.documentai.v1beta3.Document.Page.page_number]
-	//  refers to the page number in the original document. This configuration
-	//  only applies to sync requests. `page_range` can be only one of the
-	//  following:
+	//
+	//	If a page range is set, only the given pages are extracted and processed
+	//	from the document. In the output document,
+	//	[Document.Page.page_number][google.cloud.documentai.v1beta3.Document.Page.page_number]
+	//	refers to the page number in the original document. This configuration
+	//	only applies to sync requests. `page_range` can be only one of the
+	//	following:
 	//
 	// Types that are assignable to PageRange:
+	//
 	//	*ProcessOptions_IndividualPageSelector_
 	//	*ProcessOptions_FromStart
 	//	*ProcessOptions_FromEnd
@@ -539,6 +541,7 @@ type ProcessRequest struct {
 	// The document payload.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ProcessRequest_InlineDocument
 	//	*ProcessRequest_RawDocument
 	//	*ProcessRequest_GcsDocument
@@ -2751,6 +2754,7 @@ type TrainProcessorVersionRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to ProcessorFlags:
+	//
 	//	*TrainProcessorVersionRequest_CustomDocumentExtractionOptions_
 	ProcessorFlags isTrainProcessorVersionRequest_ProcessorFlags `protobuf_oneof:"processor_flags"`
 	// Required. The parent (project, location and processor) to create the new
@@ -2991,6 +2995,7 @@ type ReviewDocumentRequest struct {
 	// The document payload.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ReviewDocumentRequest_InlineDocument
 	Source isReviewDocumentRequest_Source `protobuf_oneof:"source"`
 	// Required. The resource name of the
@@ -3642,6 +3647,7 @@ type ImportProcessorVersionRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Source:
+	//
 	//	*ImportProcessorVersionRequest_ProcessorVersionSource
 	//	*ImportProcessorVersionRequest_ExternalProcessorVersionSource_
 	Source isImportProcessorVersionRequest_Source `protobuf_oneof:"source"`

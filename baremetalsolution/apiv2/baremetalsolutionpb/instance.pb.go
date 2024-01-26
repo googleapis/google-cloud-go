@@ -601,9 +601,10 @@ type UpdateInstanceRequest struct {
 	Instance *Instance `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// The list of fields to update.
 	// The currently supported fields are:
-	//   `labels`
-	//   `hyperthreading_enabled`
-	//   `os_image`
+	//
+	//	`labels`
+	//	`hyperthreading_enabled`
+	//	`os_image`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

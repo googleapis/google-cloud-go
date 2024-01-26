@@ -2243,9 +2243,9 @@ type EnvironmentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: [Environment][google.cloud.dialogflow.cx.v3.Environment]
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: [Environment][google.cloud.dialogflow.cx.v3.Environment]
 	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified
 	// [Environment][google.cloud.dialogflow.cx.v3.Environment].
@@ -2254,9 +2254,9 @@ type EnvironmentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: [Environment][google.cloud.dialogflow.cx.v3.Environment]
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: [Environment][google.cloud.dialogflow.cx.v3.Environment]
 	UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the specified
 	// [Environment][google.cloud.dialogflow.cx.v3.Environment].
@@ -2396,9 +2396,9 @@ type EnvironmentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: [Environment][google.cloud.dialogflow.cx.v3.Environment]
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: [Environment][google.cloud.dialogflow.cx.v3.Environment]
 	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Updates the specified
 	// [Environment][google.cloud.dialogflow.cx.v3.Environment].
@@ -2407,9 +2407,9 @@ type EnvironmentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: [Environment][google.cloud.dialogflow.cx.v3.Environment]
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: [Environment][google.cloud.dialogflow.cx.v3.Environment]
 	UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Deletes the specified
 	// [Environment][google.cloud.dialogflow.cx.v3.Environment].

@@ -134,6 +134,7 @@ type ConversationEvent struct {
 	// Payload of conversation event.
 	//
 	// Types that are assignable to Payload:
+	//
 	//	*ConversationEvent_NewMessagePayload
 	Payload isConversationEvent_Payload `protobuf_oneof:"payload"`
 }

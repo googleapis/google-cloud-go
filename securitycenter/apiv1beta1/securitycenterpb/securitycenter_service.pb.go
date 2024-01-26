@@ -407,13 +407,13 @@ type GroupAssetsRequest struct {
 	//
 	// Possible "state" values when compare_duration is specified:
 	//
-	// * "ADDED": indicates that the asset was not present before
-	//              compare_duration, but present at reference_time.
-	// * "REMOVED": indicates that the asset was present at the start of
-	//              compare_duration, but not present at reference_time.
-	// * "ACTIVE": indicates that the asset was present at both the
-	//              start and the end of the time period defined by
-	//              compare_duration and reference_time.
+	//   - "ADDED": indicates that the asset was not present before
+	//     compare_duration, but present at reference_time.
+	//   - "REMOVED": indicates that the asset was present at the start of
+	//     compare_duration, but not present at reference_time.
+	//   - "ACTIVE": indicates that the asset was present at both the
+	//     start and the end of the time period defined by
+	//     compare_duration and reference_time.
 	//
 	// This field is ignored if `state` is not a field in `group_by`.
 	CompareDuration *durationpb.Duration `protobuf:"bytes,4,opt,name=compare_duration,json=compareDuration,proto3" json:"compare_duration,omitempty"`
@@ -601,9 +601,9 @@ type GroupFindingsRequest struct {
 	// Restrictions have the form `<field> <operator> <value>` and may have a `-`
 	// character in front of them to indicate negation. Examples include:
 	//
-	//  * name
-	//  * source_properties.a_property
-	//  * security_marks.marks.marka
+	//   - name
+	//   - source_properties.a_property
+	//   - security_marks.marks.marka
 	//
 	// The supported operators are:
 	//
@@ -1041,13 +1041,13 @@ type ListAssetsRequest struct {
 	//
 	// Possible "state" values when compare_duration is specified:
 	//
-	// * "ADDED": indicates that the asset was not present before
-	//              compare_duration, but present at read_time.
-	// * "REMOVED": indicates that the asset was present at the start of
-	//              compare_duration, but not present at read_time.
-	// * "ACTIVE": indicates that the asset was present at both the
-	//              start and the end of the time period defined by
-	//              compare_duration and read_time.
+	//   - "ADDED": indicates that the asset was not present before
+	//     compare_duration, but present at read_time.
+	//   - "REMOVED": indicates that the asset was present at the start of
+	//     compare_duration, but not present at read_time.
+	//   - "ACTIVE": indicates that the asset was present at both the
+	//     start and the end of the time period defined by
+	//     compare_duration and read_time.
 	//
 	// If compare_duration is not specified, then the only possible state is
 	// "UNUSED", which indicates that the asset is present at read_time.
@@ -1249,9 +1249,9 @@ type ListFindingsRequest struct {
 	// Restrictions have the form `<field> <operator> <value>` and may have a `-`
 	// character in front of them to indicate negation. Examples include:
 	//
-	//  * name
-	//  * source_properties.a_property
-	//  * security_marks.marks.marka
+	//   - name
+	//   - source_properties.a_property
+	//   - security_marks.marks.marka
 	//
 	// The supported operators are:
 	//

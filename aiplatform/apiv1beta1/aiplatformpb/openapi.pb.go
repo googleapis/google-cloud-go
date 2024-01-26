@@ -120,8 +120,9 @@ type Schema struct {
 	Type Type `protobuf:"varint,1,opt,name=type,proto3,enum=google.cloud.aiplatform.v1beta1.Type" json:"type,omitempty"`
 	// Optional. The format of the data.
 	// Supported formats:
-	//  for NUMBER type: float, double
-	//  for INTEGER type: int32, int64
+	//
+	//	for NUMBER type: float, double
+	//	for INTEGER type: int32, int64
 	Format string `protobuf:"bytes,7,opt,name=format,proto3" json:"format,omitempty"`
 	// Optional. The description of the data.
 	Description string `protobuf:"bytes,8,opt,name=description,proto3" json:"description,omitempty"`

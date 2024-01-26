@@ -93,7 +93,8 @@ const (
 	// https://www.pase.com.mx
 	TollPass_MX_PASE TollPass = 91
 	// Mexico
-	//  https://operadoravial.com/quick-pass/
+	//
+	//	https://operadoravial.com/quick-pass/
 	TollPass_MX_QUICKPASS TollPass = 93
 	// http://appsh.chihuahua.gob.mx/transparencia/?doc=/ingresos/TelepeajeFormato4.pdf
 	TollPass_MX_SISTEMA_TELEPEAJE_CHIHUAHUA TollPass = 89

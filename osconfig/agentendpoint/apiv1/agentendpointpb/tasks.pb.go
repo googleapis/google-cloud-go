@@ -503,6 +503,7 @@ type Task struct {
 	// Specific details about the current task to perform.
 	//
 	// Types that are assignable to TaskDetails:
+	//
 	//	*Task_ApplyPatchesTask
 	//	*Task_ExecStepTask
 	//	*Task_ApplyConfigTask

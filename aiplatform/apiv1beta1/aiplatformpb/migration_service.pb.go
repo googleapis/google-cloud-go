@@ -61,17 +61,17 @@ type SearchMigratableResourcesRequest struct {
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// A filter for your search. You can use the following types of filters:
 	//
-	// *   Resource type filters. The following strings filter for a specific type
+	//   - Resource type filters. The following strings filter for a specific type
 	//     of
 	//     [MigratableResource][google.cloud.aiplatform.v1beta1.MigratableResource]:
-	//     *   `ml_engine_model_version:*`
-	//     *   `automl_model:*`
-	//     *   `automl_dataset:*`
-	//     *   `data_labeling_dataset:*`
-	// *   "Migrated or not" filters. The following strings filter for resources
+	//   - `ml_engine_model_version:*`
+	//   - `automl_model:*`
+	//   - `automl_dataset:*`
+	//   - `data_labeling_dataset:*`
+	//   - "Migrated or not" filters. The following strings filter for resources
 	//     that either have or have not already been migrated:
-	//     *   `last_migrate_time:*` filters for migrated resources.
-	//     *   `NOT last_migrate_time:*` filters for not yet migrated resources.
+	//   - `last_migrate_time:*` filters for migrated resources.
+	//   - `NOT last_migrate_time:*` filters for not yet migrated resources.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 
@@ -267,6 +267,7 @@ type MigrateResourceRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Request:
+	//
 	//	*MigrateResourceRequest_MigrateMlEngineModelVersionConfig_
 	//	*MigrateResourceRequest_MigrateAutomlModelConfig_
 	//	*MigrateResourceRequest_MigrateAutomlDatasetConfig_
@@ -436,6 +437,7 @@ type MigrateResourceResponse struct {
 	// After migration, the resource name in Vertex AI.
 	//
 	// Types that are assignable to MigratedResource:
+	//
 	//	*MigrateResourceResponse_Dataset
 	//	*MigrateResourceResponse_Model
 	MigratedResource isMigrateResourceResponse_MigratedResource `protobuf_oneof:"migrated_resource"`
@@ -920,6 +922,7 @@ type BatchMigrateResourcesOperationMetadata_PartialResult struct {
 	// migrated resource name will be filled.
 	//
 	// Types that are assignable to Result:
+	//
 	//	*BatchMigrateResourcesOperationMetadata_PartialResult_Error
 	//	*BatchMigrateResourcesOperationMetadata_PartialResult_Model
 	//	*BatchMigrateResourcesOperationMetadata_PartialResult_Dataset

@@ -1846,10 +1846,10 @@ type PolicyTagManagerClient interface {
 	CreatePolicyTag(ctx context.Context, in *CreatePolicyTagRequest, opts ...grpc.CallOption) (*PolicyTag, error)
 	// Deletes a policy tag together with the following:
 	//
-	// * All of its descendant policy tags, if any
-	// * Policies associated with the policy tag and its descendants
-	// * References from BigQuery table schema of the policy tag and its
-	//   descendants
+	//   - All of its descendant policy tags, if any
+	//   - Policies associated with the policy tag and its descendants
+	//   - References from BigQuery table schema of the policy tag and its
+	//     descendants
 	DeletePolicyTag(ctx context.Context, in *DeletePolicyTagRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Updates a policy tag, including its display
 	// name, description, and parent policy tag.
@@ -2014,10 +2014,10 @@ type PolicyTagManagerServer interface {
 	CreatePolicyTag(context.Context, *CreatePolicyTagRequest) (*PolicyTag, error)
 	// Deletes a policy tag together with the following:
 	//
-	// * All of its descendant policy tags, if any
-	// * Policies associated with the policy tag and its descendants
-	// * References from BigQuery table schema of the policy tag and its
-	//   descendants
+	//   - All of its descendant policy tags, if any
+	//   - Policies associated with the policy tag and its descendants
+	//   - References from BigQuery table schema of the policy tag and its
+	//     descendants
 	DeletePolicyTag(context.Context, *DeletePolicyTagRequest) (*emptypb.Empty, error)
 	// Updates a policy tag, including its display
 	// name, description, and parent policy tag.

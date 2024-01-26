@@ -384,6 +384,7 @@ type ConversationMessage struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Message:
+	//
 	//	*ConversationMessage_UserInput
 	//	*ConversationMessage_Reply
 	Message isConversationMessage_Message `protobuf_oneof:"message"`

@@ -42,6 +42,7 @@ type Value struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Value:
+	//
 	//	*Value_IntValue
 	//	*Value_DoubleValue
 	//	*Value_StringValue

@@ -262,11 +262,12 @@ type ResourceRequirements struct {
 	// Only ´memory´ and 'cpu' are supported.
 	//
 	// <p>Notes:
-	//  * The only supported values for CPU are '1', '2', '4', and '8'. Setting 4
+	//   - The only supported values for CPU are '1', '2', '4', and '8'. Setting 4
+	//
 	// CPU requires at least 2Gi of memory. For more information, go to
 	// https://cloud.google.com/run/docs/configuring/cpu.
-	//   * For supported 'memory' values and syntax, go to
-	//  https://cloud.google.com/run/docs/configuring/memory-limits
+	//   - For supported 'memory' values and syntax, go to
+	//     https://cloud.google.com/run/docs/configuring/memory-limits
 	Limits map[string]string `protobuf:"bytes,1,rep,name=limits,proto3" json:"limits,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Determines whether CPU should be throttled or not outside of requests.
 	CpuIdle bool `protobuf:"varint,2,opt,name=cpu_idle,json=cpuIdle,proto3" json:"cpu_idle,omitempty"`
@@ -339,6 +340,7 @@ type EnvVar struct {
 	// characters.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Types that are assignable to Values:
+	//
 	//	*EnvVar_Value
 	//	*EnvVar_ValueSource
 	Values isEnvVar_Values `protobuf_oneof:"values"`
@@ -672,6 +674,7 @@ type Volume struct {
 	// Required. Volume's name.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Types that are assignable to VolumeType:
+	//
 	//	*Volume_Secret
 	//	*Volume_CloudSqlInstance
 	//	*Volume_EmptyDir
@@ -795,7 +798,7 @@ type SecretVolumeSource struct {
 	// Must be a value between 0000 and 0777 (octal), defaulting to 0444.
 	// Directories within the path are not affected by  this setting.
 	//
-	// Notes
+	// # Notes
 	//
 	// * Internally, a umask of 0222 will be applied to any non-zero value.
 	// * This is an integer representation of the mode bits. So, the octal
@@ -882,7 +885,7 @@ type VersionToPath struct {
 	// 01 and 0777 (octal). If 0 or not set, the Volume's default mode will be
 	// used.
 	//
-	// Notes
+	// # Notes
 	//
 	// * Internally, a umask of 0222 will be applied to any non-zero value.
 	// * This is an integer representation of the mode bits. So, the octal
@@ -1100,6 +1103,7 @@ type Probe struct {
 	// having succeeded. Defaults to 3. Minimum value is 1.
 	FailureThreshold int32 `protobuf:"varint,4,opt,name=failure_threshold,json=failureThreshold,proto3" json:"failure_threshold,omitempty"`
 	// Types that are assignable to ProbeType:
+	//
 	//	*Probe_HttpGet
 	//	*Probe_TcpSocket
 	//	*Probe_Grpc

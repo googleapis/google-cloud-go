@@ -251,6 +251,7 @@ type RepricingConfig struct {
 	// Required. Defines the granularity for repricing.
 	//
 	// Types that are assignable to Granularity:
+	//
 	//	*RepricingConfig_EntitlementGranularity_
 	//	*RepricingConfig_ChannelPartnerGranularity_
 	Granularity isRepricingConfig_Granularity `protobuf_oneof:"granularity"`
@@ -398,6 +399,7 @@ type RepricingAdjustment struct {
 	// A oneof that represents the different types for this adjustment.
 	//
 	// Types that are assignable to Adjustment:
+	//
 	//	*RepricingAdjustment_PercentageAdjustment
 	Adjustment isRepricingAdjustment_Adjustment `protobuf_oneof:"adjustment"`
 }
@@ -591,6 +593,7 @@ type RepricingCondition struct {
 	// Represents the types of existing conditional statements.
 	//
 	// Types that are assignable to Condition:
+	//
 	//	*RepricingCondition_SkuGroupCondition
 	Condition isRepricingCondition_Condition `protobuf_oneof:"condition"`
 }

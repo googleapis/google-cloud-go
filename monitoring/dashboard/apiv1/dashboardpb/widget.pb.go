@@ -49,6 +49,7 @@ type Widget struct {
 	// Content defines the component used to populate the widget.
 	//
 	// Types that are assignable to Content:
+	//
 	//	*Widget_XyChart
 	//	*Widget_Scorecard
 	//	*Widget_Text

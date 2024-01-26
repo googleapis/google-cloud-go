@@ -229,6 +229,7 @@ type Inventory_SoftwarePackage struct {
 	// Information about the different types of software packages.
 	//
 	// Types that are assignable to Details:
+	//
 	//	*Inventory_SoftwarePackage_YumPackage
 	//	*Inventory_SoftwarePackage_AptPackage
 	//	*Inventory_SoftwarePackage_ZypperPackage
@@ -370,8 +371,9 @@ type Inventory_SoftwarePackage_ZypperPackage struct {
 
 type Inventory_SoftwarePackage_GoogetPackage struct {
 	// Details of a Googet package.
-	//  For details about the googet package manager, see
-	//  https://github.com/google/googet.
+	//
+	//	For details about the googet package manager, see
+	//	https://github.com/google/googet.
 	GoogetPackage *Inventory_VersionedPackage `protobuf:"bytes,4,opt,name=googet_package,json=googetPackage,proto3,oneof"`
 }
 

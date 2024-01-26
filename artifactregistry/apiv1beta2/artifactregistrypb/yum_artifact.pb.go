@@ -233,6 +233,7 @@ type ImportYumArtifactsRequest struct {
 	// The source location of the package binaries.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportYumArtifactsRequest_GcsSource
 	Source isImportYumArtifactsRequest_Source `protobuf_oneof:"source"`
 	// The name of the parent resource where the artifacts will be imported.
@@ -312,6 +313,7 @@ type ImportYumArtifactsErrorInfo struct {
 	// The source that was not imported.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportYumArtifactsErrorInfo_GcsSource
 	Source isImportYumArtifactsErrorInfo_Source `protobuf_oneof:"source"`
 	// The detailed error status.

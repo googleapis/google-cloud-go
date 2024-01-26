@@ -160,18 +160,18 @@ const (
 	SpeechModelVariant_USE_STANDARD SpeechModelVariant = 2
 	// Use an enhanced model variant:
 	//
-	// * If an enhanced variant does not exist for the given
-	//   [model][google.cloud.dialogflow.cx.v3beta1.InputAudioConfig.model] and
-	//   request language, Dialogflow falls back to the standard variant.
+	//   - If an enhanced variant does not exist for the given
+	//     [model][google.cloud.dialogflow.cx.v3beta1.InputAudioConfig.model] and
+	//     request language, Dialogflow falls back to the standard variant.
 	//
-	//   The [Cloud Speech
-	//   documentation](https://cloud.google.com/speech-to-text/docs/enhanced-models)
-	//   describes which models have enhanced variants.
+	//     The [Cloud Speech
+	//     documentation](https://cloud.google.com/speech-to-text/docs/enhanced-models)
+	//     describes which models have enhanced variants.
 	//
-	// * If the API caller isn't eligible for enhanced models, Dialogflow returns
-	//   an error.  Please see the [Dialogflow
-	//   docs](https://cloud.google.com/dialogflow/docs/data-logging)
-	//   for how to make your project eligible.
+	//   - If the API caller isn't eligible for enhanced models, Dialogflow returns
+	//     an error.  Please see the [Dialogflow
+	//     docs](https://cloud.google.com/dialogflow/docs/data-logging)
+	//     for how to make your project eligible.
 	SpeechModelVariant_USE_ENHANCED SpeechModelVariant = 3
 )
 
@@ -922,17 +922,17 @@ type TextToSpeechSettings struct {
 	//
 	// These settings affect:
 	//
-	//  - The [phone
-	//  gateway](https://cloud.google.com/dialogflow/cx/docs/concept/integration/phone-gateway)
-	//    synthesize configuration set via
-	//    [Agent.text_to_speech_settings][google.cloud.dialogflow.cx.v3beta1.Agent.text_to_speech_settings].
+	//   - The [phone
+	//     gateway](https://cloud.google.com/dialogflow/cx/docs/concept/integration/phone-gateway)
+	//     synthesize configuration set via
+	//     [Agent.text_to_speech_settings][google.cloud.dialogflow.cx.v3beta1.Agent.text_to_speech_settings].
 	//
-	//  - How speech is synthesized when invoking
-	//  [session][google.cloud.dialogflow.cx.v3beta1.Sessions] APIs.
-	//    [Agent.text_to_speech_settings][google.cloud.dialogflow.cx.v3beta1.Agent.text_to_speech_settings]
-	//    only applies if
-	//    [OutputAudioConfig.synthesize_speech_config][google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig.synthesize_speech_config]
-	//    is not specified.
+	//   - How speech is synthesized when invoking
+	//     [session][google.cloud.dialogflow.cx.v3beta1.Sessions] APIs.
+	//     [Agent.text_to_speech_settings][google.cloud.dialogflow.cx.v3beta1.Agent.text_to_speech_settings]
+	//     only applies if
+	//     [OutputAudioConfig.synthesize_speech_config][google.cloud.dialogflow.cx.v3beta1.OutputAudioConfig.synthesize_speech_config]
+	//     is not specified.
 	SynthesizeSpeechConfigs map[string]*SynthesizeSpeechConfig `protobuf:"bytes,1,rep,name=synthesize_speech_configs,json=synthesizeSpeechConfigs,proto3" json:"synthesize_speech_configs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 

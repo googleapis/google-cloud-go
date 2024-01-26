@@ -116,16 +116,17 @@ type GcsSource struct {
 	//
 	// * `product` (default): One JSON
 	// [Product][google.cloud.retail.v2alpha.Product] per line. Each product must
-	//   have a valid [Product.id][google.cloud.retail.v2alpha.Product.id].
-	// * `product_merchant_center`: See [Importing catalog data from Merchant
-	//   Center](https://cloud.google.com/retail/recommendations-ai/docs/upload-catalog#mc).
+	//
+	//	have a valid [Product.id][google.cloud.retail.v2alpha.Product.id].
+	//   - `product_merchant_center`: See [Importing catalog data from Merchant
+	//     Center](https://cloud.google.com/retail/recommendations-ai/docs/upload-catalog#mc).
 	//
 	// Supported values for user events imports:
 	//
 	// * `user_event` (default): One JSON
 	// [UserEvent][google.cloud.retail.v2alpha.UserEvent] per line.
-	// * `user_event_ga360`: Using
-	//   https://support.google.com/analytics/answer/3437719.
+	//   - `user_event_ga360`: Using
+	//     https://support.google.com/analytics/answer/3437719.
 	//
 	// Supported values for control imports:
 	//
@@ -195,6 +196,7 @@ type BigQuerySource struct {
 	// is not partitioned.
 	//
 	// Types that are assignable to Partition:
+	//
 	//	*BigQuerySource_PartitionDate
 	Partition isBigQuerySource_Partition `protobuf_oneof:"partition"`
 	// The project ID (can be project # or ID) that the BigQuery source is in with
@@ -217,20 +219,21 @@ type BigQuerySource struct {
 	//
 	// * `product` (default): One JSON
 	// [Product][google.cloud.retail.v2alpha.Product] per line. Each product must
-	//   have a valid [Product.id][google.cloud.retail.v2alpha.Product.id].
-	// * `product_merchant_center`: See [Importing catalog data from Merchant
-	//   Center](https://cloud.google.com/retail/recommendations-ai/docs/upload-catalog#mc).
+	//
+	//	have a valid [Product.id][google.cloud.retail.v2alpha.Product.id].
+	//   - `product_merchant_center`: See [Importing catalog data from Merchant
+	//     Center](https://cloud.google.com/retail/recommendations-ai/docs/upload-catalog#mc).
 	//
 	// Supported values for user events imports:
 	//
 	// * `user_event` (default): One JSON
 	// [UserEvent][google.cloud.retail.v2alpha.UserEvent] per line.
-	// * `user_event_ga360`:
-	//   The schema is available here:
-	//   https://support.google.com/analytics/answer/3437719.
-	// * `user_event_ga4`:
-	//   The schema is available here:
-	//   https://support.google.com/analytics/answer/7029846.
+	//   - `user_event_ga360`:
+	//     The schema is available here:
+	//     https://support.google.com/analytics/answer/3437719.
+	//   - `user_event_ga4`:
+	//     The schema is available here:
+	//     https://support.google.com/analytics/answer/7029846.
 	//
 	// Supported values for autocomplete imports:
 	//
@@ -444,6 +447,7 @@ type ImportErrorsConfig struct {
 	// Required. Errors destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ImportErrorsConfig_GcsPrefix
 	Destination isImportErrorsConfig_Destination `protobuf_oneof:"destination"`
 }
@@ -796,6 +800,7 @@ type ProductInputConfig struct {
 	// Required. The source of the input.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ProductInputConfig_ProductInlineSource
 	//	*ProductInputConfig_GcsSource
 	//	*ProductInputConfig_BigQuerySource
@@ -896,6 +901,7 @@ type UserEventInputConfig struct {
 	// The source of the input.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*UserEventInputConfig_UserEventInlineSource
 	//	*UserEventInputConfig_GcsSource
 	//	*UserEventInputConfig_BigQuerySource
@@ -1004,6 +1010,7 @@ type CompletionDataInputConfig struct {
 	// * `allowlist`:  One JSON allow suggestion per line.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*CompletionDataInputConfig_BigQuerySource
 	Source isCompletionDataInputConfig_Source `protobuf_oneof:"source"`
 }

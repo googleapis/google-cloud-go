@@ -124,6 +124,7 @@ type NotificationConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Config:
+	//
 	//	*NotificationConfig_PubsubNotification
 	Config isNotificationConfig_Config `protobuf_oneof:"config"`
 }

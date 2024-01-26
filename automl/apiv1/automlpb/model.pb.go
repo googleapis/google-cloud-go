@@ -101,6 +101,7 @@ type Model struct {
 	// Must match the metadata type of the dataset used to train the model.
 	//
 	// Types that are assignable to ModelMetadata:
+	//
 	//	*Model_TranslationModelMetadata
 	//	*Model_ImageClassificationModelMetadata
 	//	*Model_TextClassificationModelMetadata

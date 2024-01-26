@@ -410,26 +410,28 @@ type QueryCorpusRequest struct {
 	// (year >= 2020 OR year < 2010) AND (genre = drama OR genre = action)
 	//
 	// `MetadataFilter` object list:
-	//  metadata_filters = [
-	//  {key = "document.custom_metadata.year"
-	//   conditions = [{int_value = 2020, operation = GREATER_EQUAL},
-	//                 {int_value = 2010, operation = LESS}]},
-	//  {key = "document.custom_metadata.year"
-	//   conditions = [{int_value = 2020, operation = GREATER_EQUAL},
-	//                 {int_value = 2010, operation = LESS}]},
-	//  {key = "document.custom_metadata.genre"
-	//   conditions = [{string_value = "drama", operation = EQUAL},
-	//                 {string_value = "action", operation = EQUAL}]}]
+	//
+	//	metadata_filters = [
+	//	{key = "document.custom_metadata.year"
+	//	 conditions = [{int_value = 2020, operation = GREATER_EQUAL},
+	//	               {int_value = 2010, operation = LESS}]},
+	//	{key = "document.custom_metadata.year"
+	//	 conditions = [{int_value = 2020, operation = GREATER_EQUAL},
+	//	               {int_value = 2010, operation = LESS}]},
+	//	{key = "document.custom_metadata.genre"
+	//	 conditions = [{string_value = "drama", operation = EQUAL},
+	//	               {string_value = "action", operation = EQUAL}]}]
 	//
 	// Example query at chunk level for a numeric range of values:
 	// (year > 2015 AND year <= 2020)
 	//
 	// `MetadataFilter` object list:
-	//  metadata_filters = [
-	//  {key = "chunk.custom_metadata.year"
-	//   conditions = [{int_value = 2015, operation = GREATER}]},
-	//  {key = "chunk.custom_metadata.year"
-	//   conditions = [{int_value = 2020, operation = LESS_EQUAL}]}]
+	//
+	//	metadata_filters = [
+	//	{key = "chunk.custom_metadata.year"
+	//	 conditions = [{int_value = 2015, operation = GREATER}]},
+	//	{key = "chunk.custom_metadata.year"
+	//	 conditions = [{int_value = 2020, operation = LESS_EQUAL}]}]
 	//
 	// Note: "AND"s for the same key are only supported for numeric values. String
 	// values only support "OR"s for the same key.
@@ -1007,23 +1009,25 @@ type QueryDocumentRequest struct {
 	// (year >= 2020 OR year < 2010) AND (genre = drama OR genre = action)
 	//
 	// `MetadataFilter` object list:
-	//  metadata_filters = [
-	//  {key = "chunk.custom_metadata.year"
-	//   conditions = [{int_value = 2020, operation = GREATER_EQUAL},
-	//                 {int_value = 2010, operation = LESS}},
-	//  {key = "chunk.custom_metadata.genre"
-	//   conditions = [{string_value = "drama", operation = EQUAL},
-	//                 {string_value = "action", operation = EQUAL}}]
+	//
+	//	metadata_filters = [
+	//	{key = "chunk.custom_metadata.year"
+	//	 conditions = [{int_value = 2020, operation = GREATER_EQUAL},
+	//	               {int_value = 2010, operation = LESS}},
+	//	{key = "chunk.custom_metadata.genre"
+	//	 conditions = [{string_value = "drama", operation = EQUAL},
+	//	               {string_value = "action", operation = EQUAL}}]
 	//
 	// Example query for a numeric range of values:
 	// (year > 2015 AND year <= 2020)
 	//
 	// `MetadataFilter` object list:
-	//  metadata_filters = [
-	//  {key = "chunk.custom_metadata.year"
-	//   conditions = [{int_value = 2015, operation = GREATER}]},
-	//  {key = "chunk.custom_metadata.year"
-	//   conditions = [{int_value = 2020, operation = LESS_EQUAL}]}]
+	//
+	//	metadata_filters = [
+	//	{key = "chunk.custom_metadata.year"
+	//	 conditions = [{int_value = 2015, operation = GREATER}]},
+	//	{key = "chunk.custom_metadata.year"
+	//	 conditions = [{int_value = 2020, operation = LESS_EQUAL}]}]
 	//
 	// Note: "AND"s for the same key are only supported for numeric values. String
 	// values only support "OR"s for the same key.

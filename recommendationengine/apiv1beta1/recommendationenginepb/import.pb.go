@@ -202,6 +202,7 @@ type ImportErrorsConfig struct {
 	// Required. Errors destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ImportErrorsConfig_GcsPrefix
 	Destination isImportErrorsConfig_Destination `protobuf_oneof:"destination"`
 }
@@ -436,6 +437,7 @@ type InputConfig struct {
 	// Required. The source of the input.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*InputConfig_CatalogInlineSource
 	//	*InputConfig_GcsSource
 	//	*InputConfig_UserEventInlineSource

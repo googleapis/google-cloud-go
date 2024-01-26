@@ -70,6 +70,7 @@ type Operation struct {
 	// If `done` == `true`, exactly one of `error` or `response` is set.
 	//
 	// Types that are assignable to Result:
+	//
 	//	*Operation_Error
 	//	*Operation_Response
 	Result isOperation_Result `protobuf_oneof:"result"`

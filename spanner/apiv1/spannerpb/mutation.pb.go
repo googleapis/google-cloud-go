@@ -48,6 +48,7 @@ type Mutation struct {
 	// Required. The operation to perform.
 	//
 	// Types that are assignable to Operation:
+	//
 	//	*Mutation_Insert
 	//	*Mutation_Update
 	//	*Mutation_InsertOrUpdate

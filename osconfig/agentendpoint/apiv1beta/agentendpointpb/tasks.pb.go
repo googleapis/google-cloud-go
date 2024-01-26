@@ -388,6 +388,7 @@ type Task struct {
 	// Specific details about the current task to perform.
 	//
 	// Types that are assignable to TaskDetails:
+	//
 	//	*Task_ApplyPatchesTask
 	//	*Task_ExecStepTask
 	TaskDetails isTask_TaskDetails `protobuf_oneof:"task_details"`

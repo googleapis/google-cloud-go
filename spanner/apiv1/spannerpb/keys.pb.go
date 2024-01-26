@@ -132,12 +132,14 @@ type KeyRange struct {
 	// The start key must be provided. It can be either closed or open.
 	//
 	// Types that are assignable to StartKeyType:
+	//
 	//	*KeyRange_StartClosed
 	//	*KeyRange_StartOpen
 	StartKeyType isKeyRange_StartKeyType `protobuf_oneof:"start_key_type"`
 	// The end key must be provided. It can be either closed or open.
 	//
 	// Types that are assignable to EndKeyType:
+	//
 	//	*KeyRange_EndClosed
 	//	*KeyRange_EndOpen
 	EndKeyType isKeyRange_EndKeyType `protobuf_oneof:"end_key_type"`

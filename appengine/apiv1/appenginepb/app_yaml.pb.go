@@ -515,6 +515,7 @@ type UrlMap struct {
 	// Type of handler for this URL pattern.
 	//
 	// Types that are assignable to HandlerType:
+	//
 	//	*UrlMap_StaticFiles
 	//	*UrlMap_Script
 	//	*UrlMap_ApiEndpoint

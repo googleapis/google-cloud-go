@@ -390,6 +390,7 @@ type AudienceDimensionOrMetricFilter struct {
 	// One of the above filters.
 	//
 	// Types that are assignable to OneFilter:
+	//
 	//	*AudienceDimensionOrMetricFilter_StringFilter_
 	//	*AudienceDimensionOrMetricFilter_InListFilter_
 	//	*AudienceDimensionOrMetricFilter_NumericFilter_
@@ -622,6 +623,7 @@ type AudienceFilterExpression struct {
 	// The expression applied to a filter.
 	//
 	// Types that are assignable to Expr:
+	//
 	//	*AudienceFilterExpression_AndGroup
 	//	*AudienceFilterExpression_OrGroup
 	//	*AudienceFilterExpression_NotExpression
@@ -938,6 +940,7 @@ type AudienceFilterClause struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Filter:
+	//
 	//	*AudienceFilterClause_SimpleFilter
 	//	*AudienceFilterClause_SequenceFilter
 	Filter isAudienceFilterClause_Filter `protobuf_oneof:"filter"`
@@ -1338,6 +1341,7 @@ type AudienceDimensionOrMetricFilter_NumericValue struct {
 	// One of a numeric value.
 	//
 	// Types that are assignable to OneValue:
+	//
 	//	*AudienceDimensionOrMetricFilter_NumericValue_Int64Value
 	//	*AudienceDimensionOrMetricFilter_NumericValue_DoubleValue
 	OneValue isAudienceDimensionOrMetricFilter_NumericValue_OneValue `protobuf_oneof:"one_value"`

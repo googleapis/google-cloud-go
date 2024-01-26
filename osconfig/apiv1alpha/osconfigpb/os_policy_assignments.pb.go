@@ -253,8 +253,9 @@ type OSPolicyAssignment struct {
 	// 1) OSPolicyAssignment is created.
 	// 2) OSPolicyAssignment is updated and the update contains changes to one of
 	// the following fields:
-	//    - instance_filter
-	//    - os_policies
+	//   - instance_filter
+	//   - os_policies
+	//
 	// 3) OSPolicyAssignment is deleted.
 	Rollout *OSPolicyAssignment_Rollout `protobuf:"bytes,5,opt,name=rollout,proto3" json:"rollout,omitempty"`
 	// Output only. The assignment revision ID

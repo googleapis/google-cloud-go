@@ -795,6 +795,7 @@ type AuthorizationPolicy_Rule_Destination_HttpHeaderMatch struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Type:
+	//
 	//	*AuthorizationPolicy_Rule_Destination_HttpHeaderMatch_RegexMatch
 	Type isAuthorizationPolicy_Rule_Destination_HttpHeaderMatch_Type `protobuf_oneof:"type"`
 	// Required. The name of the HTTP header to match. For matching

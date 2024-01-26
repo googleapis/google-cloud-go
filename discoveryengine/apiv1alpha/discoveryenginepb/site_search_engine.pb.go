@@ -459,6 +459,7 @@ type TargetSite_FailureReason struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Failure:
+	//
 	//	*TargetSite_FailureReason_QuotaFailure_
 	Failure isTargetSite_FailureReason_Failure `protobuf_oneof:"failure"`
 }

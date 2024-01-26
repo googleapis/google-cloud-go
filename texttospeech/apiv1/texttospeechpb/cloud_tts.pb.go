@@ -494,6 +494,7 @@ type SynthesisInput struct {
 	// The input source, which is either plain text or SSML.
 	//
 	// Types that are assignable to InputSource:
+	//
 	//	*SynthesisInput_Text
 	//	*SynthesisInput_Ssml
 	InputSource isSynthesisInput_InputSource `protobuf_oneof:"input_source"`

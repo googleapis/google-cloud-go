@@ -253,6 +253,7 @@ type ImportAptArtifactsRequest struct {
 	// The source location of the package binaries.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportAptArtifactsRequest_GcsSource
 	Source isImportAptArtifactsRequest_Source `protobuf_oneof:"source"`
 	// The name of the parent resource where the artifacts will be imported.
@@ -332,6 +333,7 @@ type ImportAptArtifactsErrorInfo struct {
 	// The source that was not imported.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportAptArtifactsErrorInfo_GcsSource
 	Source isImportAptArtifactsErrorInfo_Source `protobuf_oneof:"source"`
 	// The detailed error status.

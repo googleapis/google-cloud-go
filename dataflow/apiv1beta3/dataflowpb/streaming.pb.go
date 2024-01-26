@@ -398,6 +398,7 @@ type StreamLocation struct {
 	// A specification of a stream's location.
 	//
 	// Types that are assignable to Location:
+	//
 	//	*StreamLocation_StreamingStageLocation
 	//	*StreamLocation_PubsubLocation
 	//	*StreamLocation_SideInputLocation

@@ -99,6 +99,7 @@ type ExpandedDataSetFilter struct {
 	// One of the above filters.
 	//
 	// Types that are assignable to OneFilter:
+	//
 	//	*ExpandedDataSetFilter_StringFilter_
 	//	*ExpandedDataSetFilter_InListFilter_
 	OneFilter isExpandedDataSetFilter_OneFilter `protobuf_oneof:"one_filter"`
@@ -194,6 +195,7 @@ type ExpandedDataSetFilterExpression struct {
 	// The expression applied to a filter.
 	//
 	// Types that are assignable to Expr:
+	//
 	//	*ExpandedDataSetFilterExpression_AndGroup
 	//	*ExpandedDataSetFilterExpression_NotExpression
 	//	*ExpandedDataSetFilterExpression_Filter

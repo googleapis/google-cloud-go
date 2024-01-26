@@ -317,11 +317,13 @@ type Content struct {
 	// Only returned in `GetContent` requests and not in `ListContent` request.
 	//
 	// Types that are assignable to Data:
+	//
 	//	*Content_DataText
 	Data isContent_Data `protobuf_oneof:"data"`
 	// Types of content
 	//
 	// Types that are assignable to Content:
+	//
 	//	*Content_SqlScript_
 	//	*Content_Notebook_
 	Content isContent_Content `protobuf_oneof:"content"`
@@ -558,11 +560,13 @@ type Environment_InfrastructureSpec struct {
 	// Hardware config
 	//
 	// Types that are assignable to Resources:
+	//
 	//	*Environment_InfrastructureSpec_Compute
 	Resources isEnvironment_InfrastructureSpec_Resources `protobuf_oneof:"resources"`
 	// Software config
 	//
 	// Types that are assignable to Runtime:
+	//
 	//	*Environment_InfrastructureSpec_OsImage
 	Runtime isEnvironment_InfrastructureSpec_Runtime `protobuf_oneof:"runtime"`
 }

@@ -1249,6 +1249,7 @@ type PolicySpec_PolicyRule struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Kind:
+	//
 	//	*PolicySpec_PolicyRule_Values
 	//	*PolicySpec_PolicyRule_AllowAll
 	//	*PolicySpec_PolicyRule_DenyAll

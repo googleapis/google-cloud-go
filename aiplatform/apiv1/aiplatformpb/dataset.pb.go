@@ -133,10 +133,10 @@ type Dataset struct {
 	// System reserved label keys are prefixed with "aiplatform.googleapis.com/"
 	// and are immutable. Following system labels exist for each Dataset:
 	//
-	// * "aiplatform.googleapis.com/dataset_metadata_schema": output only, its
-	//   value is the
-	//   [metadata_schema's][google.cloud.aiplatform.v1.Dataset.metadata_schema_uri]
-	//   title.
+	//   - "aiplatform.googleapis.com/dataset_metadata_schema": output only, its
+	//     value is the
+	//     [metadata_schema's][google.cloud.aiplatform.v1.Dataset.metadata_schema_uri]
+	//     title.
 	Labels map[string]string `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// All SavedQueries belong to the Dataset will be returned in List/Get
 	// Dataset response. The annotation_specs field
@@ -289,6 +289,7 @@ type ImportDataConfig struct {
 	// The source of the input.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportDataConfig_GcsSource
 	Source isImportDataConfig_Source `protobuf_oneof:"source"`
 	// Labels that will be applied to newly imported DataItems. If an identical
@@ -411,12 +412,14 @@ type ExportDataConfig struct {
 	// The destination of the output.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ExportDataConfig_GcsDestination
 	Destination isExportDataConfig_Destination `protobuf_oneof:"destination"`
 	// The instructions how the export data should be split between the
 	// training, validation and test sets.
 	//
 	// Types that are assignable to Split:
+	//
 	//	*ExportDataConfig_FractionSplit
 	//	*ExportDataConfig_FilterSplit
 	Split isExportDataConfig_Split `protobuf_oneof:"split"`

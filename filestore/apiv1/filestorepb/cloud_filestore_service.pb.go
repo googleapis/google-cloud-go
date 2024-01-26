@@ -731,6 +731,7 @@ type FileShareConfig struct {
 	// share is created from scratch.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*FileShareConfig_SourceBackup
 	Source isFileShareConfig_Source `protobuf_oneof:"source"`
 	// Nfs Export Options.
@@ -1289,6 +1290,7 @@ type RestoreInstanceRequest struct {
 	// is being restored to.
 	FileShare string `protobuf:"bytes,2,opt,name=file_share,json=fileShare,proto3" json:"file_share,omitempty"`
 	// Types that are assignable to Source:
+	//
 	//	*RestoreInstanceRequest_SourceBackup
 	Source isRestoreInstanceRequest_Source `protobuf_oneof:"source"`
 }

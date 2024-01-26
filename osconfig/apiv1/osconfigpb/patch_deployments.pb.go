@@ -184,6 +184,7 @@ type PatchDeployment struct {
 	// Schedule for the patch.
 	//
 	// Types that are assignable to Schedule:
+	//
 	//	*PatchDeployment_OneTimeSchedule
 	//	*PatchDeployment_RecurringSchedule
 	Schedule isPatchDeployment_Schedule `protobuf_oneof:"schedule"`
@@ -417,6 +418,7 @@ type RecurringSchedule struct {
 	// Configurations must match frequency.
 	//
 	// Types that are assignable to ScheduleConfig:
+	//
 	//	*RecurringSchedule_Weekly
 	//	*RecurringSchedule_Monthly
 	ScheduleConfig isRecurringSchedule_ScheduleConfig `protobuf_oneof:"schedule_config"`
@@ -605,6 +607,7 @@ type MonthlySchedule struct {
 	// One day in a month.
 	//
 	// Types that are assignable to DayOfMonth:
+	//
 	//	*MonthlySchedule_WeekDayOfMonth
 	//	*MonthlySchedule_MonthDay
 	DayOfMonth isMonthlySchedule_DayOfMonth `protobuf_oneof:"day_of_month"`

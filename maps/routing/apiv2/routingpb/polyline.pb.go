@@ -158,6 +158,7 @@ type Polyline struct {
 	// Encapsulates the type of polyline. Defaults to encoded_polyline.
 	//
 	// Types that are assignable to PolylineType:
+	//
 	//	*Polyline_EncodedPolyline
 	//	*Polyline_GeoJsonLinestring
 	PolylineType isPolyline_PolylineType `protobuf_oneof:"polyline_type"`

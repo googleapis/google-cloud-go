@@ -369,6 +369,7 @@ type Part struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Data:
+	//
 	//	*Part_Text
 	//	*Part_InlineData
 	//	*Part_FileData
@@ -376,6 +377,7 @@ type Part struct {
 	//	*Part_FunctionResponse
 	Data isPart_Data `protobuf_oneof:"data"`
 	// Types that are assignable to Metadata:
+	//
 	//	*Part_VideoMetadata
 	Metadata isPart_Metadata `protobuf_oneof:"metadata"`
 }

@@ -183,6 +183,7 @@ type CollectUserEventRequest struct {
 	// only when the raw_json is set.
 	//
 	// Types that are assignable to ConversionRule:
+	//
 	//	*CollectUserEventRequest_PrebuiltRule
 	ConversionRule isCollectUserEventRequest_ConversionRule `protobuf_oneof:"conversion_rule"`
 	// Required. The parent catalog name, such as

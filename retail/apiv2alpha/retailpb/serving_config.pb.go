@@ -122,7 +122,8 @@ type ServingConfig struct {
 	// recommendation probability to be ordered by price, with the
 	// highest-priced items first. This setting could result in a decrease in
 	// click-through and conversion rates.
-	//  Allowed values are:
+	//
+	//	Allowed values are:
 	//
 	// * `no-price-reranking`
 	// * `low-price-reranking`
@@ -270,14 +271,15 @@ type ServingConfig struct {
 	DiversityType ServingConfig_DiversityType `protobuf:"varint,20,opt,name=diversity_type,json=diversityType,proto3,enum=google.cloud.retail.v2alpha.ServingConfig_DiversityType" json:"diversity_type,omitempty"`
 	// Whether to add additional category filters on the `similar-items` model.
 	// If not specified, we enable it by default.
-	//  Allowed values are:
 	//
-	// * `no-category-match`: No additional filtering of original results from
-	//   the model and the customer's filters.
-	// * `relaxed-category-match`: Only keep results with categories that match
-	//   at least one item categories in the PredictRequests's context item.
-	//   * If customer also sends filters in the PredictRequest, then the results
-	//   will satisfy both conditions (user given and category match).
+	//	Allowed values are:
+	//
+	//   - `no-category-match`: No additional filtering of original results from
+	//     the model and the customer's filters.
+	//   - `relaxed-category-match`: Only keep results with categories that match
+	//     at least one item categories in the PredictRequests's context item.
+	//   - If customer also sends filters in the PredictRequest, then the results
+	//     will satisfy both conditions (user given and category match).
 	//
 	// Can only be set if
 	// [solution_types][google.cloud.retail.v2alpha.ServingConfig.solution_types]

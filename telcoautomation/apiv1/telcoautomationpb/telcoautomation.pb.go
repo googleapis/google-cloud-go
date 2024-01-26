@@ -4641,6 +4641,7 @@ type ManagementConfig struct {
 	// and FullManagementConfig
 	//
 	// Types that are assignable to OneofConfig:
+	//
 	//	*ManagementConfig_StandardManagementConfig
 	//	*ManagementConfig_FullManagementConfig
 	OneofConfig isManagementConfig_OneofConfig `protobuf_oneof:"oneof_config"`

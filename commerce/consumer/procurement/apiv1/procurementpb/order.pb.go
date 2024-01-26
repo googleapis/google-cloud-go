@@ -771,6 +771,7 @@ type Parameter_Value struct {
 	// The kind of value.
 	//
 	// Types that are assignable to Kind:
+	//
 	//	*Parameter_Value_Int64Value
 	//	*Parameter_Value_StringValue
 	//	*Parameter_Value_DoubleValue

@@ -579,6 +579,7 @@ type IndexDatapoint_NumericRestriction struct {
 	// namespace name. This is verified at runtime.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*IndexDatapoint_NumericRestriction_ValueInt
 	//	*IndexDatapoint_NumericRestriction_ValueFloat
 	//	*IndexDatapoint_NumericRestriction_ValueDouble

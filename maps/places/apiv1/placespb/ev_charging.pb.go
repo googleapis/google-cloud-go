@@ -52,7 +52,8 @@ const (
 	// CHAdeMO type connector.
 	EVConnectorType_EV_CONNECTOR_TYPE_CHADEMO EVConnectorType = 4
 	// Combined Charging System (AC and DC). Based on SAE.
-	//  Type-1 J-1772 connector
+	//
+	//	Type-1 J-1772 connector
 	EVConnectorType_EV_CONNECTOR_TYPE_CCS_COMBO_1 EVConnectorType = 5
 	// Combined Charging System (AC and DC). Based on Type-2
 	// Mennekes connector

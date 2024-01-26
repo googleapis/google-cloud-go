@@ -301,6 +301,7 @@ type Version struct {
 	// Defaults to `AutomaticScaling`.
 	//
 	// Types that are assignable to Scaling:
+	//
 	//	*Version_AutomaticScaling
 	//	*Version_BasicScaling
 	//	*Version_ManualScaling
@@ -1865,6 +1866,7 @@ type Entrypoint struct {
 	// The command to run.
 	//
 	// Types that are assignable to Command:
+	//
 	//	*Entrypoint_Shell
 	Command isEntrypoint_Command `protobuf_oneof:"command"`
 }

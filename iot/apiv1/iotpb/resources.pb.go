@@ -1135,6 +1135,7 @@ type RegistryCredential struct {
 	// The credential data. Reserved for expansion in the future.
 	//
 	// Types that are assignable to Credential:
+	//
 	//	*RegistryCredential_PublicKeyCertificate
 	Credential isRegistryCredential_Credential `protobuf_oneof:"credential"`
 }
@@ -1366,6 +1367,7 @@ type DeviceCredential struct {
 	// The credential data. Reserved for expansion in the future.
 	//
 	// Types that are assignable to Credential:
+	//
 	//	*DeviceCredential_PublicKey
 	Credential isDeviceCredential_Credential `protobuf_oneof:"credential"`
 	// [Optional] The time at which this credential becomes invalid. This

@@ -297,7 +297,7 @@ type ListControlsRequest struct {
 	//
 	// * List all the products under the parent branch if
 	// [filter][google.cloud.retail.v2alpha.ListControlsRequest.filter] is unset.
-	// * List controls that are used in a single ServingConfig:
+	//   - List controls that are used in a single ServingConfig:
 	//     'serving_config = "boosted_home_page_cvr"'
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 }

@@ -387,11 +387,11 @@ type InstanceConfig struct {
 	// And they can be used as arguments to policy management rules (e.g. route,
 	// firewall, load balancing, etc.).
 	//
-	//  * Label keys must be between 1 and 63 characters long and must conform to
-	//    the following regular expression: `[a-z][a-z0-9_-]{0,62}`.
-	//  * Label values must be between 0 and 63 characters long and must conform
-	//    to the regular expression `[a-z0-9_-]{0,63}`.
-	//  * No more than 64 labels can be associated with a given resource.
+	//   - Label keys must be between 1 and 63 characters long and must conform to
+	//     the following regular expression: `[a-z][a-z0-9_-]{0,62}`.
+	//   - Label values must be between 0 and 63 characters long and must conform
+	//     to the regular expression `[a-z0-9_-]{0,63}`.
+	//   - No more than 64 labels can be associated with a given resource.
 	//
 	// See https://goo.gl/xmQnxf for more information on and examples of labels.
 	//
@@ -653,11 +653,11 @@ type Instance struct {
 	// And they can be used as arguments to policy management rules (e.g. route,
 	// firewall, load balancing, etc.).
 	//
-	//  * Label keys must be between 1 and 63 characters long and must conform to
-	//    the following regular expression: `[a-z][a-z0-9_-]{0,62}`.
-	//  * Label values must be between 0 and 63 characters long and must conform
-	//    to the regular expression `[a-z0-9_-]{0,63}`.
-	//  * No more than 64 labels can be associated with a given resource.
+	//   - Label keys must be between 1 and 63 characters long and must conform to
+	//     the following regular expression: `[a-z][a-z0-9_-]{0,62}`.
+	//   - Label values must be between 0 and 63 characters long and must conform
+	//     to the regular expression `[a-z0-9_-]{0,63}`.
+	//   - No more than 64 labels can be associated with a given resource.
 	//
 	// See https://goo.gl/xmQnxf for more information on and examples of labels.
 	//
@@ -1234,19 +1234,19 @@ type ListInstanceConfigOperationsRequest struct {
 	// The following fields in the [Operation][google.longrunning.Operation]
 	// are eligible for filtering:
 	//
-	//   * `name` - The name of the long-running operation
-	//   * `done` - False if the operation is in progress, else true.
-	//   * `metadata.@type` - the type of metadata. For example, the type string
-	//      for
-	//      [CreateInstanceConfigMetadata][google.spanner.admin.instance.v1.CreateInstanceConfigMetadata]
-	//      is
-	//      `type.googleapis.com/google.spanner.admin.instance.v1.CreateInstanceConfigMetadata`.
-	//   * `metadata.<field_name>` - any field in metadata.value.
-	//      `metadata.@type` must be specified first, if filtering on metadata
-	//      fields.
-	//   * `error` - Error associated with the long-running operation.
-	//   * `response.@type` - the type of response.
-	//   * `response.<field_name>` - any field in response.value.
+	//   - `name` - The name of the long-running operation
+	//   - `done` - False if the operation is in progress, else true.
+	//   - `metadata.@type` - the type of metadata. For example, the type string
+	//     for
+	//     [CreateInstanceConfigMetadata][google.spanner.admin.instance.v1.CreateInstanceConfigMetadata]
+	//     is
+	//     `type.googleapis.com/google.spanner.admin.instance.v1.CreateInstanceConfigMetadata`.
+	//   - `metadata.<field_name>` - any field in metadata.value.
+	//     `metadata.@type` must be specified first, if filtering on metadata
+	//     fields.
+	//   - `error` - Error associated with the long-running operation.
+	//   - `response.@type` - the type of response.
+	//   - `response.<field_name>` - any field in response.value.
 	//
 	// You can combine multiple expressions by enclosing each expression in
 	// parentheses. By default, expressions are combined with AND logic. However,
@@ -1254,18 +1254,18 @@ type ListInstanceConfigOperationsRequest struct {
 	//
 	// Here are a few examples:
 	//
-	//   * `done:true` - The operation is complete.
-	//   * `(metadata.@type=` \
+	//   - `done:true` - The operation is complete.
+	//   - `(metadata.@type=` \
 	//     `type.googleapis.com/google.spanner.admin.instance.v1.CreateInstanceConfigMetadata)
 	//     AND` \
 	//     `(metadata.instance_config.name:custom-config) AND` \
 	//     `(metadata.progress.start_time < \"2021-03-28T14:50:00Z\") AND` \
 	//     `(error:*)` - Return operations where:
-	//     * The operation's metadata type is
+	//   - The operation's metadata type is
 	//     [CreateInstanceConfigMetadata][google.spanner.admin.instance.v1.CreateInstanceConfigMetadata].
-	//     * The instance config name contains "custom-config".
-	//     * The operation started before 2021-03-28T14:50:00Z.
-	//     * The operation resulted in an error.
+	//   - The instance config name contains "custom-config".
+	//   - The operation started before 2021-03-28T14:50:00Z.
+	//   - The operation resulted in an error.
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Number of operations to be returned in the response. If 0 or
 	// less, defaults to the server's maximum allowed page size.
@@ -1559,22 +1559,22 @@ type ListInstancesRequest struct {
 	// An expression for filtering the results of the request. Filter rules are
 	// case insensitive. The fields eligible for filtering are:
 	//
-	//   * `name`
-	//   * `display_name`
-	//   * `labels.key` where key is the name of a label
+	//   - `name`
+	//   - `display_name`
+	//   - `labels.key` where key is the name of a label
 	//
 	// Some examples of using filters are:
 	//
-	//   * `name:*` --> The instance has a name.
-	//   * `name:Howl` --> The instance's name contains the string "howl".
-	//   * `name:HOWL` --> Equivalent to above.
-	//   * `NAME:howl` --> Equivalent to above.
-	//   * `labels.env:*` --> The instance has the label "env".
-	//   * `labels.env:dev` --> The instance has the label "env" and the value of
-	//                        the label contains the string "dev".
-	//   * `name:howl labels.env:dev` --> The instance's name contains "howl" and
-	//                                  it has the label "env" with its value
-	//                                  containing "dev".
+	//   - `name:*` --> The instance has a name.
+	//   - `name:Howl` --> The instance's name contains the string "howl".
+	//   - `name:HOWL` --> Equivalent to above.
+	//   - `NAME:howl` --> Equivalent to above.
+	//   - `labels.env:*` --> The instance has the label "env".
+	//   - `labels.env:dev` --> The instance has the label "env" and the value of
+	//     the label contains the string "dev".
+	//   - `name:howl labels.env:dev` --> The instance's name contains "howl" and
+	//     it has the label "env" with its value
+	//     containing "dev".
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 
@@ -2131,6 +2131,7 @@ type AutoscalingConfig_AutoscalingLimits struct {
 	// The minimum compute capacity for the instance.
 	//
 	// Types that are assignable to MinLimit:
+	//
 	//	*AutoscalingConfig_AutoscalingLimits_MinNodes
 	//	*AutoscalingConfig_AutoscalingLimits_MinProcessingUnits
 	MinLimit isAutoscalingConfig_AutoscalingLimits_MinLimit `protobuf_oneof:"min_limit"`
@@ -2139,6 +2140,7 @@ type AutoscalingConfig_AutoscalingLimits struct {
 	// capacity.
 	//
 	// Types that are assignable to MaxLimit:
+	//
 	//	*AutoscalingConfig_AutoscalingLimits_MaxNodes
 	//	*AutoscalingConfig_AutoscalingLimits_MaxProcessingUnits
 	MaxLimit isAutoscalingConfig_AutoscalingLimits_MaxLimit `protobuf_oneof:"max_limit"`
@@ -3443,24 +3445,24 @@ type InstanceAdminClient interface {
 	//
 	// Immediately after the request returns:
 	//
-	//   * The instance config is readable via the API, with all requested
+	//   - The instance config is readable via the API, with all requested
 	//     attributes. The instance config's
 	//     [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
 	//     field is set to true. Its state is `CREATING`.
 	//
 	// While the operation is pending:
 	//
-	//   * Cancelling the operation renders the instance config immediately
+	//   - Cancelling the operation renders the instance config immediately
 	//     unreadable via the API.
-	//   * Except for deleting the creating resource, all other attempts to modify
+	//   - Except for deleting the creating resource, all other attempts to modify
 	//     the instance config are rejected.
 	//
 	// Upon completion of the returned operation:
 	//
-	//   * Instances can be created using the instance configuration.
-	//   * The instance config's
-	//   [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
-	//   field becomes false. Its state becomes `READY`.
+	//   - Instances can be created using the instance configuration.
+	//   - The instance config's
+	//     [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
+	//     field becomes false. Its state becomes `READY`.
 	//
 	// The returned [long-running operation][google.longrunning.Operation] will
 	// have a name of the format
@@ -3485,28 +3487,28 @@ type InstanceAdminClient interface {
 	//
 	// Immediately after the request returns:
 	//
-	//   * The instance config's
+	//   - The instance config's
 	//     [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
 	//     field is set to true.
 	//
 	// While the operation is pending:
 	//
-	//   * Cancelling the operation sets its metadata's
+	//   - Cancelling the operation sets its metadata's
 	//     [cancel_time][google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata.cancel_time].
 	//     The operation is guaranteed to succeed at undoing all changes, after
 	//     which point it terminates with a `CANCELLED` status.
-	//   * All other attempts to modify the instance config are rejected.
-	//   * Reading the instance config via the API continues to give the
+	//   - All other attempts to modify the instance config are rejected.
+	//   - Reading the instance config via the API continues to give the
 	//     pre-request values.
 	//
 	// Upon completion of the returned operation:
 	//
-	//   * Creating instances using the instance configuration uses the new
+	//   - Creating instances using the instance configuration uses the new
 	//     values.
-	//   * The instance config's new values are readable via the API.
-	//   * The instance config's
-	//   [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
-	//   field becomes false.
+	//   - The instance config's new values are readable via the API.
+	//   - The instance config's
+	//     [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
+	//     field becomes false.
 	//
 	// The returned [long-running operation][google.longrunning.Operation] will
 	// have a name of the format
@@ -3555,23 +3557,23 @@ type InstanceAdminClient interface {
 	//
 	// Immediately upon completion of this request:
 	//
-	//   * The instance is readable via the API, with all requested attributes
+	//   - The instance is readable via the API, with all requested attributes
 	//     but no allocated resources. Its state is `CREATING`.
 	//
 	// Until completion of the returned operation:
 	//
-	//   * Cancelling the operation renders the instance immediately unreadable
+	//   - Cancelling the operation renders the instance immediately unreadable
 	//     via the API.
-	//   * The instance can be deleted.
-	//   * All other attempts to modify the instance are rejected.
+	//   - The instance can be deleted.
+	//   - All other attempts to modify the instance are rejected.
 	//
 	// Upon completion of the returned operation:
 	//
-	//   * Billing for all successfully-allocated resources begins (some types
+	//   - Billing for all successfully-allocated resources begins (some types
 	//     may have lower than the requested levels).
-	//   * Databases can be created in the instance.
-	//   * The instance's allocated resource levels are readable via the API.
-	//   * The instance's state becomes `READY`.
+	//   - Databases can be created in the instance.
+	//   - The instance's allocated resource levels are readable via the API.
+	//   - The instance's state becomes `READY`.
 	//
 	// The returned [long-running operation][google.longrunning.Operation] will
 	// have a name of the format `<instance_name>/operations/<operation_id>` and
@@ -3589,27 +3591,27 @@ type InstanceAdminClient interface {
 	//
 	// Immediately upon completion of this request:
 	//
-	//   * For resource types for which a decrease in the instance's allocation
+	//   - For resource types for which a decrease in the instance's allocation
 	//     has been requested, billing is based on the newly-requested level.
 	//
 	// Until completion of the returned operation:
 	//
-	//   * Cancelling the operation sets its metadata's
+	//   - Cancelling the operation sets its metadata's
 	//     [cancel_time][google.spanner.admin.instance.v1.UpdateInstanceMetadata.cancel_time],
 	//     and begins restoring resources to their pre-request values. The
 	//     operation is guaranteed to succeed at undoing all resource changes,
 	//     after which point it terminates with a `CANCELLED` status.
-	//   * All other attempts to modify the instance are rejected.
-	//   * Reading the instance via the API continues to give the pre-request
+	//   - All other attempts to modify the instance are rejected.
+	//   - Reading the instance via the API continues to give the pre-request
 	//     resource levels.
 	//
 	// Upon completion of the returned operation:
 	//
-	//   * Billing begins for all successfully-allocated resources (some types
+	//   - Billing begins for all successfully-allocated resources (some types
 	//     may have lower than the requested levels).
-	//   * All newly-reserved resources are available for serving the instance's
+	//   - All newly-reserved resources are available for serving the instance's
 	//     tables.
-	//   * The instance's new resource levels are readable via the API.
+	//   - The instance's new resource levels are readable via the API.
 	//
 	// The returned [long-running operation][google.longrunning.Operation] will
 	// have a name of the format `<instance_name>/operations/<operation_id>` and
@@ -3626,11 +3628,11 @@ type InstanceAdminClient interface {
 	//
 	// Immediately upon completion of the request:
 	//
-	//   * Billing ceases for all of the instance's reserved resources.
+	//   - Billing ceases for all of the instance's reserved resources.
 	//
 	// Soon afterward:
 	//
-	//   * The instance and *all of its databases* immediately and
+	//   - The instance and *all of its databases* immediately and
 	//     irrevocably disappear from the API. All data in the databases
 	//     is permanently deleted.
 	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -3804,24 +3806,24 @@ type InstanceAdminServer interface {
 	//
 	// Immediately after the request returns:
 	//
-	//   * The instance config is readable via the API, with all requested
+	//   - The instance config is readable via the API, with all requested
 	//     attributes. The instance config's
 	//     [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
 	//     field is set to true. Its state is `CREATING`.
 	//
 	// While the operation is pending:
 	//
-	//   * Cancelling the operation renders the instance config immediately
+	//   - Cancelling the operation renders the instance config immediately
 	//     unreadable via the API.
-	//   * Except for deleting the creating resource, all other attempts to modify
+	//   - Except for deleting the creating resource, all other attempts to modify
 	//     the instance config are rejected.
 	//
 	// Upon completion of the returned operation:
 	//
-	//   * Instances can be created using the instance configuration.
-	//   * The instance config's
-	//   [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
-	//   field becomes false. Its state becomes `READY`.
+	//   - Instances can be created using the instance configuration.
+	//   - The instance config's
+	//     [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
+	//     field becomes false. Its state becomes `READY`.
 	//
 	// The returned [long-running operation][google.longrunning.Operation] will
 	// have a name of the format
@@ -3846,28 +3848,28 @@ type InstanceAdminServer interface {
 	//
 	// Immediately after the request returns:
 	//
-	//   * The instance config's
+	//   - The instance config's
 	//     [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
 	//     field is set to true.
 	//
 	// While the operation is pending:
 	//
-	//   * Cancelling the operation sets its metadata's
+	//   - Cancelling the operation sets its metadata's
 	//     [cancel_time][google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata.cancel_time].
 	//     The operation is guaranteed to succeed at undoing all changes, after
 	//     which point it terminates with a `CANCELLED` status.
-	//   * All other attempts to modify the instance config are rejected.
-	//   * Reading the instance config via the API continues to give the
+	//   - All other attempts to modify the instance config are rejected.
+	//   - Reading the instance config via the API continues to give the
 	//     pre-request values.
 	//
 	// Upon completion of the returned operation:
 	//
-	//   * Creating instances using the instance configuration uses the new
+	//   - Creating instances using the instance configuration uses the new
 	//     values.
-	//   * The instance config's new values are readable via the API.
-	//   * The instance config's
-	//   [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
-	//   field becomes false.
+	//   - The instance config's new values are readable via the API.
+	//   - The instance config's
+	//     [reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]
+	//     field becomes false.
 	//
 	// The returned [long-running operation][google.longrunning.Operation] will
 	// have a name of the format
@@ -3916,23 +3918,23 @@ type InstanceAdminServer interface {
 	//
 	// Immediately upon completion of this request:
 	//
-	//   * The instance is readable via the API, with all requested attributes
+	//   - The instance is readable via the API, with all requested attributes
 	//     but no allocated resources. Its state is `CREATING`.
 	//
 	// Until completion of the returned operation:
 	//
-	//   * Cancelling the operation renders the instance immediately unreadable
+	//   - Cancelling the operation renders the instance immediately unreadable
 	//     via the API.
-	//   * The instance can be deleted.
-	//   * All other attempts to modify the instance are rejected.
+	//   - The instance can be deleted.
+	//   - All other attempts to modify the instance are rejected.
 	//
 	// Upon completion of the returned operation:
 	//
-	//   * Billing for all successfully-allocated resources begins (some types
+	//   - Billing for all successfully-allocated resources begins (some types
 	//     may have lower than the requested levels).
-	//   * Databases can be created in the instance.
-	//   * The instance's allocated resource levels are readable via the API.
-	//   * The instance's state becomes `READY`.
+	//   - Databases can be created in the instance.
+	//   - The instance's allocated resource levels are readable via the API.
+	//   - The instance's state becomes `READY`.
 	//
 	// The returned [long-running operation][google.longrunning.Operation] will
 	// have a name of the format `<instance_name>/operations/<operation_id>` and
@@ -3950,27 +3952,27 @@ type InstanceAdminServer interface {
 	//
 	// Immediately upon completion of this request:
 	//
-	//   * For resource types for which a decrease in the instance's allocation
+	//   - For resource types for which a decrease in the instance's allocation
 	//     has been requested, billing is based on the newly-requested level.
 	//
 	// Until completion of the returned operation:
 	//
-	//   * Cancelling the operation sets its metadata's
+	//   - Cancelling the operation sets its metadata's
 	//     [cancel_time][google.spanner.admin.instance.v1.UpdateInstanceMetadata.cancel_time],
 	//     and begins restoring resources to their pre-request values. The
 	//     operation is guaranteed to succeed at undoing all resource changes,
 	//     after which point it terminates with a `CANCELLED` status.
-	//   * All other attempts to modify the instance are rejected.
-	//   * Reading the instance via the API continues to give the pre-request
+	//   - All other attempts to modify the instance are rejected.
+	//   - Reading the instance via the API continues to give the pre-request
 	//     resource levels.
 	//
 	// Upon completion of the returned operation:
 	//
-	//   * Billing begins for all successfully-allocated resources (some types
+	//   - Billing begins for all successfully-allocated resources (some types
 	//     may have lower than the requested levels).
-	//   * All newly-reserved resources are available for serving the instance's
+	//   - All newly-reserved resources are available for serving the instance's
 	//     tables.
-	//   * The instance's new resource levels are readable via the API.
+	//   - The instance's new resource levels are readable via the API.
 	//
 	// The returned [long-running operation][google.longrunning.Operation] will
 	// have a name of the format `<instance_name>/operations/<operation_id>` and
@@ -3987,11 +3989,11 @@ type InstanceAdminServer interface {
 	//
 	// Immediately upon completion of the request:
 	//
-	//   * Billing ceases for all of the instance's reserved resources.
+	//   - Billing ceases for all of the instance's reserved resources.
 	//
 	// Soon afterward:
 	//
-	//   * The instance and *all of its databases* immediately and
+	//   - The instance and *all of its databases* immediately and
 	//     irrevocably disappear from the API. All data in the databases
 	//     is permanently deleted.
 	DeleteInstance(context.Context, *DeleteInstanceRequest) (*emptypb.Empty, error)
