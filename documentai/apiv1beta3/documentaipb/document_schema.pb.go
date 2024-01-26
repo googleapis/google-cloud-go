@@ -515,6 +515,7 @@ type DocumentSchema_EntityType struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to ValueSource:
+	//
 	//	*DocumentSchema_EntityType_EnumValues_
 	ValueSource isDocumentSchema_EntityType_ValueSource `protobuf_oneof:"value_source"`
 	// User defined name for the type.
@@ -522,16 +523,16 @@ type DocumentSchema_EntityType struct {
 	// Name of the type. It must be unique within the schema file and
 	// cannot be a "Common Type".  The following naming conventions are used:
 	//
-	// - Use `snake_casing`.
-	// - Name matching is case-sensitive.
-	// - Maximum 64 characters.
-	// - Must start with a letter.
-	// - Allowed characters: ASCII letters `[a-z0-9_-]`.  (For backward
-	//   compatibility internal infrastructure and tooling can handle any ascii
-	//   character.)
-	// - The `/` is sometimes used to denote a property of a type.  For example
-	//   `line_item/amount`.  This convention is deprecated, but will still be
-	//   honored for backward compatibility.
+	//   - Use `snake_casing`.
+	//   - Name matching is case-sensitive.
+	//   - Maximum 64 characters.
+	//   - Must start with a letter.
+	//   - Allowed characters: ASCII letters `[a-z0-9_-]`.  (For backward
+	//     compatibility internal infrastructure and tooling can handle any ascii
+	//     character.)
+	//   - The `/` is sometimes used to denote a property of a type.  For example
+	//     `line_item/amount`.  This convention is deprecated, but will still be
+	//     honored for backward compatibility.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The entity type that this type is derived from.  For now, one and only
 	// one should be set.

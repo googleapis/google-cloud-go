@@ -460,9 +460,9 @@ type GetEnvironmentRequest struct {
 
 	// Required. The name of the environment.
 	// Supported formats:
-	// - `projects/<Project ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project ID>/locations/<Location
-	//   ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/locations/<Location
+	//     ID>/agent/environments/<Environment ID>`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -710,9 +710,9 @@ type GetEnvironmentHistoryRequest struct {
 
 	// Required. The name of the environment to retrieve history for.
 	// Supported formats:
-	// - `projects/<Project ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project ID>/locations/<Location
-	//   ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/locations/<Location
+	//     ID>/agent/environments/<Environment ID>`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of items to return in a single page. By
 	// default 100 and at most 1000.
@@ -783,9 +783,9 @@ type EnvironmentHistory struct {
 
 	// Output only. The name of the environment this history is for.
 	// Supported formats:
-	// - `projects/<Project ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project ID>/locations/<Location
-	//    ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/agent/environments/<Environment ID>`
+	//   - `projects/<Project ID>/locations/<Location
+	//     ID>/agent/environments/<Environment ID>`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Output only. The list of agent environments. There will be a maximum number
 	// of items returned based on the page_size field in the request.

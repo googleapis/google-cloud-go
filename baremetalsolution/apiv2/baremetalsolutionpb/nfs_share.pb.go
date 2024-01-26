@@ -534,8 +534,9 @@ type UpdateNfsShareRequest struct {
 	NfsShare *NfsShare `protobuf:"bytes,1,opt,name=nfs_share,json=nfsShare,proto3" json:"nfs_share,omitempty"`
 	// The list of fields to update.
 	// The only currently supported fields are:
-	//   `labels`
-	//   `allowed_clients`
+	//
+	//	`labels`
+	//	`allowed_clients`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

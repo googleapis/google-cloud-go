@@ -214,6 +214,7 @@ type ImportTaxonomiesRequest struct {
 	// Source taxonomies to be imported.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportTaxonomiesRequest_InlineSource
 	Source isImportTaxonomiesRequest_Source `protobuf_oneof:"source"`
 }
@@ -396,6 +397,7 @@ type ExportTaxonomiesRequest struct {
 	// Required. Taxonomies export destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*ExportTaxonomiesRequest_SerializedTaxonomies
 	Destination isExportTaxonomiesRequest_Destination `protobuf_oneof:"destination"`
 }

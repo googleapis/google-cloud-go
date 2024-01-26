@@ -214,6 +214,7 @@ type ClientEvent struct {
 	// The detail information of a specific event type.
 	//
 	// Types that are assignable to Event:
+	//
 	//	*ClientEvent_JobEvent
 	Event isClientEvent_Event `protobuf_oneof:"event"`
 	// Notes about the event provided by recruiters or other users, for example,

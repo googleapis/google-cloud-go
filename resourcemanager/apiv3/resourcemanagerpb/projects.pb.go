@@ -509,7 +509,6 @@ type SearchProjectsRequest struct {
 	//
 	// Some examples queries:
 	//
-	//
 	// - **`name:how*`**: The project's name starts with "how".
 	// - **`name:Howl`**: The project's name is `Howl` or `howl`.
 	// - **`name:HOWL`**: Equivalent to above.
@@ -1855,8 +1854,6 @@ type ProjectsClient interface {
 	// If project has no current parent, or it currently does not have an
 	// associated organization resource, you will also need the
 	// `resourcemanager.projects.setIamPolicy` permission in the project.
-	//
-	//
 	MoveProject(ctx context.Context, in *MoveProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Marks the project identified by the specified
 	// `name` (for example, `projects/415104041262`) for deletion.
@@ -2113,8 +2110,6 @@ type ProjectsServer interface {
 	// If project has no current parent, or it currently does not have an
 	// associated organization resource, you will also need the
 	// `resourcemanager.projects.setIamPolicy` permission in the project.
-	//
-	//
 	MoveProject(context.Context, *MoveProjectRequest) (*longrunningpb.Operation, error)
 	// Marks the project identified by the specified
 	// `name` (for example, `projects/415104041262`) for deletion.

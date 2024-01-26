@@ -71,6 +71,7 @@ type LogEntry struct {
 	// The log entry payload, which can be one of multiple types.
 	//
 	// Types that are assignable to Payload:
+	//
 	//	*LogEntry_ProtoPayload
 	//	*LogEntry_TextPayload
 	//	*LogEntry_StructPayload

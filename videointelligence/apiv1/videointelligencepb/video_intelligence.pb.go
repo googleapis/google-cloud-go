@@ -3321,6 +3321,7 @@ type ObjectTrackingAnnotation struct {
 	// and streaming modes.
 	//
 	// Types that are assignable to TrackInfo:
+	//
 	//	*ObjectTrackingAnnotation_Segment
 	//	*ObjectTrackingAnnotation_TrackId
 	TrackInfo isObjectTrackingAnnotation_TrackInfo `protobuf_oneof:"track_info"`

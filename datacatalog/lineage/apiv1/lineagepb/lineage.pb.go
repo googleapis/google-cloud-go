@@ -2023,6 +2023,7 @@ type SearchLinksRequest struct {
 	// The asset for which you want to retrieve links.
 	//
 	// Types that are assignable to Criteria:
+	//
 	//	*SearchLinksRequest_Source
 	//	*SearchLinksRequest_Target
 	Criteria isSearchLinksRequest_Criteria `protobuf_oneof:"criteria"`
@@ -2584,10 +2585,10 @@ type Origin struct {
 	// location parts of the resource name must match the project and location of
 	// the lineage resource being created. Examples:
 	//
-	// - `{source_type: COMPOSER, name:
-	//   "projects/foo/locations/us/environments/bar"}`
-	// - `{source_type: BIGQUERY, name: "projects/foo/locations/eu"}`
-	// - `{source_type: CUSTOM,   name: "myCustomIntegration"}`
+	//   - `{source_type: COMPOSER, name:
+	//     "projects/foo/locations/us/environments/bar"}`
+	//   - `{source_type: BIGQUERY, name: "projects/foo/locations/eu"}`
+	//   - `{source_type: CUSTOM,   name: "myCustomIntegration"}`
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 }
 

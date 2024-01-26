@@ -333,6 +333,7 @@ type BinaryAuthorization struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to BinauthzMethod:
+	//
 	//	*BinaryAuthorization_UseDefault
 	BinauthzMethod isBinaryAuthorization_BinauthzMethod `protobuf_oneof:"binauthz_method"`
 	// If present, indicates to use Breakglass using this justification.

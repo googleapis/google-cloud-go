@@ -55,9 +55,9 @@ const (
 	// The INACTIVE state indicates that the Channel cannot receive events
 	// permanently. There are two possible cases this state can happen:
 	//
-	// 1. The SaaS provider disconnected from this Channel.
-	// 2. The Channel activation token has expired but the SaaS provider
-	//    wasn't connected.
+	//  1. The SaaS provider disconnected from this Channel.
+	//  2. The Channel activation token has expired but the SaaS provider
+	//     wasn't connected.
 	//
 	// To re-establish a Connection with a provider, the subscriber
 	// should create a new Channel and give it to the provider.
@@ -134,6 +134,7 @@ type Channel struct {
 	// `projects/{project}/locations/{location}/providers/{provider_id}`.
 	Provider string `protobuf:"bytes,7,opt,name=provider,proto3" json:"provider,omitempty"`
 	// Types that are assignable to Transport:
+	//
 	//	*Channel_PubsubTopic
 	Transport isChannel_Transport `protobuf_oneof:"transport"`
 	// Output only. The state of a Channel.

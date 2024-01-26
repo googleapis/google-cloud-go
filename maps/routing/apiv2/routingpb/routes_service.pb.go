@@ -281,7 +281,9 @@ type ComputeRoutesRequest struct {
 	TravelMode RouteTravelMode `protobuf:"varint,4,opt,name=travel_mode,json=travelMode,proto3,enum=google.maps.routing.v2.RouteTravelMode" json:"travel_mode,omitempty"`
 	// Optional. Specifies how to compute the route. The server
 	// attempts to use the selected routing preference to compute the route. If
-	//  the routing preference results in an error or an extra long latency, then
+	//
+	//	the routing preference results in an error or an extra long latency, then
+	//
 	// an error is returned. You can specify this option only when the
 	// `travel_mode` is `DRIVE` or `TWO_WHEELER`, otherwise the request fails.
 	RoutingPreference RoutingPreference `protobuf:"varint,5,opt,name=routing_preference,json=routingPreference,proto3,enum=google.maps.routing.v2.RoutingPreference" json:"routing_preference,omitempty"`
@@ -1719,12 +1721,14 @@ type RoutesClient interface {
 	//
 	// For example, in this method:
 	//
-	// * Field mask of all available fields (for manual inspection):
-	//   `X-Goog-FieldMask: *`
-	// * Field mask of Route-level duration, distance, and polyline (an example
+	//   - Field mask of all available fields (for manual inspection):
+	//     `X-Goog-FieldMask: *`
+	//   - Field mask of Route-level duration, distance, and polyline (an example
+	//
 	// production setup):
-	//   `X-Goog-FieldMask:
-	//   routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline`
+	//
+	//	`X-Goog-FieldMask:
+	//	routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline`
 	//
 	// Google discourage the use of the wildcard (`*`) response field mask, or
 	// specifying the field mask at the top level (`routes`), because:
@@ -1755,12 +1759,12 @@ type RoutesClient interface {
 	//
 	// For example, in this method:
 	//
-	// * Field mask of all available fields (for manual inspection):
-	//   `X-Goog-FieldMask: *`
-	// * Field mask of route durations, distances, element status, condition, and
-	//   element indices (an example production setup):
-	//   `X-Goog-FieldMask:
-	//   originIndex,destinationIndex,status,condition,distanceMeters,duration`
+	//   - Field mask of all available fields (for manual inspection):
+	//     `X-Goog-FieldMask: *`
+	//   - Field mask of route durations, distances, element status, condition, and
+	//     element indices (an example production setup):
+	//     `X-Goog-FieldMask:
+	//     originIndex,destinationIndex,status,condition,distanceMeters,duration`
 	//
 	// It is critical that you include `status` in your field mask as otherwise
 	// all messages will appear to be OK. Google discourages the use of the
@@ -1844,12 +1848,14 @@ type RoutesServer interface {
 	//
 	// For example, in this method:
 	//
-	// * Field mask of all available fields (for manual inspection):
-	//   `X-Goog-FieldMask: *`
-	// * Field mask of Route-level duration, distance, and polyline (an example
+	//   - Field mask of all available fields (for manual inspection):
+	//     `X-Goog-FieldMask: *`
+	//   - Field mask of Route-level duration, distance, and polyline (an example
+	//
 	// production setup):
-	//   `X-Goog-FieldMask:
-	//   routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline`
+	//
+	//	`X-Goog-FieldMask:
+	//	routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline`
 	//
 	// Google discourage the use of the wildcard (`*`) response field mask, or
 	// specifying the field mask at the top level (`routes`), because:
@@ -1880,12 +1886,12 @@ type RoutesServer interface {
 	//
 	// For example, in this method:
 	//
-	// * Field mask of all available fields (for manual inspection):
-	//   `X-Goog-FieldMask: *`
-	// * Field mask of route durations, distances, element status, condition, and
-	//   element indices (an example production setup):
-	//   `X-Goog-FieldMask:
-	//   originIndex,destinationIndex,status,condition,distanceMeters,duration`
+	//   - Field mask of all available fields (for manual inspection):
+	//     `X-Goog-FieldMask: *`
+	//   - Field mask of route durations, distances, element status, condition, and
+	//     element indices (an example production setup):
+	//     `X-Goog-FieldMask:
+	//     originIndex,destinationIndex,status,condition,distanceMeters,duration`
 	//
 	// It is critical that you include `status` in your field mask as otherwise
 	// all messages will appear to be OK. Google discourages the use of the

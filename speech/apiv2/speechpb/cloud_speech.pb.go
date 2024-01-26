@@ -545,6 +545,7 @@ type OperationMetadata struct {
 	// The request that spawned the Operation.
 	//
 	// Types that are assignable to Request:
+	//
 	//	*OperationMetadata_BatchRecognizeRequest
 	//	*OperationMetadata_CreateRecognizerRequest
 	//	*OperationMetadata_UpdateRecognizerRequest
@@ -566,6 +567,7 @@ type OperationMetadata struct {
 	// Specific metadata per RPC.
 	//
 	// Types that are assignable to Metadata:
+	//
 	//	*OperationMetadata_BatchRecognizeMetadata
 	Metadata isOperationMetadata_Metadata `protobuf_oneof:"metadata"`
 }
@@ -2032,6 +2034,7 @@ type RecognitionConfig struct {
 	// Decoding parameters for audio being sent for recognition.
 	//
 	// Types that are assignable to DecodingConfig:
+	//
 	//	*RecognitionConfig_AutoDecodingConfig
 	//	*RecognitionConfig_ExplicitDecodingConfig
 	DecodingConfig isRecognitionConfig_DecodingConfig `protobuf_oneof:"decoding_config"`
@@ -2217,6 +2220,7 @@ type RecognizeRequest struct {
 	// Storage URI.
 	//
 	// Types that are assignable to AudioSource:
+	//
 	//	*RecognizeRequest_Content
 	//	*RecognizeRequest_Uri
 	AudioSource isRecognizeRequest_AudioSource `protobuf_oneof:"audio_source"`
@@ -2888,6 +2892,7 @@ type StreamingRecognizeRequest struct {
 	// {recognizer} segment may be set to `_` to use an empty implicit Recognizer.
 	Recognizer string `protobuf:"bytes,3,opt,name=recognizer,proto3" json:"recognizer,omitempty"`
 	// Types that are assignable to StreamingRequest:
+	//
 	//	*StreamingRecognizeRequest_StreamingConfig
 	//	*StreamingRecognizeRequest_Audio
 	StreamingRequest isStreamingRecognizeRequest_StreamingRequest `protobuf_oneof:"streaming_request"`
@@ -3187,6 +3192,7 @@ type RecognitionOutputConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Output:
+	//
 	//	*RecognitionOutputConfig_GcsOutputConfig
 	//	*RecognitionOutputConfig_InlineResponseConfig
 	Output isRecognitionOutputConfig_Output `protobuf_oneof:"output"`
@@ -3497,6 +3503,7 @@ type BatchRecognizeFileResult struct {
 	Error    *status.Status               `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 	Metadata *RecognitionResponseMetadata `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// Types that are assignable to Result:
+	//
 	//	*BatchRecognizeFileResult_CloudStorageResult
 	//	*BatchRecognizeFileResult_InlineResult
 	Result isBatchRecognizeFileResult_Result `protobuf_oneof:"result"`
@@ -3745,6 +3752,7 @@ type BatchRecognizeFileMetadata struct {
 	// The audio source, which is a Google Cloud Storage URI.
 	//
 	// Types that are assignable to AudioSource:
+	//
 	//	*BatchRecognizeFileMetadata_Uri
 	AudioSource isBatchRecognizeFileMetadata_AudioSource `protobuf_oneof:"audio_source"`
 	// Features and audio metadata to use for the Automatic Speech Recognition.
@@ -5751,6 +5759,7 @@ type SpeechAdaptation_AdaptationPhraseSet struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Value:
+	//
 	//	*SpeechAdaptation_AdaptationPhraseSet_PhraseSet
 	//	*SpeechAdaptation_AdaptationPhraseSet_InlinePhraseSet
 	Value isSpeechAdaptation_AdaptationPhraseSet_Value `protobuf_oneof:"value"`

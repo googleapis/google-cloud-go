@@ -366,6 +366,7 @@ type Fulfillment_ConditionalCases_Case_CaseContent struct {
 	// Either a message is returned or additional cases to be evaluated.
 	//
 	// Types that are assignable to CasesOrMessage:
+	//
 	//	*Fulfillment_ConditionalCases_Case_CaseContent_Message
 	//	*Fulfillment_ConditionalCases_Case_CaseContent_AdditionalCases
 	CasesOrMessage isFulfillment_ConditionalCases_Case_CaseContent_CasesOrMessage `protobuf_oneof:"cases_or_message"`

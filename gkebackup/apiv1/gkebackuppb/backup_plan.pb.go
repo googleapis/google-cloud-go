@@ -482,6 +482,7 @@ type BackupPlan_BackupConfig struct {
 	// Exactly one of the fields of backup_scope MUST be specified.
 	//
 	// Types that are assignable to BackupScope:
+	//
 	//	*BackupPlan_BackupConfig_AllNamespaces
 	//	*BackupPlan_BackupConfig_SelectedNamespaces
 	//	*BackupPlan_BackupConfig_SelectedApplications

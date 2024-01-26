@@ -1942,7 +1942,8 @@ type ListOrganizationImpactsRequest struct {
 	// Optional. The maximum number of events that should be returned. Acceptable
 	// values are `1` to `100`, inclusive. The default value is `10`.
 	//
-	//  If more results are available, the service returns a
+	//	If more results are available, the service returns a
+	//
 	// `next_page_token` that can be used to get the next page of results in
 	// subsequent list requests. The service may return fewer
 	// [impacts](/service-health/docs/reference/rest/v1beta/organizations.locations.organizationImpacts#OrganizationImpact)

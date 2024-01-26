@@ -349,15 +349,17 @@ type Action struct {
 	// operational components.
 	//
 	// <ul>
-	//   <li><code>/google/logs</code> All logs written during the pipeline
-	//   execution.</li>
-	//   <li><code>/google/logs/output</code> The combined standard output and
-	//   standard error of all actions run as part of the pipeline
-	//   execution.</li>
-	//   <li><code>/google/logs/action/*/stdout</code> The complete contents of
-	//   each individual action's standard output.</li>
-	//   <li><code>/google/logs/action/*/stderr</code> The complete contents of
-	//   each individual action's standard error output.</li>
+	//
+	//	<li><code>/google/logs</code> All logs written during the pipeline
+	//	execution.</li>
+	//	<li><code>/google/logs/output</code> The combined standard output and
+	//	standard error of all actions run as part of the pipeline
+	//	execution.</li>
+	//	<li><code>/google/logs/action/*/stdout</code> The complete contents of
+	//	each individual action's standard output.</li>
+	//	<li><code>/google/logs/action/*/stderr</code> The complete contents of
+	//	each individual action's standard error output.</li>
+	//
 	// </ul>
 	Mounts []*Mount `protobuf:"bytes,9,rep,name=mounts,proto3" json:"mounts,omitempty"`
 	// Labels to associate with the action. This field is provided to assist
@@ -1334,6 +1336,7 @@ type Volume struct {
 	// start with a hyphen.
 	Volume string `protobuf:"bytes,1,opt,name=volume,proto3" json:"volume,omitempty"`
 	// Types that are assignable to Storage:
+	//
 	//	*Volume_PersistentDisk
 	//	*Volume_ExistingDisk
 	//	*Volume_NfsMount
@@ -1736,6 +1739,7 @@ type Event struct {
 	// Machine-readable details about the event.
 	//
 	// Types that are assignable to Details:
+	//
 	//	*Event_Delayed
 	//	*Event_WorkerAssigned
 	//	*Event_WorkerReleased

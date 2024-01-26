@@ -162,6 +162,7 @@ type PolicyRule struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Kind:
+	//
 	//	*PolicyRule_Values
 	//	*PolicyRule_AllowAll
 	//	*PolicyRule_DenyAll
@@ -318,7 +319,7 @@ type CustomConstraint struct {
 	// Immutable. The resource instance type on which this policy applies. Format
 	// will be of the form : `<canonical service name>/<type>` Example:
 	//
-	//  - `compute.googleapis.com/Instance`.
+	//   - `compute.googleapis.com/Instance`.
 	ResourceTypes []string `protobuf:"bytes,2,rep,name=resource_types,json=resourceTypes,proto3" json:"resource_types,omitempty"`
 	// All the operations being applied for this constraint.
 	MethodTypes []CustomConstraint_MethodType `protobuf:"varint,3,rep,packed,name=method_types,json=methodTypes,proto3,enum=google.cloud.securityposture.v1.CustomConstraint_MethodType" json:"method_types,omitempty"`

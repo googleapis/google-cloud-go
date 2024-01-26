@@ -45,6 +45,7 @@ type MigratableResource struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Resource:
+	//
 	//	*MigratableResource_MlEngineModelVersion_
 	//	*MigratableResource_AutomlModel_
 	//	*MigratableResource_AutomlDataset_

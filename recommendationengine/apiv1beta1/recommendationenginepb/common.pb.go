@@ -50,7 +50,8 @@ type FeatureMap struct {
 	// Feature names and values must be UTF-8 encoded strings.
 	//
 	// For example: `{ "colors": {"value": ["yellow", "green"]},
-	//                 "sizes": {"value":["S", "M"]}`
+	//
+	//	"sizes": {"value":["S", "M"]}`
 	CategoricalFeatures map[string]*FeatureMap_StringList `protobuf:"bytes,1,rep,name=categorical_features,json=categoricalFeatures,proto3" json:"categorical_features,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Numerical features. Some examples would be the height/weight of a product,
 	// or age of a customer.
@@ -58,7 +59,8 @@ type FeatureMap struct {
 	// Feature names must be UTF-8 encoded strings.
 	//
 	// For example: `{ "lengths_cm": {"value":[2.3, 15.4]},
-	//                 "heights_cm": {"value":[8.1, 6.4]} }`
+	//
+	//	"heights_cm": {"value":[8.1, 6.4]} }`
 	NumericalFeatures map[string]*FeatureMap_FloatList `protobuf:"bytes,2,rep,name=numerical_features,json=numericalFeatures,proto3" json:"numerical_features,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 

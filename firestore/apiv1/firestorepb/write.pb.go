@@ -96,6 +96,7 @@ type Write struct {
 	// The operation to execute.
 	//
 	// Types that are assignable to Operation:
+	//
 	//	*Write_Update
 	//	*Write_Delete
 	//	*Write_Transform
@@ -685,6 +686,7 @@ type DocumentTransform_FieldTransform struct {
 	// The transformation to apply on the field.
 	//
 	// Types that are assignable to TransformType:
+	//
 	//	*DocumentTransform_FieldTransform_SetToServerValue
 	//	*DocumentTransform_FieldTransform_Increment
 	//	*DocumentTransform_FieldTransform_Maximum

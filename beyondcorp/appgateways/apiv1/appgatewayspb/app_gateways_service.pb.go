@@ -431,9 +431,9 @@ type CreateAppGatewayRequest struct {
 	// form: `projects/{project_id}/locations/{location_id}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. User-settable AppGateway resource ID.
-	//  * Must start with a letter.
-	//  * Must contain between 4-63 characters from `/[a-z][0-9]-/`.
-	//  * Must end with a number or a letter.
+	//   - Must start with a letter.
+	//   - Must contain between 4-63 characters from `/[a-z][0-9]-/`.
+	//   - Must end with a number or a letter.
 	AppGatewayId string `protobuf:"bytes,2,opt,name=app_gateway_id,json=appGatewayId,proto3" json:"app_gateway_id,omitempty"`
 	// Required. A BeyondCorp AppGateway resource.
 	AppGateway *AppGateway `protobuf:"bytes,3,opt,name=app_gateway,json=appGateway,proto3" json:"app_gateway,omitempty"`

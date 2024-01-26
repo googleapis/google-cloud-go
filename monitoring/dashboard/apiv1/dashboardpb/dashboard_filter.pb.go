@@ -116,6 +116,7 @@ type DashboardFilter struct {
 	// The default value used in the filter comparison
 	//
 	// Types that are assignable to DefaultValue:
+	//
 	//	*DashboardFilter_StringValue
 	DefaultValue isDashboardFilter_DefaultValue `protobuf_oneof:"default_value"`
 	// The specified filter type

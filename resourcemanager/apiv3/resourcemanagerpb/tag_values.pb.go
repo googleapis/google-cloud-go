@@ -362,13 +362,13 @@ type GetNamespacedTagValueRequest struct {
 
 	// Required. A namespaced tag value name in the following format:
 	//
-	//   `{parentId}/{tagKeyShort}/{tagValueShort}`
+	//	`{parentId}/{tagKeyShort}/{tagValueShort}`
 	//
 	// Examples:
-	// - `42/foo/abc` for a value with short name "abc" under the key with short
-	//   name "foo" under the organization with ID 42
-	// - `r2-d2/bar/xyz` for a value with short name "xyz" under the key with
-	//    short name "bar" under the project with ID "r2-d2"
+	//   - `42/foo/abc` for a value with short name "abc" under the key with short
+	//     name "foo" under the organization with ID 42
+	//   - `r2-d2/bar/xyz` for a value with short name "xyz" under the key with
+	//     short name "bar" under the project with ID "r2-d2"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

@@ -627,6 +627,7 @@ type RestoreConfig struct {
 	// selected. Listing them explicitly will result in an error.
 	//
 	// Types that are assignable to NamespacedResourceRestoreScope:
+	//
 	//	*RestoreConfig_AllNamespaces
 	//	*RestoreConfig_SelectedNamespaces
 	//	*RestoreConfig_SelectedApplications

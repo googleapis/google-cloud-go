@@ -450,7 +450,7 @@ type CreateBillingAccountRequest struct {
 	//   - `organizations/{organization_id}`, for example,
 	//     `organizations/12345678`
 	//   - `billingAccounts/{billing_account_id}`, for example,
-	//      `billingAccounts/012345-567890-ABCDEF`
+	//     `billingAccounts/012345-567890-ABCDEF`
 	Parent string `protobuf:"bytes,2,opt,name=parent,proto3" json:"parent,omitempty"`
 }
 

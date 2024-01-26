@@ -405,6 +405,7 @@ type Document struct {
 	// Original source document from the user.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Document_Uri
 	//	*Document_Content
 	Source isDocument_Source `protobuf_oneof:"source"`
@@ -598,6 +599,7 @@ type RevisionRef struct {
 	// Specifies which revision to read.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*RevisionRef_RevisionCase_
 	//	*RevisionRef_RevisionId
 	//	*RevisionRef_LatestProcessorVersion
@@ -1517,6 +1519,7 @@ type Document_Revision struct {
 	// Who/what made the change
 	//
 	// Types that are assignable to Source:
+	//
 	//	*Document_Revision_Agent
 	//	*Document_Revision_Processor
 	Source isDocument_Revision_Source `protobuf_oneof:"source"`
@@ -3353,6 +3356,7 @@ type Document_Entity_NormalizedValue struct {
 	// populated.
 	//
 	// Types that are assignable to StructuredValue:
+	//
 	//	*Document_Entity_NormalizedValue_MoneyValue
 	//	*Document_Entity_NormalizedValue_DateValue
 	//	*Document_Entity_NormalizedValue_DatetimeValue

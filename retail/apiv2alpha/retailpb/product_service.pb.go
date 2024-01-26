@@ -409,19 +409,24 @@ type ListProductsRequest struct {
 	// * List
 	// [Product.Type.VARIANT][google.cloud.retail.v2alpha.Product.Type.VARIANT]
 	// [Product][google.cloud.retail.v2alpha.Product]s sharing the same
-	//   [Product.Type.PRIMARY][google.cloud.retail.v2alpha.Product.Type.PRIMARY]
-	//   [Product][google.cloud.retail.v2alpha.Product]. For example:
-	//     `primary_product_id = "some_product_id"`
+	//
+	//	[Product.Type.PRIMARY][google.cloud.retail.v2alpha.Product.Type.PRIMARY]
+	//	[Product][google.cloud.retail.v2alpha.Product]. For example:
+	//	  `primary_product_id = "some_product_id"`
+	//
 	// * List [Product][google.cloud.retail.v2alpha.Product]s bundled in a
 	// [Product.Type.COLLECTION][google.cloud.retail.v2alpha.Product.Type.COLLECTION]
 	// [Product][google.cloud.retail.v2alpha.Product].
-	//   For example:
-	//     `collection_product_id = "some_product_id"`
+	//
+	//	For example:
+	//	  `collection_product_id = "some_product_id"`
+	//
 	// * List [Product][google.cloud.retail.v2alpha.Product]s with a partibular
 	// type. For example:
-	//     `type = "PRIMARY"`
-	//     `type = "VARIANT"`
-	//     `type = "COLLECTION"`
+	//
+	//	`type = "PRIMARY"`
+	//	`type = "VARIANT"`
+	//	`type = "COLLECTION"`
 	//
 	// If the field is unrecognizable, an INVALID_ARGUMENT error is returned.
 	//

@@ -777,6 +777,7 @@ type AnalyzeWorkloadMoveRequest struct {
 	// an existing project or a project-based workload.
 	//
 	// Types that are assignable to ProjectOrWorkloadResource:
+	//
 	//	*AnalyzeWorkloadMoveRequest_Source
 	//	*AnalyzeWorkloadMoveRequest_Project
 	ProjectOrWorkloadResource isAnalyzeWorkloadMoveRequest_ProjectOrWorkloadResource `protobuf_oneof:"projectOrWorkloadResource"`
@@ -1105,6 +1106,7 @@ type Workload struct {
 	// Settings specific to the selected [compliance_regime]
 	//
 	// Types that are assignable to ComplianceRegimeSettings:
+	//
 	//	*Workload_Il4Settings
 	//	*Workload_CjisSettings
 	//	*Workload_FedrampHighSettings_

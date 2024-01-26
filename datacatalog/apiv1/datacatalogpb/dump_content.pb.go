@@ -46,6 +46,7 @@ type TaggedEntry struct {
 	// Required. Entry to be ingested.
 	//
 	// Types that are assignable to Entry:
+	//
 	//	*TaggedEntry_V1Entry
 	Entry isTaggedEntry_Entry `protobuf_oneof:"entry"`
 	// Optional. Tags that should be ingested into the Data Catalog.
@@ -134,6 +135,7 @@ type DumpItem struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Item:
+	//
 	//	*DumpItem_TaggedEntry
 	Item isDumpItem_Item `protobuf_oneof:"item"`
 }

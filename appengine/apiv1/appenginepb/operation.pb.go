@@ -74,6 +74,7 @@ type OperationMetadataV1 struct {
 	// @OutputOnly
 	//
 	// Types that are assignable to MethodMetadata:
+	//
 	//	*OperationMetadataV1_CreateVersionMetadata
 	MethodMetadata isOperationMetadataV1_MethodMetadata `protobuf_oneof:"method_metadata"`
 }

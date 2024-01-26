@@ -45,6 +45,7 @@ type Waypoint struct {
 	// Different ways to represent a location.
 	//
 	// Types that are assignable to LocationType:
+	//
 	//	*Waypoint_Location
 	//	*Waypoint_PlaceId
 	//	*Waypoint_Address

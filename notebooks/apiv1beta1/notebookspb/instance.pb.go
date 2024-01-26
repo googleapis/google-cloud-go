@@ -514,6 +514,7 @@ type Instance struct {
 	// Type of the environment; can be one of VM image, or container image.
 	//
 	// Types that are assignable to Environment:
+	//
 	//	*Instance_VmImage
 	//	*Instance_ContainerImage
 	Environment isInstance_Environment `protobuf_oneof:"environment"`

@@ -216,10 +216,12 @@ type PolicyBasedRoute struct {
 	// network endpoints (e.g. VMs, VPNs, and Interconnects) in the VPC.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*PolicyBasedRoute_VirtualMachine_
 	//	*PolicyBasedRoute_InterconnectAttachment_
 	Target isPolicyBasedRoute_Target `protobuf_oneof:"target"`
 	// Types that are assignable to NextHop:
+	//
 	//	*PolicyBasedRoute_NextHopIlbIp
 	//	*PolicyBasedRoute_NextHopOtherRoutes
 	NextHop isPolicyBasedRoute_NextHop `protobuf_oneof:"next_hop"`

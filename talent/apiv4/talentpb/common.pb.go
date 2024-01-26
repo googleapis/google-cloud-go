@@ -2136,6 +2136,7 @@ type CompensationInfo_CompensationEntry struct {
 	// Compensation amount. It could be a fixed amount or a floating range.
 	//
 	// Types that are assignable to CompensationAmount:
+	//
 	//	*CompensationInfo_CompensationEntry_Amount
 	//	*CompensationInfo_CompensationEntry_Range
 	CompensationAmount isCompensationInfo_CompensationEntry_CompensationAmount `protobuf_oneof:"compensation_amount"`

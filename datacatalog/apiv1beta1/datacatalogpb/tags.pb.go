@@ -130,6 +130,7 @@ type Tag struct {
 	// to that scope. These fields cannot be updated after creation.
 	//
 	// Types that are assignable to Scope:
+	//
 	//	*Tag_Column
 	Scope isTag_Scope `protobuf_oneof:"scope"`
 	// Required. This maps the ID of a tag field to the value of and additional
@@ -241,6 +242,7 @@ type TagField struct {
 	// Required. The value of this field.
 	//
 	// Types that are assignable to Kind:
+	//
 	//	*TagField_DoubleValue
 	//	*TagField_StringValue
 	//	*TagField_BoolValue
@@ -581,6 +583,7 @@ type FieldType struct {
 	// Required.
 	//
 	// Types that are assignable to TypeDecl:
+	//
 	//	*FieldType_PrimitiveType_
 	//	*FieldType_EnumType_
 	TypeDecl isFieldType_TypeDecl `protobuf_oneof:"type_decl"`

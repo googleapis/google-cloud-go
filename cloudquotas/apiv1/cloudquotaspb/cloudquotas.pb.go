@@ -255,7 +255,8 @@ type ListQuotaPreferencesRequest struct {
 	// Example filters:
 	// `state=PENDING OR state=PENDING_PARTIALLY_GRANTED`
 	// `state=PENDING OR state=PENDING_PARTIALLY_GRANTED AND
-	//  creation_time>2022-12-03T10:30:00`
+	//
+	//	creation_time>2022-12-03T10:30:00`
 	//
 	// If no filter is provided, returns all pending quota preferences.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`

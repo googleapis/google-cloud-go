@@ -767,15 +767,14 @@ type UpdateRuntimeRequest struct {
 	// specified as `software_config.kernels`,
 	// and the `PATCH` request body would specify the new value, as follows:
 	//
-	//     {
-	//       "software_config":{
-	//         "kernels": [{
-	//            'repository':
-	//            'gcr.io/deeplearning-platform-release/pytorch-gpu', 'tag':
-	//            'latest' }],
-	//         }
-	//     }
-	//
+	//	{
+	//	  "software_config":{
+	//	    "kernels": [{
+	//	       'repository':
+	//	       'gcr.io/deeplearning-platform-release/pytorch-gpu', 'tag':
+	//	       'latest' }],
+	//	    }
+	//	}
 	//
 	// Currently, only the following fields can be updated:
 	// - `software_config.kernels`

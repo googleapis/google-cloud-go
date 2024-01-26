@@ -687,8 +687,8 @@ type ProductDimension struct {
 	Value float64 `protobuf:"fixed64,1,opt,name=value,proto3" json:"value,omitempty"`
 	// Required. The dimension units.
 	// Acceptable values are:
-	//   * "`in`"
-	//   * "`cm`"
+	//   - "`in`"
+	//   - "`cm`"
 	Unit string `protobuf:"bytes,2,opt,name=unit,proto3" json:"unit,omitempty"`
 }
 
@@ -749,10 +749,10 @@ type ProductWeight struct {
 	Value float64 `protobuf:"fixed64,1,opt,name=value,proto3" json:"value,omitempty"`
 	// Required. The weight unit.
 	// Acceptable values are:
-	//   * "`g`"
-	//   * "`kg`"
-	//   * "`oz`"
-	//   * "`lb`"
+	//   - "`g`"
+	//   - "`kg`"
+	//   - "`oz`"
+	//   - "`lb`"
 	Unit string `protobuf:"bytes,2,opt,name=unit,proto3" json:"unit,omitempty"`
 }
 

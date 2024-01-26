@@ -119,6 +119,7 @@ type Organization struct {
 	// descendants will be deleted.
 	//
 	// Types that are assignable to Owner:
+	//
 	//	*Organization_DirectoryCustomerId
 	Owner isOrganization_Owner `protobuf_oneof:"owner"`
 	// Output only. The organization's current lifecycle state.
@@ -308,7 +309,6 @@ type SearchOrganizationsRequest struct {
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. An optional query string used to filter the Organizations to
 	// return in the response. Query rules are case-insensitive.
-	//
 	//
 	// ```
 	// | Field            | Description                                |

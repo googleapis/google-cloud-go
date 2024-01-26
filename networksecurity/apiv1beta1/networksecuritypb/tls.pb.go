@@ -96,6 +96,7 @@ type ValidationCA struct {
 	// The type of certificate provider which provides the CA certificate.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*ValidationCA_GrpcEndpoint
 	//	*ValidationCA_CertificateProviderInstance
 	Type isValidationCA_Type `protobuf_oneof:"type"`
@@ -240,6 +241,7 @@ type CertificateProvider struct {
 	// private keys.
 	//
 	// Types that are assignable to Type:
+	//
 	//	*CertificateProvider_GrpcEndpoint
 	//	*CertificateProvider_CertificateProviderInstance
 	Type isCertificateProvider_Type `protobuf_oneof:"type"`

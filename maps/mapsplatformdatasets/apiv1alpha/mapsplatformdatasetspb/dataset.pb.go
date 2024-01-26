@@ -172,6 +172,7 @@ type Dataset struct {
 	// Details about the source of the data for the dataset.
 	//
 	// Types that are assignable to DataSource:
+	//
 	//	*Dataset_LocalFileSource
 	//	*Dataset_GcsSource
 	DataSource isDataset_DataSource `protobuf_oneof:"data_source"`

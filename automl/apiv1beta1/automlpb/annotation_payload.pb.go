@@ -45,6 +45,7 @@ type AnnotationPayload struct {
 	// specific to the AutoML domain.
 	//
 	// Types that are assignable to Detail:
+	//
 	//	*AnnotationPayload_Translation
 	//	*AnnotationPayload_Classification
 	//	*AnnotationPayload_ImageObjectDetection

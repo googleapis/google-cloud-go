@@ -45,6 +45,7 @@ type FeatureView struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Source:
+	//
 	//	*FeatureView_BigQuerySource_
 	//	*FeatureView_FeatureRegistrySource_
 	Source isFeatureView_Source `protobuf_oneof:"source"`

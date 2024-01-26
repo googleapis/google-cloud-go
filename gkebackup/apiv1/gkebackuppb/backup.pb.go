@@ -176,6 +176,7 @@ type Backup struct {
 	// value.
 	//
 	// Types that are assignable to BackupScope:
+	//
 	//	*Backup_AllNamespaces
 	//	*Backup_SelectedNamespaces
 	//	*Backup_SelectedApplications
@@ -502,6 +503,7 @@ type Backup_ClusterMetadata struct {
 	// Platform-specific version
 	//
 	// Types that are assignable to PlatformVersion:
+	//
 	//	*Backup_ClusterMetadata_GkeVersion
 	//	*Backup_ClusterMetadata_AnthosVersion
 	PlatformVersion isBackup_ClusterMetadata_PlatformVersion `protobuf_oneof:"platform_version"`

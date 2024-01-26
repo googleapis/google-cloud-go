@@ -1558,6 +1558,7 @@ type Step struct {
 	// final state the configuration is cleared.
 	//
 	// Types that are assignable to StepInfo:
+	//
 	//	*Step_Instance
 	//	*Step_Firewall
 	//	*Step_Route

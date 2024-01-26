@@ -44,6 +44,7 @@ type DataStats struct {
 	// The data statistics specific to a DataType.
 	//
 	// Types that are assignable to Stats:
+	//
 	//	*DataStats_Float64Stats
 	//	*DataStats_StringStats
 	//	*DataStats_TimestampStats

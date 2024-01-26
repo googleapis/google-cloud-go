@@ -159,6 +159,7 @@ type Companion struct {
 	// Ad resource associated with the companion ad.
 	//
 	// Types that are assignable to AdResource:
+	//
 	//	*Companion_IframeAdResource
 	//	*Companion_StaticAdResource
 	//	*Companion_HtmlAdResource

@@ -528,10 +528,10 @@ type DeleteTransitionRouteGroupRequest struct {
 	// This field has no effect for transition route group that no page is using.
 	// If the transition route group is referenced by any page:
 	//
-	// *  If `force` is set to false, an error will be returned with message
-	//    indicating pages that reference the transition route group.
-	// *  If `force` is set to true, Dialogflow will remove the transition route
-	//    group, as well as any reference to it.
+	//   - If `force` is set to false, an error will be returned with message
+	//     indicating pages that reference the transition route group.
+	//   - If `force` is set to true, Dialogflow will remove the transition route
+	//     group, as well as any reference to it.
 	Force bool `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"`
 }
 

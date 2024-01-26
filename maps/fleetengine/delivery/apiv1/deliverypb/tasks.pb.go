@@ -685,6 +685,7 @@ type TaskTrackingViewConfig_VisibilityOption struct {
 	// The specific visibility option chosen.
 	//
 	// Types that are assignable to VisibilityOption:
+	//
 	//	*TaskTrackingViewConfig_VisibilityOption_RemainingStopCountThreshold
 	//	*TaskTrackingViewConfig_VisibilityOption_DurationUntilEstimatedArrivalTimeThreshold
 	//	*TaskTrackingViewConfig_VisibilityOption_RemainingDrivingDistanceMetersThreshold

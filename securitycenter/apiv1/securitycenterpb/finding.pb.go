@@ -430,18 +430,18 @@ type Finding struct {
 	// all the contacts that pertain. Please refer to:
 	// https://cloud.google.com/resource-manager/docs/managing-notification-contacts#notification-categories
 	//
-	//     {
-	//       "security": {
-	//         "contacts": [
-	//           {
-	//             "email": "person1@company.com"
-	//           },
-	//           {
-	//             "email": "person2@company.com"
-	//           }
-	//         ]
-	//       }
-	//     }
+	//	{
+	//	  "security": {
+	//	    "contacts": [
+	//	      {
+	//	        "email": "person1@company.com"
+	//	      },
+	//	      {
+	//	        "email": "person2@company.com"
+	//	      }
+	//	    ]
+	//	  }
+	//	}
 	Contacts map[string]*ContactDetails `protobuf:"bytes,33,rep,name=contacts,proto3" json:"contacts,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Contains compliance information for security standards associated to the
 	// finding.

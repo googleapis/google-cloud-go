@@ -302,11 +302,16 @@ type ListOSPolicyAssignmentReportsRequest struct {
 	//
 	// For example:
 	// `projects/{project}/locations/{location}/instances/{instance}/osPolicyAssignments/-/reports`
-	//  returns all reports for the instance
+	//
+	//	returns all reports for the instance
+	//
 	// `projects/{project}/locations/{location}/instances/-/osPolicyAssignments/{assignment-id}/reports`
-	//  returns all the reports for the given assignment across all instances.
+	//
+	//	returns all the reports for the given assignment across all instances.
+	//
 	// `projects/{project}/locations/{location}/instances/-/osPolicyAssignments/-/reports`
-	//  returns all the reports for all assignments across all instances.
+	//
+	//	returns all the reports for all assignments across all instances.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of results to return.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -673,6 +678,7 @@ type OSPolicyAssignmentReport_OSPolicyCompliance_OSPolicyResourceCompliance stru
 	// Resource specific output.
 	//
 	// Types that are assignable to Output:
+	//
 	//	*OSPolicyAssignmentReport_OSPolicyCompliance_OSPolicyResourceCompliance_ExecResourceOutput_
 	Output isOSPolicyAssignmentReport_OSPolicyCompliance_OSPolicyResourceCompliance_Output `protobuf_oneof:"output"`
 }

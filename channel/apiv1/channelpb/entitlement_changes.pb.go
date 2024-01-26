@@ -334,6 +334,7 @@ type EntitlementChange struct {
 	// The reason the change was made
 	//
 	// Types that are assignable to ChangeReason:
+	//
 	//	*EntitlementChange_SuspensionReason
 	//	*EntitlementChange_CancellationReason_
 	//	*EntitlementChange_ActivationReason_

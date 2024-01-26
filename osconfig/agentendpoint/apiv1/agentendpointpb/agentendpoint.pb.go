@@ -264,6 +264,7 @@ type ReportTaskProgressRequest struct {
 	// Intermediate progress of the current task.
 	//
 	// Types that are assignable to Progress:
+	//
 	//	*ReportTaskProgressRequest_ApplyPatchesTaskProgress
 	//	*ReportTaskProgressRequest_ExecStepTaskProgress
 	//	*ReportTaskProgressRequest_ApplyConfigTaskProgress
@@ -450,6 +451,7 @@ type ReportTaskCompleteRequest struct {
 	// Final output details of the current task.
 	//
 	// Types that are assignable to Output:
+	//
 	//	*ReportTaskCompleteRequest_ApplyPatchesTaskOutput
 	//	*ReportTaskCompleteRequest_ExecStepTaskOutput
 	//	*ReportTaskCompleteRequest_ApplyConfigTaskOutput

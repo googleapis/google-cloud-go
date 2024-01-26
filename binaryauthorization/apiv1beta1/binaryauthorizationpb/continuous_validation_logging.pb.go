@@ -256,6 +256,7 @@ type ContinuousValidationEvent struct {
 	// Type of CV event.
 	//
 	// Types that are assignable to EventType:
+	//
 	//	*ContinuousValidationEvent_PodEvent
 	//	*ContinuousValidationEvent_ConfigErrorEvent_
 	EventType isContinuousValidationEvent_EventType `protobuf_oneof:"event_type"`
@@ -698,6 +699,7 @@ type ContinuousValidationEvent_ContinuousValidationPodEvent_ImageDetails_CheckRe
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Scope:
+	//
 	//	*ContinuousValidationEvent_ContinuousValidationPodEvent_ImageDetails_CheckResult_CheckSetScope_KubernetesServiceAccount
 	//	*ContinuousValidationEvent_ContinuousValidationPodEvent_ImageDetails_CheckResult_CheckSetScope_KubernetesNamespace
 	Scope isContinuousValidationEvent_ContinuousValidationPodEvent_ImageDetails_CheckResult_CheckSetScope_Scope `protobuf_oneof:"scope"`

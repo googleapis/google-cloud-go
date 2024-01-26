@@ -315,9 +315,10 @@ type BackendMetastore struct {
 	// metastores are listed below:
 	//
 	// * BigQuery
-	//     * `projects/{project_id}`
+	//   - `projects/{project_id}`
+	//
 	// * Dataproc Metastore
-	//     * `projects/{project_id}/locations/{location}/services/{service_id}`
+	//   - `projects/{project_id}/locations/{location}/services/{service_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The type of the backend metastore.
 	MetastoreType BackendMetastore_MetastoreType `protobuf:"varint,2,opt,name=metastore_type,json=metastoreType,proto3,enum=google.cloud.metastore.v1.BackendMetastore_MetastoreType" json:"metastore_type,omitempty"`

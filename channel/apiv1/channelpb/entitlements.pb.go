@@ -264,7 +264,7 @@ type Entitlement struct {
 	//
 	// - max_units: The maximum assignable units for a flexible offer
 	//
-	// OR
+	// # OR
 	//
 	// - num_units: The total commitment for commitment-based offers
 	//

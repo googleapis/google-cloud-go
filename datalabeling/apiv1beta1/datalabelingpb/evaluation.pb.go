@@ -163,6 +163,7 @@ type EvaluationConfig struct {
 	// Vertical specific options for general metrics.
 	//
 	// Types that are assignable to VerticalOption:
+	//
 	//	*EvaluationConfig_BoundingBoxEvaluationOptions
 	VerticalOption isEvaluationConfig_VerticalOption `protobuf_oneof:"vertical_option"`
 }
@@ -288,6 +289,7 @@ type EvaluationMetrics struct {
 	// Common metrics covering most general cases.
 	//
 	// Types that are assignable to Metrics:
+	//
 	//	*EvaluationMetrics_ClassificationMetrics
 	//	*EvaluationMetrics_ObjectDetectionMetrics
 	Metrics isEvaluationMetrics_Metrics `protobuf_oneof:"metrics"`

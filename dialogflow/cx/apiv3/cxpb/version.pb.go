@@ -1355,10 +1355,10 @@ type VersionsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	LoadVersion(ctx context.Context, in *LoadVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Compares the specified base version with target version.
 	CompareVersions(ctx context.Context, in *CompareVersionsRequest, opts ...grpc.CallOption) (*CompareVersionsResponse, error)
@@ -1463,10 +1463,10 @@ type VersionsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: An empty [Struct
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	// - `response`: An [Empty
-	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+	//   - `metadata`: An empty [Struct
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+	//   - `response`: An [Empty
+	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	LoadVersion(context.Context, *LoadVersionRequest) (*longrunningpb.Operation, error)
 	// Compares the specified base version with target version.
 	CompareVersions(context.Context, *CompareVersionsRequest) (*CompareVersionsResponse, error)

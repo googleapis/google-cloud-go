@@ -113,6 +113,7 @@ type NotificationConfig struct {
 	// The config for triggering notifications.
 	//
 	// Types that are assignable to NotifyConfig:
+	//
 	//	*NotificationConfig_StreamingConfig_
 	NotifyConfig isNotificationConfig_NotifyConfig `protobuf_oneof:"notify_config"`
 }

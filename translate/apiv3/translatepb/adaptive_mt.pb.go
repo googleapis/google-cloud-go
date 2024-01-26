@@ -822,6 +822,7 @@ type ImportAdaptiveMtFileRequest struct {
 	// The source for the document.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportAdaptiveMtFileRequest_FileInputSource
 	//	*ImportAdaptiveMtFileRequest_GcsInputSource
 	Source isImportAdaptiveMtFileRequest_Source `protobuf_oneof:"source"`

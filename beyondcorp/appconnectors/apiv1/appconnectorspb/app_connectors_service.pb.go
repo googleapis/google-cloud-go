@@ -333,9 +333,9 @@ type CreateAppConnectorRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. User-settable AppConnector resource ID.
 	//
-	//  * Must start with a letter.
-	//  * Must contain between 4-63 characters from `/[a-z][0-9]-/`.
-	//  * Must end with a number or a letter.
+	//   - Must start with a letter.
+	//   - Must contain between 4-63 characters from `/[a-z][0-9]-/`.
+	//   - Must end with a number or a letter.
 	AppConnectorId string `protobuf:"bytes,2,opt,name=app_connector_id,json=appConnectorId,proto3" json:"app_connector_id,omitempty"`
 	// Required. A BeyondCorp AppConnector resource.
 	AppConnector *AppConnector `protobuf:"bytes,3,opt,name=app_connector,json=appConnector,proto3" json:"app_connector,omitempty"`
@@ -932,6 +932,7 @@ type AppConnector_PrincipalInfo struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Type:
+	//
 	//	*AppConnector_PrincipalInfo_ServiceAccount_
 	Type isAppConnector_PrincipalInfo_Type `protobuf_oneof:"type"`
 }

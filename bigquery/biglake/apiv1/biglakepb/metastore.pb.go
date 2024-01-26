@@ -294,6 +294,7 @@ type Database struct {
 	// Options specified for the database type.
 	//
 	// Types that are assignable to Options:
+	//
 	//	*Database_HiveOptions
 	Options isDatabase_Options `protobuf_oneof:"options"`
 	// Output only. The resource name.
@@ -422,6 +423,7 @@ type Table struct {
 	// Options specified for the table type.
 	//
 	// Types that are assignable to Options:
+	//
 	//	*Table_HiveOptions
 	Options isTable_Options `protobuf_oneof:"options"`
 	// Output only. The resource name.

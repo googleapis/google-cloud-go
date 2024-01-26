@@ -518,6 +518,7 @@ type ReadRowsResponse struct {
 	// Row data is returned in format specified during session creation.
 	//
 	// Types that are assignable to Rows:
+	//
 	//	*ReadRowsResponse_AvroRows
 	//	*ReadRowsResponse_ArrowRecordBatch
 	Rows isReadRowsResponse_Rows `protobuf_oneof:"rows"`
@@ -535,6 +536,7 @@ type ReadRowsResponse struct {
 	// RPC.
 	//
 	// Types that are assignable to Schema:
+	//
 	//	*ReadRowsResponse_AvroSchema
 	//	*ReadRowsResponse_ArrowSchema
 	Schema isReadRowsResponse_Schema `protobuf_oneof:"schema"`
@@ -935,6 +937,7 @@ type AppendRowsRequest struct {
 	// initial request.
 	//
 	// Types that are assignable to Rows:
+	//
 	//	*AppendRowsRequest_ProtoRows
 	Rows isAppendRowsRequest_Rows `protobuf_oneof:"rows"`
 	// Id set by client to annotate its identity. Only initial request setting is
@@ -1070,6 +1073,7 @@ type AppendRowsResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Response:
+	//
 	//	*AppendRowsResponse_AppendResult_
 	//	*AppendRowsResponse_Error
 	Response isAppendRowsResponse_Response `protobuf_oneof:"response"`

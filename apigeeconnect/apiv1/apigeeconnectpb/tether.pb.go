@@ -301,6 +301,7 @@ type Payload struct {
 	// The kind of payload.
 	//
 	// Types that are assignable to Kind:
+	//
 	//	*Payload_HttpRequest
 	//	*Payload_StreamInfo
 	//	*Payload_Action

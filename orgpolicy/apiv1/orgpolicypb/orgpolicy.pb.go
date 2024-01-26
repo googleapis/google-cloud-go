@@ -135,10 +135,11 @@ type Policy struct {
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// The field to populate is based on the `constraint_type` value in the
 	// `Constraint`.
-	//   `list_constraint` => `list_policy`
-	//   `boolean_constraint` => `boolean_policy`
 	//
-	//  A `restore_default` message may be used with any `Constraint` type.
+	//	 `list_constraint` => `list_policy`
+	//	 `boolean_constraint` => `boolean_policy`
+	//
+	//	A `restore_default` message may be used with any `Constraint` type.
 	//
 	// Providing a *_policy that is incompatible with the `constraint_type` will
 	// result in an `invalid_argument` error.
@@ -147,6 +148,7 @@ type Policy struct {
 	// `invalid_argument` error.
 	//
 	// Types that are assignable to PolicyType:
+	//
 	//	*Policy_ListPolicy_
 	//	*Policy_BooleanPolicy_
 	//	*Policy_RestoreDefault_
@@ -335,75 +337,94 @@ type Policy_ListPolicy struct {
 	// `projects/bar` parented by `organizations/foo`:
 	//
 	// Example 1 (no inherited values):
-	//   `organizations/foo` has a `Policy` with values:
-	//     {allowed_values: "E1" allowed_values:"E2"}
-	//   `projects/bar` has `inherit_from_parent` `false` and values:
-	//     {allowed_values: "E3" allowed_values: "E4"}
+	//
+	//	`organizations/foo` has a `Policy` with values:
+	//	  {allowed_values: "E1" allowed_values:"E2"}
+	//	`projects/bar` has `inherit_from_parent` `false` and values:
+	//	  {allowed_values: "E3" allowed_values: "E4"}
+	//
 	// The accepted values at `organizations/foo` are `E1`, `E2`.
 	// The accepted values at `projects/bar` are `E3`, and `E4`.
 	//
 	// Example 2 (inherited values):
-	//   `organizations/foo` has a `Policy` with values:
-	//     {allowed_values: "E1" allowed_values:"E2"}
-	//   `projects/bar` has a `Policy` with values:
-	//     {value: "E3" value: "E4" inherit_from_parent: true}
+	//
+	//	`organizations/foo` has a `Policy` with values:
+	//	  {allowed_values: "E1" allowed_values:"E2"}
+	//	`projects/bar` has a `Policy` with values:
+	//	  {value: "E3" value: "E4" inherit_from_parent: true}
+	//
 	// The accepted values at `organizations/foo` are `E1`, `E2`.
 	// The accepted values at `projects/bar` are `E1`, `E2`, `E3`, and `E4`.
 	//
 	// Example 3 (inheriting both allowed and denied values):
-	//   `organizations/foo` has a `Policy` with values:
-	//     {allowed_values: "E1" allowed_values: "E2"}
-	//   `projects/bar` has a `Policy` with:
-	//     {denied_values: "E1"}
+	//
+	//	`organizations/foo` has a `Policy` with values:
+	//	  {allowed_values: "E1" allowed_values: "E2"}
+	//	`projects/bar` has a `Policy` with:
+	//	  {denied_values: "E1"}
+	//
 	// The accepted values at `organizations/foo` are `E1`, `E2`.
 	// The value accepted at `projects/bar` is `E2`.
 	//
 	// Example 4 (RestoreDefault):
-	//   `organizations/foo` has a `Policy` with values:
-	//     {allowed_values: "E1" allowed_values:"E2"}
-	//   `projects/bar` has a `Policy` with values:
-	//     {RestoreDefault: {}}
+	//
+	//	`organizations/foo` has a `Policy` with values:
+	//	  {allowed_values: "E1" allowed_values:"E2"}
+	//	`projects/bar` has a `Policy` with values:
+	//	  {RestoreDefault: {}}
+	//
 	// The accepted values at `organizations/foo` are `E1`, `E2`.
 	// The accepted values at `projects/bar` are either all or none depending on
 	// the value of `constraint_default` (if `ALLOW`, all; if
 	// `DENY`, none).
 	//
 	// Example 5 (no policy inherits parent policy):
-	//   `organizations/foo` has no `Policy` set.
-	//   `projects/bar` has no `Policy` set.
+	//
+	//	`organizations/foo` has no `Policy` set.
+	//	`projects/bar` has no `Policy` set.
+	//
 	// The accepted values at both levels are either all or none depending on
 	// the value of `constraint_default` (if `ALLOW`, all; if
 	// `DENY`, none).
 	//
 	// Example 6 (ListConstraint allowing all):
-	//   `organizations/foo` has a `Policy` with values:
-	//     {allowed_values: "E1" allowed_values: "E2"}
-	//   `projects/bar` has a `Policy` with:
-	//     {all: ALLOW}
+	//
+	//	`organizations/foo` has a `Policy` with values:
+	//	  {allowed_values: "E1" allowed_values: "E2"}
+	//	`projects/bar` has a `Policy` with:
+	//	  {all: ALLOW}
+	//
 	// The accepted values at `organizations/foo` are `E1`, E2`.
 	// Any value is accepted at `projects/bar`.
 	//
 	// Example 7 (ListConstraint allowing none):
-	//   `organizations/foo` has a `Policy` with values:
-	//     {allowed_values: "E1" allowed_values: "E2"}
-	//   `projects/bar` has a `Policy` with:
-	//     {all: DENY}
+	//
+	//	`organizations/foo` has a `Policy` with values:
+	//	  {allowed_values: "E1" allowed_values: "E2"}
+	//	`projects/bar` has a `Policy` with:
+	//	  {all: DENY}
+	//
 	// The accepted values at `organizations/foo` are `E1`, E2`.
 	// No value is accepted at `projects/bar`.
 	//
 	// Example 10 (allowed and denied subtrees of Resource Manager hierarchy):
 	// Given the following resource hierarchy
-	//   O1->{F1, F2}; F1->{P1}; F2->{P2, P3},
-	//   `organizations/foo` has a `Policy` with values:
-	//     {allowed_values: "under:organizations/O1"}
-	//   `projects/bar` has a `Policy` with:
-	//     {allowed_values: "under:projects/P3"}
-	//     {denied_values: "under:folders/F2"}
+	//
+	//	O1->{F1, F2}; F1->{P1}; F2->{P2, P3},
+	//	`organizations/foo` has a `Policy` with values:
+	//	  {allowed_values: "under:organizations/O1"}
+	//	`projects/bar` has a `Policy` with:
+	//	  {allowed_values: "under:projects/P3"}
+	//	  {denied_values: "under:folders/F2"}
+	//
 	// The accepted values at `organizations/foo` are `organizations/O1`,
-	//   `folders/F1`, `folders/F2`, `projects/P1`, `projects/P2`,
-	//   `projects/P3`.
+	//
+	//	`folders/F1`, `folders/F2`, `projects/P1`, `projects/P2`,
+	//	`projects/P3`.
+	//
 	// The accepted values at `projects/bar` are `organizations/O1`,
-	//   `folders/F1`, `projects/P1`.
+	//
+	//	`folders/F1`, `projects/P1`.
 	InheritFromParent bool `protobuf:"varint,5,opt,name=inherit_from_parent,json=inheritFromParent,proto3" json:"inherit_from_parent,omitempty"`
 }
 
@@ -503,25 +524,31 @@ type Policy_BooleanPolicy struct {
 	// The following examples demonstrate the different possible layerings:
 	//
 	// Example 1 (nearest `Constraint` wins):
-	//   `organizations/foo` has a `Policy` with:
-	//     {enforced: false}
-	//   `projects/bar` has no `Policy` set.
+	//
+	//	`organizations/foo` has a `Policy` with:
+	//	  {enforced: false}
+	//	`projects/bar` has no `Policy` set.
+	//
 	// The constraint at `projects/bar` and `organizations/foo` will not be
 	// enforced.
 	//
 	// Example 2 (enforcement gets replaced):
-	//   `organizations/foo` has a `Policy` with:
-	//     {enforced: false}
-	//   `projects/bar` has a `Policy` with:
-	//     {enforced: true}
+	//
+	//	`organizations/foo` has a `Policy` with:
+	//	  {enforced: false}
+	//	`projects/bar` has a `Policy` with:
+	//	  {enforced: true}
+	//
 	// The constraint at `organizations/foo` is not enforced.
 	// The constraint at `projects/bar` is enforced.
 	//
 	// Example 3 (RestoreDefault):
-	//   `organizations/foo` has a `Policy` with:
-	//     {enforced: true}
-	//   `projects/bar` has a `Policy` with:
-	//     {RestoreDefault: {}}
+	//
+	//	`organizations/foo` has a `Policy` with:
+	//	  {enforced: true}
+	//	`projects/bar` has a `Policy` with:
+	//	  {RestoreDefault: {}}
+	//
 	// The constraint at `organizations/foo` is enforced.
 	// The constraint at `projects/bar` is not enforced, because
 	// `constraint_default` for the `Constraint` is `ALLOW`.

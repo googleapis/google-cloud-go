@@ -107,8 +107,8 @@ type FirewallRule struct {
 	// rule applies to. You can use the wildcard character "*" to match all IPs
 	// equivalent to "0/0" and "::/0" together.
 	// Examples: `192.168.1.1` or `192.168.0.0/16` or `2001:db8::/32`
-	//           or `2001:0db8:0000:0042:0000:8a2e:0370:7334`.
 	//
+	//	or `2001:0db8:0000:0042:0000:8a2e:0370:7334`.
 	//
 	// <p>Truncation will be silently performed on addresses which are not
 	// properly truncated. For example, `1.2.3.4/24` is accepted as the same

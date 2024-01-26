@@ -369,16 +369,17 @@ type ProductLevelConfig struct {
 	//
 	// * `primary` (default): You can ingest
 	// [Product][google.cloud.retail.v2.Product]s of all types. When
-	//   ingesting a [Product][google.cloud.retail.v2.Product], its type will
-	//   default to
-	//   [Product.Type.PRIMARY][google.cloud.retail.v2.Product.Type.PRIMARY] if
-	//   unset.
-	// * `variant` (incompatible with Retail Search): You can only
-	//   ingest
-	//   [Product.Type.VARIANT][google.cloud.retail.v2.Product.Type.VARIANT]
-	//   [Product][google.cloud.retail.v2.Product]s. This means
-	//   [Product.primary_product_id][google.cloud.retail.v2.Product.primary_product_id]
-	//   cannot be empty.
+	//
+	//	ingesting a [Product][google.cloud.retail.v2.Product], its type will
+	//	default to
+	//	[Product.Type.PRIMARY][google.cloud.retail.v2.Product.Type.PRIMARY] if
+	//	unset.
+	//   - `variant` (incompatible with Retail Search): You can only
+	//     ingest
+	//     [Product.Type.VARIANT][google.cloud.retail.v2.Product.Type.VARIANT]
+	//     [Product][google.cloud.retail.v2.Product]s. This means
+	//     [Product.primary_product_id][google.cloud.retail.v2.Product.primary_product_id]
+	//     cannot be empty.
 	//
 	// If this field is set to an invalid value other than these, an
 	// INVALID_ARGUMENT error is returned.
@@ -396,10 +397,10 @@ type ProductLevelConfig struct {
 	// imported as [Product.id][google.cloud.retail.v2.Product.id]. Acceptable
 	// values are:
 	//
-	// * `offerId` (default): Import `offerId` as the product ID.
-	// * `itemGroupId`: Import `itemGroupId` as the product ID. Notice that Retail
-	//   API will choose one item from the ones with the same `itemGroupId`, and
-	//   use it to represent the item group.
+	//   - `offerId` (default): Import `offerId` as the product ID.
+	//   - `itemGroupId`: Import `itemGroupId` as the product ID. Notice that Retail
+	//     API will choose one item from the ones with the same `itemGroupId`, and
+	//     use it to represent the item group.
 	//
 	// If this field is set to an invalid value other than these, an
 	// INVALID_ARGUMENT error is returned.

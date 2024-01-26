@@ -104,6 +104,7 @@ type FeatureOnlineStore struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to StorageType:
+	//
 	//	*FeatureOnlineStore_Bigtable_
 	StorageType isFeatureOnlineStore_StorageType `protobuf_oneof:"storage_type"`
 	// Identifier. Name of the FeatureOnlineStore. Format:

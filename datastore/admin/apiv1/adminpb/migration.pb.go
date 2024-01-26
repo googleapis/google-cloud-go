@@ -290,6 +290,7 @@ type MigrationProgressEvent struct {
 	// Details about this step.
 	//
 	// Types that are assignable to StepDetails:
+	//
 	//	*MigrationProgressEvent_PrepareStepDetails_
 	//	*MigrationProgressEvent_RedirectWritesStepDetails_
 	StepDetails isMigrationProgressEvent_StepDetails `protobuf_oneof:"step_details"`

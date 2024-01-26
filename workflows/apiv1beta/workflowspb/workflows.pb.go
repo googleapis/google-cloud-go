@@ -147,6 +147,7 @@ type Workflow struct {
 	// revision.
 	//
 	// Types that are assignable to SourceCode:
+	//
 	//	*Workflow_SourceContents
 	SourceCode isWorkflow_SourceCode `protobuf_oneof:"source_code"`
 }

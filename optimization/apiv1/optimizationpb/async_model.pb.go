@@ -161,6 +161,7 @@ type InputConfig struct {
 	// Required.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*InputConfig_GcsSource
 	Source isInputConfig_Source `protobuf_oneof:"source"`
 	// The input data format that used to store the model in Cloud Storage.
@@ -242,6 +243,7 @@ type OutputConfig struct {
 	// Required.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*OutputConfig_GcsDestination
 	Destination isOutputConfig_Destination `protobuf_oneof:"destination"`
 	// The output data format that used to store the results in Cloud Storage.

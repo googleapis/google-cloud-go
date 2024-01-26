@@ -87,6 +87,7 @@ type Asset struct {
 	// policy](https://cloud.google.com/access-context-manager/docs/overview#access-policies).
 	//
 	// Types that are assignable to AccessContextPolicy:
+	//
 	//	*Asset_AccessPolicy
 	//	*Asset_AccessLevel
 	//	*Asset_ServicePerimeter

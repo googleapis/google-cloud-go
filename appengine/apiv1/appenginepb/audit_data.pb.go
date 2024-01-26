@@ -47,6 +47,7 @@ type AuditData struct {
 	// included in parent audit log message.
 	//
 	// Types that are assignable to Method:
+	//
 	//	*AuditData_UpdateService
 	//	*AuditData_CreateVersion
 	Method isAuditData_Method `protobuf_oneof:"method"`

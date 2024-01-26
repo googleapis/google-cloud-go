@@ -121,6 +121,7 @@ type Fulfillment struct {
 	// Required. The fulfillment configuration.
 	//
 	// Types that are assignable to Fulfillment:
+	//
 	//	*Fulfillment_GenericWebService_
 	Fulfillment isFulfillment_Fulfillment `protobuf_oneof:"fulfillment"`
 	// Optional. Whether fulfillment is enabled.

@@ -121,12 +121,14 @@ type FunctionDeclaration struct {
 	// Schema defining the type used for the parameter. For function with no
 	// parameters, this can be left unset. Example with 1 required and 1 optional
 	// parameter: type: OBJECT properties:
-	//  param1:
-	//    type: STRING
-	//  param2:
-	//    type: INTEGER
+	//
+	//	param1:
+	//	  type: STRING
+	//	param2:
+	//	  type: INTEGER
+	//
 	// required:
-	//  - param1
+	//   - param1
 	Parameters *Schema `protobuf:"bytes,3,opt,name=parameters,proto3" json:"parameters,omitempty"`
 }
 

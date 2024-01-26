@@ -46,6 +46,7 @@ type ModelEvaluation struct {
 	// Output only. Problem type specific evaluation metrics.
 	//
 	// Types that are assignable to Metrics:
+	//
 	//	*ModelEvaluation_ClassificationEvaluationMetrics
 	//	*ModelEvaluation_RegressionEvaluationMetrics
 	//	*ModelEvaluation_TranslationEvaluationMetrics

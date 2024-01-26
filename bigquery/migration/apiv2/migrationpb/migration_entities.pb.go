@@ -355,6 +355,7 @@ type MigrationTask struct {
 	// The details of the task.
 	//
 	// Types that are assignable to TaskDetails:
+	//
 	//	*MigrationTask_TranslationConfigDetails
 	TaskDetails isMigrationTask_TaskDetails `protobuf_oneof:"task_details"`
 	// Output only. Immutable. The unique identifier for the migration task. The

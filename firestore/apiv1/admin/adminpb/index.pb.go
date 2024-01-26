@@ -444,6 +444,7 @@ type Index_IndexField struct {
 	// How the field value is indexed.
 	//
 	// Types that are assignable to ValueMode:
+	//
 	//	*Index_IndexField_Order_
 	//	*Index_IndexField_ArrayConfig_
 	ValueMode isIndex_IndexField_ValueMode `protobuf_oneof:"value_mode"`

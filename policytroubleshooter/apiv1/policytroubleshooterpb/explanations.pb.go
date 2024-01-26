@@ -224,10 +224,10 @@ const (
 	// The binding includes the principal. The principal can be included
 	// directly or indirectly. For example:
 	//
-	// * A principal is included directly if that principal is listed in the
-	//   binding.
-	// * A principal is included indirectly if that principal is in a Google
-	//   group or Google Workspace domain that is listed in the binding.
+	//   - A principal is included directly if that principal is listed in the
+	//     binding.
+	//   - A principal is included indirectly if that principal is in a Google
+	//     group or Google Workspace domain that is listed in the binding.
 	BindingExplanation_MEMBERSHIP_INCLUDED BindingExplanation_Membership = 1
 	// The binding does not include the principal.
 	BindingExplanation_MEMBERSHIP_NOT_INCLUDED BindingExplanation_Membership = 2

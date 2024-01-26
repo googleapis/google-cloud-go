@@ -547,6 +547,7 @@ type TypedValue struct {
 	// The typed value field.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*TypedValue_BoolValue
 	//	*TypedValue_Int64Value
 	//	*TypedValue_DoubleValue

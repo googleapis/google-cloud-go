@@ -412,16 +412,16 @@ type UpdateAttachedClusterRequest struct {
 	// fields from
 	// [AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster]:
 	//
-	//  *   `annotations`.
-	//  *   `authorization.admin_groups`.
-	//  *   `authorization.admin_users`.
-	//  *   `binary_authorization.evaluation_mode`.
-	//  *   `description`.
-	//  *   `logging_config.component_config.enable_components`.
-	//  *   `monitoring_config.managed_prometheus_config.enabled`.
-	//  *   `platform_version`.
-	//  *   `proxy_config.kubernetes_secret.name`.
-	//  *   `proxy_config.kubernetes_secret.namespace`.
+	//   - `annotations`.
+	//   - `authorization.admin_groups`.
+	//   - `authorization.admin_users`.
+	//   - `binary_authorization.evaluation_mode`.
+	//   - `description`.
+	//   - `logging_config.component_config.enable_components`.
+	//   - `monitoring_config.managed_prometheus_config.enabled`.
+	//   - `platform_version`.
+	//   - `proxy_config.kubernetes_secret.name`.
+	//   - `proxy_config.kubernetes_secret.namespace`.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

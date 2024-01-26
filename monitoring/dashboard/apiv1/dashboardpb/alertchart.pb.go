@@ -44,7 +44,7 @@ type AlertChart struct {
 
 	// Required. The resource name of the alert policy. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID]
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

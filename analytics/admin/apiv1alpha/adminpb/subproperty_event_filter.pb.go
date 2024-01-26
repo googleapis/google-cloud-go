@@ -166,6 +166,7 @@ type SubpropertyEventFilterCondition struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to OneFilter:
+	//
 	//	*SubpropertyEventFilterCondition_NullFilter
 	//	*SubpropertyEventFilterCondition_StringFilter_
 	OneFilter isSubpropertyEventFilterCondition_OneFilter `protobuf_oneof:"one_filter"`
@@ -260,6 +261,7 @@ type SubpropertyEventFilterExpression struct {
 	// The expression applied to a filter.
 	//
 	// Types that are assignable to Expr:
+	//
 	//	*SubpropertyEventFilterExpression_OrGroup
 	//	*SubpropertyEventFilterExpression_NotExpression
 	//	*SubpropertyEventFilterExpression_FilterCondition

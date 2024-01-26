@@ -114,6 +114,7 @@ type ChannelGroupFilter struct {
 	// A StringFilter or InListFilter that defines this filters behavior.
 	//
 	// Types that are assignable to ValueFilter:
+	//
 	//	*ChannelGroupFilter_StringFilter_
 	//	*ChannelGroupFilter_InListFilter_
 	ValueFilter isChannelGroupFilter_ValueFilter `protobuf_oneof:"value_filter"`
@@ -209,6 +210,7 @@ type ChannelGroupFilterExpression struct {
 	// The expression applied to a filter.
 	//
 	// Types that are assignable to Expr:
+	//
 	//	*ChannelGroupFilterExpression_AndGroup
 	//	*ChannelGroupFilterExpression_OrGroup
 	//	*ChannelGroupFilterExpression_NotExpression

@@ -487,54 +487,72 @@ type SearchRequest struct {
 	//
 	// Supported keys are:
 	//
-	// * colorFamilies
-	// * price
-	// * originalPrice
-	// * discount
-	// * variantId
-	// * inventory(place_id,price)
-	// * inventory(place_id,original_price)
-	// * inventory(place_id,attributes.key), where key is any key in the
-	//   [Product.local_inventories.attributes][google.cloud.retail.v2beta.LocalInventory.attributes]
-	//   map.
-	// * attributes.key, where key is any key in the
-	//   [Product.attributes][google.cloud.retail.v2beta.Product.attributes] map.
-	// * pickupInStore.id, where id is any
+	//   - colorFamilies
+	//   - price
+	//   - originalPrice
+	//   - discount
+	//   - variantId
+	//   - inventory(place_id,price)
+	//   - inventory(place_id,original_price)
+	//   - inventory(place_id,attributes.key), where key is any key in the
+	//     [Product.local_inventories.attributes][google.cloud.retail.v2beta.LocalInventory.attributes]
+	//     map.
+	//   - attributes.key, where key is any key in the
+	//     [Product.attributes][google.cloud.retail.v2beta.Product.attributes] map.
+	//   - pickupInStore.id, where id is any
+	//
 	// [FulfillmentInfo.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids]
 	// for [FulfillmentInfo.type][google.cloud.retail.v2beta.FulfillmentInfo.type]
-	//   "pickup-in-store".
+	//
+	//	"pickup-in-store".
+	//
 	// * shipToStore.id, where id is any
 	// [FulfillmentInfo.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids]
 	// for [FulfillmentInfo.type][google.cloud.retail.v2beta.FulfillmentInfo.type]
-	//   "ship-to-store".
+	//
+	//	"ship-to-store".
+	//
 	// * sameDayDelivery.id, where id is any
 	// [FulfillmentInfo.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids]
 	// for [FulfillmentInfo.type][google.cloud.retail.v2beta.FulfillmentInfo.type]
-	//   "same-day-delivery".
+	//
+	//	"same-day-delivery".
+	//
 	// * nextDayDelivery.id, where id is any
 	// [FulfillmentInfo.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids]
 	// for [FulfillmentInfo.type][google.cloud.retail.v2beta.FulfillmentInfo.type]
-	//   "next-day-delivery".
+	//
+	//	"next-day-delivery".
+	//
 	// * customFulfillment1.id, where id is any
 	// [FulfillmentInfo.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids]
 	// for [FulfillmentInfo.type][google.cloud.retail.v2beta.FulfillmentInfo.type]
-	//   "custom-type-1".
+	//
+	//	"custom-type-1".
+	//
 	// * customFulfillment2.id, where id is any
 	// [FulfillmentInfo.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids]
 	// for [FulfillmentInfo.type][google.cloud.retail.v2beta.FulfillmentInfo.type]
-	//   "custom-type-2".
+	//
+	//	"custom-type-2".
+	//
 	// * customFulfillment3.id, where id is any
 	// [FulfillmentInfo.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids]
 	// for [FulfillmentInfo.type][google.cloud.retail.v2beta.FulfillmentInfo.type]
-	//   "custom-type-3".
+	//
+	//	"custom-type-3".
+	//
 	// * customFulfillment4.id, where id is any
 	// [FulfillmentInfo.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids]
 	// for [FulfillmentInfo.type][google.cloud.retail.v2beta.FulfillmentInfo.type]
-	//   "custom-type-4".
+	//
+	//	"custom-type-4".
+	//
 	// * customFulfillment5.id, where id is any
 	// [FulfillmentInfo.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids]
 	// for [FulfillmentInfo.type][google.cloud.retail.v2beta.FulfillmentInfo.type]
-	//   "custom-type-5".
+	//
+	//	"custom-type-5".
 	//
 	// If this field is set to an invalid value other than these, an
 	// INVALID_ARGUMENT error is returned.
@@ -568,17 +586,17 @@ type SearchRequest struct {
 	PersonalizationSpec *SearchRequest_PersonalizationSpec `protobuf:"bytes,32,opt,name=personalization_spec,json=personalizationSpec,proto3" json:"personalization_spec,omitempty"`
 	// The labels applied to a resource must meet the following requirements:
 	//
-	// * Each resource can have multiple labels, up to a maximum of 64.
-	// * Each label must be a key-value pair.
-	// * Keys have a minimum length of 1 character and a maximum length of 63
-	//   characters and cannot be empty. Values can be empty and have a maximum
-	//   length of 63 characters.
-	// * Keys and values can contain only lowercase letters, numeric characters,
-	//   underscores, and dashes. All characters must use UTF-8 encoding, and
-	//   international characters are allowed.
-	// * The key portion of a label must be unique. However, you can use the same
-	//   key with multiple resources.
-	// * Keys must start with a lowercase letter or international character.
+	//   - Each resource can have multiple labels, up to a maximum of 64.
+	//   - Each label must be a key-value pair.
+	//   - Keys have a minimum length of 1 character and a maximum length of 63
+	//     characters and cannot be empty. Values can be empty and have a maximum
+	//     length of 63 characters.
+	//   - Keys and values can contain only lowercase letters, numeric characters,
+	//     underscores, and dashes. All characters must use UTF-8 encoding, and
+	//     international characters are allowed.
+	//   - The key portion of a label must be unique. However, you can use the same
+	//     key with multiple resources.
+	//   - Keys must start with a lowercase letter or international character.
 	//
 	// See [Google Cloud
 	// Document](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
@@ -952,6 +970,7 @@ type ExperimentInfo struct {
 	// Information associated with the specific experiment entity being recorded.
 	//
 	// Types that are assignable to ExperimentMetadata:
+	//
 	//	*ExperimentInfo_ServingConfigExperiment_
 	ExperimentMetadata isExperimentInfo_ExperimentMetadata `protobuf_oneof:"experiment_metadata"`
 	// The fully qualified resource name of the experiment that provides the
@@ -1040,7 +1059,6 @@ type SearchRequest_FacetSpec struct {
 	// If this field is negative, an INVALID_ARGUMENT is returned.
 	Limit int32 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
 	// List of keys to exclude when faceting.
-	//
 	//
 	// By default,
 	// [FacetKey.key][google.cloud.retail.v2beta.SearchRequest.FacetSpec.FacetKey.key]
@@ -1455,38 +1473,38 @@ type SearchRequest_FacetSpec_FacetKey struct {
 	// is not specified:
 	//
 	// * textual_field =
-	//     * "brands"
-	//     * "categories"
-	//     * "genders"
-	//     * "ageGroups"
-	//     * "availability"
-	//     * "colorFamilies"
-	//     * "colors"
-	//     * "sizes"
-	//     * "materials"
-	//     * "patterns"
-	//     * "conditions"
-	//     * "attributes.key"
-	//     * "pickupInStore"
-	//     * "shipToStore"
-	//     * "sameDayDelivery"
-	//     * "nextDayDelivery"
-	//     * "customFulfillment1"
-	//     * "customFulfillment2"
-	//     * "customFulfillment3"
-	//     * "customFulfillment4"
-	//     * "customFulfillment5"
-	//     * "inventory(place_id,attributes.key)"
+	//   - "brands"
+	//   - "categories"
+	//   - "genders"
+	//   - "ageGroups"
+	//   - "availability"
+	//   - "colorFamilies"
+	//   - "colors"
+	//   - "sizes"
+	//   - "materials"
+	//   - "patterns"
+	//   - "conditions"
+	//   - "attributes.key"
+	//   - "pickupInStore"
+	//   - "shipToStore"
+	//   - "sameDayDelivery"
+	//   - "nextDayDelivery"
+	//   - "customFulfillment1"
+	//   - "customFulfillment2"
+	//   - "customFulfillment3"
+	//   - "customFulfillment4"
+	//   - "customFulfillment5"
+	//   - "inventory(place_id,attributes.key)"
 	//
 	// * numerical_field =
-	//     * "price"
-	//     * "discount"
-	//     * "rating"
-	//     * "ratingCount"
-	//     * "attributes.key"
-	//     * "inventory(place_id,price)"
-	//     * "inventory(place_id,original_price)"
-	//     * "inventory(place_id,attributes.key)"
+	//   - "price"
+	//   - "discount"
+	//   - "rating"
+	//   - "ratingCount"
+	//   - "attributes.key"
+	//   - "inventory(place_id,price)"
+	//   - "inventory(place_id,original_price)"
+	//   - "inventory(place_id,attributes.key)"
 	Key string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
 	// Set only if values should be bucketized into intervals. Must be set
 	// for facets with numerical values. Must not be set for facet with text
@@ -1555,7 +1573,8 @@ type SearchRequest_FacetSpec_FacetKey struct {
 	// * "value desc", which means order by
 	// [SearchResponse.Facet.values.value][google.cloud.retail.v2beta.SearchResponse.Facet.FacetValue.value]
 	// descending.
-	//   Only applies to textual facets.
+	//
+	//	Only applies to textual facets.
 	//
 	// If not set, textual values are sorted in [natural
 	// order](https://en.wikipedia.org/wiki/Natural_sort_order); numerical
@@ -1704,9 +1723,10 @@ type SearchRequest_BoostSpec_ConditionBoostSpec struct {
 	//
 	// * To boost products with product ID "product_1" or "product_2", and
 	// color
-	//   "Red" or "Blue":
-	//     * (id: ANY("product_1", "product_2")) AND (colorFamilies:
-	//     ANY("Red","Blue"))
+	//
+	//	"Red" or "Blue":
+	//	  * (id: ANY("product_1", "product_2")) AND (colorFamilies:
+	//	  ANY("Red","Blue"))
 	Condition string `protobuf:"bytes,1,opt,name=condition,proto3" json:"condition,omitempty"`
 	// Strength of the condition boost, which should be in [-1, 1]. Negative
 	// boost means demotion. Default is 0.0.
@@ -1832,14 +1852,14 @@ type SearchResponse_SearchResult struct {
 	// there are two variants with colors "red" and "blue", the rollup values
 	// are
 	//
-	//     { key: "colorFamilies"
-	//       value {
-	//         list_value {
-	//           values { string_value: "red" }
-	//           values { string_value: "blue" }
-	//          }
-	//       }
-	//     }
+	//	{ key: "colorFamilies"
+	//	  value {
+	//	    list_value {
+	//	      values { string_value: "red" }
+	//	      values { string_value: "blue" }
+	//	     }
+	//	  }
+	//	}
 	//
 	// For [FulfillmentInfo][google.cloud.retail.v2beta.FulfillmentInfo], the
 	// rollup values is a double value with type
@@ -2076,6 +2096,7 @@ type SearchResponse_Facet_FacetValue struct {
 	// A facet value which contains values.
 	//
 	// Types that are assignable to FacetValue:
+	//
 	//	*SearchResponse_Facet_FacetValue_Value
 	//	*SearchResponse_Facet_FacetValue_Interval
 	FacetValue isSearchResponse_Facet_FacetValue_FacetValue `protobuf_oneof:"facet_value"`

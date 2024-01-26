@@ -348,6 +348,7 @@ type Destination struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Descriptor_:
+	//
 	//	*Destination_CloudRun
 	//	*Destination_CloudFunction
 	//	*Destination_Gke
@@ -468,6 +469,7 @@ type Transport struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Intermediary:
+	//
 	//	*Transport_Pubsub
 	Intermediary isTransport_Intermediary `protobuf_oneof:"intermediary"`
 }

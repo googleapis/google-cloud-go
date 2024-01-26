@@ -266,15 +266,17 @@ type ListFilesRequest struct {
 	// An expression for filtering the results of the request. Filter rules are
 	// case insensitive. The fields eligible for filtering are:
 	//
-	//   * `name`
-	//   * `owner`
+	//   - `name`
 	//
-	//  An example of using a filter:
+	//   - `owner`
 	//
-	//   * `name="projects/p1/locations/us-central1/repositories/repo1/files/a/b/*"` --> Files with an
-	//   ID starting with "a/b/".
-	//   * `owner="projects/p1/locations/us-central1/repositories/repo1/packages/pkg1/versions/1.0"` -->
-	//   Files owned by the version `1.0` in package `pkg1`.
+	//     An example of using a filter:
+	//
+	//   - `name="projects/p1/locations/us-central1/repositories/repo1/files/a/b/*"` --> Files with an
+	//     ID starting with "a/b/".
+	//
+	//   - `owner="projects/p1/locations/us-central1/repositories/repo1/packages/pkg1/versions/1.0"` -->
+	//     Files owned by the version `1.0` in package `pkg1`.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	// The maximum number of files to return.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`

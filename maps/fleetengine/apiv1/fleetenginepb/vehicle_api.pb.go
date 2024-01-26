@@ -820,13 +820,15 @@ type SearchVehiclesRequest struct {
 	// (required_attributes[0] AND required_attributes[1] AND ...)
 	// AND
 	// (
-	//   (required_one_of_attribute_sets[0][0] AND
-	//   required_one_of_attribute_sets[0][1] AND
-	//   ...)
-	//   OR
-	//   (required_one_of_attribute_sets[1][0] AND
-	//   required_one_of_attribute_sets[1][1] AND
-	//   ...)
+	//
+	//	(required_one_of_attribute_sets[0][0] AND
+	//	required_one_of_attribute_sets[0][1] AND
+	//	...)
+	//	OR
+	//	(required_one_of_attribute_sets[1][0] AND
+	//	required_one_of_attribute_sets[1][1] AND
+	//	...)
+	//
 	// )
 	// ```
 	//
@@ -1165,13 +1167,15 @@ type ListVehiclesRequest struct {
 	// (required_attributes[0] AND required_attributes[1] AND ...)
 	// AND
 	// (
-	//   (required_one_of_attribute_sets[0][0] AND
-	//   required_one_of_attribute_sets[0][1] AND
-	//   ...)
-	//   OR
-	//   (required_one_of_attribute_sets[1][0] AND
-	//   required_one_of_attribute_sets[1][1] AND
-	//   ...)
+	//
+	//	(required_one_of_attribute_sets[0][0] AND
+	//	required_one_of_attribute_sets[0][1] AND
+	//	...)
+	//	OR
+	//	(required_one_of_attribute_sets[1][0] AND
+	//	required_one_of_attribute_sets[1][1] AND
+	//	...)
+	//
 	// )
 	// ```
 	//
@@ -1422,7 +1426,9 @@ func (x *ListVehiclesResponse) GetTotalSize() int64 {
 	return 0
 }
 
-// Describes intermediate points along a route.
+// Describes intermediate points along a route for a `VehicleMatch` in a
+// `SearchVehiclesResponse`. This concept is represented as a `TripWaypoint` in
+// all other endpoints.
 type Waypoint struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -720,6 +720,7 @@ type SecuritySettings struct {
 	// a few days without allowing direct readings.
 	//
 	// Types that are assignable to DataRetention:
+	//
 	//	*SecuritySettings_RetentionWindowDays
 	//	*SecuritySettings_RetentionStrategy_
 	DataRetention isSecuritySettings_DataRetention `protobuf_oneof:"data_retention"`

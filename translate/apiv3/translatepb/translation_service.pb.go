@@ -323,8 +323,8 @@ type TranslateTextGlossaryConfig struct {
 	//
 	// The format depends on the glossary:
 	//
-	// - User-provided custom glossary:
-	//   `projects/{project-number-or-id}/locations/{location-id}/glossaries/{glossary-id}`
+	//   - User-provided custom glossary:
+	//     `projects/{project-number-or-id}/locations/{location-id}/glossaries/{glossary-id}`
 	Glossary string `protobuf:"bytes,1,opt,name=glossary,proto3" json:"glossary,omitempty"`
 	// Optional. Indicates match is case insensitive. The default value is `false`
 	// if missing.
@@ -388,7 +388,8 @@ type TranslateTextRequest struct {
 	// length of this field is 1024. Use BatchTranslateText for larger text.
 	Contents []string `protobuf:"bytes,1,rep,name=contents,proto3" json:"contents,omitempty"`
 	// Optional. The format of the source text, for example, "text/html",
-	//  "text/plain". If left blank, the MIME type defaults to "text/html".
+	//
+	//	"text/plain". If left blank, the MIME type defaults to "text/html".
 	MimeType string `protobuf:"bytes,3,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
 	// Optional. The ISO-639 language code of the input text if
 	// known, for example, "en-US" or "sr-Latn". Supported language codes are
@@ -418,12 +419,11 @@ type TranslateTextRequest struct {
 	//
 	// The format depends on model type:
 	//
-	// - AutoML Translation models:
-	//   `projects/{project-number-or-id}/locations/{location-id}/models/{model-id}`
+	//   - AutoML Translation models:
+	//     `projects/{project-number-or-id}/locations/{location-id}/models/{model-id}`
 	//
-	// - General (built-in) models:
-	//   `projects/{project-number-or-id}/locations/{location-id}/models/general/nmt`,
-	//
+	//   - General (built-in) models:
+	//     `projects/{project-number-or-id}/locations/{location-id}/models/general/nmt`,
 	//
 	// For global (non-regionalized) requests, use `location-id` `global`.
 	// For example,
@@ -717,6 +717,7 @@ type DetectLanguageRequest struct {
 	// Required. The source of the document from which to detect the language.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*DetectLanguageRequest_Content
 	Source isDetectLanguageRequest_Source `protobuf_oneof:"source"`
 	// Optional. The format of the source text, for example, "text/html",
@@ -956,12 +957,11 @@ type GetSupportedLanguagesRequest struct {
 	//
 	// The format depends on model type:
 	//
-	// - AutoML Translation models:
-	//   `projects/{project-number-or-id}/locations/{location-id}/models/{model-id}`
+	//   - AutoML Translation models:
+	//     `projects/{project-number-or-id}/locations/{location-id}/models/{model-id}`
 	//
-	// - General (built-in) models:
-	//   `projects/{project-number-or-id}/locations/{location-id}/models/general/nmt`,
-	//
+	//   - General (built-in) models:
+	//     `projects/{project-number-or-id}/locations/{location-id}/models/general/nmt`,
 	//
 	// Returns languages supported by the specified model.
 	// If missing, we get supported languages of Google general NMT model.
@@ -1215,6 +1215,7 @@ type InputConfig struct {
 	// Required. Specify the input.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*InputConfig_GcsSource
 	Source isInputConfig_Source `protobuf_oneof:"source"`
 }
@@ -1285,7 +1286,9 @@ type InputConfig_GcsSource struct {
 	// of the text request. If the first column is missing, we use the row
 	// number (0-based) from the input file as the ID in the output file. The
 	// second column is the actual text to be
-	//  translated. We recommend each row be <= 10K Unicode codepoints,
+	//
+	//	translated. We recommend each row be <= 10K Unicode codepoints,
+	//
 	// otherwise an error might be returned.
 	// Note that the input tsv must be RFC 4180 compliant.
 	//
@@ -1362,6 +1365,7 @@ type OutputConfig struct {
 	// Required. The destination of output.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*OutputConfig_GcsDestination
 	Destination isOutputConfig_Destination `protobuf_oneof:"destination"`
 }
@@ -1508,6 +1512,7 @@ type DocumentInputConfig struct {
 	// - application/pdf
 	//
 	// Types that are assignable to Source:
+	//
 	//	*DocumentInputConfig_Content
 	//	*DocumentInputConfig_GcsSource
 	Source isDocumentInputConfig_Source `protobuf_oneof:"source"`
@@ -1617,6 +1622,7 @@ type DocumentOutputConfig struct {
 	// TranslateDocumentResponse.glossary_document_translation.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*DocumentOutputConfig_GcsDestination
 	Destination isDocumentOutputConfig_Destination `protobuf_oneof:"destination"`
 	// Optional. Specifies the translated document's mime_type.
@@ -1702,7 +1708,6 @@ type DocumentOutputConfig_GcsDestination struct {
 	// - [ext] corresponds to the translated file's extension according to its
 	// mime type.
 	//
-	//
 	// For a DocumentInputConfig.gcs_uri provided document, the output file will
 	// have a name according to its URI. For example: an input file with URI:
 	// `gs://a/b/c.[extension]` stored in a gcs_destination bucket with name
@@ -1711,7 +1716,6 @@ type DocumentOutputConfig_GcsDestination struct {
 	// - [trg] corresponds to the translated file's language code,
 	// - [ext] corresponds to the translated file's extension according to its
 	// mime type.
-	//
 	//
 	// If the document was directly provided through the request, then the
 	// output document will have the format:
@@ -1778,12 +1782,11 @@ type TranslateDocumentRequest struct {
 	//
 	// The format depends on model type:
 	//
-	// - AutoML Translation models:
-	//   `projects/{project-number-or-id}/locations/{location-id}/models/{model-id}`
+	//   - AutoML Translation models:
+	//     `projects/{project-number-or-id}/locations/{location-id}/models/{model-id}`
 	//
-	// - General (built-in) models:
-	//   `projects/{project-number-or-id}/locations/{location-id}/models/general/nmt`,
-	//
+	//   - General (built-in) models:
+	//     `projects/{project-number-or-id}/locations/{location-id}/models/general/nmt`,
 	//
 	// If not provided, the default Google model (NMT) will be used for
 	// translation.
@@ -2120,12 +2123,11 @@ type BatchTranslateTextRequest struct {
 	//
 	// The value format depends on model type:
 	//
-	// - AutoML Translation models:
-	//   `projects/{project-number-or-id}/locations/{location-id}/models/{model-id}`
+	//   - AutoML Translation models:
+	//     `projects/{project-number-or-id}/locations/{location-id}/models/{model-id}`
 	//
-	// - General (built-in) models:
-	//   `projects/{project-number-or-id}/locations/{location-id}/models/general/nmt`,
-	//
+	//   - General (built-in) models:
+	//     `projects/{project-number-or-id}/locations/{location-id}/models/general/nmt`,
 	//
 	// If the map is empty or a specific model is
 	// not requested for a language pair, then default google model (nmt) is used.
@@ -2429,6 +2431,7 @@ type GlossaryInputConfig struct {
 	// Required. Specify the input.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*GlossaryInputConfig_GcsSource
 	Source isGlossaryInputConfig_Source `protobuf_oneof:"source"`
 }
@@ -2492,19 +2495,19 @@ type GlossaryInputConfig_GcsSource struct {
 	//
 	// For unidirectional glossaries:
 	//
-	// - TSV/CSV (`.tsv`/`.csv`): Two column file, tab- or comma-separated.
-	//   The first column is source text. The second column is target text.
-	//   No headers in this file. The first row contains data and not column
-	//   names.
+	//   - TSV/CSV (`.tsv`/`.csv`): Two column file, tab- or comma-separated.
+	//     The first column is source text. The second column is target text.
+	//     No headers in this file. The first row contains data and not column
+	//     names.
 	//
 	// - TMX (`.tmx`): TMX file with parallel data defining source/target term
 	// pairs.
 	//
 	// For equivalent term sets glossaries:
 	//
-	// - CSV (`.csv`): Multi-column CSV file defining equivalent glossary terms
-	//   in multiple languages. See documentation for more information -
-	//   [glossaries](https://cloud.google.com/translate/docs/advanced/glossary).
+	//   - CSV (`.csv`): Multi-column CSV file defining equivalent glossary terms
+	//     in multiple languages. See documentation for more information -
+	//     [glossaries](https://cloud.google.com/translate/docs/advanced/glossary).
 	GcsSource *GcsSource `protobuf:"bytes,1,opt,name=gcs_source,json=gcsSource,proto3,oneof"`
 }
 
@@ -2522,6 +2525,7 @@ type Glossary struct {
 	// Languages supported by the glossary.
 	//
 	// Types that are assignable to Languages:
+	//
 	//	*Glossary_LanguagePair
 	//	*Glossary_LanguageCodesSet_
 	Languages isGlossary_Languages `protobuf_oneof:"languages"`
@@ -3209,12 +3213,11 @@ type BatchTranslateDocumentRequest struct {
 	//
 	// The value format depends on model type:
 	//
-	// - AutoML Translation models:
-	//   `projects/{project-number-or-id}/locations/{location-id}/models/{model-id}`
+	//   - AutoML Translation models:
+	//     `projects/{project-number-or-id}/locations/{location-id}/models/{model-id}`
 	//
-	// - General (built-in) models:
-	//   `projects/{project-number-or-id}/locations/{location-id}/models/general/nmt`,
-	//
+	//   - General (built-in) models:
+	//     `projects/{project-number-or-id}/locations/{location-id}/models/general/nmt`,
 	//
 	// If the map is empty or a specific model is
 	// not requested for a language pair, then default google model (nmt) is used.
@@ -3226,8 +3229,8 @@ type BatchTranslateDocumentRequest struct {
 	// mime_type of translated documents.
 	//
 	// Supported file format conversion includes:
-	// - `application/pdf` to
-	//   `application/vnd.openxmlformats-officedocument.wordprocessingml.document`
+	//   - `application/pdf` to
+	//     `application/vnd.openxmlformats-officedocument.wordprocessingml.document`
 	//
 	// If nothing specified, output files will be in the same format as the
 	// original file.
@@ -3364,6 +3367,7 @@ type BatchDocumentInputConfig struct {
 	// Specify the input.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*BatchDocumentInputConfig_GcsSource
 	Source isBatchDocumentInputConfig_Source `protobuf_oneof:"source"`
 }
@@ -3453,6 +3457,7 @@ type BatchDocumentOutputConfig struct {
 	// and be empty.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*BatchDocumentOutputConfig_GcsDestination
 	Destination isBatchDocumentOutputConfig_Destination `protobuf_oneof:"destination"`
 }

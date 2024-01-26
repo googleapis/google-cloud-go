@@ -383,8 +383,8 @@ func (c *PublisherClient) CreateTopic(ctx context.Context, req *pubsubpb.Topic, 
 	return c.internalClient.CreateTopic(ctx, req, opts...)
 }
 
-// UpdateTopic updates an existing topic. Note that certain properties of a
-// topic are not modifiable.
+// UpdateTopic updates an existing topic by updating the fields specified in the update
+// mask. Note that certain properties of a topic are not modifiable.
 func (c *PublisherClient) UpdateTopic(ctx context.Context, req *pubsubpb.UpdateTopicRequest, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	return c.internalClient.UpdateTopic(ctx, req, opts...)
 }
@@ -970,8 +970,8 @@ func (c *publisherRESTClient) CreateTopic(ctx context.Context, req *pubsubpb.Top
 	return resp, nil
 }
 
-// UpdateTopic updates an existing topic. Note that certain properties of a
-// topic are not modifiable.
+// UpdateTopic updates an existing topic by updating the fields specified in the update
+// mask. Note that certain properties of a topic are not modifiable.
 func (c *publisherRESTClient) UpdateTopic(ctx context.Context, req *pubsubpb.UpdateTopicRequest, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

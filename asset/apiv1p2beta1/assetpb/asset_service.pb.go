@@ -557,6 +557,7 @@ type OutputConfig struct {
 	// Asset export destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*OutputConfig_GcsDestination
 	Destination isOutputConfig_Destination `protobuf_oneof:"destination"`
 }
@@ -627,6 +628,7 @@ type GcsDestination struct {
 	// Required.
 	//
 	// Types that are assignable to ObjectUri:
+	//
 	//	*GcsDestination_Uri
 	ObjectUri isGcsDestination_ObjectUri `protobuf_oneof:"object_uri"`
 }
@@ -751,6 +753,7 @@ type FeedOutputConfig struct {
 	// Asset feed destination.
 	//
 	// Types that are assignable to Destination:
+	//
 	//	*FeedOutputConfig_PubsubDestination
 	Destination isFeedOutputConfig_Destination `protobuf_oneof:"destination"`
 }

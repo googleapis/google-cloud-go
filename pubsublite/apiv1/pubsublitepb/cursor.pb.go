@@ -250,6 +250,7 @@ type StreamingCommitCursorRequest struct {
 	// The type of request this is.
 	//
 	// Types that are assignable to Request:
+	//
 	//	*StreamingCommitCursorRequest_Initial
 	//	*StreamingCommitCursorRequest_Commit
 	Request isStreamingCommitCursorRequest_Request `protobuf_oneof:"request"`
@@ -335,6 +336,7 @@ type StreamingCommitCursorResponse struct {
 	// The type of request this is.
 	//
 	// Types that are assignable to Request:
+	//
 	//	*StreamingCommitCursorResponse_Initial
 	//	*StreamingCommitCursorResponse_Commit
 	Request isStreamingCommitCursorResponse_Request `protobuf_oneof:"request"`

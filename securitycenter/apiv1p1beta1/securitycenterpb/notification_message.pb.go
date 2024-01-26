@@ -46,6 +46,7 @@ type NotificationMessage struct {
 	// Notification Event.
 	//
 	// Types that are assignable to Event:
+	//
 	//	*NotificationMessage_Finding
 	Event isNotificationMessage_Event `protobuf_oneof:"event"`
 	// The Cloud resource tied to the notification.

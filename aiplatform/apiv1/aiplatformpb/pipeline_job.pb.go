@@ -674,6 +674,7 @@ type PipelineTaskExecutorDetail struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Details:
+	//
 	//	*PipelineTaskExecutorDetail_ContainerDetail_
 	//	*PipelineTaskExecutorDetail_CustomJobDetail_
 	Details isPipelineTaskExecutorDetail_Details `protobuf_oneof:"details"`
@@ -870,6 +871,7 @@ type PipelineJob_RuntimeConfig_InputArtifact struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Kind:
+	//
 	//	*PipelineJob_RuntimeConfig_InputArtifact_ArtifactId
 	Kind isPipelineJob_RuntimeConfig_InputArtifact_Kind `protobuf_oneof:"kind"`
 }

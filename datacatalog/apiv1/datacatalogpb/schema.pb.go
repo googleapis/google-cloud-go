@@ -253,6 +253,7 @@ type ColumnSchema struct {
 	// Information only applying for columns in Entries from a specific system.
 	//
 	// Types that are assignable to SystemSpec:
+	//
 	//	*ColumnSchema_LookerColumnSpec_
 	SystemSpec isColumnSchema_SystemSpec `protobuf_oneof:"system_spec"`
 	// Optional. Garbage collection policy for the column or column family.

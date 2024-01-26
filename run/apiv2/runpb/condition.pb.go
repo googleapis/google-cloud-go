@@ -446,6 +446,7 @@ type Condition struct {
 	// Successful conditions cannot have a reason.
 	//
 	// Types that are assignable to Reasons:
+	//
 	//	*Condition_Reason
 	//	*Condition_RevisionReason_
 	//	*Condition_ExecutionReason_

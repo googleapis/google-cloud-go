@@ -633,15 +633,15 @@ type UpdateEnvironmentRequest struct {
 	// "config.softwareConfig.pypiPackages.numpy". The included patch
 	// environment would specify the scikit-learn version as follows:
 	//
-	//     {
-	//       "config":{
-	//         "softwareConfig":{
-	//           "pypiPackages":{
-	//             "scikit-learn":"==0.19.0"
-	//           }
-	//         }
-	//       }
-	//     }
+	//	{
+	//	  "config":{
+	//	    "softwareConfig":{
+	//	      "pypiPackages":{
+	//	        "scikit-learn":"==0.19.0"
+	//	      }
+	//	    }
+	//	  }
+	//	}
 	//
 	// Note that in the above example, any existing PyPI packages
 	// other than scikit-learn and numpy will be unaffected.
@@ -655,12 +655,12 @@ type UpdateEnvironmentRequest struct {
 	// provide the paths "labels.label1", "labels.label2", and "labels.label3"
 	// and populate the patch environment as follows:
 	//
-	//     {
-	//       "labels":{
-	//         "label1":"new-label1-value"
-	//         "label2":"new-label2-value"
-	//       }
-	//     }
+	//	{
+	//	  "labels":{
+	//	    "label1":"new-label1-value"
+	//	    "label2":"new-label2-value"
+	//	  }
+	//	}
 	//
 	// Note that in the above example, any existing labels that are not
 	// included in the `updateMask` will be unaffected.
@@ -673,80 +673,91 @@ type UpdateEnvironmentRequest struct {
 	// the path "config.softwareConfig.pypiPackages", and
 	// the patch environment would be the following:
 	//
-	//     {
-	//       "config":{
-	//         "softwareConfig":{
-	//           "pypiPackages":{
-	//             "botocore":"==1.7.14"
-	//           }
-	//         }
-	//       }
-	//     }
+	//	{
+	//	  "config":{
+	//	    "softwareConfig":{
+	//	      "pypiPackages":{
+	//	        "botocore":"==1.7.14"
+	//	      }
+	//	    }
+	//	  }
+	//	}
 	//
 	// **Note:** Only the following fields can be updated:
 	//
 	// * `config.softwareConfig.pypiPackages`
-	//     * Replace all custom custom PyPI packages. If a replacement
-	//       package map is not included in `environment`, all custom
-	//       PyPI packages are cleared. It is an error to provide both
-	//       this mask and a mask specifying an individual package.
+	//   - Replace all custom custom PyPI packages. If a replacement
+	//     package map is not included in `environment`, all custom
+	//     PyPI packages are cleared. It is an error to provide both
+	//     this mask and a mask specifying an individual package.
+	//
 	// * `config.softwareConfig.pypiPackages.`packagename
-	//     * Update the custom PyPI package *packagename*,
-	//       preserving other packages. To delete the package, include it in
-	//       `updateMask`, and omit the mapping for it in
-	//       `environment.config.softwareConfig.pypiPackages`. It is an error
-	//       to provide both a mask of this form and the
-	//       `config.softwareConfig.pypiPackages` mask.
+	//   - Update the custom PyPI package *packagename*,
+	//     preserving other packages. To delete the package, include it in
+	//     `updateMask`, and omit the mapping for it in
+	//     `environment.config.softwareConfig.pypiPackages`. It is an error
+	//     to provide both a mask of this form and the
+	//     `config.softwareConfig.pypiPackages` mask.
+	//
 	// * `labels`
-	//     * Replace all environment labels. If a replacement labels map is not
-	//       included in `environment`, all labels are cleared. It is an error to
-	//       provide both this mask and a mask specifying one or more individual
-	//       labels.
+	//   - Replace all environment labels. If a replacement labels map is not
+	//     included in `environment`, all labels are cleared. It is an error to
+	//     provide both this mask and a mask specifying one or more individual
+	//     labels.
+	//
 	// * `labels.`labelName
-	//     * Set the label named *labelName*, while preserving other
-	//       labels. To delete the label, include it in `updateMask` and omit its
-	//       mapping in `environment.labels`. It is an error to provide both a
-	//       mask of this form and the `labels` mask.
+	//   - Set the label named *labelName*, while preserving other
+	//     labels. To delete the label, include it in `updateMask` and omit its
+	//     mapping in `environment.labels`. It is an error to provide both a
+	//     mask of this form and the `labels` mask.
+	//
 	// * `config.nodeCount`
-	//     * Horizontally scale the number of nodes in the environment. An integer
-	//       greater than or equal to 3 must be provided in the `config.nodeCount`
-	//       field. Supported for Cloud Composer environments in versions
-	//       composer-1.*.*-airflow-*.*.*.
+	//   - Horizontally scale the number of nodes in the environment. An integer
+	//     greater than or equal to 3 must be provided in the `config.nodeCount`
+	//     field. Supported for Cloud Composer environments in versions
+	//     composer-1.*.*-airflow-*.*.*.
+	//
 	// * `config.webServerNetworkAccessControl`
-	//     * Replace the environment's current `WebServerNetworkAccessControl`.
+	//   - Replace the environment's current `WebServerNetworkAccessControl`.
+	//
 	// * `config.softwareConfig.airflowConfigOverrides`
-	//     * Replace all Apache Airflow config overrides. If a replacement config
-	//       overrides map is not included in `environment`, all config overrides
-	//       are cleared.
-	//       It is an error to provide both this mask and a mask specifying one or
-	//       more individual config overrides.
+	//   - Replace all Apache Airflow config overrides. If a replacement config
+	//     overrides map is not included in `environment`, all config overrides
+	//     are cleared.
+	//     It is an error to provide both this mask and a mask specifying one or
+	//     more individual config overrides.
+	//
 	// * `config.softwareConfig.airflowConfigOverrides.`section-name
-	//     * Override the Apache Airflow config property *name* in the
-	//       section named *section*, preserving other properties. To
-	//       delete the property override, include it in `updateMask` and omit its
-	//       mapping in
-	//       `environment.config.softwareConfig.airflowConfigOverrides`.
-	//       It is an error to provide both a mask of this form and the
-	//       `config.softwareConfig.airflowConfigOverrides` mask.
+	//   - Override the Apache Airflow config property *name* in the
+	//     section named *section*, preserving other properties. To
+	//     delete the property override, include it in `updateMask` and omit its
+	//     mapping in
+	//     `environment.config.softwareConfig.airflowConfigOverrides`.
+	//     It is an error to provide both a mask of this form and the
+	//     `config.softwareConfig.airflowConfigOverrides` mask.
+	//
 	// * `config.softwareConfig.envVariables`
-	//     * Replace all environment variables. If a replacement environment
-	//       variable map is not included in `environment`, all custom environment
-	//       variables are cleared.
+	//   - Replace all environment variables. If a replacement environment
+	//     variable map is not included in `environment`, all custom environment
+	//     variables are cleared.
+	//
 	// * `config.softwareConfig.schedulerCount`
-	//     * Horizontally scale the number of schedulers in Airflow. A positive
-	//       integer not greater than the number of nodes must be provided in the
-	//       `config.softwareConfig.schedulerCount` field. Supported for Cloud
-	//       Composer environments in versions composer-1.*.*-airflow-2.*.*.
+	//   - Horizontally scale the number of schedulers in Airflow. A positive
+	//     integer not greater than the number of nodes must be provided in the
+	//     `config.softwareConfig.schedulerCount` field. Supported for Cloud
+	//     Composer environments in versions composer-1.*.*-airflow-2.*.*.
+	//
 	// * `config.databaseConfig.machineType`
-	//     * Cloud SQL machine type used by Airflow database.
-	//       It has to be one of: db-n1-standard-2, db-n1-standard-4,
-	//       db-n1-standard-8 or db-n1-standard-16. Supported for Cloud Composer
-	//       environments in versions composer-1.*.*-airflow-*.*.*.
+	//   - Cloud SQL machine type used by Airflow database.
+	//     It has to be one of: db-n1-standard-2, db-n1-standard-4,
+	//     db-n1-standard-8 or db-n1-standard-16. Supported for Cloud Composer
+	//     environments in versions composer-1.*.*-airflow-*.*.*.
+	//
 	// * `config.webServerConfig.machineType`
-	//     * Machine type on which Airflow web server is running.
-	//       It has to be one of: composer-n1-webserver-2, composer-n1-webserver-4
-	//       or composer-n1-webserver-8. Supported for Cloud Composer environments
-	//       in versions composer-1.*.*-airflow-*.*.*.
+	//   - Machine type on which Airflow web server is running.
+	//     It has to be one of: composer-n1-webserver-2, composer-n1-webserver-4
+	//     or composer-n1-webserver-8. Supported for Cloud Composer environments
+	//     in versions composer-1.*.*-airflow-*.*.*.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -2456,12 +2467,14 @@ type IPAllocationPolicy struct {
 	// Configuration of allocating IP addresses for pods in the GKE cluster.
 	//
 	// Types that are assignable to ClusterIpAllocation:
+	//
 	//	*IPAllocationPolicy_ClusterSecondaryRangeName
 	//	*IPAllocationPolicy_ClusterIpv4CidrBlock
 	ClusterIpAllocation isIPAllocationPolicy_ClusterIpAllocation `protobuf_oneof:"cluster_ip_allocation"`
 	// Configuration of allocating IP addresses for services in the GKE cluster.
 	//
 	// Types that are assignable to ServicesIpAllocation:
+	//
 	//	*IPAllocationPolicy_ServicesSecondaryRangeName
 	//	*IPAllocationPolicy_ServicesIpv4CidrBlock
 	ServicesIpAllocation isIPAllocationPolicy_ServicesIpAllocation `protobuf_oneof:"services_ip_allocation"`
@@ -3706,7 +3719,8 @@ type WebServerNetworkAccessControl_AllowedIpRange struct {
 	// IP address or range, defined using CIDR notation, of requests that this
 	// rule applies to.
 	// Examples: `192.168.1.1` or `192.168.0.0/16` or `2001:db8::/32`
-	//           or `2001:0db8:0000:0042:0000:8a2e:0370:7334`.
+	//
+	//	or `2001:0db8:0000:0042:0000:8a2e:0370:7334`.
 	//
 	// IP range prefixes should be properly truncated. For example,
 	// `1.2.3.4/24` should be truncated to `1.2.3.0/24`. Similarly, for IPv6,

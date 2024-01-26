@@ -553,6 +553,7 @@ type CertificateIssuanceConfig_CertificateAuthorityConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Kind:
+	//
 	//	*CertificateIssuanceConfig_CertificateAuthorityConfig_CertificateAuthorityServiceConfig_
 	Kind isCertificateIssuanceConfig_CertificateAuthorityConfig_Kind `protobuf_oneof:"kind"`
 }

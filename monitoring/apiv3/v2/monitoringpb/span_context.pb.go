@@ -49,7 +49,7 @@ type SpanContext struct {
 
 	// The resource name of the span. The format is:
 	//
-	//     projects/[PROJECT_ID_OR_NUMBER]/traces/[TRACE_ID]/spans/[SPAN_ID]
+	//	projects/[PROJECT_ID_OR_NUMBER]/traces/[TRACE_ID]/spans/[SPAN_ID]
 	//
 	// `[TRACE_ID]` is a unique identifier for a trace within a project;
 	// it is a 32-character hexadecimal encoding of a 16-byte array.

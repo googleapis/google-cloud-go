@@ -297,6 +297,7 @@ type PublishRequest struct {
 	// The type of request this is.
 	//
 	// Types that are assignable to RequestType:
+	//
 	//	*PublishRequest_InitialRequest
 	//	*PublishRequest_MessagePublishRequest
 	RequestType isPublishRequest_RequestType `protobuf_oneof:"request_type"`
@@ -382,6 +383,7 @@ type PublishResponse struct {
 	// The type of response this is.
 	//
 	// Types that are assignable to ResponseType:
+	//
 	//	*PublishResponse_InitialResponse
 	//	*PublishResponse_MessageResponse
 	ResponseType isPublishResponse_ResponseType `protobuf_oneof:"response_type"`

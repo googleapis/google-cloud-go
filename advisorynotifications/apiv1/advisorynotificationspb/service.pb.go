@@ -509,6 +509,7 @@ type Attachment struct {
 	// Data type of the attachment.
 	//
 	// Types that are assignable to Data:
+	//
 	//	*Attachment_Csv
 	Data isAttachment_Data `protobuf_oneof:"data"`
 	// The title of the attachment.

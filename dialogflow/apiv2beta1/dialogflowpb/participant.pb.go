@@ -245,18 +245,18 @@ type Participant struct {
 	//
 	// You can specify a user id as follows:
 	//
-	// 1. If you set this field in
-	//    [CreateParticipantRequest][google.cloud.dialogflow.v2beta1.CreateParticipantRequest.participant]
-	//    or
-	//    [UpdateParticipantRequest][google.cloud.dialogflow.v2beta1.UpdateParticipantRequest.participant],
-	//    Dialogflow adds the obfuscated user id with the participant.
+	//  1. If you set this field in
+	//     [CreateParticipantRequest][google.cloud.dialogflow.v2beta1.CreateParticipantRequest.participant]
+	//     or
+	//     [UpdateParticipantRequest][google.cloud.dialogflow.v2beta1.UpdateParticipantRequest.participant],
+	//     Dialogflow adds the obfuscated user id with the participant.
 	//
-	// 2. If you set this field in
-	//    [AnalyzeContent][google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.obfuscated_external_user_id]
-	//    or
-	//    [StreamingAnalyzeContent][google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.obfuscated_external_user_id],
-	//    Dialogflow will update
-	//    [Participant.obfuscated_external_user_id][google.cloud.dialogflow.v2beta1.Participant.obfuscated_external_user_id].
+	//  2. If you set this field in
+	//     [AnalyzeContent][google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.obfuscated_external_user_id]
+	//     or
+	//     [StreamingAnalyzeContent][google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.obfuscated_external_user_id],
+	//     Dialogflow will update
+	//     [Participant.obfuscated_external_user_id][google.cloud.dialogflow.v2beta1.Participant.obfuscated_external_user_id].
 	//
 	// Dialogflow uses this user id for billing and measurement. If a user with
 	// the same obfuscated_external_user_id is created in a later conversation,
@@ -268,11 +268,11 @@ type Participant struct {
 	//
 	// Note:
 	//
-	// * Please never pass raw user ids to Dialogflow. Always obfuscate your user
-	//   id first.
-	// * Dialogflow only accepts a UTF-8 encoded string, e.g., a hex digest of a
-	//   hash function like SHA-512.
-	// * The length of the user id must be <= 256 characters.
+	//   - Please never pass raw user ids to Dialogflow. Always obfuscate your user
+	//     id first.
+	//   - Dialogflow only accepts a UTF-8 encoded string, e.g., a hex digest of a
+	//     hash function like SHA-512.
+	//   - The length of the user id must be <= 256 characters.
 	ObfuscatedExternalUserId string `protobuf:"bytes,7,opt,name=obfuscated_external_user_id,json=obfuscatedExternalUserId,proto3" json:"obfuscated_external_user_id,omitempty"`
 	// Optional. Key-value filters on the metadata of documents returned by
 	// article suggestion. If specified, article suggestion only returns suggested
@@ -282,14 +282,17 @@ type Participant struct {
 	// example, filters to match all documents that have 'US' or 'CA' in their
 	// market metadata values and 'agent' in their user metadata values will be
 	// ```
-	// documents_metadata_filters {
-	//   key: "market"
-	//   value: "US,CA"
-	// }
-	// documents_metadata_filters {
-	//   key: "user"
-	//   value: "agent"
-	// }
+	//
+	//	documents_metadata_filters {
+	//	  key: "market"
+	//	  value: "US,CA"
+	//	}
+	//
+	//	documents_metadata_filters {
+	//	  key: "user"
+	//	  value: "agent"
+	//	}
+	//
 	// ```
 	DocumentsMetadataFilters map[string]string `protobuf:"bytes,8,rep,name=documents_metadata_filters,json=documentsMetadataFilters,proto3" json:"documents_metadata_filters,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
@@ -912,6 +915,7 @@ type AutomatedAgentReply struct {
 	// Required.
 	//
 	// Types that are assignable to Response:
+	//
 	//	*AutomatedAgentReply_DetectIntentResponse
 	Response isAutomatedAgentReply_Response `protobuf_oneof:"response"`
 	// Response messages from the automated agent.
@@ -919,6 +923,7 @@ type AutomatedAgentReply struct {
 	// Info on the query match for the automated agent response.
 	//
 	// Types that are assignable to Match:
+	//
 	//	*AutomatedAgentReply_Intent
 	//	*AutomatedAgentReply_Event
 	Match isAutomatedAgentReply_Match `protobuf_oneof:"match"`
@@ -1333,14 +1338,17 @@ type AssistQueryParameters struct {
 	// example, filters to match all documents that have 'US' or 'CA' in their
 	// market metadata values and 'agent' in their user metadata values will be
 	// ```
-	// documents_metadata_filters {
-	//   key: "market"
-	//   value: "US,CA"
-	// }
-	// documents_metadata_filters {
-	//   key: "user"
-	//   value: "agent"
-	// }
+	//
+	//	documents_metadata_filters {
+	//	  key: "market"
+	//	  value: "US,CA"
+	//	}
+	//
+	//	documents_metadata_filters {
+	//	  key: "user"
+	//	  value: "agent"
+	//	}
+	//
 	// ```
 	DocumentsMetadataFilters map[string]string `protobuf:"bytes,1,rep,name=documents_metadata_filters,json=documentsMetadataFilters,proto3" json:"documents_metadata_filters,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
@@ -1398,6 +1406,7 @@ type AnalyzeContentRequest struct {
 	// Required. The input content.
 	//
 	// Types that are assignable to Input:
+	//
 	//	*AnalyzeContentRequest_TextInput
 	//	*AnalyzeContentRequest_AudioInput
 	//	*AnalyzeContentRequest_EventInput
@@ -1674,10 +1683,10 @@ type AnalyzeContentResponse struct {
 	// Optional. The audio data bytes encoded as specified in the request.
 	// This field is set if:
 	//
-	//  - `reply_audio_config` was specified in the request, or
-	//  - The automated agent responded with audio to play to the user. In such
-	//    case, `reply_audio.config` contains settings used to synthesize the
-	//    speech.
+	//   - `reply_audio_config` was specified in the request, or
+	//   - The automated agent responded with audio to play to the user. In such
+	//     case, `reply_audio.config` contains settings used to synthesize the
+	//     speech.
 	//
 	// In some scenarios, multiple output audio fields may be present in the
 	// response structure. In these cases, only the top-most-level audio output
@@ -1905,6 +1914,7 @@ type StreamingAnalyzeContentRequest struct {
 	// Required. The input config.
 	//
 	// Types that are assignable to Config:
+	//
 	//	*StreamingAnalyzeContentRequest_AudioConfig
 	//	*StreamingAnalyzeContentRequest_TextConfig
 	Config isStreamingAnalyzeContentRequest_Config `protobuf_oneof:"config"`
@@ -1917,6 +1927,7 @@ type StreamingAnalyzeContentRequest struct {
 	// Required. The input.
 	//
 	// Types that are assignable to Input:
+	//
 	//	*StreamingAnalyzeContentRequest_InputAudio
 	//	*StreamingAnalyzeContentRequest_InputText
 	//	*StreamingAnalyzeContentRequest_InputDtmf
@@ -1958,8 +1969,8 @@ type StreamingAnalyzeContentRequest struct {
 	// [AudioEncoding.AUDIO_ENCODING_LINEAR_16][google.cloud.dialogflow.v2beta1.AudioEncoding.AUDIO_ENCODING_LINEAR_16]
 	// and
 	// [AudioEncoding.AUDIO_ENCODING_MULAW][google.cloud.dialogflow.v2beta1.AudioEncoding.AUDIO_ENCODING_MULAW]
-	// - Lifecycle: conversation should be in `Assist Stage`, go to
-	//   [Conversation.CreateConversation][] for more information.
+	//   - Lifecycle: conversation should be in `Assist Stage`, go to
+	//     [Conversation.CreateConversation][] for more information.
 	//
 	// InvalidArgument Error will be returned if the one of restriction checks
 	// failed.
@@ -2207,10 +2218,10 @@ type StreamingAnalyzeContentResponse struct {
 	// Optional. The audio data bytes encoded as specified in the request.
 	// This field is set if:
 	//
-	//  - The `reply_audio_config` field is specified in the request.
-	//  - The automated agent, which this output comes from, responded with audio.
-	//    In such case, the `reply_audio.config` field contains settings used to
-	//    synthesize the speech.
+	//   - The `reply_audio_config` field is specified in the request.
+	//   - The automated agent, which this output comes from, responded with audio.
+	//     In such case, the `reply_audio.config` field contains settings used to
+	//     synthesize the speech.
 	//
 	// In some scenarios, multiple output audio fields may be present in the
 	// response structure. In these cases, only the top-most-level audio output
@@ -2357,10 +2368,12 @@ type AnnotatedMessagePart struct {
 	// this message part. For example for a system entity of type
 	// `@sys.unit-currency`, this may contain:
 	// <pre>
-	// {
-	//   "amount": 5,
-	//   "currency": "USD"
-	// }
+	//
+	//	{
+	//	  "amount": 5,
+	//	  "currency": "USD"
+	//	}
+	//
 	// </pre>
 	FormattedValue *structpb.Value `protobuf:"bytes,3,opt,name=formatted_value,json=formattedValue,proto3" json:"formatted_value,omitempty"`
 }
@@ -2751,6 +2764,7 @@ type IntentSuggestion struct {
 	// The name of the intent.
 	//
 	// Types that are assignable to Intent:
+	//
 	//	*IntentSuggestion_IntentV2
 	Intent isIntentSuggestion_Intent `protobuf_oneof:"intent"`
 	// Human readable description for better understanding an intent like its
@@ -2841,6 +2855,7 @@ type DialogflowAssistAnswer struct {
 	// Result from DetectIntent for one matched intent.
 	//
 	// Types that are assignable to Result:
+	//
 	//	*DialogflowAssistAnswer_QueryResult
 	//	*DialogflowAssistAnswer_IntentSuggestion
 	Result isDialogflowAssistAnswer_Result `protobuf_oneof:"result"`
@@ -2943,6 +2958,7 @@ type SuggestionResult struct {
 	// Different type of suggestion response.
 	//
 	// Types that are assignable to SuggestionResponse:
+	//
 	//	*SuggestionResult_Error
 	//	*SuggestionResult_SuggestArticlesResponse
 	//	*SuggestionResult_SuggestFaqAnswersResponse
@@ -4059,6 +4075,7 @@ type ResponseMessage struct {
 	// Required. The rich response message.
 	//
 	// Types that are assignable to Message:
+	//
 	//	*ResponseMessage_Text_
 	//	*ResponseMessage_Payload
 	//	*ResponseMessage_LiveAgentHandoff_
@@ -4598,6 +4615,7 @@ type ResponseMessage_TelephonyTransferCall struct {
 	// Endpoint to transfer the call to.
 	//
 	// Types that are assignable to Endpoint:
+	//
 	//	*ResponseMessage_TelephonyTransferCall_PhoneNumber
 	//	*ResponseMessage_TelephonyTransferCall_SipUri
 	Endpoint isResponseMessage_TelephonyTransferCall_Endpoint `protobuf_oneof:"endpoint"`
@@ -4686,6 +4704,7 @@ type ResponseMessage_MixedAudio_Segment struct {
 	// Content of the segment.
 	//
 	// Types that are assignable to Content:
+	//
 	//	*ResponseMessage_MixedAudio_Segment_Audio
 	//	*ResponseMessage_MixedAudio_Segment_Uri
 	Content isResponseMessage_MixedAudio_Segment_Content `protobuf_oneof:"content"`

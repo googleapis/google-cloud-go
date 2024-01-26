@@ -56,18 +56,21 @@ type DiscoverConnectionProfileRequest struct {
 	// The connection profile on which to run discover.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*DiscoverConnectionProfileRequest_ConnectionProfile
 	//	*DiscoverConnectionProfileRequest_ConnectionProfileName
 	Target isDiscoverConnectionProfileRequest_Target `protobuf_oneof:"target"`
 	// The depth of the retrieved hierarchy of data objects.
 	//
 	// Types that are assignable to Hierarchy:
+	//
 	//	*DiscoverConnectionProfileRequest_FullHierarchy
 	//	*DiscoverConnectionProfileRequest_HierarchyDepth
 	Hierarchy isDiscoverConnectionProfileRequest_Hierarchy `protobuf_oneof:"hierarchy"`
 	// The data object to populate with child data objects and metadata.
 	//
 	// Types that are assignable to DataObject:
+	//
 	//	*DiscoverConnectionProfileRequest_OracleRdbms
 	//	*DiscoverConnectionProfileRequest_MysqlRdbms
 	//	*DiscoverConnectionProfileRequest_PostgresqlRdbms
@@ -260,6 +263,7 @@ type DiscoverConnectionProfileResponse struct {
 	// The data object that has been enriched by the discover API call.
 	//
 	// Types that are assignable to DataObject:
+	//
 	//	*DiscoverConnectionProfileResponse_OracleRdbms
 	//	*DiscoverConnectionProfileResponse_MysqlRdbms
 	//	*DiscoverConnectionProfileResponse_PostgresqlRdbms

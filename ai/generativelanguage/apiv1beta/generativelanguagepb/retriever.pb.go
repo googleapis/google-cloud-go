@@ -189,7 +189,7 @@ type Corpus struct {
 	// Example: `corpora/my-awesome-corpora-123a456b789c`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The human-readable display name for the `Corpus`. The display
-	// name must be no more than 128 characters in length, including spaces.
+	// name must be no more than 512 characters in length, including spaces.
 	// Example: "Docs on Semantic Retriever"
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Output only. The Timestamp of when the `Corpus` was created.
@@ -408,6 +408,7 @@ type CustomMetadata struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Value:
+	//
 	//	*CustomMetadata_StringValue
 	//	*CustomMetadata_StringListValue
 	//	*CustomMetadata_NumericValue
@@ -587,6 +588,7 @@ type Condition struct {
 	// set.
 	//
 	// Types that are assignable to Value:
+	//
 	//	*Condition_StringValue
 	//	*Condition_NumericValue
 	Value isCondition_Value `protobuf_oneof:"value"`
@@ -783,6 +785,7 @@ type ChunkData struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Data:
+	//
 	//	*ChunkData_StringValue
 	Data isChunkData_Data `protobuf_oneof:"data"`
 }

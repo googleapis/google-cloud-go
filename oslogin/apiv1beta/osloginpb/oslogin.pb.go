@@ -688,6 +688,7 @@ type SecurityKey struct {
 	// The FIDO protocol type used to register this credential.
 	//
 	// Types that are assignable to ProtocolType:
+	//
 	//	*SecurityKey_UniversalTwoFactor
 	//	*SecurityKey_WebAuthn
 	ProtocolType isSecurityKey_ProtocolType `protobuf_oneof:"protocol_type"`

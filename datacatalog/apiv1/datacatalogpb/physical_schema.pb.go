@@ -43,6 +43,7 @@ type PhysicalSchema struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Schema:
+	//
 	//	*PhysicalSchema_Avro
 	//	*PhysicalSchema_Thrift
 	//	*PhysicalSchema_Protobuf

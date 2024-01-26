@@ -43,6 +43,7 @@ type UserActionReference struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Reference:
+	//
 	//	*UserActionReference_Operation
 	//	*UserActionReference_DataLabelingJob
 	Reference isUserActionReference_Reference `protobuf_oneof:"reference"`

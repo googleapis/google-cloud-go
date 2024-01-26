@@ -119,10 +119,10 @@ type PlanNode struct {
 	// For example, a Parameter Reference node could have the following
 	// information in its metadata:
 	//
-	//     {
-	//       "parameter_reference": "param1",
-	//       "parameter_type": "array"
-	//     }
+	//	{
+	//	  "parameter_reference": "param1",
+	//	  "parameter_type": "array"
+	//	}
 	Metadata *structpb.Struct `protobuf:"bytes,6,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// The execution statistics associated with the node, contained in a group of
 	// key-value pairs. Only present if the plan was returned as a result of a

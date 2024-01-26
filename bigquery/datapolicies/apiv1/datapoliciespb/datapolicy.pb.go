@@ -113,7 +113,7 @@ const (
 	// The default masking values for each type listed as below:
 	//
 	// * STRING: ""
-	// * BYTES: b''
+	// * BYTES: b”
 	// * INTEGER: 0
 	// * FLOAT: 0.0
 	// * NUMERIC: 0
@@ -659,11 +659,13 @@ type DataPolicy struct {
 	// Label that is bound to this data policy.
 	//
 	// Types that are assignable to MatchingLabel:
+	//
 	//	*DataPolicy_PolicyTag
 	MatchingLabel isDataPolicy_MatchingLabel `protobuf_oneof:"matching_label"`
 	// The policy that is bound to this data policy.
 	//
 	// Types that are assignable to Policy:
+	//
 	//	*DataPolicy_DataMaskingPolicy
 	Policy isDataPolicy_Policy `protobuf_oneof:"policy"`
 	// Output only. Resource name of this data policy, in the format of
@@ -790,6 +792,7 @@ type DataMaskingPolicy struct {
 	// A masking expression to bind to the data masking rule.
 	//
 	// Types that are assignable to MaskingExpression:
+	//
 	//	*DataMaskingPolicy_PredefinedExpression_
 	//	*DataMaskingPolicy_Routine
 	MaskingExpression isDataMaskingPolicy_MaskingExpression `protobuf_oneof:"masking_expression"`

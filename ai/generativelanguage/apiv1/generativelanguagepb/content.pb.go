@@ -115,6 +115,7 @@ type Part struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Data:
+	//
 	//	*Part_Text
 	//	*Part_InlineData
 	Data isPart_Data `protobuf_oneof:"data"`

@@ -1081,12 +1081,14 @@ type DataScan struct {
 	// cannot be changed to data_profile_spec.
 	//
 	// Types that are assignable to Spec:
+	//
 	//	*DataScan_DataQualitySpec
 	//	*DataScan_DataProfileSpec
 	Spec isDataScan_Spec `protobuf_oneof:"spec"`
 	// The result of the data scan.
 	//
 	// Types that are assignable to Result:
+	//
 	//	*DataScan_DataQualityResult
 	//	*DataScan_DataProfileResult
 	Result isDataScan_Result `protobuf_oneof:"result"`
@@ -1312,12 +1314,14 @@ type DataScanJob struct {
 	// Data Scan related setting.
 	//
 	// Types that are assignable to Spec:
+	//
 	//	*DataScanJob_DataQualitySpec
 	//	*DataScanJob_DataProfileSpec
 	Spec isDataScanJob_Spec `protobuf_oneof:"spec"`
 	// The result of the data scan.
 	//
 	// Types that are assignable to Result:
+	//
 	//	*DataScanJob_DataQualityResult
 	//	*DataScanJob_DataProfileResult
 	Result isDataScanJob_Result `protobuf_oneof:"result"`
@@ -1500,6 +1504,7 @@ type DataScan_ExecutionSpec struct {
 	// table.
 	//
 	// Types that are assignable to Incremental:
+	//
 	//	*DataScan_ExecutionSpec_Field
 	Incremental isDataScan_ExecutionSpec_Incremental `protobuf_oneof:"incremental"`
 }

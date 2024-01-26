@@ -1894,7 +1894,8 @@ type RouterStatus_BgpPeerStatus struct {
 	State string `protobuf:"bytes,5,opt,name=state,proto3" json:"state,omitempty"`
 	// Time this session has been up.
 	// Format:
-	//  14 years, 51 weeks, 6 days, 23 hours, 59 minutes, 59 seconds
+	//
+	//	14 years, 51 weeks, 6 days, 23 hours, 59 minutes, 59 seconds
 	Uptime string `protobuf:"bytes,6,opt,name=uptime,proto3" json:"uptime,omitempty"`
 	// Time this session has been up, in seconds.
 	UptimeSeconds int64 `protobuf:"varint,7,opt,name=uptime_seconds,json=uptimeSeconds,proto3" json:"uptime_seconds,omitempty"`

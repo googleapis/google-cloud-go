@@ -54,6 +54,7 @@ type TrainCustomModelRequest struct {
 	// Model training input.
 	//
 	// Types that are assignable to TrainingInput:
+	//
 	//	*TrainCustomModelRequest_GcsTrainingInput_
 	TrainingInput isTrainCustomModelRequest_TrainingInput `protobuf_oneof:"training_input"`
 	// Required. The resource name of the Data Store, such as
@@ -62,7 +63,7 @@ type TrainCustomModelRequest struct {
 	DataStore string `protobuf:"bytes,1,opt,name=data_store,json=dataStore,proto3" json:"data_store,omitempty"`
 	// Model to be trained. Supported values are:
 	//
-	//  * **search-tuning**: Fine tuning the search system based on data provided.
+	//   - **search-tuning**: Fine tuning the search system based on data provided.
 	ModelType string `protobuf:"bytes,3,opt,name=model_type,json=modelType,proto3" json:"model_type,omitempty"`
 	// The desired location of errors incurred during the data ingestion and
 	// training.
@@ -161,10 +162,10 @@ type TrainCustomModelResponse struct {
 	ErrorConfig *ImportErrorConfig `protobuf:"bytes,2,opt,name=error_config,json=errorConfig,proto3" json:"error_config,omitempty"`
 	// The trained model status. Possible values are:
 	//
-	//  * **bad-data**: The training data quality is bad.
-	//  * **no-improvement**: Tuning didn't improve performance. Won't deploy.
-	//  * **in-progress**: Model training is in progress.
-	//  * **ready**: The model is ready for serving.
+	//   - **bad-data**: The training data quality is bad.
+	//   - **no-improvement**: Tuning didn't improve performance. Won't deploy.
+	//   - **in-progress**: Model training is in progress.
+	//   - **ready**: The model is ready for serving.
 	ModelStatus string `protobuf:"bytes,3,opt,name=model_status,json=modelStatus,proto3" json:"model_status,omitempty"`
 }
 
@@ -290,24 +291,24 @@ type TrainCustomModelRequest_GcsTrainingInput struct {
 	// The gcs corpus data which could be associated in train data.
 	// The data path format is gs://<bucket_to_data>/<jsonl_file_name>.
 	// A newline delimited jsonl/ndjson file.
-	//  * For search-tuning model, each line should have the _id, title
-	//  and text. Example: {"_id": "doc1", title: "relevant doc", "text":
-	//  "relevant text"}
+	//   - For search-tuning model, each line should have the _id, title
+	//     and text. Example: {"_id": "doc1", title: "relevant doc", "text":
+	//     "relevant text"}
 	CorpusDataPath string `protobuf:"bytes,1,opt,name=corpus_data_path,json=corpusDataPath,proto3" json:"corpus_data_path,omitempty"`
 	// The gcs query data which could be associated in train data.
 	// The data path format is gs://<bucket_to_data>/<jsonl_file_name>.
 	// A newline delimited jsonl/ndjson file.
-	//  * For search-tuning model, each line should have the _id
-	//  and text. Example: {"_id": "query1",  "text": "example query"}
+	//   - For search-tuning model, each line should have the _id
+	//     and text. Example: {"_id": "query1",  "text": "example query"}
 	QueryDataPath string `protobuf:"bytes,2,opt,name=query_data_path,json=queryDataPath,proto3" json:"query_data_path,omitempty"`
 	// Gcs training data path whose format should be
 	// gs://<bucket_to_data>/<tsv_file_name>. The file should be in tsv format.
 	// Each line should have the doc_id and query_id and score (number).
-	//  * For search-tuning model, it should have the query-id corpus-id
-	//  score as tsv file header. The score should be a number in [0, inf+). The
-	//  larger the number is, the more relevant the pair is. Example:
-	//  query-id\tcorpus-id\tscore
-	//  query1\tdoc1\t1
+	//   - For search-tuning model, it should have the query-id corpus-id
+	//     score as tsv file header. The score should be a number in [0, inf+). The
+	//     larger the number is, the more relevant the pair is. Example:
+	//     query-id\tcorpus-id\tscore
+	//     query1\tdoc1\t1
 	TrainDataPath string `protobuf:"bytes,3,opt,name=train_data_path,json=trainDataPath,proto3" json:"train_data_path,omitempty"`
 	// Gcs test data. Same format as train_data_path. If not provided, a
 	// random 80/20 train/test split will be performed on train_data_path.

@@ -171,6 +171,7 @@ type Repository struct {
 	// Repository-specific configurations.
 	//
 	// Types that are assignable to FormatConfig:
+	//
 	//	*Repository_MavenConfig
 	FormatConfig isRepository_FormatConfig `protobuf_oneof:"format_config"`
 	// The name of the repository, for example:

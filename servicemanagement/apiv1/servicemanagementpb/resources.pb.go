@@ -769,6 +769,7 @@ type Rollout struct {
 	// and how they should be used at runtime.
 	//
 	// Types that are assignable to Strategy:
+	//
 	//	*Rollout_TrafficPercentStrategy_
 	//	*Rollout_DeleteServiceStrategy_
 	Strategy isRollout_Strategy `protobuf_oneof:"strategy"`

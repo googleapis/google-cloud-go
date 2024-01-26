@@ -359,6 +359,7 @@ type TerminalPointId struct {
 	// Deprecated.
 	//
 	// Types that are assignable to Id:
+	//
 	//	*TerminalPointId_PlaceId
 	//	*TerminalPointId_GeneratedId
 	Id isTerminalPointId_Id `protobuf_oneof:"Id"`
@@ -689,6 +690,7 @@ type VehicleAttribute struct {
 	// The attribute's value, can be in string, bool, or double type.
 	//
 	// Types that are assignable to VehicleAttributeValue:
+	//
 	//	*VehicleAttribute_StringValue
 	//	*VehicleAttribute_BoolValue
 	//	*VehicleAttribute_NumberValue

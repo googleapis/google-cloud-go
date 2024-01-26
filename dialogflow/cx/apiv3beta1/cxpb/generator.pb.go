@@ -533,11 +533,11 @@ type DeleteGeneratorRequest struct {
 	// This field has no effect for generators not being used.
 	// For generators that are used by pages/flows/transition route groups:
 	//
-	// *  If `force` is set to false, an error will be returned with message
-	//    indicating the referenced resources.
-	// *  If `force` is set to true, Dialogflow will remove the generator, as well
-	//    as any references to the generator (i.e.
-	//    [Generator][Fulfillment.generator]) in fulfillments.
+	//   - If `force` is set to false, an error will be returned with message
+	//     indicating the referenced resources.
+	//   - If `force` is set to true, Dialogflow will remove the generator, as well
+	//     as any references to the generator (i.e.
+	//     [Generator][Fulfillment.generator]) in fulfillments.
 	Force bool `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"`
 }
 

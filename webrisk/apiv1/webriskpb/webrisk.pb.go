@@ -1887,6 +1887,7 @@ type ThreatInfo_Confidence struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Value:
+	//
 	//	*ThreatInfo_Confidence_Score
 	//	*ThreatInfo_Confidence_Level
 	Value isThreatInfo_Confidence_Value `protobuf_oneof:"value"`

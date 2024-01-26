@@ -264,6 +264,7 @@ type Interval struct {
 	// Otherwise, an `INVALID_ARGUMENT` error is returned.
 	//
 	// Types that are assignable to Min:
+	//
 	//	*Interval_Minimum
 	//	*Interval_ExclusiveMinimum
 	Min isInterval_Min `protobuf_oneof:"min"`
@@ -274,6 +275,7 @@ type Interval struct {
 	// Otherwise, an `INVALID_ARGUMENT` error is returned.
 	//
 	// Types that are assignable to Max:
+	//
 	//	*Interval_Maximum
 	//	*Interval_ExclusiveMaximum
 	Max isInterval_Max `protobuf_oneof:"max"`

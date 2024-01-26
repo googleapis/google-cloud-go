@@ -177,6 +177,7 @@ type Connection struct {
 	// Configuration for the connection depending on the type of provider.
 	//
 	// Types that are assignable to ConnectionConfig:
+	//
 	//	*Connection_GithubConfig
 	//	*Connection_GithubEnterpriseConfig
 	//	*Connection_GitlabConfig

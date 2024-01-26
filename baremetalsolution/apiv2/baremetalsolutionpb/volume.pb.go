@@ -801,7 +801,8 @@ type UpdateVolumeRequest struct {
 	Volume *Volume `protobuf:"bytes,1,opt,name=volume,proto3" json:"volume,omitempty"`
 	// The list of fields to update.
 	// The only currently supported fields are:
-	//   'labels'
+	//
+	//	'labels'
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

@@ -385,6 +385,7 @@ type DataAttributeBinding struct {
 	// the query to match resources and associate attributes.
 	//
 	// Types that are assignable to ResourceReference:
+	//
 	//	*DataAttributeBinding_Resource
 	ResourceReference isDataAttributeBinding_ResourceReference `protobuf_oneof:"resource_reference"`
 	// Optional. List of attributes to be associated with the resource, provided

@@ -1748,7 +1748,7 @@ type ImportProductSetsGcsSource struct {
 	// The `labels` column (optional) is a line containing a list of
 	// comma-separated key-value pairs, in the following format:
 	//
-	//     "key_1=value_1,key_2=value_2,...,key_n=value_n"
+	//	"key_1=value_1,key_2=value_2,...,key_n=value_n"
 	//
 	// The `bounding-poly` column (optional) identifies one region of
 	// interest from the image in the same manner as `CreateReferenceImage`. If
@@ -1818,6 +1818,7 @@ type ImportProductSetsInputConfig struct {
 	// The source of the input.
 	//
 	// Types that are assignable to Source:
+	//
 	//	*ImportProductSetsInputConfig_GcsSource
 	Source isImportProductSetsInputConfig_Source `protobuf_oneof:"source"`
 }
@@ -2138,6 +2139,7 @@ type PurgeProductsRequest struct {
 	// The Products to delete.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*PurgeProductsRequest_ProductSetPurgeConfig
 	//	*PurgeProductsRequest_DeleteOrphanProducts
 	Target isPurgeProductsRequest_Target `protobuf_oneof:"target"`
@@ -3456,15 +3458,15 @@ type ProductSearchClient interface {
 	//
 	// Possible errors:
 	//
-	// * Returns INVALID_ARGUMENT if display_name is missing, or is longer than
-	//   4096 characters.
+	//   - Returns INVALID_ARGUMENT if display_name is missing, or is longer than
+	//     4096 characters.
 	CreateProductSet(ctx context.Context, in *CreateProductSetRequest, opts ...grpc.CallOption) (*ProductSet, error)
 	// Lists ProductSets in an unspecified order.
 	//
 	// Possible errors:
 	//
-	// * Returns INVALID_ARGUMENT if page_size is greater than 100, or less
-	//   than 1.
+	//   - Returns INVALID_ARGUMENT if page_size is greater than 100, or less
+	//     than 1.
 	ListProductSets(ctx context.Context, in *ListProductSetsRequest, opts ...grpc.CallOption) (*ListProductSetsResponse, error)
 	// Gets information associated with a ProductSet.
 	//
@@ -3477,9 +3479,9 @@ type ProductSearchClient interface {
 	//
 	// Possible errors:
 	//
-	// * Returns NOT_FOUND if the ProductSet does not exist.
-	// * Returns INVALID_ARGUMENT if display_name is present in update_mask but
-	//   missing from the request or longer than 4096 characters.
+	//   - Returns NOT_FOUND if the ProductSet does not exist.
+	//   - Returns INVALID_ARGUMENT if display_name is present in update_mask but
+	//     missing from the request or longer than 4096 characters.
 	UpdateProductSet(ctx context.Context, in *UpdateProductSetRequest, opts ...grpc.CallOption) (*ProductSet, error)
 	// Permanently deletes a ProductSet. Products and ReferenceImages in the
 	// ProductSet are not deleted.
@@ -3490,10 +3492,10 @@ type ProductSearchClient interface {
 	//
 	// Possible errors:
 	//
-	// * Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
-	//   characters.
-	// * Returns INVALID_ARGUMENT if description is longer than 4096 characters.
-	// * Returns INVALID_ARGUMENT if product_category is missing or invalid.
+	//   - Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
+	//     characters.
+	//   - Returns INVALID_ARGUMENT if description is longer than 4096 characters.
+	//   - Returns INVALID_ARGUMENT if product_category is missing or invalid.
 	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*Product, error)
 	// Lists products in an unspecified order.
 	//
@@ -3516,12 +3518,12 @@ type ProductSearchClient interface {
 	//
 	// Possible errors:
 	//
-	// * Returns NOT_FOUND if the Product does not exist.
-	// * Returns INVALID_ARGUMENT if display_name is present in update_mask but is
-	//   missing from the request or longer than 4096 characters.
-	// * Returns INVALID_ARGUMENT if description is present in update_mask but is
-	//   longer than 4096 characters.
-	// * Returns INVALID_ARGUMENT if product_category is present in update_mask.
+	//   - Returns NOT_FOUND if the Product does not exist.
+	//   - Returns INVALID_ARGUMENT if display_name is present in update_mask but is
+	//     missing from the request or longer than 4096 characters.
+	//   - Returns INVALID_ARGUMENT if description is present in update_mask but is
+	//     longer than 4096 characters.
+	//   - Returns INVALID_ARGUMENT if product_category is present in update_mask.
 	UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*Product, error)
 	// Permanently deletes a product and its reference images.
 	//
@@ -3542,12 +3544,12 @@ type ProductSearchClient interface {
 	//
 	// Possible errors:
 	//
-	// * Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
-	//   characters.
-	// * Returns INVALID_ARGUMENT if the product does not exist.
-	// * Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
-	//   compatible with the parent product's product_category is detected.
-	// * Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
+	//   - Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
+	//     characters.
+	//   - Returns INVALID_ARGUMENT if the product does not exist.
+	//   - Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
+	//     compatible with the parent product's product_category is detected.
+	//   - Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
 	CreateReferenceImage(ctx context.Context, in *CreateReferenceImageRequest, opts ...grpc.CallOption) (*ReferenceImage, error)
 	// Permanently deletes a reference image.
 	//
@@ -3561,9 +3563,9 @@ type ProductSearchClient interface {
 	//
 	// Possible errors:
 	//
-	// * Returns NOT_FOUND if the parent product does not exist.
-	// * Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
-	//   than 1.
+	//   - Returns NOT_FOUND if the parent product does not exist.
+	//   - Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
+	//     than 1.
 	ListReferenceImages(ctx context.Context, in *ListReferenceImagesRequest, opts ...grpc.CallOption) (*ListReferenceImagesResponse, error)
 	// Gets information associated with a ReferenceImage.
 	//
@@ -3814,15 +3816,15 @@ type ProductSearchServer interface {
 	//
 	// Possible errors:
 	//
-	// * Returns INVALID_ARGUMENT if display_name is missing, or is longer than
-	//   4096 characters.
+	//   - Returns INVALID_ARGUMENT if display_name is missing, or is longer than
+	//     4096 characters.
 	CreateProductSet(context.Context, *CreateProductSetRequest) (*ProductSet, error)
 	// Lists ProductSets in an unspecified order.
 	//
 	// Possible errors:
 	//
-	// * Returns INVALID_ARGUMENT if page_size is greater than 100, or less
-	//   than 1.
+	//   - Returns INVALID_ARGUMENT if page_size is greater than 100, or less
+	//     than 1.
 	ListProductSets(context.Context, *ListProductSetsRequest) (*ListProductSetsResponse, error)
 	// Gets information associated with a ProductSet.
 	//
@@ -3835,9 +3837,9 @@ type ProductSearchServer interface {
 	//
 	// Possible errors:
 	//
-	// * Returns NOT_FOUND if the ProductSet does not exist.
-	// * Returns INVALID_ARGUMENT if display_name is present in update_mask but
-	//   missing from the request or longer than 4096 characters.
+	//   - Returns NOT_FOUND if the ProductSet does not exist.
+	//   - Returns INVALID_ARGUMENT if display_name is present in update_mask but
+	//     missing from the request or longer than 4096 characters.
 	UpdateProductSet(context.Context, *UpdateProductSetRequest) (*ProductSet, error)
 	// Permanently deletes a ProductSet. Products and ReferenceImages in the
 	// ProductSet are not deleted.
@@ -3848,10 +3850,10 @@ type ProductSearchServer interface {
 	//
 	// Possible errors:
 	//
-	// * Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
-	//   characters.
-	// * Returns INVALID_ARGUMENT if description is longer than 4096 characters.
-	// * Returns INVALID_ARGUMENT if product_category is missing or invalid.
+	//   - Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
+	//     characters.
+	//   - Returns INVALID_ARGUMENT if description is longer than 4096 characters.
+	//   - Returns INVALID_ARGUMENT if product_category is missing or invalid.
 	CreateProduct(context.Context, *CreateProductRequest) (*Product, error)
 	// Lists products in an unspecified order.
 	//
@@ -3874,12 +3876,12 @@ type ProductSearchServer interface {
 	//
 	// Possible errors:
 	//
-	// * Returns NOT_FOUND if the Product does not exist.
-	// * Returns INVALID_ARGUMENT if display_name is present in update_mask but is
-	//   missing from the request or longer than 4096 characters.
-	// * Returns INVALID_ARGUMENT if description is present in update_mask but is
-	//   longer than 4096 characters.
-	// * Returns INVALID_ARGUMENT if product_category is present in update_mask.
+	//   - Returns NOT_FOUND if the Product does not exist.
+	//   - Returns INVALID_ARGUMENT if display_name is present in update_mask but is
+	//     missing from the request or longer than 4096 characters.
+	//   - Returns INVALID_ARGUMENT if description is present in update_mask but is
+	//     longer than 4096 characters.
+	//   - Returns INVALID_ARGUMENT if product_category is present in update_mask.
 	UpdateProduct(context.Context, *UpdateProductRequest) (*Product, error)
 	// Permanently deletes a product and its reference images.
 	//
@@ -3900,12 +3902,12 @@ type ProductSearchServer interface {
 	//
 	// Possible errors:
 	//
-	// * Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
-	//   characters.
-	// * Returns INVALID_ARGUMENT if the product does not exist.
-	// * Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
-	//   compatible with the parent product's product_category is detected.
-	// * Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
+	//   - Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
+	//     characters.
+	//   - Returns INVALID_ARGUMENT if the product does not exist.
+	//   - Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
+	//     compatible with the parent product's product_category is detected.
+	//   - Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
 	CreateReferenceImage(context.Context, *CreateReferenceImageRequest) (*ReferenceImage, error)
 	// Permanently deletes a reference image.
 	//
@@ -3919,9 +3921,9 @@ type ProductSearchServer interface {
 	//
 	// Possible errors:
 	//
-	// * Returns NOT_FOUND if the parent product does not exist.
-	// * Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
-	//   than 1.
+	//   - Returns NOT_FOUND if the parent product does not exist.
+	//   - Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
+	//     than 1.
 	ListReferenceImages(context.Context, *ListReferenceImagesRequest) (*ListReferenceImagesResponse, error)
 	// Gets information associated with a ReferenceImage.
 	//

@@ -2503,6 +2503,7 @@ type GenerateAccessTokenRequest struct {
 	// Desired expiration or lifetime of the access token.
 	//
 	// Types that are assignable to Expiration:
+	//
 	//	*GenerateAccessTokenRequest_ExpireTime
 	//	*GenerateAccessTokenRequest_Ttl
 	Expiration isGenerateAccessTokenRequest_Expiration `protobuf_oneof:"expiration"`
@@ -2854,6 +2855,7 @@ type WorkstationConfig_Host struct {
 	// Type of host that will be used for the workstation's runtime.
 	//
 	// Types that are assignable to Config:
+	//
 	//	*WorkstationConfig_Host_GceInstance_
 	Config isWorkstationConfig_Host_Config `protobuf_oneof:"config"`
 }
@@ -2924,6 +2926,7 @@ type WorkstationConfig_PersistentDirectory struct {
 	// How a persistent directory should be implemented.
 	//
 	// Types that are assignable to DirectoryType:
+	//
 	//	*WorkstationConfig_PersistentDirectory_GcePd
 	DirectoryType isWorkstationConfig_PersistentDirectory_DirectoryType `protobuf_oneof:"directory_type"`
 	// Optional. Location of this directory in the running workstation.

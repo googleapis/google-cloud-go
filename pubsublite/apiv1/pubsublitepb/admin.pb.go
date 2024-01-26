@@ -1076,6 +1076,7 @@ type SeekSubscriptionRequest struct {
 	// The target to seek to. Must be set.
 	//
 	// Types that are assignable to Target:
+	//
 	//	*SeekSubscriptionRequest_NamedTarget_
 	//	*SeekSubscriptionRequest_TimeTarget
 	Target isSeekSubscriptionRequest_Target `protobuf_oneof:"target"`
