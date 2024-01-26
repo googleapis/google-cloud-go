@@ -787,3 +787,45 @@ func TestExactlyOnceDelivery_ReceiptModackError(t *testing.T) {
 		t.Fatal("expected message to not have been delivered when exactly once enabled")
 	})
 }
+
+func TestSubscribeMessageExpirationFlowControl(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic: topic,
+	}
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatalf("create sub err: %v", err)
+	}
+
+	s.ReceiveSettings.NumGoroutines = 1
+	s.ReceiveSettings.MaxOutstandingMessages = 1
+	s.ReceiveSettings.MaxExtension = 5 * time.Second
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("exactly-once-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	count := 0
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		if count == 0 {
+			// Do nothing, let the message expire.
+			count++
+		} else {
+			msg.Ack()
+			cancel()
+		}
+	})
+	if err != nil {
+		t.Fatalf("s.Receive err: %v", err)
+	}
+}
