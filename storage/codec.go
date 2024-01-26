@@ -1,4 +1,4 @@
-package codec
+package storage
 
 import (
 	"fmt"
@@ -6,11 +6,8 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
-// Custom codec for readObject to reduce data copies during download.
-// Replaces standard implementation at https://pkg.go.dev/google.golang.org/grpc/encoding/proto
-
-// Name is the name registered for the proto compressor.
-const Name = "proto"
+const Name = "" // works
+// const Name = "codec" // does not work
 
 // func init() {
 // 	encoding.RegisterCodec(ReadObjectCodec{})
@@ -28,11 +25,17 @@ func (ReadObjectCodec) Marshal(v any) ([]byte, error) {
 }
 
 func (ReadObjectCodec) Unmarshal(data []byte, v any) error {
+	fmt.Println("helloworld")
 	vv, ok := v.(proto.Message)
 	if !ok {
 		return fmt.Errorf("failed to unmarshal, message is %T, want proto.Message", v)
 	}
-	return proto.Unmarshal(data, vv)
+
+	if err := proto.Unmarshal(data, vv); err != nil {
+		return fmt.Errorf("failed to unmarshal: %v\n", err)
+	}
+
+	return nil
 }
 
 func (ReadObjectCodec) Name() string {
