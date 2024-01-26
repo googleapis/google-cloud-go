@@ -169,6 +169,14 @@ func initIntegrationTest() func() {
 		sOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))}
 		ptmOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, datacatalog.DefaultAuthScopes()...))}
 		connOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, connection.DefaultAuthScopes()...))}
+		// Check to see if we should add a universe option based on the test credentials
+		if uni, err := testutil.UniverseFromEnv(ctx, Scope); err == nil && uni != "googleapis.com" {
+			log.Printf("UNIVERSE: %q", uni)
+			bqOpts = append(bqOpts, option.WithUniverseDomain(uni))
+			sOpts = append(sOpts, option.WithUniverseDomain(uni))
+			ptmOpts = append(ptmOpts, option.WithUniverseDomain(uni))
+			connOpts = append(connOpts, option.WithUniverseDomain(uni))
+		}
 		cleanup := func() {}
 		now := time.Now().UTC()
 		if *record {
@@ -324,8 +332,13 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 	if testCreds == nil {
 		t.Skip("test credentials not present, skipping")
 	}
-
-	if _, err := NewClient(ctx, DetectProjectID, option.WithCredentials(testCreds)); err != nil {
+	opts := []option.ClientOption{
+		option.WithCredentials(testCreds),
+	}
+	if uni, err := testutil.UniverseFromEnv(ctx, Scope); err == nil && uni != "googleapis.com" {
+		opts = append(opts, option.WithUniverseDomain(uni))
+	}
+	if _, err := NewClient(ctx, DetectProjectID, opts...); err != nil {
 		t.Errorf("test NewClient: %v", err)
 	}
 
