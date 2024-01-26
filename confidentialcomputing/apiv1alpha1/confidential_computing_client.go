@@ -54,7 +54,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("confidentialcomputing.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("confidentialcomputing.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("confidentialcomputing.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://confidentialcomputing.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -303,7 +305,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://confidentialcomputing.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://confidentialcomputing.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://confidentialcomputing.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://confidentialcomputing.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

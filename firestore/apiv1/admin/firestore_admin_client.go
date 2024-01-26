@@ -70,7 +70,9 @@ type FirestoreAdminCallOptions struct {
 func defaultFirestoreAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("firestore.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("firestore.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("firestore.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://firestore.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -736,7 +738,9 @@ func NewFirestoreAdminRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultFirestoreAdminRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://firestore.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://firestore.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://firestore.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://firestore.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

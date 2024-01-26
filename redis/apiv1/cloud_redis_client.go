@@ -69,7 +69,9 @@ type CloudRedisCallOptions struct {
 func defaultCloudRedisGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("redis.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("redis.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("redis.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://redis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -617,7 +619,9 @@ func NewCloudRedisRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultCloudRedisRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://redis.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://redis.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://redis.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://redis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
