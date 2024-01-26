@@ -1387,6 +1387,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
+					iter.eoMu.RLock()
+					msgAckHandler(msg, iter.enableExactlyOnceDelivery)
+					iter.eoMu.RUnlock()
+
 					wg.Add(1)
 					// Make sure the subscription has ordering enabled before adding to scheduler.
 					var key string

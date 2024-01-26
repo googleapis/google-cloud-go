@@ -807,24 +807,32 @@ func TestSubscribeMessageExpirationFlowControl(t *testing.T) {
 
 	s.ReceiveSettings.NumGoroutines = 1
 	s.ReceiveSettings.MaxOutstandingMessages = 1
-	s.ReceiveSettings.MaxExtension = 5 * time.Second
+	s.ReceiveSettings.MaxExtension = 10 * time.Second
+	s.ReceiveSettings.MaxExtensionPeriod = 10 * time.Second
 	r := topic.Publish(ctx, &Message{
-		Data: []byte("exactly-once-message"),
+		Data: []byte("redelivered-message"),
 	})
 	if _, err := r.Get(ctx); err != nil {
 		t.Fatalf("failed to publish message: %v", err)
 	}
 
-	count := 0
+	deliveryCount := 0
+	ctx, cancel = context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
-		if count == 0 {
-			// Do nothing, let the message expire.
-			count++
-		} else {
+		// Only acknowledge the message on the 2nd invocation of the callback (2nd delivery).
+		if deliveryCount == 1 {
 			msg.Ack()
+		}
+		// Otherwise, do nothing and let the message expire.
+		deliveryCount++
+		if deliveryCount == 2 {
 			cancel()
 		}
 	})
+	if deliveryCount != 2 {
+		t.Fatalf("expected 2 iterations of the callback, got %d", deliveryCount)
+	}
 	if err != nil {
 		t.Fatalf("s.Receive err: %v", err)
 	}
