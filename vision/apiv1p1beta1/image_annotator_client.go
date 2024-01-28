@@ -48,7 +48,9 @@ type ImageAnnotatorCallOptions struct {
 func defaultImageAnnotatorGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("vision.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("vision.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("vision.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://vision.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -257,7 +259,9 @@ func NewImageAnnotatorRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultImageAnnotatorRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://vision.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://vision.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://vision.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://vision.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

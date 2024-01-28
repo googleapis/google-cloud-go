@@ -59,7 +59,9 @@ type ModelCallOptions struct {
 func defaultModelGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("generativelanguage.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("generativelanguage.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("generativelanguage.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://generativelanguage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -483,7 +485,9 @@ func NewModelRESTClient(ctx context.Context, opts ...option.ClientOption) (*Mode
 func defaultModelRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://generativelanguage.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://generativelanguage.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://generativelanguage.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://generativelanguage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

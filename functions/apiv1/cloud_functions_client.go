@@ -68,7 +68,9 @@ type CloudFunctionsCallOptions struct {
 func defaultCloudFunctionsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudfunctions.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudfunctions.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudfunctions.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudfunctions.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -559,7 +561,9 @@ func NewCloudFunctionsRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultCloudFunctionsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudfunctions.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudfunctions.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudfunctions.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudfunctions.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

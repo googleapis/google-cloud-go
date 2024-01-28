@@ -84,7 +84,9 @@ type KeyManagementCallOptions struct {
 func defaultKeyManagementGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudkms.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudkms.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudkms.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudkms.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -1241,7 +1243,9 @@ func NewKeyManagementRESTClient(ctx context.Context, opts ...option.ClientOption
 func defaultKeyManagementRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudkms.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudkms.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudkms.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudkms.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

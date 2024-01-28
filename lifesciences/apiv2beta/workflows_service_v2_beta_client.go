@@ -58,7 +58,9 @@ type WorkflowsServiceV2BetaCallOptions struct {
 func defaultWorkflowsServiceV2BetaGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("lifesciences.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("lifesciences.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("lifesciences.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://lifesciences.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -370,7 +372,9 @@ func NewWorkflowsServiceV2BetaRESTClient(ctx context.Context, opts ...option.Cli
 func defaultWorkflowsServiceV2BetaRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://lifesciences.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://lifesciences.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://lifesciences.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://lifesciences.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

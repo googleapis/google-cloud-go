@@ -67,7 +67,9 @@ type InstanceAdminCallOptions struct {
 func defaultInstanceAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("spanner.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("spanner.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("spanner.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -839,7 +841,9 @@ func NewInstanceAdminRESTClient(ctx context.Context, opts ...option.ClientOption
 func defaultInstanceAdminRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://spanner.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://spanner.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://spanner.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

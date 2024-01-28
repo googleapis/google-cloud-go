@@ -75,7 +75,9 @@ type NotebookCallOptions struct {
 func defaultNotebookGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("notebooks.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("notebooks.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("notebooks.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://notebooks.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -656,7 +658,9 @@ func NewNotebookRESTClient(ctx context.Context, opts ...option.ClientOption) (*N
 func defaultNotebookRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://notebooks.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://notebooks.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://notebooks.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://notebooks.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

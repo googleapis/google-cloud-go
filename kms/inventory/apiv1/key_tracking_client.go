@@ -49,7 +49,9 @@ type KeyTrackingCallOptions struct {
 func defaultKeyTrackingGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("kmsinventory.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("kmsinventory.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("kmsinventory.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://kmsinventory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -253,7 +255,9 @@ func NewKeyTrackingRESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultKeyTrackingRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://kmsinventory.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://kmsinventory.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://kmsinventory.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://kmsinventory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

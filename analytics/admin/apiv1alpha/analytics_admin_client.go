@@ -185,7 +185,9 @@ type AnalyticsAdminCallOptions struct {
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("analyticsadmin.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("analyticsadmin.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("analyticsadmin.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://analyticsadmin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -4295,7 +4297,9 @@ func NewAnalyticsAdminRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultAnalyticsAdminRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://analyticsadmin.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://analyticsadmin.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://analyticsadmin.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://analyticsadmin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

@@ -98,7 +98,9 @@ type DataMigrationCallOptions struct {
 func defaultDataMigrationGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("datamigration.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("datamigration.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("datamigration.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://datamigration.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
