@@ -69,7 +69,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("rapidmigrationassessment.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("rapidmigrationassessment.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("rapidmigrationassessment.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://rapidmigrationassessment.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -559,7 +561,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://rapidmigrationassessment.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://rapidmigrationassessment.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://rapidmigrationassessment.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://rapidmigrationassessment.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

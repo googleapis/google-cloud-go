@@ -53,7 +53,9 @@ type FleetRoutingCallOptions struct {
 func defaultFleetRoutingGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudoptimization.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudoptimization.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudoptimization.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudoptimization.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -437,7 +439,9 @@ func NewFleetRoutingRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultFleetRoutingRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudoptimization.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudoptimization.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudoptimization.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudoptimization.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

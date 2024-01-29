@@ -48,7 +48,9 @@ type RoutesCallOptions struct {
 func defaultRoutesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("routes.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("routes.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("routes.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://routes.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -308,7 +310,9 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 func defaultRoutesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://routes.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://routes.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://routes.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://routes.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
