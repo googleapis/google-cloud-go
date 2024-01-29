@@ -15,10 +15,6 @@
 
 # TODO(deklerk): Add integration tests when it's secure to do so. b/64723143
 
-export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
-export GCLOUD_TESTS_GOLANG_PROJECT_ID=dulcet-port-762
-export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
-
 # Fail on any error
 set -eo pipefail
 
@@ -58,7 +54,7 @@ runPresubmitTests() {
   fi
 
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then
-    go test -race -v -timeout 45m ./... 2>&1 |
+    go test -race -v -timeout 15m -short ./... 2>&1 |
       tee sponge_log.log
   else
     go test -race -v -timeout 45m ./... 2>&1 |
