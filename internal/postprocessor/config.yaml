@@ -139,6 +139,7 @@ modules:
   - video
   - videointelligence
   - vision
+  - visionai
   - vmmigration
   - vmwareengine
   - vpcaccess
@@ -897,6 +898,9 @@ service-configs:
     service-config: vision_v1p1beta1.yaml
     import-path: cloud.google.com/go/vision/v2/apiv1p1beta1
     rel-path: /vision/apiv1p1beta1
+  - input-directory: google/cloud/visionai/v1
+    service-config: visionai_v1.yaml
+    import-path: cloud.google.com/go/visionai/apiv1
   - input-directory: google/cloud/vmmigration/v1
     service-config: vmmigration_v1.yaml
     import-path: cloud.google.com/go/vmmigration/apiv1
