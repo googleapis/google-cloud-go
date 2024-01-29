@@ -72,7 +72,9 @@ type TranslationCallOptions struct {
 func defaultTranslationGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("translate.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("translate.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("translate.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://translate.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -603,7 +605,9 @@ func NewTranslationRESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultTranslationRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://translate.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://translate.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://translate.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://translate.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

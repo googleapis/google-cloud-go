@@ -606,6 +606,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateCalculatedMetric_sync",
+      "title": "analyticsadmin CreateCalculatedMetric Sample",
+      "description": "CreateCalculatedMetric creates a CalculatedMetric.",
+      "file": "AnalyticsAdminClient/CreateCalculatedMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCalculatedMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateCalculatedMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateCalculatedMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.CalculatedMetric",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateCalculatedMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCalculatedMetric",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateChannelGroup_sync",
       "title": "analyticsadmin CreateChannelGroup Sample",
       "description": "CreateChannelGroup creates a ChannelGroup.",
@@ -1645,6 +1691,51 @@
         "method": {
           "shortName": "DeleteAdSenseLink",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAdSenseLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteCalculatedMetric_sync",
+      "title": "analyticsadmin DeleteCalculatedMetric Sample",
+      "description": "DeleteCalculatedMetric deletes a CalculatedMetric on a property.",
+      "file": "AnalyticsAdminClient/DeleteCalculatedMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCalculatedMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteCalculatedMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteCalculatedMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteCalculatedMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteCalculatedMetric",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -2734,6 +2825,52 @@
         "method": {
           "shortName": "GetBigQueryLink",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetBigQueryLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetCalculatedMetric_sync",
+      "title": "analyticsadmin GetCalculatedMetric Sample",
+      "description": "GetCalculatedMetric lookup for a single CalculatedMetric.",
+      "file": "AnalyticsAdminClient/GetCalculatedMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCalculatedMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetCalculatedMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetCalculatedMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.CalculatedMetric",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetCalculatedMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetCalculatedMetric",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -3992,6 +4129,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListCalculatedMetrics_sync",
+      "title": "analyticsadmin ListCalculatedMetrics Sample",
+      "description": "ListCalculatedMetrics lists CalculatedMetrics on a property.",
+      "file": "AnalyticsAdminClient/ListCalculatedMetrics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCalculatedMetrics",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListCalculatedMetrics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListCalculatedMetricsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CalculatedMetricIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListCalculatedMetrics",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListCalculatedMetrics",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListChannelGroups_sync",
       "title": "analyticsadmin ListChannelGroups Sample",
       "description": "ListChannelGroups lists ChannelGroups on a property.",
@@ -5172,6 +5355,52 @@
         "method": {
           "shortName": "UpdateAudience",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAudience",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateCalculatedMetric_sync",
+      "title": "analyticsadmin UpdateCalculatedMetric Sample",
+      "description": "UpdateCalculatedMetric updates a CalculatedMetric on a property.",
+      "file": "AnalyticsAdminClient/UpdateCalculatedMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCalculatedMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateCalculatedMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateCalculatedMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.CalculatedMetric",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateCalculatedMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCalculatedMetric",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/pubsub/apiv1",
-    "version": "1.34.0",
+    "version": "1.36.0",
     "language": "GO",
     "apis": [
       {
@@ -519,7 +519,7 @@
     {
       "regionTag": "pubsub_v1_generated_Publisher_UpdateTopic_sync",
       "title": "pubsub UpdateTopic Sample",
-      "description": "UpdateTopic updates an existing topic. Note that certain properties of a\ntopic are not modifiable.",
+      "description": "UpdateTopic updates an existing topic by updating the fields specified in the update\nmask. Note that certain properties of a topic are not modifiable.",
       "file": "PublisherClient/UpdateTopic/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1935,7 +1935,7 @@
     {
       "regionTag": "pubsub_v1_generated_Subscriber_UpdateSnapshot_sync",
       "title": "pubsub UpdateSnapshot Sample",
-      "description": "UpdateSnapshot updates an existing snapshot. Snapshots are used in\n[Seek](https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.",
+      "description": "UpdateSnapshot updates an existing snapshot by updating the fields specified in the update\nmask. Snapshots are used in\n[Seek](https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.",
       "file": "SubscriberClient/UpdateSnapshot/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1981,7 +1981,7 @@
     {
       "regionTag": "pubsub_v1_generated_Subscriber_UpdateSubscription_sync",
       "title": "pubsub UpdateSubscription Sample",
-      "description": "UpdateSubscription updates an existing subscription. Note that certain properties of a\nsubscription, such as its topic, are not modifiable.",
+      "description": "UpdateSubscription updates an existing subscription by updating the fields specified in the\nupdate mask. Note that certain properties of a subscription, such as its\ntopic, are not modifiable.",
       "file": "SubscriberClient/UpdateSubscription/main.go",
       "language": "GO",
       "clientMethod": {

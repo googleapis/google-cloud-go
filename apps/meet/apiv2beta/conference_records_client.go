@@ -60,7 +60,9 @@ type ConferenceRecordsCallOptions struct {
 func defaultConferenceRecordsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("meet.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("meet.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("meet.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://meet.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -608,7 +610,9 @@ func NewConferenceRecordsRESTClient(ctx context.Context, opts ...option.ClientOp
 func defaultConferenceRecordsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://meet.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://meet.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://meet.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://meet.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
