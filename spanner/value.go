@@ -21,7 +21,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"math"
 	"math/big"
@@ -893,7 +892,7 @@ func (n NullProtoMessage) String() string {
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullProtoMessage.
 func (n NullProtoMessage) MarshalJSON() ([]byte, error) {
 	if n.Valid {
-		return json.Marshal(n.ProtoMessageVal)
+		return jsonProvider.Marshal(n.ProtoMessageVal)
 	}
 	return jsonNullBytes, nil
 }
@@ -908,7 +907,7 @@ func (n *NullProtoMessage) UnmarshalJSON(payload []byte) error {
 		n.Valid = false
 		return nil
 	}
-	err := json.Unmarshal(payload, n.ProtoMessageVal)
+	err := jsonProvider.Unmarshal(payload, n.ProtoMessageVal)
 	if err != nil {
 		return fmt.Errorf("payload cannot be converted to a proto message: err: %s", err)
 	}
