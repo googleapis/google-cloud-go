@@ -1,5 +1,68 @@
 # Changes
 
+## [1.9.5](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.4...servicemanagement/v1.9.5) (2023-11-01)
+
+
+### Bug Fixes
+
+* **servicemanagement:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.3...servicemanagement/v1.9.4) (2023-10-26)
+
+
+### Bug Fixes
+
+* **servicemanagement:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.2...servicemanagement/v1.9.3) (2023-10-12)
+
+
+### Bug Fixes
+
+* **servicemanagement:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.1...servicemanagement/v1.9.2) (2023-06-27)
+
+
+### Documentation
+
+* **servicemanagement:** Update docs to existing services ([1da334c](https://github.com/googleapis/google-cloud-go/commit/1da334c0cbeed9cfb8df0551714721284d164d60))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.0...servicemanagement/v1.9.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **servicemanagement:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.8.1...servicemanagement/v1.9.0) (2023-05-30)
+
+
+### Features
+
+* **servicemanagement:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.8.0...servicemanagement/v1.8.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **servicemanagement:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.7.0...servicemanagement/v1.8.0) (2023-03-22)
+
+
+### Features
+
+* **servicemanagement:** Added overrides_by_request_protocol to backend.proto feat: added field proto_reference_documentation_uri to proto reference documentation. feat: added SERVICE_NOT_VISIBLE and GCP_SUSPENDED into error reason ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.6.0...servicemanagement/v1.7.0) (2023-03-15)
+
+
+### Features
+
+* **servicemanagement:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.5.0...servicemanagement/v1.6.0) (2023-01-04)
 
 

@@ -152,6 +152,65 @@
         }
       }
     },
+    "ModelService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ModelClient",
+          "rpcs": {
+            "CreateModel": {
+              "methods": [
+                "CreateModel"
+              ]
+            },
+            "DeleteModel": {
+              "methods": [
+                "DeleteModel"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListModels": {
+              "methods": [
+                "ListModels"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "PauseModel": {
+              "methods": [
+                "PauseModel"
+              ]
+            },
+            "ResumeModel": {
+              "methods": [
+                "ResumeModel"
+              ]
+            },
+            "TuneModel": {
+              "methods": [
+                "TuneModel"
+              ]
+            },
+            "UpdateModel": {
+              "methods": [
+                "UpdateModel"
+              ]
+            }
+          }
+        }
+      }
+    },
     "PredictionService": {
       "clients": {
         "grpc": {

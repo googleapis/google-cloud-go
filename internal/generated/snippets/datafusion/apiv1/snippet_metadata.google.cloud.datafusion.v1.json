@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datafusion/apiv1",
-    "version": "1.5.0",
+    "version": "1.7.4",
     "language": "GO",
     "apis": [
       {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datafusionpb.Instance",
+        "resultType": "*datafusionpb.Instance",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datafusion.v1.Client"

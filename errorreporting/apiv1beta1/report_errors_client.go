@@ -124,10 +124,6 @@ func (c *ReportErrorsClient) Connection() *grpc.ClientConn {
 // Note: Error Reporting (at /error-reporting) is a global service built
 // on Cloud Logging and doesn’t analyze logs stored
 // in regional log buckets or logs routed to other Google Cloud projects.
-//
-// For more information, see
-// Using Error Reporting with regionalized
-// logs (at /error-reporting/docs/regionalization).
 func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	return c.internalClient.ReportErrorEvent(ctx, req, opts...)
 }
@@ -202,7 +198,7 @@ func (c *reportErrorsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *reportErrorsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -262,7 +258,7 @@ func defaultReportErrorsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *reportErrorsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -315,10 +311,6 @@ func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *erro
 // Note: Error Reporting (at /error-reporting) is a global service built
 // on Cloud Logging and doesn’t analyze logs stored
 // in regional log buckets or logs routed to other Google Cloud projects.
-//
-// For more information, see
-// Using Error Reporting with regionalized
-// logs (at /error-reporting/docs/regionalization).
 func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEvent()
@@ -372,7 +364,7 @@ func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *erro
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

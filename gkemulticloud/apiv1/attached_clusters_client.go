@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,15 +26,14 @@ import (
 	gkemulticloudpb "cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -50,6 +49,7 @@ type AttachedClustersCallOptions struct {
 	DeleteAttachedCluster                  []gax.CallOption
 	GetAttachedServerConfig                []gax.CallOption
 	GenerateAttachedClusterInstallManifest []gax.CallOption
+	GenerateAttachedClusterAgentToken      []gax.CallOption
 	CancelOperation                        []gax.CallOption
 	DeleteOperation                        []gax.CallOption
 	GetOperation                           []gax.CallOption
@@ -70,10 +70,17 @@ func defaultAttachedClustersGRPCClientOptions() []option.ClientOption {
 
 func defaultAttachedClustersCallOptions() *AttachedClustersCallOptions {
 	return &AttachedClustersCallOptions{
-		CreateAttachedCluster: []gax.CallOption{},
-		UpdateAttachedCluster: []gax.CallOption{},
-		ImportAttachedCluster: []gax.CallOption{},
+		CreateAttachedCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAttachedCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ImportAttachedCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAttachedCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +92,7 @@ func defaultAttachedClustersCallOptions() *AttachedClustersCallOptions {
 			}),
 		},
 		ListAttachedClusters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -95,8 +103,11 @@ func defaultAttachedClustersCallOptions() *AttachedClustersCallOptions {
 				})
 			}),
 		},
-		DeleteAttachedCluster: []gax.CallOption{},
+		DeleteAttachedCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAttachedServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -108,6 +119,19 @@ func defaultAttachedClustersCallOptions() *AttachedClustersCallOptions {
 			}),
 		},
 		GenerateAttachedClusterInstallManifest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GenerateAttachedClusterAgentToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -142,6 +166,7 @@ type internalAttachedClustersClient interface {
 	DeleteAttachedClusterOperation(name string) *DeleteAttachedClusterOperation
 	GetAttachedServerConfig(context.Context, *gkemulticloudpb.GetAttachedServerConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AttachedServerConfig, error)
 	GenerateAttachedClusterInstallManifest(context.Context, *gkemulticloudpb.GenerateAttachedClusterInstallManifestRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAttachedClusterInstallManifestResponse, error)
+	GenerateAttachedClusterAgentToken(context.Context, *gkemulticloudpb.GenerateAttachedClusterAgentTokenRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAttachedClusterAgentTokenResponse, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -192,7 +217,7 @@ func (c *AttachedClustersClient) Connection() *grpc.ClientConn {
 
 // CreateAttachedCluster creates a new
 // AttachedCluster resource
-// on a given GCP project and region.
+// on a given Google Cloud Platform project and region.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -278,6 +303,11 @@ func (c *AttachedClustersClient) GenerateAttachedClusterInstallManifest(ctx cont
 	return c.internalClient.GenerateAttachedClusterInstallManifest(ctx, req, opts...)
 }
 
+// GenerateAttachedClusterAgentToken generates an access token for a cluster agent.
+func (c *AttachedClustersClient) GenerateAttachedClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAttachedClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAttachedClusterAgentTokenResponse, error) {
+	return c.internalClient.GenerateAttachedClusterAgentToken(ctx, req, opts...)
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *AttachedClustersClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
@@ -305,9 +335,6 @@ type attachedClustersGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing AttachedClustersClient
 	CallOptions **AttachedClustersCallOptions
 
@@ -322,7 +349,7 @@ type attachedClustersGRPCClient struct {
 	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewAttachedClustersClient creates a new attached clusters client based on gRPC.
@@ -341,11 +368,6 @@ func NewAttachedClustersClient(ctx context.Context, opts ...option.ClientOption)
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -354,7 +376,6 @@ func NewAttachedClustersClient(ctx context.Context, opts ...option.ClientOption)
 
 	c := &attachedClustersGRPCClient{
 		connPool:               connPool,
-		disableDeadlines:       disableDeadlines,
 		attachedClustersClient: gkemulticloudpb.NewAttachedClustersClient(connPool),
 		CallOptions:            &client.CallOptions,
 		operationsClient:       longrunningpb.NewOperationsClient(connPool),
@@ -389,9 +410,9 @@ func (c *attachedClustersGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *attachedClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -401,14 +422,10 @@ func (c *attachedClustersGRPCClient) Close() error {
 }
 
 func (c *attachedClustersGRPCClient) CreateAttachedCluster(ctx context.Context, req *gkemulticloudpb.CreateAttachedClusterRequest, opts ...gax.CallOption) (*CreateAttachedClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateAttachedCluster[0:len((*c.CallOptions).CreateAttachedCluster):len((*c.CallOptions).CreateAttachedCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -425,14 +442,10 @@ func (c *attachedClustersGRPCClient) CreateAttachedCluster(ctx context.Context, 
 }
 
 func (c *attachedClustersGRPCClient) UpdateAttachedCluster(ctx context.Context, req *gkemulticloudpb.UpdateAttachedClusterRequest, opts ...gax.CallOption) (*UpdateAttachedClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attached_cluster.name", url.QueryEscape(req.GetAttachedCluster().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attached_cluster.name", url.QueryEscape(req.GetAttachedCluster().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateAttachedCluster[0:len((*c.CallOptions).UpdateAttachedCluster):len((*c.CallOptions).UpdateAttachedCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -449,14 +462,10 @@ func (c *attachedClustersGRPCClient) UpdateAttachedCluster(ctx context.Context, 
 }
 
 func (c *attachedClustersGRPCClient) ImportAttachedCluster(ctx context.Context, req *gkemulticloudpb.ImportAttachedClusterRequest, opts ...gax.CallOption) (*ImportAttachedClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ImportAttachedCluster[0:len((*c.CallOptions).ImportAttachedCluster):len((*c.CallOptions).ImportAttachedCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -473,14 +482,10 @@ func (c *attachedClustersGRPCClient) ImportAttachedCluster(ctx context.Context, 
 }
 
 func (c *attachedClustersGRPCClient) GetAttachedCluster(ctx context.Context, req *gkemulticloudpb.GetAttachedClusterRequest, opts ...gax.CallOption) (*gkemulticloudpb.AttachedCluster, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetAttachedCluster[0:len((*c.CallOptions).GetAttachedCluster):len((*c.CallOptions).GetAttachedCluster)], opts...)
 	var resp *gkemulticloudpb.AttachedCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -495,9 +500,10 @@ func (c *attachedClustersGRPCClient) GetAttachedCluster(ctx context.Context, req
 }
 
 func (c *attachedClustersGRPCClient) ListAttachedClusters(ctx context.Context, req *gkemulticloudpb.ListAttachedClustersRequest, opts ...gax.CallOption) *AttachedClusterIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListAttachedClusters[0:len((*c.CallOptions).ListAttachedClusters):len((*c.CallOptions).ListAttachedClusters)], opts...)
 	it := &AttachedClusterIterator{}
 	req = proto.Clone(req).(*gkemulticloudpb.ListAttachedClustersRequest)
@@ -540,14 +546,10 @@ func (c *attachedClustersGRPCClient) ListAttachedClusters(ctx context.Context, r
 }
 
 func (c *attachedClustersGRPCClient) DeleteAttachedCluster(ctx context.Context, req *gkemulticloudpb.DeleteAttachedClusterRequest, opts ...gax.CallOption) (*DeleteAttachedClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteAttachedCluster[0:len((*c.CallOptions).DeleteAttachedCluster):len((*c.CallOptions).DeleteAttachedCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -564,14 +566,10 @@ func (c *attachedClustersGRPCClient) DeleteAttachedCluster(ctx context.Context, 
 }
 
 func (c *attachedClustersGRPCClient) GetAttachedServerConfig(ctx context.Context, req *gkemulticloudpb.GetAttachedServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AttachedServerConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetAttachedServerConfig[0:len((*c.CallOptions).GetAttachedServerConfig):len((*c.CallOptions).GetAttachedServerConfig)], opts...)
 	var resp *gkemulticloudpb.AttachedServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -586,14 +584,10 @@ func (c *attachedClustersGRPCClient) GetAttachedServerConfig(ctx context.Context
 }
 
 func (c *attachedClustersGRPCClient) GenerateAttachedClusterInstallManifest(ctx context.Context, req *gkemulticloudpb.GenerateAttachedClusterInstallManifestRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAttachedClusterInstallManifestResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GenerateAttachedClusterInstallManifest[0:len((*c.CallOptions).GenerateAttachedClusterInstallManifest):len((*c.CallOptions).GenerateAttachedClusterInstallManifest)], opts...)
 	var resp *gkemulticloudpb.GenerateAttachedClusterInstallManifestResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -607,10 +601,29 @@ func (c *attachedClustersGRPCClient) GenerateAttachedClusterInstallManifest(ctx 
 	return resp, nil
 }
 
-func (c *attachedClustersGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *attachedClustersGRPCClient) GenerateAttachedClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAttachedClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAttachedClusterAgentTokenResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attached_cluster", url.QueryEscape(req.GetAttachedCluster()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateAttachedClusterAgentToken[0:len((*c.CallOptions).GenerateAttachedClusterAgentToken):len((*c.CallOptions).GenerateAttachedClusterAgentToken)], opts...)
+	var resp *gkemulticloudpb.GenerateAttachedClusterAgentTokenResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.attachedClustersClient.GenerateAttachedClusterAgentToken(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *attachedClustersGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -621,9 +634,10 @@ func (c *attachedClustersGRPCClient) CancelOperation(ctx context.Context, req *l
 }
 
 func (c *attachedClustersGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -634,9 +648,10 @@ func (c *attachedClustersGRPCClient) DeleteOperation(ctx context.Context, req *l
 }
 
 func (c *attachedClustersGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -651,9 +666,10 @@ func (c *attachedClustersGRPCClient) GetOperation(ctx context.Context, req *long
 }
 
 func (c *attachedClustersGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -695,78 +711,12 @@ func (c *attachedClustersGRPCClient) ListOperations(ctx context.Context, req *lo
 	return it
 }
 
-// CreateAttachedClusterOperation manages a long-running operation from CreateAttachedCluster.
-type CreateAttachedClusterOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateAttachedClusterOperation returns a new CreateAttachedClusterOperation from a given name.
 // The name must be that of a previously created CreateAttachedClusterOperation, possibly from a different process.
 func (c *attachedClustersGRPCClient) CreateAttachedClusterOperation(name string) *CreateAttachedClusterOperation {
 	return &CreateAttachedClusterOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateAttachedClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AttachedCluster, error) {
-	var resp gkemulticloudpb.AttachedCluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateAttachedClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AttachedCluster, error) {
-	var resp gkemulticloudpb.AttachedCluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateAttachedClusterOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateAttachedClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateAttachedClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteAttachedClusterOperation manages a long-running operation from DeleteAttachedCluster.
-type DeleteAttachedClusterOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteAttachedClusterOperation returns a new DeleteAttachedClusterOperation from a given name.
@@ -777,56 +727,6 @@ func (c *attachedClustersGRPCClient) DeleteAttachedClusterOperation(name string)
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteAttachedClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteAttachedClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteAttachedClusterOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteAttachedClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteAttachedClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ImportAttachedClusterOperation manages a long-running operation from ImportAttachedCluster.
-type ImportAttachedClusterOperation struct {
-	lro *longrunning.Operation
-}
-
 // ImportAttachedClusterOperation returns a new ImportAttachedClusterOperation from a given name.
 // The name must be that of a previously created ImportAttachedClusterOperation, possibly from a different process.
 func (c *attachedClustersGRPCClient) ImportAttachedClusterOperation(name string) *ImportAttachedClusterOperation {
@@ -835,221 +735,10 @@ func (c *attachedClustersGRPCClient) ImportAttachedClusterOperation(name string)
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportAttachedClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AttachedCluster, error) {
-	var resp gkemulticloudpb.AttachedCluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportAttachedClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AttachedCluster, error) {
-	var resp gkemulticloudpb.AttachedCluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportAttachedClusterOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportAttachedClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportAttachedClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateAttachedClusterOperation manages a long-running operation from UpdateAttachedCluster.
-type UpdateAttachedClusterOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateAttachedClusterOperation returns a new UpdateAttachedClusterOperation from a given name.
 // The name must be that of a previously created UpdateAttachedClusterOperation, possibly from a different process.
 func (c *attachedClustersGRPCClient) UpdateAttachedClusterOperation(name string) *UpdateAttachedClusterOperation {
 	return &UpdateAttachedClusterOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateAttachedClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AttachedCluster, error) {
-	var resp gkemulticloudpb.AttachedCluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateAttachedClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AttachedCluster, error) {
-	var resp gkemulticloudpb.AttachedCluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateAttachedClusterOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateAttachedClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateAttachedClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AttachedClusterIterator manages a stream of *gkemulticloudpb.AttachedCluster.
-type AttachedClusterIterator struct {
-	items    []*gkemulticloudpb.AttachedCluster
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AttachedCluster, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AttachedClusterIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AttachedClusterIterator) Next() (*gkemulticloudpb.AttachedCluster, error) {
-	var item *gkemulticloudpb.AttachedCluster
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AttachedClusterIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AttachedClusterIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

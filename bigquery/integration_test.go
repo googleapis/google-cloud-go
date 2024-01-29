@@ -54,6 +54,7 @@ var record = flag.Bool("record", false, "record RPCs")
 
 var (
 	client                 *Client
+	storageOptimizedClient *Client
 	storageClient          *storage.Client
 	connectionsClient      *connection.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
@@ -121,6 +122,14 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		storageOptimizedClient, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = storageOptimizedClient.EnableStorageReadClient(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
 		storageClient, err = storage.NewClient(ctx, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
@@ -145,6 +154,7 @@ func initIntegrationTest() func() {
 			log.Print("replay not supported for Go versions before 1.8")
 		}
 		client = nil
+		storageOptimizedClient = nil
 		storageClient = nil
 		connectionsClient = nil
 		return func() {}
@@ -204,6 +214,14 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
 		}
+		storageOptimizedClient, err = NewClient(ctx, projID, bqOpts...)
+		if err != nil {
+			log.Fatalf("NewClient: %v", err)
+		}
+		err = storageOptimizedClient.EnableStorageReadClient(ctx, bqOpts...)
+		if err != nil {
+			log.Fatalf("ConfigureStorageReadClient: %v", err)
+		}
 		storageClient, err = storage.NewClient(ctx, sOpts...)
 		if err != nil {
 			log.Fatalf("storage.NewClient: %v", err)
@@ -234,6 +252,14 @@ func initTestState(client *Client, t time.Time) func() {
 	// For replayability, seed the random source with t.
 	Seed(t.UnixNano())
 
+	prefixes := []string{
+		"dataset_",                    // bigquery package tests
+		"managedwriter_test_dataset_", // managedwriter package tests
+	}
+	for _, prefix := range prefixes {
+		deleteDatasets(ctx, prefix)
+	}
+
 	dataset = client.Dataset(datasetIDs.New())
 	otherDataset = client.Dataset(datasetIDs.New())
 
@@ -250,6 +276,44 @@ func initTestState(client *Client, t time.Time) func() {
 		}
 		if err := otherDataset.DeleteWithContents(ctx); err != nil {
 			log.Printf("could not delete %s", dataset.DatasetID)
+		}
+	}
+}
+
+// delete a resource if it is older than a day
+// that will prevent collisions with parallel CI test runs.
+func isResourceStale(t time.Time) bool {
+	return time.Since(t).Hours() >= 24
+}
+
+// delete old datasets
+func deleteDatasets(ctx context.Context, prefix string) {
+	it := client.Datasets(ctx)
+
+	for {
+		ds, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			fmt.Printf("failed to list project datasets: %v\n", err)
+			break
+		}
+		if !strings.HasPrefix(ds.DatasetID, prefix) {
+			continue
+		}
+
+		md, err := ds.Metadata(ctx)
+		if err != nil {
+			fmt.Printf("failed to get dataset `%s` metadata: %v\n", ds.DatasetID, err)
+			continue
+		}
+		if isResourceStale(md.CreationTime) {
+			fmt.Printf("found old dataset to delete: %s\n", ds.DatasetID)
+			err := ds.DeleteWithContents(ctx)
+			if err != nil {
+				fmt.Printf("failed to delete old dataset `%s`\n", ds.DatasetID)
+			}
 		}
 	}
 }
@@ -337,6 +401,26 @@ func TestIntegration_JobFrom(t *testing.T) {
 		}
 	}
 
+}
+
+func TestIntegration_QueryContextTimeout(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+
+	q := client.Query("select count(*) from unnest(generate_array(1,1000000)), unnest(generate_array(1, 1000)) as foo")
+	q.DisableQueryCache = true
+	before := time.Now()
+	_, err := q.Read(ctx)
+	if err != context.DeadlineExceeded {
+		t.Errorf("Read() error, wanted %v, got %v", context.DeadlineExceeded, err)
+	}
+	wantMaxDur := 500 * time.Millisecond
+	if d := time.Since(before); d > wantMaxDur {
+		t.Errorf("return duration too long, wanted max %v got %v", wantMaxDur, d)
+	}
 }
 
 func TestIntegration_SnapshotRestoreClone(t *testing.T) {
@@ -563,6 +647,7 @@ func TestIntegration_RangePartitioning(t *testing.T) {
 		t.Errorf("Range.Interval: got %v, wanted %v", gotInt64, wantedRange.Interval)
 	}
 }
+
 func TestIntegration_RemoveTimePartitioning(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -690,6 +775,11 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
+	beforePreview := client.enableQueryPreview
+	// ensure we restore the preview setting on test exit
+	defer func() {
+		client.enableQueryPreview = beforePreview
+	}()
 	ctx := context.Background()
 
 	testCases := []struct {
@@ -712,7 +802,7 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			// in the job config, but switching to relying on jobs.getQueryResults allows the
 			// service to decide the behavior.
 			description: "ctas ddl",
-			query:       fmt.Sprintf("CREATE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
+			query:       fmt.Sprintf("CREATE OR REPLACE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
 			want:        nil,
 		},
 		{
@@ -721,19 +811,45 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			query:       "select count(*) from unnest(generate_array(1,1000000)), unnest(generate_array(1, 1000)) as foo",
 			want:        [][]Value{{int64(1000000000)}},
 		},
+		{
+			// Query doesn't yield a result.
+			description: "DML",
+			query:       fmt.Sprintf("CREATE OR REPLACE TABLE %s.%s (foo STRING, bar INT64)", dataset.DatasetID, tableIDs.New()),
+			want:        [][]Value{},
+		},
 	}
-	for _, tc := range testCases {
-		curCase := tc
-		t.Run(curCase.description, func(t *testing.T) {
-			t.Parallel()
-			q := client.Query(curCase.query)
-			it, err := q.Read(ctx)
-			if err != nil {
-				t.Fatalf("%s read error: %v", curCase.description, err)
-			}
-			checkReadAndTotalRows(t, curCase.description, it, curCase.want)
-		})
-	}
+
+	t.Run("nopreview_group", func(t *testing.T) {
+		client.enableQueryPreview = false
+		for _, tc := range testCases {
+			curCase := tc
+			t.Run(curCase.description, func(t *testing.T) {
+				t.Parallel()
+				q := client.Query(curCase.query)
+				it, err := q.Read(ctx)
+				if err != nil {
+					t.Fatalf("%s read error: %v", curCase.description, err)
+				}
+				checkReadAndTotalRows(t, curCase.description, it, curCase.want)
+			})
+		}
+	})
+	t.Run("preview_group", func(t *testing.T) {
+		client.enableQueryPreview = true
+		for _, tc := range testCases {
+			curCase := tc
+			t.Run(curCase.description, func(t *testing.T) {
+				t.Parallel()
+				q := client.Query(curCase.query)
+				it, err := q.Read(ctx)
+				if err != nil {
+					t.Fatalf("%s read error: %v", curCase.description, err)
+				}
+				checkReadAndTotalRows(t, curCase.description, it, curCase.want)
+			})
+		}
+	})
+
 }
 
 func TestIntegration_QueryIterationPager(t *testing.T) {
@@ -1376,6 +1492,10 @@ func TestIntegration_Load(t *testing.T) {
 	loader := table.LoaderFrom(rs)
 	loader.WriteDisposition = WriteTruncate
 	loader.Labels = map[string]string{"test": "go"}
+	loader.MediaOptions = []googleapi.MediaOption{
+		googleapi.ContentType("text/csv"),
+		googleapi.ChunkSize(googleapi.MinUploadChunkSize),
+	}
 	job, err := loader.Run(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -1395,7 +1515,8 @@ func TestIntegration_Load(t *testing.T) {
 		cmp.AllowUnexported(Table{}),
 		cmpopts.IgnoreUnexported(Client{}, ReaderSource{}),
 		// returned schema is at top level, not in the config
-		cmpopts.IgnoreFields(FileConfig{}, "Schema"))
+		cmpopts.IgnoreFields(FileConfig{}, "Schema"),
+		cmpopts.IgnoreFields(LoadConfig{}, "MediaOptions"))
 	if diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
@@ -1403,7 +1524,88 @@ func TestIntegration_Load(t *testing.T) {
 		t.Fatal(err)
 	}
 	checkReadAndTotalRows(t, "reader load", table.Read(ctx), wantRows)
+}
 
+func TestIntegration_LoadWithSessionSupport(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+
+	ctx := context.Background()
+	sessionDataset := client.Dataset("_SESSION")
+	sessionTable := sessionDataset.Table("test_temp_destination_table")
+
+	schema := Schema{
+		{Name: "username", Type: StringFieldType, Required: false},
+		{Name: "tweet", Type: StringFieldType, Required: false},
+		{Name: "timestamp", Type: StringFieldType, Required: false},
+		{Name: "likes", Type: IntegerFieldType, Required: false},
+	}
+	sourceURIs := []string{
+		"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter.parquet",
+	}
+
+	source := NewGCSReference(sourceURIs...)
+	source.SourceFormat = Parquet
+	source.Schema = schema
+	loader := sessionTable.LoaderFrom(source)
+	loader.CreateSession = true
+	loader.CreateDisposition = CreateIfNeeded
+
+	job, err := loader.Run(ctx)
+	if err != nil {
+		t.Fatalf("loader.Run: %v", err)
+	}
+	err = wait(ctx, job)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
+
+	sessionInfo := job.lastStatus.Statistics.SessionInfo
+	if sessionInfo == nil {
+		t.Fatalf("empty job.lastStatus.Statistics.SessionInfo: %v", sessionInfo)
+	}
+
+	sessionID := sessionInfo.SessionID
+	loaderWithSession := sessionTable.LoaderFrom(source)
+	loaderWithSession.CreateDisposition = CreateIfNeeded
+	loaderWithSession.ConnectionProperties = []*ConnectionProperty{
+		{
+			Key:   "session_id",
+			Value: sessionID,
+		},
+	}
+	jobWithSession, err := loaderWithSession.Run(ctx)
+	if err != nil {
+		t.Fatalf("loaderWithSession.Run: %v", err)
+	}
+	err = wait(ctx, jobWithSession)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
+
+	sessionJobInfo := jobWithSession.lastStatus.Statistics.SessionInfo
+	if sessionJobInfo == nil {
+		t.Fatalf("empty jobWithSession.lastStatus.Statistics.SessionInfo: %v", sessionJobInfo)
+	}
+
+	if sessionID != sessionJobInfo.SessionID {
+		t.Fatalf("expected session ID %q, but found %q", sessionID, sessionJobInfo.SessionID)
+	}
+
+	sql := "SELECT * FROM _SESSION.test_temp_destination_table;"
+	q := client.Query(sql)
+	q.ConnectionProperties = []*ConnectionProperty{
+		{
+			Key:   "session_id",
+			Value: sessionID,
+		},
+	}
+	sessionQueryJob, err := q.Run(ctx)
+	err = wait(ctx, sessionQueryJob)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
 }
 
 func TestIntegration_LoadWithReferenceSchemaFile(t *testing.T) {
@@ -1902,12 +2104,16 @@ func TestIntegration_QuerySessionSupport(t *testing.T) {
 
 }
 
-func TestIntegration_QueryParameters(t *testing.T) {
-	if client == nil {
-		t.Skip("Integration tests skipped")
-	}
-	ctx := context.Background()
+var (
+	queryParameterTestCases = []struct {
+		query      string
+		parameters []QueryParameter
+		wantRow    []Value
+		wantConfig interface{}
+	}{}
+)
 
+func initQueryParameterTestCases() {
 	d := civil.Date{Year: 2016, Month: 3, Day: 20}
 	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 3008}
 	rtm := tm
@@ -1928,7 +2134,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		SubStructArray []ss
 	}
 
-	testCases := []struct {
+	queryParameterTestCases = []struct {
 		query      string
 		parameters []QueryParameter
 		wantRow    []Value
@@ -1999,6 +2205,22 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			[]QueryParameter{{Name: "val", Value: tm}},
 			[]Value{rtm},
 			rtm,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "JSON",
+						},
+						Value: "{\"alpha\":\"beta\"}",
+					},
+				},
+			},
+			[]Value{"{\"alpha\":\"beta\"}"},
+			"{\"alpha\":\"beta\"}",
 		},
 		{
 			"SELECT @val",
@@ -2167,7 +2389,17 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			},
 		},
 	}
-	for _, c := range testCases {
+}
+
+func TestIntegration_QueryParameters(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	initQueryParameterTestCases()
+
+	for _, c := range queryParameterTestCases {
 		q := client.Query(c.query)
 		q.Parameters = c.parameters
 		job, err := q.Run(ctx)
@@ -2235,6 +2467,22 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 					},
 					ParameterValue: &bq.QueryParameterValue{
 						Value: ts.Format(time.RFC3339Nano),
+					},
+				},
+			},
+			[]Value{ts},
+			ts,
+		},
+		{
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "TIMESTAMP",
+					},
+					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format(dateTimeFormat),
 					},
 				},
 			},
@@ -3083,21 +3331,28 @@ func checkReadAndTotalRows(t *testing.T, msg string, it *RowIterator, want [][]V
 
 func compareRead(it *RowIterator, want [][]Value, compareTotalRows bool) (msg string, ok bool) {
 	got, _, totalRows, err := readAll(it)
+	jobStr := ""
+	if it.SourceJob() != nil {
+		jobStr = it.SourceJob().jobID
+	}
+	if jobStr != "" {
+		jobStr = fmt.Sprintf("(Job: %s)", jobStr)
+	}
 	if err != nil {
 		return err.Error(), false
 	}
 	if len(got) != len(want) {
-		return fmt.Sprintf("got %d rows, want %d", len(got), len(want)), false
+		return fmt.Sprintf("%s got %d rows, want %d", jobStr, len(got), len(want)), false
 	}
 	if compareTotalRows && len(got) != int(totalRows) {
-		return fmt.Sprintf("got %d rows, but totalRows = %d", len(got), totalRows), false
+		return fmt.Sprintf("%s got %d rows, but totalRows = %d", jobStr, len(got), totalRows), false
 	}
 	sort.Sort(byCol0(got))
 	for i, r := range got {
 		gotRow := []Value(r)
 		wantRow := want[i]
 		if !testutil.Equal(gotRow, wantRow) {
-			return fmt.Sprintf("#%d: got %#v, want %#v", i, gotRow, wantRow), false
+			return fmt.Sprintf("%s #%d: got %#v, want %#v", jobStr, i, gotRow, wantRow), false
 		}
 	}
 	return "", true

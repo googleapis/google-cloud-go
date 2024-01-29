@@ -1,5 +1,68 @@
 # Changes
 
+## [1.15.4](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.3...security/v1.15.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **security:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.15.3](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.2...security/v1.15.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **security:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.15.2](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.1...security/v1.15.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **security:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.0...security/v1.15.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **security:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.14.1...security/v1.15.0) (2023-05-30)
+
+
+### Features
+
+* **security:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.14.0...security/v1.14.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **security:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.13.0...security/v1.14.0) (2023-04-11)
+
+
+### Features
+
+* **security/privateca:** Added ignore_dependent_resources to DeleteCaPoolRequest, DeleteCertificateAuthorityRequest, DisableCertificateAuthorityRequest ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.12.0...security/v1.13.0) (2023-03-15)
+
+
+### Features
+
+* **security/privateca:** Remove apiv1beta1 ([#7539](https://github.com/googleapis/google-cloud-go/issues/7539)) ([ae38ff1](https://github.com/googleapis/google-cloud-go/commit/ae38ff1eda235f6d8d9013c580d458f2f2ef451f)), refs [#7378](https://github.com/googleapis/google-cloud-go/issues/7378)
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.11.0...security/v1.12.0) (2023-02-14)
+
+
+### Features
+
+* **security/privateca:** Add X.509 Name Constraints support ([#7419](https://github.com/googleapis/google-cloud-go/issues/7419)) ([e316886](https://github.com/googleapis/google-cloud-go/commit/e316886d201ec125f8821c4849dbd0e8e714c2ed))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.10.0...security/v1.11.0) (2023-01-04)
 
 

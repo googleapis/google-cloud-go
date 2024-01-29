@@ -3,7 +3,7 @@
   "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
   "language": "go",
   "protoPackage": "google.cloud.recaptchaenterprise.v1beta1",
-  "libraryPackage": "cloud.google.com/go/recaptchaenterprise/apiv1beta1",
+  "libraryPackage": "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1",
   "services": {
     "RecaptchaEnterpriseServiceV1Beta1": {
       "clients": {

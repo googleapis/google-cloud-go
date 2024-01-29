@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/automl/apiv1beta1",
-    "version": "1.8.0",
+    "version": "1.13.4",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "automlpb.Dataset",
+        "resultType": "*automlpb.Dataset",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.automl.v1beta1.Client"
@@ -60,7 +60,7 @@
     {
       "regionTag": "automl_v1beta1_generated_AutoMl_CreateModel_sync",
       "title": "automl CreateModel Sample",
-      "description": "CreateModel creates a model.\nReturns a Model in the response\nfield when it completes.\nWhen you create a model, several model evaluations are created for it: \na global evaluation, and one evaluation for each annotation spec.",
+      "description": "CreateModel creates a model.\nReturns a Model in the [response][google.longrunning.Operation.response]\nfield when it completes.\nWhen you create a model, several model evaluations are created for it: \na global evaluation, and one evaluation for each annotation spec.",
       "file": "Client/CreateModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "automl_v1beta1_generated_AutoMl_DeleteDataset_sync",
       "title": "automl DeleteDataset Sample",
-      "description": "DeleteDataset deletes a dataset and all of its contents.\nReturns empty response in the\nresponse field when it completes,\nand delete_details in the\nmetadata field.",
+      "description": "DeleteDataset deletes a dataset and all of its contents.\nReturns empty response in the\n[response][google.longrunning.Operation.response] field when it completes,\nand `delete_details` in the\n[metadata][google.longrunning.Operation.metadata] field.",
       "file": "Client/DeleteDataset/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "automl_v1beta1_generated_AutoMl_DeleteModel_sync",
       "title": "automl DeleteModel Sample",
-      "description": "DeleteModel deletes a model.\nReturns google.protobuf.Empty in the\nresponse field when it completes,\nand delete_details in the\nmetadata field.",
+      "description": "DeleteModel deletes a model.\nReturns `google.protobuf.Empty` in the\n[response][google.longrunning.Operation.response] field when it completes,\nand `delete_details` in the\n[metadata][google.longrunning.Operation.metadata] field.",
       "file": "Client/DeleteModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -198,7 +198,7 @@
     {
       "regionTag": "automl_v1beta1_generated_AutoMl_DeployModel_sync",
       "title": "automl DeployModel Sample",
-      "description": "DeployModel deploys a model. If a model is already deployed, deploying it with the\nsame parameters has no effect. Deploying with different parametrs\n(as e.g. changing\n\nnode_number)\nwill reset the deployment state without pausing the model’s availability.\n\nOnly applicable for Text Classification, Image Object Detection , Tables, and Image Segmentation; all other domains manage\ndeployment automatically.\n\nReturns an empty response in the\nresponse field when it completes.",
+      "description": "DeployModel deploys a model. If a model is already deployed, deploying it with the\nsame parameters has no effect. Deploying with different parametrs\n(as e.g. changing\n\n[node_number][google.cloud.automl.v1beta1.ImageObjectDetectionModelDeploymentMetadata.node_number])\nwill reset the deployment state without pausing the model's availability.\n\nOnly applicable for Text Classification, Image Object Detection , Tables, and Image Segmentation; all other domains manage\ndeployment automatically.\n\nReturns an empty response in the\n[response][google.longrunning.Operation.response] field when it completes.",
       "file": "Client/DeployModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +244,7 @@
     {
       "regionTag": "automl_v1beta1_generated_AutoMl_ExportData_sync",
       "title": "automl ExportData Sample",
-      "description": "ExportData exports dataset’s data to the provided output location.\nReturns an empty response in the\nresponse field when it completes.",
+      "description": "ExportData exports dataset's data to the provided output location.\nReturns an empty response in the\n[response][google.longrunning.Operation.response] field when it completes.",
       "file": "Client/ExportData/main.go",
       "language": "GO",
       "clientMethod": {
@@ -290,7 +290,7 @@
     {
       "regionTag": "automl_v1beta1_generated_AutoMl_ExportEvaluatedExamples_sync",
       "title": "automl ExportEvaluatedExamples Sample",
-      "description": "ExportEvaluatedExamples exports examples on which the model was evaluated (i.e. which were in the\nTEST set of the dataset the model was created from), together with their\nground truth annotations and the annotations created (predicted) by the\nmodel.\nThe examples, ground truth and predictions are exported in the state\nthey were at the moment the model was evaluated.\n\nThis export is available only for 30 days since the model evaluation is\ncreated.\n\nCurrently only available for Tables.\n\nReturns an empty response in the\nresponse field when it completes.",
+      "description": "ExportEvaluatedExamples exports examples on which the model was evaluated (i.e. which were in the\nTEST set of the dataset the model was created from), together with their\nground truth annotations and the annotations created (predicted) by the\nmodel.\nThe examples, ground truth and predictions are exported in the state\nthey were at the moment the model was evaluated.\n\nThis export is available only for 30 days since the model evaluation is\ncreated.\n\nCurrently only available for Tables.\n\nReturns an empty response in the\n[response][google.longrunning.Operation.response] field when it completes.",
       "file": "Client/ExportEvaluatedExamples/main.go",
       "language": "GO",
       "clientMethod": {
@@ -336,7 +336,7 @@
     {
       "regionTag": "automl_v1beta1_generated_AutoMl_ExportModel_sync",
       "title": "automl ExportModel Sample",
-      "description": "ExportModel exports a trained, “export-able”, model to a user specified Google Cloud\nStorage location. A model is considered export-able if and only if it has\nan export format defined for it in\n\nModelExportOutputConfig.\n\nReturns an empty response in the\nresponse field when it completes.",
+      "description": "ExportModel exports a trained, \"export-able\", model to a user specified Google Cloud\nStorage location. A model is considered export-able if and only if it has\nan export format defined for it in\n\n[ModelExportOutputConfig][google.cloud.automl.v1beta1.ModelExportOutputConfig].\n\nReturns an empty response in the\n[response][google.longrunning.Operation.response] field when it completes.",
       "file": "Client/ExportModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -402,7 +402,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "automlpb.AnnotationSpec",
+        "resultType": "*automlpb.AnnotationSpec",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.automl.v1beta1.Client"
@@ -448,7 +448,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "automlpb.ColumnSpec",
+        "resultType": "*automlpb.ColumnSpec",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.automl.v1beta1.Client"
@@ -494,7 +494,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "automlpb.Dataset",
+        "resultType": "*automlpb.Dataset",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.automl.v1beta1.Client"
@@ -540,7 +540,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "automlpb.Model",
+        "resultType": "*automlpb.Model",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.automl.v1beta1.Client"
@@ -586,7 +586,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "automlpb.ModelEvaluation",
+        "resultType": "*automlpb.ModelEvaluation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.automl.v1beta1.Client"
@@ -632,7 +632,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "automlpb.TableSpec",
+        "resultType": "*automlpb.TableSpec",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.automl.v1beta1.Client"
@@ -658,7 +658,7 @@
     {
       "regionTag": "automl_v1beta1_generated_AutoMl_ImportData_sync",
       "title": "automl ImportData Sample",
-      "description": "ImportData imports data into a dataset.\nFor Tables this method can only be called on an empty Dataset.\n\nFor Tables: \n\n\tA\n\tschema_inference_version\n\tparameter must be explicitly set.\n\tReturns an empty response in the\n\tresponse field when it completes.",
+      "description": "ImportData imports data into a dataset.\nFor Tables this method can only be called on an empty Dataset.\n\nFor Tables: \n*   A\n[schema_inference_version][google.cloud.automl.v1beta1.InputConfig.params]\nparameter must be explicitly set.\nReturns an empty response in the\n[response][google.longrunning.Operation.response] field when it completes.",
       "file": "Client/ImportData/main.go",
       "language": "GO",
       "clientMethod": {
@@ -934,7 +934,7 @@
     {
       "regionTag": "automl_v1beta1_generated_AutoMl_UndeployModel_sync",
       "title": "automl UndeployModel Sample",
-      "description": "UndeployModel undeploys a model. If the model is not deployed this method has no effect.\n\nOnly applicable for Text Classification, Image Object Detection and Tables;\nall other domains manage deployment automatically.\n\nReturns an empty response in the\nresponse field when it completes.",
+      "description": "UndeployModel undeploys a model. If the model is not deployed this method has no effect.\n\nOnly applicable for Text Classification, Image Object Detection and Tables;\nall other domains manage deployment automatically.\n\nReturns an empty response in the\n[response][google.longrunning.Operation.response] field when it completes.",
       "file": "Client/UndeployModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1000,7 +1000,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "automlpb.ColumnSpec",
+        "resultType": "*automlpb.ColumnSpec",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.automl.v1beta1.Client"
@@ -1046,7 +1046,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "automlpb.Dataset",
+        "resultType": "*automlpb.Dataset",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.automl.v1beta1.Client"
@@ -1092,7 +1092,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "automlpb.TableSpec",
+        "resultType": "*automlpb.TableSpec",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.automl.v1beta1.Client"
@@ -1118,7 +1118,7 @@
     {
       "regionTag": "automl_v1beta1_generated_PredictionService_BatchPredict_sync",
       "title": "automl BatchPredict Sample",
-      "description": "BatchPredict perform a batch prediction. Unlike the online Predict, batch\nprediction result won’t be immediately available in the response. Instead,\na long running operation object is returned. User can poll the operation\nresult via GetOperation\nmethod. Once the operation is done, BatchPredictResult is returned in\nthe response field.\nAvailable for following ML problems: \n\n\tImage Classification\n\n\tImage Object Detection\n\n\tVideo Classification\n\n\tVideo Object Tracking * Text Extraction\n\n\tTables",
+      "description": "BatchPredict perform a batch prediction. Unlike the online [Predict][google.cloud.automl.v1beta1.PredictionService.Predict], batch\nprediction result won't be immediately available in the response. Instead,\na long running operation object is returned. User can poll the operation\nresult via [GetOperation][google.longrunning.Operations.GetOperation]\nmethod. Once the operation is done, [BatchPredictResult][google.cloud.automl.v1beta1.BatchPredictResult] is returned in\nthe [response][google.longrunning.Operation.response] field.\nAvailable for following ML problems: \n* Image Classification\n* Image Object Detection\n* Video Classification\n* Video Object Tracking * Text Extraction\n* Tables",
       "file": "PredictionClient/BatchPredict/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1164,7 +1164,7 @@
     {
       "regionTag": "automl_v1beta1_generated_PredictionService_Predict_sync",
       "title": "automl Predict Sample",
-      "description": "Predict perform an online prediction. The prediction result will be directly\nreturned in the response.\nAvailable for following ML problems, and their expected request payloads: \n\n\tImage Classification - Image in .JPEG, .GIF or .PNG format, image_bytes\n\tup to 30MB.\n\n\tImage Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes\n\tup to 30MB.\n\n\tText Classification - TextSnippet, content up to 60,000 characters,\n\tUTF-8 encoded.\n\n\tText Extraction - TextSnippet, content up to 30,000 characters,\n\tUTF-8 NFC encoded.\n\n\tTranslation - TextSnippet, content up to 25,000 characters, UTF-8\n\tencoded.\n\n\tTables - Row, with column values matching the columns of the model,\n\tup to 5MB. Not available for FORECASTING\n\nprediction_type.\n\n\tText Sentiment - TextSnippet, content up 500 characters, UTF-8\n\tencoded.",
+      "description": "Predict perform an online prediction. The prediction result will be directly\nreturned in the response.\nAvailable for following ML problems, and their expected request payloads: \n* Image Classification - Image in .JPEG, .GIF or .PNG format, image_bytes\nup to 30MB.\n* Image Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes\nup to 30MB.\n* Text Classification - TextSnippet, content up to 60,000 characters,\nUTF-8 encoded.\n* Text Extraction - TextSnippet, content up to 30,000 characters,\nUTF-8 NFC encoded.\n* Translation - TextSnippet, content up to 25,000 characters, UTF-8\nencoded.\n* Tables - Row, with column values matching the columns of the model,\nup to 5MB. Not available for FORECASTING\n\n[prediction_type][google.cloud.automl.v1beta1.TablesModelMetadata.prediction_type].\n* Text Sentiment - TextSnippet, content up 500 characters, UTF-8\nencoded.",
       "file": "PredictionClient/Predict/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1184,7 +1184,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "automlpb.PredictResponse",
+        "resultType": "*automlpb.PredictResponse",
         "client": {
           "shortName": "PredictionClient",
           "fullName": "google.cloud.automl.v1beta1.PredictionClient"

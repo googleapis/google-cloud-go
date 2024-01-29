@@ -1,5 +1,112 @@
 # Changes
 
+## [1.15.5](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.4...kms/v1.15.5) (2023-11-01)
+
+
+### Bug Fixes
+
+* **kms:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.15.4](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.3...kms/v1.15.4) (2023-10-26)
+
+
+### Bug Fixes
+
+* **kms:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.15.3](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.2...kms/v1.15.3) (2023-10-12)
+
+
+### Bug Fixes
+
+* **kms:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.15.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.1...kms/v1.15.2) (2023-09-11)
+
+
+### Documentation
+
+* **kms:** Minor formatting ([15be57b](https://github.com/googleapis/google-cloud-go/commit/15be57b9264a793494cedc3966034fa20f56d7c5))
+* **kms:** Minor formatting ([fbfaf21](https://github.com/googleapis/google-cloud-go/commit/fbfaf21c15ae8a07ab39c6036cf0cee700b5627c))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.0...kms/v1.15.1) (2023-08-08)
+
+
+### Documentation
+
+* **kms:** Minor formatting ([#8371](https://github.com/googleapis/google-cloud-go/issues/8371)) ([b4349cc](https://github.com/googleapis/google-cloud-go/commit/b4349cc507870ff8629bbc07de578b63bb889626))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.14.0...kms/v1.15.0) (2023-07-24)
+
+
+### Features
+
+* **kms:** Add interoperable symmetric encryption system ([432864c](https://github.com/googleapis/google-cloud-go/commit/432864c7fc0bb551a5017b423bbd5f76c3357dc3))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.13.0...kms/v1.14.0) (2023-07-18)
+
+
+### Features
+
+* **kms/inventory:** Add resource_types to SearchAllResources, to allow filtering by resource type ([#8261](https://github.com/googleapis/google-cloud-go/issues/8261)) ([9d55bab](https://github.com/googleapis/google-cloud-go/commit/9d55bab76839af4ef4301544b856b042352a489e))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.12.1...kms/v1.13.0) (2023-07-10)
+
+
+### Features
+
+* **kms:** Add interoperable symmetric encryption system ([14b95d3](https://github.com/googleapis/google-cloud-go/commit/14b95d33753d0b391d0b49533e92b551e5dc3072))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.12.0...kms/v1.12.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **kms:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.11.0...kms/v1.12.0) (2023-06-13)
+
+
+### Features
+
+* **kms/inventory:** Promote to GA ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.10.2...kms/v1.11.0) (2023-05-30)
+
+
+### Features
+
+* **kms:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.10.1...kms/v1.10.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **kms:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.10.0...kms/v1.10.1) (2023-04-04)
+
+
+### Documentation
+
+* **kms:** Publish the API comment changes related to supporting different hash functions/values for ECDSA signing ([#7619](https://github.com/googleapis/google-cloud-go/issues/7619)) ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.9.0...kms/v1.10.0) (2023-03-15)
+
+
+### Features
+
+* **kms:** Add support for Coordinated External Keys ([#7517](https://github.com/googleapis/google-cloud-go/issues/7517)) ([64c6a6f](https://github.com/googleapis/google-cloud-go/commit/64c6a6fa30fd8bec40405fdddb73d1078024e985))
+* **kms:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.8.0...kms/v1.9.0) (2023-03-01)
+
+
+### Features
+
+* **kms/inventory:** Start generating apiv1 ([#7504](https://github.com/googleapis/google-cloud-go/issues/7504)) ([0ceff58](https://github.com/googleapis/google-cloud-go/commit/0ceff5837ca7389d52cf344da353ef3c85483055))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.7.0...kms/v1.8.0) (2023-01-04)
 
 

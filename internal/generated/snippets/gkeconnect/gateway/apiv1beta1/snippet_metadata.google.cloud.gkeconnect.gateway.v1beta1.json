@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
-    "version": "0.6.0",
+    "version": "0.8.4",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "httpbodypb.HttpBody",
+        "resultType": "*httpbodypb.HttpBody",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "httpbodypb.HttpBody",
+        "resultType": "*httpbodypb.HttpBody",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "httpbodypb.HttpBody",
+        "resultType": "*httpbodypb.HttpBody",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client"
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "httpbodypb.HttpBody",
+        "resultType": "*httpbodypb.HttpBody",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client"
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "httpbodypb.HttpBody",
+        "resultType": "*httpbodypb.HttpBody",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client"

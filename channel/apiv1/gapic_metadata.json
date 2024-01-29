@@ -229,6 +229,11 @@
                 "ListCustomers"
               ]
             },
+            "ListEntitlementChanges": {
+              "methods": [
+                "ListEntitlementChanges"
+              ]
+            },
             "ListEntitlements": {
               "methods": [
                 "ListEntitlements"
@@ -259,6 +264,16 @@
                 "ListPurchasableSkus"
               ]
             },
+            "ListSkuGroupBillableSkus": {
+              "methods": [
+                "ListSkuGroupBillableSkus"
+              ]
+            },
+            "ListSkuGroups": {
+              "methods": [
+                "ListSkuGroups"
+              ]
+            },
             "ListSkus": {
               "methods": [
                 "ListSkus"
@@ -287,6 +302,11 @@
             "ProvisionCloudIdentity": {
               "methods": [
                 "ProvisionCloudIdentity"
+              ]
+            },
+            "QueryEligibleBillingAccounts": {
+              "methods": [
+                "QueryEligibleBillingAccounts"
               ]
             },
             "RegisterSubscriber": {
@@ -479,6 +499,11 @@
                 "ListCustomers"
               ]
             },
+            "ListEntitlementChanges": {
+              "methods": [
+                "ListEntitlementChanges"
+              ]
+            },
             "ListEntitlements": {
               "methods": [
                 "ListEntitlements"
@@ -509,6 +534,16 @@
                 "ListPurchasableSkus"
               ]
             },
+            "ListSkuGroupBillableSkus": {
+              "methods": [
+                "ListSkuGroupBillableSkus"
+              ]
+            },
+            "ListSkuGroups": {
+              "methods": [
+                "ListSkuGroups"
+              ]
+            },
             "ListSkus": {
               "methods": [
                 "ListSkus"
@@ -537,6 +572,11 @@
             "ProvisionCloudIdentity": {
               "methods": [
                 "ProvisionCloudIdentity"
+              ]
+            },
+            "QueryEligibleBillingAccounts": {
+              "methods": [
+                "QueryEligibleBillingAccounts"
               ]
             },
             "RegisterSubscriber": {

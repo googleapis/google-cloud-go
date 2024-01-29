@@ -37,6 +37,7 @@ import (
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
+	tspb "github.com/golang/protobuf/ptypes/timestamp"
 )
 
 const (
@@ -367,12 +368,20 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 
 	// Sets all fields for a message and ensures it is correctly received.
 	t.Run("AllFieldsRoundTrip", func(t *testing.T) {
+		eventTime, err := EncodeEventTimeAttribute(&tspb.Timestamp{
+			Seconds: 1672531200,
+			Nanos:   500000000,
+		})
+		if err != nil {
+			t.Errorf("EncodeEventTimeAttribute() got err: %v", err)
+		}
 		msg := &pubsub.Message{
 			Data:        []byte("round_trip"),
 			OrderingKey: "ordering_key",
 			Attributes: map[string]string{
-				"attr1": "value1",
-				"attr2": "value2",
+				"attr1":               "value1",
+				"attr2":               "value2",
+				EventTimeAttributeKey: eventTime,
 			},
 		}
 		publishMessages(t, DefaultPublishSettings, topicPath, msg)
@@ -908,9 +917,6 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 	createSubscription(ctx, t, admin, subscriptionPath, topicPath)
 	defer cleanUpSubscription(ctx, t, admin, subscriptionPath)
 
-	var msgBatch3 []string
-	var publishTimes3 *publishTimeRange
-
 	// Note: Subtests need to be run sequentially.
 
 	t.Run("SeekToBeginning", func(t *testing.T) {
@@ -987,25 +993,8 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 
 		// Publish batch 3 and verify that messages are only received from batch 3
 		// (batch 2 skipped).
-		msgBatch3 = publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch3", messageCount, 0)
-		publishTimes3 = receiveAllMessages(t, makeMsgTracker(msgBatch3), recvSettings, subscriptionPath)
-
-		if seekOp != nil {
-			validateCompleteSeekOperation(ctx, t, subscriptionPath, seekOp)
-		}
-	})
-
-	t.Run("SeekToPublishTime", func(t *testing.T) {
-		// Seek to min publish time of batch 3.
-		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(), pubsublite.PublishTime(publishTimes3.Min()))
-		if err != nil {
-			t.Errorf("SeekSubscription() got err: %v", err)
-		} else {
-			validateNewSeekOperation(t, subscriptionPath, seekOp)
-		}
-
-		// Verify that messages are received from batch 3.
-		receiveAllMessages(t, makeMsgTracker(msgBatch3), recvSettings, subscriptionPath)
+		msgBatch := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch3", messageCount, 0)
+		receiveAllMessages(t, makeMsgTracker(msgBatch), recvSettings, subscriptionPath)
 
 		if seekOp != nil {
 			validateCompleteSeekOperation(ctx, t, subscriptionPath, seekOp)

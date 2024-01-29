@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/migration/apiv2",
-    "version": "1.44.0",
+    "version": "1.58.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "migrationpb.MigrationWorkflow",
+        "resultType": "*migrationpb.MigrationWorkflow",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.migration.v2.Client"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "migrationpb.MigrationSubtask",
+        "resultType": "*migrationpb.MigrationSubtask",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.migration.v2.Client"
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "migrationpb.MigrationWorkflow",
+        "resultType": "*migrationpb.MigrationWorkflow",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.migration.v2.Client"

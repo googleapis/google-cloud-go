@@ -349,6 +349,34 @@ func TestSchemaConversion(t *testing.T) {
 			},
 		},
 		{
+			// collation values
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					{
+						Name:      "name",
+						Type:      "STRING",
+						Collation: "und:ci",
+					},
+					{
+						Name:      "another_name",
+						Type:      "STRING",
+						Collation: "",
+					},
+				}},
+			schema: Schema{
+				{
+					Name:      "name",
+					Type:      StringFieldType,
+					Collation: "und:ci",
+				},
+				{
+					Name:      "another_name",
+					Type:      StringFieldType,
+					Collation: "",
+				},
+			},
+		},
+		{
 			// policy tags
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
@@ -388,6 +416,29 @@ func TestSchemaConversion(t *testing.T) {
 						},
 					},
 				},
+			},
+		},
+		{
+			// RANGE
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					func() *bq.TableFieldSchema {
+						f := bqTableFieldSchema("desc", "rt", "RANGE", "", nil)
+						f.RangeElementType = &bq.TableFieldSchemaRangeElementType{
+							Type: "DATE",
+						}
+						return f
+					}(),
+				},
+			},
+			schema: Schema{
+				func() *FieldSchema {
+					f := fieldSchema("desc", "rt", "RANGE", false, false, nil)
+					f.RangeElementType = &RangeElementType{
+						Type: DateFieldType,
+					}
+					return f
+				}(),
 			},
 		},
 	}

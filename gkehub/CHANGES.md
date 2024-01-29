@@ -1,5 +1,61 @@
 # Changes
 
+## [0.14.4](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.3...gkehub/v0.14.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **gkehub:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [0.14.3](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.2...gkehub/v0.14.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **gkehub:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [0.14.2](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.1...gkehub/v0.14.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **gkehub:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [0.14.1](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.0...gkehub/v0.14.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **gkehub:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.13.1...gkehub/v0.14.0) (2023-05-30)
+
+
+### Features
+
+* **gkehub:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [0.13.1](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.13.0...gkehub/v0.13.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **gkehub:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.12.0...gkehub/v0.13.0) (2023-04-25)
+
+
+### Features
+
+* **gkehub:** Add `monitoring_config` field ([#7806](https://github.com/googleapis/google-cloud-go/issues/7806)) ([e1e8ba9](https://github.com/googleapis/google-cloud-go/commit/e1e8ba9f4d427c52c4a2bc949479055824124ba0))
+
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.11.0...gkehub/v0.12.0) (2023-03-15)
+
+
+### Features
+
+* **gkehub:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.10.0...gkehub/v0.11.0) (2023-01-04)
 
 

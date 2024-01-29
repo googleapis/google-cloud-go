@@ -17,6 +17,7 @@ package adapt
 import (
 	"encoding/base64"
 	"fmt"
+	"sort"
 	"strings"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
@@ -185,8 +186,8 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 			if foundDesc != nil {
 				// check to see if we already have this in current dependency list
 				haveDep := false
-				for _, curDep := range deps {
-					if foundDesc.ParentFile().FullName() == curDep.FullName() {
+				for _, dep := range deps {
+					if messageDependsOnFile(foundDesc, dep) {
 						haveDep = true
 						break
 					}
@@ -279,6 +280,27 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	return found.(protoreflect.MessageDescriptor), nil
 }
 
+// messageDependsOnFile checks if the given message descriptor already belongs to the file descriptor.
+// To check for that, first we check if the message descriptor parent file is the same as the file descriptor.
+// If not, check if the message descriptor belongs is contained as a child of the file descriptor.
+func messageDependsOnFile(msg protoreflect.MessageDescriptor, file protoreflect.FileDescriptor) bool {
+	parentFile := msg.ParentFile()
+	parentFileName := parentFile.FullName()
+	if parentFileName != "" {
+		if parentFileName == file.FullName() {
+			return true
+		}
+	}
+	fileMessages := file.Messages()
+	for i := 0; i < fileMessages.Len(); i++ {
+		childMsg := fileMessages.Get(i)
+		if msg.FullName() == childMsg.FullName() {
+			return true
+		}
+	}
+	return false
+}
+
 // tableFieldSchemaToFieldDescriptorProto builds individual field descriptors for a proto message.
 //
 // For proto3, in cases where the mode is nullable we use the well known wrapper types.
@@ -286,8 +308,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 //
 // Messages are always nullable, and repeated fields are as well.
 func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, useProto3 bool) (*descriptorpb.FieldDescriptorProto, error) {
-
-	name := strings.ToLower(field.GetName())
+	name := field.GetName()
 	var fdp *descriptorpb.FieldDescriptorProto
 
 	if field.GetType() == storagepb.TableFieldSchema_STRUCT {
@@ -384,34 +405,30 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 	for i := 0; i < in.Fields().Len(); i++ {
 		inField := in.Fields().Get(i)
 		resultFDP := protodesc.ToFieldDescriptorProto(inField)
-		// For proto3 messages without presence, use proto2 default values to match proto3
-		// behavior in default values.
-		if inField.Syntax() == protoreflect.Proto3 && inField.Cardinality() != protoreflect.Repeated {
-			// Only set default value if there's no field presence.
-			if resultFDP.Proto3Optional == nil || !resultFDP.GetProto3Optional() {
-				switch resultFDP.GetType() {
-				case descriptorpb.FieldDescriptorProto_TYPE_BOOL:
-					resultFDP.DefaultValue = proto.String("false")
-				case descriptorpb.FieldDescriptorProto_TYPE_BYTES, descriptorpb.FieldDescriptorProto_TYPE_STRING:
-					resultFDP.DefaultValue = proto.String("")
-				case descriptorpb.FieldDescriptorProto_TYPE_ENUM:
-					// Resolve the proto3 default value.  The default value should be the value name.
-					defValue := inField.Enum().Values().ByNumber(inField.Default().Enum())
-					resultFDP.DefaultValue = proto.String(string(defValue.Name()))
-				case descriptorpb.FieldDescriptorProto_TYPE_DOUBLE,
-					descriptorpb.FieldDescriptorProto_TYPE_FLOAT,
-					descriptorpb.FieldDescriptorProto_TYPE_INT64,
-					descriptorpb.FieldDescriptorProto_TYPE_UINT64,
-					descriptorpb.FieldDescriptorProto_TYPE_INT32,
-					descriptorpb.FieldDescriptorProto_TYPE_FIXED64,
-					descriptorpb.FieldDescriptorProto_TYPE_FIXED32,
-					descriptorpb.FieldDescriptorProto_TYPE_UINT32,
-					descriptorpb.FieldDescriptorProto_TYPE_SFIXED32,
-					descriptorpb.FieldDescriptorProto_TYPE_SFIXED64,
-					descriptorpb.FieldDescriptorProto_TYPE_SINT32,
-					descriptorpb.FieldDescriptorProto_TYPE_SINT64:
-					resultFDP.DefaultValue = proto.String("0")
-				}
+		// For messages without explicit presence, use default values to match implicit presence behavior.
+		if !inField.HasPresence() && inField.Cardinality() != protoreflect.Repeated {
+			switch resultFDP.GetType() {
+			case descriptorpb.FieldDescriptorProto_TYPE_BOOL:
+				resultFDP.DefaultValue = proto.String("false")
+			case descriptorpb.FieldDescriptorProto_TYPE_BYTES, descriptorpb.FieldDescriptorProto_TYPE_STRING:
+				resultFDP.DefaultValue = proto.String("")
+			case descriptorpb.FieldDescriptorProto_TYPE_ENUM:
+				// Resolve the proto3 default value.  The default value should be the value name.
+				defValue := inField.Enum().Values().ByNumber(inField.Default().Enum())
+				resultFDP.DefaultValue = proto.String(string(defValue.Name()))
+			case descriptorpb.FieldDescriptorProto_TYPE_DOUBLE,
+				descriptorpb.FieldDescriptorProto_TYPE_FLOAT,
+				descriptorpb.FieldDescriptorProto_TYPE_INT64,
+				descriptorpb.FieldDescriptorProto_TYPE_UINT64,
+				descriptorpb.FieldDescriptorProto_TYPE_INT32,
+				descriptorpb.FieldDescriptorProto_TYPE_FIXED64,
+				descriptorpb.FieldDescriptorProto_TYPE_FIXED32,
+				descriptorpb.FieldDescriptorProto_TYPE_UINT32,
+				descriptorpb.FieldDescriptorProto_TYPE_SFIXED32,
+				descriptorpb.FieldDescriptorProto_TYPE_SFIXED64,
+				descriptorpb.FieldDescriptorProto_TYPE_SINT32,
+				descriptorpb.FieldDescriptorProto_TYPE_SINT64:
+				resultFDP.DefaultValue = proto.String("0")
 			}
 		}
 		// Clear proto3 optional annotation, as the backend converter can
@@ -460,6 +477,12 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 			} else {
 				enumDP := protodesc.ToEnumDescriptorProto(inField.Enum())
 				enumDP.Name = proto.String(enumName)
+				// Ensure values in enum are sorted.
+				vals := enumDP.GetValue()
+				sort.SliceStable(vals, func(i, j int) bool {
+					return vals[i].GetNumber() < vals[j].GetNumber()
+				})
+				// Append wrapped enum to nested types.
 				root.NestedType = append(root.NestedType, &descriptorpb.DescriptorProto{
 					Name:     proto.String(enclosingTypeName),
 					EnumType: []*descriptorpb.EnumDescriptorProto{enumDP},
@@ -470,6 +493,18 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 		}
 		resultDP.Field = append(resultDP.Field, resultFDP)
 	}
+	// To reduce comparison jitter, order the common slices fields where possible.
+	//
+	// First, fields are sorted by ID number.
+	fields := resultDP.GetField()
+	sort.SliceStable(fields, func(i, j int) bool {
+		return fields[i].GetNumber() < fields[j].GetNumber()
+	})
+	// Then, sort nested messages in NestedType by name.
+	nested := resultDP.GetNestedType()
+	sort.SliceStable(nested, func(i, j int) bool {
+		return nested[i].GetName() < nested[j].GetName()
+	})
 	structTypes.add(fullProtoName)
 	return resultDP, nil
 }

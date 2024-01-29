@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/eventarc/publishing/apiv1",
-    "version": "1.9.0",
+    "version": "1.13.3",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "eventarcpublishing_v1_generated_Publisher_PublishChannelConnectionEvents_sync",
       "title": "eventarcpublishing PublishChannelConnectionEvents Sample",
-      "description": "PublishChannelConnectionEvents publish events to a ChannelConnection in a partner’s project.",
+      "description": "PublishChannelConnectionEvents publish events to a ChannelConnection in a partner's project.",
       "file": "PublisherClient/PublishChannelConnectionEvents/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "publishingpb.PublishChannelConnectionEventsResponse",
+        "resultType": "*publishingpb.PublishChannelConnectionEventsResponse",
         "client": {
           "shortName": "PublisherClient",
           "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient"
@@ -60,7 +60,7 @@
     {
       "regionTag": "eventarcpublishing_v1_generated_Publisher_PublishEvents_sync",
       "title": "eventarcpublishing PublishEvents Sample",
-      "description": "PublishEvents publish events to a subscriber’s channel.",
+      "description": "PublishEvents publish events to a subscriber's channel.",
       "file": "PublisherClient/PublishEvents/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "publishingpb.PublishEventsResponse",
+        "resultType": "*publishingpb.PublishEventsResponse",
         "client": {
           "shortName": "PublisherClient",
           "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient"

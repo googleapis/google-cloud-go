@@ -15,6 +15,11 @@
                 "BatchOptimizeTours"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "OptimizeTours": {
               "methods": [
                 "OptimizeTours"
@@ -28,6 +33,11 @@
             "BatchOptimizeTours": {
               "methods": [
                 "BatchOptimizeTours"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "OptimizeTours": {

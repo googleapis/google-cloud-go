@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,20 +21,18 @@ import (
 	"fmt"
 	"math"
 	"net/url"
-	"time"
 
 	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -115,6 +113,10 @@ type internalDataScanClient interface {
 
 // DataScanClient is a client for interacting with Cloud Dataplex API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// DataScanService manages DataScan resources which can be configured to run
+// various types of data scanning workload and generate enriched metadata (e.g.
+// Data Profile, Data Quality) for the data source.
 type DataScanClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDataScanClient
@@ -151,7 +153,7 @@ func (c *DataScanClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateDataScan creates a dataScan resource.
+// CreateDataScan creates a DataScan resource.
 func (c *DataScanClient) CreateDataScan(ctx context.Context, req *dataplexpb.CreateDataScanRequest, opts ...gax.CallOption) (*CreateDataScanOperation, error) {
 	return c.internalClient.CreateDataScan(ctx, req, opts...)
 }
@@ -162,7 +164,7 @@ func (c *DataScanClient) CreateDataScanOperation(name string) *CreateDataScanOpe
 	return c.internalClient.CreateDataScanOperation(name)
 }
 
-// UpdateDataScan update the dataScan resource.
+// UpdateDataScan updates a DataScan resource.
 func (c *DataScanClient) UpdateDataScan(ctx context.Context, req *dataplexpb.UpdateDataScanRequest, opts ...gax.CallOption) (*UpdateDataScanOperation, error) {
 	return c.internalClient.UpdateDataScan(ctx, req, opts...)
 }
@@ -173,7 +175,7 @@ func (c *DataScanClient) UpdateDataScanOperation(name string) *UpdateDataScanOpe
 	return c.internalClient.UpdateDataScanOperation(name)
 }
 
-// DeleteDataScan delete the dataScan resource.
+// DeleteDataScan deletes a DataScan resource.
 func (c *DataScanClient) DeleteDataScan(ctx context.Context, req *dataplexpb.DeleteDataScanRequest, opts ...gax.CallOption) (*DeleteDataScanOperation, error) {
 	return c.internalClient.DeleteDataScan(ctx, req, opts...)
 }
@@ -184,27 +186,27 @@ func (c *DataScanClient) DeleteDataScanOperation(name string) *DeleteDataScanOpe
 	return c.internalClient.DeleteDataScanOperation(name)
 }
 
-// GetDataScan get dataScan resource.
+// GetDataScan gets a DataScan resource.
 func (c *DataScanClient) GetDataScan(ctx context.Context, req *dataplexpb.GetDataScanRequest, opts ...gax.CallOption) (*dataplexpb.DataScan, error) {
 	return c.internalClient.GetDataScan(ctx, req, opts...)
 }
 
-// ListDataScans lists dataScans.
+// ListDataScans lists DataScans.
 func (c *DataScanClient) ListDataScans(ctx context.Context, req *dataplexpb.ListDataScansRequest, opts ...gax.CallOption) *DataScanIterator {
 	return c.internalClient.ListDataScans(ctx, req, opts...)
 }
 
-// RunDataScan run an on demand execution of a DataScan.
+// RunDataScan runs an on-demand execution of a DataScan
 func (c *DataScanClient) RunDataScan(ctx context.Context, req *dataplexpb.RunDataScanRequest, opts ...gax.CallOption) (*dataplexpb.RunDataScanResponse, error) {
 	return c.internalClient.RunDataScan(ctx, req, opts...)
 }
 
-// GetDataScanJob get DataScanJob resource.
+// GetDataScanJob gets a DataScanJob resource.
 func (c *DataScanClient) GetDataScanJob(ctx context.Context, req *dataplexpb.GetDataScanJobRequest, opts ...gax.CallOption) (*dataplexpb.DataScanJob, error) {
 	return c.internalClient.GetDataScanJob(ctx, req, opts...)
 }
 
-// ListDataScanJobs lists DataScanJobs under the given dataScan.
+// ListDataScanJobs lists DataScanJobs under the given DataScan.
 func (c *DataScanClient) ListDataScanJobs(ctx context.Context, req *dataplexpb.ListDataScanJobsRequest, opts ...gax.CallOption) *DataScanJobIterator {
 	return c.internalClient.ListDataScanJobs(ctx, req, opts...)
 }
@@ -246,9 +248,6 @@ type dataScanGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DataScanClient
 	CallOptions **DataScanCallOptions
 
@@ -265,11 +264,15 @@ type dataScanGRPCClient struct {
 	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewDataScanClient creates a new data scan service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// DataScanService manages DataScan resources which can be configured to run
+// various types of data scanning workload and generate enriched metadata (e.g.
+// Data Profile, Data Quality) for the data source.
 func NewDataScanClient(ctx context.Context, opts ...option.ClientOption) (*DataScanClient, error) {
 	clientOpts := defaultDataScanGRPCClientOptions()
 	if newDataScanClientHook != nil {
@@ -280,11 +283,6 @@ func NewDataScanClient(ctx context.Context, opts ...option.ClientOption) (*DataS
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -293,7 +291,6 @@ func NewDataScanClient(ctx context.Context, opts ...option.ClientOption) (*DataS
 
 	c := &dataScanGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		dataScanClient:   dataplexpb.NewDataScanServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -329,9 +326,9 @@ func (c *dataScanGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *dataScanGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -341,9 +338,10 @@ func (c *dataScanGRPCClient) Close() error {
 }
 
 func (c *dataScanGRPCClient) CreateDataScan(ctx context.Context, req *dataplexpb.CreateDataScanRequest, opts ...gax.CallOption) (*CreateDataScanOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataScan[0:len((*c.CallOptions).CreateDataScan):len((*c.CallOptions).CreateDataScan)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -360,9 +358,10 @@ func (c *dataScanGRPCClient) CreateDataScan(ctx context.Context, req *dataplexpb
 }
 
 func (c *dataScanGRPCClient) UpdateDataScan(ctx context.Context, req *dataplexpb.UpdateDataScanRequest, opts ...gax.CallOption) (*UpdateDataScanOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_scan.name", url.QueryEscape(req.GetDataScan().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_scan.name", url.QueryEscape(req.GetDataScan().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDataScan[0:len((*c.CallOptions).UpdateDataScan):len((*c.CallOptions).UpdateDataScan)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -379,9 +378,10 @@ func (c *dataScanGRPCClient) UpdateDataScan(ctx context.Context, req *dataplexpb
 }
 
 func (c *dataScanGRPCClient) DeleteDataScan(ctx context.Context, req *dataplexpb.DeleteDataScanRequest, opts ...gax.CallOption) (*DeleteDataScanOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDataScan[0:len((*c.CallOptions).DeleteDataScan):len((*c.CallOptions).DeleteDataScan)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -398,9 +398,10 @@ func (c *dataScanGRPCClient) DeleteDataScan(ctx context.Context, req *dataplexpb
 }
 
 func (c *dataScanGRPCClient) GetDataScan(ctx context.Context, req *dataplexpb.GetDataScanRequest, opts ...gax.CallOption) (*dataplexpb.DataScan, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataScan[0:len((*c.CallOptions).GetDataScan):len((*c.CallOptions).GetDataScan)], opts...)
 	var resp *dataplexpb.DataScan
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -415,9 +416,10 @@ func (c *dataScanGRPCClient) GetDataScan(ctx context.Context, req *dataplexpb.Ge
 }
 
 func (c *dataScanGRPCClient) ListDataScans(ctx context.Context, req *dataplexpb.ListDataScansRequest, opts ...gax.CallOption) *DataScanIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDataScans[0:len((*c.CallOptions).ListDataScans):len((*c.CallOptions).ListDataScans)], opts...)
 	it := &DataScanIterator{}
 	req = proto.Clone(req).(*dataplexpb.ListDataScansRequest)
@@ -460,9 +462,10 @@ func (c *dataScanGRPCClient) ListDataScans(ctx context.Context, req *dataplexpb.
 }
 
 func (c *dataScanGRPCClient) RunDataScan(ctx context.Context, req *dataplexpb.RunDataScanRequest, opts ...gax.CallOption) (*dataplexpb.RunDataScanResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RunDataScan[0:len((*c.CallOptions).RunDataScan):len((*c.CallOptions).RunDataScan)], opts...)
 	var resp *dataplexpb.RunDataScanResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -477,9 +480,10 @@ func (c *dataScanGRPCClient) RunDataScan(ctx context.Context, req *dataplexpb.Ru
 }
 
 func (c *dataScanGRPCClient) GetDataScanJob(ctx context.Context, req *dataplexpb.GetDataScanJobRequest, opts ...gax.CallOption) (*dataplexpb.DataScanJob, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataScanJob[0:len((*c.CallOptions).GetDataScanJob):len((*c.CallOptions).GetDataScanJob)], opts...)
 	var resp *dataplexpb.DataScanJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -494,9 +498,10 @@ func (c *dataScanGRPCClient) GetDataScanJob(ctx context.Context, req *dataplexpb
 }
 
 func (c *dataScanGRPCClient) ListDataScanJobs(ctx context.Context, req *dataplexpb.ListDataScanJobsRequest, opts ...gax.CallOption) *DataScanJobIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDataScanJobs[0:len((*c.CallOptions).ListDataScanJobs):len((*c.CallOptions).ListDataScanJobs)], opts...)
 	it := &DataScanJobIterator{}
 	req = proto.Clone(req).(*dataplexpb.ListDataScanJobsRequest)
@@ -539,9 +544,10 @@ func (c *dataScanGRPCClient) ListDataScanJobs(ctx context.Context, req *dataplex
 }
 
 func (c *dataScanGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -556,9 +562,10 @@ func (c *dataScanGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 }
 
 func (c *dataScanGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -601,9 +608,10 @@ func (c *dataScanGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 }
 
 func (c *dataScanGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -614,9 +622,10 @@ func (c *dataScanGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 }
 
 func (c *dataScanGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -627,9 +636,10 @@ func (c *dataScanGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 }
 
 func (c *dataScanGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -644,9 +654,10 @@ func (c *dataScanGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 }
 
 func (c *dataScanGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -688,78 +699,12 @@ func (c *dataScanGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	return it
 }
 
-// CreateDataScanOperation manages a long-running operation from CreateDataScan.
-type CreateDataScanOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateDataScanOperation returns a new CreateDataScanOperation from a given name.
 // The name must be that of a previously created CreateDataScanOperation, possibly from a different process.
 func (c *dataScanGRPCClient) CreateDataScanOperation(name string) *CreateDataScanOperation {
 	return &CreateDataScanOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDataScanOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataScan, error) {
-	var resp dataplexpb.DataScan
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDataScanOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataScan, error) {
-	var resp dataplexpb.DataScan
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDataScanOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateDataScanOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateDataScanOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDataScanOperation manages a long-running operation from DeleteDataScan.
-type DeleteDataScanOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteDataScanOperation returns a new DeleteDataScanOperation from a given name.
@@ -770,210 +715,10 @@ func (c *dataScanGRPCClient) DeleteDataScanOperation(name string) *DeleteDataSca
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDataScanOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDataScanOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDataScanOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDataScanOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDataScanOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateDataScanOperation manages a long-running operation from UpdateDataScan.
-type UpdateDataScanOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateDataScanOperation returns a new UpdateDataScanOperation from a given name.
 // The name must be that of a previously created UpdateDataScanOperation, possibly from a different process.
 func (c *dataScanGRPCClient) UpdateDataScanOperation(name string) *UpdateDataScanOperation {
 	return &UpdateDataScanOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateDataScanOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataScan, error) {
-	var resp dataplexpb.DataScan
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateDataScanOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.DataScan, error) {
-	var resp dataplexpb.DataScan
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateDataScanOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
-	var meta dataplexpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateDataScanOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateDataScanOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DataScanIterator manages a stream of *dataplexpb.DataScan.
-type DataScanIterator struct {
-	items    []*dataplexpb.DataScan
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataplexpb.DataScan, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataScanIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataScanIterator) Next() (*dataplexpb.DataScan, error) {
-	var item *dataplexpb.DataScan
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DataScanIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataScanIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DataScanJobIterator manages a stream of *dataplexpb.DataScanJob.
-type DataScanJobIterator struct {
-	items    []*dataplexpb.DataScanJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataplexpb.DataScanJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataScanJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataScanJobIterator) Next() (*dataplexpb.DataScanJob, error) {
-	var item *dataplexpb.DataScanJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DataScanJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataScanJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

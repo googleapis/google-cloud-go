@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/assuredworkloads/apiv1",
-    "version": "1.9.0",
+    "version": "1.11.4",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "assuredworkloadspb.AcknowledgeViolationResponse",
+        "resultType": "*assuredworkloadspb.AcknowledgeViolationResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.assuredworkloads.v1.Client"
@@ -106,7 +106,7 @@
     {
       "regionTag": "assuredworkloads_v1_generated_AssuredWorkloadsService_DeleteWorkload_sync",
       "title": "assuredworkloads DeleteWorkload Sample",
-      "description": "DeleteWorkload deletes the workload. Make sure that workload’s direct children are already\nin a deleted state, otherwise the request will fail with a\nFAILED_PRECONDITION error.",
+      "description": "DeleteWorkload deletes the workload. Make sure that workload's direct children are already\nin a deleted state, otherwise the request will fail with a\nFAILED_PRECONDITION error.",
       "file": "Client/DeleteWorkload/main.go",
       "language": "GO",
       "clientMethod": {
@@ -171,17 +171,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.assuredworkloads.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.assuredworkloads.v1.AssuredWorkloadsService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "AssuredWorkloadsService",
-            "fullName": "google.cloud.assuredworkloads.v1.AssuredWorkloadsService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "assuredworkloadspb.Violation",
+        "resultType": "*assuredworkloadspb.Violation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.assuredworkloads.v1.Client"
@@ -263,7 +263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "assuredworkloadspb.Workload",
+        "resultType": "*assuredworkloadspb.Workload",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.assuredworkloads.v1.Client"
@@ -316,10 +316,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.assuredworkloads.v1.AssuredWorkloadsService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "AssuredWorkloadsService",
-            "fullName": "google.cloud.assuredworkloads.v1.AssuredWorkloadsService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -327,7 +327,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -335,7 +335,7 @@
     {
       "regionTag": "assuredworkloads_v1_generated_AssuredWorkloadsService_ListViolations_sync",
       "title": "assuredworkloads ListViolations Sample",
-      "description": "ListViolations lists the Violations in the AssuredWorkload Environment.\nCallers may also choose to read across multiple Workloads as per\nAIP-159 (at https: //google.aip.dev/159) by using ‘-’ (the hyphen or dash\ncharacter) as a wildcard character instead of workload-id in the parent.\nFormat organizations/{org_id}/locations/{location}/workloads/-",
+      "description": "ListViolations lists the Violations in the AssuredWorkload Environment.\nCallers may also choose to read across multiple Workloads as per\n[AIP-159](https: //google.aip.dev/159) by using '-' (the hyphen or dash\ncharacter) as a wildcard character instead of workload-id in the parent.\nFormat `organizations/{org_id}/locations/{location}/workloads/-`",
       "file": "Client/ListViolations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -427,7 +427,7 @@
     {
       "regionTag": "assuredworkloads_v1_generated_AssuredWorkloadsService_RestrictAllowedResources_sync",
       "title": "assuredworkloads RestrictAllowedResources Sample",
-      "description": "RestrictAllowedResources restrict the list of resources allowed in the Workload environment.\nThe current list of allowed products can be found at\nhttps: //cloud.google.com/assured-workloads/docs/supported-products (at https: //cloud.google.com/assured-workloads/docs/supported-products)\nIn addition to assuredworkloads.workload.update permission, the user should\nalso have orgpolicy.policy.set permission on the folder resource\nto use this functionality.",
+      "description": "RestrictAllowedResources restrict the list of resources allowed in the Workload environment.\nThe current list of allowed products can be found at\nhttps: //cloud.google.com/assured-workloads/docs/supported-products\nIn addition to assuredworkloads.workload.update permission, the user should\nalso have orgpolicy.policy.set permission on the folder resource\nto use this functionality.",
       "file": "Client/RestrictAllowedResources/main.go",
       "language": "GO",
       "clientMethod": {
@@ -447,7 +447,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "assuredworkloadspb.RestrictAllowedResourcesResponse",
+        "resultType": "*assuredworkloadspb.RestrictAllowedResourcesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.assuredworkloads.v1.Client"
@@ -473,7 +473,7 @@
     {
       "regionTag": "assuredworkloads_v1_generated_AssuredWorkloadsService_UpdateWorkload_sync",
       "title": "assuredworkloads UpdateWorkload Sample",
-      "description": "UpdateWorkload updates an existing workload.\nCurrently allows updating of workload display_name and labels.\nFor force updates don’t set etag field in the Workload.\nOnly one update operation per workload can be in progress.",
+      "description": "UpdateWorkload updates an existing workload.\nCurrently allows updating of workload display_name and labels.\nFor force updates don't set etag field in the Workload.\nOnly one update operation per workload can be in progress.",
       "file": "Client/UpdateWorkload/main.go",
       "language": "GO",
       "clientMethod": {
@@ -493,7 +493,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "assuredworkloadspb.Workload",
+        "resultType": "*assuredworkloadspb.Workload",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.assuredworkloads.v1.Client"

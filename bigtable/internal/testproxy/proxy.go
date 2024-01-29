@@ -26,7 +26,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigtable"
-	"github.com/golang/protobuf/ptypes/duration"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
@@ -35,6 +34,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	stat "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 var (
@@ -369,9 +369,9 @@ func parseTableID(tableName string) (tableID string, _ error) {
 // made using the client, an appProfileID (optionally), and a
 // perOperationTimeout (optionally).
 type testClient struct {
-	c                   *bigtable.Client   // c stores the Bigtable client under test
-	appProfileID        string             // appProfileID is currently unused
-	perOperationTimeout *duration.Duration // perOperationTimeout sets a custom timeout for methods calls on this client
+	c                   *bigtable.Client     // c stores the Bigtable client under test
+	appProfileID        string               // appProfileID is currently unused
+	perOperationTimeout *durationpb.Duration // perOperationTimeout sets a custom timeout for methods calls on this client
 }
 
 // timeout adds a timeout setting to a context if perOperationTimeout is set on
@@ -440,7 +440,10 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		return nil, stat.Error(codes.Unknown, fmt.Sprintf("%s: failed to create connection: %v", logLabel, err))
 	}
 
-	c, err := bigtable.NewClient(ctx, req.ProjectId, req.InstanceId, option.WithGRPCConn(conn))
+	config := bigtable.ClientConfig{
+		AppProfile: req.AppProfileId,
+	}
+	c, err := bigtable.NewClientWithConfig(ctx, req.ProjectId, req.InstanceId, config, option.WithGRPCConn(conn))
 	if err != nil {
 		return nil, stat.Error(codes.Internal,
 			fmt.Sprintf("%s: failed to create client: %v", logLabel, err))
@@ -594,21 +597,15 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		Status: &statpb.Status{
 			Code: int32(codes.OK),
 		},
-		Row: []*btpb.Row{},
+		Rows: []*btpb.Row{},
 	}
 
 	if err != nil {
-		log.Printf("error from Table.ReadRows: %v\n", err)
-		if st, ok := stat.FromError(err); ok {
-			res.Status = &statpb.Status{
-				Code:    st.Proto().Code,
-				Message: st.Message(),
-			}
-		}
+		res.Status = statusFromError(err)
 		return res, nil
 	}
 
-	res.Row = rowsPb
+	res.Rows = rowsPb
 
 	return res, nil
 }
@@ -726,7 +723,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 		}
 	}
 
-	res.Entry = entries
+	res.Entries = entries
 	return res, nil
 }
 
@@ -838,7 +835,7 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 		sk = append(sk, s)
 	}
 
-	res.Sample = sk
+	res.Samples = sk
 
 	return res, nil
 }
@@ -892,7 +889,8 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 
 	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
 	if err != nil {
-		return nil, err
+		res.Status = statusFromError(err)
+		return res, nil
 	}
 
 	rp, err := rowToProto(r)

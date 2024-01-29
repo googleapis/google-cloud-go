@@ -1,5 +1,76 @@
 # Changes
 
+## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.9.3...resourcemanager/v1.9.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **resourcemanager:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.9.2...resourcemanager/v1.9.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **resourcemanager:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.9.1...resourcemanager/v1.9.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **resourcemanager:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.9.0...resourcemanager/v1.9.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **resourcemanager:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.8.2...resourcemanager/v1.9.0) (2023-05-30)
+
+
+### Features
+
+* **resourcemanager:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.8.1...resourcemanager/v1.8.2) (2023-05-10)
+
+
+### Documentation
+
+* **resourcemanager:** Update formatting for Purpose class documentation ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.8.0...resourcemanager/v1.8.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **resourcemanager:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.7.0...resourcemanager/v1.8.0) (2023-04-25)
+
+
+### Features
+
+* **resourcemanager:** Add TagHolds, GetNamespacedTagKey, and GetNamespacedTagValue APIs. Adds support for project parented tags ([#7796](https://github.com/googleapis/google-cloud-go/issues/7796)) ([52471c8](https://github.com/googleapis/google-cloud-go/commit/52471c84101ef5f6b528fdb206a5659a07014bfd))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.6.0...resourcemanager/v1.7.0) (2023-04-04)
+
+
+### Features
+
+* **resourcemanager:** Promote to GA ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+* **resourcemanager:** Promote to GA ([fce42e0](https://github.com/googleapis/google-cloud-go/commit/fce42e0e6764e27760cf6f137b66fed45145ebf8))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.5.0...resourcemanager/v1.6.0) (2023-03-15)
+
+
+### Features
+
+* **resourcemanager:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.4.0...resourcemanager/v1.5.0) (2023-01-04)
 
 

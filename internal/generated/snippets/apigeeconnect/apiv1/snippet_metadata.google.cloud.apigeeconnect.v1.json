@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/apigeeconnect/apiv1",
-    "version": "1.4.0",
+    "version": "1.6.4",
     "language": "GO",
     "apis": [
       {
@@ -76,6 +76,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "apigeeconnectpb.Tether_EgressClient",
         "client": {
           "shortName": "TetherClient",
           "fullName": "google.cloud.apigeeconnect.v1.TetherClient"

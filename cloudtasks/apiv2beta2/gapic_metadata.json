@@ -45,6 +45,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetQueue": {
               "methods": [
                 "GetQueue"
@@ -58,6 +63,11 @@
             "LeaseTasks": {
               "methods": [
                 "LeaseTasks"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListQueues": {
@@ -108,6 +118,11 @@
             "UpdateQueue": {
               "methods": [
                 "UpdateQueue"
+              ]
+            },
+            "UploadQueueYaml": {
+              "methods": [
+                "UploadQueueYaml"
               ]
             }
           }
@@ -150,6 +165,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetQueue": {
               "methods": [
                 "GetQueue"
@@ -163,6 +183,11 @@
             "LeaseTasks": {
               "methods": [
                 "LeaseTasks"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListQueues": {
@@ -213,6 +238,11 @@
             "UpdateQueue": {
               "methods": [
                 "UpdateQueue"
+              ]
+            },
+            "UploadQueueYaml": {
+              "methods": [
+                "UploadQueueYaml"
               ]
             }
           }

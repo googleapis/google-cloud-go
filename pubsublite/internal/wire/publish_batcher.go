@@ -17,6 +17,7 @@ import (
 	"container/list"
 	"errors"
 	"fmt"
+	"sort"
 
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/protobuf/proto"
@@ -25,6 +26,16 @@ import (
 )
 
 var errPublishQueueEmpty = errors.New("pubsublite: received publish response from server with no batches in flight")
+var errInvalidCursorRanges = errors.New("pubsublite: server sent invalid cursor ranges in message publish response")
+
+// publisherClientID is a 16-byte identifier for a publisher session and if
+// specified, will enable publish idempotency. The same client id must be set
+// for all partitions.
+type publisherClientID []byte
+
+// publishSequenceNumber uniquely identifies messages in a single publisher
+// session, for implementing publish idempotency.
+type publishSequenceNumber int64
 
 // PublishResultFunc receives the result of a publish.
 type PublishResultFunc func(*MessageMetadata, error)
@@ -36,6 +47,7 @@ type publishResult struct {
 
 // messageHolder stores a message to be published, with associated metadata.
 type messageHolder struct {
+	seqNum   publishSequenceNumber
 	msg      *pb.PubSubMessage
 	size     int
 	onResult PublishResultFunc
@@ -44,6 +56,7 @@ type messageHolder struct {
 // publishBatch holds messages that are published in the same
 // MessagePublishRequest.
 type publishBatch struct {
+	clientID   publisherClientID
 	msgHolders []*messageHolder
 	totalSize  int
 }
@@ -54,10 +67,16 @@ func (b *publishBatch) ToPublishRequest() *pb.PublishRequest {
 		msgs[i] = holder.msg
 	}
 
+	var firstSeqNum int64
+	if len(b.clientID) > 0 && len(b.msgHolders) > 0 {
+		firstSeqNum = int64(b.msgHolders[0].seqNum)
+	}
+
 	return &pb.PublishRequest{
 		RequestType: &pb.PublishRequest_MessagePublishRequest{
 			MessagePublishRequest: &pb.MessagePublishRequest{
-				Messages: msgs,
+				Messages:            msgs,
+				FirstSequenceNumber: firstSeqNum,
 			},
 		},
 	}
@@ -67,6 +86,8 @@ func (b *publishBatch) ToPublishRequest() *pb.PublishRequest {
 // published batches. It is owned by singlePartitionPublisher.
 type publishMessageBatcher struct {
 	partition int
+	// The sequence number to assign to the next message.
+	nextSequence publishSequenceNumber
 	// Used to batch messages. Setting HandlerLimit=1 results in ordered batches.
 	msgBundler *bundler.Bundler
 	// FIFO queue of in-flight batches of published messages. Results have not yet
@@ -80,9 +101,11 @@ type publishMessageBatcher struct {
 	availableBufferBytes int
 }
 
-func newPublishMessageBatcher(settings *PublishSettings, partition int, onNewBatch func(*publishBatch)) *publishMessageBatcher {
+func newPublishMessageBatcher(settings *PublishSettings, clientID publisherClientID,
+	initialSeqNum publishSequenceNumber, partition int, onNewBatch func(*publishBatch)) *publishMessageBatcher {
 	batcher := &publishMessageBatcher{
 		partition:            partition,
+		nextSequence:         initialSeqNum,
 		publishQueue:         list.New(),
 		availableBufferBytes: settings.BufferedByteLimit,
 	}
@@ -98,7 +121,7 @@ func newPublishMessageBatcher(settings *PublishSettings, partition int, onNewBat
 		// singlePartitionPublisher.onNewBatch() receives the new batch from the
 		// Bundler, which calls publishMessageBatcher.AddBatch(). Only the
 		// publisher's mutex is required.
-		batch := &publishBatch{msgHolders: msgs}
+		batch := &publishBatch{clientID: clientID, msgHolders: msgs}
 		for _, msg := range batch.msgHolders {
 			batch.totalSize += msg.size
 		}
@@ -124,7 +147,8 @@ func (b *publishMessageBatcher) AddMessage(msg *pb.PubSubMessage, onResult Publi
 		return ErrOverflow
 	}
 
-	holder := &messageHolder{msg: msg, size: msgSize, onResult: onResult}
+	holder := &messageHolder{seqNum: b.nextSequence, msg: msg, size: msgSize, onResult: onResult}
+	b.nextSequence++
 	if err := b.msgBundler.Add(holder, msgSize); err != nil {
 		// As we've already checked the size of the message and overflow, the
 		// bundler should not return an error.
@@ -138,27 +162,51 @@ func (b *publishMessageBatcher) AddBatch(batch *publishBatch) {
 	b.publishQueue.PushBack(batch)
 }
 
-func (b *publishMessageBatcher) OnPublishResponse(firstOffset int64) ([]*publishResult, error) {
+type byRangeStartIndex []*pb.MessagePublishResponse_CursorRange
+
+func (m byRangeStartIndex) Len() int      { return len(m) }
+func (m byRangeStartIndex) Swap(i, j int) { m[i], m[j] = m[j], m[i] }
+func (m byRangeStartIndex) Less(i, j int) bool {
+	return m[i].GetStartIndex() < m[j].GetStartIndex()
+}
+
+func (b *publishMessageBatcher) OnPublishResponse(response *pb.MessagePublishResponse) ([]*publishResult, error) {
 	frontElem := b.publishQueue.Front()
 	if frontElem == nil {
 		return nil, errPublishQueueEmpty
 	}
-	if firstOffset < b.minExpectedNextOffset {
-		return nil, fmt.Errorf("pubsublite: server returned publish response with inconsistent start offset = %d, expected >= %d", firstOffset, b.minExpectedNextOffset)
-	}
+
+	// Ensure cursor ranges are sorted by increasing message batch index.
+	sort.Sort(byRangeStartIndex(response.CursorRanges))
 
 	batch, _ := frontElem.Value.(*publishBatch)
 	var results []*publishResult
-	for i, msgHolder := range batch.msgHolders {
-		// Messages are ordered, so the offset of each message is firstOffset + i.
+	var rIdx int
+	ranges := response.GetCursorRanges()
+	for msgIdx, msgHolder := range batch.msgHolders {
+		if rIdx < len(ranges) && ranges[rIdx].GetEndIndex() <= int32(msgIdx) {
+			rIdx++
+			if rIdx < len(ranges) && ranges[rIdx].GetStartIndex() < ranges[rIdx-1].GetEndIndex() {
+				return nil, errInvalidCursorRanges
+			}
+		}
+
+		offset := int64(-1)
+		if rIdx < len(ranges) && msgIdx >= int(ranges[rIdx].GetStartIndex()) && msgIdx < int(ranges[rIdx].GetEndIndex()) {
+			offsetInRange := int64(msgIdx) - int64(ranges[rIdx].GetStartIndex())
+			offset = ranges[rIdx].GetStartCursor().GetOffset() + offsetInRange
+			if offset < b.minExpectedNextOffset {
+				return nil, fmt.Errorf("pubsublite: received publish response with offset %d, expected at least %d", offset, b.minExpectedNextOffset)
+			}
+			b.minExpectedNextOffset = offset + 1
+		}
 		results = append(results, &publishResult{
-			Metadata: &MessageMetadata{Partition: b.partition, Offset: firstOffset + int64(i)},
+			Metadata: &MessageMetadata{Partition: b.partition, Offset: offset},
 			OnResult: msgHolder.onResult,
 		})
 	}
 
 	b.availableBufferBytes += batch.totalSize
-	b.minExpectedNextOffset = firstOffset + int64(len(batch.msgHolders))
 	b.publishQueue.Remove(frontElem)
 	return results, nil
 }
@@ -204,4 +252,8 @@ func (b *publishMessageBatcher) Flush() {
 
 func (b *publishMessageBatcher) InFlightBatchesEmpty() bool {
 	return b.publishQueue.Len() == 0
+}
+
+func (b *publishMessageBatcher) NextSequenceNumber() publishSequenceNumber {
+	return b.nextSequence
 }

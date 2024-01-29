@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/firestore/apiv1/admin",
-    "version": "1.9.0",
+    "version": "1.14.0",
     "language": "GO",
     "apis": [
       {
@@ -40,7 +40,53 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.firestore.admin.v1.FirestoreAdmin.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_CreateDatabase_sync",
+      "title": "firestore CreateDatabase Sample",
+      "description": "CreateDatabase create a database.",
+      "file": "FirestoreAdminClient/CreateDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDatabase",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.CreateDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDatabaseOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "CreateDatabase",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.CreateDatabase",
           "service": {
             "shortName": "FirestoreAdmin",
             "fullName": "google.firestore.admin.v1.FirestoreAdmin"
@@ -51,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -59,7 +105,7 @@
     {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_CreateIndex_sync",
       "title": "firestore CreateIndex Sample",
-      "description": "CreateIndex creates a composite index. This returns a google.longrunning.Operation\nwhich may be used to track the status of the creation. The metadata for\nthe operation will be the type IndexOperationMetadata.",
+      "description": "CreateIndex creates a composite index. This returns a\n[google.longrunning.Operation][google.longrunning.Operation] which may be\nused to track the status of the creation. The metadata for the operation\nwill be the type\n[IndexOperationMetadata][google.firestore.admin.v1.IndexOperationMetadata].",
       "file": "FirestoreAdminClient/CreateIndex/main.go",
       "language": "GO",
       "clientMethod": {
@@ -87,6 +133,52 @@
         "method": {
           "shortName": "CreateIndex",
           "fullName": "google.firestore.admin.v1.FirestoreAdmin.CreateIndex",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_DeleteDatabase_sync",
+      "title": "firestore DeleteDatabase Sample",
+      "description": "DeleteDatabase deletes a database.",
+      "file": "FirestoreAdminClient/DeleteDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDatabase",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.DeleteDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDatabaseOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteDatabase",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.DeleteDatabase",
           "service": {
             "shortName": "FirestoreAdmin",
             "fullName": "google.firestore.admin.v1.FirestoreAdmin"
@@ -176,10 +268,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.firestore.admin.v1.FirestoreAdmin.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "FirestoreAdmin",
-            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -187,7 +279,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -195,7 +287,7 @@
     {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_ExportDocuments_sync",
       "title": "firestore ExportDocuments Sample",
-      "description": "ExportDocuments exports a copy of all or a subset of documents from Google Cloud Firestore\nto another storage system, such as Google Cloud Storage. Recent updates to\ndocuments may not be reflected in the export. The export occurs in the\nbackground and its progress can be monitored and managed via the\nOperation resource that is created. The output of an export may only be\nused once the associated operation is done. If an export operation is\ncancelled before completion it may leave partial data behind in Google\nCloud Storage.\n\nFor more details on export behavior and output format, refer to: \nhttps: //cloud.google.com/firestore/docs/manage-data/export-import (at https: //cloud.google.com/firestore/docs/manage-data/export-import)",
+      "description": "ExportDocuments exports a copy of all or a subset of documents from Google Cloud Firestore\nto another storage system, such as Google Cloud Storage. Recent updates to\ndocuments may not be reflected in the export. The export occurs in the\nbackground and its progress can be monitored and managed via the\nOperation resource that is created. The output of an export may only be\nused once the associated operation is done. If an export operation is\ncancelled before completion it may leave partial data behind in Google\nCloud Storage.\n\nFor more details on export behavior and output format, refer to: \nhttps: //cloud.google.com/firestore/docs/manage-data/export-import",
       "file": "FirestoreAdminClient/ExportDocuments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -261,7 +353,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Database",
+        "resultType": "*adminpb.Database",
         "client": {
           "shortName": "FirestoreAdminClient",
           "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
@@ -307,7 +399,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Field",
+        "resultType": "*adminpb.Field",
         "client": {
           "shortName": "FirestoreAdminClient",
           "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
@@ -353,7 +445,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Index",
+        "resultType": "*adminpb.Index",
         "client": {
           "shortName": "FirestoreAdminClient",
           "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
@@ -399,17 +491,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "FirestoreAdminClient",
           "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.firestore.admin.v1.FirestoreAdmin.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "FirestoreAdmin",
-            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -417,7 +509,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -491,7 +583,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.ListDatabasesResponse",
+        "resultType": "*adminpb.ListDatabasesResponse",
         "client": {
           "shortName": "FirestoreAdminClient",
           "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
@@ -517,7 +609,7 @@
     {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_ListFields_sync",
       "title": "firestore ListFields Sample",
-      "description": "ListFields lists the field configuration and metadata for this database.\n\nCurrently, FirestoreAdmin.ListFields only supports listing fields\nthat have been explicitly overridden. To issue this query, call\nFirestoreAdmin.ListFields with the filter set to\nindexConfig.usesAncestorConfig: false .",
+      "description": "ListFields lists the field configuration and metadata for this database.\n\nCurrently,\n[FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]\nonly supports listing fields that have been explicitly overridden. To issue\nthis query, call\n[FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]\nwith the filter set to `indexConfig.usesAncestorConfig: false` or\n`ttlConfig: *`.",
       "file": "FirestoreAdminClient/ListFields/main.go",
       "language": "GO",
       "clientMethod": {
@@ -636,10 +728,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.firestore.admin.v1.FirestoreAdmin.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "FirestoreAdmin",
-            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -647,7 +739,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -701,7 +793,7 @@
     {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_UpdateField_sync",
       "title": "firestore UpdateField Sample",
-      "description": "UpdateField updates a field configuration. Currently, field updates apply only to\nsingle field index configuration. However, calls to\nFirestoreAdmin.UpdateField should provide a field mask to avoid\nchanging any configuration that the caller isn’t aware of. The field mask\nshould be specified as: { paths: \"index_config\" }.\n\nThis call returns a google.longrunning.Operation which may be used to\ntrack the status of the field update. The metadata for\nthe operation will be the type FieldOperationMetadata.\n\nTo configure the default field settings for the database, use\nthe special Field with resource name: \nprojects/{project_id}/databases/{database_id}/collectionGroups/__default__/fields/*.",
+      "description": "UpdateField updates a field configuration. Currently, field updates apply only to\nsingle field index configuration. However, calls to\n[FirestoreAdmin.UpdateField][google.firestore.admin.v1.FirestoreAdmin.UpdateField]\nshould provide a field mask to avoid changing any configuration that the\ncaller isn't aware of. The field mask should be specified as: `{ paths: \n\"index_config\" }`.\n\nThis call returns a\n[google.longrunning.Operation][google.longrunning.Operation] which may be\nused to track the status of the field update. The metadata for the\noperation will be the type\n[FieldOperationMetadata][google.firestore.admin.v1.FieldOperationMetadata].\n\nTo configure the default field settings for the database, use\nthe special `Field` with resource name: \n`projects/{project_id}/databases/{database_id}/collectionGroups/__default__/fields/*`.",
       "file": "FirestoreAdminClient/UpdateField/main.go",
       "language": "GO",
       "clientMethod": {

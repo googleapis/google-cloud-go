@@ -134,10 +134,11 @@ func (br *testPublishBatchReceiver) ValidateBatches(want []*publishBatch) {
 	}
 }
 
-func makeMsgHolder(msg *pb.PubSubMessage, receiver ...*testPublishResultReceiver) *messageHolder {
+func makeMsgHolder(msg *pb.PubSubMessage, seqNum publishSequenceNumber, receiver ...*testPublishResultReceiver) *messageHolder {
 	h := &messageHolder{
-		msg:  msg,
-		size: proto.Size(msg),
+		seqNum: seqNum,
+		msg:    msg,
+		size:   proto.Size(msg),
 	}
 	if len(receiver) > 0 {
 		h.onResult = receiver[0].set
@@ -145,8 +146,8 @@ func makeMsgHolder(msg *pb.PubSubMessage, receiver ...*testPublishResultReceiver
 	return h
 }
 
-func makePublishBatch(msgs ...*messageHolder) *publishBatch {
-	batch := new(publishBatch)
+func makePublishBatch(clientID publisherClientID, msgs ...*messageHolder) *publishBatch {
+	batch := &publishBatch{clientID: clientID}
 	for _, msg := range msgs {
 		batch.msgHolders = append(batch.msgHolders, msg)
 		batch.totalSize += msg.size
@@ -160,7 +161,7 @@ func TestPublishBatcherAddMessage(t *testing.T) {
 	settings.BufferedByteLimit = initAvailableBytes
 
 	receiver := newTestPublishBatchReceiver(t)
-	batcher := newPublishMessageBatcher(&settings, 0, receiver.onNewBatch)
+	batcher := newPublishMessageBatcher(&settings, nil, 0, 0, receiver.onNewBatch)
 
 	if got, want := batcher.availableBufferBytes, initAvailableBytes; got != want {
 		t.Errorf("availableBufferBytes: got %d, want %d", got, want)
@@ -205,23 +206,24 @@ func TestPublishBatcherBundlerCountThreshold(t *testing.T) {
 	settings := DefaultPublishSettings
 	settings.DelayThreshold = time.Minute // Batching delay disabled
 	settings.CountThreshold = 2
+	var clientID publisherClientID
 
 	// Batch 1
 	msg1 := &pb.PubSubMessage{Data: []byte{'1'}}
 	msg2 := &pb.PubSubMessage{Data: []byte{'2'}}
-	wantBatch1 := makePublishBatch(makeMsgHolder(msg1), makeMsgHolder(msg2))
+	wantBatch1 := makePublishBatch(clientID, makeMsgHolder(msg1, 100), makeMsgHolder(msg2, 101))
 
 	// Batch 2
 	msg3 := &pb.PubSubMessage{Data: []byte{'3'}}
 	msg4 := &pb.PubSubMessage{Data: []byte{'4'}}
-	wantBatch2 := makePublishBatch(makeMsgHolder(msg3), makeMsgHolder(msg4))
+	wantBatch2 := makePublishBatch(clientID, makeMsgHolder(msg3, 102), makeMsgHolder(msg4, 103))
 
 	// Batch 3
 	msg5 := &pb.PubSubMessage{Data: []byte{'5'}}
-	wantBatch3 := makePublishBatch(makeMsgHolder(msg5))
+	wantBatch3 := makePublishBatch(clientID, makeMsgHolder(msg5, 104))
 
 	receiver := newTestPublishBatchReceiver(t)
-	batcher := newPublishMessageBatcher(&settings, 0, receiver.onNewBatch)
+	batcher := newPublishMessageBatcher(&settings, clientID, 100, 0, receiver.onNewBatch)
 
 	msgs := []*pb.PubSubMessage{msg1, msg2, msg3, msg4, msg5}
 	for _, msg := range msgs {
@@ -231,23 +233,28 @@ func TestPublishBatcherBundlerCountThreshold(t *testing.T) {
 	}
 	batcher.Flush()
 
+	if got, want := batcher.NextSequenceNumber(), publishSequenceNumber(105); got != want {
+		t.Errorf("NextSequenceNumber() got: %d, want: %d", got, want)
+	}
+
 	receiver.ValidateBatches([]*publishBatch{wantBatch1, wantBatch2, wantBatch3})
 }
 
 func TestPublishBatcherBundlerBatchingDelay(t *testing.T) {
 	settings := DefaultPublishSettings
 	settings.DelayThreshold = 5 * time.Millisecond
+	clientID := publisherClientID("publisher")
 
 	// Batch 1
 	msg1 := &pb.PubSubMessage{Data: []byte{'1'}}
-	wantBatch1 := makePublishBatch(makeMsgHolder(msg1))
+	wantBatch1 := makePublishBatch(clientID, makeMsgHolder(msg1, 0))
 
 	// Batch 2
 	msg2 := &pb.PubSubMessage{Data: []byte{'2'}}
-	wantBatch2 := makePublishBatch(makeMsgHolder(msg2))
+	wantBatch2 := makePublishBatch(clientID, makeMsgHolder(msg2, 1))
 
 	receiver := newTestPublishBatchReceiver(t)
-	batcher := newPublishMessageBatcher(&settings, 0, receiver.onNewBatch)
+	batcher := newPublishMessageBatcher(&settings, clientID, 0, 0, receiver.onNewBatch)
 
 	if err := batcher.AddMessage(msg1, nil); err != nil {
 		t.Errorf("AddMessage(%v) got err: %v", msg1, err)
@@ -260,18 +267,22 @@ func TestPublishBatcherBundlerBatchingDelay(t *testing.T) {
 	}
 	batcher.Flush()
 
+	if got, want := batcher.NextSequenceNumber(), publishSequenceNumber(2); got != want {
+		t.Errorf("NextSequenceNumber() got: %d, want: %d", got, want)
+	}
+
 	receiver.ValidateBatches([]*publishBatch{wantBatch1, wantBatch2})
 }
 
 func TestPublishBatcherBundlerOnPermanentError(t *testing.T) {
 	receiver := newTestPublishBatchReceiver(t)
-	batcher := newPublishMessageBatcher(&DefaultPublishSettings, 0, receiver.onNewBatch)
+	batcher := newPublishMessageBatcher(&DefaultPublishSettings, nil, -1, 0, receiver.onNewBatch)
 
 	msg1 := &pb.PubSubMessage{Data: []byte{'1'}}
 	msg2 := &pb.PubSubMessage{Data: []byte{'2'}}
 	pubResult1 := newTestPublishResultReceiver(t, msg1)
 	pubResult2 := newTestPublishResultReceiver(t, msg2)
-	batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1, pubResult1), makeMsgHolder(msg2, pubResult2)))
+	batcher.AddBatch(makePublishBatch(nil, makeMsgHolder(msg1, -1, pubResult1), makeMsgHolder(msg2, 101, pubResult2)))
 
 	wantErr := status.Error(codes.FailedPrecondition, "failed")
 	batcher.OnPermanentError(wantErr)
@@ -282,10 +293,10 @@ func TestPublishBatcherBundlerOnPermanentError(t *testing.T) {
 func TestPublishBatcherBundlerOnPublishResponse(t *testing.T) {
 	const partition = 2
 	receiver := newTestPublishBatchReceiver(t)
-	batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
+	batcher := newPublishMessageBatcher(&DefaultPublishSettings, nil, -1, partition, receiver.onNewBatch)
 
 	t.Run("empty in-flight batches", func(t *testing.T) {
-		_, gotErr := batcher.OnPublishResponse(0)
+		_, gotErr := batcher.OnPublishResponse(pubResp(cursorRange(100, 0, 1)))
 		if wantErr := errPublishQueueEmpty; !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("OnPublishResponse() got err: %v, want err: %v", gotErr, wantErr)
 		}
@@ -299,27 +310,68 @@ func TestPublishBatcherBundlerOnPublishResponse(t *testing.T) {
 		// Batch 2
 		msg3 := &pb.PubSubMessage{Data: []byte{'3'}}
 
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1), makeMsgHolder(msg2)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg3)))
+		batcher.AddBatch(makePublishBatch(nil, makeMsgHolder(msg1, -1), makeMsgHolder(msg2, -1)))
+		batcher.AddBatch(makePublishBatch(nil, makeMsgHolder(msg3, -1)))
 
-		got, err := batcher.OnPublishResponse(70)
+		got, err := batcher.OnPublishResponse(pubResp(cursorRange(3, 0, 2)))
 		if err != nil {
 			t.Errorf("OnPublishResponse() got err: %v", err)
 		}
 		want := []*publishResult{
-			{Metadata: &MessageMetadata{Partition: partition, Offset: 70}},
-			{Metadata: &MessageMetadata{Partition: partition, Offset: 71}},
+			{Metadata: &MessageMetadata{Partition: partition, Offset: 3}},
+			{Metadata: &MessageMetadata{Partition: partition, Offset: 4}},
 		}
 		if diff := testutil.Diff(got, want); diff != "" {
 			t.Errorf("Results got: -, want: +\n%s", diff)
 		}
 
-		got, err = batcher.OnPublishResponse(80)
+		got, err = batcher.OnPublishResponse(pubResp(cursorRange(8, 0, 1)))
 		if err != nil {
 			t.Errorf("OnPublishResponse() got err: %v", err)
 		}
 		want = []*publishResult{
+			{Metadata: &MessageMetadata{Partition: partition, Offset: 8}},
+		}
+		if diff := testutil.Diff(got, want); diff != "" {
+			t.Errorf("Results got: -, want: +\n%s", diff)
+		}
+	})
+
+	t.Run("missing cursor ranges", func(t *testing.T) {
+		msg1 := &pb.PubSubMessage{Data: []byte{'1'}}
+		msg2 := &pb.PubSubMessage{Data: []byte{'2'}}
+		msg3 := &pb.PubSubMessage{Data: []byte{'3'}}
+		msg4 := &pb.PubSubMessage{Data: []byte{'4'}}
+		msg5 := &pb.PubSubMessage{Data: []byte{'5'}}
+		msg6 := &pb.PubSubMessage{Data: []byte{'6'}}
+		msg7 := &pb.PubSubMessage{Data: []byte{'7'}}
+
+		batcher.AddBatch(makePublishBatch(
+			nil,
+			makeMsgHolder(msg1, -1),
+			makeMsgHolder(msg2, -1),
+			makeMsgHolder(msg3, -1),
+			makeMsgHolder(msg4, -1),
+			makeMsgHolder(msg5, -1),
+			makeMsgHolder(msg6, -1),
+			makeMsgHolder(msg7, -1)))
+
+		// The server should not respond with unsorted cursor ranges, but check that it is handled.
+		got, err := batcher.OnPublishResponse(pubResp(
+			cursorRange(50, 4, 5),
+			cursorRange(80, 5, 6),
+			cursorRange(10, 1, 3)))
+		if err != nil {
+			t.Errorf("OnPublishResponse() got err: %v", err)
+		}
+		want := []*publishResult{
+			{Metadata: &MessageMetadata{Partition: partition, Offset: -1}},
+			{Metadata: &MessageMetadata{Partition: partition, Offset: 10}},
+			{Metadata: &MessageMetadata{Partition: partition, Offset: 11}},
+			{Metadata: &MessageMetadata{Partition: partition, Offset: -1}},
+			{Metadata: &MessageMetadata{Partition: partition, Offset: 50}},
 			{Metadata: &MessageMetadata{Partition: partition, Offset: 80}},
+			{Metadata: &MessageMetadata{Partition: partition, Offset: -1}},
 		}
 		if diff := testutil.Diff(got, want); diff != "" {
 			t.Errorf("Results got: -, want: +\n%s", diff)
@@ -328,10 +380,10 @@ func TestPublishBatcherBundlerOnPublishResponse(t *testing.T) {
 
 	t.Run("inconsistent offset", func(t *testing.T) {
 		msg := &pb.PubSubMessage{Data: []byte{'4'}}
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg)))
+		batcher.AddBatch(makePublishBatch(nil, makeMsgHolder(msg, -1)))
 
-		_, gotErr := batcher.OnPublishResponse(80)
-		if wantMsg := "inconsistent start offset = 80"; !test.ErrorHasMsg(gotErr, wantMsg) {
+		_, gotErr := batcher.OnPublishResponse(pubResp(cursorRange(80, 0, 1)))
+		if wantMsg := "expected at least 81"; !test.ErrorHasMsg(gotErr, wantMsg) {
 			t.Errorf("OnPublishResponse() got err: %v, want err msg: %q", gotErr, wantMsg)
 		}
 	})
@@ -343,13 +395,14 @@ func TestPublishBatcherRebatching(t *testing.T) {
 
 	t.Run("single batch", func(t *testing.T) {
 		msg1 := &pb.PubSubMessage{Data: []byte{'1'}}
+		clientID := publisherClientID("publisher")
 
-		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1)))
+		batcher := newPublishMessageBatcher(&DefaultPublishSettings, nil, -1, partition, receiver.onNewBatch)
+		batcher.AddBatch(makePublishBatch(clientID, makeMsgHolder(msg1, 100)))
 
 		got := batcher.InFlightBatches()
 		want := []*publishBatch{
-			makePublishBatch(makeMsgHolder(msg1)),
+			makePublishBatch(clientID, makeMsgHolder(msg1, 100)),
 		}
 		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
 			t.Errorf("Batches got: -, want: +\n%s", diff)
@@ -361,15 +414,16 @@ func TestPublishBatcherRebatching(t *testing.T) {
 		msg2 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{2}, 200)}
 		msg3 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{3}, 300)}
 		msg4 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{4}, 400)}
+		clientID := publisherClientID("publisher")
 
-		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg2), makeMsgHolder(msg3)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg4)))
+		batcher := newPublishMessageBatcher(&DefaultPublishSettings, nil, -1, partition, receiver.onNewBatch)
+		batcher.AddBatch(makePublishBatch(clientID, makeMsgHolder(msg1, 100)))
+		batcher.AddBatch(makePublishBatch(clientID, makeMsgHolder(msg2, 101), makeMsgHolder(msg3, 102)))
+		batcher.AddBatch(makePublishBatch(clientID, makeMsgHolder(msg4, 103)))
 
 		got := batcher.InFlightBatches()
 		want := []*publishBatch{
-			makePublishBatch(makeMsgHolder(msg1), makeMsgHolder(msg2), makeMsgHolder(msg3), makeMsgHolder(msg4)),
+			makePublishBatch(clientID, makeMsgHolder(msg1, 100), makeMsgHolder(msg2, 101), makeMsgHolder(msg3, 102), makeMsgHolder(msg4, 103)),
 		}
 		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
 			t.Errorf("Batches got: -, want: +\n%s", diff)
@@ -381,16 +435,16 @@ func TestPublishBatcherRebatching(t *testing.T) {
 		msg2 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{2}, MaxPublishRequestBytes/2)}
 		msg3 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{3}, MaxPublishRequestBytes/2)}
 
-		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg2)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg3)))
+		batcher := newPublishMessageBatcher(&DefaultPublishSettings, nil, -1, partition, receiver.onNewBatch)
+		batcher.AddBatch(makePublishBatch(nil, makeMsgHolder(msg1, 10)))
+		batcher.AddBatch(makePublishBatch(nil, makeMsgHolder(msg2, 11)))
+		batcher.AddBatch(makePublishBatch(nil, makeMsgHolder(msg3, 12)))
 
 		got := batcher.InFlightBatches()
 		want := []*publishBatch{
-			makePublishBatch(makeMsgHolder(msg1)),
-			makePublishBatch(makeMsgHolder(msg2)),
-			makePublishBatch(makeMsgHolder(msg3)),
+			makePublishBatch(nil, makeMsgHolder(msg1, 10)),
+			makePublishBatch(nil, makeMsgHolder(msg2, 11)),
+			makePublishBatch(nil, makeMsgHolder(msg3, 12)),
 		}
 		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
 			t.Errorf("Batches got: -, want: +\n%s", diff)
@@ -405,19 +459,20 @@ func TestPublishBatcherRebatching(t *testing.T) {
 		// Not merged due to byte limit.
 		msg4 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{4}, MaxPublishRequestBytes-500)}
 		msg5 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{5}, 500)}
+		clientID := publisherClientID("publisher")
 
-		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg2)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg3)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg4)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg5)))
+		batcher := newPublishMessageBatcher(&DefaultPublishSettings, nil, -1, partition, receiver.onNewBatch)
+		batcher.AddBatch(makePublishBatch(clientID, makeMsgHolder(msg1, 20)))
+		batcher.AddBatch(makePublishBatch(clientID, makeMsgHolder(msg2, 21)))
+		batcher.AddBatch(makePublishBatch(clientID, makeMsgHolder(msg3, 22)))
+		batcher.AddBatch(makePublishBatch(clientID, makeMsgHolder(msg4, 23)))
+		batcher.AddBatch(makePublishBatch(clientID, makeMsgHolder(msg5, 24)))
 
 		got := batcher.InFlightBatches()
 		want := []*publishBatch{
-			makePublishBatch(makeMsgHolder(msg1), makeMsgHolder(msg2), makeMsgHolder(msg3)),
-			makePublishBatch(makeMsgHolder(msg4)),
-			makePublishBatch(makeMsgHolder(msg5)),
+			makePublishBatch(clientID, makeMsgHolder(msg1, 20), makeMsgHolder(msg2, 21), makeMsgHolder(msg3, 22)),
+			makePublishBatch(clientID, makeMsgHolder(msg4, 23)),
+			makePublishBatch(clientID, makeMsgHolder(msg5, 24)),
 		}
 		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
 			t.Errorf("Batches got: -, want: +\n%s", diff)
@@ -425,27 +480,28 @@ func TestPublishBatcherRebatching(t *testing.T) {
 	})
 
 	t.Run("max count", func(t *testing.T) {
+		clientID := publisherClientID("publisher")
 		var msgs []*pb.PubSubMessage
 		var batch1 []*messageHolder
 		var batch2 []*messageHolder
-		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
+		batcher := newPublishMessageBatcher(&DefaultPublishSettings, nil, -1, partition, receiver.onNewBatch)
 		for i := 0; i <= MaxPublishRequestCount; i++ {
 			msg := &pb.PubSubMessage{Data: []byte{'0'}}
 			msgs = append(msgs, msg)
 
-			msgHolder := makeMsgHolder(msg)
+			msgHolder := makeMsgHolder(msg, publishSequenceNumber(500+i))
 			if i < MaxPublishRequestCount {
 				batch1 = append(batch1, msgHolder)
 			} else {
 				batch2 = append(batch2, msgHolder)
 			}
-			batcher.AddBatch(makePublishBatch(msgHolder))
+			batcher.AddBatch(makePublishBatch(clientID, msgHolder))
 		}
 
 		got := batcher.InFlightBatches()
 		want := []*publishBatch{
-			makePublishBatch(batch1...),
-			makePublishBatch(batch2...),
+			makePublishBatch(clientID, batch1...),
+			makePublishBatch(clientID, batch2...),
 		}
 		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
 			t.Errorf("Batches got: -, want: +\n%s", diff)

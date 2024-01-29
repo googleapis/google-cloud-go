@@ -141,6 +141,17 @@ type FieldSchema struct {
 	//   - Struct or array composed with the above allowed functions, for example:
 	//       [CURRENT_DATE(), DATE '2020-01-01']"
 	DefaultValueExpression string
+
+	// Collation can be set only when the type of field is STRING.
+	// The following values are supported:
+	//   - 'und:ci': undetermined locale, case insensitive.
+	//   - '': empty string. Default to case-sensitive behavior.
+	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
+	Collation string
+
+	// Information about the range.
+	// If the type is RANGE, this field is required.
+	RangeElementType *RangeElementType
 }
 
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
@@ -153,6 +164,8 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 		Precision:              fs.Precision,
 		Scale:                  fs.Scale,
 		DefaultValueExpression: fs.DefaultValueExpression,
+		Collation:              string(fs.Collation),
+		RangeElementType:       fs.RangeElementType.toBQ(),
 	}
 
 	if fs.Repeated {
@@ -166,6 +179,32 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 	}
 
 	return tfs
+}
+
+// RangeElementType describes information about the range type.
+type RangeElementType struct {
+	// The subtype of the RANGE, if the type of this field is RANGE.
+	// Possible values for the field element type of a RANGE include:
+	// DATE, DATETIME, or TIMESTAMP.
+	Type FieldType
+}
+
+func (rt *RangeElementType) toBQ() *bq.TableFieldSchemaRangeElementType {
+	if rt == nil {
+		return nil
+	}
+	return &bq.TableFieldSchemaRangeElementType{
+		Type: string(rt.Type),
+	}
+}
+
+func bqToRangeElementType(rt *bq.TableFieldSchemaRangeElementType) *RangeElementType {
+	if rt == nil {
+		return nil
+	}
+	return &RangeElementType{
+		Type: FieldType(rt.Type),
+	}
 }
 
 // PolicyTagList represents the annotations on a schema column for enforcing column-level security.
@@ -212,6 +251,8 @@ func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 		Precision:              tfs.Precision,
 		Scale:                  tfs.Scale,
 		DefaultValueExpression: tfs.DefaultValueExpression,
+		Collation:              tfs.Collation,
+		RangeElementType:       bqToRangeElementType(tfs.RangeElementType),
 	}
 
 	for _, f := range tfs.Fields {
@@ -268,6 +309,8 @@ const (
 	IntervalFieldType FieldType = "INTERVAL"
 	// JSONFieldType is a representation of a json object.
 	JSONFieldType FieldType = "JSON"
+	// RangeFieldType represents a continuous range of values.
+	RangeFieldType FieldType = "RANGE"
 )
 
 var (
@@ -288,6 +331,7 @@ var (
 		BigNumericFieldType: true,
 		IntervalFieldType:   true,
 		JSONFieldType:       true,
+		RangeFieldType:      true,
 	}
 	// The API will accept alias names for the types based on the Standard SQL type names.
 	fieldAliases = map[FieldType]FieldType{

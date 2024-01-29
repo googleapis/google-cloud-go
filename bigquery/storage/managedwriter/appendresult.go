@@ -16,13 +16,11 @@ package managedwriter
 
 import (
 	"context"
-	"fmt"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2/apierror"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 // NoStreamOffset is a sentinel value for signalling we're not tracking
@@ -31,9 +29,6 @@ const NoStreamOffset int64 = -1
 
 // AppendResult tracks the status of a batch of data rows.
 type AppendResult struct {
-	// rowData contains the serialized row data.
-	rowData [][]byte
-
 	ready chan struct{}
 
 	// if the append failed without a response, this will retain a reference to the error.
@@ -46,10 +41,9 @@ type AppendResult struct {
 	totalAttempts int
 }
 
-func newAppendResult(data [][]byte) *AppendResult {
+func newAppendResult() *AppendResult {
 	return &AppendResult{
-		ready:   make(chan struct{}),
-		rowData: data,
+		ready: make(chan struct{}),
 	}
 }
 
@@ -138,7 +132,7 @@ func (ar *AppendResult) offset(ctx context.Context) int64 {
 func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSchema, error) {
 	select {
 	case <-ctx.Done():
-		return nil, fmt.Errorf("context done")
+		return nil, ctx.Err()
 	case <-ar.Ready():
 		if ar.response != nil {
 			if schema := ar.response.GetUpdatedSchema(); schema != nil {
@@ -155,7 +149,7 @@ func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSche
 func (ar *AppendResult) TotalAttempts(ctx context.Context) (int, error) {
 	select {
 	case <-ctx.Done():
-		return 0, fmt.Errorf("context done")
+		return 0, ctx.Err()
 	case <-ar.Ready():
 		return ar.totalAttempts, nil
 	}
@@ -164,12 +158,22 @@ func (ar *AppendResult) TotalAttempts(ctx context.Context) (int, error) {
 // pendingWrite tracks state for a set of rows that are part of a single
 // append request.
 type pendingWrite struct {
-	request *storagepb.AppendRowsRequest
-	// for schema evolution cases, accept a new schema
-	newSchema *descriptorpb.DescriptorProto
-	result    *AppendResult
+	// writer retains a reference to the origin of a pending write.  Primary
+	// used is to inform routing decisions.
+	writer *ManagedStream
 
-	// this is used by the flow controller.
+	// We store the request as it's simplex-optimized form, as statistically that's the most
+	// likely outcome when processing requests and it allows us to be efficient on send.
+	// We retain the additional information to build the complete request in the related fields.
+	req           *storagepb.AppendRowsRequest
+	reqTmpl       *versionedTemplate // request template at time of creation
+	traceID       string
+	writeStreamID string
+
+	// Reference to the AppendResult which is exposed to the user.
+	result *AppendResult
+
+	// Flow control is based on the unoptimized request size.
 	reqSize int
 
 	// retains the original request context, primarily for checking against
@@ -184,43 +188,55 @@ type pendingWrite struct {
 // to the pending results for later consumption.  The provided context is
 // embedded in the pending write, as the write may be retried and we want
 // to respect the original context for expiry/cancellation etc.
-func newPendingWrite(ctx context.Context, appends [][]byte) *pendingWrite {
+func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest, reqTmpl *versionedTemplate, writeStreamID, traceID string) *pendingWrite {
 	pw := &pendingWrite{
-		request: &storagepb.AppendRowsRequest{
-			Rows: &storagepb.AppendRowsRequest_ProtoRows{
-				ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
-					Rows: &storagepb.ProtoRows{
-						SerializedRows: appends,
-					},
-				},
-			},
-		},
-		result: newAppendResult(appends),
+		writer: src,
+		result: newAppendResult(),
 		reqCtx: ctx,
+
+		req:           req,     // minimal req, typically just row data
+		reqTmpl:       reqTmpl, // remainder of templated request
+		writeStreamID: writeStreamID,
+		traceID:       traceID,
 	}
-	// We compute the size now for flow controller purposes, though
-	// the actual request size may be slightly larger (e.g. the first
-	// request in a new stream bears schema and stream id).
-	pw.reqSize = proto.Size(pw.request)
+	// Compute the approx size for flow control purposes.
+	pw.reqSize = proto.Size(pw.req) + len(writeStreamID) + len(traceID)
+	if pw.reqTmpl != nil {
+		pw.reqSize += proto.Size(pw.reqTmpl.tmpl)
+	}
 	return pw
 }
 
 // markDone propagates finalization of an append request to the associated
 // AppendResult.
-func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error, fc *flowController) {
+func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error) {
+	// First, propagate necessary state from the pendingWrite to the final result.
 	if resp != nil {
 		pw.result.response = resp
 	}
 	pw.result.err = err
-	// Record the final attempts in the result for the user.
 	pw.result.totalAttempts = pw.attemptCount
 
+	// Close the result's ready channel.
 	close(pw.result.ready)
-	// Clear the reference to the request.
-	pw.request = nil
-	// if there's a flow controller, signal release.  The only time this should be nil is when
-	// encountering issues with flow control during enqueuing the initial request.
-	if fc != nil {
-		fc.release(pw.reqSize)
+	// Cleanup references remaining on the write explicitly.
+	pw.req = nil
+	pw.reqTmpl = nil
+	pw.writer = nil
+	pw.reqCtx = nil
+}
+
+func (pw *pendingWrite) constructFullRequest(addTrace bool) *storagepb.AppendRowsRequest {
+	req := &storagepb.AppendRowsRequest{}
+	if pw.reqTmpl != nil {
+		req = proto.Clone(pw.reqTmpl.tmpl).(*storagepb.AppendRowsRequest)
 	}
+	if pw.req != nil {
+		proto.Merge(req, pw.req)
+	}
+	if addTrace {
+		req.TraceId = buildTraceID(&streamSettings{TraceID: pw.traceID})
+	}
+	req.WriteStream = pw.writeStreamID
+	return req
 }

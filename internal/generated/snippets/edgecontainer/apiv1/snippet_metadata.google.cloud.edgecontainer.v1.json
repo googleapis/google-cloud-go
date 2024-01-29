@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/edgecontainer/apiv1",
-    "version": "0.2.0",
+    "version": "1.1.4",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "EdgeContainer",
-            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -315,10 +315,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "EdgeContainer",
-            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -400,7 +400,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "edgecontainerpb.GenerateAccessTokenResponse",
+        "resultType": "*edgecontainerpb.GenerateAccessTokenResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
@@ -446,7 +446,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "edgecontainerpb.Cluster",
+        "resultType": "*edgecontainerpb.Cluster",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
@@ -492,17 +492,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "EdgeContainer",
-            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -538,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "edgecontainerpb.Machine",
+        "resultType": "*edgecontainerpb.Machine",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
@@ -584,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "edgecontainerpb.NodePool",
+        "resultType": "*edgecontainerpb.NodePool",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
@@ -630,17 +630,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "EdgeContainer",
-            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -676,7 +676,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "edgecontainerpb.VpnConnection",
+        "resultType": "*edgecontainerpb.VpnConnection",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
@@ -775,10 +775,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "EdgeContainer",
-            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -786,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -913,10 +913,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "EdgeContainer",
-            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -924,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]

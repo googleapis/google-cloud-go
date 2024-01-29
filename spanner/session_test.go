@@ -21,10 +21,7 @@ import (
 	"container/heap"
 	"context"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"math/rand"
-	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -67,13 +64,13 @@ func TestSessionPoolConfigValidation(t *testing.T) {
 			SessionPoolConfig{
 				WriteSessions: -0.1,
 			},
-			errWriteFractionOutOfRange(-0.1),
+			nil,
 		},
 		{
 			SessionPoolConfig{
 				WriteSessions: 2.0,
 			},
-			errWriteFractionOutOfRange(2.0),
+			nil,
 		},
 		{
 			SessionPoolConfig{
@@ -191,47 +188,6 @@ func TestLIFOSessionOrder(t *testing.T) {
 	}
 }
 
-// TestLIFOTakeWriteSessionOrder tests if write session pool hand out sessions in LIFO order.
-func TestLIFOTakeWriteSessionOrder(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	_, client, teardown := setupMockedTestServerWithConfig(t,
-		ClientConfig{
-			SessionPoolConfig: SessionPoolConfig{
-				MaxOpened: 3,
-				MinOpened: 3,
-				// Set the write fraction to 0 to ensure the write sessions are
-				// only created on demand, which will guarantee the exact order
-				// in which we receive the sessions.
-				WriteSessions: 0,
-			},
-		})
-	defer teardown()
-	sp := client.idleSessions
-	// Create/take three sessions and recycle them.
-	shs, shsIDs := make([]*sessionHandle, 3), make([]string, 3)
-	for i := 0; i < len(shs); i++ {
-		var err error
-		if shs[i], err = sp.takeWriteSession(ctx); err != nil {
-			t.Fatalf("failed to take session(%v): %v", i, err)
-		}
-		shsIDs[i] = shs[i].getID()
-	}
-	for i := 0; i < len(shs); i++ {
-		shs[i].recycle()
-	}
-	for i := 2; i >= 0; i-- {
-		ws, err := sp.takeWriteSession(ctx)
-		if err != nil {
-			t.Fatalf("cannot take session from session pool: %v", err)
-		}
-		// check, if write sessions returned in LIFO order.
-		if wantID, gotID := shsIDs[i], ws.getID(); wantID != gotID {
-			t.Fatalf("got session with id: %v, want: %v", gotID, wantID)
-		}
-	}
-}
-
 // TestTakeFromIdleList tests taking sessions from session pool's idle list.
 func TestTakeFromIdleList(t *testing.T) {
 	t.Parallel()
@@ -268,56 +224,6 @@ func TestTakeFromIdleList(t *testing.T) {
 	gotSessions := map[string]bool{}
 	for i := 0; i < len(shs); i++ {
 		sh, err := sp.take(ctx)
-		if err != nil {
-			t.Fatalf("cannot take session from session pool: %v", err)
-		}
-		gotSessions[sh.getID()] = true
-	}
-	if len(gotSessions) != 10 {
-		t.Fatalf("got %v unique sessions, want 10", len(gotSessions))
-	}
-	if !testEqual(gotSessions, wantSessions) {
-		t.Fatalf("got sessions: %v, want %v", gotSessions, wantSessions)
-	}
-}
-
-// TesttakeWriteSessionFromIdleList tests taking write sessions from session
-// pool's idle list.
-func TestTakeWriteSessionFromIdleList(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-
-	// Make sure maintainer keeps the idle sessions.
-	server, client, teardown := setupMockedTestServerWithConfig(t,
-		ClientConfig{
-			SessionPoolConfig: SessionPoolConfig{MaxIdle: 10, MaxOpened: 10},
-		})
-	defer teardown()
-	sp := client.idleSessions
-
-	// Take ten sessions from session pool and recycle them.
-	shs := make([]*sessionHandle, 10)
-	for i := 0; i < len(shs); i++ {
-		var err error
-		shs[i], err = sp.takeWriteSession(ctx)
-		if err != nil {
-			t.Fatalf("failed to get session(%v): %v", i, err)
-		}
-	}
-	// Make sure it's sampled once before recycling, otherwise it will be
-	// cleaned up.
-	<-time.After(sp.SessionPoolConfig.healthCheckSampleInterval)
-	for i := 0; i < len(shs); i++ {
-		shs[i].recycle()
-	}
-	// Further session requests from session pool won't cause mockclient to
-	// create more sessions.
-	wantSessions := server.TestSpanner.DumpSessions()
-	// Take ten sessions from session pool again, this time all sessions should
-	// come from idle list.
-	gotSessions := map[string]bool{}
-	for i := 0; i < len(shs); i++ {
-		sh, err := sp.takeWriteSession(ctx)
 		if err != nil {
 			t.Fatalf("cannot take session from session pool: %v", err)
 		}
@@ -422,79 +328,6 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	}
 }
 
-// TestTakeFromIdleWriteListChecked tests taking sessions from session pool's
-// idle list, but with a extra ping check.
-func TestTakeFromIdleWriteListChecked(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-
-	// Make sure maintainer keeps the idle sessions.
-	server, client, teardown := setupMockedTestServerWithConfig(t,
-		ClientConfig{
-			SessionPoolConfig: SessionPoolConfig{
-				MaxIdle:                   1,
-				HealthCheckInterval:       50 * time.Millisecond,
-				healthCheckSampleInterval: 10 * time.Millisecond,
-			},
-		})
-	defer teardown()
-	sp := client.idleSessions
-
-	// Stop healthcheck workers to simulate slow pings.
-	sp.hc.close()
-
-	// Create a session and recycle it.
-	sh, err := sp.takeWriteSession(ctx)
-	if err != nil {
-		t.Fatalf("failed to get session: %v", err)
-	}
-	wantSid := sh.getID()
-	// Set the next check in the past to ensure the next take() call will
-	// trigger a health check.
-	sh.session.nextCheck = time.Now().Add(-time.Minute)
-	sh.recycle()
-
-	// Two back-to-back session requests, both of them should return the same
-	// session created before and only the first of them should trigger a
-	// session ping.
-	for i := 0; i < 2; i++ {
-		// Take the session from the idle list and recycle it.
-		sh, err = sp.takeWriteSession(ctx)
-		if err != nil {
-			t.Fatalf("%v - failed to get session: %v", i, err)
-		}
-		if gotSid := sh.getID(); gotSid != wantSid {
-			t.Fatalf("%v - got session id: %v, want %v", i, gotSid, wantSid)
-		}
-		// The two back-to-back session requests shouldn't trigger any session
-		// pings because sessionPool.Take reschedules the next healthcheck.
-		if got, want := server.TestSpanner.DumpPings(), ([]string{wantSid}); !testEqual(got, want) {
-			t.Fatalf("%v - got ping session requests: %v, want %v", i, got, want)
-		}
-		sh.recycle()
-	}
-
-	// Inject session error to mockclient, and take the session from the
-	// session pool, the old session should be destroyed and the session pool
-	// will create a new session.
-	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
-		SimulatedExecutionTime{
-			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
-		})
-
-	// Force ping by setting check time in the past.
-	s := sp.idleList.Front().Value.(*session)
-	s.nextCheck = time.Now().Add(-time.Minute)
-
-	sh, err = sp.takeWriteSession(ctx)
-	if err != nil {
-		t.Fatalf("failed to get session: %v", err)
-	}
-	if sh.getID() == wantSid {
-		t.Fatalf("sessionPool.Take still returns the same session %v, want it to create a new one", wantSid)
-	}
-}
-
 // TestSessionLeak tests leaking a session and getting the stack of the
 // goroutine that leaked it.
 func TestSessionLeak(t *testing.T) {
@@ -573,6 +406,512 @@ func TestSessionLeak(t *testing.T) {
 	// Close iterators to check sessions back into the pool before closing.
 	iter2.Stop()
 	iter.Stop()
+}
+
+func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 0,
+			MaxOpened: 1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: WarnAndClose,
+			},
+			TrackSessionHandles: true,
+		},
+	})
+	defer teardown()
+
+	// Execute a query without calling rowIterator.Stop. This will cause the
+	// session not to be returned to the pool.
+	single := client.Single()
+	iter := single.Query(ctx, NewStatement(SelectFooFromBar))
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Got unexpected error while iterating results: %v\n", err)
+		}
+	}
+	// The session should not have been returned to the pool.
+	p := client.idleSessions
+	p.mu.Lock()
+	if g, w := p.idleList.Len(), 0; g != w { // No of sessions in the pool must be 0
+		p.mu.Unlock()
+		t.Fatalf("Idle sessions count mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	p.mu.Unlock()
+	// The checked out session should contain a stack trace as Logging is true.
+	single.sh.mu.Lock()
+	if single.sh.stack == nil {
+		single.sh.mu.Unlock()
+		t.Fatalf("Missing stacktrace from session handle")
+	}
+	if g, w := single.sh.eligibleForLongRunning, false; g != w {
+		single.sh.mu.Unlock()
+		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
+	}
+
+	// Mock the session lastUseTime to be greater than 60 mins
+	single.sh.lastUseTime = time.Now().Add(-time.Hour)
+	single.sh.mu.Unlock()
+
+	// force run task to clean up unexpected long-running sessions
+	p.removeLongRunningSessions()
+
+	// The session should have been removed from pool.
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if g, w := p.idleList.Len(), 0; g != w {
+		t.Fatalf("Idle Sessions in pool, count mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := p.numInUse, uint64(0); g != w {
+		t.Fatalf("Number of sessions currently in use mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := p.numOpened, uint64(0); g != w {
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
+		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	iter.Stop()
+}
+
+func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                 1,
+			MaxOpened:                 3,
+			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: WarnAndClose,
+				executionFrequency:          15 * time.Millisecond, // check long-running sessions every 20ms
+			},
+		},
+	})
+	defer teardown()
+	sp := client.idleSessions
+
+	// get session-1 from pool
+	s1, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-2 from pool
+	s2, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-3 from pool
+	s3, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	sp.mu.Lock()
+	if g, w := sp.numOpened, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("No of sessions opened mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numInUse, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("No of sessions in use mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	sp.mu.Unlock()
+	s1.mu.Lock()
+	s1.eligibleForLongRunning = false
+	s1.lastUseTime = time.Now().Add(-time.Hour)
+	s1.mu.Unlock()
+
+	s2.mu.Lock()
+	s2.eligibleForLongRunning = false
+	s2.lastUseTime = time.Now().Add(-time.Hour)
+	s2.mu.Unlock()
+
+	s3.mu.Lock()
+	s3.eligibleForLongRunning = true
+	s3.lastUseTime = time.Now().Add(-time.Hour)
+	s3.mu.Unlock()
+
+	// Sleep for maintainer to run long-running cleanup task
+	time.Sleep(30 * time.Millisecond)
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
+
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	if g, w := sp.numOfLeakedSessionsRemoved, uint64(2); g != w {
+		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numOpened, uint64(1); g != w {
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+}
+
+func TestLongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 3,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: WarnAndClose,
+			},
+		},
+	})
+	defer teardown()
+	sp := client.idleSessions
+
+	// get session-1 from pool
+	s1, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-2 from pool
+	s2, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-3 from pool
+	s3, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	sp.mu.Lock()
+	if g, w := sp.numOpened, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("No of sessions opened mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numInUse, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("No of sessions in use mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	sp.mu.Unlock()
+	s1.mu.Lock()
+	s1.eligibleForLongRunning = false
+	s1.lastUseTime = time.Now().Add(-time.Hour)
+	s1.mu.Unlock()
+
+	s2.mu.Lock()
+	s2.eligibleForLongRunning = false
+	s2.lastUseTime = time.Now().Add(-time.Hour)
+	s2.mu.Unlock()
+
+	s3.mu.Lock()
+	s3.eligibleForLongRunning = true
+	s3.lastUseTime = time.Now().Add(-time.Hour)
+	s3.mu.Unlock()
+
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
+
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	if g, w := sp.numOfLeakedSessionsRemoved, uint64(2); g != w {
+		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numOpened, uint64(1); g != w {
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+}
+
+func TestLongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsOpen(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 3,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: Warn,
+			},
+		},
+	})
+	defer teardown()
+	sp := client.idleSessions
+
+	// get session-1 from pool
+	s1, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-2 from pool
+	s2, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-3 from pool
+	s3, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	sp.mu.Lock()
+	if g, w := sp.numInUse, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("Number of sessions currently in use mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numOpened, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	sp.mu.Unlock()
+	s1.mu.Lock()
+	s1.eligibleForLongRunning = false
+	s1.lastUseTime = time.Now().Add(-time.Hour)
+	s1.mu.Unlock()
+
+	s2.mu.Lock()
+	s2.eligibleForLongRunning = false
+	s2.lastUseTime = time.Now().Add(-time.Hour)
+	s2.mu.Unlock()
+
+	s3.mu.Lock()
+	s3.eligibleForLongRunning = true
+	s3.lastUseTime = time.Now().Add(-time.Hour)
+	s3.mu.Unlock()
+
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
+
+	s1.mu.Lock()
+	if !s1.isSessionLeakLogged {
+		t.Fatalf("Expect session leak logged for session %v", s1.session.id)
+	}
+	s1.mu.Unlock()
+
+	s2.mu.Lock()
+	if !s2.isSessionLeakLogged {
+		t.Fatalf("Expect session leak logged for session %v", s2.session.id)
+	}
+	s2.mu.Unlock()
+
+	s3.mu.Lock()
+	if s3.isSessionLeakLogged {
+		t.Fatalf("Incorrect session leak log as transaction is long running for session: %v", s3.session.id)
+	}
+	s3.mu.Unlock()
+
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
+		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numOpened, uint64(3); g != w {
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+}
+
+func TestLongRunningTransactionsCleanup_UtilisationBelowThreshold_VerifyInactiveSessionsOpen(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 3,
+			incStep:   1,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: WarnAndClose,
+			},
+		},
+	})
+	defer teardown()
+	sp := client.idleSessions
+
+	// get session-1 from pool
+	s1, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-2 from pool
+	s2, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	sp.mu.Lock()
+	if g, w := sp.numInUse, uint64(2); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("Number of sessions currently in use mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numOpened, uint64(2); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	sp.mu.Unlock()
+	s1.mu.Lock()
+	s1.eligibleForLongRunning = false
+	s1.lastUseTime = time.Now().Add(-time.Hour)
+	s1.mu.Unlock()
+
+	s2.mu.Lock()
+	s2.eligibleForLongRunning = false
+	s2.lastUseTime = time.Now().Add(-time.Hour)
+	s2.mu.Unlock()
+
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
+
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	// 2/3 sessions are used. Hence utilisation < 95%.
+	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
+		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numOpened, uint64(2); g != w {
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+}
+
+func TestLongRunningTransactions_WhenAllExpectedlyLongRunning_VerifyInactiveSessionsOpen(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 3,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: Warn,
+			},
+		},
+	})
+	defer teardown()
+	sp := client.idleSessions
+
+	// get session-1 from pool
+	s1, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-2 from pool
+	s2, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-3 from pool
+	s3, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	sp.mu.Lock()
+	if g, w := sp.numInUse, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("Number of sessions currently in use mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numOpened, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	sp.mu.Unlock()
+	s1.mu.Lock()
+	s1.eligibleForLongRunning = true
+	s1.lastUseTime = time.Now().Add(-time.Hour)
+	s1.mu.Unlock()
+
+	s2.mu.Lock()
+	s2.eligibleForLongRunning = true
+	s2.lastUseTime = time.Now().Add(-time.Hour)
+	s2.mu.Unlock()
+
+	s3.mu.Lock()
+	s3.eligibleForLongRunning = true
+	s3.lastUseTime = time.Now().Add(-time.Hour)
+	s3.mu.Unlock()
+
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
+
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
+		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numOpened, uint64(3); g != w {
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+}
+
+func TestLongRunningTransactions_WhenDurationBelowThreshold_VerifyInactiveSessionsOpen(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 3,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				ActionOnInactiveTransaction: Warn,
+			},
+		},
+	})
+	defer teardown()
+	sp := client.idleSessions
+
+	// get session-1 from pool
+	s1, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-2 from pool
+	s2, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-3 from pool
+	s3, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	if g, w := sp.numInUse, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("Number of sessions currently in use mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	sp.mu.Lock()
+	if g, w := sp.numOpened, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	sp.mu.Unlock()
+	s1.mu.Lock()
+	s1.eligibleForLongRunning = false
+	s1.lastUseTime = time.Now().Add(-50 * time.Minute)
+	s1.mu.Unlock()
+
+	s2.mu.Lock()
+	s2.eligibleForLongRunning = false
+	s2.lastUseTime = time.Now().Add(-50 * time.Minute)
+	s2.mu.Unlock()
+
+	s3.mu.Lock()
+	s3.eligibleForLongRunning = true
+	s3.lastUseTime = time.Now().Add(-50 * time.Minute)
+	s3.mu.Unlock()
+
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
+
+	s1.mu.Lock()
+	if s1.isSessionLeakLogged {
+		t.Fatalf("Session leak should not be logged for session %v as checkout duration is <60 mins", s1.session.id)
+	}
+	s1.mu.Unlock()
+
+	s2.mu.Lock()
+	if s2.isSessionLeakLogged {
+		t.Fatalf("Session leak should not be logged for session %v as checkout duration is <60 mins", s2.session.id)
+	}
+	s2.mu.Unlock()
+
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
+		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numOpened, uint64(3); g != w {
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
 }
 
 // TestMaxOpenedSessions tests max open sessions constraint.
@@ -676,15 +1015,10 @@ func TestMinOpenedSessions(t *testing.T) {
 	// There should be still one session left in either the idle list or in one
 	// of the other opened states due to the min open sessions constraint.
 	if (sp.idleList.Len() +
-		sp.idleWriteList.Len() +
-		int(sp.prepareReqs) +
 		int(sp.createReqs)) != 1 {
 		t.Fatalf(
-			"got %v sessions in idle lists, want 1. Opened: %d, read: %d, "+
-				"write: %d, in preparation: %d, in creation: %d",
-			sp.idleList.Len()+sp.idleWriteList.Len(), sp.numOpened,
-			sp.idleList.Len(), sp.idleWriteList.Len(), sp.prepareReqs,
-			sp.createReqs)
+			"got %v sessions in idle lists, want 1. Opened: %d, Creation: %d",
+			sp.idleList.Len(), sp.numOpened, sp.createReqs)
 	}
 }
 
@@ -960,345 +1294,6 @@ func TestHealthCheck_NonFirstHealthCheck(t *testing.T) {
 	}
 }
 
-// Tests that a fractions of sessions are prepared for write by health checker.
-func TestWriteSessionsPrepared(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	_, client, teardown := setupMockedTestServerWithConfig(t,
-		ClientConfig{
-			SessionPoolConfig: SessionPoolConfig{
-				WriteSessions:       0.5,
-				MaxIdle:             200,
-				HealthCheckInterval: time.Nanosecond,
-			},
-		})
-	defer teardown()
-	sp := client.idleSessions
-
-	shs := make([]*sessionHandle, 100)
-	var err error
-	for i := 0; i < 100; i++ {
-		shs[i], err = sp.take(ctx)
-		if err != nil {
-			t.Fatalf("cannot get session from session pool: %v", err)
-		}
-	}
-	// Now there are 100 sessions in the pool. Release them.
-	for _, sh := range shs {
-		sh.recycle()
-	}
-
-	// Take 50 write sessions. The write sessions will be taken from either the
-	// list of prepared sessions (idleWriteList), or they will be prepared
-	// during the takeWriteSession method.
-	wshs := make([]*sessionHandle, 50)
-	for i := 0; i < 50; i++ {
-		wshs[i], err = sp.takeWriteSession(ctx)
-		if err != nil {
-			t.Fatalf("cannot get session from session pool: %v", err)
-		}
-		if wshs[i].getTransactionID() == nil {
-			t.Fatalf("got nil transaction id from session pool")
-		}
-	}
-	// Return the session to the pool.
-	for _, sh := range wshs {
-		sh.recycle()
-	}
-
-	// Now force creation of 100 more sessions.
-	shs = make([]*sessionHandle, 200)
-	for i := 0; i < 200; i++ {
-		shs[i], err = sp.take(ctx)
-		if err != nil {
-			t.Fatalf("cannot get session from session pool: %v", err)
-		}
-	}
-
-	// Now there are 200 sessions in the pool. Release them.
-	for _, sh := range shs {
-		sh.recycle()
-	}
-	// The health checker should eventually prepare 100 of the 200 sessions with
-	// a r/w tx.
-	waitUntil := time.After(time.Second)
-	var numWritePrepared int
-	for numWritePrepared < 100 {
-		select {
-		case <-waitUntil:
-			break
-		default:
-		}
-		sp.mu.Lock()
-		numWritePrepared = sp.idleWriteList.Len()
-		sp.mu.Unlock()
-	}
-
-	sp.mu.Lock()
-	defer sp.mu.Unlock()
-	if sp.idleWriteList.Len() != 100 {
-		t.Fatalf("Expect 100 write prepared session, got: %d", sp.idleWriteList.Len())
-	}
-}
-
-// TestTakeFromWriteQueue tests that sessionPool.take() returns write prepared
-// sessions as well.
-func TestTakeFromWriteQueue(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	_, client, teardown := setupMockedTestServerWithConfig(t,
-		ClientConfig{
-			SessionPoolConfig: SessionPoolConfig{
-				MaxOpened:           1,
-				WriteSessions:       1.0,
-				MaxIdle:             1,
-				HealthCheckInterval: time.Nanosecond,
-			},
-		})
-	defer teardown()
-	sp := client.idleSessions
-
-	sh, err := sp.take(ctx)
-	if err != nil {
-		t.Fatalf("cannot get session from session pool: %v", err)
-	}
-	sh.recycle()
-
-	// Wait until the health checker has write-prepared the session.
-	waitUntil := time.After(time.Second)
-	var numWritePrepared int
-	for numWritePrepared == 0 {
-		select {
-		case <-waitUntil:
-			break
-		default:
-		}
-		sp.mu.Lock()
-		numWritePrepared = sp.idleWriteList.Len()
-		sp.mu.Unlock()
-	}
-
-	// The session should now be in write queue but take should also return it.
-	sp.mu.Lock()
-	if sp.idleWriteList.Len() == 0 {
-		t.Fatalf("write queue unexpectedly empty")
-	}
-	if sp.idleList.Len() != 0 {
-		t.Fatalf("read queue not empty")
-	}
-	sp.mu.Unlock()
-	sh, err = sp.take(ctx)
-	if err != nil {
-		t.Fatalf("cannot get session from session pool: %v", err)
-	}
-	sh.recycle()
-}
-
-// The session pool should stop trying to create write-prepared sessions if a
-// non-transient error occurs while trying to begin a transaction. The
-// process for preparing write sessions should automatically be re-enabled if
-// a BeginTransaction call initiated by takeWriteSession succeeds.
-//
-// The only exception to the above is that a 'Session not found' error should
-// cause the session to be removed from the session pool, and it should not
-// affect the background process of preparing sessions.
-func TestErrorOnPrepareSession(t *testing.T) {
-	t.Parallel()
-
-	serverErrors := []error{
-		status.Errorf(codes.PermissionDenied, "Caller is missing IAM permission spanner.databases.beginOrRollbackReadWriteTransaction on resource"),
-		status.Errorf(codes.NotFound, `Database not found: projects/<project>/instances/<instance>/databases/<database> resource_type: "type.googleapis.com/google.spanner.admin.database.v1.Database" resource_name: "projects/<project>/instances/<instance>/databases/<database>" description: "Database does not exist."`),
-		status.Errorf(codes.FailedPrecondition, "Invalid transaction option"),
-		status.Errorf(codes.Internal, "Unknown server error"),
-	}
-	logger := log.New(os.Stderr, "", log.LstdFlags)
-	for _, serverErr := range serverErrors {
-		ctx := context.Background()
-		server, client, teardown := setupMockedTestServerWithConfig(t,
-			ClientConfig{
-				SessionPoolConfig: SessionPoolConfig{
-					MinOpened:           10,
-					MaxOpened:           10,
-					WriteSessions:       0.5,
-					HealthCheckInterval: time.Millisecond,
-				},
-				Logger: logger,
-			})
-		defer teardown()
-		// Discard logging until trying to prepare sessions has stopped.
-		logger.SetOutput(ioutil.Discard)
-		server.TestSpanner.PutExecutionTime(MethodBeginTransaction, SimulatedExecutionTime{
-			Errors:    []error{serverErr},
-			KeepError: true,
-		})
-		sp := client.idleSessions
-
-		// Wait until session creation has seized.
-		waitFor(t, func() error {
-			sp.mu.Lock()
-			defer sp.mu.Unlock()
-			if sp.createReqs != 0 {
-				return fmt.Errorf("%d sessions are still in creation", sp.createReqs)
-			}
-			return nil
-		})
-
-		// Wait until the health checker has tried to write-prepare a session.
-		// This will cause the session pool to write some errors to the log that
-		// preparing sessions failed.
-		waitUntil := time.After(time.Second)
-		var prepareDisabled bool
-		var numOpened int
-	waitForPrepare:
-		for !prepareDisabled || numOpened < 10 {
-			select {
-			case <-waitUntil:
-				break waitForPrepare
-			default:
-			}
-			sp.mu.Lock()
-			prepareDisabled = sp.disableBackgroundPrepareSessions
-			numOpened = sp.idleList.Len()
-			sp.mu.Unlock()
-		}
-		// Re-enable logging.
-		logger.SetOutput(os.Stderr)
-
-		// There should be no write-prepared sessions.
-		sp.mu.Lock()
-		if sp.idleWriteList.Len() != 0 {
-			sp.mu.Unlock()
-			t.Fatalf("write queue unexpectedly not empty")
-		}
-		// All sessions should be in the read idle list.
-		if g, w := sp.idleList.Len(), 10; g != w {
-			sp.mu.Unlock()
-			t.Fatalf("session count mismatch:\nWant: %v\nGot: %v", w, g)
-		}
-		sp.mu.Unlock()
-		// Take a read session should succeed.
-		sh, err := sp.take(ctx)
-		if err != nil {
-			t.Fatalf("cannot get session from session pool: %v", err)
-		}
-		sh.recycle()
-		// Take a write session should fail with the server error.
-		_, err = sp.takeWriteSession(ctx)
-		if ErrCode(err) != ErrCode(serverErr) {
-			t.Fatalf("take write session failed with unexpected error.\nGot: %v\nWant: %v\n", err, serverErr)
-		}
-
-		// Clearing the error on the server should allow us to take a write
-		// session.
-		server.TestSpanner.PutExecutionTime(MethodBeginTransaction, SimulatedExecutionTime{})
-		sh, err = sp.takeWriteSession(ctx)
-		if err != nil {
-			t.Fatalf("cannot get write session from session pool: %v", err)
-		}
-		sh.recycle()
-		// The maintainer should also pick this up and prepare 50% of the sessions.
-		waitUntil = time.After(time.Second)
-		var numPrepared int
-		for numPrepared < 5 {
-			select {
-			case <-waitUntil:
-				break
-			default:
-			}
-			sp.mu.Lock()
-			numPrepared = sp.idleWriteList.Len()
-			sp.mu.Unlock()
-		}
-		sp.mu.Lock()
-		if g, w := sp.idleWriteList.Len(), 5; g != w {
-			sp.mu.Unlock()
-			t.Fatalf("write session count mismatch:\nWant: %v\nGot: %v", w, g)
-		}
-		sp.mu.Unlock()
-	}
-}
-
-// The session pool should continue to try to create write-prepared sessions if
-// a 'Session not found' error occurs. The session that has been deleted by
-// backend should be removed from the pool, and the maintainer should create a
-// new session if this causes the number of sessions in the pool to fall below
-// MinOpened.
-func TestSessionNotFoundOnPrepareSession(t *testing.T) {
-	t.Parallel()
-
-	// The server will return 'Session not found' for the first 8
-	// BeginTransaction calls.
-	sessionNotFoundErr := newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")
-	serverErrors := make([]error, 8)
-	for i := range serverErrors {
-		serverErrors[i] = sessionNotFoundErr
-	}
-	ctx := context.Background()
-	logger := log.New(os.Stderr, "", log.LstdFlags)
-	server, client, teardown := setupMockedTestServerWithConfig(t,
-		ClientConfig{
-			SessionPoolConfig: SessionPoolConfig{
-				MinOpened:                 10,
-				MaxOpened:                 10,
-				WriteSessions:             0.5,
-				HealthCheckInterval:       time.Millisecond,
-				healthCheckSampleInterval: time.Millisecond,
-			},
-			Logger: logger,
-		})
-	defer teardown()
-	// Discard logging until trying to prepare sessions has stopped.
-	logger.SetOutput(ioutil.Discard)
-	server.TestSpanner.PutExecutionTime(MethodBeginTransaction, SimulatedExecutionTime{
-		Errors: serverErrors,
-	})
-	sp := client.idleSessions
-
-	// Wait until the health checker has tried to write-prepare the sessions.
-	waitUntil := time.After(5 * time.Second)
-	var numWriteSessions int
-	var numReadSessions int
-waitForPrepare:
-	for (numWriteSessions+numReadSessions) < 10 || numWriteSessions < 5 {
-		select {
-		case <-waitUntil:
-			break waitForPrepare
-		default:
-		}
-		sp.mu.Lock()
-		numReadSessions = sp.idleList.Len()
-		numWriteSessions = sp.idleWriteList.Len()
-		sp.mu.Unlock()
-	}
-	// Re-enable logging.
-	logger.SetOutput(os.Stderr)
-
-	// There should be at least 5 write-prepared sessions.
-	sp.mu.Lock()
-	if g, w := sp.idleWriteList.Len(), 5; g < w {
-		sp.mu.Unlock()
-		t.Fatalf("write-prepared session count mismatch.\nWant at least: %v\nGot: %v", w, g)
-	}
-	// The other sessions should be in the read idle list.
-	if g, w := sp.idleList.Len()+sp.idleWriteList.Len(), 10; g != w {
-		sp.mu.Unlock()
-		t.Fatalf("total session count mismatch:\nWant: %v\nGot: %v", w, g)
-	}
-	sp.mu.Unlock()
-	// Take a read session should succeed.
-	sh, err := sp.take(ctx)
-	if err != nil {
-		t.Fatalf("cannot get session from session pool: %v", err)
-	}
-	sh.recycle()
-	// Take a write session should succeed.
-	sh, err = sp.takeWriteSession(ctx)
-	if err != nil {
-		t.Fatalf("take write session failed with unexpected error.\nGot: %v\nWant: %v\n", err, nil)
-	}
-	sh.recycle()
-}
-
 // TestSessionHealthCheck tests healthchecking cases.
 func TestSessionHealthCheck(t *testing.T) {
 	t.Parallel()
@@ -1421,13 +1416,6 @@ func TestStressSessionPool(t *testing.T) {
 			}
 			idleSessions[s.getID()] = true
 		}
-		for sl := sp.idleWriteList.Front(); sl != nil; sl = sl.Next() {
-			s := sl.Value.(*session)
-			if idleSessions[s.getID()] {
-				t.Fatalf("%v: found duplicated session in idle write list: %v", ti, s.getID())
-			}
-			idleSessions[s.getID()] = true
-		}
 		if int(sp.numOpened) != len(idleSessions) {
 			t.Fatalf("%v: number of opened sessions (%v) != number of idle sessions (%v)", ti, sp.numOpened, len(idleSessions))
 		}
@@ -1483,18 +1471,12 @@ func testStressSessionPool(t *testing.T, cfg SessionPoolConfig, ti int, idx int,
 			// middle of the test.
 			pool.close(context.Background())
 		}
-		// Take a write sessions ~ 20% of the times.
-		takeWrite := rand.Intn(5) == 4
 		var (
 			sh     *sessionHandle
 			gotErr error
 		)
 		wasValid := pool.isValid()
-		if takeWrite {
-			sh, gotErr = pool.takeWriteSession(ctx)
-		} else {
-			sh, gotErr = pool.take(ctx)
-		}
+		sh, gotErr = pool.take(ctx)
 		if gotErr != nil {
 			if pool.isValid() {
 				t.Fatalf("%v.%v: pool.take returns error when pool is still valid: %v", ti, idx, gotErr)
@@ -1514,10 +1496,10 @@ func testStressSessionPool(t *testing.T, cfg SessionPoolConfig, ti int, idx int,
 		// Note that if session pool is invalid after sh is taken,
 		// then sh might be invalidated by healthcheck workers.
 		if (sh.getID() == "" || sh.session == nil || !sh.session.isValid()) && pool.isValid() {
-			t.Fatalf("%v.%v.%v: pool.take returns invalid session %v", ti, idx, takeWrite, sh.session)
+			t.Fatalf("%v.%v: pool.take returns invalid session %v", ti, idx, sh.session)
 		}
-		if takeWrite && sh.getTransactionID() == nil {
-			t.Fatalf("%v.%v: pool.takeWriteSession returns session %v without transaction", ti, idx, sh.session)
+		if sh.getTransactionID() != nil {
+			t.Fatalf("%v.%v: pool.take returns session %v with transaction", ti, idx, sh.session)
 		}
 		if rand.Intn(100) < idx {
 			// Random sleep before destroying/recycling the session,
@@ -1658,7 +1640,7 @@ loop:
 			t.Fatalf("timed out, got %d session(s), want %d", numOpened, spc.MinOpened)
 		default:
 			sp.mu.Lock()
-			numOpened = sp.idleList.Len() + sp.idleWriteList.Len()
+			numOpened = sp.idleList.Len()
 			sp.mu.Unlock()
 			if numOpened == 10 {
 				break loop
@@ -1673,43 +1655,6 @@ loop:
 	})
 	if err != nil {
 		t.Fatal(err)
-	}
-}
-
-// Tests that the session pool with a MinSessions>0 also prepares WriteSessions
-// sessions.
-func TestInit_PreparesSessions(t *testing.T) {
-	t.Parallel()
-	spc := SessionPoolConfig{
-		MinOpened:                 10,
-		MaxIdle:                   10,
-		WriteSessions:             0.5,
-		healthCheckSampleInterval: 20 * time.Millisecond,
-	}
-	_, client, teardown := setupMockedTestServerWithConfig(t,
-		ClientConfig{
-			SessionPoolConfig: spc,
-		})
-	defer teardown()
-	sp := client.idleSessions
-
-	timeoutAmt := 4 * time.Second
-	timeout := time.After(timeoutAmt)
-	var numPrepared int
-	want := int(spc.WriteSessions * float64(spc.MinOpened))
-loop:
-	for {
-		select {
-		case <-timeout:
-			t.Fatalf("timed out after %v, got %d write-prepared session(s), want %d", timeoutAmt, numPrepared, want)
-		default:
-			sp.mu.Lock()
-			numPrepared = sp.idleWriteList.Len()
-			sp.mu.Unlock()
-			if numPrepared == want {
-				break loop
-			}
-		}
 	}
 }
 

@@ -24,10 +24,64 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+func TestNewClientWithDatabase(t *testing.T) {
+	origDetectProjectIDFn := detectProjectIDFn
+	origGtransportDialPoolFn := gtransportDialPoolFn
+	defer func() {
+		detectProjectIDFn = origDetectProjectIDFn
+		gtransportDialPoolFn = origGtransportDialPoolFn
+	}()
+
+	tests := []struct {
+		desc                 string
+		databaseID           string
+		wantErr              bool
+		detectProjectIDFn    func(ctx context.Context, opts ...option.ClientOption) (string, error)
+		gtransportDialPoolFn func(ctx context.Context, opts ...option.ClientOption) (grpc.ConnPool, error)
+	}{
+		{
+			desc:       "Error from detect project ID should not fail NewClientWithDatabase",
+			databaseID: "db1",
+			wantErr:    false,
+			detectProjectIDFn: func(ctx context.Context, opts ...option.ClientOption) (string, error) {
+				return "", errors.New("mock error from detect project ID")
+			},
+			gtransportDialPoolFn: origGtransportDialPoolFn,
+		},
+		{
+			desc:              "Error from DialPool",
+			databaseID:        "db1",
+			wantErr:           true,
+			detectProjectIDFn: origDetectProjectIDFn,
+			gtransportDialPoolFn: func(ctx context.Context, opts ...option.ClientOption) (grpc.ConnPool, error) {
+				return nil, errors.New("mock error from DialPool")
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			detectProjectIDFn = tc.detectProjectIDFn
+			gtransportDialPoolFn = tc.gtransportDialPoolFn
+
+			client, gotErr := NewClientWithDatabase(context.Background(), "my-project", tc.databaseID)
+			if gotErr != nil && !tc.wantErr {
+				t.Errorf("got error %v, but none was expected", gotErr)
+			} else if gotErr == nil && tc.wantErr {
+				t.Errorf("wanted error, but none returned")
+			} else if gotErr == nil && client.databaseID != tc.databaseID {
+				t.Errorf("got %s, want %s", client.databaseID, tc.databaseID)
+			}
+		})
+	}
+}
 
 func TestQueryConstruction(t *testing.T) {
 	tests := []struct {
@@ -46,10 +100,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter("foo >", 7),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        greaterThan,
+						Operator:  string(greaterThan),
 						Value:     7,
 					},
 				},
@@ -61,10 +115,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter("foo=", 6),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        equal,
+						Operator:  string(equal),
 						Value:     6,
 					},
 				},
@@ -76,10 +130,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter(" foo< ", 8),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        lessThan,
+						Operator:  string(lessThan),
 						Value:     8,
 					},
 				},
@@ -91,10 +145,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter("foo >=", 9),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        greaterEq,
+						Operator:  string(greaterEq),
 						Value:     9,
 					},
 				},
@@ -558,6 +612,78 @@ func TestPutInvalidEntity(t *testing.T) {
 
 		return errors.New("bang") // Return error: we don't actually want to commit.
 	})
+}
+
+func TestPutNestedArray(t *testing.T) {
+	type InnerByte struct {
+		ArrByte []byte
+	}
+
+	type OuterByte struct {
+		InnerArr []InnerByte `datastore:"arrbyte,flatten"`
+	}
+
+	type InnerStr struct {
+		ArrStr []string
+	}
+
+	type OuterStr struct {
+		InnerArr []InnerStr `datastore:"arrstr,flatten"`
+	}
+
+	ctx := context.Background()
+	client := &Client{
+		client: &fakeDatastoreClient{
+			commit: func(req *pb.CommitRequest) (*pb.CommitResponse, error) {
+				return &pb.CommitResponse{}, nil
+			},
+		},
+	}
+
+	testcases := []struct {
+		desc        string
+		src         interface{}
+		key         *Key
+		wantFailure bool
+		wantErrMsg  string
+	}{
+		{
+			desc: "Nested byte slice should pass",
+			src: &OuterByte{
+				InnerArr: []InnerByte{
+					{
+						ArrByte: []byte("Test string"),
+					},
+				},
+			},
+			key: NameKey("OuterByte", "OuterByte1", nil),
+		},
+		{
+			desc: "Nested slice not of byte type should fail",
+			src: &OuterStr{
+				InnerArr: []InnerStr{
+					{
+						ArrStr: []string{"a", "b"},
+					},
+				},
+			},
+			key:         NameKey("OuterStr", "OuterStr1", nil),
+			wantFailure: true,
+			wantErrMsg:  "flattening nested structs leads to a slice of slices",
+		},
+	}
+
+	for _, tc := range testcases {
+		gotKey, gotErr := client.Put(ctx, tc.key, tc.src)
+		gotFailure := gotErr != nil
+		if gotFailure != tc.wantFailure ||
+			(gotErr != nil && !strings.Contains(gotErr.Error(), tc.wantErrMsg)) {
+			t.Errorf("%q: Mismatch in error got: %v, want: %q", tc.desc, gotErr, tc.wantErrMsg)
+		}
+		if gotErr == nil && !gotKey.Equal(tc.key) {
+			t.Errorf("%q: Mismatch in key got: %v, want: %q", tc.desc, gotKey, tc.key)
+		}
+	}
 }
 
 func TestDeferred(t *testing.T) {

@@ -5,6 +5,50 @@
   "protoPackage": "google.cloud.retail.v2alpha",
   "libraryPackage": "cloud.google.com/go/retail/apiv2alpha",
   "services": {
+    "AnalyticsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AnalyticsClient",
+          "rpcs": {
+            "ExportAnalyticsMetrics": {
+              "methods": [
+                "ExportAnalyticsMetrics"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AnalyticsClient",
+          "rpcs": {
+            "ExportAnalyticsMetrics": {
+              "methods": [
+                "ExportAnalyticsMetrics"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "CatalogService": {
       "clients": {
         "grpc": {
@@ -297,6 +341,70 @@
         }
       }
     },
+    "MerchantCenterAccountLinkService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MerchantCenterAccountLinkClient",
+          "rpcs": {
+            "CreateMerchantCenterAccountLink": {
+              "methods": [
+                "CreateMerchantCenterAccountLink"
+              ]
+            },
+            "DeleteMerchantCenterAccountLink": {
+              "methods": [
+                "DeleteMerchantCenterAccountLink"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListMerchantCenterAccountLinks": {
+              "methods": [
+                "ListMerchantCenterAccountLinks"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "MerchantCenterAccountLinkClient",
+          "rpcs": {
+            "CreateMerchantCenterAccountLink": {
+              "methods": [
+                "CreateMerchantCenterAccountLink"
+              ]
+            },
+            "DeleteMerchantCenterAccountLink": {
+              "methods": [
+                "DeleteMerchantCenterAccountLink"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListMerchantCenterAccountLinks": {
+              "methods": [
+                "ListMerchantCenterAccountLinks"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ModelService": {
       "clients": {
         "grpc": {
@@ -310,6 +418,11 @@
             "DeleteModel": {
               "methods": [
                 "DeleteModel"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
               ]
             },
             "GetOperation": {
@@ -360,6 +473,11 @@
             "DeleteModel": {
               "methods": [
                 "DeleteModel"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
               ]
             },
             "GetOperation": {

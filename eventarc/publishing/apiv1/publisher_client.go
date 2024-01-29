@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -34,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -60,15 +59,19 @@ func defaultPublisherGRPCClientOptions() []option.ClientOption {
 
 func defaultPublisherCallOptions() *PublisherCallOptions {
 	return &PublisherCallOptions{
-		PublishChannelConnectionEvents: []gax.CallOption{},
-		PublishEvents:                  []gax.CallOption{},
+		PublishChannelConnectionEvents: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		PublishEvents: []gax.CallOption{},
 	}
 }
 
 func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 	return &PublisherCallOptions{
-		PublishChannelConnectionEvents: []gax.CallOption{},
-		PublishEvents:                  []gax.CallOption{},
+		PublishChannelConnectionEvents: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		PublishEvents: []gax.CallOption{},
 	}
 }
 
@@ -156,9 +159,6 @@ type publisherGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PublisherClient
 	CallOptions **PublisherCallOptions
 
@@ -166,7 +166,7 @@ type publisherGRPCClient struct {
 	publisherClient publishingpb.PublisherClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewPublisherClient creates a new publisher client based on gRPC.
@@ -206,11 +206,6 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -218,10 +213,9 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 	client := PublisherClient{CallOptions: defaultPublisherCallOptions()}
 
 	c := &publisherGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		publisherClient:  publishingpb.NewPublisherClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:        connPool,
+		publisherClient: publishingpb.NewPublisherClient(connPool),
+		CallOptions:     &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -242,9 +236,9 @@ func (c *publisherGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *publisherGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -261,8 +255,8 @@ type publisherRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing PublisherClient
 	CallOptions **PublisherCallOptions
@@ -325,9 +319,9 @@ func defaultPublisherRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *publisherRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -345,14 +339,10 @@ func (c *publisherRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *publisherGRPCClient) PublishChannelConnectionEvents(ctx context.Context, req *publishingpb.PublishChannelConnectionEventsRequest, opts ...gax.CallOption) (*publishingpb.PublishChannelConnectionEventsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel_connection", url.QueryEscape(req.GetChannelConnection())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "channel_connection", url.QueryEscape(req.GetChannelConnection()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).PublishChannelConnectionEvents[0:len((*c.CallOptions).PublishChannelConnectionEvents):len((*c.CallOptions).PublishChannelConnectionEvents)], opts...)
 	var resp *publishingpb.PublishChannelConnectionEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -367,9 +357,10 @@ func (c *publisherGRPCClient) PublishChannelConnectionEvents(ctx context.Context
 }
 
 func (c *publisherGRPCClient) PublishEvents(ctx context.Context, req *publishingpb.PublishEventsRequest, opts ...gax.CallOption) (*publishingpb.PublishEventsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel", url.QueryEscape(req.GetChannel())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "channel", url.QueryEscape(req.GetChannel()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).PublishEvents[0:len((*c.CallOptions).PublishEvents):len((*c.CallOptions).PublishEvents)], opts...)
 	var resp *publishingpb.PublishEventsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -403,9 +394,11 @@ func (c *publisherRESTClient) PublishChannelConnectionEvents(ctx context.Context
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel_connection", url.QueryEscape(req.GetChannelConnection())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "channel_connection", url.QueryEscape(req.GetChannelConnection()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).PublishChannelConnectionEvents[0:len((*c.CallOptions).PublishChannelConnectionEvents):len((*c.CallOptions).PublishChannelConnectionEvents)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishingpb.PublishChannelConnectionEventsResponse{}
@@ -430,13 +423,13 @@ func (c *publisherRESTClient) PublishChannelConnectionEvents(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -467,9 +460,11 @@ func (c *publisherRESTClient) PublishEvents(ctx context.Context, req *publishing
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel", url.QueryEscape(req.GetChannel())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "channel", url.QueryEscape(req.GetChannel()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).PublishEvents[0:len((*c.CallOptions).PublishEvents):len((*c.CallOptions).PublishEvents)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publishingpb.PublishEventsResponse{}
@@ -494,13 +489,13 @@ func (c *publisherRESTClient) PublishEvents(ctx context.Context, req *publishing
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

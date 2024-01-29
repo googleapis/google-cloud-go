@@ -30,20 +30,30 @@ import (
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
 
-type operator int
+type operator string
 
 const (
-	lessThan operator = iota + 1
-	lessEq
-	equal
-	greaterEq
-	greaterThan
-	in
-	notIn
-	notEqual
+	lessThan    operator = "<"
+	lessEq      operator = "<="
+	equal       operator = "="
+	greaterEq   operator = ">="
+	greaterThan operator = ">"
+	in          operator = "in"
+	notIn       operator = "not-in"
+	notEqual    operator = "!="
 
 	keyFieldName = "__key__"
 )
+
+var stringToOperator = createStringToOperator()
+
+func createStringToOperator() map[string]operator {
+	strToOp := make(map[string]operator)
+	for op := range operatorToProto {
+		strToOp[string(op)] = op
+	}
+	return strToOp
+}
 
 var operatorToProto = map[operator]pb.PropertyFilter_Operator{
 	lessThan:    pb.PropertyFilter_LESS_THAN,
@@ -54,13 +64,6 @@ var operatorToProto = map[operator]pb.PropertyFilter_Operator{
 	in:          pb.PropertyFilter_IN,
 	notIn:       pb.PropertyFilter_NOT_IN,
 	notEqual:    pb.PropertyFilter_NOT_EQUAL,
-}
-
-// filter is a conditional filter on query results.
-type filter struct {
-	FieldName string
-	Op        operator
-	Value     interface{}
 }
 
 type sortDirection bool
@@ -81,6 +84,150 @@ type order struct {
 	Direction sortDirection
 }
 
+// EntityFilter represents a datastore filter.
+type EntityFilter interface {
+	toValidFilter() (EntityFilter, error)
+	toProto() (*pb.Filter, error)
+}
+
+// PropertyFilter represents field based filter.
+//
+// The operator parameter takes the following strings: ">", "<", ">=", "<=",
+// "=", "!=", "in", and "not-in".
+// Fields are compared against the provided value using the operator.
+// Field names which contain spaces, quote marks, or operator characters
+// should be passed as quoted Go string literals as returned by strconv.Quote
+// or the fmt package's %q verb.
+type PropertyFilter struct {
+	FieldName string
+	Operator  string
+	Value     interface{}
+}
+
+func (pf PropertyFilter) toProto() (*pb.Filter, error) {
+
+	if pf.FieldName == "" {
+		return nil, errors.New("datastore: empty query filter field name")
+	}
+	v, err := interfaceToProto(reflect.ValueOf(pf.Value).Interface(), false)
+	if err != nil {
+		return nil, fmt.Errorf("datastore: bad query filter value type: %w", err)
+	}
+
+	op, isOp := stringToOperator[pf.Operator]
+	if !isOp {
+		return nil, fmt.Errorf("datastore: invalid operator %q in filter", pf.Operator)
+	}
+
+	opProto, ok := operatorToProto[op]
+	if !ok {
+		return nil, errors.New("datastore: unknown query filter operator")
+	}
+	xf := &pb.PropertyFilter{
+		Op:       opProto,
+		Property: &pb.PropertyReference{Name: pf.FieldName},
+		Value:    v,
+	}
+	return &pb.Filter{
+		FilterType: &pb.Filter_PropertyFilter{PropertyFilter: xf},
+	}, nil
+}
+
+func (pf PropertyFilter) toValidFilter() (EntityFilter, error) {
+	op := strings.TrimSpace(pf.Operator)
+	_, isOp := stringToOperator[op]
+	if !isOp {
+		return nil, fmt.Errorf("datastore: invalid operator %q in filter", pf.Operator)
+	}
+
+	unquotedFieldName, err := unquote(pf.FieldName)
+	if err != nil {
+		return nil, fmt.Errorf("datastore: invalid syntax for quoted field name %q", pf.FieldName)
+	}
+
+	return PropertyFilter{Operator: op, FieldName: unquotedFieldName, Value: pf.Value}, nil
+}
+
+// CompositeFilter represents datastore composite filters.
+type CompositeFilter interface {
+	EntityFilter
+	isCompositeFilter()
+}
+
+// OrFilter represents a union of two or more filters.
+type OrFilter struct {
+	Filters []EntityFilter
+}
+
+func (OrFilter) isCompositeFilter() {}
+
+func (of OrFilter) toProto() (*pb.Filter, error) {
+
+	var pbFilters []*pb.Filter
+
+	for _, filter := range of.Filters {
+		pbFilter, err := filter.toProto()
+		if err != nil {
+			return nil, err
+		}
+		pbFilters = append(pbFilters, pbFilter)
+	}
+	return &pb.Filter{FilterType: &pb.Filter_CompositeFilter{CompositeFilter: &pb.CompositeFilter{
+		Op:      pb.CompositeFilter_OR,
+		Filters: pbFilters,
+	}}}, nil
+}
+
+func (of OrFilter) toValidFilter() (EntityFilter, error) {
+	var validFilters []EntityFilter
+	for _, filter := range of.Filters {
+		validFilter, err := filter.toValidFilter()
+		if err != nil {
+			return nil, err
+		}
+		validFilters = append(validFilters, validFilter)
+	}
+	of.Filters = validFilters
+	return of, nil
+}
+
+// AndFilter represents the intersection of two or more filters.
+type AndFilter struct {
+	Filters []EntityFilter
+}
+
+func (AndFilter) isCompositeFilter() {}
+
+func (af AndFilter) toProto() (*pb.Filter, error) {
+
+	var pbFilters []*pb.Filter
+
+	for _, filter := range af.Filters {
+		pbFilter, err := filter.toProto()
+		if err != nil {
+			return nil, err
+		}
+		pbFilters = append(pbFilters, pbFilter)
+	}
+	return &pb.Filter{FilterType: &pb.Filter_CompositeFilter{CompositeFilter: &pb.CompositeFilter{
+		Op:      pb.CompositeFilter_AND,
+		Filters: pbFilters,
+	}}}, nil
+}
+
+func (af AndFilter) toValidFilter() (EntityFilter, error) {
+	var validFilters []EntityFilter
+	for _, filter := range af.Filters {
+		validFilter, err := filter.toValidFilter()
+		if err != nil {
+			return nil, err
+		}
+		validFilters = append(validFilters, validFilter)
+	}
+	af.Filters = validFilters
+	return af, nil
+}
+
 // NewQuery creates a new Query for a specific entity kind.
 //
 // An empty kind means to return all entities, including entities created and
@@ -97,7 +244,7 @@ func NewQuery(kind string) *Query {
 type Query struct {
 	kind       string
 	ancestor   *Key
-	filter     []filter
+	filter     []EntityFilter
 	order      []order
 	projection []string
 
@@ -121,7 +268,7 @@ func (q *Query) clone() *Query {
 	x := *q
 	// Copy the contents of the slice-typed fields to a new backing store.
 	if len(q.filter) > 0 {
-		x.filter = make([]filter, len(q.filter))
+		x.filter = make([]EntityFilter, len(q.filter))
 		copy(x.filter, q.filter)
 	}
 	if len(q.order) > 0 {
@@ -176,6 +323,22 @@ func (q *Query) Transaction(t *Transaction) *Query {
 	return q
 }
 
+// FilterEntity returns a query with provided filter.
+//
+// Filter can be a single field comparison or a composite filter
+// AndFilter and OrFilter are supported composite filters
+// Filters in multiple calls are joined together by AND
+func (q *Query) FilterEntity(ef EntityFilter) *Query {
+	q = q.clone()
+	vf, err := ef.toValidFilter()
+	if err != nil {
+		q.err = err
+		return q
+	}
+	q.filter = append(q.filter, vf)
+	return q
+}
+
 // Filter returns a derivative query with a field-based filter.
 //
 // Deprecated: Use the FilterField method instead, which supports the same
@@ -209,42 +372,11 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 // should be passed as quoted Go string literals as returned by strconv.Quote
 // or the fmt package's %q verb.
 func (q *Query) FilterField(fieldName, operator string, value interface{}) *Query {
-	q = q.clone()
-
-	f := filter{
+	return q.FilterEntity(PropertyFilter{
 		FieldName: fieldName,
+		Operator:  operator,
 		Value:     value,
-	}
-
-	switch o := strings.TrimSpace(operator); o {
-	case "<=":
-		f.Op = lessEq
-	case ">=":
-		f.Op = greaterEq
-	case "<":
-		f.Op = lessThan
-	case ">":
-		f.Op = greaterThan
-	case "=":
-		f.Op = equal
-	case "in":
-		f.Op = in
-	case "not-in":
-		f.Op = notIn
-	case "!=":
-		f.Op = notEqual
-	default:
-		q.err = fmt.Errorf("datastore: invalid operator %q in filter", operator)
-		return q
-	}
-	var err error
-	f.FieldName, err = unquote(f.FieldName)
-	if err != nil {
-		q.err = fmt.Errorf("datastore: invalid syntax for quoted field name %q", f.FieldName)
-		return q
-	}
-	q.filter = append(q.filter, f)
-	return q
+	})
 }
 
 // Order returns a derivative query with a field-based sort order. Orders are
@@ -411,25 +543,11 @@ func (q *Query) toProto() (*pb.Query, error) {
 	}
 	var filters []*pb.Filter
 	for _, qf := range q.filter {
-		if qf.FieldName == "" {
-			return nil, errors.New("datastore: empty query filter field name")
-		}
-		v, err := interfaceToProto(reflect.ValueOf(qf.Value).Interface(), false)
+		pbFilter, err := qf.toProto()
 		if err != nil {
-			return nil, fmt.Errorf("datastore: bad query filter value type: %v", err)
+			return nil, err
 		}
-		op, ok := operatorToProto[qf.Op]
-		if !ok {
-			return nil, errors.New("datastore: unknown query filter operator")
-		}
-		xf := &pb.PropertyFilter{
-			Op:       op,
-			Property: &pb.PropertyReference{Name: qf.FieldName},
-			Value:    v,
-		}
-		filters = append(filters, &pb.Filter{
-			FilterType: &pb.Filter_PropertyFilter{PropertyFilter: xf},
-		})
+		filters = append(filters, pbFilter)
 	}
 
 	if q.ancestor != nil {
@@ -609,7 +727,8 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 		pageCursor:   q.start,
 		entityCursor: q.start,
 		req: &pb.RunQueryRequest{
-			ProjectId: c.dataset,
+			ProjectId:  c.dataset,
+			DatabaseId: c.databaseID,
 		},
 	}
 
@@ -626,7 +745,18 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 }
 
 // RunAggregationQuery gets aggregation query (e.g. COUNT) results from the service.
-func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (AggregationResult, error) {
+func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (ar AggregationResult, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.RunAggregationQuery")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	if aq == nil {
+		return nil, errors.New("datastore: aggregation query cannot be nil")
+	}
+
+	if aq.query == nil {
+		return nil, errors.New("datastore: aggregation query must include nested query")
+	}
+
 	if len(aq.aggregationQueries) == 0 {
 		return nil, errors.New("datastore: aggregation query must contain one or more operators (e.g. count)")
 	}
@@ -637,7 +767,8 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	}
 
 	req := &pb.RunAggregationQueryRequest{
-		ProjectId: c.dataset,
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
 		QueryType: &pb.RunAggregationQueryRequest_AggregationQuery{
 			AggregationQuery: &pb.AggregationQuery{
 				QueryType: &pb.AggregationQuery_NestedQuery{
@@ -665,7 +796,7 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 		return nil, err
 	}
 
-	ar := make(AggregationResult)
+	ar = make(AggregationResult)
 
 	// TODO(developer): change batch parsing logic if other aggregations are supported.
 	for _, a := range res.Batch.AggregationResults {
@@ -895,7 +1026,6 @@ func DecodeCursor(s string) (Cursor, error) {
 // NewAggregationQuery returns an AggregationQuery with this query as its
 // base query.
 func (q *Query) NewAggregationQuery() *AggregationQuery {
-	q.eventual = true
 	return &AggregationQuery{
 		query:              q,
 		aggregationQueries: make([]*pb.AggregationQuery_Aggregation, 0),
@@ -919,6 +1049,50 @@ func (aq *AggregationQuery) WithCount(alias string) *AggregationQuery {
 	aqpb := &pb.AggregationQuery_Aggregation{
 		Alias:    alias,
 		Operator: &pb.AggregationQuery_Aggregation_Count_{},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// WithSum specifies that the aggregation query should provide a sum of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Datastore entity property name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Datastore
+// will autogenerate a key.
+func (aq *AggregationQuery) WithSum(fieldName string, alias string) *AggregationQuery {
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.AggregationQuery_Aggregation_Sum_{
+			Sum: &pb.AggregationQuery_Aggregation_Sum{
+				Property: &pb.PropertyReference{
+					Name: fieldName,
+				},
+			},
+		},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// WithAvg specifies that the aggregation query should provide an average of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Datastore entity property name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Datastore
+// will autogenerate a key.
+func (aq *AggregationQuery) WithAvg(fieldName string, alias string) *AggregationQuery {
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.AggregationQuery_Aggregation_Avg_{
+			Avg: &pb.AggregationQuery_Aggregation_Avg{
+				Property: &pb.PropertyReference{
+					Name: fieldName,
+				},
+			},
+		},
 	}
 
 	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)

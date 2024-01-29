@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "BatchDeleteVersions": {
+              "methods": [
+                "BatchDeleteVersions"
+              ]
+            },
             "CreateRepository": {
               "methods": [
                 "CreateRepository"
@@ -60,6 +65,21 @@
                 "GetLocation"
               ]
             },
+            "GetMavenArtifact": {
+              "methods": [
+                "GetMavenArtifact"
+              ]
+            },
+            "GetNpmPackage": {
+              "methods": [
+                "GetNpmPackage"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetPackage": {
               "methods": [
                 "GetPackage"
@@ -70,6 +90,11 @@
                 "GetProjectSettings"
               ]
             },
+            "GetPythonPackage": {
+              "methods": [
+                "GetPythonPackage"
+              ]
+            },
             "GetRepository": {
               "methods": [
                 "GetRepository"
@@ -78,6 +103,11 @@
             "GetTag": {
               "methods": [
                 "GetTag"
+              ]
+            },
+            "GetVPCSCConfig": {
+              "methods": [
+                "GetVPCSCConfig"
               ]
             },
             "GetVersion": {
@@ -110,9 +140,24 @@
                 "ListLocations"
               ]
             },
+            "ListMavenArtifacts": {
+              "methods": [
+                "ListMavenArtifacts"
+              ]
+            },
+            "ListNpmPackages": {
+              "methods": [
+                "ListNpmPackages"
+              ]
+            },
             "ListPackages": {
               "methods": [
                 "ListPackages"
+              ]
+            },
+            "ListPythonPackages": {
+              "methods": [
+                "ListPythonPackages"
               ]
             },
             "ListRepositories": {
@@ -153,6 +198,11 @@
             "UpdateTag": {
               "methods": [
                 "UpdateTag"
+              ]
+            },
+            "UpdateVPCSCConfig": {
+              "methods": [
+                "UpdateVPCSCConfig"
               ]
             }
           }
@@ -160,6 +210,11 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "BatchDeleteVersions": {
+              "methods": [
+                "BatchDeleteVersions"
+              ]
+            },
             "CreateRepository": {
               "methods": [
                 "CreateRepository"
@@ -210,6 +265,21 @@
                 "GetLocation"
               ]
             },
+            "GetMavenArtifact": {
+              "methods": [
+                "GetMavenArtifact"
+              ]
+            },
+            "GetNpmPackage": {
+              "methods": [
+                "GetNpmPackage"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetPackage": {
               "methods": [
                 "GetPackage"
@@ -220,6 +290,11 @@
                 "GetProjectSettings"
               ]
             },
+            "GetPythonPackage": {
+              "methods": [
+                "GetPythonPackage"
+              ]
+            },
             "GetRepository": {
               "methods": [
                 "GetRepository"
@@ -228,6 +303,11 @@
             "GetTag": {
               "methods": [
                 "GetTag"
+              ]
+            },
+            "GetVPCSCConfig": {
+              "methods": [
+                "GetVPCSCConfig"
               ]
             },
             "GetVersion": {
@@ -260,9 +340,24 @@
                 "ListLocations"
               ]
             },
+            "ListMavenArtifacts": {
+              "methods": [
+                "ListMavenArtifacts"
+              ]
+            },
+            "ListNpmPackages": {
+              "methods": [
+                "ListNpmPackages"
+              ]
+            },
             "ListPackages": {
               "methods": [
                 "ListPackages"
+              ]
+            },
+            "ListPythonPackages": {
+              "methods": [
+                "ListPythonPackages"
               ]
             },
             "ListRepositories": {
@@ -303,6 +398,11 @@
             "UpdateTag": {
               "methods": [
                 "UpdateTag"
+              ]
+            },
+            "UpdateVPCSCConfig": {
+              "methods": [
+                "UpdateVPCSCConfig"
               ]
             }
           }

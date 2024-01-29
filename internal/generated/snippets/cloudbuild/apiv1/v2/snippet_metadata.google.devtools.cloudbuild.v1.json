@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudbuild/apiv1/v2",
-    "version": "1.5.0",
+    "version": "1.15.0",
     "language": "GO",
     "apis": [
       {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cloudbuildpb.Build",
+        "resultType": "*cloudbuildpb.Build",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.cloudbuild.v1.Client"
@@ -106,7 +106,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_CreateBuild_sync",
       "title": "cloudbuild CreateBuild Sample",
-      "description": "CreateBuild starts a build with the specified configuration.\n\nThis method returns a long-running Operation, which includes the build\nID. Pass the build ID to GetBuild to determine the build status (such as\nSUCCESS or FAILURE).",
+      "description": "CreateBuild starts a build with the specified configuration.\n\nThis method returns a long-running `Operation`, which includes the build\nID. Pass the build ID to `GetBuild` to determine the build status (such as\n`SUCCESS` or `FAILURE`).",
       "file": "Client/CreateBuild/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_CreateBuildTrigger_sync",
       "title": "cloudbuild CreateBuildTrigger Sample",
-      "description": "CreateBuildTrigger creates a new BuildTrigger.\n\nThis API is experimental.",
+      "description": "CreateBuildTrigger creates a new `BuildTrigger`.\n\nThis API is experimental.",
       "file": "Client/CreateBuildTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cloudbuildpb.BuildTrigger",
+        "resultType": "*cloudbuildpb.BuildTrigger",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.cloudbuild.v1.Client"
@@ -198,7 +198,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_CreateWorkerPool_sync",
       "title": "cloudbuild CreateWorkerPool Sample",
-      "description": "CreateWorkerPool creates a WorkerPool.",
+      "description": "CreateWorkerPool creates a `WorkerPool`.",
       "file": "Client/CreateWorkerPool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +244,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_DeleteBuildTrigger_sync",
       "title": "cloudbuild DeleteBuildTrigger Sample",
-      "description": "DeleteBuildTrigger deletes a BuildTrigger by its project ID and trigger ID.\n\nThis API is experimental.",
+      "description": "DeleteBuildTrigger deletes a `BuildTrigger` by its project ID and trigger ID.\n\nThis API is experimental.",
       "file": "Client/DeleteBuildTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -289,7 +289,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_DeleteWorkerPool_sync",
       "title": "cloudbuild DeleteWorkerPool Sample",
-      "description": "DeleteWorkerPool deletes a WorkerPool.",
+      "description": "DeleteWorkerPool deletes a `WorkerPool`.",
       "file": "Client/DeleteWorkerPool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -335,7 +335,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_GetBuild_sync",
       "title": "cloudbuild GetBuild Sample",
-      "description": "GetBuild returns information about a previously requested build.\n\nThe Build that is returned includes its status (such as SUCCESS,\nFAILURE, or WORKING), and timing information.",
+      "description": "GetBuild returns information about a previously requested build.\n\nThe `Build` that is returned includes its status (such as `SUCCESS`,\n`FAILURE`, or `WORKING`), and timing information.",
       "file": "Client/GetBuild/main.go",
       "language": "GO",
       "clientMethod": {
@@ -355,7 +355,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cloudbuildpb.Build",
+        "resultType": "*cloudbuildpb.Build",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.cloudbuild.v1.Client"
@@ -381,7 +381,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_GetBuildTrigger_sync",
       "title": "cloudbuild GetBuildTrigger Sample",
-      "description": "GetBuildTrigger returns information about a BuildTrigger.\n\nThis API is experimental.",
+      "description": "GetBuildTrigger returns information about a `BuildTrigger`.\n\nThis API is experimental.",
       "file": "Client/GetBuildTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -401,7 +401,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cloudbuildpb.BuildTrigger",
+        "resultType": "*cloudbuildpb.BuildTrigger",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.cloudbuild.v1.Client"
@@ -427,7 +427,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_GetWorkerPool_sync",
       "title": "cloudbuild GetWorkerPool Sample",
-      "description": "GetWorkerPool returns details of a WorkerPool.",
+      "description": "GetWorkerPool returns details of a `WorkerPool`.",
       "file": "Client/GetWorkerPool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -447,7 +447,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cloudbuildpb.WorkerPool",
+        "resultType": "*cloudbuildpb.WorkerPool",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.cloudbuild.v1.Client"
@@ -473,7 +473,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_ListBuildTriggers_sync",
       "title": "cloudbuild ListBuildTriggers Sample",
-      "description": "ListBuildTriggers lists existing BuildTriggers.\n\nThis API is experimental.",
+      "description": "ListBuildTriggers lists existing `BuildTrigger`s.\n\nThis API is experimental.",
       "file": "Client/ListBuildTriggers/main.go",
       "language": "GO",
       "clientMethod": {
@@ -565,7 +565,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_ListWorkerPools_sync",
       "title": "cloudbuild ListWorkerPools Sample",
-      "description": "ListWorkerPools lists WorkerPools.",
+      "description": "ListWorkerPools lists `WorkerPool`s.",
       "file": "Client/ListWorkerPools/main.go",
       "language": "GO",
       "clientMethod": {
@@ -631,7 +631,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cloudbuildpb.ReceiveTriggerWebhookResponse",
+        "resultType": "*cloudbuildpb.ReceiveTriggerWebhookResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.cloudbuild.v1.Client"
@@ -657,7 +657,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_RetryBuild_sync",
       "title": "cloudbuild RetryBuild Sample",
-      "description": "RetryBuild creates a new build based on the specified build.\n\nThis method creates a new build using the original build request, which may\nor may not result in an identical build.\n\nFor triggered builds: \n\n\tTriggered builds resolve to a precise revision; therefore a retry of a\n\ttriggered build will result in a build that uses the same revision.\n\nFor non-triggered builds that specify RepoSource: \n\n\tIf the original build built from the tip of a branch, the retried build\n\twill build from the tip of that branch, which may not be the same revision\n\tas the original build.\n\n\tIf the original build specified a commit sha or revision ID, the retried\n\tbuild will use the identical source.\n\nFor builds that specify StorageSource: \n\n\tIf the original build pulled source from Google Cloud Storage without\n\tspecifying the generation of the object, the new build will use the current\n\tobject, which may be different from the original build source.\n\n\tIf the original build pulled source from Cloud Storage and specified the\n\tgeneration of the object, the new build will attempt to use the same\n\tobject, which may or may not be available depending on the bucket’s\n\tlifecycle management settings.",
+      "description": "RetryBuild creates a new build based on the specified build.\n\nThis method creates a new build using the original build request, which may\nor may not result in an identical build.\n\nFor triggered builds: \n\n* Triggered builds resolve to a precise revision; therefore a retry of a\ntriggered build will result in a build that uses the same revision.\n\nFor non-triggered builds that specify `RepoSource`: \n\n* If the original build built from the tip of a branch, the retried build\nwill build from the tip of that branch, which may not be the same revision\nas the original build.\n* If the original build specified a commit sha or revision ID, the retried\nbuild will use the identical source.\n\nFor builds that specify `StorageSource`: \n\n* If the original build pulled source from Cloud Storage without\nspecifying the generation of the object, the new build will use the current\nobject, which may be different from the original build source.\n* If the original build pulled source from Cloud Storage and specified the\ngeneration of the object, the new build will attempt to use the same\nobject, which may or may not be available depending on the bucket's\nlifecycle management settings.",
       "file": "Client/RetryBuild/main.go",
       "language": "GO",
       "clientMethod": {
@@ -703,7 +703,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_RunBuildTrigger_sync",
       "title": "cloudbuild RunBuildTrigger Sample",
-      "description": "RunBuildTrigger runs a BuildTrigger at a particular source revision.",
+      "description": "RunBuildTrigger runs a `BuildTrigger` at a particular source revision.\n\nTo run a regional or global trigger, use the POST request\nthat includes the location endpoint in the path (ex.\nv1/projects/{projectId}/locations/{region}/triggers/{triggerId}: run). The\nPOST request that does not include the location endpoint in the path can\nonly be used when running global triggers.",
       "file": "Client/RunBuildTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -749,7 +749,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_UpdateBuildTrigger_sync",
       "title": "cloudbuild UpdateBuildTrigger Sample",
-      "description": "UpdateBuildTrigger updates a BuildTrigger by its project ID and trigger ID.\n\nThis API is experimental.",
+      "description": "UpdateBuildTrigger updates a `BuildTrigger` by its project ID and trigger ID.\n\nThis API is experimental.",
       "file": "Client/UpdateBuildTrigger/main.go",
       "language": "GO",
       "clientMethod": {
@@ -769,7 +769,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cloudbuildpb.BuildTrigger",
+        "resultType": "*cloudbuildpb.BuildTrigger",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.cloudbuild.v1.Client"
@@ -795,7 +795,7 @@
     {
       "regionTag": "cloudbuild_v1_generated_CloudBuild_UpdateWorkerPool_sync",
       "title": "cloudbuild UpdateWorkerPool Sample",
-      "description": "UpdateWorkerPool updates a WorkerPool.",
+      "description": "UpdateWorkerPool updates a `WorkerPool`.",
       "file": "Client/UpdateWorkerPool/main.go",
       "language": "GO",
       "clientMethod": {

@@ -1,5 +1,61 @@
 # Changes
 
+## [1.13.3](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.2...metastore/v1.13.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **metastore:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.1...metastore/v1.13.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **metastore:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.0...metastore/v1.13.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **metastore:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.12.0...metastore/v1.13.0) (2023-10-04)
+
+
+### Features
+
+* **metastore:** Added EndpointLocation (v1, v1beta, v1alpha) ([e9ae601](https://github.com/googleapis/google-cloud-go/commit/e9ae6018983ae09781740e4ff939e6e365863dbb))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.11.1...metastore/v1.12.0) (2023-07-10)
+
+
+### Features
+
+* **metastore:** Added Admin Interface (v1) ([#8190](https://github.com/googleapis/google-cloud-go/issues/8190)) ([14b95d3](https://github.com/googleapis/google-cloud-go/commit/14b95d33753d0b391d0b49533e92b551e5dc3072))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.11.0...metastore/v1.11.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **metastore:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.10.1...metastore/v1.11.0) (2023-05-30)
+
+
+### Features
+
+* **metastore:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.10.0...metastore/v1.10.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **metastore:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.9.1...metastore/v1.10.0) (2023-01-04)
 
 

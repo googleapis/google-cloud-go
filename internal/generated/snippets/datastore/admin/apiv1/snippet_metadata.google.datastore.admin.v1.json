@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datastore/admin/apiv1",
-    "version": "1.10.0",
+    "version": "1.15.0",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.datastore.admin.v1.DatastoreAdmin.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "DatastoreAdmin",
-            "fullName": "google.datastore.admin.v1.DatastoreAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -59,7 +59,7 @@
     {
       "regionTag": "datastore_v1_generated_DatastoreAdmin_CreateIndex_sync",
       "title": "datastore CreateIndex Sample",
-      "description": "CreateIndex creates the specified index.\nA newly created index’s initial state is CREATING. On completion of the\nreturned google.longrunning.Operation, the state will be READY.\nIf the index already exists, the call will return an ALREADY_EXISTS\nstatus.\n\nDuring index creation, the process could result in an error, in which\ncase the index will move to the ERROR state. The process can be recovered\nby fixing the data that caused the error, removing the index with\ndelete, then\nre-creating the index with [create]\n[google.datastore.admin.v1.DatastoreAdmin.CreateIndex].\n\nIndexes with a single property cannot be created.",
+      "description": "CreateIndex creates the specified index.\nA newly created index's initial state is `CREATING`. On completion of the\nreturned [google.longrunning.Operation][google.longrunning.Operation], the\nstate will be `READY`. If the index already exists, the call will return an\n`ALREADY_EXISTS` status.\n\nDuring index creation, the process could result in an error, in which\ncase the index will move to the `ERROR` state. The process can be recovered\nby fixing the data that caused the error, removing the index with\n[delete][google.datastore.admin.v1.DatastoreAdmin.DeleteIndex], then\nre-creating the index with [create]\n[google.datastore.admin.v1.DatastoreAdmin.CreateIndex].\n\nIndexes with a single property cannot be created.",
       "file": "DatastoreAdminClient/CreateIndex/main.go",
       "language": "GO",
       "clientMethod": {
@@ -105,7 +105,7 @@
     {
       "regionTag": "datastore_v1_generated_DatastoreAdmin_DeleteIndex_sync",
       "title": "datastore DeleteIndex Sample",
-      "description": "DeleteIndex deletes an existing index.\nAn index can only be deleted if it is in a READY or ERROR state. On\nsuccessful execution of the request, the index will be in a DELETING\nstate. And on completion of the\nreturned google.longrunning.Operation, the index will be removed.\n\nDuring index deletion, the process could result in an error, in which\ncase the index will move to the ERROR state. The process can be recovered\nby fixing the data that caused the error, followed by calling\ndelete again.",
+      "description": "DeleteIndex deletes an existing index.\nAn index can only be deleted if it is in a `READY` or `ERROR` state. On\nsuccessful execution of the request, the index will be in a `DELETING`\n[state][google.datastore.admin.v1.Index.State]. And on completion of the\nreturned [google.longrunning.Operation][google.longrunning.Operation], the\nindex will be removed.\n\nDuring index deletion, the process could result in an error, in which\ncase the index will move to the `ERROR` state. The process can be recovered\nby fixing the data that caused the error, followed by calling\n[delete][google.datastore.admin.v1.DatastoreAdmin.DeleteIndex] again.",
       "file": "DatastoreAdminClient/DeleteIndex/main.go",
       "language": "GO",
       "clientMethod": {
@@ -177,10 +177,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.datastore.admin.v1.DatastoreAdmin.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "DatastoreAdmin",
-            "fullName": "google.datastore.admin.v1.DatastoreAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Index",
+        "resultType": "*adminpb.Index",
         "client": {
           "shortName": "DatastoreAdminClient",
           "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
@@ -308,17 +308,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "DatastoreAdminClient",
           "fullName": "google.datastore.admin.v1.DatastoreAdminClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.datastore.admin.v1.DatastoreAdmin.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "DatastoreAdmin",
-            "fullName": "google.datastore.admin.v1.DatastoreAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -453,10 +453,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.datastore.admin.v1.DatastoreAdmin.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "DatastoreAdmin",
-            "fullName": "google.datastore.admin.v1.DatastoreAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]

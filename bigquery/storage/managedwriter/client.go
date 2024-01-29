@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"runtime"
 	"strings"
+	"sync"
 
 	"cloud.google.com/go/bigquery/internal"
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
@@ -27,7 +28,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -39,16 +40,31 @@ import (
 // does not have the project ID encoded.
 const DetectProjectID = "*detect-project-id*"
 
-const managedstreamIDPrefix = "managedstream"
-
 // Client is a managed BigQuery Storage write client scoped to a single project.
 type Client struct {
 	rawClient *storage.BigQueryWriteClient
 	projectID string
+
+	// retained context.  primarily used for connection management and the underlying
+	// client.
+	ctx    context.Context
+	cancel context.CancelFunc
+
+	// cfg retains general settings (custom ClientOptions).
+	cfg *writerClientConfig
+
+	// mu guards access to shared connectionPool instances.
+	mu sync.Mutex
+	// When multiplexing is enabled, this map retains connectionPools keyed by region ID.
+	pools map[string]*connectionPool
 }
 
 // NewClient instantiates a new client.
+//
+// The context provided here is retained and used for background connection management
+// between the client and the BigQuery Storage service.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (c *Client, err error) {
+	// Set a reasonable default for the gRPC connection pool size.
 	numConns := runtime.GOMAXPROCS(0)
 	if numConns > 4 {
 		numConns = 4
@@ -58,8 +74,11 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}
 	o = append(o, opts...)
 
-	rawClient, err := storage.NewBigQueryWriteClient(ctx, o...)
+	cCtx, cancel := context.WithCancel(ctx)
+
+	rawClient, err := storage.NewBigQueryWriteClient(cCtx, o...)
 	if err != nil {
+		cancel()
 		return nil, err
 	}
 	rawClient.SetGoogleClientInfo("gccl", internal.Version)
@@ -67,24 +86,42 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	// Handle project autodetection.
 	projectID, err = detect.ProjectID(ctx, projectID, "", opts...)
 	if err != nil {
+		cancel()
 		return nil, err
 	}
 
 	return &Client{
 		rawClient: rawClient,
 		projectID: projectID,
+		ctx:       cCtx,
+		cancel:    cancel,
+		cfg:       newWriterClientConfig(opts...),
+		pools:     make(map[string]*connectionPool),
 	}, nil
 }
 
 // Close releases resources held by the client.
 func (c *Client) Close() error {
-	// TODO: consider if we should propagate a cancellation from client to all associated managed streams.
-	if c.rawClient == nil {
-		return fmt.Errorf("already closed")
+
+	// Shutdown the per-region pools.
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	var firstErr error
+	for _, pool := range c.pools {
+		if err := pool.Close(); err != nil && firstErr == nil {
+			firstErr = err
+		}
 	}
-	c.rawClient.Close()
-	c.rawClient = nil
-	return nil
+
+	// Close the underlying client stub.
+	if err := c.rawClient.Close(); err != nil && firstErr == nil {
+		firstErr = err
+	}
+	// Cancel the retained client context.
+	if c.cancel != nil {
+		c.cancel()
+	}
+	return firstErr
 }
 
 // NewManagedStream establishes a new managed stream for appending data into a table.
@@ -95,8 +132,11 @@ func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*M
 }
 
 // createOpenF builds the opener function we need to access the AppendRows bidi stream.
-func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-	return func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+func createOpenF(streamFunc streamClientFunc, routingHeader string) func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		if routingHeader != "" {
+			ctx = metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", routingHeader)
+		}
 		arc, err := streamFunc(ctx, opts...)
 		if err != nil {
 			return nil, err
@@ -106,59 +146,58 @@ func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(opts ...
 }
 
 func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClientFunc, skipSetup bool, opts ...WriterOption) (*ManagedStream, error) {
-	ctx, cancel := context.WithCancel(ctx)
-
-	ms := &ManagedStream{
-		id:             newUUID(managedstreamIDPrefix),
-		streamSettings: defaultStreamSettings(),
+	// First, we create a minimal managed stream.
+	writer := &ManagedStream{
+		id:             newUUID(writerIDPrefix),
 		c:              c,
-		ctx:            ctx,
-		cancel:         cancel,
-		callOptions: []gax.CallOption{
-			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
-		},
-		open: createOpenF(ctx, streamFunc),
+		streamSettings: defaultStreamSettings(),
+		curTemplate:    newVersionedTemplate(),
 	}
-
-	// apply writer options
+	// apply writer options.
 	for _, opt := range opts {
-		opt(ms)
+		opt(writer)
 	}
 
-	// skipSetup exists for testing scenarios.
+	// skipSetup allows for customization at test time.
+	// Examine out config writer and apply settings to the real one.
 	if !skipSetup {
-		if err := c.validateOptions(ctx, ms); err != nil {
+		if err := c.validateOptions(ctx, writer); err != nil {
 			return nil, err
 		}
 
-		if ms.streamSettings.streamID == "" {
+		if writer.streamSettings.streamID == "" {
 			// not instantiated with a stream, construct one.
-			streamName := fmt.Sprintf("%s/streams/_default", ms.destinationTable)
-			if ms.streamSettings.streamType != DefaultStream {
+			streamName := fmt.Sprintf("%s/streams/_default", writer.streamSettings.destinationTable)
+			if writer.streamSettings.streamType != DefaultStream {
 				// For everything but a default stream, we create a new stream on behalf of the user.
 				req := &storagepb.CreateWriteStreamRequest{
-					Parent: ms.destinationTable,
+					Parent: writer.streamSettings.destinationTable,
 					WriteStream: &storagepb.WriteStream{
-						Type: streamTypeToEnum(ms.streamSettings.streamType),
+						Type: streamTypeToEnum(writer.streamSettings.streamType),
 					}}
-				resp, err := ms.c.rawClient.CreateWriteStream(ctx, req)
+				resp, err := writer.c.rawClient.CreateWriteStream(ctx, req)
 				if err != nil {
 					return nil, fmt.Errorf("couldn't create write stream: %w", err)
 				}
 				streamName = resp.GetName()
 			}
-			ms.streamSettings.streamID = streamName
+			writer.streamSettings.streamID = streamName
 		}
 	}
-	if ms.streamSettings != nil {
-		if ms.ctx != nil {
-			ms.ctx = keyContextWithTags(ms.ctx, ms.streamSettings.streamID, ms.streamSettings.dataOrigin)
-		}
-		ms.fc = newFlowController(ms.streamSettings.MaxInflightRequests, ms.streamSettings.MaxInflightBytes)
-	} else {
-		ms.fc = newFlowController(0, 0)
+	// we maintain a pool per region, and attach all exclusive and multiplex writers to that pool.
+	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc)
+	if err != nil {
+		return nil, err
 	}
-	return ms, nil
+	// Add the writer to the pool.
+	if err := pool.addWriter(writer); err != nil {
+		return nil, err
+	}
+	writer.ctx, writer.cancel = context.WithCancel(ctx)
+
+	// Attach any tag keys to the context on the writer, so instrumentation works as expected.
+	writer.ctx = setupWriterStatContext(writer)
+	return writer, nil
 }
 
 // validateOptions is used to validate that we received a sane/compatible set of WriterOptions
@@ -175,9 +214,9 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 		}
 		// update type and destination based on stream metadata
 		ms.streamSettings.streamType = StreamType(info.Type.String())
-		ms.destinationTable = TableParentFromStreamName(ms.streamSettings.streamID)
+		ms.streamSettings.destinationTable = TableParentFromStreamName(ms.streamSettings.streamID)
 	}
-	if ms.destinationTable == "" {
+	if ms.streamSettings.destinationTable == "" {
 		return fmt.Errorf("no destination table specified")
 	}
 	// we could auto-select DEFAULT here, but let's force users to be specific for now.
@@ -185,6 +224,61 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 		return fmt.Errorf("stream type wasn't specified")
 	}
 	return nil
+}
+
+// resolvePool either returns an existing connectionPool, or returns a new pool if this is the first writer in a given region.
+func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc) (*connectionPool, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	resp, err := c.getWriteStream(ctx, settings.streamID, false)
+	if err != nil {
+		return nil, err
+	}
+	loc := resp.GetLocation()
+	if pool, ok := c.pools[loc]; ok {
+		return pool, nil
+	}
+
+	// No existing pool available, create one for the location and add to shared pools.
+	pool, err := c.createPool(loc, streamFunc)
+	if err != nil {
+		return nil, err
+	}
+	c.pools[loc] = pool
+	return pool, nil
+}
+
+// createPool builds a connectionPool.
+func (c *Client) createPool(location string, streamFunc streamClientFunc) (*connectionPool, error) {
+	cCtx, cancel := context.WithCancel(c.ctx)
+
+	if c.cfg == nil {
+		cancel()
+		return nil, fmt.Errorf("missing client config")
+	}
+
+	var routingHeader string
+	/*
+	 * TODO: set once backend respects the new routing header
+	 * if location != "" && c.projectID != "" {
+	 *  	routingHeader = fmt.Sprintf("write_location=projects/%s/locations/%s", c.projectID, location)
+	 * }
+	 */
+
+	pool := &connectionPool{
+		id:                 newUUID(poolIDPrefix),
+		location:           location,
+		ctx:                cCtx,
+		cancel:             cancel,
+		open:               createOpenF(streamFunc, routingHeader),
+		callOptions:        c.cfg.defaultAppendRowsCallOptions,
+		baseFlowController: newFlowController(c.cfg.defaultInflightRequests, c.cfg.defaultInflightBytes),
+	}
+	router := newSharedRouter(c.cfg.useMultiplex, c.cfg.maxMultiplexPoolSize)
+	if err := pool.activateRouter(router); err != nil {
+		return nil, err
+	}
+	return pool, nil
 }
 
 // BatchCommitWriteStreams atomically commits a group of PENDING streams that belong to the same
@@ -207,9 +301,12 @@ func (c *Client) CreateWriteStream(ctx context.Context, req *storagepb.CreateWri
 	return c.rawClient.CreateWriteStream(ctx, req, opts...)
 }
 
-// getWriteStream returns information about a given write stream.
-//
-// It's primarily used for setup validation, and not exposed directly to end users.
+// GetWriteStream returns information about a given WriteStream.
+func (c *Client) GetWriteStream(ctx context.Context, req *storagepb.GetWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
+	return c.rawClient.GetWriteStream(ctx, req, opts...)
+}
+
+// getWriteStream is an internal version of GetWriteStream used for writer setup and validation.
 func (c *Client) getWriteStream(ctx context.Context, streamName string, fullView bool) (*storagepb.WriteStream, error) {
 	req := &storagepb.GetWriteStreamRequest{
 		Name: streamName,
@@ -244,4 +341,11 @@ func TableParentFromParts(projectID, datasetID, tableID string) string {
 func newUUID(prefix string) string {
 	id := uuid.New()
 	return fmt.Sprintf("%s_%s", prefix, id.String())
+}
+
+// canMultiplex returns true if the input identifier supports multiplexing.  Currently the only stream
+// type that supports multiplexing are default streams.
+func canMultiplex(in string) bool {
+	// TODO: strengthen validation
+	return strings.HasSuffix(in, "default")
 }

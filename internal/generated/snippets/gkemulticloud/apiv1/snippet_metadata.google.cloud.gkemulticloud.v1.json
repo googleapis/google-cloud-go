@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkemulticloud/apiv1",
-    "version": "0.4.0",
+    "version": "1.1.0",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.gkemulticloud.v1.AttachedClusters.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "AttachedClusters",
-            "fullName": "google.cloud.gkemulticloud.v1.AttachedClusters"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -59,7 +59,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_CreateAttachedCluster_sync",
       "title": "gkemulticloud CreateAttachedCluster Sample",
-      "description": "CreateAttachedCluster creates a new\nAttachedCluster resource\non a given GCP project and region.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "CreateAttachedCluster creates a new\n[AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster] resource\non a given Google Cloud Platform project and region.\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AttachedClustersClient/CreateAttachedCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -105,7 +105,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_DeleteAttachedCluster_sync",
       "title": "gkemulticloud DeleteAttachedCluster Sample",
-      "description": "DeleteAttachedCluster deletes a specific\nAttachedCluster resource.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "DeleteAttachedCluster deletes a specific\n[AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster] resource.\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AttachedClustersClient/DeleteAttachedCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -177,7 +177,53 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.gkemulticloud.v1.AttachedClusters.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AttachedClusters_GenerateAttachedClusterAgentToken_sync",
+      "title": "gkemulticloud GenerateAttachedClusterAgentToken Sample",
+      "description": "GenerateAttachedClusterAgentToken generates an access token for a cluster agent.",
+      "file": "AttachedClustersClient/GenerateAttachedClusterAgentToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateAttachedClusterAgentToken",
+        "fullName": "google.cloud.gkemulticloud.v1.AttachedClustersClient.GenerateAttachedClusterAgentToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GenerateAttachedClusterAgentTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.GenerateAttachedClusterAgentTokenResponse",
+        "client": {
+          "shortName": "AttachedClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AttachedClustersClient"
+        },
+        "method": {
+          "shortName": "GenerateAttachedClusterAgentToken",
+          "fullName": "google.cloud.gkemulticloud.v1.AttachedClusters.GenerateAttachedClusterAgentToken",
           "service": {
             "shortName": "AttachedClusters",
             "fullName": "google.cloud.gkemulticloud.v1.AttachedClusters"
@@ -188,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -216,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.GenerateAttachedClusterInstallManifestResponse",
+        "resultType": "*gkemulticloudpb.GenerateAttachedClusterInstallManifestResponse",
         "client": {
           "shortName": "AttachedClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AttachedClustersClient"
@@ -242,7 +288,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_GetAttachedCluster_sync",
       "title": "gkemulticloud GetAttachedCluster Sample",
-      "description": "GetAttachedCluster describes a specific\nAttachedCluster resource.",
+      "description": "GetAttachedCluster describes a specific\n[AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster] resource.",
       "file": "AttachedClustersClient/GetAttachedCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -262,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.AttachedCluster",
+        "resultType": "*gkemulticloudpb.AttachedCluster",
         "client": {
           "shortName": "AttachedClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AttachedClustersClient"
@@ -308,7 +354,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.AttachedServerConfig",
+        "resultType": "*gkemulticloudpb.AttachedServerConfig",
         "client": {
           "shortName": "AttachedClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AttachedClustersClient"
@@ -354,17 +400,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "AttachedClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AttachedClustersClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.gkemulticloud.v1.AttachedClusters.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "AttachedClusters",
-            "fullName": "google.cloud.gkemulticloud.v1.AttachedClusters"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -372,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -380,7 +426,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_ImportAttachedCluster_sync",
       "title": "gkemulticloud ImportAttachedCluster Sample",
-      "description": "ImportAttachedCluster imports creates a new\nAttachedCluster resource\nby importing an existing Fleet Membership resource.\n\nAttached Clusters created before the introduction of the Anthos Multi-Cloud\nAPI can be imported through this method.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "ImportAttachedCluster imports creates a new\n[AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster] resource\nby importing an existing Fleet Membership resource.\n\nAttached Clusters created before the introduction of the Anthos Multi-Cloud\nAPI can be imported through this method.\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AttachedClustersClient/ImportAttachedCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -426,7 +472,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_ListAttachedClusters_sync",
       "title": "gkemulticloud ListAttachedClusters Sample",
-      "description": "ListAttachedClusters lists all AttachedCluster\nresources on a given Google Cloud project and region.",
+      "description": "ListAttachedClusters lists all [AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster]\nresources on a given Google Cloud project and region.",
       "file": "AttachedClustersClient/ListAttachedClusters/main.go",
       "language": "GO",
       "clientMethod": {
@@ -499,10 +545,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.gkemulticloud.v1.AttachedClusters.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "AttachedClusters",
-            "fullName": "google.cloud.gkemulticloud.v1.AttachedClusters"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -510,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -518,7 +564,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_UpdateAttachedCluster_sync",
       "title": "gkemulticloud UpdateAttachedCluster Sample",
-      "description": "UpdateAttachedCluster updates an\nAttachedCluster.",
+      "description": "UpdateAttachedCluster updates an\n[AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster].",
       "file": "AttachedClustersClient/UpdateAttachedCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -590,10 +636,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "AwsClusters",
-            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -601,7 +647,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -609,7 +655,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_CreateAwsCluster_sync",
       "title": "gkemulticloud CreateAwsCluster Sample",
-      "description": "CreateAwsCluster creates a new AwsCluster\nresource on a given GCP project and region.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "CreateAwsCluster creates a new [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]\nresource on a given Google Cloud Platform project and region.\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AwsClustersClient/CreateAwsCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -655,7 +701,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_CreateAwsNodePool_sync",
       "title": "gkemulticloud CreateAwsNodePool Sample",
-      "description": "CreateAwsNodePool creates a new AwsNodePool,\nattached to a given AwsCluster.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "CreateAwsNodePool creates a new [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool],\nattached to a given [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster].\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AwsClustersClient/CreateAwsNodePool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -701,7 +747,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_DeleteAwsCluster_sync",
       "title": "gkemulticloud DeleteAwsCluster Sample",
-      "description": "DeleteAwsCluster deletes a specific AwsCluster\nresource.\n\nFails if the cluster has one or more associated\nAwsNodePool resources.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "DeleteAwsCluster deletes a specific [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]\nresource.\n\nFails if the cluster has one or more associated\n[AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool] resources.\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AwsClustersClient/DeleteAwsCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -747,7 +793,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_DeleteAwsNodePool_sync",
       "title": "gkemulticloud DeleteAwsNodePool Sample",
-      "description": "DeleteAwsNodePool deletes a specific AwsNodePool\nresource.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "DeleteAwsNodePool deletes a specific [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool]\nresource.\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AwsClustersClient/DeleteAwsNodePool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -819,10 +865,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "AwsClusters",
-            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -830,7 +876,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -838,7 +884,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GenerateAwsAccessToken_sync",
       "title": "gkemulticloud GenerateAwsAccessToken Sample",
-      "description": "GenerateAwsAccessToken generates a short-lived access token to authenticate to a given\nAwsCluster resource.",
+      "description": "GenerateAwsAccessToken generates a short-lived access token to authenticate to a given\n[AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster] resource.",
       "file": "AwsClustersClient/GenerateAwsAccessToken/main.go",
       "language": "GO",
       "clientMethod": {
@@ -858,7 +904,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.GenerateAwsAccessTokenResponse",
+        "resultType": "*gkemulticloudpb.GenerateAwsAccessTokenResponse",
         "client": {
           "shortName": "AwsClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
@@ -882,9 +928,55 @@
       ]
     },
     {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_GenerateAwsClusterAgentToken_sync",
+      "title": "gkemulticloud GenerateAwsClusterAgentToken Sample",
+      "description": "GenerateAwsClusterAgentToken generates an access token for a cluster agent.",
+      "file": "AwsClustersClient/GenerateAwsClusterAgentToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateAwsClusterAgentToken",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.GenerateAwsClusterAgentToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GenerateAwsClusterAgentTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.GenerateAwsClusterAgentTokenResponse",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "GenerateAwsClusterAgentToken",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GenerateAwsClusterAgentToken",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsCluster_sync",
       "title": "gkemulticloud GetAwsCluster Sample",
-      "description": "GetAwsCluster describes a specific AwsCluster\nresource.",
+      "description": "GetAwsCluster describes a specific [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]\nresource.",
       "file": "AwsClustersClient/GetAwsCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -904,7 +996,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.AwsCluster",
+        "resultType": "*gkemulticloudpb.AwsCluster",
         "client": {
           "shortName": "AwsClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
@@ -928,9 +1020,55 @@
       ]
     },
     {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsJsonWebKeys_sync",
+      "title": "gkemulticloud GetAwsJsonWebKeys Sample",
+      "description": "GetAwsJsonWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.",
+      "file": "AwsClustersClient/GetAwsJsonWebKeys/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAwsJsonWebKeys",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.GetAwsJsonWebKeys",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAwsJsonWebKeysRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.AwsJsonWebKeys",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "GetAwsJsonWebKeys",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GetAwsJsonWebKeys",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsNodePool_sync",
       "title": "gkemulticloud GetAwsNodePool Sample",
-      "description": "GetAwsNodePool describes a specific\nAwsNodePool resource.",
+      "description": "GetAwsNodePool describes a specific\n[AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool] resource.",
       "file": "AwsClustersClient/GetAwsNodePool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -950,7 +1088,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.AwsNodePool",
+        "resultType": "*gkemulticloudpb.AwsNodePool",
         "client": {
           "shortName": "AwsClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
@@ -958,6 +1096,52 @@
         "method": {
           "shortName": "GetAwsNodePool",
           "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GetAwsNodePool",
+          "service": {
+            "shortName": "AwsClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsOpenIdConfig_sync",
+      "title": "gkemulticloud GetAwsOpenIdConfig Sample",
+      "description": "GetAwsOpenIdConfig gets the OIDC discovery document for the cluster.\nSee the\n[OpenID Connect Discovery 1.0\nspecification](https: //openid.net/specs/openid-connect-discovery-1_0.html)\nfor details.",
+      "file": "AwsClustersClient/GetAwsOpenIdConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAwsOpenIdConfig",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.GetAwsOpenIdConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAwsOpenIdConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.AwsOpenIdConfig",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "GetAwsOpenIdConfig",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GetAwsOpenIdConfig",
           "service": {
             "shortName": "AwsClusters",
             "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
@@ -996,7 +1180,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.AwsServerConfig",
+        "resultType": "*gkemulticloudpb.AwsServerConfig",
         "client": {
           "shortName": "AwsClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
@@ -1042,17 +1226,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "AwsClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "AwsClusters",
-            "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1060,7 +1244,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1068,7 +1252,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_ListAwsClusters_sync",
       "title": "gkemulticloud ListAwsClusters Sample",
-      "description": "ListAwsClusters lists all AwsCluster resources\non a given Google Cloud project and region.",
+      "description": "ListAwsClusters lists all [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster] resources\non a given Google Cloud project and region.",
       "file": "AwsClustersClient/ListAwsClusters/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1114,7 +1298,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_ListAwsNodePools_sync",
       "title": "gkemulticloud ListAwsNodePools Sample",
-      "description": "ListAwsNodePools lists all AwsNodePool\nresources on a given\nAwsCluster.",
+      "description": "ListAwsNodePools lists all [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool]\nresources on a given\n[AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster].",
       "file": "AwsClustersClient/ListAwsNodePools/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1187,7 +1371,53 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AwsClusters_RollbackAwsNodePoolUpdate_sync",
+      "title": "gkemulticloud RollbackAwsNodePoolUpdate Sample",
+      "description": "RollbackAwsNodePoolUpdate rolls back a previously aborted or failed\n[AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool] update request.\nMakes no changes if the last update request successfully finished.\nIf an update request is in progress, you cannot rollback the update.\nYou must first cancel or let it finish unsuccessfully before you can\nrollback.",
+      "file": "AwsClustersClient/RollbackAwsNodePoolUpdate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RollbackAwsNodePoolUpdate",
+        "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient.RollbackAwsNodePoolUpdate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.RollbackAwsNodePoolUpdateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RollbackAwsNodePoolUpdateOperation",
+        "client": {
+          "shortName": "AwsClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClustersClient"
+        },
+        "method": {
+          "shortName": "RollbackAwsNodePoolUpdate",
+          "fullName": "google.cloud.gkemulticloud.v1.AwsClusters.RollbackAwsNodePoolUpdate",
           "service": {
             "shortName": "AwsClusters",
             "fullName": "google.cloud.gkemulticloud.v1.AwsClusters"
@@ -1198,7 +1428,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1206,7 +1436,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_UpdateAwsCluster_sync",
       "title": "gkemulticloud UpdateAwsCluster Sample",
-      "description": "UpdateAwsCluster updates an AwsCluster.",
+      "description": "UpdateAwsCluster updates an [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster].",
       "file": "AwsClustersClient/UpdateAwsCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1252,7 +1482,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_UpdateAwsNodePool_sync",
       "title": "gkemulticloud UpdateAwsNodePool Sample",
-      "description": "UpdateAwsNodePool updates an AwsNodePool.",
+      "description": "UpdateAwsNodePool updates an [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool].",
       "file": "AwsClustersClient/UpdateAwsNodePool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1324,10 +1554,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "AzureClusters",
-            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1335,7 +1565,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1343,7 +1573,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_CreateAzureClient_sync",
       "title": "gkemulticloud CreateAzureClient Sample",
-      "description": "CreateAzureClient creates a new AzureClient\nresource on a given Google Cloud project and region.\n\nAzureClient resources hold client authentication\ninformation needed by the Anthos Multicloud API to manage Azure resources\non your Azure subscription on your behalf.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "CreateAzureClient creates a new [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]\nresource on a given Google Cloud project and region.\n\n`AzureClient` resources hold client authentication\ninformation needed by the Anthos Multicloud API to manage Azure resources\non your Azure subscription on your behalf.\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AzureClustersClient/CreateAzureClient/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1389,7 +1619,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_CreateAzureCluster_sync",
       "title": "gkemulticloud CreateAzureCluster Sample",
-      "description": "CreateAzureCluster creates a new AzureCluster\nresource on a given GCP project and region.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "CreateAzureCluster creates a new [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]\nresource on a given Google Cloud Platform project and region.\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AzureClustersClient/CreateAzureCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1435,7 +1665,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_CreateAzureNodePool_sync",
       "title": "gkemulticloud CreateAzureNodePool Sample",
-      "description": "CreateAzureNodePool creates a new AzureNodePool,\nattached to a given\nAzureCluster.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "CreateAzureNodePool creates a new [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool],\nattached to a given\n[AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AzureClustersClient/CreateAzureNodePool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1481,7 +1711,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_DeleteAzureClient_sync",
       "title": "gkemulticloud DeleteAzureClient Sample",
-      "description": "DeleteAzureClient deletes a specific AzureClient\nresource.\n\nIf the client is used by one or more clusters, deletion will\nfail and a FAILED_PRECONDITION error will be returned.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "DeleteAzureClient deletes a specific [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]\nresource.\n\nIf the client is used by one or more clusters, deletion will\nfail and a `FAILED_PRECONDITION` error will be returned.\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AzureClustersClient/DeleteAzureClient/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1527,7 +1757,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_DeleteAzureCluster_sync",
       "title": "gkemulticloud DeleteAzureCluster Sample",
-      "description": "DeleteAzureCluster deletes a specific\nAzureCluster resource.\n\nFails if the cluster has one or more associated\nAzureNodePool resources.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "DeleteAzureCluster deletes a specific\n[AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.\n\nFails if the cluster has one or more associated\n[AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resources.\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AzureClustersClient/DeleteAzureCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1573,7 +1803,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_DeleteAzureNodePool_sync",
       "title": "gkemulticloud DeleteAzureNodePool Sample",
-      "description": "DeleteAzureNodePool deletes a specific\nAzureNodePool resource.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "DeleteAzureNodePool deletes a specific\n[AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.\n\nIf successful, the response contains a newly created\n[Operation][google.longrunning.Operation] resource that can be\ndescribed to track the status of the operation.",
       "file": "AzureClustersClient/DeleteAzureNodePool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1645,10 +1875,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "AzureClusters",
-            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1656,7 +1886,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1664,7 +1894,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GenerateAzureAccessToken_sync",
       "title": "gkemulticloud GenerateAzureAccessToken Sample",
-      "description": "GenerateAzureAccessToken generates a short-lived access token to authenticate to a given\nAzureCluster resource.",
+      "description": "GenerateAzureAccessToken generates a short-lived access token to authenticate to a given\n[AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.",
       "file": "AzureClustersClient/GenerateAzureAccessToken/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1684,7 +1914,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.GenerateAzureAccessTokenResponse",
+        "resultType": "*gkemulticloudpb.GenerateAzureAccessTokenResponse",
         "client": {
           "shortName": "AzureClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
@@ -1708,9 +1938,55 @@
       ]
     },
     {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_GenerateAzureClusterAgentToken_sync",
+      "title": "gkemulticloud GenerateAzureClusterAgentToken Sample",
+      "description": "GenerateAzureClusterAgentToken generates an access token for a cluster agent.",
+      "file": "AzureClustersClient/GenerateAzureClusterAgentToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateAzureClusterAgentToken",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.GenerateAzureClusterAgentToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GenerateAzureClusterAgentTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.GenerateAzureClusterAgentTokenResponse",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "GenerateAzureClusterAgentToken",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GenerateAzureClusterAgentToken",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureClient_sync",
       "title": "gkemulticloud GetAzureClient Sample",
-      "description": "GetAzureClient describes a specific\nAzureClient resource.",
+      "description": "GetAzureClient describes a specific\n[AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource.",
       "file": "AzureClustersClient/GetAzureClient/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1730,7 +2006,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.AzureClient",
+        "resultType": "*gkemulticloudpb.AzureClient",
         "client": {
           "shortName": "AzureClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
@@ -1756,7 +2032,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureCluster_sync",
       "title": "gkemulticloud GetAzureCluster Sample",
-      "description": "GetAzureCluster describes a specific\nAzureCluster resource.",
+      "description": "GetAzureCluster describes a specific\n[AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.",
       "file": "AzureClustersClient/GetAzureCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1776,7 +2052,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.AzureCluster",
+        "resultType": "*gkemulticloudpb.AzureCluster",
         "client": {
           "shortName": "AzureClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
@@ -1800,9 +2076,55 @@
       ]
     },
     {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureJsonWebKeys_sync",
+      "title": "gkemulticloud GetAzureJsonWebKeys Sample",
+      "description": "GetAzureJsonWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.",
+      "file": "AzureClustersClient/GetAzureJsonWebKeys/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAzureJsonWebKeys",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.GetAzureJsonWebKeys",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAzureJsonWebKeysRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.AzureJsonWebKeys",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "GetAzureJsonWebKeys",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GetAzureJsonWebKeys",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureNodePool_sync",
       "title": "gkemulticloud GetAzureNodePool Sample",
-      "description": "GetAzureNodePool describes a specific\nAzureNodePool resource.",
+      "description": "GetAzureNodePool describes a specific\n[AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.",
       "file": "AzureClustersClient/GetAzureNodePool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1822,7 +2144,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.AzureNodePool",
+        "resultType": "*gkemulticloudpb.AzureNodePool",
         "client": {
           "shortName": "AzureClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
@@ -1830,6 +2152,52 @@
         "method": {
           "shortName": "GetAzureNodePool",
           "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GetAzureNodePool",
+          "service": {
+            "shortName": "AzureClusters",
+            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureOpenIdConfig_sync",
+      "title": "gkemulticloud GetAzureOpenIdConfig Sample",
+      "description": "GetAzureOpenIdConfig gets the OIDC discovery document for the cluster.\nSee the\n[OpenID Connect Discovery 1.0\nspecification](https: //openid.net/specs/openid-connect-discovery-1_0.html)\nfor details.",
+      "file": "AzureClustersClient/GetAzureOpenIdConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAzureOpenIdConfig",
+        "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient.GetAzureOpenIdConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkemulticloudpb.GetAzureOpenIdConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkemulticloudpb.AzureOpenIdConfig",
+        "client": {
+          "shortName": "AzureClustersClient",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
+        },
+        "method": {
+          "shortName": "GetAzureOpenIdConfig",
+          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GetAzureOpenIdConfig",
           "service": {
             "shortName": "AzureClusters",
             "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
@@ -1868,7 +2236,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkemulticloudpb.AzureServerConfig",
+        "resultType": "*gkemulticloudpb.AzureServerConfig",
         "client": {
           "shortName": "AzureClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
@@ -1914,17 +2282,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "AzureClustersClient",
           "fullName": "google.cloud.gkemulticloud.v1.AzureClustersClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "AzureClusters",
-            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1932,7 +2300,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1940,7 +2308,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_ListAzureClients_sync",
       "title": "gkemulticloud ListAzureClients Sample",
-      "description": "ListAzureClients lists all AzureClient\nresources on a given Google Cloud project and region.",
+      "description": "ListAzureClients lists all [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]\nresources on a given Google Cloud project and region.",
       "file": "AzureClustersClient/ListAzureClients/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1986,7 +2354,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_ListAzureClusters_sync",
       "title": "gkemulticloud ListAzureClusters Sample",
-      "description": "ListAzureClusters lists all AzureCluster\nresources on a given Google Cloud project and region.",
+      "description": "ListAzureClusters lists all [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]\nresources on a given Google Cloud project and region.",
       "file": "AzureClustersClient/ListAzureClusters/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2032,7 +2400,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_ListAzureNodePools_sync",
       "title": "gkemulticloud ListAzureNodePools Sample",
-      "description": "ListAzureNodePools lists all AzureNodePool\nresources on a given\nAzureCluster.",
+      "description": "ListAzureNodePools lists all [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool]\nresources on a given\n[AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].",
       "file": "AzureClustersClient/ListAzureNodePools/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2105,10 +2473,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.gkemulticloud.v1.AzureClusters.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "AzureClusters",
-            "fullName": "google.cloud.gkemulticloud.v1.AzureClusters"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2116,7 +2484,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2124,7 +2492,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_UpdateAzureCluster_sync",
       "title": "gkemulticloud UpdateAzureCluster Sample",
-      "description": "UpdateAzureCluster updates an AzureCluster.",
+      "description": "UpdateAzureCluster updates an [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].",
       "file": "AzureClustersClient/UpdateAzureCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2170,7 +2538,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_UpdateAzureNodePool_sync",
       "title": "gkemulticloud UpdateAzureNodePool Sample",
-      "description": "UpdateAzureNodePool updates an AzureNodePool.",
+      "description": "UpdateAzureNodePool updates an [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool].",
       "file": "AzureClustersClient/UpdateAzureNodePool/main.go",
       "language": "GO",
       "clientMethod": {

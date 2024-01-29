@@ -90,7 +90,6 @@
         {"name": "storage.objects.compose",       "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.copy",          "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.delete",        "resources": ["BUCKET", "OBJECT"]},
-        {"name": "storage.objects.insert",        "resources": ["BUCKET"]},
         {"name": "storage.objects.patch",         "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.rewrite",       "resources": ["BUCKET", "OBJECT"]},
         {"name": "storage.objects.update",        "resources": ["BUCKET", "OBJECT"]}
@@ -248,10 +247,13 @@
           "instructions": ["return-reset-connection", "return-503"]
         },
         {
+          "instructions": ["return-408"]
+        },
+        {
           "instructions": ["return-503-after-256K"]
         },
         {
-          "instructions": ["return-503-after-8192K"]
+          "instructions": ["return-503-after-8192K", "return-408"]
         }
       ],
       "methods": [

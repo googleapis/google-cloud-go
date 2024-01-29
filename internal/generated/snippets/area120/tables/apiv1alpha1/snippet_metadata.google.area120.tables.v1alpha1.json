@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/area120/tables/apiv1alpha1",
-    "version": "0.6.0",
+    "version": "0.8.4",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tablespb.BatchCreateRowsResponse",
+        "resultType": "*tablespb.BatchCreateRowsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.area120.tables.v1alpha1.Client"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tablespb.BatchUpdateRowsResponse",
+        "resultType": "*tablespb.BatchUpdateRowsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.area120.tables.v1alpha1.Client"
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tablespb.Row",
+        "resultType": "*tablespb.Row",
         "client": {
           "shortName": "Client",
           "fullName": "google.area120.tables.v1alpha1.Client"
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tablespb.Row",
+        "resultType": "*tablespb.Row",
         "client": {
           "shortName": "Client",
           "fullName": "google.area120.tables.v1alpha1.Client"
@@ -308,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tablespb.Table",
+        "resultType": "*tablespb.Table",
         "client": {
           "shortName": "Client",
           "fullName": "google.area120.tables.v1alpha1.Client"
@@ -354,7 +354,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tablespb.Workspace",
+        "resultType": "*tablespb.Workspace",
         "client": {
           "shortName": "Client",
           "fullName": "google.area120.tables.v1alpha1.Client"
@@ -538,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tablespb.Row",
+        "resultType": "*tablespb.Row",
         "client": {
           "shortName": "Client",
           "fullName": "google.area120.tables.v1alpha1.Client"

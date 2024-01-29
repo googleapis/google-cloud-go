@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datalabeling/apiv1beta1",
-    "version": "0.6.0",
+    "version": "0.8.4",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.AnnotationSpecSet",
+        "resultType": "*datalabelingpb.AnnotationSpecSet",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.Dataset",
+        "resultType": "*datalabelingpb.Dataset",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.EvaluationJob",
+        "resultType": "*datalabelingpb.EvaluationJob",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"
@@ -489,7 +489,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.AnnotatedDataset",
+        "resultType": "*datalabelingpb.AnnotatedDataset",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"
@@ -535,7 +535,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.AnnotationSpecSet",
+        "resultType": "*datalabelingpb.AnnotationSpecSet",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"
@@ -581,7 +581,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.DataItem",
+        "resultType": "*datalabelingpb.DataItem",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"
@@ -627,7 +627,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.Dataset",
+        "resultType": "*datalabelingpb.Dataset",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"
@@ -653,7 +653,7 @@
     {
       "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_GetEvaluation_sync",
       "title": "datalabeling GetEvaluation Sample",
-      "description": "GetEvaluation gets an evaluation by resource name (to search, use\nprojects.evaluations.search).",
+      "description": "GetEvaluation gets an evaluation by resource name (to search, use\n[projects.evaluations.search][google.cloud.datalabeling.v1beta1.DataLabelingService.SearchEvaluations]).",
       "file": "Client/GetEvaluation/main.go",
       "language": "GO",
       "clientMethod": {
@@ -673,7 +673,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.Evaluation",
+        "resultType": "*datalabelingpb.Evaluation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"
@@ -719,7 +719,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.EvaluationJob",
+        "resultType": "*datalabelingpb.EvaluationJob",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"
@@ -765,7 +765,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.Example",
+        "resultType": "*datalabelingpb.Example",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"
@@ -811,7 +811,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.Instruction",
+        "resultType": "*datalabelingpb.Instruction",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"
@@ -1343,7 +1343,7 @@
     {
       "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_PauseEvaluationJob_sync",
       "title": "datalabeling PauseEvaluationJob Sample",
-      "description": "PauseEvaluationJob pauses an evaluation job. Pausing an evaluation job that is already in a\nPAUSED state is a no-op.",
+      "description": "PauseEvaluationJob pauses an evaluation job. Pausing an evaluation job that is already in a\n`PAUSED` state is a no-op.",
       "file": "Client/PauseEvaluationJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1388,7 +1388,7 @@
     {
       "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_ResumeEvaluationJob_sync",
       "title": "datalabeling ResumeEvaluationJob Sample",
-      "description": "ResumeEvaluationJob resumes a paused evaluation job. A deleted evaluation job can’t be resumed.\nResuming a running or scheduled evaluation job is a no-op.",
+      "description": "ResumeEvaluationJob resumes a paused evaluation job. A deleted evaluation job can't be resumed.\nResuming a running or scheduled evaluation job is a no-op.",
       "file": "Client/ResumeEvaluationJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1433,7 +1433,7 @@
     {
       "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_SearchEvaluations_sync",
       "title": "datalabeling SearchEvaluations Sample",
-      "description": "SearchEvaluations searches evaluations within a project.",
+      "description": "SearchEvaluations searches [evaluations][google.cloud.datalabeling.v1beta1.Evaluation] within a project.",
       "file": "Client/SearchEvaluations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1525,7 +1525,7 @@
     {
       "regionTag": "datalabeling_v1beta1_generated_DataLabelingService_UpdateEvaluationJob_sync",
       "title": "datalabeling UpdateEvaluationJob Sample",
-      "description": "UpdateEvaluationJob updates an evaluation job. You can only update certain fields of the job’s\nEvaluationJobConfig: humanAnnotationConfig.instruction,\nexampleCount, and exampleSamplePercentage.\n\nIf you want to change any other aspect of the evaluation job, you must\ndelete the job and create a new one.",
+      "description": "UpdateEvaluationJob updates an evaluation job. You can only update certain fields of the job's\n[EvaluationJobConfig][google.cloud.datalabeling.v1beta1.EvaluationJobConfig]: `humanAnnotationConfig.instruction`,\n`exampleCount`, and `exampleSamplePercentage`.\n\nIf you want to change any other aspect of the evaluation job, you must\ndelete the job and create a new one.",
       "file": "Client/UpdateEvaluationJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1545,7 +1545,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datalabelingpb.EvaluationJob",
+        "resultType": "*datalabelingpb.EvaluationJob",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datalabeling.v1beta1.Client"

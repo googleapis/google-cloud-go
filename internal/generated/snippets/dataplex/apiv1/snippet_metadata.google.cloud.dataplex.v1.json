@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataplex/apiv1",
-    "version": "1.4.0",
+    "version": "1.14.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,2253 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_CancelOperation_sync",
+      "title": "dataplex CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ContentClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_CreateContent_sync",
+      "title": "dataplex CreateContent Sample",
+      "description": "CreateContent create a content.",
+      "file": "ContentClient/CreateContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateContent",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.CreateContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.Content",
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "CreateContent",
+          "fullName": "google.cloud.dataplex.v1.ContentService.CreateContent",
+          "service": {
+            "shortName": "ContentService",
+            "fullName": "google.cloud.dataplex.v1.ContentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_DeleteContent_sync",
+      "title": "dataplex DeleteContent Sample",
+      "description": "DeleteContent delete a content.",
+      "file": "ContentClient/DeleteContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteContent",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.DeleteContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "DeleteContent",
+          "fullName": "google.cloud.dataplex.v1.ContentService.DeleteContent",
+          "service": {
+            "shortName": "ContentService",
+            "fullName": "google.cloud.dataplex.v1.ContentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_DeleteOperation_sync",
+      "title": "dataplex DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ContentClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_GetContent_sync",
+      "title": "dataplex GetContent Sample",
+      "description": "GetContent get a content resource.",
+      "file": "ContentClient/GetContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetContent",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.GetContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.Content",
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "GetContent",
+          "fullName": "google.cloud.dataplex.v1.ContentService.GetContent",
+          "service": {
+            "shortName": "ContentService",
+            "fullName": "google.cloud.dataplex.v1.ContentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_GetIamPolicy_sync",
+      "title": "dataplex GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a contentitem resource. A `NOT_FOUND`\nerror is returned if the resource does not exist. An empty policy is\nreturned if the resource exists but does not have a policy set on it.\n\nCaller must have Google IAM `dataplex.content.getIamPolicy` permission\non the resource.",
+      "file": "ContentClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.dataplex.v1.ContentService.GetIamPolicy",
+          "service": {
+            "shortName": "ContentService",
+            "fullName": "google.cloud.dataplex.v1.ContentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_GetLocation_sync",
+      "title": "dataplex GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ContentClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_GetOperation_sync",
+      "title": "dataplex GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ContentClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_ListContent_sync",
+      "title": "dataplex ListContent Sample",
+      "description": "ListContent list content.",
+      "file": "ContentClient/ListContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListContent",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.ListContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ContentIterator",
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "ListContent",
+          "fullName": "google.cloud.dataplex.v1.ContentService.ListContent",
+          "service": {
+            "shortName": "ContentService",
+            "fullName": "google.cloud.dataplex.v1.ContentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_ListLocations_sync",
+      "title": "dataplex ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ContentClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_ListOperations_sync",
+      "title": "dataplex ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ContentClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_SetIamPolicy_sync",
+      "title": "dataplex SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified contentitem resource.\nReplaces any existing policy.\n\nCaller must have Google IAM `dataplex.content.setIamPolicy` permission\non the resource.",
+      "file": "ContentClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.dataplex.v1.ContentService.SetIamPolicy",
+          "service": {
+            "shortName": "ContentService",
+            "fullName": "google.cloud.dataplex.v1.ContentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_TestIamPermissions_sync",
+      "title": "dataplex TestIamPermissions Sample",
+      "description": "TestIamPermissions returns the caller's permissions on a resource.\nIf the resource does not exist, an empty set of\npermissions is returned (a `NOT_FOUND` error is not returned).\n\nA caller is not required to have Google IAM permission to make this\nrequest.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
+      "file": "ContentClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.dataplex.v1.ContentService.TestIamPermissions",
+          "service": {
+            "shortName": "ContentService",
+            "fullName": "google.cloud.dataplex.v1.ContentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_ContentService_UpdateContent_sync",
+      "title": "dataplex UpdateContent Sample",
+      "description": "UpdateContent update a content. Only supports full resource update.",
+      "file": "ContentClient/UpdateContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateContent",
+        "fullName": "google.cloud.dataplex.v1.ContentClient.UpdateContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.Content",
+        "client": {
+          "shortName": "ContentClient",
+          "fullName": "google.cloud.dataplex.v1.ContentClient"
+        },
+        "method": {
+          "shortName": "UpdateContent",
+          "fullName": "google.cloud.dataplex.v1.ContentService.UpdateContent",
+          "service": {
+            "shortName": "ContentService",
+            "fullName": "google.cloud.dataplex.v1.ContentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_CancelOperation_sync",
+      "title": "dataplex CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataScanClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_CreateDataScan_sync",
+      "title": "dataplex CreateDataScan Sample",
+      "description": "CreateDataScan creates a DataScan resource.",
+      "file": "DataScanClient/CreateDataScan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataScan",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.CreateDataScan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateDataScanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDataScanOperation",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "CreateDataScan",
+          "fullName": "google.cloud.dataplex.v1.DataScanService.CreateDataScan",
+          "service": {
+            "shortName": "DataScanService",
+            "fullName": "google.cloud.dataplex.v1.DataScanService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_DeleteDataScan_sync",
+      "title": "dataplex DeleteDataScan Sample",
+      "description": "DeleteDataScan deletes a DataScan resource.",
+      "file": "DataScanClient/DeleteDataScan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataScan",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.DeleteDataScan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteDataScanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDataScanOperation",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "DeleteDataScan",
+          "fullName": "google.cloud.dataplex.v1.DataScanService.DeleteDataScan",
+          "service": {
+            "shortName": "DataScanService",
+            "fullName": "google.cloud.dataplex.v1.DataScanService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_DeleteOperation_sync",
+      "title": "dataplex DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataScanClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_GetDataScan_sync",
+      "title": "dataplex GetDataScan Sample",
+      "description": "GetDataScan gets a DataScan resource.",
+      "file": "DataScanClient/GetDataScan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataScan",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.GetDataScan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetDataScanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.DataScan",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "GetDataScan",
+          "fullName": "google.cloud.dataplex.v1.DataScanService.GetDataScan",
+          "service": {
+            "shortName": "DataScanService",
+            "fullName": "google.cloud.dataplex.v1.DataScanService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_GetDataScanJob_sync",
+      "title": "dataplex GetDataScanJob Sample",
+      "description": "GetDataScanJob gets a DataScanJob resource.",
+      "file": "DataScanClient/GetDataScanJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataScanJob",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.GetDataScanJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetDataScanJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.DataScanJob",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "GetDataScanJob",
+          "fullName": "google.cloud.dataplex.v1.DataScanService.GetDataScanJob",
+          "service": {
+            "shortName": "DataScanService",
+            "fullName": "google.cloud.dataplex.v1.DataScanService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_GetLocation_sync",
+      "title": "dataplex GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "DataScanClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_GetOperation_sync",
+      "title": "dataplex GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataScanClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_ListDataScanJobs_sync",
+      "title": "dataplex ListDataScanJobs Sample",
+      "description": "ListDataScanJobs lists DataScanJobs under the given DataScan.",
+      "file": "DataScanClient/ListDataScanJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataScanJobs",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.ListDataScanJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListDataScanJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataScanJobIterator",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "ListDataScanJobs",
+          "fullName": "google.cloud.dataplex.v1.DataScanService.ListDataScanJobs",
+          "service": {
+            "shortName": "DataScanService",
+            "fullName": "google.cloud.dataplex.v1.DataScanService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_ListDataScans_sync",
+      "title": "dataplex ListDataScans Sample",
+      "description": "ListDataScans lists DataScans.",
+      "file": "DataScanClient/ListDataScans/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataScans",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.ListDataScans",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListDataScansRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataScanIterator",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "ListDataScans",
+          "fullName": "google.cloud.dataplex.v1.DataScanService.ListDataScans",
+          "service": {
+            "shortName": "DataScanService",
+            "fullName": "google.cloud.dataplex.v1.DataScanService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_ListLocations_sync",
+      "title": "dataplex ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "DataScanClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_ListOperations_sync",
+      "title": "dataplex ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataScanClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_RunDataScan_sync",
+      "title": "dataplex RunDataScan Sample",
+      "description": "RunDataScan runs an on-demand execution of a DataScan",
+      "file": "DataScanClient/RunDataScan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunDataScan",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.RunDataScan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.RunDataScanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.RunDataScanResponse",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "RunDataScan",
+          "fullName": "google.cloud.dataplex.v1.DataScanService.RunDataScan",
+          "service": {
+            "shortName": "DataScanService",
+            "fullName": "google.cloud.dataplex.v1.DataScanService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataScanService_UpdateDataScan_sync",
+      "title": "dataplex UpdateDataScan Sample",
+      "description": "UpdateDataScan updates a DataScan resource.",
+      "file": "DataScanClient/UpdateDataScan/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataScan",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.UpdateDataScan",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateDataScanRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDataScanOperation",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "UpdateDataScan",
+          "fullName": "google.cloud.dataplex.v1.DataScanService.UpdateDataScan",
+          "service": {
+            "shortName": "DataScanService",
+            "fullName": "google.cloud.dataplex.v1.DataScanService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_CancelOperation_sync",
+      "title": "dataplex CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataTaxonomyClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataAttribute_sync",
+      "title": "dataplex CreateDataAttribute Sample",
+      "description": "CreateDataAttribute create a DataAttribute resource.",
+      "file": "DataTaxonomyClient/CreateDataAttribute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataAttribute",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.CreateDataAttribute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateDataAttributeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDataAttributeOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "CreateDataAttribute",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.CreateDataAttribute",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataAttributeBinding_sync",
+      "title": "dataplex CreateDataAttributeBinding Sample",
+      "description": "CreateDataAttributeBinding create a DataAttributeBinding resource.",
+      "file": "DataTaxonomyClient/CreateDataAttributeBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataAttributeBinding",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.CreateDataAttributeBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateDataAttributeBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDataAttributeBindingOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "CreateDataAttributeBinding",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.CreateDataAttributeBinding",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataTaxonomy_sync",
+      "title": "dataplex CreateDataTaxonomy Sample",
+      "description": "CreateDataTaxonomy create a DataTaxonomy resource.",
+      "file": "DataTaxonomyClient/CreateDataTaxonomy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataTaxonomy",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.CreateDataTaxonomy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateDataTaxonomyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDataTaxonomyOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "CreateDataTaxonomy",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.CreateDataTaxonomy",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataAttribute_sync",
+      "title": "dataplex DeleteDataAttribute Sample",
+      "description": "DeleteDataAttribute deletes a Data Attribute resource.",
+      "file": "DataTaxonomyClient/DeleteDataAttribute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataAttribute",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.DeleteDataAttribute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteDataAttributeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDataAttributeOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "DeleteDataAttribute",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.DeleteDataAttribute",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataAttributeBinding_sync",
+      "title": "dataplex DeleteDataAttributeBinding Sample",
+      "description": "DeleteDataAttributeBinding deletes a DataAttributeBinding resource. All attributes within the\nDataAttributeBinding must be deleted before the DataAttributeBinding can be\ndeleted.",
+      "file": "DataTaxonomyClient/DeleteDataAttributeBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataAttributeBinding",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.DeleteDataAttributeBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteDataAttributeBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDataAttributeBindingOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "DeleteDataAttributeBinding",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.DeleteDataAttributeBinding",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataTaxonomy_sync",
+      "title": "dataplex DeleteDataTaxonomy Sample",
+      "description": "DeleteDataTaxonomy deletes a DataTaxonomy resource. All attributes within the DataTaxonomy\nmust be deleted before the DataTaxonomy can be deleted.",
+      "file": "DataTaxonomyClient/DeleteDataTaxonomy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataTaxonomy",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.DeleteDataTaxonomy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteDataTaxonomyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDataTaxonomyOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "DeleteDataTaxonomy",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.DeleteDataTaxonomy",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteOperation_sync",
+      "title": "dataplex DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataTaxonomyClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataAttribute_sync",
+      "title": "dataplex GetDataAttribute Sample",
+      "description": "GetDataAttribute retrieves a Data Attribute resource.",
+      "file": "DataTaxonomyClient/GetDataAttribute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataAttribute",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.GetDataAttribute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetDataAttributeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.DataAttribute",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "GetDataAttribute",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.GetDataAttribute",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataAttributeBinding_sync",
+      "title": "dataplex GetDataAttributeBinding Sample",
+      "description": "GetDataAttributeBinding retrieves a DataAttributeBinding resource.",
+      "file": "DataTaxonomyClient/GetDataAttributeBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataAttributeBinding",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.GetDataAttributeBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetDataAttributeBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.DataAttributeBinding",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "GetDataAttributeBinding",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.GetDataAttributeBinding",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataTaxonomy_sync",
+      "title": "dataplex GetDataTaxonomy Sample",
+      "description": "GetDataTaxonomy retrieves a DataTaxonomy resource.",
+      "file": "DataTaxonomyClient/GetDataTaxonomy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataTaxonomy",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.GetDataTaxonomy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetDataTaxonomyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.DataTaxonomy",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "GetDataTaxonomy",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.GetDataTaxonomy",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetLocation_sync",
+      "title": "dataplex GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "DataTaxonomyClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetOperation_sync",
+      "title": "dataplex GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataTaxonomyClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataAttributeBindings_sync",
+      "title": "dataplex ListDataAttributeBindings Sample",
+      "description": "ListDataAttributeBindings lists DataAttributeBinding resources in a project and location.",
+      "file": "DataTaxonomyClient/ListDataAttributeBindings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataAttributeBindings",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.ListDataAttributeBindings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListDataAttributeBindingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataAttributeBindingIterator",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "ListDataAttributeBindings",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.ListDataAttributeBindings",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataAttributes_sync",
+      "title": "dataplex ListDataAttributes Sample",
+      "description": "ListDataAttributes lists Data Attribute resources in a DataTaxonomy.",
+      "file": "DataTaxonomyClient/ListDataAttributes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataAttributes",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.ListDataAttributes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListDataAttributesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataAttributeIterator",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "ListDataAttributes",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.ListDataAttributes",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataTaxonomies_sync",
+      "title": "dataplex ListDataTaxonomies Sample",
+      "description": "ListDataTaxonomies lists DataTaxonomy resources in a project and location.",
+      "file": "DataTaxonomyClient/ListDataTaxonomies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataTaxonomies",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.ListDataTaxonomies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListDataTaxonomiesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataTaxonomyIterator",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "ListDataTaxonomies",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.ListDataTaxonomies",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListLocations_sync",
+      "title": "dataplex ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "DataTaxonomyClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListOperations_sync",
+      "title": "dataplex ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataTaxonomyClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataAttribute_sync",
+      "title": "dataplex UpdateDataAttribute Sample",
+      "description": "UpdateDataAttribute updates a DataAttribute resource.",
+      "file": "DataTaxonomyClient/UpdateDataAttribute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataAttribute",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.UpdateDataAttribute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateDataAttributeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDataAttributeOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "UpdateDataAttribute",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.UpdateDataAttribute",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataAttributeBinding_sync",
+      "title": "dataplex UpdateDataAttributeBinding Sample",
+      "description": "UpdateDataAttributeBinding updates a DataAttributeBinding resource.",
+      "file": "DataTaxonomyClient/UpdateDataAttributeBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataAttributeBinding",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.UpdateDataAttributeBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateDataAttributeBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDataAttributeBindingOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "UpdateDataAttributeBinding",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.UpdateDataAttributeBinding",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataTaxonomy_sync",
+      "title": "dataplex UpdateDataTaxonomy Sample",
+      "description": "UpdateDataTaxonomy updates a DataTaxonomy resource.",
+      "file": "DataTaxonomyClient/UpdateDataTaxonomy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataTaxonomy",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.UpdateDataTaxonomy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateDataTaxonomyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDataTaxonomyOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "UpdateDataTaxonomy",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.UpdateDataTaxonomy",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "dataplex_v1_generated_DataplexService_CancelJob_sync",
       "title": "dataplex CancelJob Sample",
@@ -85,10 +2332,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -96,7 +2343,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -498,10 +2745,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -509,7 +2756,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -629,7 +2876,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataplexpb.Asset",
+        "resultType": "*dataplexpb.Asset",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataplex.v1.Client"
@@ -675,7 +2922,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataplexpb.Environment",
+        "resultType": "*dataplexpb.Environment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataplex.v1.Client"
@@ -721,7 +2968,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataplexpb.Job",
+        "resultType": "*dataplexpb.Job",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataplex.v1.Client"
@@ -767,7 +3014,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataplexpb.Lake",
+        "resultType": "*dataplexpb.Lake",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataplex.v1.Client"
@@ -813,17 +3060,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataplex.v1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -831,7 +3078,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -859,17 +3106,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataplex.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -877,7 +3124,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -905,7 +3152,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataplexpb.Task",
+        "resultType": "*dataplexpb.Task",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataplex.v1.Client"
@@ -951,7 +3198,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataplexpb.Zone",
+        "resultType": "*dataplexpb.Zone",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataplex.v1.Client"
@@ -1280,10 +3527,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1291,7 +3538,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1326,10 +3573,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dataplex.v1.DataplexService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "DataplexService",
-            "fullName": "google.cloud.dataplex.v1.DataplexService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1337,7 +3584,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1522,6 +3769,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataplexService_RunTask_sync",
+      "title": "dataplex RunTask Sample",
+      "description": "RunTask run an on demand execution of a Task.",
+      "file": "Client/RunTask/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunTask",
+        "fullName": "google.cloud.dataplex.v1.Client.RunTask",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.RunTaskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.RunTaskResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataplex.v1.Client"
+        },
+        "method": {
+          "shortName": "RunTask",
+          "fullName": "google.cloud.dataplex.v1.DataplexService.RunTask",
+          "service": {
+            "shortName": "DataplexService",
+            "fullName": "google.cloud.dataplex.v1.DataplexService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1757,1289 +4050,6 @@
       ]
     },
     {
-      "regionTag": "dataplex_v1_generated_ContentService_CancelOperation_sync",
-      "title": "dataplex CancelOperation Sample",
-      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
-      "file": "ContentClient/CancelOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.cloud.dataplex.v1.ContentService.CancelOperation",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 52,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_CreateContent_sync",
-      "title": "dataplex CreateContent Sample",
-      "description": "CreateContent create a content.",
-      "file": "ContentClient/CreateContent/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateContent",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.CreateContent",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.CreateContentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "dataplexpb.Content",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "CreateContent",
-          "fullName": "google.cloud.dataplex.v1.ContentService.CreateContent",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_DeleteContent_sync",
-      "title": "dataplex DeleteContent Sample",
-      "description": "DeleteContent delete a content.",
-      "file": "ContentClient/DeleteContent/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteContent",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.DeleteContent",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.DeleteContentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "DeleteContent",
-          "fullName": "google.cloud.dataplex.v1.ContentService.DeleteContent",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 51,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_DeleteOperation_sync",
-      "title": "dataplex DeleteOperation Sample",
-      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
-      "file": "ContentClient/DeleteOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.cloud.dataplex.v1.ContentService.DeleteOperation",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 52,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_GetContent_sync",
-      "title": "dataplex GetContent Sample",
-      "description": "GetContent get a content resource.",
-      "file": "ContentClient/GetContent/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetContent",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.GetContent",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.GetContentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "dataplexpb.Content",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "GetContent",
-          "fullName": "google.cloud.dataplex.v1.ContentService.GetContent",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_GetIamPolicy_sync",
-      "title": "dataplex GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a contentitem resource. A NOT_FOUND\nerror is returned if the resource does not exist. An empty policy is\nreturned if the resource exists but does not have a policy set on it.\n\nCaller must have Google IAM dataplex.content.getIamPolicy permission\non the resource.",
-      "file": "ContentClient/GetIamPolicy/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "iampb.Policy",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.dataplex.v1.ContentService.GetIamPolicy",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_GetLocation_sync",
-      "title": "dataplex GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "ContentClient/GetLocation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetLocation",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.GetLocation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "locationpb.Location",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.dataplex.v1.ContentService.GetLocation",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_GetOperation_sync",
-      "title": "dataplex GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "ContentClient/GetOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "longrunningpb.Operation",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.cloud.dataplex.v1.ContentService.GetOperation",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_ListContent_sync",
-      "title": "dataplex ListContent Sample",
-      "description": "ListContent list content.",
-      "file": "ContentClient/ListContent/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListContent",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.ListContent",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.ListContentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "ContentIterator",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "ListContent",
-          "fullName": "google.cloud.dataplex.v1.ContentService.ListContent",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 60,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_ListLocations_sync",
-      "title": "dataplex ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "ContentClient/ListLocations/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListLocations",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.ListLocations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "LocationIterator",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.dataplex.v1.ContentService.ListLocations",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 61,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_ListOperations_sync",
-      "title": "dataplex ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "ContentClient/ListOperations/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOperations",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.ListOperations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OperationIterator",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.cloud.dataplex.v1.ContentService.ListOperations",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 61,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_SetIamPolicy_sync",
-      "title": "dataplex SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified contentitem resource.\nReplaces any existing policy.\n\nCaller must have Google IAM dataplex.content.setIamPolicy permission\non the resource.",
-      "file": "ContentClient/SetIamPolicy/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "SetIamPolicy",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.SetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "iampb.Policy",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.dataplex.v1.ContentService.SetIamPolicy",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_TestIamPermissions_sync",
-      "title": "dataplex TestIamPermissions Sample",
-      "description": "TestIamPermissions returns the caller’s permissions on a resource.\nIf the resource does not exist, an empty set of\npermissions is returned (a NOT_FOUND error is not returned).\n\nA caller is not required to have Google IAM permission to make this\nrequest.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay “fail open” without warning.",
-      "file": "ContentClient/TestIamPermissions/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "TestIamPermissions",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.TestIamPermissions",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.dataplex.v1.ContentService.TestIamPermissions",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_ContentService_UpdateContent_sync",
-      "title": "dataplex UpdateContent Sample",
-      "description": "UpdateContent update a content. Only supports full resource update.",
-      "file": "ContentClient/UpdateContent/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "UpdateContent",
-        "fullName": "google.cloud.dataplex.v1.ContentClient.UpdateContent",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.UpdateContentRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "dataplexpb.Content",
-        "client": {
-          "shortName": "ContentClient",
-          "fullName": "google.cloud.dataplex.v1.ContentClient"
-        },
-        "method": {
-          "shortName": "UpdateContent",
-          "fullName": "google.cloud.dataplex.v1.ContentService.UpdateContent",
-          "service": {
-            "shortName": "ContentService",
-            "fullName": "google.cloud.dataplex.v1.ContentService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_CancelOperation_sync",
-      "title": "dataplex CancelOperation Sample",
-      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
-      "file": "DataScanClient/CancelOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.CancelOperation",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 52,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_CreateDataScan_sync",
-      "title": "dataplex CreateDataScan Sample",
-      "description": "CreateDataScan creates a dataScan resource.",
-      "file": "DataScanClient/CreateDataScan/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CreateDataScan",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.CreateDataScan",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.CreateDataScanRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "CreateDataScanOperation",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "CreateDataScan",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.CreateDataScan",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 58,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_DeleteDataScan_sync",
-      "title": "dataplex DeleteDataScan Sample",
-      "description": "DeleteDataScan delete the dataScan resource.",
-      "file": "DataScanClient/DeleteDataScan/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteDataScan",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.DeleteDataScan",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.DeleteDataScanRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "DeleteDataScanOperation",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "DeleteDataScan",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.DeleteDataScan",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 56,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_DeleteOperation_sync",
-      "title": "dataplex DeleteOperation Sample",
-      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
-      "file": "DataScanClient/DeleteOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.DeleteOperation",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 52,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_GetDataScan_sync",
-      "title": "dataplex GetDataScan Sample",
-      "description": "GetDataScan get dataScan resource.",
-      "file": "DataScanClient/GetDataScan/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetDataScan",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.GetDataScan",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.GetDataScanRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "dataplexpb.DataScan",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "GetDataScan",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.GetDataScan",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_GetDataScanJob_sync",
-      "title": "dataplex GetDataScanJob Sample",
-      "description": "GetDataScanJob get DataScanJob resource.",
-      "file": "DataScanClient/GetDataScanJob/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetDataScanJob",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.GetDataScanJob",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.GetDataScanJobRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "dataplexpb.DataScanJob",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "GetDataScanJob",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.GetDataScanJob",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_GetLocation_sync",
-      "title": "dataplex GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "DataScanClient/GetLocation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetLocation",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.GetLocation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "locationpb.Location",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.GetLocation",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_GetOperation_sync",
-      "title": "dataplex GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "DataScanClient/GetOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "longrunningpb.Operation",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.GetOperation",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_ListDataScanJobs_sync",
-      "title": "dataplex ListDataScanJobs Sample",
-      "description": "ListDataScanJobs lists DataScanJobs under the given dataScan.",
-      "file": "DataScanClient/ListDataScanJobs/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListDataScanJobs",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.ListDataScanJobs",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.ListDataScanJobsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "DataScanJobIterator",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "ListDataScanJobs",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.ListDataScanJobs",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 60,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_ListDataScans_sync",
-      "title": "dataplex ListDataScans Sample",
-      "description": "ListDataScans lists dataScans.",
-      "file": "DataScanClient/ListDataScans/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListDataScans",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.ListDataScans",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.ListDataScansRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "DataScanIterator",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "ListDataScans",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.ListDataScans",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 60,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_ListLocations_sync",
-      "title": "dataplex ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "DataScanClient/ListLocations/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListLocations",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.ListLocations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "LocationIterator",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.ListLocations",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 61,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_ListOperations_sync",
-      "title": "dataplex ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "DataScanClient/ListOperations/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOperations",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.ListOperations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OperationIterator",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.ListOperations",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 61,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_RunDataScan_sync",
-      "title": "dataplex RunDataScan Sample",
-      "description": "RunDataScan run an on demand execution of a DataScan.",
-      "file": "DataScanClient/RunDataScan/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "RunDataScan",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.RunDataScan",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.RunDataScanRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "dataplexpb.RunDataScanResponse",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "RunDataScan",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.RunDataScan",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "dataplex_v1_generated_DataScanService_UpdateDataScan_sync",
-      "title": "dataplex UpdateDataScan Sample",
-      "description": "UpdateDataScan update the dataScan resource.",
-      "file": "DataScanClient/UpdateDataScan/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "UpdateDataScan",
-        "fullName": "google.cloud.dataplex.v1.DataScanClient.UpdateDataScan",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "dataplexpb.UpdateDataScanRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "UpdateDataScanOperation",
-        "client": {
-          "shortName": "DataScanClient",
-          "fullName": "google.cloud.dataplex.v1.DataScanClient"
-        },
-        "method": {
-          "shortName": "UpdateDataScan",
-          "fullName": "google.cloud.dataplex.v1.DataScanService.UpdateDataScan",
-          "service": {
-            "shortName": "DataScanService",
-            "fullName": "google.cloud.dataplex.v1.DataScanService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 58,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "dataplex_v1_generated_MetadataService_CancelOperation_sync",
       "title": "dataplex CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -3068,10 +4078,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dataplex.v1.MetadataService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "MetadataService",
-            "fullName": "google.cloud.dataplex.v1.MetadataService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -3079,7 +4089,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -3107,7 +4117,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataplexpb.Entity",
+        "resultType": "*dataplexpb.Entity",
         "client": {
           "shortName": "MetadataClient",
           "fullName": "google.cloud.dataplex.v1.MetadataClient"
@@ -3153,7 +4163,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataplexpb.Partition",
+        "resultType": "*dataplexpb.Partition",
         "client": {
           "shortName": "MetadataClient",
           "fullName": "google.cloud.dataplex.v1.MetadataClient"
@@ -3250,10 +4260,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.dataplex.v1.MetadataService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "MetadataService",
-            "fullName": "google.cloud.dataplex.v1.MetadataService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -3261,7 +4271,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -3334,7 +4344,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataplexpb.Entity",
+        "resultType": "*dataplexpb.Entity",
         "client": {
           "shortName": "MetadataClient",
           "fullName": "google.cloud.dataplex.v1.MetadataClient"
@@ -3380,17 +4390,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "MetadataClient",
           "fullName": "google.cloud.dataplex.v1.MetadataClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dataplex.v1.MetadataService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "MetadataService",
-            "fullName": "google.cloud.dataplex.v1.MetadataService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -3398,7 +4408,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3426,17 +4436,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "MetadataClient",
           "fullName": "google.cloud.dataplex.v1.MetadataClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dataplex.v1.MetadataService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "MetadataService",
-            "fullName": "google.cloud.dataplex.v1.MetadataService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -3444,7 +4454,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3472,7 +4482,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataplexpb.Partition",
+        "resultType": "*dataplexpb.Partition",
         "client": {
           "shortName": "MetadataClient",
           "fullName": "google.cloud.dataplex.v1.MetadataClient"
@@ -3571,10 +4581,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dataplex.v1.MetadataService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "MetadataService",
-            "fullName": "google.cloud.dataplex.v1.MetadataService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -3582,7 +4592,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -3617,10 +4627,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dataplex.v1.MetadataService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "MetadataService",
-            "fullName": "google.cloud.dataplex.v1.MetadataService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -3628,7 +4638,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -3702,7 +4712,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataplexpb.Entity",
+        "resultType": "*dataplexpb.Entity",
         "client": {
           "shortName": "MetadataClient",
           "fullName": "google.cloud.dataplex.v1.MetadataClient"

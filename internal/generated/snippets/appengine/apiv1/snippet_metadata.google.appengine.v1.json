@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/appengine/apiv1",
-    "version": "1.5.0",
+    "version": "1.8.4",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "appengine_v1_generated_Applications_CreateApplication_sync",
       "title": "appengine CreateApplication Sample",
-      "description": "CreateApplication creates an App Engine application for a Google Cloud Platform project.\nRequired fields: \n\n\tid - The ID of the target Cloud Platform project.\n\n\tlocation - The region (at https: //cloud.google.com/appengine/docs/locations) where you want the App Engine application located.\n\nFor more information about App Engine applications, see Managing Projects, Applications, and Billing (at https: //cloud.google.com/appengine/docs/standard/python/console/).",
+      "description": "CreateApplication creates an App Engine application for a Google Cloud Platform project.\nRequired fields: \n\n* `id` - The ID of the target Cloud Platform project.\n* *location* - The [region](https: //cloud.google.com/appengine/docs/locations) where you want the App Engine application located.\n\nFor more information about App Engine applications, see [Managing Projects, Applications, and Billing](https: //cloud.google.com/appengine/docs/standard/python/console/).",
       "file": "ApplicationsClient/CreateApplication/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.Application",
+        "resultType": "*appenginepb.Application",
         "client": {
           "shortName": "ApplicationsClient",
           "fullName": "google.appengine.v1.ApplicationsClient"
@@ -106,7 +106,7 @@
     {
       "regionTag": "appengine_v1_generated_Applications_RepairApplication_sync",
       "title": "appengine RepairApplication Sample",
-      "description": "RepairApplication recreates the required App Engine features for the specified App Engine\napplication, for example a Cloud Storage bucket or App Engine service\naccount.\nUse this method if you receive an error message about a missing feature,\nfor example, Error retrieving the App Engine service account.\nIf you have deleted your App Engine service account, this will\nnot be able to recreate it. Instead, you should attempt to use the\nIAM undelete API if possible at https: //cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params={ (at https: //cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params=%7B)“name”%3A\"projects%2F-%2FserviceAccounts%2Funique_id\"%2C\"resource\"%3A%7B%7D%7D .\nIf the deletion was recent, the numeric ID can be found in the Cloud\nConsole Activity Log.",
+      "description": "RepairApplication recreates the required App Engine features for the specified App Engine\napplication, for example a Cloud Storage bucket or App Engine service\naccount.\nUse this method if you receive an error message about a missing feature,\nfor example, *Error retrieving the App Engine service account*.\nIf you have deleted your App Engine service account, this will\nnot be able to recreate it. Instead, you should attempt to use the\nIAM undelete API if possible at https: //cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params=%7B\"name\"%3A\"projects%2F-%2FserviceAccounts%2Funique_id\"%2C\"resource\"%3A%7B%7D%7D .\nIf the deletion was recent, the numeric ID can be found in the Cloud\nConsole Activity Log.",
       "file": "ApplicationsClient/RepairApplication/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "appengine_v1_generated_Applications_UpdateApplication_sync",
       "title": "appengine UpdateApplication Sample",
-      "description": "UpdateApplication updates the specified Application resource.\nYou can update the following fields: \n\n\tauth_domain - Google authentication domain for controlling user access to the application.\n\n\tdefault_cookie_expiration - Cookie expiration policy for the application.\n\n\tiap - Identity-Aware Proxy properties for the application.",
+      "description": "UpdateApplication updates the specified Application resource.\nYou can update the following fields: \n\n* `auth_domain` - Google authentication domain for controlling user access to the application.\n* `default_cookie_expiration` - Cookie expiration policy for the application.\n* `iap` - Identity-Aware Proxy properties for the application.",
       "file": "ApplicationsClient/UpdateApplication/main.go",
       "language": "GO",
       "clientMethod": {
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.AuthorizedCertificate",
+        "resultType": "*appenginepb.AuthorizedCertificate",
         "client": {
           "shortName": "AuthorizedCertificatesClient",
           "fullName": "google.appengine.v1.AuthorizedCertificatesClient"
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.AuthorizedCertificate",
+        "resultType": "*appenginepb.AuthorizedCertificate",
         "client": {
           "shortName": "AuthorizedCertificatesClient",
           "fullName": "google.appengine.v1.AuthorizedCertificatesClient"
@@ -381,7 +381,7 @@
     {
       "regionTag": "appengine_v1_generated_AuthorizedCertificates_UpdateAuthorizedCertificate_sync",
       "title": "appengine UpdateAuthorizedCertificate Sample",
-      "description": "UpdateAuthorizedCertificate updates the specified SSL certificate. To renew a certificate and maintain\nits existing domain mappings, update certificate_data with a new\ncertificate. The new certificate must be applicable to the same domains as\nthe original certificate. The certificate display_name may also be\nupdated.",
+      "description": "UpdateAuthorizedCertificate updates the specified SSL certificate. To renew a certificate and maintain\nits existing domain mappings, update `certificate_data` with a new\ncertificate. The new certificate must be applicable to the same domains as\nthe original certificate. The certificate `display_name` may also be\nupdated.",
       "file": "AuthorizedCertificatesClient/UpdateAuthorizedCertificate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -401,7 +401,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.AuthorizedCertificate",
+        "resultType": "*appenginepb.AuthorizedCertificate",
         "client": {
           "shortName": "AuthorizedCertificatesClient",
           "fullName": "google.appengine.v1.AuthorizedCertificatesClient"
@@ -473,7 +473,7 @@
     {
       "regionTag": "appengine_v1_generated_DomainMappings_CreateDomainMapping_sync",
       "title": "appengine CreateDomainMapping Sample",
-      "description": "CreateDomainMapping maps a domain to an application. A user must be authorized to administer a\ndomain in order to map it to an application. For a list of available\nauthorized domains, see AuthorizedDomains.ListAuthorizedDomains (at ).",
+      "description": "CreateDomainMapping maps a domain to an application. A user must be authorized to administer a\ndomain in order to map it to an application. For a list of available\nauthorized domains, see [`AuthorizedDomains.ListAuthorizedDomains`]().",
       "file": "DomainMappingsClient/CreateDomainMapping/main.go",
       "language": "GO",
       "clientMethod": {
@@ -519,7 +519,7 @@
     {
       "regionTag": "appengine_v1_generated_DomainMappings_DeleteDomainMapping_sync",
       "title": "appengine DeleteDomainMapping Sample",
-      "description": "DeleteDomainMapping deletes the specified domain mapping. A user must be authorized to\nadminister the associated domain in order to delete a DomainMapping\nresource.",
+      "description": "DeleteDomainMapping deletes the specified domain mapping. A user must be authorized to\nadminister the associated domain in order to delete a `DomainMapping`\nresource.",
       "file": "DomainMappingsClient/DeleteDomainMapping/main.go",
       "language": "GO",
       "clientMethod": {
@@ -585,7 +585,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.DomainMapping",
+        "resultType": "*appenginepb.DomainMapping",
         "client": {
           "shortName": "DomainMappingsClient",
           "fullName": "google.appengine.v1.DomainMappingsClient"
@@ -657,7 +657,7 @@
     {
       "regionTag": "appengine_v1_generated_DomainMappings_UpdateDomainMapping_sync",
       "title": "appengine UpdateDomainMapping Sample",
-      "description": "UpdateDomainMapping updates the specified domain mapping. To map an SSL certificate to a\ndomain mapping, update certificate_id to point to an AuthorizedCertificate\nresource. A user must be authorized to administer the associated domain\nin order to update a DomainMapping resource.",
+      "description": "UpdateDomainMapping updates the specified domain mapping. To map an SSL certificate to a\ndomain mapping, update `certificate_id` to point to an `AuthorizedCertificate`\nresource. A user must be authorized to administer the associated domain\nin order to update a `DomainMapping` resource.",
       "file": "DomainMappingsClient/UpdateDomainMapping/main.go",
       "language": "GO",
       "clientMethod": {
@@ -703,7 +703,7 @@
     {
       "regionTag": "appengine_v1_generated_Firewall_BatchUpdateIngressRules_sync",
       "title": "appengine BatchUpdateIngressRules Sample",
-      "description": "BatchUpdateIngressRules replaces the entire firewall ruleset in one bulk operation. This overrides\nand replaces the rules of an existing firewall with the new rules.\n\nIf the final rule does not match traffic with the ‘*’ wildcard IP range,\nthen an “allow all” rule is explicitly added to the end of the list.",
+      "description": "BatchUpdateIngressRules replaces the entire firewall ruleset in one bulk operation. This overrides\nand replaces the rules of an existing firewall with the new rules.\n\nIf the final rule does not match traffic with the '*' wildcard IP range,\nthen an \"allow all\" rule is explicitly added to the end of the list.",
       "file": "FirewallClient/BatchUpdateIngressRules/main.go",
       "language": "GO",
       "clientMethod": {
@@ -723,7 +723,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.BatchUpdateIngressRulesResponse",
+        "resultType": "*appenginepb.BatchUpdateIngressRulesResponse",
         "client": {
           "shortName": "FirewallClient",
           "fullName": "google.appengine.v1.FirewallClient"
@@ -769,7 +769,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.FirewallRule",
+        "resultType": "*appenginepb.FirewallRule",
         "client": {
           "shortName": "FirewallClient",
           "fullName": "google.appengine.v1.FirewallClient"
@@ -860,7 +860,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.FirewallRule",
+        "resultType": "*appenginepb.FirewallRule",
         "client": {
           "shortName": "FirewallClient",
           "fullName": "google.appengine.v1.FirewallClient"
@@ -952,7 +952,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.FirewallRule",
+        "resultType": "*appenginepb.FirewallRule",
         "client": {
           "shortName": "FirewallClient",
           "fullName": "google.appengine.v1.FirewallClient"
@@ -978,7 +978,7 @@
     {
       "regionTag": "appengine_v1_generated_Instances_DebugInstance_sync",
       "title": "appengine DebugInstance Sample",
-      "description": "DebugInstance enables debugging on a VM instance. This allows you to use the SSH\ncommand to connect to the virtual machine where the instance lives.\nWhile in “debug mode”, the instance continues to serve live traffic.\nYou should delete the instance when you are done debugging and then\nallow the system to take over and determine if another instance\nshould be started.\n\nOnly applicable for instances in App Engine flexible environment.",
+      "description": "DebugInstance enables debugging on a VM instance. This allows you to use the SSH\ncommand to connect to the virtual machine where the instance lives.\nWhile in \"debug mode\", the instance continues to serve live traffic.\nYou should delete the instance when you are done debugging and then\nallow the system to take over and determine if another instance\nshould be started.\n\nOnly applicable for instances in App Engine flexible environment.",
       "file": "InstancesClient/DebugInstance/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1024,7 +1024,7 @@
     {
       "regionTag": "appengine_v1_generated_Instances_DeleteInstance_sync",
       "title": "appengine DeleteInstance Sample",
-      "description": "DeleteInstance stops a running instance.\n\nThe instance might be automatically recreated based on the scaling settings\nof the version. For more information, see “How Instances are Managed”\n(standard environment (at https: //cloud.google.com/appengine/docs/standard/python/how-instances-are-managed) |\nflexible environment (at https: //cloud.google.com/appengine/docs/flexible/python/how-instances-are-managed)).\n\nTo ensure that instances are not re-created and avoid getting billed, you\ncan stop all instances within the target version by changing the serving\nstatus of the version to STOPPED with the\napps.services.versions.patch (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions/patch)\nmethod.",
+      "description": "DeleteInstance stops a running instance.\n\nThe instance might be automatically recreated based on the scaling settings\nof the version. For more information, see \"How Instances are Managed\"\n([standard environment](https: //cloud.google.com/appengine/docs/standard/python/how-instances-are-managed) |\n[flexible environment](https: //cloud.google.com/appengine/docs/flexible/python/how-instances-are-managed)).\n\nTo ensure that instances are not re-created and avoid getting billed, you\ncan stop all instances within the target version by changing the serving\nstatus of the version to `STOPPED` with the\n[`apps.services.versions.patch`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions/patch)\nmethod.",
       "file": "InstancesClient/DeleteInstance/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1090,7 +1090,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.Instance",
+        "resultType": "*appenginepb.Instance",
         "client": {
           "shortName": "InstancesClient",
           "fullName": "google.appengine.v1.InstancesClient"
@@ -1116,7 +1116,7 @@
     {
       "regionTag": "appengine_v1_generated_Instances_ListInstances_sync",
       "title": "appengine ListInstances Sample",
-      "description": "ListInstances lists the instances of a version.\n\nTip: To aggregate details about instances over time, see the\nStackdriver Monitoring API (at https: //cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list).",
+      "description": "ListInstances lists the instances of a version.\n\nTip: To aggregate details about instances over time, see the\n[Stackdriver Monitoring API](https: //cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list).",
       "file": "InstancesClient/ListInstances/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1228,7 +1228,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.Service",
+        "resultType": "*appenginepb.Service",
         "client": {
           "shortName": "ServicesClient",
           "fullName": "google.appengine.v1.ServicesClient"
@@ -1438,7 +1438,7 @@
     {
       "regionTag": "appengine_v1_generated_Versions_GetVersion_sync",
       "title": "appengine GetVersion Sample",
-      "description": "GetVersion gets the specified Version resource.\nBy default, only a BASIC_VIEW will be returned.\nSpecify the FULL_VIEW parameter to get the full resource.",
+      "description": "GetVersion gets the specified Version resource.\nBy default, only a `BASIC_VIEW` will be returned.\nSpecify the `FULL_VIEW` parameter to get the full resource.",
       "file": "VersionsClient/GetVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1458,7 +1458,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "appenginepb.Version",
+        "resultType": "*appenginepb.Version",
         "client": {
           "shortName": "VersionsClient",
           "fullName": "google.appengine.v1.VersionsClient"
@@ -1530,7 +1530,7 @@
     {
       "regionTag": "appengine_v1_generated_Versions_UpdateVersion_sync",
       "title": "appengine UpdateVersion Sample",
-      "description": "UpdateVersion updates the specified Version resource.\nYou can specify the following fields depending on the App Engine\nenvironment and type of scaling that the version resource uses: \n\nStandard environment\n\n\tinstance_class (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class)\n\nautomatic scaling in the standard environment: \n\n\tautomatic_scaling.min_idle_instances (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n\n\tautomatic_scaling.max_idle_instances (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n\n\tautomaticScaling.standard_scheduler_settings.max_instances (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n\n\tautomaticScaling.standard_scheduler_settings.min_instances (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n\n\tautomaticScaling.standard_scheduler_settings.target_cpu_utilization (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n\n\tautomaticScaling.standard_scheduler_settings.target_throughput_utilization (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n\nbasic scaling or manual scaling in the standard environment: \n\n\tserving_status (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)\n\n\tmanual_scaling.instances (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)\n\nFlexible environment\n\n\tserving_status (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)\n\nautomatic scaling in the flexible environment: \n\n\tautomatic_scaling.min_total_instances (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n\n\tautomatic_scaling.max_total_instances (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n\n\tautomatic_scaling.cool_down_period_sec (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n\n\tautomatic_scaling.cpu_utilization.target_utilization (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n\nmanual scaling in the flexible environment: \n\n\tmanual_scaling.instances (at https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)",
+      "description": "UpdateVersion updates the specified Version resource.\nYou can specify the following fields depending on the App Engine\nenvironment and type of scaling that the version resource uses: \n\n**Standard environment**\n\n* [`instance_class`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class)\n\n*automatic scaling* in the standard environment: \n\n* [`automatic_scaling.min_idle_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n* [`automatic_scaling.max_idle_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n* [`automaticScaling.standard_scheduler_settings.max_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n* [`automaticScaling.standard_scheduler_settings.min_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n* [`automaticScaling.standard_scheduler_settings.target_cpu_utilization`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n* [`automaticScaling.standard_scheduler_settings.target_throughput_utilization`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)\n\n*basic scaling* or *manual scaling* in the standard environment: \n\n* [`serving_status`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)\n* [`manual_scaling.instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)\n\n**Flexible environment**\n\n* [`serving_status`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)\n\n*automatic scaling* in the flexible environment: \n\n* [`automatic_scaling.min_total_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n* [`automatic_scaling.max_total_instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n* [`automatic_scaling.cool_down_period_sec`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n* [`automatic_scaling.cpu_utilization.target_utilization`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)\n\n*manual scaling* in the flexible environment: \n\n* [`manual_scaling.instances`](https: //cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)",
       "file": "VersionsClient/UpdateVersion/main.go",
       "language": "GO",
       "clientMethod": {

@@ -15,6 +15,11 @@
                 "BulkAnalyzeConversations"
               ]
             },
+            "BulkDeleteConversations": {
+              "methods": [
+                "BulkDeleteConversations"
+              ]
+            },
             "CalculateIssueModelStats": {
               "methods": [
                 "CalculateIssueModelStats"
@@ -208,6 +213,11 @@
             "UpdateView": {
               "methods": [
                 "UpdateView"
+              ]
+            },
+            "UploadConversation": {
+              "methods": [
+                "UploadConversation"
               ]
             }
           }
@@ -220,6 +230,11 @@
                 "BulkAnalyzeConversations"
               ]
             },
+            "BulkDeleteConversations": {
+              "methods": [
+                "BulkDeleteConversations"
+              ]
+            },
             "CalculateIssueModelStats": {
               "methods": [
                 "CalculateIssueModelStats"
@@ -413,6 +428,11 @@
             "UpdateView": {
               "methods": [
                 "UpdateView"
+              ]
+            },
+            "UploadConversation": {
+              "methods": [
+                "UploadConversation"
               ]
             }
           }

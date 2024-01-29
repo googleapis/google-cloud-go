@@ -34,6 +34,7 @@ import (
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
 type CreateTable struct {
 	Name              ID
+	IfNotExists       bool
 	Columns           []ColumnDef
 	Constraints       []TableConstraint
 	PrimaryKey        []KeyPart
@@ -106,6 +107,7 @@ type CreateIndex struct {
 
 	Unique       bool
 	NullFiltered bool
+	IfNotExists  bool
 
 	Storing    []ID
 	Interleave ID
@@ -133,10 +135,24 @@ func (*CreateView) isDDLStmt()        {}
 func (cv *CreateView) Pos() Position  { return cv.Position }
 func (cv *CreateView) clearOffset()   { cv.Position.Offset = 0 }
 
+// CreateRole represents a CREATE Role statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#create_role
+type CreateRole struct {
+	Name ID
+
+	Position Position // position of the "CREATE" token
+}
+
+func (cr *CreateRole) String() string { return fmt.Sprintf("%#v", cr) }
+func (*CreateRole) isDDLStmt()        {}
+func (cr *CreateRole) Pos() Position  { return cr.Position }
+func (cr *CreateRole) clearOffset()   { cr.Position.Offset = 0 }
+
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
 type DropTable struct {
-	Name ID
+	Name     ID
+	IfExists bool
 
 	Position Position // position of the "DROP" token
 }
@@ -149,7 +165,8 @@ func (dt *DropTable) clearOffset()   { dt.Position.Offset = 0 }
 // DropIndex represents a DROP INDEX statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop-index
 type DropIndex struct {
-	Name ID
+	Name     ID
+	IfExists bool
 
 	Position Position // position of the "DROP" token
 }
@@ -171,6 +188,62 @@ func (dv *DropView) String() string { return fmt.Sprintf("%#v", dv) }
 func (*DropView) isDDLStmt()        {}
 func (dv *DropView) Pos() Position  { return dv.Position }
 func (dv *DropView) clearOffset()   { dv.Position.Offset = 0 }
+
+// DropRole represents a DROP ROLE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#drop_role
+type DropRole struct {
+	Name ID
+
+	Position Position // position of the "DROP" token
+}
+
+func (dr *DropRole) String() string { return fmt.Sprintf("%#v", dr) }
+func (*DropRole) isDDLStmt()        {}
+func (dr *DropRole) Pos() Position  { return dr.Position }
+func (dr *DropRole) clearOffset()   { dr.Position.Offset = 0 }
+
+// GrantRole represents a GRANT statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#grant_statement
+type GrantRole struct {
+	ToRoleNames       []ID
+	GrantRoleNames    []ID
+	Privileges        []Privilege
+	TableNames        []ID
+	TvfNames          []ID
+	ViewNames         []ID
+	ChangeStreamNames []ID
+
+	Position Position // position of the "GRANT" token
+}
+
+func (gr *GrantRole) String() string { return fmt.Sprintf("%#v", gr) }
+func (*GrantRole) isDDLStmt()        {}
+func (gr *GrantRole) Pos() Position  { return gr.Position }
+func (gr *GrantRole) clearOffset()   { gr.Position.Offset = 0 }
+
+// RevokeRole represents a REVOKE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#revoke_statement
+type RevokeRole struct {
+	FromRoleNames     []ID
+	RevokeRoleNames   []ID
+	Privileges        []Privilege
+	TableNames        []ID
+	TvfNames          []ID
+	ViewNames         []ID
+	ChangeStreamNames []ID
+	Position          Position // position of the "REVOKE" token
+}
+
+func (rr *RevokeRole) String() string { return fmt.Sprintf("%#v", rr) }
+func (*RevokeRole) isDDLStmt()        {}
+func (rr *RevokeRole) Pos() Position  { return rr.Position }
+func (rr *RevokeRole) clearOffset()   { rr.Position.Offset = 0 }
+
+// Privilege represents privilege to grant or revoke.
+type Privilege struct {
+	Type    PrivilegeType
+	Columns []ID
+}
 
 // AlterTable represents an ALTER TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#alter_table
@@ -215,7 +288,10 @@ func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (DropRowDeletionPolicy) isTableAlteration()    {}
 
 type (
-	AddColumn      struct{ Def ColumnDef }
+	AddColumn struct {
+		IfNotExists bool
+		Def         ColumnDef
+	}
 	DropColumn     struct{ Name ID }
 	AddConstraint  struct{ Constraint TableConstraint }
 	DropConstraint struct{ Name ID }
@@ -290,9 +366,11 @@ func (SetDatabaseOptions) isDatabaseAlteration() {}
 // DatabaseOptions represents options on a database as part of a
 // ALTER DATABASE statement.
 type DatabaseOptions struct {
-	OptimizerVersion       *int
-	VersionRetentionPeriod *string
-	EnableKeyVisualizer    *bool
+	OptimizerVersion           *int
+	OptimizerStatisticsPackage *string
+	VersionRetentionPeriod     *string
+	EnableKeyVisualizer        *bool
+	DefaultLeader              *string
 }
 
 // Delete represents a DELETE statement.
@@ -383,6 +461,7 @@ type ForeignKey struct {
 	Columns    []ID
 	RefTable   ID
 	RefColumns []ID
+	OnDelete   OnDelete
 
 	Position Position // position of the "FOREIGN" token
 }
@@ -425,6 +504,15 @@ const (
 	Date
 	Timestamp
 	JSON
+)
+
+type PrivilegeType int
+
+const (
+	PrivilegeTypeSelect PrivilegeType = iota
+	PrivilegeTypeInsert
+	PrivilegeTypeUpdate
+	PrivilegeTypeDelete
 )
 
 // KeyPart represents a column specification as part of a primary key or index definition.
@@ -669,7 +757,9 @@ type Func struct {
 	Name string // not ID
 	Args []Expr
 
-	// TODO: various functions permit as-expressions, which might warrant different types in here.
+	Distinct      bool
+	NullsHandling NullsHandling
+	Having        *AggregateHaving
 }
 
 func (Func) isBoolExpr() {} // possibly bool
@@ -709,6 +799,35 @@ type IntervalExpr struct {
 
 func (IntervalExpr) isBoolExpr() {} // possibly bool
 func (IntervalExpr) isExpr()     {}
+
+type SequenceExpr struct {
+	Name ID
+}
+
+func (SequenceExpr) isExpr() {}
+
+// NullsHandling represents the method of dealing with NULL values in aggregate functions.
+type NullsHandling int
+
+const (
+	NullsHandlingUnspecified NullsHandling = iota
+	RespectNulls
+	IgnoreNulls
+)
+
+// AggregateHaving represents the HAVING clause specific to aggregate functions, restricting rows based on a maximal or minimal value.
+type AggregateHaving struct {
+	Condition AggregateHavingCondition
+	Expr      Expr
+}
+
+// AggregateHavingCondition represents the condition (MAX or MIN) for the AggregateHaving clause.
+type AggregateHavingCondition int
+
+const (
+	HavingMax AggregateHavingCondition = iota
+	HavingMin
+)
 
 // Paren represents a parenthesised expression.
 type Paren struct {
@@ -1082,10 +1201,15 @@ type ChangeStreamAlteration interface {
 }
 
 func (AlterWatch) isChangeStreamAlteration()               {}
+func (DropChangeStreamWatch) isChangeStreamAlteration()    {}
 func (AlterChangeStreamOptions) isChangeStreamAlteration() {}
 
 type (
-	AlterWatch               struct{ Watch []WatchDef }
+	AlterWatch struct {
+		WatchAllTables bool
+		Watch          []WatchDef
+	}
+	DropChangeStreamWatch    struct{}
 	AlterChangeStreamOptions struct{ Options ChangeStreamOptions }
 )
 
@@ -1113,5 +1237,119 @@ func (wd WatchDef) Pos() Position { return wd.Position }
 func (wd *WatchDef) clearOffset() { wd.Position.Offset = 0 }
 
 type ChangeStreamOptions struct {
-	RetentionPeriod *string
+	RetentionPeriod  *string
+	ValueCaptureType *string
 }
+
+// AlterStatistics represents an ALTER STATISTICS statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#alter-statistics
+type AlterStatistics struct {
+	Name       ID
+	Alteration StatisticsAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (as *AlterStatistics) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterStatistics) isDDLStmt()        {}
+func (as *AlterStatistics) Pos() Position  { return as.Position }
+func (as *AlterStatistics) clearOffset()   { as.Position.Offset = 0 }
+
+type StatisticsAlteration interface {
+	isStatisticsAlteration()
+	SQL() string
+}
+
+type SetStatisticsOptions struct{ Options StatisticsOptions }
+
+func (SetStatisticsOptions) isStatisticsAlteration() {}
+
+// StatisticsOptions represents options on a statistics as part of a ALTER STATISTICS statement.
+type StatisticsOptions struct {
+	AllowGC *bool
+}
+
+type AlterIndex struct {
+	Name       ID
+	Alteration IndexAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (as *AlterIndex) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterIndex) isDDLStmt()        {}
+func (as *AlterIndex) Pos() Position  { return as.Position }
+func (as *AlterIndex) clearOffset()   { as.Position.Offset = 0 }
+
+type IndexAlteration interface {
+	isIndexAlteration()
+	SQL() string
+}
+
+func (AddStoredColumn) isIndexAlteration()  {}
+func (DropStoredColumn) isIndexAlteration() {}
+
+type (
+	AddStoredColumn  struct{ Name ID }
+	DropStoredColumn struct{ Name ID }
+)
+
+// CreateSequence represents an ALTER SEQUENCE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#create-sequence
+type CreateSequence struct {
+	Name        ID
+	IfNotExists bool
+	Options     SequenceOptions
+
+	Position Position
+}
+
+func (cs *CreateSequence) String() string { return fmt.Sprintf("%#v", cs) }
+func (*CreateSequence) isDDLStmt()        {}
+func (cs *CreateSequence) Pos() Position  { return cs.Position }
+func (cs *CreateSequence) clearOffset()   { cs.Position.Offset = 0 }
+
+// AlterSequence represents an ALTER SEQUENCE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#alter-sequence
+type AlterSequence struct {
+	Name       ID
+	Alteration SequenceAlteration
+
+	Position Position
+}
+
+func (as *AlterSequence) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterSequence) isDDLStmt()        {}
+func (as *AlterSequence) Pos() Position  { return as.Position }
+func (as *AlterSequence) clearOffset()   { as.Position.Offset = 0 }
+
+type SequenceAlteration interface {
+	isSequenceAlteration()
+	SQL() string
+}
+
+type SetSequenceOptions struct{ Options SequenceOptions }
+
+func (SetSequenceOptions) isSequenceAlteration() {}
+
+// SequenceOptions represents options on a sequence as part of a CREATE SEQUENCE and ALTER SEQUENCE statement.
+type SequenceOptions struct {
+	SequenceKind     *string
+	SkipRangeMin     *int
+	SkipRangeMax     *int
+	StartWithCounter *int
+}
+
+// DropSequence represents a DROP SEQUENCE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#drop-sequence
+type DropSequence struct {
+	Name     ID
+	IfExists bool
+
+	Position Position
+}
+
+func (ds *DropSequence) String() string { return fmt.Sprintf("%#v", ds) }
+func (*DropSequence) isDDLStmt()        {}
+func (ds *DropSequence) Pos() Position  { return ds.Position }
+func (ds *DropSequence) clearOffset()   { ds.Position.Offset = 0 }

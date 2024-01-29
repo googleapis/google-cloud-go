@@ -27,8 +27,11 @@ for i in $(find . -name go.mod); do
   go mod tidy
   popd
 done
-git diff go.mod | tee /dev/stderr | (! read)
-git diff go.sum | tee /dev/stderr | (! read)
+
+# Documentation for the :^ pathspec can be found at:
+# https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
+git diff '*go.mod' :^internal/generated/snippets | tee /dev/stderr | (! read)
+git diff '*go.sum' :^internal/generated/snippets | tee /dev/stderr | (! read)
 
 gofmt -s -d -l . 2>&1 | tee /dev/stderr | (! read)
 goimports -l . 2>&1 | tee /dev/stderr | (! read)
@@ -52,6 +55,7 @@ golint ./... 2>&1 | (
     grep -vE " executeStreamingSql(Min|Rnd)Time" |
     grep -vE " executeSql(Min|Rnd)Time" |
     grep -vE "pubsub\/pstest\/fake\.go.+should have comment or be unexported" |
+    grep -vE "pubsub\/subscription\.go.+ type name will be used as pubsub.PubsubWrapper by other packages" |
     grep -v "ClusterId" |
     grep -v "InstanceId" |
     grep -v "firestore.arrayUnion" |

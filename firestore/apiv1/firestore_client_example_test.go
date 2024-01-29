@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 
 	firestore "cloud.google.com/go/firestore/apiv1"
 	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
@@ -60,7 +60,7 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_GetDocument() {
+func ExampleClient_BatchWrite() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -73,95 +73,16 @@ func ExampleClient_GetDocument() {
 	}
 	defer c.Close()
 
-	req := &firestorepb.GetDocumentRequest{
+	req := &firestorepb.BatchWriteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#GetDocumentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#BatchWriteRequest.
 	}
-	resp, err := c.GetDocument(ctx, req)
+	resp, err := c.BatchWrite(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleClient_ListDocuments() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := firestore.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &firestorepb.ListDocumentsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#ListDocumentsRequest.
-	}
-	it := c.ListDocuments(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_UpdateDocument() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := firestore.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &firestorepb.UpdateDocumentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#UpdateDocumentRequest.
-	}
-	resp, err := c.UpdateDocument(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteDocument() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := firestore.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &firestorepb.DeleteDocumentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#DeleteDocumentRequest.
-	}
-	err = c.DeleteDocument(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }
 
 func ExampleClient_BeginTransaction() {
@@ -214,7 +135,7 @@ func ExampleClient_Commit() {
 	_ = resp
 }
 
-func ExampleClient_Rollback() {
+func ExampleClient_CreateDocument() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -227,17 +148,42 @@ func ExampleClient_Rollback() {
 	}
 	defer c.Close()
 
-	req := &firestorepb.RollbackRequest{
+	req := &firestorepb.CreateDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#RollbackRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#CreateDocumentRequest.
 	}
-	err = c.Rollback(ctx, req)
+	resp, err := c.CreateDocument(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteDocument() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := firestore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &firestorepb.DeleteDocumentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#DeleteDocumentRequest.
+	}
+	err = c.DeleteDocument(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 }
 
-func ExampleClient_PartitionQuery() {
+func ExampleClient_GetDocument() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -250,11 +196,36 @@ func ExampleClient_PartitionQuery() {
 	}
 	defer c.Close()
 
-	req := &firestorepb.PartitionQueryRequest{
+	req := &firestorepb.GetDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#PartitionQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#GetDocumentRequest.
 	}
-	it := c.PartitionQuery(ctx, req)
+	resp, err := c.GetDocument(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListCollectionIds() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := firestore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &firestorepb.ListCollectionIdsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#ListCollectionIdsRequest.
+	}
+	it := c.ListCollectionIds(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -268,7 +239,7 @@ func ExampleClient_PartitionQuery() {
 	}
 }
 
-func ExampleClient_Write() {
+func ExampleClient_ListDocuments() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -280,28 +251,19 @@ func ExampleClient_Write() {
 		// TODO: Handle error.
 	}
 	defer c.Close()
-	stream, err := c.Write(ctx)
-	if err != nil {
-		// TODO: Handle error.
+
+	req := &firestorepb.ListDocumentsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#ListDocumentsRequest.
 	}
-	go func() {
-		reqs := []*firestorepb.WriteRequest{
-			// TODO: Create requests.
-		}
-		for _, req := range reqs {
-			if err := stream.Send(req); err != nil {
-				// TODO: Handle error.
-			}
-		}
-		stream.CloseSend()
-	}()
+	it := c.ListDocuments(ctx, req)
 	for {
-		resp, err := stream.Recv()
-		if err == io.EOF {
+		resp, err := it.Next()
+		if err == iterator.Done {
 			break
 		}
 		if err != nil {
-			// TODO: handle error.
+			// TODO: Handle error.
 		}
 		// TODO: Use resp.
 		_ = resp
@@ -348,7 +310,7 @@ func ExampleClient_Listen() {
 	}
 }
 
-func ExampleClient_ListCollectionIds() {
+func ExampleClient_PartitionQuery() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -361,11 +323,11 @@ func ExampleClient_ListCollectionIds() {
 	}
 	defer c.Close()
 
-	req := &firestorepb.ListCollectionIdsRequest{
+	req := &firestorepb.PartitionQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#ListCollectionIdsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#PartitionQueryRequest.
 	}
-	it := c.ListCollectionIds(ctx, req)
+	it := c.PartitionQuery(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -379,7 +341,7 @@ func ExampleClient_ListCollectionIds() {
 	}
 }
 
-func ExampleClient_BatchWrite() {
+func ExampleClient_Rollback() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -392,11 +354,34 @@ func ExampleClient_BatchWrite() {
 	}
 	defer c.Close()
 
-	req := &firestorepb.BatchWriteRequest{
+	req := &firestorepb.RollbackRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#BatchWriteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#RollbackRequest.
 	}
-	resp, err := c.BatchWrite(ctx, req)
+	err = c.Rollback(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_UpdateDocument() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := firestore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &firestorepb.UpdateDocumentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#UpdateDocumentRequest.
+	}
+	resp, err := c.UpdateDocument(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -404,7 +389,7 @@ func ExampleClient_BatchWrite() {
 	_ = resp
 }
 
-func ExampleClient_CreateDocument() {
+func ExampleClient_Write() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -416,17 +401,32 @@ func ExampleClient_CreateDocument() {
 		// TODO: Handle error.
 	}
 	defer c.Close()
-
-	req := &firestorepb.CreateDocumentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#CreateDocumentRequest.
-	}
-	resp, err := c.CreateDocument(ctx, req)
+	stream, err := c.Write(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+	go func() {
+		reqs := []*firestorepb.WriteRequest{
+			// TODO: Create requests.
+		}
+		for _, req := range reqs {
+			if err := stream.Send(req); err != nil {
+				// TODO: Handle error.
+			}
+		}
+		stream.CloseSend()
+	}()
+	for {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
 
 func ExampleClient_CancelOperation() {
@@ -444,7 +444,7 @@ func ExampleClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -467,7 +467,7 @@ func ExampleClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -490,7 +490,7 @@ func ExampleClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -515,7 +515,7 @@ func ExampleClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

@@ -4,7 +4,7 @@ assign_issues_by:
   - 'api: datastore'
   - 'api: firestore'
   to:
-  - telpirion
+  - bhshkh
 - labels:
   - 'api: storage'
   to:
@@ -29,4 +29,8 @@ assign_issues_by:
   - 'api: logging'
   - 'api: clouderrorreporting'
   to:
-  - googleapis/api-logging
+  - googleapis/api-logging-go-reviewers
+- labels:
+  - 'api: cloudprofiler'
+  to:
+  - googleapis/api-profiler

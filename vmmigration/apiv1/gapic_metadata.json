@@ -25,6 +25,11 @@
                 "CancelCutoverJob"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateCloneJob": {
               "methods": [
                 "CreateCloneJob"
@@ -80,6 +85,11 @@
                 "DeleteMigratingVm"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteSource": {
               "methods": [
                 "DeleteSource"
@@ -125,9 +135,24 @@
                 "GetGroup"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetMigratingVm": {
               "methods": [
                 "GetMigratingVm"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReplicationCycle": {
+              "methods": [
+                "GetReplicationCycle"
               ]
             },
             "GetSource": {
@@ -165,9 +190,24 @@
                 "ListGroups"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ListMigratingVms": {
               "methods": [
                 "ListMigratingVms"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReplicationCycles": {
+              "methods": [
+                "ListReplicationCycles"
               ]
             },
             "ListSources": {
@@ -250,6 +290,11 @@
                 "CancelCutoverJob"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateCloneJob": {
               "methods": [
                 "CreateCloneJob"
@@ -305,6 +350,11 @@
                 "DeleteMigratingVm"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteSource": {
               "methods": [
                 "DeleteSource"
@@ -350,9 +400,24 @@
                 "GetGroup"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetMigratingVm": {
               "methods": [
                 "GetMigratingVm"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReplicationCycle": {
+              "methods": [
+                "GetReplicationCycle"
               ]
             },
             "GetSource": {
@@ -390,9 +455,24 @@
                 "ListGroups"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ListMigratingVms": {
               "methods": [
                 "ListMigratingVms"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReplicationCycles": {
+              "methods": [
+                "ListReplicationCycles"
               ]
             },
             "ListSources": {

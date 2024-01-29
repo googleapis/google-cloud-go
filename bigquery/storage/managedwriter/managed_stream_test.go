@@ -17,7 +17,6 @@ package managedwriter
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"runtime"
 	"testing"
@@ -25,74 +24,10 @@ import (
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
-	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-	statuspb "google.golang.org/genproto/googleapis/rpc/status"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
 )
-
-func TestManagedStream_OpenWithRetry(t *testing.T) {
-
-	testCases := []struct {
-		desc     string
-		errors   []error
-		wantFail bool
-	}{
-		{
-			desc:     "no error",
-			errors:   []error{nil},
-			wantFail: false,
-		},
-		{
-			desc: "transient failures",
-			errors: []error{
-				status.Errorf(codes.Unavailable, "try 1"),
-				status.Errorf(codes.Unavailable, "try 2"),
-				nil},
-			wantFail: false,
-		},
-		{
-			desc:     "terminal error",
-			errors:   []error{status.Errorf(codes.InvalidArgument, "bad args")},
-			wantFail: true,
-		},
-	}
-
-	for _, tc := range testCases {
-		ms := &ManagedStream{
-			ctx: context.Background(),
-			open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-				if len(tc.errors) == 0 {
-					panic("out of errors")
-				}
-				err := tc.errors[0]
-				tc.errors = tc.errors[1:]
-				if err == nil {
-					return &testAppendRowsClient{}, nil
-				}
-				return nil, err
-			},
-		}
-		arc, ch, err := ms.openWithRetry()
-		if tc.wantFail && err == nil {
-			t.Errorf("case %s: wanted failure, got success", tc.desc)
-		}
-		if !tc.wantFail && err != nil {
-			t.Errorf("case %s: wanted success, got %v", tc.desc, err)
-		}
-		if err == nil {
-			if arc == nil {
-				t.Errorf("case %s: expected append client, got nil", tc.desc)
-			}
-			if ch == nil {
-				t.Errorf("case %s: expected channel, got nil", tc.desc)
-			}
-		}
-	}
-}
 
 type testRecvResponse struct {
 	resp *storagepb.AppendRowsResponse
@@ -122,7 +57,7 @@ func (tarc *testAppendRowsClient) CloseSend() error {
 }
 
 // openTestArc handles wiring in a test AppendRowsClient into a managedstream by providing the open function.
-func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.AppendRowsRequest) error, recvF func() (*storagepb.AppendRowsResponse, error)) func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.AppendRowsRequest) error, recvF func() (*storagepb.AppendRowsResponse, error)) func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	sF := func(req *storagepb.AppendRowsRequest) error {
 		testARC.requests = append(testARC.requests, req)
 		return nil
@@ -143,28 +78,39 @@ func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.Append
 	testARC.closeF = func() error {
 		return nil
 	}
-	return func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 		testARC.openCount = testARC.openCount + 1
+		// Simulate grpc finalizer goroutine
+		go func() {
+			<-ctx.Done()
+		}()
 		return testARC, nil
 	}
 }
 
-func TestManagedStream_FirstAppendBehavior(t *testing.T) {
+func TestManagedStream_RequestOptimization(t *testing.T) {
 
 	ctx := context.Background()
-
 	testARC := &testAppendRowsClient{}
+	pool := &connectionPool{
+		ctx:                ctx,
+		open:               openTestArc(testARC, nil, nil),
+		baseFlowController: newFlowController(0, 0),
+	}
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
 	ms := &ManagedStream{
+		id:             "foo",
 		ctx:            ctx,
-		open:           openTestArc(testARC, nil, nil),
 		streamSettings: defaultStreamSettings(),
-		fc:             newFlowController(0, 0),
+	}
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
 	}
 	ms.streamSettings.streamID = "FOO"
 	ms.streamSettings.TraceID = "TRACE"
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
-	}
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -212,15 +158,8 @@ func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 			}
 
 		} else {
-			if v.GetTraceId() != "" {
-				t.Errorf("expected no TraceID on request %d, got %s", k, v.GetTraceId())
-			}
-			if v.GetWriteStream() != "" {
-				t.Errorf("expected no WriteStream on request %d, got %s", k, v.GetWriteStream())
-			}
-			if v.GetProtoRows().GetWriterSchema().GetProtoDescriptor() != nil {
-				t.Errorf("expected test WriterSchema on request %d, got %s", k, v.GetProtoRows().GetWriterSchema().GetProtoDescriptor().String())
-			}
+			// TODO: add validation to ensure we're optimizing requests on the wire.
+			// Sending consecutive requests with same dest/schema we should redact.
 		}
 	}
 }
@@ -229,19 +168,30 @@ func TestManagedStream_FlowControllerFailure(t *testing.T) {
 
 	ctx := context.Background()
 
-	// create a flowcontroller with 1 inflight message allowed, and exhaust it.
-	fc := newFlowController(1, 0)
-	fc.acquire(ctx, 0)
+	pool := &connectionPool{
+		ctx:                ctx,
+		open:               openTestArc(&testAppendRowsClient{}, nil, nil),
+		baseFlowController: newFlowController(1, 0),
+	}
+	router := newSimpleRouter("")
+	if err := pool.activateRouter(router); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
 
 	ms := &ManagedStream{
+		id:             "foo",
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
-		fc:             fc,
-		open:           openTestArc(&testAppendRowsClient{}, nil, nil),
 	}
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWritre: %v", err)
 	}
+
+	// Exhaust inflight requests on the single connection.
+	router.conn.fc = newFlowController(1, 0)
+	router.conn.fc.acquire(ctx, 0)
+
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -262,10 +212,9 @@ func TestManagedStream_FlowControllerFailure(t *testing.T) {
 func TestManagedStream_AppendWithDeadline(t *testing.T) {
 	ctx := context.Background()
 
-	ms := &ManagedStream{
-		ctx:            ctx,
-		streamSettings: defaultStreamSettings(),
-		fc:             newFlowController(0, 0),
+	pool := &connectionPool{
+		ctx:                ctx,
+		baseFlowController: newFlowController(0, 0),
 		open: openTestArc(&testAppendRowsClient{},
 			func(req *storagepb.AppendRowsRequest) error {
 				// Append is intentionally slow.
@@ -273,16 +222,28 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 				return nil
 			}, nil),
 	}
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
+	router := newSimpleRouter("")
+	if err := pool.activateRouter(router); err != nil {
+		t.Errorf("activateRouter: %v", err)
 	}
+
+	ms := &ManagedStream{
+		id:             "foo",
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+	}
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
+	conn := router.conn
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 
 	fakeData := [][]byte{
 		[]byte("foo"),
 	}
 
 	wantCount := 0
-	if ct := ms.fc.count(); ct != wantCount {
+	if ct := conn.fc.count(); ct != wantCount {
 		t.Errorf("flowcontroller count mismatch, got %d want %d", ct, wantCount)
 	}
 
@@ -298,14 +259,14 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 
 	// We expect the flowcontroller count to still be occupied, as the Send is slow.
 	wantCount = 1
-	if ct := ms.fc.count(); ct != wantCount {
+	if ct := conn.fc.count(); ct != wantCount {
 		t.Errorf("flowcontroller post-append count mismatch, got %d want %d", ct, wantCount)
 	}
 
 	// Wait for the append to finish, then check again.
 	time.Sleep(300 * time.Millisecond)
 	wantCount = 0
-	if ct := ms.fc.count(); ct != wantCount {
+	if ct := conn.fc.count(); ct != wantCount {
 		t.Errorf("flowcontroller post-append count mismatch, got %d want %d", ct, wantCount)
 	}
 }
@@ -315,21 +276,39 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 	// https://github.com/googleapis/google-cloud-go/issues/6657
 	ctx := context.Background()
 
-	ms := &ManagedStream{
-		ctx:            ctx,
-		streamSettings: defaultStreamSettings(),
-		fc:             newFlowController(0, 0),
+	pool := &connectionPool{
+		ctx:                ctx,
+		baseFlowController: newFlowController(0, 0),
 		open: openTestArc(&testAppendRowsClient{},
 			func(req *storagepb.AppendRowsRequest) error {
-				// Append is intentionally slow.
 				return nil
 			}, nil),
 	}
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Errorf("activateRouter: %v", err)
 	}
+
+	ms := &ManagedStream{
+		id:             "foo",
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+	}
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
+
 	fakeData := [][]byte{
 		[]byte("foo"),
+	}
+	fakeReq := &storagepb.AppendRowsRequest{
+		Rows: &storagepb.AppendRowsRequest_ProtoRows{
+			ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+				Rows: &storagepb.ProtoRows{
+					SerializedRows: fakeData,
+				},
+			},
+		},
 	}
 
 	// Create a context and immediately cancel it.
@@ -337,7 +316,7 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 	cancel()
 
 	// First, append with an invalid context.
-	pw := newPendingWrite(cancelCtx, fakeData)
+	pw := newPendingWrite(cancelCtx, ms, fakeReq, ms.curTemplate, "", "")
 	err := ms.appendWithRetry(pw)
 	if err != context.Canceled {
 		t.Errorf("expected cancelled context error, got: %v", err)
@@ -394,33 +373,46 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		ctx := context.Background()
 		openF := openTestArc(&testAppendRowsClient{}, nil, nil)
-		ms := &ManagedStream{
-			ctx: context.Background(),
-			open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		pool := &connectionPool{
+			ctx: ctx,
+			open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				if len(tc.openErrors) == 0 {
 					panic("out of open errors")
 				}
 				curErr := tc.openErrors[0]
 				tc.openErrors = tc.openErrors[1:]
 				if curErr == nil {
-					return openF(opts...)
+					return openF(ctx, opts...)
 				}
 				return nil, curErr
 			},
+		}
+		router := newSimpleRouter("")
+		if err := pool.activateRouter(router); err != nil {
+			t.Errorf("activateRouter: %v", err)
+		}
+		ms := &ManagedStream{
+			id: "foo",
 			streamSettings: &streamSettings{
 				streamID: "foo",
 			},
 		}
+		ms.ctx, ms.cancel = context.WithCancel(pool.ctx)
+		if err := pool.addWriter(ms); err != nil {
+			t.Errorf("addWriter: %v", err)
+		}
 
+		testReq := ms.buildRequest([][]byte{[]byte("foo")})
 		// first append
-		pw := newPendingWrite(tc.ctx, [][]byte{[]byte("foo")})
+		pw := newPendingWrite(tc.ctx, ms, testReq, nil, "", "")
 		gotErr := ms.appendWithRetry(pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s first response: got %v, want %v", tc.desc, gotErr, tc.respErr)
 		}
 		// second append
-		pw = newPendingWrite(tc.ctx, [][]byte{[]byte("bar")})
+		pw = newPendingWrite(tc.ctx, ms, testReq, nil, "", "")
 		gotErr = ms.appendWithRetry(pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s second response: got %v, want %v", tc.desc, gotErr, tc.respErr)
@@ -429,6 +421,17 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 		// Issue two closes, to ensure we're not deadlocking there either.
 		ms.Close()
 		ms.Close()
+
+		// Issue two more appends, ensure we're not deadlocked as the writer is closed.
+		gotErr = ms.appendWithRetry(pw)
+		if !errors.Is(gotErr, io.EOF) {
+			t.Errorf("expected io.EOF, got %v", gotErr)
+		}
+		gotErr = ms.appendWithRetry(pw)
+		if !errors.Is(gotErr, io.EOF) {
+			t.Errorf("expected io.EOF, got %v", gotErr)
+		}
+
 	}
 
 }
@@ -436,19 +439,27 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 func TestManagedStream_LeakingGoroutines(t *testing.T) {
 	ctx := context.Background()
 
-	ms := &ManagedStream{
-		ctx:            ctx,
-		streamSettings: defaultStreamSettings(),
-		fc:             newFlowController(10, 0),
+	pool := &connectionPool{
+		ctx: ctx,
 		open: openTestArc(&testAppendRowsClient{},
 			func(req *storagepb.AppendRowsRequest) error {
 				// Append is intentionally slower than context to cause pressure.
 				time.Sleep(40 * time.Millisecond)
 				return nil
 			}, nil),
+		baseFlowController: newFlowController(10, 0),
 	}
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
+	ms := &ManagedStream{
+		id:             "foo",
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+	}
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
 	}
 
 	fakeData := [][]byte{
@@ -471,265 +482,164 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 	}
 }
 
-// Ensures we don't lose track of channels/connections during reconnects.
-// https://github.com/googleapis/google-cloud-go/issues/6766
-func TestManagedStream_LeakingReconnect(t *testing.T) {
-
+func TestManagedStream_LeakingGoroutinesReconnect(t *testing.T) {
 	ctx := context.Background()
 
+	reqCount := 0
+	testArc := &testAppendRowsClient{}
+	pool := &connectionPool{
+		ctx: ctx,
+		open: openTestArc(testArc,
+			func(req *storagepb.AppendRowsRequest) error {
+				reqCount++
+				if reqCount%2 == 1 {
+					return io.EOF
+				}
+				return nil
+			}, nil),
+		baseFlowController: newFlowController(1000, 0),
+	}
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
 	ms := &ManagedStream{
+		id:             "foo",
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
-		fc:             newFlowController(10, 0),
+		retry:          newStatelessRetryer(),
+	}
+	ms.retry.maxAttempts = 4
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
+
+	fakeData := [][]byte{
+		[]byte("foo"),
+	}
+
+	threshold := runtime.NumGoroutine() + 5
+
+	// Send a bunch of appends that will trigger reconnects and monitor that
+	// goroutine growth stays within bounded threshold.
+	for i := 0; i < 100; i++ {
+		writeCtx := context.Background()
+		r, err := ms.AppendRows(writeCtx, fakeData)
+		if err != nil {
+			t.Fatalf("failed to append row: %v", err)
+		}
+		_, err = r.GetResult(context.Background())
+		if err != nil {
+			t.Fatalf("failed to get result: %v", err)
+		}
+		if r.totalAttempts != 2 {
+			t.Fatalf("should trigger a retry, but found: %d attempts", r.totalAttempts)
+		}
+		if testArc.openCount != i+2 {
+			t.Errorf("should trigger a reconnect, but found openCount %d", testArc.openCount)
+		}
+		if i%10 == 0 {
+			if current := runtime.NumGoroutine(); current > threshold {
+				t.Errorf("potential goroutine leak, append %d: current %d, threshold %d", i, current, threshold)
+			}
+		}
+	}
+}
+
+func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
+	// Issue: double close of pending write.
+	// https://github.com/googleapis/google-cloud-go/issues/7380
+	ctx, cancel := context.WithCancel(context.Background())
+	pool := &connectionPool{
+		ctx: ctx,
 		open: openTestArc(&testAppendRowsClient{},
 			func(req *storagepb.AppendRowsRequest) error {
-				// Append always reports EOF on send.
-				return io.EOF
-			}, nil),
+				// Append doesn't error, but is slow.
+				time.Sleep(time.Second)
+				return nil
+			},
+			func() (*storagepb.AppendRowsResponse, error) {
+				// Response is slow and always returns a retriable error.
+				time.Sleep(2 * time.Second)
+				return nil, io.EOF
+			}),
+		baseFlowController: newFlowController(10, 0),
 	}
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Errorf("activateRouter: %v", err)
 	}
-
-	var chans []chan *pendingWrite
-
-	for i := 0; i < 10; i++ {
-		_, ch, err := ms.getStream(nil, true)
-		if err != nil {
-			t.Fatalf("failed openWithRetry(%d): %v", i, err)
-		}
-		chans = append(chans, ch)
-	}
-	var closedCount int
-	for _, ch := range chans {
-		select {
-		case _, ok := <-ch:
-			if !ok {
-				closedCount = closedCount + 1
-			}
-		case <-time.After(time.Second):
-			// we blocked, likely indicative that the channel is open.
-			continue
-		}
-	}
-	if wantClosed := len(chans) - 1; wantClosed != closedCount {
-		t.Errorf("closed count mismatch, got %d want %d", closedCount, wantClosed)
-	}
-}
-
-// Ensures we're propagating call options as expected.
-// Background: https://github.com/googleapis/google-cloud-go/issues/6487
-func TestOpenCallOptionPropagation(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
 
 	ms := &ManagedStream{
-		ctx: ctx,
-		callOptions: []gax.CallOption{
-			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
-		},
-		open: createOpenF(ctx, func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
-			if len(opts) == 0 {
-				t.Fatalf("no options were propagated")
-			}
-			return nil, fmt.Errorf("no real client")
-		}),
+		id:             "foo",
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		retry:          newStatelessRetryer(),
 	}
-	ms.openWithRetry()
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
+
+	fakeData := [][]byte{
+		[]byte("foo"),
+	}
+
+	res, err := ms.AppendRows(context.Background(), fakeData)
+	if err != nil {
+		t.Errorf("AppendRows send err: %v", err)
+	}
+	cancel()
+
+	select {
+
+	case <-res.Ready():
+		if _, err := res.GetResult(context.Background()); err == nil {
+			t.Errorf("expected failure, got success")
+		}
+
+	case <-time.After(5 * time.Second):
+		t.Errorf("result was not ready in expected time")
+	}
 }
 
-// This test evaluates how the receiver deals with a pending write.
-func TestManagedStream_Receiver(t *testing.T) {
+func TestManagedStream_Closure(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
 
-	var customErr = fmt.Errorf("foo")
-
-	testCases := []struct {
-		description       string
-		recvResp          []*testRecvResponse
-		wantFinalErr      error
-		wantTotalAttempts int
-	}{
-		{
-			description: "no errors",
-			recvResp: []*testRecvResponse{
-				{
-					resp: &storagepb.AppendRowsResponse{},
-					err:  nil,
-				},
-			},
-			wantTotalAttempts: 1,
-		},
-		{
-			description: "recv err w/io.EOF",
-			recvResp: []*testRecvResponse{
-				{
-					resp: nil,
-					err:  io.EOF,
-				},
-				{
-					resp: &storagepb.AppendRowsResponse{},
-					err:  nil,
-				},
-			},
-			wantTotalAttempts: 2,
-		},
-		{
-			description: "recv err retried and then failed",
-			recvResp: []*testRecvResponse{
-				{
-					resp: nil,
-					err:  io.EOF,
-				},
-				{
-					resp: nil,
-					err:  customErr,
-				},
-			},
-			wantTotalAttempts: 2,
-			wantFinalErr:      customErr,
-		},
-		{
-			description: "recv err w/ custom error",
-			recvResp: []*testRecvResponse{
-				{
-					resp: nil,
-					err:  customErr,
-				},
-				{
-					resp: &storagepb.AppendRowsResponse{},
-					err:  nil,
-				},
-			},
-			wantTotalAttempts: 1,
-			wantFinalErr:      customErr,
-		},
-
-		{
-			description: "resp embeds Unavailable",
-			recvResp: []*testRecvResponse{
-				{
-					resp: &storagepb.AppendRowsResponse{
-						Response: &storagepb.AppendRowsResponse_Error{
-							Error: &statuspb.Status{
-								Code:    int32(codes.Unavailable),
-								Message: "foo",
-							},
-						},
-					},
-					err: nil,
-				},
-				{
-					resp: &storagepb.AppendRowsResponse{},
-					err:  nil,
-				},
-			},
-			wantTotalAttempts: 2,
-		},
-		{
-			description: "resp embeds generic ResourceExhausted",
-			recvResp: []*testRecvResponse{
-				{
-					resp: &storagepb.AppendRowsResponse{
-						Response: &storagepb.AppendRowsResponse_Error{
-							Error: &statuspb.Status{
-								Code:    int32(codes.ResourceExhausted),
-								Message: "foo",
-							},
-						},
-					},
-					err: nil,
-				},
-			},
-			wantTotalAttempts: 1,
-		},
-		{
-			description: "resp embeds throughput ResourceExhausted",
-			recvResp: []*testRecvResponse{
-				{
-					resp: &storagepb.AppendRowsResponse{
-						Response: &storagepb.AppendRowsResponse_Error{
-							Error: &statuspb.Status{
-								Code:    int32(codes.ResourceExhausted),
-								Message: "Exceeds 'AppendRows throughput' quota for stream blah",
-							},
-						},
-					},
-					err: nil,
-				},
-				{
-					resp: &storagepb.AppendRowsResponse{},
-					err:  nil,
-				},
-			},
-			wantTotalAttempts: 2,
-		},
-		{
-			description: "retriable failures until max attempts",
-			recvResp: []*testRecvResponse{
-				{
-					err: io.EOF,
-				},
-				{
-					err: io.EOF,
-				},
-				{
-					err: io.EOF,
-				},
-				{
-					err: io.EOF,
-				},
-			},
-			wantTotalAttempts: 4,
-			wantFinalErr:      io.EOF,
-		},
+	pool := &connectionPool{
+		ctx:                ctx,
+		cancel:             cancel,
+		baseFlowController: newFlowController(0, 0),
+		open: openTestArc(&testAppendRowsClient{},
+			func(req *storagepb.AppendRowsRequest) error {
+				return nil
+			}, nil),
+	}
+	router := newSimpleRouter("")
+	if err := pool.activateRouter(router); err != nil {
+		t.Errorf("activateRouter: %v", err)
 	}
 
-	for _, tc := range testCases {
-		ctx, cancel := context.WithCancel(context.Background())
+	ms := &ManagedStream{
+		id:             "foo",
+		streamSettings: defaultStreamSettings(),
+	}
+	ms.ctx, ms.cancel = context.WithCancel(pool.ctx)
+	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter A: %v", err)
+	}
 
-		testArc := &testAppendRowsClient{
-			responses: tc.recvResp,
-		}
+	if router.conn == nil {
+		t.Errorf("expected non-nil connection")
+	}
 
-		ms := &ManagedStream{
-			ctx: ctx,
-			open: openTestArc(testArc, nil,
-				func() (*storagepb.AppendRowsResponse, error) {
-					if len(testArc.responses) == 0 {
-						panic("out of responses")
-					}
-					curResp := testArc.responses[0]
-					testArc.responses = testArc.responses[1:]
-					return curResp.resp, curResp.err
-				},
-			),
-			streamSettings: defaultStreamSettings(),
-			fc:             newFlowController(0, 0),
-			retry:          newStatelessRetryer(),
-		}
-		// use openWithRetry to get the reference to the channel and add our test pending write.
-		_, ch, _ := ms.openWithRetry()
-		pw := newPendingWrite(ctx, [][]byte{[]byte("foo")})
-		pw.attemptCount = 1 // we're injecting directly, but attribute this as a single attempt.
-		ch <- pw
-
-		// Wait until the write is marked done.
-		<-pw.result.Ready()
-
-		// Check retry count is as expected.
-		gotTotalAttempts, err := pw.result.TotalAttempts(ctx)
-		if err != nil {
-			t.Errorf("failed to get total appends: %v", err)
-		}
-		if gotTotalAttempts != tc.wantTotalAttempts {
-			t.Errorf("%s: got %d total attempts, want %d attempts", tc.description, gotTotalAttempts, tc.wantTotalAttempts)
-		}
-
-		// Check that the write got the expected final result.
-		if gotFinalErr := pw.result.err; !errors.Is(gotFinalErr, tc.wantFinalErr) {
-			t.Errorf("%s: got final error %v, wanted final error %v", tc.description, gotFinalErr, tc.wantFinalErr)
-		}
-		ms.Close()
-		cancel()
+	if err := ms.Close(); err != io.EOF {
+		t.Errorf("msB.Close, want %v got %v", io.EOF, err)
+	}
+	if router.conn != nil {
+		t.Errorf("expected nil connection")
+	}
+	if ms.ctx.Err() == nil {
+		t.Errorf("expected writer ctx to be dead, is alive")
 	}
 }

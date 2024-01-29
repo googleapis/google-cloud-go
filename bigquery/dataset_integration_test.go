@@ -159,7 +159,7 @@ func TestIntegration_DatasetUpdateETags(t *testing.T) {
 	check(md3, "", "")
 }
 
-func TestIntegration_DatasetUpdateDefaultExpiration(t *testing.T) {
+func TestIntegration_DatasetUpdateDefaultExpirationAndMaxTimeTravel(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -168,13 +168,21 @@ func TestIntegration_DatasetUpdateDefaultExpiration(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	wantExpiration := time.Hour
+	wantTimeTravel := 48 * time.Hour
 	// Set the default expiration time.
-	md, err := dataset.Update(ctx, DatasetMetadataToUpdate{DefaultTableExpiration: time.Hour}, "")
+	md, err := dataset.Update(ctx, DatasetMetadataToUpdate{
+		DefaultTableExpiration: wantExpiration,
+		MaxTimeTravel:          wantTimeTravel,
+	}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if md.DefaultTableExpiration != time.Hour {
-		t.Fatalf("got %s, want 1h", md.DefaultTableExpiration)
+	if got := md.DefaultTableExpiration; got != wantExpiration {
+		t.Fatalf("DefaultTableExpiration want %s got %s", wantExpiration, md.DefaultTableExpiration)
+	}
+	if got := md.MaxTimeTravel; got != wantTimeTravel {
+		t.Fatalf("MaxTimeTravelHours want %s got %s", wantTimeTravel, md.MaxTimeTravel)
 	}
 	// Omitting DefaultTableExpiration doesn't change it.
 	md, err = dataset.Update(ctx, DatasetMetadataToUpdate{Name: "xyz"}, "")
@@ -226,6 +234,133 @@ func TestIntegration_DatasetUpdateDefaultPartitionExpiration(t *testing.T) {
 	}
 	if md.DefaultPartitionExpiration != 0 {
 		t.Fatalf("got %s, want 0", md.DefaultPartitionExpiration)
+	}
+}
+
+func TestIntegration_DatasetUpdateDefaultCollation(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	caseInsensitiveCollation := "und:ci"
+	caseSensitiveCollation := ""
+
+	ctx := context.Background()
+	ds := client.Dataset(datasetIDs.New())
+	err := ds.Create(ctx, &DatasetMetadata{
+		DefaultCollation: caseSensitiveCollation,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	md, err := ds.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != caseSensitiveCollation {
+		t.Fatalf("got %q, want %q", md.DefaultCollation, caseSensitiveCollation)
+	}
+
+	// Update the default collation
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{
+		DefaultCollation: caseInsensitiveCollation,
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != caseInsensitiveCollation {
+		t.Fatalf("got %q, want %q", md.DefaultCollation, caseInsensitiveCollation)
+	}
+
+	// Omitting DefaultCollation doesn't change it.
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{Name: "xyz"}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != caseInsensitiveCollation {
+		t.Fatalf("got %q, want %q", md.DefaultCollation, caseInsensitiveCollation)
+	}
+
+	if err := ds.Delete(ctx); err != nil {
+		t.Fatalf("deleting dataset %v: %v", ds, err)
+	}
+}
+
+func TestIntegration_DatasetStorageBillingModel(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	t.Skip("BigQuery flat-rate commitments enabled for project, feature skipped")
+
+	ctx := context.Background()
+	md, err := dataset.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.StorageBillingModel != LogicalStorageBillingModel {
+		t.Fatalf("got %q, want %q", md.StorageBillingModel, LogicalStorageBillingModel)
+	}
+
+	ds := client.Dataset(datasetIDs.New())
+	err = ds.Create(ctx, &DatasetMetadata{
+		StorageBillingModel: PhysicalStorageBillingModel,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	md, err = ds.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.StorageBillingModel != PhysicalStorageBillingModel {
+		t.Fatalf("got %q, want %q", md.StorageBillingModel, PhysicalStorageBillingModel)
+	}
+	if err := ds.Delete(ctx); err != nil {
+		t.Fatalf("deleting dataset %v: %v", ds, err)
+	}
+}
+
+func TestIntegration_DatasetStorageUpdateBillingModel(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	t.Skip("BigQuery flat-rate commitments enabled for project, feature skipped")
+
+	ctx := context.Background()
+	ds := client.Dataset(datasetIDs.New())
+	err := ds.Create(ctx, &DatasetMetadata{
+		StorageBillingModel: LogicalStorageBillingModel,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	md, err := ds.Metadata(ctx)
+	if md.StorageBillingModel != LogicalStorageBillingModel {
+		t.Fatalf("got %q, want %q", md.StorageBillingModel, LogicalStorageBillingModel)
+	}
+
+	// Update the Storage billing model
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{
+		StorageBillingModel: PhysicalStorageBillingModel,
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.StorageBillingModel != PhysicalStorageBillingModel {
+		t.Fatalf("got %q, want %q", md.StorageBillingModel, PhysicalStorageBillingModel)
+	}
+
+	// Omitting StorageBillingModel doesn't change it.
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{Name: "xyz"}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.StorageBillingModel != PhysicalStorageBillingModel {
+		t.Fatalf("got %q, want %q", md.StorageBillingModel, PhysicalStorageBillingModel)
+	}
+
+	if err := ds.Delete(ctx); err != nil {
+		t.Fatalf("deleting dataset %v: %v", ds, err)
 	}
 }
 

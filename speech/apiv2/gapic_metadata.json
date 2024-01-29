@@ -65,6 +65,11 @@
                 "GetCustomClass"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -83,6 +88,11 @@
             "ListCustomClasses": {
               "methods": [
                 "ListCustomClasses"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -205,6 +215,11 @@
                 "GetCustomClass"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -223,6 +238,11 @@
             "ListCustomClasses": {
               "methods": [
                 "ListCustomClasses"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {

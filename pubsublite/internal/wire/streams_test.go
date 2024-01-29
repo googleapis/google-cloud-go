@@ -59,7 +59,7 @@ func newTestStreamHandler(t *testing.T, connectTimeout, idleTimeout time.Duratio
 	sh := &testStreamHandler{
 		CancelCtx:  cancel,
 		Topic:      topic,
-		InitialReq: initPubReq(topic),
+		InitialReq: initPubReq(topic, nil),
 		t:          t,
 		statuses:   make(chan streamStatus, 3),
 		responses:  make(chan interface{}, 1),
@@ -392,8 +392,8 @@ func TestRetryableStreamInitTimeout(t *testing.T) {
 
 func TestRetryableStreamSendReceive(t *testing.T) {
 	pub := newTestStreamHandler(t, streamTestTimeout, streamTestTimeout)
-	req := msgPubReq(&pb.PubSubMessage{Data: []byte("msg")})
-	wantResp := msgPubResp(5)
+	req := msgPubReq(0, &pb.PubSubMessage{Data: []byte("msg")})
+	wantResp := msgPubResp(cursorRange(5, 0, 2))
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
@@ -518,8 +518,8 @@ func TestRetryableStreamDisconnectedWithResetSignal(t *testing.T) {
 
 func TestRetryableStreamIdleStreamDetection(t *testing.T) {
 	pub := newTestStreamHandler(t, streamTestTimeout, 50*time.Millisecond)
-	req := msgPubReq(&pb.PubSubMessage{Data: []byte("msg")})
-	wantResp := msgPubResp(5)
+	req := msgPubReq(0, &pb.PubSubMessage{Data: []byte("msg")})
+	wantResp := msgPubResp(cursorRange(5, 0, 2))
 
 	verifiers := test.NewVerifiers(t)
 

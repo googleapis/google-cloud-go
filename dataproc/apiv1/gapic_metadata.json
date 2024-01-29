@@ -3,13 +3,18 @@
   "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
   "language": "go",
   "protoPackage": "google.cloud.dataproc.v1",
-  "libraryPackage": "cloud.google.com/go/dataproc/apiv1",
+  "libraryPackage": "cloud.google.com/go/dataproc/v2/apiv1",
   "services": {
     "AutoscalingPolicyService": {
       "clients": {
         "grpc": {
           "libraryClient": "AutoscalingPolicyClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateAutoscalingPolicy": {
               "methods": [
                 "CreateAutoscalingPolicy"
@@ -20,14 +25,44 @@
                 "DeleteAutoscalingPolicy"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetAutoscalingPolicy": {
               "methods": [
                 "GetAutoscalingPolicy"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListAutoscalingPolicies": {
               "methods": [
                 "ListAutoscalingPolicies"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateAutoscalingPolicy": {
@@ -40,6 +75,11 @@
         "rest": {
           "libraryClient": "AutoscalingPolicyClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateAutoscalingPolicy": {
               "methods": [
                 "CreateAutoscalingPolicy"
@@ -50,14 +90,44 @@
                 "DeleteAutoscalingPolicy"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetAutoscalingPolicy": {
               "methods": [
                 "GetAutoscalingPolicy"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListAutoscalingPolicies": {
               "methods": [
                 "ListAutoscalingPolicies"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateAutoscalingPolicy": {
@@ -74,6 +144,11 @@
         "grpc": {
           "libraryClient": "BatchControllerClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBatch": {
               "methods": [
                 "CreateBatch"
@@ -84,14 +159,44 @@
                 "DeleteBatch"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetBatch": {
               "methods": [
                 "GetBatch"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListBatches": {
               "methods": [
                 "ListBatches"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -99,6 +204,11 @@
         "rest": {
           "libraryClient": "BatchControllerClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBatch": {
               "methods": [
                 "CreateBatch"
@@ -109,14 +219,44 @@
                 "DeleteBatch"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetBatch": {
               "methods": [
                 "GetBatch"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListBatches": {
               "methods": [
                 "ListBatches"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -128,6 +268,11 @@
         "grpc": {
           "libraryClient": "ClusterControllerClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateCluster": {
               "methods": [
                 "CreateCluster"
@@ -136,6 +281,11 @@
             "DeleteCluster": {
               "methods": [
                 "DeleteCluster"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DiagnoseCluster": {
@@ -148,9 +298,29 @@
                 "GetCluster"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListClusters": {
               "methods": [
                 "ListClusters"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "StartCluster": {
@@ -161,6 +331,11 @@
             "StopCluster": {
               "methods": [
                 "StopCluster"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateCluster": {
@@ -173,6 +348,11 @@
         "rest": {
           "libraryClient": "ClusterControllerClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateCluster": {
               "methods": [
                 "CreateCluster"
@@ -181,6 +361,11 @@
             "DeleteCluster": {
               "methods": [
                 "DeleteCluster"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DiagnoseCluster": {
@@ -193,9 +378,29 @@
                 "GetCluster"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListClusters": {
               "methods": [
                 "ListClusters"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "StartCluster": {
@@ -206,6 +411,11 @@
             "StopCluster": {
               "methods": [
                 "StopCluster"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateCluster": {
@@ -227,9 +437,24 @@
                 "CancelJob"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "DeleteJob": {
               "methods": [
                 "DeleteJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
               ]
             },
             "GetJob": {
@@ -237,9 +462,24 @@
                 "GetJob"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListJobs": {
               "methods": [
                 "ListJobs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "SubmitJob": {
@@ -250,6 +490,11 @@
             "SubmitJobAsOperation": {
               "methods": [
                 "SubmitJobAsOperation"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateJob": {
@@ -267,9 +512,24 @@
                 "CancelJob"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "DeleteJob": {
               "methods": [
                 "DeleteJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
               ]
             },
             "GetJob": {
@@ -277,9 +537,24 @@
                 "GetJob"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListJobs": {
               "methods": [
                 "ListJobs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "SubmitJob": {
@@ -290,6 +565,11 @@
             "SubmitJobAsOperation": {
               "methods": [
                 "SubmitJobAsOperation"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateJob": {
@@ -306,9 +586,24 @@
         "grpc": {
           "libraryClient": "NodeGroupControllerClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateNodeGroup": {
               "methods": [
                 "CreateNodeGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
               ]
             },
             "GetNodeGroup": {
@@ -316,9 +611,29 @@
                 "GetNodeGroup"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ResizeNodeGroup": {
               "methods": [
                 "ResizeNodeGroup"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -326,9 +641,24 @@
         "rest": {
           "libraryClient": "NodeGroupControllerClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateNodeGroup": {
               "methods": [
                 "CreateNodeGroup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
               ]
             },
             "GetNodeGroup": {
@@ -336,9 +666,29 @@
                 "GetNodeGroup"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ResizeNodeGroup": {
               "methods": [
                 "ResizeNodeGroup"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -350,14 +700,34 @@
         "grpc": {
           "libraryClient": "WorkflowTemplateClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateWorkflowTemplate": {
               "methods": [
                 "CreateWorkflowTemplate"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteWorkflowTemplate": {
               "methods": [
                 "DeleteWorkflowTemplate"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetWorkflowTemplate": {
@@ -375,9 +745,24 @@
                 "InstantiateWorkflowTemplate"
               ]
             },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListWorkflowTemplates": {
               "methods": [
                 "ListWorkflowTemplates"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateWorkflowTemplate": {
@@ -390,14 +775,34 @@
         "rest": {
           "libraryClient": "WorkflowTemplateClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateWorkflowTemplate": {
               "methods": [
                 "CreateWorkflowTemplate"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteWorkflowTemplate": {
               "methods": [
                 "DeleteWorkflowTemplate"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetWorkflowTemplate": {
@@ -415,9 +820,24 @@
                 "InstantiateWorkflowTemplate"
               ]
             },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListWorkflowTemplates": {
               "methods": [
                 "ListWorkflowTemplates"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateWorkflowTemplate": {

@@ -47,10 +47,14 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -88,6 +92,18 @@ const (
 	// timeout is to allow clients to degrade gracefully if underlying logging
 	// service is temporarily impaired for some reason.
 	defaultWriteTimeout = 10 * time.Minute
+
+	// Part of the error message when the payload contains invalid UTF-8 characters.
+	utfErrorString = "string field contains invalid UTF-8"
+
+	// DetectProjectID is a sentinel value that instructs NewClient to detect the
+	// project ID. It is given in place of the projectID argument. NewClient will
+	// use the project ID from the given credentials or the default credentials
+	// (https://developers.google.com/accounts/docs/application-default-credentials)
+	// if no credentials were provided. When providing credentials, not all
+	// options will allow NewClient to extract the project ID. Specifically a JWT
+	// does not have the project ID encoded.
+	DetectProjectID = "*detect-project-id*"
 )
 
 var (
@@ -96,7 +112,9 @@ var (
 	ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
 
 	// For testing:
-	now = time.Now
+	now                    = time.Now
+	toLogEntryInternal     = toLogEntryInternalImpl
+	detectResourceInternal = detectResource
 
 	// ErrOverflow signals that the number of buffered entries for a Logger
 	// exceeds its BufferLimit.
@@ -140,8 +158,11 @@ type Client struct {
 //	billingAccounts/ACCOUNT_ID
 //	organizations/ORG_ID
 //
-// for backwards compatibility, a string with no '/' is also allowed and is interpreted
+// For backwards compatibility, a string with no '/' is also allowed and is interpreted
 // as a project ID.
+//
+// If logging.DetectProjectId is provided as the parent, the parent will be interpreted as a project
+// ID, and its value will be inferred from the environment.
 //
 // By default NewClient uses WriteScope. To use a different scope, call
 // NewClient using a WithScopes option (see https://godoc.org/google.golang.org/api/option#WithScopes).
@@ -184,6 +205,13 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 
 func makeParent(parent string) (string, error) {
 	if !strings.ContainsRune(parent, '/') {
+		if parent == DetectProjectID {
+			resource := detectResourceInternal()
+			if resource == nil {
+				return parent, fmt.Errorf("could not determine project ID from environment")
+			}
+			parent = resource.Labels["project_id"]
+		}
 		return "projects/" + parent, nil
 	}
 	prefix := strings.Split(parent, "/")[0]
@@ -256,13 +284,44 @@ type Logger struct {
 	redirectOutputWriter   io.Writer
 }
 
+type loggerRetryer struct {
+	defaultRetryer gax.Retryer
+}
+
+func newLoggerRetryer() gax.Retryer {
+	// Copied from CallOptions.WriteLogEntries in apiv2/logging_client.go.
+	d := gax.OnCodes([]codes.Code{
+		codes.DeadlineExceeded,
+		codes.Internal,
+		codes.Unavailable,
+	}, gax.Backoff{
+		Initial:    100 * time.Millisecond,
+		Max:        60000 * time.Millisecond,
+		Multiplier: 1.30,
+	})
+
+	r := &loggerRetryer{defaultRetryer: d}
+	return r
+}
+
+func (r *loggerRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
+	s, ok := status.FromError(err)
+	if !ok {
+		return r.defaultRetryer.Retry(err)
+	}
+	if strings.Contains(s.Message(), utfErrorString) {
+		return 0, false
+	}
+	return r.defaultRetryer.Retry(err)
+}
+
 // Logger returns a Logger that will write entries with the given log ID, such as
 // "syslog". A log ID must be less than 512 characters long and can only
 // include the following characters: upper and lower case alphanumeric
 // characters: [A-Za-z0-9]; and punctuation characters: forward-slash,
 // underscore, hyphen, and period.
 func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
-	r := detectResource()
+	r := detectResourceInternal()
 	if r == nil {
 		r = monitoredResource(c.parent)
 	}
@@ -287,7 +346,8 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	}
 	l.stdLoggers = map[Severity]*log.Logger{}
 	for s := range severityName {
-		l.stdLoggers[s] = log.New(severityWriter{l, s}, "", 0)
+		e := Entry{Severity: s}
+		l.stdLoggers[s] = log.New(templateEntryWriter{l, &e}, "", 0)
 	}
 
 	c.loggers.Add(1)
@@ -301,16 +361,20 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	return l
 }
 
-type severityWriter struct {
-	l *Logger
-	s Severity
+type templateEntryWriter struct {
+	l        *Logger
+	template *Entry
 }
 
-func (w severityWriter) Write(p []byte) (n int, err error) {
-	w.l.Log(Entry{
-		Severity: w.s,
-		Payload:  string(p),
-	})
+func (w templateEntryWriter) Write(p []byte) (n int, err error) {
+	e := *w.template
+	e.Payload = string(p)
+	// The second argument to logInternal() is how many frames to skip
+	// from the call stack when determining the source location. In the
+	// current implementation of log.Logger (i.e. Go's logging library)
+	// the Write() method is called 2 calls deep so we need to skip 3
+	// frames to account for the call to logInternal() itself.
+	w.l.logInternal(e, 3)
 	return len(p), nil
 }
 
@@ -656,7 +720,11 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 
 // Log buffers the Entry for output to the logging service. It never blocks.
 func (l *Logger) Log(e Entry) {
-	ent, err := toLogEntryInternal(e, l, l.client.parent, 1)
+	l.logInternal(e, 1)
+}
+
+func (l *Logger) logInternal(e Entry, skipLevels int) {
+	ent, err := toLogEntryInternal(e, l, l.client.parent, skipLevels+1)
 	if err != nil {
 		l.client.error(err)
 		return
@@ -705,7 +773,8 @@ func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 	ctx, afterCall := l.ctxFunc()
 	ctx, cancel := context.WithTimeout(ctx, defaultWriteTimeout)
 	defer cancel()
-	_, err := l.client.client.WriteLogEntries(ctx, req)
+
+	_, err := l.client.client.WriteLogEntries(ctx, req, gax.WithRetry(newLoggerRetryer))
 	if err != nil {
 		l.client.error(err)
 	}
@@ -720,6 +789,20 @@ func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 // severity level in each Logger. Callers may mutate the returned log.Logger
 // (for example by calling SetFlags or SetPrefix).
 func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s] }
+
+// StandardLoggerFromTemplate returns a Go Standard Logging API *log.Logger.
+//
+// The returned logger emits logs using logging.(*Logger).Log() with an entry
+// constructed from the provided template Entry struct.
+//
+// The caller is responsible for ensuring that the template Entry struct
+// does not change during the the lifetime of the returned *log.Logger.
+//
+// Prefer (*Logger).StandardLogger() which is more efficient if the template
+// only sets Severity.
+func (l *Logger) StandardLoggerFromTemplate(template *Entry) *log.Logger {
+	return log.New(templateEntryWriter{l, template}, "", 0)
+}
 
 func populateTraceInfo(e *Entry, req *http.Request) bool {
 	if req == nil {
@@ -834,7 +917,7 @@ func (l *Logger) ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
 	return toLogEntryInternal(e, l, parent, 1)
 }
 
-func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
+func toLogEntryInternalImpl(e Entry, l *Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
 		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
 	}
@@ -905,65 +988,70 @@ func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*log
 // entry represents the fields of a logging.Entry that can be parsed by Logging agent.
 // See the mappings at https://cloud.google.com/logging/docs/structured-logging#special-payload-fields
 type structuredLogEntry struct {
-	// JsonMessage    map[string]interface{}        `json:"message,omitempty"`
-	// TextMessage    string                        `json:"message,omitempty"`
-	Message        json.RawMessage               `json:"message"`
-	Severity       string                        `json:"severity,omitempty"`
-	HTTPRequest    *logtypepb.HttpRequest        `json:"httpRequest,omitempty"`
-	Timestamp      string                        `json:"timestamp,omitempty"`
-	Labels         map[string]string             `json:"logging.googleapis.com/labels,omitempty"`
-	InsertID       string                        `json:"logging.googleapis.com/insertId,omitempty"`
-	Operation      *logpb.LogEntryOperation      `json:"logging.googleapis.com/operation,omitempty"`
-	SourceLocation *logpb.LogEntrySourceLocation `json:"logging.googleapis.com/sourceLocation,omitempty"`
-	SpanID         string                        `json:"logging.googleapis.com/spanId,omitempty"`
-	Trace          string                        `json:"logging.googleapis.com/trace,omitempty"`
-	TraceSampled   bool                          `json:"logging.googleapis.com/trace_sampled,omitempty"`
+	Message        json.RawMessage                   `json:"message"`
+	Severity       string                            `json:"severity,omitempty"`
+	HTTPRequest    *structuredLogEntryHTTPRequest    `json:"httpRequest,omitempty"`
+	Timestamp      string                            `json:"timestamp,omitempty"`
+	Labels         map[string]string                 `json:"logging.googleapis.com/labels,omitempty"`
+	InsertID       string                            `json:"logging.googleapis.com/insertId,omitempty"`
+	Operation      *structuredLogEntryOperation      `json:"logging.googleapis.com/operation,omitempty"`
+	SourceLocation *structuredLogEntrySourceLocation `json:"logging.googleapis.com/sourceLocation,omitempty"`
+	SpanID         string                            `json:"logging.googleapis.com/spanId,omitempty"`
+	Trace          string                            `json:"logging.googleapis.com/trace,omitempty"`
+	TraceSampled   bool                              `json:"logging.googleapis.com/trace_sampled,omitempty"`
 }
 
-func convertSnakeToMixedCase(snakeStr string) string {
-	words := strings.Split(snakeStr, "_")
-	mixedStr := words[0]
-	for _, word := range words[1:] {
-		mixedStr += strings.Title(word)
-	}
-	return mixedStr
+// structuredLogEntryHTTPRequest wraps the HTTPRequest proto field in structuredLogEntry for easier JSON marshalling.
+type structuredLogEntryHTTPRequest struct {
+	request *logtypepb.HttpRequest
 }
 
-func (s structuredLogEntry) MarshalJSON() ([]byte, error) {
-	// extract structuredLogEntry into json map
-	type Alias structuredLogEntry
-	var mapData map[string]interface{}
-	data, err := json.Marshal(Alias(s))
-	if err == nil {
-		err = json.Unmarshal(data, &mapData)
-	}
-	if err == nil {
-		// ensure all inner dicts use mixed case instead of snake case
-		innerDicts := [3]string{"httpRequest", "logging.googleapis.com/operation", "logging.googleapis.com/sourceLocation"}
-		for _, field := range innerDicts {
-			if fieldData, ok := mapData[field]; ok {
-				formattedFieldData := make(map[string]interface{})
-				for k, v := range fieldData.(map[string]interface{}) {
-					formattedFieldData[convertSnakeToMixedCase(k)] = v
-				}
-				mapData[field] = formattedFieldData
-			}
-		}
-		// serialize json map into raw bytes
-		return json.Marshal(mapData)
-	}
-	return data, err
+func (s structuredLogEntryHTTPRequest) MarshalJSON() ([]byte, error) {
+	return protojson.Marshal(s.request)
+}
+
+// structuredLogEntryOperation wraps the Operation proto field in structuredLogEntry for easier JSON marshalling.
+type structuredLogEntryOperation struct {
+	operation *logpb.LogEntryOperation
+}
+
+func (s structuredLogEntryOperation) MarshalJSON() ([]byte, error) {
+	return protojson.Marshal(s.operation)
+}
+
+// structuredLogEntrySourceLocation wraps the SourceLocation proto field in structuredLogEntry for easier JSON marshalling.
+type structuredLogEntrySourceLocation struct {
+	sourceLocation *logpb.LogEntrySourceLocation
+}
+
+func (s structuredLogEntrySourceLocation) MarshalJSON() ([]byte, error) {
+	return protojson.Marshal(s.sourceLocation)
 }
 
 func serializeEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
+	var httpRequest *structuredLogEntryHTTPRequest
+	if entry.HttpRequest != nil {
+		httpRequest = &structuredLogEntryHTTPRequest{entry.HttpRequest}
+	}
+
+	var operation *structuredLogEntryOperation
+	if entry.Operation != nil {
+		operation = &structuredLogEntryOperation{entry.Operation}
+	}
+
+	var sourceLocation *structuredLogEntrySourceLocation
+	if entry.SourceLocation != nil {
+		sourceLocation = &structuredLogEntrySourceLocation{entry.SourceLocation}
+	}
+
 	jsonifiedEntry := structuredLogEntry{
 		Severity:       entry.Severity.String(),
-		HTTPRequest:    entry.HttpRequest,
+		HTTPRequest:    httpRequest,
 		Timestamp:      entry.Timestamp.String(),
 		Labels:         entry.Labels,
 		InsertID:       entry.InsertId,
-		Operation:      entry.Operation,
-		SourceLocation: entry.SourceLocation,
+		Operation:      operation,
+		SourceLocation: sourceLocation,
 		SpanID:         entry.SpanId,
 		Trace:          entry.Trace,
 		TraceSampled:   entry.TraceSampled,

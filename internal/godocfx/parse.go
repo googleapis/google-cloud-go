@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build go1.15
-// +build go1.15
-
 // TODO:
 //   IDs for const/var groups have every name, not just the one to link to.
 //   Preserve IDs when sanitizing then use the right ID for linking.
@@ -621,6 +618,17 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 
 func toHTML(p *doc.Package, s string) string {
 	printer := p.Printer()
+
+	// Set the DocLinkBaseURL to pkg.go.dev so links to other packages work.
+	//
+	// This will send users to pkg.go.dev for other cloud.google.com packages
+	// that do have docs hosted on cloud.google.com. The link structure for
+	// docs on cloud.google.com is [prefix]/[module]/[version]/[pkg]. At this
+	// point, we don't know what the module path is for any given import path.
+	// So, for simplicity, we're choosing to have working links to pkg.go.dev
+	// (with occasional links that could be served on cloud.google.com) rather
+	// than broken links on cloud.google.com.
+	printer.DocLinkBaseURL = "https://pkg.go.dev"
 
 	// Set the default heading level to 2 so we go from H1 to H2.
 	printer.HeadingLevel = 2

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datacatalog/apiv1",
-    "version": "1.8.1",
+    "version": "1.19.2",
     "language": "GO",
     "apis": [
       {
@@ -12,9 +12,54 @@
   },
   "snippets": [
     {
+      "regionTag": "datacatalog_v1_generated_DataCatalog_CancelOperation_sync",
+      "title": "datacatalog CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.datacatalog.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datacatalog_v1_generated_DataCatalog_CreateEntry_sync",
       "title": "datacatalog CreateEntry Sample",
-      "description": "CreateEntry creates an entry.\n\nYou can create entries only with ‘FILESET’, ‘CLUSTER’, ‘DATA_STREAM’,\nor custom types. Data Catalog automatically creates entries with other\ntypes during metadata ingestion from integrated systems.\n\nYou must enable the Data Catalog API in the project identified by\nthe parent parameter. For more information, see Data Catalog resource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).\n\nAn entry group can have a maximum of 100,000 entries.",
+      "description": "CreateEntry creates an entry.\n\nYou can create entries only with 'FILESET', 'CLUSTER', 'DATA_STREAM',\nor custom types. Data Catalog automatically creates entries with other\ntypes during metadata ingestion from integrated systems.\n\nYou must enable the Data Catalog API in the project identified by\nthe `parent` parameter. For more information, see [Data Catalog resource\nproject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project).\n\nAn entry group can have a maximum of 100,000 entries.",
       "file": "Client/CreateEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +79,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Entry",
+        "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -60,7 +105,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_CreateEntryGroup_sync",
       "title": "datacatalog CreateEntryGroup Sample",
-      "description": "CreateEntryGroup creates an entry group.\n\nAn entry group contains logically related entries together with Cloud\nIdentity and Access Management (at /data-catalog/docs/concepts/iam) policies.\nThese policies specify users who can create, edit, and view entries\nwithin entry groups.\n\nData Catalog automatically creates entry groups with names that start with\nthe @ symbol for the following resources: \n\n\tBigQuery entries (@bigquery)\n\n\tPub/Sub topics (@pubsub)\n\n\tDataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})\n\nYou can create your own entry groups for Cloud Storage fileset entries\nand custom entries together with the corresponding IAM policies.\nUser-created entry groups can’t contain the @ symbol, it is reserved\nfor automatically created groups.\n\nEntry groups, like entries, can be searched.\n\nA maximum of 10,000 entry groups may be created per organization across all\nlocations.\n\nYou must enable the Data Catalog API in the project identified by\nthe parent parameter. For more information, see Data Catalog resource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
+      "description": "CreateEntryGroup creates an entry group.\n\nAn entry group contains logically related entries together with [Cloud\nIdentity and Access Management](/data-catalog/docs/concepts/iam) policies.\nThese policies specify users who can create, edit, and view entries\nwithin entry groups.\n\nData Catalog automatically creates entry groups with names that start with\nthe `@` symbol for the following resources: \n\n* BigQuery entries (`@bigquery`)\n* Pub/Sub topics (`@pubsub`)\n* Dataproc Metastore services (`@dataproc_metastore_{SERVICE_NAME_HASH}`)\n\nYou can create your own entry groups for Cloud Storage fileset entries\nand custom entries together with the corresponding IAM policies.\nUser-created entry groups can't contain the `@` symbol, it is reserved\nfor automatically created groups.\n\nEntry groups, like entries, can be searched.\n\nA maximum of 10,000 entry groups may be created per organization across all\nlocations.\n\nYou must enable the Data Catalog API in the project identified by\nthe `parent` parameter. For more information, see [Data Catalog resource\nproject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/CreateEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.EntryGroup",
+        "resultType": "*datacatalogpb.EntryGroup",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -106,7 +151,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_CreateTag_sync",
       "title": "datacatalog CreateTag Sample",
-      "description": "CreateTag creates a tag and assigns it to: \n\n\tAn Entry if the method name is\n\tprojects.locations.entryGroups.entries.tags.create.\n\n\tOr EntryGroupif the method\n\tname is projects.locations.entryGroups.tags.create.\n\nNote: The project identified by the parent parameter for the [tag]\n(https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters (at https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters))\nand the [tag template]\n(https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters (at https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters))\nused to create the tag must be in the same organization.",
+      "description": "CreateTag creates a tag and assigns it to: \n\n* An [Entry][google.cloud.datacatalog.v1.Entry] if the method name is\n`projects.locations.entryGroups.entries.tags.create`.\n* Or [EntryGroup][google.cloud.datacatalog.v1.EntryGroup]if the method\nname is `projects.locations.entryGroups.tags.create`.\n\nNote: The project identified by the `parent` parameter for the [tag]\n(https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters)\nand the [tag template]\n(https: //cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters)\nused to create the tag must be in the same organization.",
       "file": "Client/CreateTag/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Tag",
+        "resultType": "*datacatalogpb.Tag",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -152,7 +197,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_CreateTagTemplate_sync",
       "title": "datacatalog CreateTagTemplate Sample",
-      "description": "CreateTagTemplate creates a tag template.\n\nYou must enable the Data Catalog API in the project identified by the\nparent parameter.\nFor more information, see [Data Catalog resource project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)).",
+      "description": "CreateTagTemplate creates a tag template.\n\nYou must enable the Data Catalog API in the project identified by the\n`parent` parameter.\nFor more information, see [Data Catalog resource project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/CreateTagTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplate",
+        "resultType": "*datacatalogpb.TagTemplate",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -198,7 +243,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_CreateTagTemplateField_sync",
       "title": "datacatalog CreateTagTemplateField Sample",
-      "description": "CreateTagTemplateField creates a field in a tag template.\n\nYou must enable the Data Catalog API in the project identified by\nthe parent parameter. For more information, see Data Catalog resource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
+      "description": "CreateTagTemplateField creates a field in a tag template.\n\nYou must enable the Data Catalog API in the project identified by\nthe `parent` parameter. For more information, see [Data Catalog resource\nproject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/CreateTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {
@@ -218,7 +263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplateField",
+        "resultType": "*datacatalogpb.TagTemplateField",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -244,7 +289,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_DeleteEntry_sync",
       "title": "datacatalog DeleteEntry Sample",
-      "description": "DeleteEntry deletes an existing entry.\n\nYou can delete only the entries created by the\nCreateEntry\nmethod.\n\nYou must enable the Data Catalog API in the project identified by\nthe name parameter. For more information, see Data Catalog\nresource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
+      "description": "DeleteEntry deletes an existing entry.\n\nYou can delete only the entries created by the\n[CreateEntry][google.cloud.datacatalog.v1.DataCatalog.CreateEntry]\nmethod.\n\nYou must enable the Data Catalog API in the project identified by\nthe `name` parameter. For more information, see [Data Catalog\nresource\nproject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/DeleteEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -289,7 +334,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_DeleteEntryGroup_sync",
       "title": "datacatalog DeleteEntryGroup Sample",
-      "description": "DeleteEntryGroup deletes an entry group.\n\nYou must enable the Data Catalog API in the project\nidentified by the name parameter. For more information, see Data Catalog\nresource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
+      "description": "DeleteEntryGroup deletes an entry group.\n\nYou must enable the Data Catalog API in the project\nidentified by the `name` parameter. For more information, see [Data Catalog\nresource\nproject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/DeleteEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -319,6 +364,51 @@
           "service": {
             "shortName": "DataCatalog",
             "fullName": "google.cloud.datacatalog.v1.DataCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datacatalog_v1_generated_DataCatalog_DeleteOperation_sync",
+      "title": "datacatalog DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.datacatalog.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -379,7 +469,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_DeleteTagTemplate_sync",
       "title": "datacatalog DeleteTagTemplate Sample",
-      "description": "DeleteTagTemplate deletes a tag template and all tags that use it.\n\nYou must enable the Data Catalog API in the project identified by\nthe name parameter. For more information, see Data Catalog resource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
+      "description": "DeleteTagTemplate deletes a tag template and all tags that use it.\n\nYou must enable the Data Catalog API in the project identified by\nthe `name` parameter. For more information, see [Data Catalog resource\nproject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/DeleteTagTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -424,7 +514,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_DeleteTagTemplateField_sync",
       "title": "datacatalog DeleteTagTemplateField Sample",
-      "description": "DeleteTagTemplateField deletes a field in a tag template and all uses of this field from the tags\nbased on this template.\n\nYou must enable the Data Catalog API in the project identified by\nthe name parameter. For more information, see Data Catalog resource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
+      "description": "DeleteTagTemplateField deletes a field in a tag template and all uses of this field from the tags\nbased on this template.\n\nYou must enable the Data Catalog API in the project identified by\nthe `name` parameter. For more information, see [Data Catalog resource\nproject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/DeleteTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {
@@ -489,7 +579,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Entry",
+        "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -535,7 +625,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.EntryGroup",
+        "resultType": "*datacatalogpb.EntryGroup",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -561,7 +651,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_GetIamPolicy_sync",
       "title": "datacatalog GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a resource.\n\nMay return: \n\n\tANOT_FOUND error if the resource doesn’t exist or you don’t have the\n\tpermission to view it.\n\n\tAn empty policy if the resource exists but doesn’t have a set policy.\n\nSupported resources are: \n\n\tTag templates\n\n\tEntry groups\n\nNote: This method doesn’t get policies from Google Cloud Platform\nresources ingested into Data Catalog.\n\nTo call this method, you must have the following Google IAM permissions: \n\n\tdatacatalog.tagTemplates.getIamPolicy to get policies on tag\n\ttemplates.\n\n\tdatacatalog.entryGroups.getIamPolicy to get policies on entry groups.",
+      "description": "GetIamPolicy gets the access control policy for a resource.\n\nMay return: \n\n* A`NOT_FOUND` error if the resource doesn't exist or you don't have the\npermission to view it.\n* An empty policy if the resource exists but doesn't have a set policy.\n\nSupported resources are: \n\n- Tag templates\n- Entry groups\n\nNote: This method doesn't get policies from Google Cloud Platform\nresources ingested into Data Catalog.\n\nTo call this method, you must have the following Google IAM permissions: \n\n- `datacatalog.tagTemplates.getIamPolicy` to get policies on tag\ntemplates.\n- `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.",
       "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -581,7 +671,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -599,7 +689,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datacatalog_v1_generated_DataCatalog_GetOperation_sync",
+      "title": "datacatalog GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.datacatalog.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -627,7 +763,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplate",
+        "resultType": "*datacatalogpb.TagTemplate",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -651,9 +787,55 @@
       ]
     },
     {
+      "regionTag": "datacatalog_v1_generated_DataCatalog_ImportEntries_sync",
+      "title": "datacatalog ImportEntries Sample",
+      "description": "ImportEntries imports entries from a source, such as data previously dumped into a\nCloud Storage bucket, into Data Catalog. Import of entries\nis a sync operation that reconciles the state of the third-party system\nwith the Data Catalog.\n\n`ImportEntries` accepts source data snapshots of a third-party system.\nSnapshot should be delivered as a .wire or base65-encoded .txt file\ncontaining a sequence of Protocol Buffer messages of\n[DumpItem][google.cloud.datacatalog.v1.DumpItem] type.\n\n`ImportEntries` returns a [long-running operation]\n[google.longrunning.Operation] resource that can be queried with\n[Operations.GetOperation][google.longrunning.Operations.GetOperation]\nto return\n[ImportEntriesMetadata][google.cloud.datacatalog.v1.ImportEntriesMetadata]\nand an\n[ImportEntriesResponse][google.cloud.datacatalog.v1.ImportEntriesResponse]\nmessage.",
+      "file": "Client/ImportEntries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportEntries",
+        "fullName": "google.cloud.datacatalog.v1.Client.ImportEntries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datacatalogpb.ImportEntriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportEntriesOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.v1.Client"
+        },
+        "method": {
+          "shortName": "ImportEntries",
+          "fullName": "google.cloud.datacatalog.v1.DataCatalog.ImportEntries",
+          "service": {
+            "shortName": "DataCatalog",
+            "fullName": "google.cloud.datacatalog.v1.DataCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datacatalog_v1_generated_DataCatalog_ListEntries_sync",
       "title": "datacatalog ListEntries Sample",
-      "description": "ListEntries lists entries.\n\nNote: Currently, this method can list only custom entries.\nTo get a list of both custom and automatically created entries, use\nSearchCatalog.",
+      "description": "ListEntries lists entries.\n\nNote: Currently, this method can list only custom entries.\nTo get a list of both custom and automatically created entries, use\n[SearchCatalog][google.cloud.datacatalog.v1.DataCatalog.SearchCatalog].",
       "file": "Client/ListEntries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -743,9 +925,55 @@
       ]
     },
     {
+      "regionTag": "datacatalog_v1_generated_DataCatalog_ListOperations_sync",
+      "title": "datacatalog ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.datacatalog.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datacatalog_v1_generated_DataCatalog_ListTags_sync",
       "title": "datacatalog ListTags Sample",
-      "description": "ListTags lists tags assigned to an Entry.\nThe columns in the response are\nlowercased.",
+      "description": "ListTags lists tags assigned to an [Entry][google.cloud.datacatalog.v1.Entry].\nThe [columns][google.cloud.datacatalog.v1.Tag.column] in the response are\nlowercased.",
       "file": "Client/ListTags/main.go",
       "language": "GO",
       "clientMethod": {
@@ -811,7 +1039,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Entry",
+        "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -837,7 +1065,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_ModifyEntryContacts_sync",
       "title": "datacatalog ModifyEntryContacts Sample",
-      "description": "ModifyEntryContacts modifies contacts, part of the business context of an\nEntry.\n\nTo call this method, you must have the datacatalog.entries.updateContacts\nIAM permission on the corresponding project.",
+      "description": "ModifyEntryContacts modifies contacts, part of the business context of an\n[Entry][google.cloud.datacatalog.v1.Entry].\n\nTo call this method, you must have the `datacatalog.entries.updateContacts`\nIAM permission on the corresponding project.",
       "file": "Client/ModifyEntryContacts/main.go",
       "language": "GO",
       "clientMethod": {
@@ -857,7 +1085,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Contacts",
+        "resultType": "*datacatalogpb.Contacts",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -883,7 +1111,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_ModifyEntryOverview_sync",
       "title": "datacatalog ModifyEntryOverview Sample",
-      "description": "ModifyEntryOverview modifies entry overview, part of the business context of an\nEntry.\n\nTo call this method, you must have the datacatalog.entries.updateOverview\nIAM permission on the corresponding project.",
+      "description": "ModifyEntryOverview modifies entry overview, part of the business context of an\n[Entry][google.cloud.datacatalog.v1.Entry].\n\nTo call this method, you must have the `datacatalog.entries.updateOverview`\nIAM permission on the corresponding project.",
       "file": "Client/ModifyEntryOverview/main.go",
       "language": "GO",
       "clientMethod": {
@@ -903,7 +1131,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.EntryOverview",
+        "resultType": "*datacatalogpb.EntryOverview",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -927,9 +1155,55 @@
       ]
     },
     {
+      "regionTag": "datacatalog_v1_generated_DataCatalog_ReconcileTags_sync",
+      "title": "datacatalog ReconcileTags Sample",
+      "description": "ReconcileTags `ReconcileTags` creates or updates a list of tags on the entry.\nIf the\n[ReconcileTagsRequest.force_delete_missing][google.cloud.datacatalog.v1.ReconcileTagsRequest.force_delete_missing]\nparameter is set, the operation deletes tags not included in the input tag\nlist.\n\n`ReconcileTags` returns a [long-running operation]\n[google.longrunning.Operation] resource that can be queried with\n[Operations.GetOperation][google.longrunning.Operations.GetOperation]\nto return [ReconcileTagsMetadata]\n[google.cloud.datacatalog.v1.ReconcileTagsMetadata] and\na [ReconcileTagsResponse]\n[google.cloud.datacatalog.v1.ReconcileTagsResponse] message.",
+      "file": "Client/ReconcileTags/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReconcileTags",
+        "fullName": "google.cloud.datacatalog.v1.Client.ReconcileTags",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datacatalogpb.ReconcileTagsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReconcileTagsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.v1.Client"
+        },
+        "method": {
+          "shortName": "ReconcileTags",
+          "fullName": "google.cloud.datacatalog.v1.DataCatalog.ReconcileTags",
+          "service": {
+            "shortName": "DataCatalog",
+            "fullName": "google.cloud.datacatalog.v1.DataCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datacatalog_v1_generated_DataCatalog_RenameTagTemplateField_sync",
       "title": "datacatalog RenameTagTemplateField Sample",
-      "description": "RenameTagTemplateField renames a field in a tag template.\n\nYou must enable the Data Catalog API in the project identified by the\nname parameter. For more information, see [Data Catalog resource project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project)).",
+      "description": "RenameTagTemplateField renames a field in a tag template.\n\nYou must enable the Data Catalog API in the project identified by the\n`name` parameter. For more information, see [Data Catalog resource project]\n(https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/RenameTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {
@@ -949,7 +1223,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplateField",
+        "resultType": "*datacatalogpb.TagTemplateField",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -995,7 +1269,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplateField",
+        "resultType": "*datacatalogpb.TagTemplateField",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -1021,7 +1295,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_SearchCatalog_sync",
       "title": "datacatalog SearchCatalog Sample",
-      "description": "SearchCatalog searches Data Catalog for multiple resources like entries and tags that\nmatch a query.\n\nThis is a [Custom Method]\n(https: //cloud.google.com/apis/design/custom_methods (at https: //cloud.google.com/apis/design/custom_methods)) that doesn’t return\nall information on a resource, only its ID and high level fields. To get\nmore information, you can subsequently call specific get methods.\n\nNote: Data Catalog search queries don’t guarantee full recall. Results\nthat match your query might not be returned, even in subsequent\nresult pages. Additionally, returned (and not returned) results can vary\nif you repeat search queries.\n\nFor more information, see [Data Catalog search syntax]\n(https: //cloud.google.com/data-catalog/docs/how-to/search-reference (at https: //cloud.google.com/data-catalog/docs/how-to/search-reference)).",
+      "description": "SearchCatalog searches Data Catalog for multiple resources like entries and tags that\nmatch a query.\n\nThis is a [Custom Method]\n(https: //cloud.google.com/apis/design/custom_methods) that doesn't return\nall information on a resource, only its ID and high level fields. To get\nmore information, you can subsequently call specific get methods.\n\nNote: Data Catalog search queries don't guarantee full recall. Results\nthat match your query might not be returned, even in subsequent\nresult pages. Additionally, returned (and not returned) results can vary\nif you repeat search queries.\n\nFor more information, see [Data Catalog search syntax]\n(https: //cloud.google.com/data-catalog/docs/how-to/search-reference).",
       "file": "Client/SearchCatalog/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1067,7 +1341,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_SetIamPolicy_sync",
       "title": "datacatalog SetIamPolicy Sample",
-      "description": "SetIamPolicy sets an access control policy for a resource. Replaces any existing\npolicy.\n\nSupported resources are: \n\n\tTag templates\n\n\tEntry groups\n\nNote: This method sets policies only within Data Catalog and can’t be\nused to manage policies in BigQuery, Pub/Sub, Dataproc Metastore, and any\nexternal Google Cloud Platform resources synced with the Data Catalog.\n\nTo call this method, you must have the following Google IAM permissions: \n\n\tdatacatalog.tagTemplates.setIamPolicy to set policies on tag\n\ttemplates.\n\n\tdatacatalog.entryGroups.setIamPolicy to set policies on entry groups.",
+      "description": "SetIamPolicy sets an access control policy for a resource. Replaces any existing\npolicy.\n\nSupported resources are: \n\n- Tag templates\n- Entry groups\n\nNote: This method sets policies only within Data Catalog and can't be\nused to manage policies in BigQuery, Pub/Sub, Dataproc Metastore, and any\nexternal Google Cloud Platform resources synced with the Data Catalog.\n\nTo call this method, you must have the following Google IAM permissions: \n\n- `datacatalog.tagTemplates.setIamPolicy` to set policies on tag\ntemplates.\n- `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1087,7 +1361,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -1105,7 +1379,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1113,7 +1387,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_StarEntry_sync",
       "title": "datacatalog StarEntry Sample",
-      "description": "StarEntry marks an Entry as starred by\nthe current user. Starring information is private to each user.",
+      "description": "StarEntry marks an [Entry][google.cloud.datacatalog.v1.Entry] as starred by\nthe current user. Starring information is private to each user.",
       "file": "Client/StarEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1133,7 +1407,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.StarEntryResponse",
+        "resultType": "*datacatalogpb.StarEntryResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -1159,7 +1433,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_TestIamPermissions_sync",
       "title": "datacatalog TestIamPermissions Sample",
-      "description": "TestIamPermissions gets your permissions on a resource.\n\nReturns an empty set of permissions if the resource doesn’t exist.\n\nSupported resources are: \n\n\tTag templates\n\n\tEntry groups\n\nNote: This method gets policies only within Data Catalog and can’t be\nused to get policies from BigQuery, Pub/Sub, Dataproc Metastore, and any\nexternal Google Cloud Platform resources ingested into Data Catalog.\n\nNo Google IAM permissions are required to call this method.",
+      "description": "TestIamPermissions gets your permissions on a resource.\n\nReturns an empty set of permissions if the resource doesn't exist.\n\nSupported resources are: \n\n- Tag templates\n- Entry groups\n\nNote: This method gets policies only within Data Catalog and can't be\nused to get policies from BigQuery, Pub/Sub, Dataproc Metastore, and any\nexternal Google Cloud Platform resources ingested into Data Catalog.\n\nNo Google IAM permissions are required to call this method.",
       "file": "Client/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1179,7 +1453,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -1197,7 +1471,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1205,7 +1479,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_UnstarEntry_sync",
       "title": "datacatalog UnstarEntry Sample",
-      "description": "UnstarEntry marks an Entry as NOT starred by\nthe current user. Starring information is private to each user.",
+      "description": "UnstarEntry marks an [Entry][google.cloud.datacatalog.v1.Entry] as NOT starred by\nthe current user. Starring information is private to each user.",
       "file": "Client/UnstarEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1225,7 +1499,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.UnstarEntryResponse",
+        "resultType": "*datacatalogpb.UnstarEntryResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -1251,7 +1525,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_UpdateEntry_sync",
       "title": "datacatalog UpdateEntry Sample",
-      "description": "UpdateEntry updates an existing entry.\n\nYou must enable the Data Catalog API in the project identified by\nthe entry.name parameter. For more information, see Data Catalog\nresource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
+      "description": "UpdateEntry updates an existing entry.\n\nYou must enable the Data Catalog API in the project identified by\nthe `entry.name` parameter. For more information, see [Data Catalog\nresource\nproject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/UpdateEntry/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1271,7 +1545,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Entry",
+        "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -1297,7 +1571,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_UpdateEntryGroup_sync",
       "title": "datacatalog UpdateEntryGroup Sample",
-      "description": "UpdateEntryGroup updates an entry group.\n\nYou must enable the Data Catalog API in the project identified by\nthe entry_group.name parameter. For more information, see Data Catalog\nresource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
+      "description": "UpdateEntryGroup updates an entry group.\n\nYou must enable the Data Catalog API in the project identified by\nthe `entry_group.name` parameter. For more information, see [Data Catalog\nresource\nproject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/UpdateEntryGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1317,7 +1591,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.EntryGroup",
+        "resultType": "*datacatalogpb.EntryGroup",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -1363,7 +1637,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Tag",
+        "resultType": "*datacatalogpb.Tag",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -1389,7 +1663,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_UpdateTagTemplate_sync",
       "title": "datacatalog UpdateTagTemplate Sample",
-      "description": "UpdateTagTemplate updates a tag template.\n\nYou can’t update template fields with this method. These fields are\nseparate resources with their own create, update, and delete methods.\n\nYou must enable the Data Catalog API in the project identified by\nthe tag_template.name parameter. For more information, see Data Catalog\nresource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
+      "description": "UpdateTagTemplate updates a tag template.\n\nYou can't update template fields with this method. These fields are\nseparate resources with their own create, update, and delete methods.\n\nYou must enable the Data Catalog API in the project identified by\nthe `tag_template.name` parameter. For more information, see [Data Catalog\nresource\nproject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/UpdateTagTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1409,7 +1683,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplate",
+        "resultType": "*datacatalogpb.TagTemplate",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -1435,7 +1709,7 @@
     {
       "regionTag": "datacatalog_v1_generated_DataCatalog_UpdateTagTemplateField_sync",
       "title": "datacatalog UpdateTagTemplateField Sample",
-      "description": "UpdateTagTemplateField updates a field in a tag template.\n\nYou can’t update the field type with this method.\n\nYou must enable the Data Catalog API in the project\nidentified by the name parameter. For more information, see Data Catalog\nresource\nproject (at https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
+      "description": "UpdateTagTemplateField updates a field in a tag template.\n\nYou can't update the field type with this method.\n\nYou must enable the Data Catalog API in the project\nidentified by the `name` parameter. For more information, see [Data Catalog\nresource\nproject](https: //cloud.google.com/data-catalog/docs/concepts/resource-project).",
       "file": "Client/UpdateTagTemplateField/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1455,7 +1729,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.TagTemplateField",
+        "resultType": "*datacatalogpb.TagTemplateField",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.v1.Client"
@@ -1474,6 +1748,51 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datacatalog_v1_generated_PolicyTagManager_CancelOperation_sync",
+      "title": "datacatalog CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyTagManagerClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PolicyTagManagerClient",
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1501,7 +1820,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.PolicyTag",
+        "resultType": "*datacatalogpb.PolicyTag",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
@@ -1527,7 +1846,7 @@
     {
       "regionTag": "datacatalog_v1_generated_PolicyTagManager_CreateTaxonomy_sync",
       "title": "datacatalog CreateTaxonomy Sample",
-      "description": "CreateTaxonomy creates a taxonomy in a specified project.\n\nThe taxonomy is initially empty, that is, it doesn’t contain policy tags.",
+      "description": "CreateTaxonomy creates a taxonomy in a specified project.\n\nThe taxonomy is initially empty, that is, it doesn't contain policy tags.",
       "file": "PolicyTagManagerClient/CreateTaxonomy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1547,7 +1866,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Taxonomy",
+        "resultType": "*datacatalogpb.Taxonomy",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
@@ -1571,9 +1890,54 @@
       ]
     },
     {
+      "regionTag": "datacatalog_v1_generated_PolicyTagManager_DeleteOperation_sync",
+      "title": "datacatalog DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyTagManagerClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PolicyTagManagerClient",
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datacatalog_v1_generated_PolicyTagManager_DeletePolicyTag_sync",
       "title": "datacatalog DeletePolicyTag Sample",
-      "description": "DeletePolicyTag deletes a policy tag together with the following: \n\n\tAll of its descendant policy tags, if any\n\n\tPolicies associated with the policy tag and its descendants\n\n\tReferences from BigQuery table schema of the policy tag and its\n\tdescendants",
+      "description": "DeletePolicyTag deletes a policy tag together with the following: \n\n* All of its descendant policy tags, if any\n* Policies associated with the policy tag and its descendants\n* References from BigQuery table schema of the policy tag and its\ndescendants",
       "file": "PolicyTagManagerClient/DeletePolicyTag/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1683,7 +2047,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
@@ -1701,7 +2065,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datacatalog_v1_generated_PolicyTagManager_GetOperation_sync",
+      "title": "datacatalog GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyTagManagerClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "PolicyTagManagerClient",
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1729,7 +2139,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.PolicyTag",
+        "resultType": "*datacatalogpb.PolicyTag",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
@@ -1775,7 +2185,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Taxonomy",
+        "resultType": "*datacatalogpb.Taxonomy",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
@@ -1794,6 +2204,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datacatalog_v1_generated_PolicyTagManager_ListOperations_sync",
+      "title": "datacatalog ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "PolicyTagManagerClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "PolicyTagManagerClient",
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1913,7 +2369,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
@@ -1931,7 +2387,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1959,7 +2415,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
@@ -1977,7 +2433,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2005,7 +2461,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.PolicyTag",
+        "resultType": "*datacatalogpb.PolicyTag",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
@@ -2051,7 +2507,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Taxonomy",
+        "resultType": "*datacatalogpb.Taxonomy",
         "client": {
           "shortName": "PolicyTagManagerClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
@@ -2075,9 +2531,99 @@
       ]
     },
     {
+      "regionTag": "datacatalog_v1_generated_PolicyTagManagerSerialization_CancelOperation_sync",
+      "title": "datacatalog CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyTagManagerSerializationClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PolicyTagManagerSerializationClient",
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datacatalog_v1_generated_PolicyTagManagerSerialization_DeleteOperation_sync",
+      "title": "datacatalog DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyTagManagerSerializationClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PolicyTagManagerSerializationClient",
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datacatalog_v1_generated_PolicyTagManagerSerialization_ExportTaxonomies_sync",
       "title": "datacatalog ExportTaxonomies Sample",
-      "description": "ExportTaxonomies exports taxonomies in the requested type and returns them,\nincluding their policy tags. The requested taxonomies must belong to the\nsame project.\n\nThis method generates SerializedTaxonomy protocol buffers with nested\npolicy tags that can be used as input for ImportTaxonomies calls.",
+      "description": "ExportTaxonomies exports taxonomies in the requested type and returns them,\nincluding their policy tags. The requested taxonomies must belong to the\nsame project.\n\nThis method generates `SerializedTaxonomy` protocol buffers with nested\npolicy tags that can be used as input for `ImportTaxonomies` calls.",
       "file": "PolicyTagManagerSerializationClient/ExportTaxonomies/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2097,7 +2643,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.ExportTaxonomiesResponse",
+        "resultType": "*datacatalogpb.ExportTaxonomiesResponse",
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
@@ -2108,6 +2654,52 @@
           "service": {
             "shortName": "PolicyTagManagerSerialization",
             "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerialization"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datacatalog_v1_generated_PolicyTagManagerSerialization_GetOperation_sync",
+      "title": "datacatalog GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "PolicyTagManagerSerializationClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "PolicyTagManagerSerializationClient",
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2143,7 +2735,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.ImportTaxonomiesResponse",
+        "resultType": "*datacatalogpb.ImportTaxonomiesResponse",
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
@@ -2167,9 +2759,55 @@
       ]
     },
     {
+      "regionTag": "datacatalog_v1_generated_PolicyTagManagerSerialization_ListOperations_sync",
+      "title": "datacatalog ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "PolicyTagManagerSerializationClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "PolicyTagManagerSerializationClient",
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datacatalog_v1_generated_PolicyTagManagerSerialization_ReplaceTaxonomy_sync",
       "title": "datacatalog ReplaceTaxonomy Sample",
-      "description": "ReplaceTaxonomy replaces (updates) a taxonomy and all its policy tags.\n\nThe taxonomy and its entire hierarchy of policy tags must be\nrepresented literally by SerializedTaxonomy and the nested\nSerializedPolicyTag messages.\n\nThis operation automatically does the following: \n\n\tDeletes the existing policy tags that are missing from the\n\tSerializedPolicyTag.\n\n\tCreates policy tags that don’t have resource names. They are considered\n\tnew.\n\n\tUpdates policy tags with valid resources names accordingly.",
+      "description": "ReplaceTaxonomy replaces (updates) a taxonomy and all its policy tags.\n\nThe taxonomy and its entire hierarchy of policy tags must be\nrepresented literally by `SerializedTaxonomy` and the nested\n`SerializedPolicyTag` messages.\n\nThis operation automatically does the following: \n\n- Deletes the existing policy tags that are missing from the\n`SerializedPolicyTag`.\n- Creates policy tags that don't have resource names. They are considered\nnew.\n- Updates policy tags with valid resources names accordingly.",
       "file": "PolicyTagManagerSerializationClient/ReplaceTaxonomy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2189,7 +2827,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datacatalogpb.Taxonomy",
+        "resultType": "*datacatalogpb.Taxonomy",
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
           "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"

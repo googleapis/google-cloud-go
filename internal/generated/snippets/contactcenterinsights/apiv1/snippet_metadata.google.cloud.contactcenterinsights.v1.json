@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/contactcenterinsights/apiv1",
-    "version": "1.4.0",
+    "version": "1.12.1",
     "language": "GO",
     "apis": [
       {
@@ -58,9 +58,55 @@
       ]
     },
     {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_BulkDeleteConversations_sync",
+      "title": "contactcenterinsights BulkDeleteConversations Sample",
+      "description": "BulkDeleteConversations deletes multiple conversations in a single request.",
+      "file": "Client/BulkDeleteConversations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BulkDeleteConversations",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.BulkDeleteConversations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.BulkDeleteConversationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BulkDeleteConversationsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "BulkDeleteConversations",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.BulkDeleteConversations",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CalculateIssueModelStats_sync",
       "title": "contactcenterinsights CalculateIssueModelStats Sample",
-      "description": "CalculateIssueModelStats gets an issue model’s statistics.",
+      "description": "CalculateIssueModelStats gets an issue model's statistics.",
       "file": "Client/CalculateIssueModelStats/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.CalculateIssueModelStatsResponse",
+        "resultType": "*contactcenterinsightspb.CalculateIssueModelStatsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -126,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.CalculateStatsResponse",
+        "resultType": "*contactcenterinsightspb.CalculateStatsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -178,10 +224,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "ContactCenterInsights",
-            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -189,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -263,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.Conversation",
+        "resultType": "*contactcenterinsightspb.Conversation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -355,7 +401,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.PhraseMatcher",
+        "resultType": "*contactcenterinsightspb.PhraseMatcher",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -401,7 +447,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.View",
+        "resultType": "*contactcenterinsightspb.View",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -810,7 +856,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.Analysis",
+        "resultType": "*contactcenterinsightspb.Analysis",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -856,7 +902,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.Conversation",
+        "resultType": "*contactcenterinsightspb.Conversation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -902,7 +948,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.Issue",
+        "resultType": "*contactcenterinsightspb.Issue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -948,7 +994,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.IssueModel",
+        "resultType": "*contactcenterinsightspb.IssueModel",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -994,17 +1040,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "ContactCenterInsights",
-            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1012,7 +1058,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1040,7 +1086,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.PhraseMatcher",
+        "resultType": "*contactcenterinsightspb.PhraseMatcher",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -1086,7 +1132,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.Settings",
+        "resultType": "*contactcenterinsightspb.Settings",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -1132,7 +1178,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.View",
+        "resultType": "*contactcenterinsightspb.View",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -1158,7 +1204,7 @@
     {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_IngestConversations_sync",
       "title": "contactcenterinsights IngestConversations Sample",
-      "description": "IngestConversations imports conversations and processes them according to the user’s\nconfiguration.",
+      "description": "IngestConversations imports conversations and processes them according to the user's\nconfiguration.",
       "file": "Client/IngestConversations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1316,7 +1362,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.ListIssueModelsResponse",
+        "resultType": "*contactcenterinsightspb.ListIssueModelsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -1362,7 +1408,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.ListIssuesResponse",
+        "resultType": "*contactcenterinsightspb.ListIssuesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -1415,10 +1461,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "ContactCenterInsights",
-            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1426,7 +1472,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1592,7 +1638,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.Conversation",
+        "resultType": "*contactcenterinsightspb.Conversation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -1638,7 +1684,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.Issue",
+        "resultType": "*contactcenterinsightspb.Issue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -1684,7 +1730,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.IssueModel",
+        "resultType": "*contactcenterinsightspb.IssueModel",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -1730,7 +1776,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.PhraseMatcher",
+        "resultType": "*contactcenterinsightspb.PhraseMatcher",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -1776,7 +1822,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.Settings",
+        "resultType": "*contactcenterinsightspb.Settings",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -1822,7 +1868,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "contactcenterinsightspb.View",
+        "resultType": "*contactcenterinsightspb.View",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.contactcenterinsights.v1.Client"
@@ -1841,6 +1887,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_UploadConversation_sync",
+      "title": "contactcenterinsights UploadConversation Sample",
+      "description": "UploadConversation create a longrunning conversation upload operation. This method differs\nfrom CreateConversation by allowing audio transcription and optional DLP\nredaction.",
+      "file": "Client/UploadConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UploadConversation",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.UploadConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.UploadConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UploadConversationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "UploadConversation",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.UploadConversation",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

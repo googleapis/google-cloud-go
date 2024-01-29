@@ -16,7 +16,6 @@ package pubsub
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
@@ -29,41 +28,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-func TestClient_CustomRetry(t *testing.T) {
-	ctx := context.Background()
-	pco := &vkit.PublisherCallOptions{
-		Publish: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable, codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    200 * time.Millisecond,
-					Max:        30000 * time.Millisecond,
-					Multiplier: 1.25,
-				})
-			}),
-		},
-	}
-	sco := &vkit.SubscriberCallOptions{}
-	c, err := NewClientWithConfig(ctx, "some-project", &ClientConfig{PublisherCallOptions: pco, SubscriberCallOptions: sco})
-	if err != nil {
-		t.Fatalf("failed to create client with config: %v", err)
-	}
-
-	cs := &gax.CallSettings{}
-	// This is the default retry setting.
-	c.pubc.CallOptions.Publish[0].Resolve(cs)
-	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{100000000 60000000000 1.3 0} [10 1 13 8 2 14 4]}"; got != want {
-		t.Fatalf("got: %v, want: %v", got, want)
-	}
-
-	// This is the custom retry setting.
-	c.pubc.CallOptions.Publish[1].Resolve(cs)
-	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{200000000 30000000000 1.25 0} [14 4]}"; got != want {
-		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
-	}
-}
 
 func TestClient_ApplyClientConfig(t *testing.T) {
 	ctx := context.Background()
@@ -115,5 +79,13 @@ func TestClient_ApplyClientConfig(t *testing.T) {
 		if id != "1" {
 			t.Fatalf("got wrong message id from server, got %s, want 1", id)
 		}
+	}
+}
+
+func TestClient_EmptyProjectID(t *testing.T) {
+	ctx := context.Background()
+	_, err := NewClient(ctx, "")
+	if err != ErrEmptyProjectID {
+		t.Fatalf("passing empty project ID got %v, want%v", err, ErrEmptyProjectID)
 	}
 }

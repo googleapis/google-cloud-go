@@ -15,16 +15,18 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -63,7 +65,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true},
+		Autoclass:  &Autoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -167,7 +169,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
 		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &raw.BucketAutoclass{Enabled: true},
+		Autoclass:  &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
 				Action: &raw.BucketLifecycleRuleAction{
@@ -396,7 +398,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass: "NEARLINE",
-		Autoclass:    &Autoclass{Enabled: false},
+		Autoclass:    &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -440,8 +442,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:         &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:         &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass:    "NEARLINE",
-		Autoclass:       &raw.BucketAutoclass{Enabled: false, ForceSendFields: []string{"Enabled"}},
-		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle"},
+		Autoclass:       &raw.BucketAutoclass{Enabled: true, TerminalStorageClass: "ARCHIVE", ForceSendFields: []string{"Enabled"}},
+		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle", "Autoclass"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -619,6 +621,9 @@ func TestNewBucket(t *testing.T) {
 			RetentionPeriod: 3,
 			EffectiveTime:   aTime.Format(time.RFC3339),
 		},
+		ObjectRetention: &raw.BucketObjectRetention{
+			Mode: "Enabled",
+		},
 		IamConfiguration: &raw.BucketIamConfiguration{
 			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
 				Enabled:    true,
@@ -646,8 +651,10 @@ func TestNewBucket(t *testing.T) {
 		Website:       &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		ProjectNumber: 123231313,
 		Autoclass: &raw.BucketAutoclass{
-			Enabled:    true,
-			ToggleTime: "2017-10-23T04:05:06Z",
+			Enabled:                        true,
+			ToggleTime:                     "2017-10-23T04:05:06Z",
+			TerminalStorageClass:           "NEARLINE",
+			TerminalStorageClassUpdateTime: "2017-10-23T04:05:06Z",
 		},
 	}
 	want := &BucketAttrs{
@@ -682,6 +689,7 @@ func TestNewBucket(t *testing.T) {
 			EffectiveTime:   aTime,
 			RetentionPeriod: 3 * time.Second,
 		},
+		ObjectRetentionMode:      "Enabled",
 		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true, LockedTime: aTime},
 		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true, LockedTime: aTime},
 		CORS: []CORS{
@@ -700,20 +708,23 @@ func TestNewBucket(t *testing.T) {
 		LocationType:     "dual-region",
 		ProjectNumber:    123231313,
 		Autoclass: &Autoclass{
-			Enabled:    true,
-			ToggleTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+			Enabled:                        true,
+			ToggleTime:                     time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+			TerminalStorageClass:           "NEARLINE",
+			TerminalStorageClassUpdateTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
 		},
 	}
 	got, err := newBucket(rb)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
 
 func TestNewBucketFromProto(t *testing.T) {
+	autoclassTSC := "NEARLINE"
 	pb := &storagepb.Bucket{
 		Name: "name",
 		Acl: []*storagepb.BucketAccessControl{
@@ -751,7 +762,12 @@ func TestNewBucketFromProto(t *testing.T) {
 		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
 		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
 		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true, ToggleTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))},
+		Autoclass: &storagepb.Bucket_Autoclass{
+			Enabled:                        true,
+			ToggleTime:                     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			TerminalStorageClass:           &autoclassTSC,
+			TerminalStorageClassUpdateTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
@@ -792,7 +808,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), TerminalStorageClass: "NEARLINE", TerminalStorageClassUpdateTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -805,7 +821,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		},
 	}
 	got := newBucketFromProto(pb)
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
@@ -840,7 +856,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &Autoclass{Enabled: true},
+		Autoclass:  &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -856,6 +872,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		Etag:           "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
 	}
 	got := attrs.toProtoBucket()
+	autoclassTSC := "ARCHIVE"
 	want := &storagepb.Bucket{
 		Name: "name",
 		Acl: []*storagepb.BucketAccessControl{
@@ -889,7 +906,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
 		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
 		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
-		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true},
+		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true, TerminalStorageClass: &autoclassTSC},
 		Lifecycle: &storagepb.Bucket_Lifecycle{
 			Rule: []*storagepb.Bucket_Lifecycle_Rule{
 				{
@@ -1054,6 +1071,7 @@ func TestBucketRetryer(t *testing.T) {
 						Multiplier: 3,
 					}),
 					WithPolicy(RetryAlways),
+					WithMaxAttempts(5),
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
@@ -1063,6 +1081,7 @@ func TestBucketRetryer(t *testing.T) {
 					Multiplier: 3,
 				},
 				policy:      RetryAlways,
+				maxAttempts: expectedAttempts(5),
 				shouldRetry: func(err error) bool { return false },
 			},
 		},
@@ -1086,6 +1105,15 @@ func TestBucketRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy: RetryNever,
+			},
+		},
+		{
+			name: "set max retry attempts only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(WithMaxAttempts(5))
+			},
+			want: &retryConfig{
+				maxAttempts: expectedAttempts(5),
 			},
 		},
 		{
@@ -1206,6 +1234,323 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 				}
 			} else if err == nil {
 				t.Error("expected error but detectDefaultGoogleAccessID did not return one")
+			}
+		})
+	}
+}
+
+// TestBucketSignedURL_Endpoint_Emulator_Host tests that Bucket.SignedURl
+// respects the host set in STORAGE_EMULATOR_HOST and/or in option.WithEndpoint
+// TODO: move this testing to conformance tests.
+func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
+	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
+	bucketName := "bucket-name"
+	objectName := "obj-name"
+
+	localhost9000 := "localhost:9000"
+	localhost6000Https := "https://localhost:6000"
+
+	tests := []struct {
+		desc         string
+		emulatorHost string
+		endpoint     *string
+		now          time.Time
+		opts         *SignedURLOptions
+		// Note for future implementors: X-Goog-Signature generated by having
+		// the client run through its algorithm with pre-defined input and copy
+		// pasting the output. These tests are not great for testing whether
+		// the right signature is calculated - instead we rely on the backend
+		// and integration tests for that.
+		want string
+	}{
+		{
+			desc:         "SignURLV4 creates link to resources in emulator",
+			emulatorHost: localhost9000,
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV4,
+				Insecure:       true,
+			},
+			want: "http://localhost:9000/" + bucketName + "/" + objectName +
+				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
+				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
+				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
+				"&X-Goog-Signature=2ff5ff0e5f336c4f2e4a44b93673ea22c6f94153da070206077328ce9f33b51d668549454668e6a784fe99110e506d504d7199015e34b22f8faa3e5eee294a71d8729e55debe7d24fbc336193e217373124ec69db19d447c8b649b6ca0734a76cebe33e9ccacbe462cdf2dacb30809846a81f1f48c654eed45ddd26eb787947760d82fb5098d34e3aaa6d4a0b0b8b444a12436d1456b96bcd8a2acc5b74a948a42216a1f842802a0d41391fe9acc97744eb1a848f596d3284f95a56f134cd6b78387efbd514ae7d2b98e62241cf6466e7493822184e0bd192dee62dad2d1449bc9c8fed2e84ddfa26996a0c5a9238cf675bb4ffec05cdcec07cc57d272357fd2" +
+				"&X-Goog-SignedHeaders=host",
+		},
+		{
+			desc:     "SignURLV4 - endpoint",
+			endpoint: &localhost9000,
+			now:      expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV4,
+				Insecure:       true,
+			},
+			want: "http://localhost:9000/" + bucketName + "/" + objectName +
+				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
+				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
+				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
+				"&X-Goog-Signature=2ff5ff0e5f336c4f2e4a44b93673ea22c6f94153da070206077328ce9f33b51d668549454668e6a784fe99110e506d504d7199015e34b22f8faa3e5eee294a71d8729e55debe7d24fbc336193e217373124ec69db19d447c8b649b6ca0734a76cebe33e9ccacbe462cdf2dacb30809846a81f1f48c654eed45ddd26eb787947760d82fb5098d34e3aaa6d4a0b0b8b444a12436d1456b96bcd8a2acc5b74a948a42216a1f842802a0d41391fe9acc97744eb1a848f596d3284f95a56f134cd6b78387efbd514ae7d2b98e62241cf6466e7493822184e0bd192dee62dad2d1449bc9c8fed2e84ddfa26996a0c5a9238cf675bb4ffec05cdcec07cc57d272357fd2" +
+				"&X-Goog-SignedHeaders=host",
+		},
+		{
+			desc:         "SignURLV4 - endpoint takes precedence over emulator",
+			endpoint:     &localhost9000,
+			emulatorHost: "localhost:8000",
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV4,
+				Insecure:       true,
+			},
+			want: "http://localhost:9000/" + bucketName + "/" + objectName +
+				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
+				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
+				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
+				"&X-Goog-Signature=2ff5ff0e5f336c4f2e4a44b93673ea22c6f94153da070206077328ce9f33b51d668549454668e6a784fe99110e506d504d7199015e34b22f8faa3e5eee294a71d8729e55debe7d24fbc336193e217373124ec69db19d447c8b649b6ca0734a76cebe33e9ccacbe462cdf2dacb30809846a81f1f48c654eed45ddd26eb787947760d82fb5098d34e3aaa6d4a0b0b8b444a12436d1456b96bcd8a2acc5b74a948a42216a1f842802a0d41391fe9acc97744eb1a848f596d3284f95a56f134cd6b78387efbd514ae7d2b98e62241cf6466e7493822184e0bd192dee62dad2d1449bc9c8fed2e84ddfa26996a0c5a9238cf675bb4ffec05cdcec07cc57d272357fd2" +
+				"&X-Goog-SignedHeaders=host",
+		},
+		{
+			desc:         "SigningSchemeV2 - emulator",
+			emulatorHost: "localhost:8000",
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV2,
+			},
+			want: "https://localhost:8000/" + bucketName + "/" + objectName +
+				"?Expires=1033570800" +
+				"&GoogleAccessId=xxx%40clientid" +
+				"&Signature=oRi3y2tBTmoDto7FezNx4AjC0RXA6fpJjTBa0hINeVroZ%2ByOeRU8MRwJbKg1IkBbV0IjtlPaGwv5YoUH16UYdipBjCXOS%2B1qgRWyzl8AnzvU%2BfwSXSlCk9zPtHHoBkFT7G4cZQOdDTLRrSG%2FmRJ3K09KEHYg%2Fc6R5Dd92inD1tLE2tiFMyHFs5uQHRMsepY4wrWiIQ4u53tPvk%2Fwiq1%2B9yL6x3QGblhdWwjX0BTVBOxexyKTlwczJW0XlWX8wpcTFfzQnJZuujbhanf2g9MGzSmkv3ylyuQdHMJDYp4Bzq%2FmnkNUg0Vp6iEvh9tyVdRNkwXeg3D8qn%2BFSOxcF%2B9vJw%3D%3D",
+		},
+		{
+			desc:         "SigningSchemeV2 - endpoint",
+			emulatorHost: "localhost:8000",
+			endpoint:     &localhost9000,
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV2,
+			},
+			want: "https://localhost:9000/" + bucketName + "/" + objectName +
+				"?Expires=1033570800" +
+				"&GoogleAccessId=xxx%40clientid" +
+				"&Signature=oRi3y2tBTmoDto7FezNx4AjC0RXA6fpJjTBa0hINeVroZ%2ByOeRU8MRwJbKg1IkBbV0IjtlPaGwv5YoUH16UYdipBjCXOS%2B1qgRWyzl8AnzvU%2BfwSXSlCk9zPtHHoBkFT7G4cZQOdDTLRrSG%2FmRJ3K09KEHYg%2Fc6R5Dd92inD1tLE2tiFMyHFs5uQHRMsepY4wrWiIQ4u53tPvk%2Fwiq1%2B9yL6x3QGblhdWwjX0BTVBOxexyKTlwczJW0XlWX8wpcTFfzQnJZuujbhanf2g9MGzSmkv3ylyuQdHMJDYp4Bzq%2FmnkNUg0Vp6iEvh9tyVdRNkwXeg3D8qn%2BFSOxcF%2B9vJw%3D%3D",
+		},
+		{
+			desc:         "VirtualHostedStyle - emulator",
+			emulatorHost: "localhost:8000",
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV4,
+				Style:          VirtualHostedStyle(),
+				Insecure:       true,
+			},
+			want: "http://" + bucketName + ".localhost:8000/" + objectName +
+				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
+				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
+				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
+				"&X-Goog-Signature=9163ad1bfb8ca4c70aff3bc6ee5b2895d8fc6946f28ade641824c40efed922ec1f42c100ab98192f6db955620bf35f660fa6da0974a35d5599d56583f4dd8f9f8441b8dd70ebb3557a742db5d619e9c950b8b397da76317aeee4409c25dd8ac1af0454d331d49b6c3fc4b6118ddcf570154f3455d616c737e0b5891de7758dea438f734e1124e78ebc7bad657d68f9003f282e14f8c5dceb97f441efad70ff2f76eab89537b05bdf0fbb50d87c34e7583028979b87793d9bc1902f44d6e4b4c4564bc457b430584881b8ee4e8995fcca4e6050c4c28609c5d0026a3a4b2fc0121dcb11833c872e5bf9f154f8be582a65ad6f52b5bd2cf052f23fadd293f8362e" +
+				"&X-Goog-SignedHeaders=host",
+		},
+		{
+			desc:         "VirtualHostedStyle - endpoint does not have effect",
+			emulatorHost: "localhost:9000",
+			endpoint:     &localhost6000Https,
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV4,
+				Style:          VirtualHostedStyle(),
+				Insecure:       true,
+			},
+			want: "http://" + bucketName + ".localhost:9000/" + objectName +
+				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
+				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
+				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
+				"&X-Goog-Signature=59577491e93738f05f2442166c787fdf6f5ad70619cd87d7ac2590b78f31c01cd3cef1948fd9150de756a834de0e7cf843d82b36f744fe8cf3c095fbb35205f8db17ddaa72925a7aae9179ebf811519ab04a9e778cc1a388fa961869f01f0ab6b70e8c4e39730752f8874d29809db15209a062df90c42b536237d371f1397916008a97db70c9cd011965f843e8ddbaf2d20aed4a213e71938aeb5c88411bdf40444ae6b07f34ee2fa91825c32f136a7e7411d33dda3d34260d61694a50f5a13d1187490d1a9301aaef745ec78db7620beb4501fd76bf54d989d227ca29d01e76c50fbb3cf796e1987c18c732a14f1c4c36fa630514f6edf029546a129136d28c" +
+				"&X-Goog-SignedHeaders=host",
+		},
+		{
+			desc:         "BucketBoundHostname - emulator",
+			emulatorHost: "localhost:8000",
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV4,
+				Style:          BucketBoundHostname("myhost"),
+			},
+			want: "https://" + "myhost/" + objectName +
+				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
+				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
+				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
+				"&X-Goog-Signature=15fe19f6c61bcbdbd6473c32f2bec29caa8a5fa3b2ce32cfb5329a71edaa0d4e5ffe6469f32ed4c23ca2fbed3882fdf1ed107c6a98c2c4995dda6036c64bae51e6cb542c353618f483832aa1f3ef85342ddadd69c13ad4c69fd3f573ea5cf325a58056e3d5a37005217662af63b49fef8688de3c5c7a2f7b43651a030edd0813eb7f7713989a4c29a8add65133ce652895fea9de7dbc6248ee11b4d7c6c1e152df87700100e896e544ba8eeea96584078f56e699665140b750e90550b9b79633f4e7c8409efa807be5670d6e987eeee04a4180be9b9e30bb8557597beaf390a3805cc602c87a3e34800f8bc01449c3dd10ac2f2263e55e55b91e445052548d5e" +
+				"&X-Goog-SignedHeaders=host",
+		},
+		{
+			desc:     "BucketBoundHostname - endpoint",
+			endpoint: &localhost9000,
+			now:      expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV4,
+				Style:          BucketBoundHostname("myhost"),
+			},
+			want: "https://" + "myhost/" + objectName +
+				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
+				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
+				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
+				"&X-Goog-Signature=15fe19f6c61bcbdbd6473c32f2bec29caa8a5fa3b2ce32cfb5329a71edaa0d4e5ffe6469f32ed4c23ca2fbed3882fdf1ed107c6a98c2c4995dda6036c64bae51e6cb542c353618f483832aa1f3ef85342ddadd69c13ad4c69fd3f573ea5cf325a58056e3d5a37005217662af63b49fef8688de3c5c7a2f7b43651a030edd0813eb7f7713989a4c29a8add65133ce652895fea9de7dbc6248ee11b4d7c6c1e152df87700100e896e544ba8eeea96584078f56e699665140b750e90550b9b79633f4e7c8409efa807be5670d6e987eeee04a4180be9b9e30bb8557597beaf390a3805cc602c87a3e34800f8bc01449c3dd10ac2f2263e55e55b91e445052548d5e" +
+				"&X-Goog-SignedHeaders=host",
+		},
+		{
+			desc:         "emulator host specifies scheme",
+			emulatorHost: "https://localhost:6000",
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV4,
+				Insecure:       true,
+			},
+			want: "http://localhost:6000/" + bucketName + "/" + objectName +
+				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
+				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
+				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
+				"&X-Goog-Signature=1bdbbc7e8db59e51ae2e6593fb326d9b1aa49a0905c6b94ee5bcb3be9e329656c07564a14e209275c95065f752695bd394d09afadb6874c0c0121799482f6f496593a87cdce48afd3c125b18054730273727075845e0b7d64e90503ffb20e6b02d2609bb596b081ce994ab4aafa35ee0a53350a994329e73a0125bb0edc955792f942ea8a9df5f5e87adcda4be5005dfb0d44915dee708815ac1d023c760379a22bc3d43983a672cf06c664b81bf1b724525bc1d0b2a89649c5ca396abf817ff5543f113933eb9f009fc655508656bf0d4017b2f5412028d144ef782c7b64162471c3a518053bf488ad382db3b3806316d903fa94d8b247b910aea4aa109cc55" +
+				"&X-Goog-SignedHeaders=host",
+		},
+		{
+			desc:     "endpoint specifies scheme",
+			endpoint: &localhost6000Https,
+			now:      expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV4,
+				Insecure:       true,
+			},
+			want: "http://localhost:6000/" + bucketName + "/" + objectName +
+				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
+				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
+				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
+				"&X-Goog-Signature=1bdbbc7e8db59e51ae2e6593fb326d9b1aa49a0905c6b94ee5bcb3be9e329656c07564a14e209275c95065f752695bd394d09afadb6874c0c0121799482f6f496593a87cdce48afd3c125b18054730273727075845e0b7d64e90503ffb20e6b02d2609bb596b081ce994ab4aafa35ee0a53350a994329e73a0125bb0edc955792f942ea8a9df5f5e87adcda4be5005dfb0d44915dee708815ac1d023c760379a22bc3d43983a672cf06c664b81bf1b724525bc1d0b2a89649c5ca396abf817ff5543f113933eb9f009fc655508656bf0d4017b2f5412028d144ef782c7b64162471c3a518053bf488ad382db3b3806316d903fa94d8b247b910aea4aa109cc55" +
+				"&X-Goog-SignedHeaders=host",
+		},
+		{
+			desc:         "emulator host specifies scheme using SigningSchemeV2",
+			emulatorHost: "https://localhost:8000",
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV2,
+			},
+			want: "https://localhost:8000/" + bucketName + "/" + objectName +
+				"?Expires=1033570800" +
+				"&GoogleAccessId=xxx%40clientid" +
+				"&Signature=oRi3y2tBTmoDto7FezNx4AjC0RXA6fpJjTBa0hINeVroZ%2ByOeRU8MRwJbKg1IkBbV0IjtlPaGwv5YoUH16UYdipBjCXOS%2B1qgRWyzl8AnzvU%2BfwSXSlCk9zPtHHoBkFT7G4cZQOdDTLRrSG%2FmRJ3K09KEHYg%2Fc6R5Dd92inD1tLE2tiFMyHFs5uQHRMsepY4wrWiIQ4u53tPvk%2Fwiq1%2B9yL6x3QGblhdWwjX0BTVBOxexyKTlwczJW0XlWX8wpcTFfzQnJZuujbhanf2g9MGzSmkv3ylyuQdHMJDYp4Bzq%2FmnkNUg0Vp6iEvh9tyVdRNkwXeg3D8qn%2BFSOxcF%2B9vJw%3D%3D",
+		},
+		{
+			desc:     "endpoint specifies scheme using SigningSchemeV2",
+			endpoint: &localhost6000Https,
+			now:      expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV2,
+			},
+			want: "https://localhost:6000/" + bucketName + "/" + objectName +
+				"?Expires=1033570800" +
+				"&GoogleAccessId=xxx%40clientid" +
+				"&Signature=oRi3y2tBTmoDto7FezNx4AjC0RXA6fpJjTBa0hINeVroZ%2ByOeRU8MRwJbKg1IkBbV0IjtlPaGwv5YoUH16UYdipBjCXOS%2B1qgRWyzl8AnzvU%2BfwSXSlCk9zPtHHoBkFT7G4cZQOdDTLRrSG%2FmRJ3K09KEHYg%2Fc6R5Dd92inD1tLE2tiFMyHFs5uQHRMsepY4wrWiIQ4u53tPvk%2Fwiq1%2B9yL6x3QGblhdWwjX0BTVBOxexyKTlwczJW0XlWX8wpcTFfzQnJZuujbhanf2g9MGzSmkv3ylyuQdHMJDYp4Bzq%2FmnkNUg0Vp6iEvh9tyVdRNkwXeg3D8qn%2BFSOxcF%2B9vJw%3D%3D",
+		},
+		{
+			desc:         "hostname in opts overrides all else",
+			endpoint:     &localhost9000,
+			emulatorHost: "https://localhost:8000",
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV2,
+				Hostname:       "localhost:6000",
+			},
+			want: "https://localhost:6000/" + bucketName + "/" + objectName +
+				"?Expires=1033570800" +
+				"&GoogleAccessId=xxx%40clientid" +
+				"&Signature=oRi3y2tBTmoDto7FezNx4AjC0RXA6fpJjTBa0hINeVroZ%2ByOeRU8MRwJbKg1IkBbV0IjtlPaGwv5YoUH16UYdipBjCXOS%2B1qgRWyzl8AnzvU%2BfwSXSlCk9zPtHHoBkFT7G4cZQOdDTLRrSG%2FmRJ3K09KEHYg%2Fc6R5Dd92inD1tLE2tiFMyHFs5uQHRMsepY4wrWiIQ4u53tPvk%2Fwiq1%2B9yL6x3QGblhdWwjX0BTVBOxexyKTlwczJW0XlWX8wpcTFfzQnJZuujbhanf2g9MGzSmkv3ylyuQdHMJDYp4Bzq%2FmnkNUg0Vp6iEvh9tyVdRNkwXeg3D8qn%2BFSOxcF%2B9vJw%3D%3D",
+		},
+	}
+	oldUTCNow := utcNow
+	defer func() {
+		utcNow = oldUTCNow
+	}()
+
+	for _, test := range tests {
+		t.Run(test.desc, func(s *testing.T) {
+			utcNow = func() time.Time {
+				return test.now
+			}
+
+			t.Setenv("STORAGE_EMULATOR_HOST", test.emulatorHost)
+
+			var opts []option.ClientOption
+			if test.endpoint != nil {
+				opts = append(opts, option.WithEndpoint(*test.endpoint))
+			}
+			c, err := NewClient(context.Background(), opts...)
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+
+			got, err := c.Bucket(bucketName).SignedURL(objectName, test.opts)
+			if err != nil {
+				s.Fatal(err)
+			}
+
+			if got != test.want {
+				s.Fatalf("bucket.SidnedURL:\n\tgot:\t%v\n\twant:\t%v", got, test.want)
 			}
 		})
 	}

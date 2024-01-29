@@ -15,14 +15,39 @@
                 "AbandonRelease"
               ]
             },
+            "AdvanceRollout": {
+              "methods": [
+                "AdvanceRollout"
+              ]
+            },
             "ApproveRollout": {
               "methods": [
                 "ApproveRollout"
               ]
             },
+            "CancelAutomationRun": {
+              "methods": [
+                "CancelAutomationRun"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CancelRollout": {
+              "methods": [
+                "CancelRollout"
+              ]
+            },
+            "CreateAutomation": {
+              "methods": [
+                "CreateAutomation"
+              ]
+            },
+            "CreateCustomTargetType": {
+              "methods": [
+                "CreateCustomTargetType"
               ]
             },
             "CreateDeliveryPipeline": {
@@ -45,6 +70,16 @@
                 "CreateTarget"
               ]
             },
+            "DeleteAutomation": {
+              "methods": [
+                "DeleteAutomation"
+              ]
+            },
+            "DeleteCustomTargetType": {
+              "methods": [
+                "DeleteCustomTargetType"
+              ]
+            },
             "DeleteDeliveryPipeline": {
               "methods": [
                 "DeleteDeliveryPipeline"
@@ -60,9 +95,24 @@
                 "DeleteTarget"
               ]
             },
+            "GetAutomation": {
+              "methods": [
+                "GetAutomation"
+              ]
+            },
+            "GetAutomationRun": {
+              "methods": [
+                "GetAutomationRun"
+              ]
+            },
             "GetConfig": {
               "methods": [
                 "GetConfig"
+              ]
+            },
+            "GetCustomTargetType": {
+              "methods": [
+                "GetCustomTargetType"
               ]
             },
             "GetDeliveryPipeline": {
@@ -105,6 +155,26 @@
                 "GetTarget"
               ]
             },
+            "IgnoreJob": {
+              "methods": [
+                "IgnoreJob"
+              ]
+            },
+            "ListAutomationRuns": {
+              "methods": [
+                "ListAutomationRuns"
+              ]
+            },
+            "ListAutomations": {
+              "methods": [
+                "ListAutomations"
+              ]
+            },
+            "ListCustomTargetTypes": {
+              "methods": [
+                "ListCustomTargetTypes"
+              ]
+            },
             "ListDeliveryPipelines": {
               "methods": [
                 "ListDeliveryPipelines"
@@ -145,14 +215,34 @@
                 "RetryJob"
               ]
             },
+            "RollbackTarget": {
+              "methods": [
+                "RollbackTarget"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
               ]
             },
+            "TerminateJobRun": {
+              "methods": [
+                "TerminateJobRun"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateAutomation": {
+              "methods": [
+                "UpdateAutomation"
+              ]
+            },
+            "UpdateCustomTargetType": {
+              "methods": [
+                "UpdateCustomTargetType"
               ]
             },
             "UpdateDeliveryPipeline": {
@@ -175,14 +265,39 @@
                 "AbandonRelease"
               ]
             },
+            "AdvanceRollout": {
+              "methods": [
+                "AdvanceRollout"
+              ]
+            },
             "ApproveRollout": {
               "methods": [
                 "ApproveRollout"
               ]
             },
+            "CancelAutomationRun": {
+              "methods": [
+                "CancelAutomationRun"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CancelRollout": {
+              "methods": [
+                "CancelRollout"
+              ]
+            },
+            "CreateAutomation": {
+              "methods": [
+                "CreateAutomation"
+              ]
+            },
+            "CreateCustomTargetType": {
+              "methods": [
+                "CreateCustomTargetType"
               ]
             },
             "CreateDeliveryPipeline": {
@@ -205,6 +320,16 @@
                 "CreateTarget"
               ]
             },
+            "DeleteAutomation": {
+              "methods": [
+                "DeleteAutomation"
+              ]
+            },
+            "DeleteCustomTargetType": {
+              "methods": [
+                "DeleteCustomTargetType"
+              ]
+            },
             "DeleteDeliveryPipeline": {
               "methods": [
                 "DeleteDeliveryPipeline"
@@ -220,9 +345,24 @@
                 "DeleteTarget"
               ]
             },
+            "GetAutomation": {
+              "methods": [
+                "GetAutomation"
+              ]
+            },
+            "GetAutomationRun": {
+              "methods": [
+                "GetAutomationRun"
+              ]
+            },
             "GetConfig": {
               "methods": [
                 "GetConfig"
+              ]
+            },
+            "GetCustomTargetType": {
+              "methods": [
+                "GetCustomTargetType"
               ]
             },
             "GetDeliveryPipeline": {
@@ -265,6 +405,26 @@
                 "GetTarget"
               ]
             },
+            "IgnoreJob": {
+              "methods": [
+                "IgnoreJob"
+              ]
+            },
+            "ListAutomationRuns": {
+              "methods": [
+                "ListAutomationRuns"
+              ]
+            },
+            "ListAutomations": {
+              "methods": [
+                "ListAutomations"
+              ]
+            },
+            "ListCustomTargetTypes": {
+              "methods": [
+                "ListCustomTargetTypes"
+              ]
+            },
             "ListDeliveryPipelines": {
               "methods": [
                 "ListDeliveryPipelines"
@@ -305,14 +465,34 @@
                 "RetryJob"
               ]
             },
+            "RollbackTarget": {
+              "methods": [
+                "RollbackTarget"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
               ]
             },
+            "TerminateJobRun": {
+              "methods": [
+                "TerminateJobRun"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateAutomation": {
+              "methods": [
+                "UpdateAutomation"
+              ]
+            },
+            "UpdateCustomTargetType": {
+              "methods": [
+                "UpdateCustomTargetType"
               ]
             },
             "UpdateDeliveryPipeline": {

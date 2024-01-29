@@ -15,7 +15,7 @@
 package proxy
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -35,13 +35,13 @@ func TestLogger(t *testing.T) {
 			Path:   "a/b/c",
 		},
 		Header:  http.Header{"H1": {"v1", "v2"}, "Content-Type": {"text/plain"}},
-		Body:    ioutil.NopCloser(strings.NewReader("hello")),
+		Body:    io.NopCloser(strings.NewReader("hello")),
 		Trailer: http.Header{"T1": {"v3", "v4"}},
 	}
 	res := &http.Response{
 		Request:    req,
 		StatusCode: 204,
-		Body:       ioutil.NopCloser(strings.NewReader("goodbye")),
+		Body:       io.NopCloser(strings.NewReader("goodbye")),
 		Header:     http.Header{"H2": {"v5"}},
 		Trailer:    http.Header{"T2": {"v6", "v7"}},
 	}
@@ -159,7 +159,7 @@ func TestEmptyBody(t *testing.T) {
 			Host:   "example.com",
 			Path:   "a/b/c",
 		},
-		Body: ioutil.NopCloser(strings.NewReader("")),
+		Body: io.NopCloser(strings.NewReader("")),
 	}
 	l := newLogger()
 	_, remove, err := martian.TestContext(req, nil, nil)

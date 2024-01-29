@@ -31,8 +31,6 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/ptypes"
-	durpb "github.com/golang/protobuf/ptypes/duration"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/iterator"
@@ -40,8 +38,10 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/genproto/googleapis/rpc/status"
-	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/durationpb"
+	field_mask "google.golang.org/protobuf/types/known/fieldmaskpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const adminAddr = "bigtableadmin.googleapis.com:443"
@@ -113,7 +113,11 @@ func (ac *AdminClient) Close() error {
 }
 
 func (ac *AdminClient) instancePrefix() string {
-	return fmt.Sprintf("projects/%s/instances/%s", ac.project, ac.instance)
+	return instancePrefix(ac.project, ac.instance)
+}
+
+func instancePrefix(project, instance string) string {
+	return fmt.Sprintf("projects/%s/instances/%s", project, instance)
 }
 
 func (ac *AdminClient) backupPath(cluster, instance, backup string) string {
@@ -211,6 +215,11 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 	return names, nil
 }
 
+// ChangeStreamRetention indicates how long bigtable should retain change data.
+// Minimum is 1 day. Maximum is 7. nil to not change the retention period. 0 to
+// disable change stream retention.
+type ChangeStreamRetention optional.Duration
+
 // DeletionProtection indicates whether the table is protected against data loss
 // i.e. when set to protected, deleting the table, the column families in the table,
 // and the instance containing the table would be prohibited.
@@ -233,13 +242,14 @@ type TableConf struct {
 	Families map[string]GCPolicy
 	// DeletionProtection can be none, protected or unprotected
 	// set to protected to make the table protected against data loss
-	DeletionProtection DeletionProtection
+	DeletionProtection    DeletionProtection
+	ChangeStreamRetention ChangeStreamRetention
 }
 
 // CreateTable creates a new table in the instance.
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, DeletionProtection: None})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, ChangeStreamRetention: nil, DeletionProtection: None})
 }
 
 // CreatePresplitTable creates a new table in the instance.
@@ -248,7 +258,7 @@ func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
 // spanning the key ranges: [, s1), [s1, s2), [s2, ).
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreatePresplitTable(ctx context.Context, table string, splitKeys []string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, DeletionProtection: None})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, ChangeStreamRetention: nil, DeletionProtection: None})
 }
 
 // CreateTableFromConf creates a new table in the instance from the given configuration.
@@ -268,6 +278,10 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 		tbl.DeletionProtection = true
 	} else if conf.DeletionProtection == Unprotected {
 		tbl.DeletionProtection = false
+	}
+	if conf.ChangeStreamRetention != nil && conf.ChangeStreamRetention.(time.Duration) != 0 {
+		tbl.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
+		tbl.ChangeStreamConfig.RetentionPeriod = durationpb.New(conf.ChangeStreamRetention.(time.Duration))
 	}
 	if conf.Families != nil {
 		tbl.ColumnFamilies = make(map[string]*btapb.ColumnFamily)
@@ -307,12 +321,23 @@ type UpdateTableConf struct {
 	tableID string
 	// deletionProtection can be unset, true or false
 	// set to true to make the table protected against data loss
-	deletionProtection DeletionProtection
+	deletionProtection    DeletionProtection
+	changeStreamRetention ChangeStreamRetention
+}
+
+// UpdateTableDisableChangeStream updates a table to disable change stream for table ID.
+func (ac *AdminClient) UpdateTableDisableChangeStream(ctx context.Context, tableID string) error {
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, None, time.Duration(0)})
+}
+
+// UpdateTableWithChangeStream updates a table to with the given table ID and change stream config.
+func (ac *AdminClient) UpdateTableWithChangeStream(ctx context.Context, tableID string, changeStreamRetention ChangeStreamRetention) error {
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, None, changeStreamRetention})
 }
 
 // UpdateTableWithDeletionProtection updates a table with the given table ID and deletion protection parameter.
 func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, tableID string, deletionProtection DeletionProtection) error {
-	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, deletionProtection})
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, deletionProtection, nil})
 }
 
 // updateTableWithConf updates a table in the instance from the given configuration.
@@ -323,30 +348,34 @@ func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTabl
 		return errors.New("TableID is required")
 	}
 
-	if conf.deletionProtection == None {
-		return errors.New("deletion protection is required")
-	}
-
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 
 	updateMask := &field_mask.FieldMask{
-		Paths: []string{
-			"deletion_protection",
-		},
-	}
-
-	deletionProtection := true
-	if conf.deletionProtection == Unprotected {
-		deletionProtection = false
+		Paths: []string{},
 	}
 	prefix := ac.instancePrefix()
 	req := &btapb.UpdateTableRequest{
 		Table: &btapb.Table{
-			Name:               prefix + "/tables/" + conf.tableID,
-			DeletionProtection: deletionProtection,
+			Name: prefix + "/tables/" + conf.tableID,
 		},
 		UpdateMask: updateMask,
 	}
+
+	if conf.deletionProtection != None {
+		updateMask.Paths = append(updateMask.Paths, "deletion_protection")
+		req.Table.DeletionProtection = conf.deletionProtection != Unprotected
+	}
+
+	if conf.changeStreamRetention != nil {
+		if conf.changeStreamRetention.(time.Duration) == time.Duration(0) {
+			updateMask.Paths = append(updateMask.Paths, "change_stream_config")
+		} else {
+			updateMask.Paths = append(updateMask.Paths, "change_stream_config.retention_period")
+			req.Table.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
+			req.Table.ChangeStreamConfig.RetentionPeriod = durationpb.New(conf.changeStreamRetention.(time.Duration))
+		}
+	}
+
 	lro, err := ac.tClient.UpdateTable(ctx, req)
 	if err != nil {
 		return fmt.Errorf("error from update: %w", err)
@@ -394,7 +423,8 @@ type TableInfo struct {
 	// DeletionProtection indicates whether the table is protected against data loss
 	// DeletionProtection could be None depending on the table view
 	// for example when using NAME_ONLY, the response does not contain DeletionProtection and the value should be None
-	DeletionProtection DeletionProtection
+	DeletionProtection    DeletionProtection
+	ChangeStreamRetention ChangeStreamRetention
 }
 
 // FamilyInfo represents information about a column family.
@@ -450,6 +480,10 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	} else {
 		ti.DeletionProtection = Unprotected
 	}
+	if res.ChangeStreamConfig != nil && res.ChangeStreamConfig.RetentionPeriod != nil {
+		ti.ChangeStreamRetention = res.ChangeStreamConfig.RetentionPeriod.AsDuration()
+	}
+
 	return ti, nil
 }
 
@@ -534,10 +568,10 @@ func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapsh
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
-	var ttlProto *durpb.Duration
+	var ttlProto *durationpb.Duration
 
 	if ttl > 0 {
-		ttlProto = ptypes.DurationProto(ttl)
+		ttlProto = durationpb.New(ttl)
 	}
 
 	req := &btapb.SnapshotTableRequest{
@@ -612,15 +646,15 @@ func newSnapshotInfo(snapshot *btapb.Snapshot) (*SnapshotInfo, error) {
 	tablePathParts := strings.Split(snapshot.SourceTable.Name, "/")
 	tableID := tablePathParts[len(tablePathParts)-1]
 
-	createTime, err := ptypes.Timestamp(snapshot.CreateTime)
-	if err != nil {
+	if err := snapshot.CreateTime.CheckValid(); err != nil {
 		return nil, fmt.Errorf("invalid createTime: %w", err)
 	}
+	createTime := snapshot.CreateTime.AsTime()
 
-	deleteTime, err := ptypes.Timestamp(snapshot.DeleteTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid deleteTime: %w", err)
+	if err := snapshot.DeleteTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid deleteTime: %v", err)
 	}
+	deleteTime := snapshot.DeleteTime.AsTime()
 
 	return &SnapshotInfo{
 		Name:        name,
@@ -1061,7 +1095,7 @@ func (iac *InstanceAdminClient) UpdateInstanceWithClusters(ctx context.Context, 
 				return fmt.Errorf("UpdateCluster %q failed %w; however UpdateInstance succeeded",
 					cluster.ClusterID, clusterErr)
 			}
-			return err
+			return clusterErr
 		}
 	}
 
@@ -1871,10 +1905,7 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
-	parsedExpireTime, err := ptypes.TimestampProto(expireTime)
-	if err != nil {
-		return err
-	}
+	parsedExpireTime := timestamppb.New(expireTime)
 
 	req := &btapb.CreateBackupRequest{
 		Parent:   prefix + "/clusters/" + cluster,
@@ -1886,6 +1917,27 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 	}
 
 	op, err := ac.tClient.CreateBackup(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Backup{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
+// CopyBackup copies the specified source backup with the user-provided expire time.
+func (ac *AdminClient) CopyBackup(ctx context.Context, sourceCluster, sourceBackup,
+	destProject, destInstance, destCluster, destBackup string, expireTime time.Time) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	sourceBackupPath := ac.backupPath(sourceCluster, ac.instance, sourceBackup)
+	destPrefix := instancePrefix(destProject, destInstance)
+	req := &btapb.CopyBackupRequest{
+		Parent:       destPrefix + "/clusters/" + destCluster,
+		BackupId:     destBackup,
+		SourceBackup: sourceBackupPath,
+		ExpireTime:   timestamppb.New(expireTime),
+	}
+
+	op, err := ac.tClient.CopyBackup(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -1946,24 +1998,25 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 	tablePathParts := strings.Split(backup.SourceTable, "/")
 	tableID := tablePathParts[len(tablePathParts)-1]
 
-	startTime, err := ptypes.Timestamp(backup.StartTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid startTime: %w", err)
+	if err := backup.StartTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid startTime: %v", err)
 	}
+	startTime := backup.StartTime.AsTime()
 
-	endTime, err := ptypes.Timestamp(backup.EndTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid endTime: %w", err)
+	if err := backup.EndTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid endTime: %v", err)
 	}
+	endTime := backup.EndTime.AsTime()
 
-	expireTime, err := ptypes.Timestamp(backup.ExpireTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid expireTime: %w", err)
+	if err := backup.ExpireTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid expireTime: %v", err)
 	}
+	expireTime := backup.ExpireTime.AsTime()
 	encryptionInfo := newEncryptionInfo(backup.EncryptionInfo)
 	bi := BackupInfo{
 		Name:           name,
 		SourceTable:    tableID,
+		SourceBackup:   backup.SourceBackup,
 		SizeBytes:      backup.SizeBytes,
 		StartTime:      startTime,
 		EndTime:        endTime,
@@ -2003,6 +2056,7 @@ func (it *BackupIterator) Next() (*BackupInfo, error) {
 type BackupInfo struct {
 	Name           string
 	SourceTable    string
+	SourceBackup   string
 	SizeBytes      int64
 	StartTime      time.Time
 	EndTime        time.Time
@@ -2050,10 +2104,7 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
-	expireTimestamp, err := ptypes.TimestampProto(expireTime)
-	if err != nil {
-		return err
-	}
+	expireTimestamp := timestamppb.New(expireTime)
 
 	updateMask := &field_mask.FieldMask{}
 	updateMask.Paths = append(updateMask.Paths, "expire_time")
@@ -2065,6 +2116,6 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 		},
 		UpdateMask: updateMask,
 	}
-	_, err = ac.tClient.UpdateBackup(ctx, req)
+	_, err := ac.tClient.UpdateBackup(ctx, req)
 	return err
 }

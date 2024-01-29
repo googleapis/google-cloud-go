@@ -1,5 +1,75 @@
 # Changelog
 
+## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.1...apigeeregistry/v0.8.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.0...apigeeregistry/v0.8.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.7.2...apigeeregistry/v0.8.0) (2023-10-17)
+
+
+### Features
+
+* **apigeeregistry:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [0.7.2](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.7.1...apigeeregistry/v0.7.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry-v0.7.0...apigeeregistry/v0.7.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.6.1...apigeeregistry/v0.7.0) (2023-05-30)
+
+
+### Features
+
+* **apigeeregistry:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.6.0...apigeeregistry/v0.6.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.5.0...apigeeregistry/v0.6.0) (2023-03-15)
+
+
+### Features
+
+* **apigeeregistry:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.4.0...apigeeregistry/v0.5.0) (2023-02-17)
+
+
+### Features
+
+* **apigeeregistry:** Migrate to new stubs ([a61ddcd](https://github.com/googleapis/google-cloud-go/commit/a61ddcd3041c7af4a15109dc4431f9b327c497fb))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.3.0...apigeeregistry/v0.4.0) (2023-02-16)
+
+
+### Features
+
+* **apigeeregistry:** Start generating proto stubs ([970d763](https://github.com/googleapis/google-cloud-go/commit/970d763531b54b2bc75d7ff26a20b6e05150cab8))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.2.1...apigeeregistry/v0.3.0) (2023-01-04)
 
 

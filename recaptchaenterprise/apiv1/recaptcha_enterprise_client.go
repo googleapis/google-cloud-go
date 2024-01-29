@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,14 +23,13 @@ import (
 	"net/url"
 	"time"
 
+	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -42,11 +41,17 @@ type CallOptions struct {
 	AnnotateAssessment                   []gax.CallOption
 	CreateKey                            []gax.CallOption
 	ListKeys                             []gax.CallOption
+	RetrieveLegacySecretKey              []gax.CallOption
 	GetKey                               []gax.CallOption
 	UpdateKey                            []gax.CallOption
 	DeleteKey                            []gax.CallOption
 	MigrateKey                           []gax.CallOption
 	GetMetrics                           []gax.CallOption
+	CreateFirewallPolicy                 []gax.CallOption
+	ListFirewallPolicies                 []gax.CallOption
+	GetFirewallPolicy                    []gax.CallOption
+	UpdateFirewallPolicy                 []gax.CallOption
+	DeleteFirewallPolicy                 []gax.CallOption
 	ListRelatedAccountGroups             []gax.CallOption
 	ListRelatedAccountGroupMemberships   []gax.CallOption
 	SearchRelatedAccountGroupMemberships []gax.CallOption
@@ -66,22 +71,42 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateAssessment:                     []gax.CallOption{},
-		AnnotateAssessment:                   []gax.CallOption{},
-		CreateKey:                            []gax.CallOption{},
-		ListKeys:                             []gax.CallOption{},
-		GetKey:                               []gax.CallOption{},
-		UpdateKey:                            []gax.CallOption{},
-		DeleteKey:                            []gax.CallOption{},
+		CreateAssessment: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		AnnotateAssessment: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CreateKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ListKeys: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		RetrieveLegacySecretKey: []gax.CallOption{},
+		GetKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		MigrateKey:                           []gax.CallOption{},
 		GetMetrics:                           []gax.CallOption{},
+		CreateFirewallPolicy:                 []gax.CallOption{},
+		ListFirewallPolicies:                 []gax.CallOption{},
+		GetFirewallPolicy:                    []gax.CallOption{},
+		UpdateFirewallPolicy:                 []gax.CallOption{},
+		DeleteFirewallPolicy:                 []gax.CallOption{},
 		ListRelatedAccountGroups:             []gax.CallOption{},
 		ListRelatedAccountGroupMemberships:   []gax.CallOption{},
 		SearchRelatedAccountGroupMemberships: []gax.CallOption{},
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from reCAPTCHA Enterprise API.
+// internalClient is an interface that defines the methods available from reCAPTCHA Enterprise API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -90,11 +115,17 @@ type internalClient interface {
 	AnnotateAssessment(context.Context, *recaptchaenterprisepb.AnnotateAssessmentRequest, ...gax.CallOption) (*recaptchaenterprisepb.AnnotateAssessmentResponse, error)
 	CreateKey(context.Context, *recaptchaenterprisepb.CreateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
 	ListKeys(context.Context, *recaptchaenterprisepb.ListKeysRequest, ...gax.CallOption) *KeyIterator
+	RetrieveLegacySecretKey(context.Context, *recaptchaenterprisepb.RetrieveLegacySecretKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.RetrieveLegacySecretKeyResponse, error)
 	GetKey(context.Context, *recaptchaenterprisepb.GetKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
 	UpdateKey(context.Context, *recaptchaenterprisepb.UpdateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
 	DeleteKey(context.Context, *recaptchaenterprisepb.DeleteKeyRequest, ...gax.CallOption) error
 	MigrateKey(context.Context, *recaptchaenterprisepb.MigrateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
 	GetMetrics(context.Context, *recaptchaenterprisepb.GetMetricsRequest, ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error)
+	CreateFirewallPolicy(context.Context, *recaptchaenterprisepb.CreateFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
+	ListFirewallPolicies(context.Context, *recaptchaenterprisepb.ListFirewallPoliciesRequest, ...gax.CallOption) *FirewallPolicyIterator
+	GetFirewallPolicy(context.Context, *recaptchaenterprisepb.GetFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
+	UpdateFirewallPolicy(context.Context, *recaptchaenterprisepb.UpdateFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
+	DeleteFirewallPolicy(context.Context, *recaptchaenterprisepb.DeleteFirewallPolicyRequest, ...gax.CallOption) error
 	ListRelatedAccountGroups(context.Context, *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, ...gax.CallOption) *RelatedAccountGroupIterator
 	ListRelatedAccountGroupMemberships(context.Context, *recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest, ...gax.CallOption) *RelatedAccountGroupMembershipIterator
 	SearchRelatedAccountGroupMemberships(context.Context, *recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest, ...gax.CallOption) *RelatedAccountGroupMembershipIterator
@@ -129,7 +160,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -155,6 +187,13 @@ func (c *Client) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKe
 	return c.internalClient.ListKeys(ctx, req, opts...)
 }
 
+// RetrieveLegacySecretKey returns the secret key related to the specified public key.
+// You must use the legacy secret key only in a 3rd party integration with
+// legacy reCAPTCHA.
+func (c *Client) RetrieveLegacySecretKey(ctx context.Context, req *recaptchaenterprisepb.RetrieveLegacySecretKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.RetrieveLegacySecretKeyResponse, error) {
+	return c.internalClient.RetrieveLegacySecretKey(ctx, req, opts...)
+}
+
 // GetKey returns the specified key.
 func (c *Client) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
 	return c.internalClient.GetKey(ctx, req, opts...)
@@ -173,7 +212,7 @@ func (c *Client) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.Delet
 // MigrateKey migrates an existing key from reCAPTCHA to reCAPTCHA Enterprise.
 // Once a key is migrated, it can be used from either product. SiteVerify
 // requests are billed as CreateAssessment calls. You must be
-// authenticated as one of the current owners of the reCAPTCHA Site Key, and
+// authenticated as one of the current owners of the reCAPTCHA Key, and
 // your user must have the reCAPTCHA Enterprise Admin IAM role in the
 // destination project.
 func (c *Client) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.MigrateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
@@ -186,12 +225,39 @@ func (c *Client) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.GetM
 	return c.internalClient.GetMetrics(ctx, req, opts...)
 }
 
+// CreateFirewallPolicy creates a new FirewallPolicy, specifying conditions at which reCAPTCHA
+// Enterprise actions can be executed.
+// A project may have a maximum of 1000 policies.
+func (c *Client) CreateFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.CreateFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	return c.internalClient.CreateFirewallPolicy(ctx, req, opts...)
+}
+
+// ListFirewallPolicies returns the list of all firewall policies that belong to a project.
+func (c *Client) ListFirewallPolicies(ctx context.Context, req *recaptchaenterprisepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
+	return c.internalClient.ListFirewallPolicies(ctx, req, opts...)
+}
+
+// GetFirewallPolicy returns the specified firewall policy.
+func (c *Client) GetFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.GetFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	return c.internalClient.GetFirewallPolicy(ctx, req, opts...)
+}
+
+// UpdateFirewallPolicy updates the specified firewall policy.
+func (c *Client) UpdateFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.UpdateFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	return c.internalClient.UpdateFirewallPolicy(ctx, req, opts...)
+}
+
+// DeleteFirewallPolicy deletes the specified firewall policy.
+func (c *Client) DeleteFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.DeleteFirewallPolicyRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteFirewallPolicy(ctx, req, opts...)
+}
+
 // ListRelatedAccountGroups list groups of related accounts.
 func (c *Client) ListRelatedAccountGroups(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, opts ...gax.CallOption) *RelatedAccountGroupIterator {
 	return c.internalClient.ListRelatedAccountGroups(ctx, req, opts...)
 }
 
-// ListRelatedAccountGroupMemberships get the memberships in a group of related accounts.
+// ListRelatedAccountGroupMemberships get memberships in a group of related accounts.
 func (c *Client) ListRelatedAccountGroupMemberships(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest, opts ...gax.CallOption) *RelatedAccountGroupMembershipIterator {
 	return c.internalClient.ListRelatedAccountGroupMemberships(ctx, req, opts...)
 }
@@ -208,9 +274,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -218,7 +281,7 @@ type gRPCClient struct {
 	client recaptchaenterprisepb.RecaptchaEnterpriseServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new recaptcha enterprise service client based on gRPC.
@@ -235,11 +298,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -247,10 +305,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           recaptchaenterprisepb.NewRecaptchaEnterpriseServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      recaptchaenterprisepb.NewRecaptchaEnterpriseServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -261,7 +318,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -270,9 +328,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -282,14 +340,10 @@ func (c *gRPCClient) Close() error {
 }
 
 func (c *gRPCClient) CreateAssessment(ctx context.Context, req *recaptchaenterprisepb.CreateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Assessment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateAssessment[0:len((*c.CallOptions).CreateAssessment):len((*c.CallOptions).CreateAssessment)], opts...)
 	var resp *recaptchaenterprisepb.Assessment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -304,14 +358,10 @@ func (c *gRPCClient) CreateAssessment(ctx context.Context, req *recaptchaenterpr
 }
 
 func (c *gRPCClient) AnnotateAssessment(ctx context.Context, req *recaptchaenterprisepb.AnnotateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AnnotateAssessmentResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AnnotateAssessment[0:len((*c.CallOptions).AnnotateAssessment):len((*c.CallOptions).AnnotateAssessment)], opts...)
 	var resp *recaptchaenterprisepb.AnnotateAssessmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -326,14 +376,10 @@ func (c *gRPCClient) AnnotateAssessment(ctx context.Context, req *recaptchaenter
 }
 
 func (c *gRPCClient) CreateKey(ctx context.Context, req *recaptchaenterprisepb.CreateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateKey[0:len((*c.CallOptions).CreateKey):len((*c.CallOptions).CreateKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -348,9 +394,10 @@ func (c *gRPCClient) CreateKey(ctx context.Context, req *recaptchaenterprisepb.C
 }
 
 func (c *gRPCClient) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKeysRequest, opts ...gax.CallOption) *KeyIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListKeys[0:len((*c.CallOptions).ListKeys):len((*c.CallOptions).ListKeys)], opts...)
 	it := &KeyIterator{}
 	req = proto.Clone(req).(*recaptchaenterprisepb.ListKeysRequest)
@@ -392,15 +439,29 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *recaptchaenterprisepb.Li
 	return it
 }
 
-func (c *gRPCClient) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *gRPCClient) RetrieveLegacySecretKey(ctx context.Context, req *recaptchaenterprisepb.RetrieveLegacySecretKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.RetrieveLegacySecretKeyResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "key", url.QueryEscape(req.GetKey()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RetrieveLegacySecretKey[0:len((*c.CallOptions).RetrieveLegacySecretKey):len((*c.CallOptions).RetrieveLegacySecretKey)], opts...)
+	var resp *recaptchaenterprisepb.RetrieveLegacySecretKeyResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RetrieveLegacySecretKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetKey[0:len((*c.CallOptions).GetKey):len((*c.CallOptions).GetKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -415,14 +476,10 @@ func (c *gRPCClient) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetK
 }
 
 func (c *gRPCClient) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.UpdateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "key.name", url.QueryEscape(req.GetKey().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "key.name", url.QueryEscape(req.GetKey().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateKey[0:len((*c.CallOptions).UpdateKey):len((*c.CallOptions).UpdateKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -437,14 +494,10 @@ func (c *gRPCClient) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.U
 }
 
 func (c *gRPCClient) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.DeleteKeyRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteKey[0:len((*c.CallOptions).DeleteKey):len((*c.CallOptions).DeleteKey)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -455,9 +508,10 @@ func (c *gRPCClient) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.D
 }
 
 func (c *gRPCClient) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.MigrateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).MigrateKey[0:len((*c.CallOptions).MigrateKey):len((*c.CallOptions).MigrateKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -472,9 +526,10 @@ func (c *gRPCClient) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.
 }
 
 func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.GetMetricsRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetMetrics[0:len((*c.CallOptions).GetMetrics):len((*c.CallOptions).GetMetrics)], opts...)
 	var resp *recaptchaenterprisepb.Metrics
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -488,10 +543,125 @@ func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.
 	return resp, nil
 }
 
-func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, opts ...gax.CallOption) *RelatedAccountGroupIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+func (c *gRPCClient) CreateFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.CreateFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateFirewallPolicy[0:len((*c.CallOptions).CreateFirewallPolicy):len((*c.CallOptions).CreateFirewallPolicy)], opts...)
+	var resp *recaptchaenterprisepb.FirewallPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateFirewallPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListFirewallPolicies(ctx context.Context, req *recaptchaenterprisepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListFirewallPolicies[0:len((*c.CallOptions).ListFirewallPolicies):len((*c.CallOptions).ListFirewallPolicies)], opts...)
+	it := &FirewallPolicyIterator{}
+	req = proto.Clone(req).(*recaptchaenterprisepb.ListFirewallPoliciesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.FirewallPolicy, string, error) {
+		resp := &recaptchaenterprisepb.ListFirewallPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListFirewallPolicies(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetFirewallPolicies(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.GetFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetFirewallPolicy[0:len((*c.CallOptions).GetFirewallPolicy):len((*c.CallOptions).GetFirewallPolicy)], opts...)
+	var resp *recaptchaenterprisepb.FirewallPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetFirewallPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.UpdateFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "firewall_policy.name", url.QueryEscape(req.GetFirewallPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateFirewallPolicy[0:len((*c.CallOptions).UpdateFirewallPolicy):len((*c.CallOptions).UpdateFirewallPolicy)], opts...)
+	var resp *recaptchaenterprisepb.FirewallPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateFirewallPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.DeleteFirewallPolicyRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteFirewallPolicy[0:len((*c.CallOptions).DeleteFirewallPolicy):len((*c.CallOptions).DeleteFirewallPolicy)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteFirewallPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, opts ...gax.CallOption) *RelatedAccountGroupIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListRelatedAccountGroups[0:len((*c.CallOptions).ListRelatedAccountGroups):len((*c.CallOptions).ListRelatedAccountGroups)], opts...)
 	it := &RelatedAccountGroupIterator{}
 	req = proto.Clone(req).(*recaptchaenterprisepb.ListRelatedAccountGroupsRequest)
@@ -534,9 +704,10 @@ func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptch
 }
 
 func (c *gRPCClient) ListRelatedAccountGroupMemberships(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest, opts ...gax.CallOption) *RelatedAccountGroupMembershipIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListRelatedAccountGroupMemberships[0:len((*c.CallOptions).ListRelatedAccountGroupMemberships):len((*c.CallOptions).ListRelatedAccountGroupMemberships)], opts...)
 	it := &RelatedAccountGroupMembershipIterator{}
 	req = proto.Clone(req).(*recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest)
@@ -579,9 +750,10 @@ func (c *gRPCClient) ListRelatedAccountGroupMemberships(ctx context.Context, req
 }
 
 func (c *gRPCClient) SearchRelatedAccountGroupMemberships(ctx context.Context, req *recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest, opts ...gax.CallOption) *RelatedAccountGroupMembershipIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SearchRelatedAccountGroupMemberships[0:len((*c.CallOptions).SearchRelatedAccountGroupMemberships):len((*c.CallOptions).SearchRelatedAccountGroupMemberships)], opts...)
 	it := &RelatedAccountGroupMembershipIterator{}
 	req = proto.Clone(req).(*recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest)
@@ -621,145 +793,4 @@ func (c *gRPCClient) SearchRelatedAccountGroupMemberships(ctx context.Context, r
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// KeyIterator manages a stream of *recaptchaenterprisepb.Key.
-type KeyIterator struct {
-	items    []*recaptchaenterprisepb.Key
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recaptchaenterprisepb.Key, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *KeyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *KeyIterator) Next() (*recaptchaenterprisepb.Key, error) {
-	var item *recaptchaenterprisepb.Key
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *KeyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *KeyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RelatedAccountGroupIterator manages a stream of *recaptchaenterprisepb.RelatedAccountGroup.
-type RelatedAccountGroupIterator struct {
-	items    []*recaptchaenterprisepb.RelatedAccountGroup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recaptchaenterprisepb.RelatedAccountGroup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RelatedAccountGroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RelatedAccountGroupIterator) Next() (*recaptchaenterprisepb.RelatedAccountGroup, error) {
-	var item *recaptchaenterprisepb.RelatedAccountGroup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RelatedAccountGroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RelatedAccountGroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RelatedAccountGroupMembershipIterator manages a stream of *recaptchaenterprisepb.RelatedAccountGroupMembership.
-type RelatedAccountGroupMembershipIterator struct {
-	items    []*recaptchaenterprisepb.RelatedAccountGroupMembership
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recaptchaenterprisepb.RelatedAccountGroupMembership, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RelatedAccountGroupMembershipIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RelatedAccountGroupMembershipIterator) Next() (*recaptchaenterprisepb.RelatedAccountGroupMembership, error) {
-	var item *recaptchaenterprisepb.RelatedAccountGroupMembership
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RelatedAccountGroupMembershipIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RelatedAccountGroupMembershipIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

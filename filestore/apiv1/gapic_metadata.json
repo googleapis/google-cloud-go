@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "CloudFilestoreManagerClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"
@@ -18,6 +23,11 @@
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
+              ]
+            },
+            "CreateSnapshot": {
+              "methods": [
+                "CreateSnapshot"
               ]
             },
             "DeleteBackup": {
@@ -30,6 +40,16 @@
                 "DeleteInstance"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSnapshot": {
+              "methods": [
+                "DeleteSnapshot"
+              ]
+            },
             "GetBackup": {
               "methods": [
                 "GetBackup"
@@ -38,6 +58,21 @@
             "GetInstance": {
               "methods": [
                 "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSnapshot": {
+              "methods": [
+                "GetSnapshot"
               ]
             },
             "ListBackups": {
@@ -50,9 +85,29 @@
                 "ListInstances"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSnapshots": {
+              "methods": [
+                "ListSnapshots"
+              ]
+            },
             "RestoreInstance": {
               "methods": [
                 "RestoreInstance"
+              ]
+            },
+            "RevertInstance": {
+              "methods": [
+                "RevertInstance"
               ]
             },
             "UpdateBackup": {
@@ -63,6 +118,11 @@
             "UpdateInstance": {
               "methods": [
                 "UpdateInstance"
+              ]
+            },
+            "UpdateSnapshot": {
+              "methods": [
+                "UpdateSnapshot"
               ]
             }
           }
@@ -70,6 +130,11 @@
         "rest": {
           "libraryClient": "CloudFilestoreManagerClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"
@@ -78,6 +143,11 @@
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
+              ]
+            },
+            "CreateSnapshot": {
+              "methods": [
+                "CreateSnapshot"
               ]
             },
             "DeleteBackup": {
@@ -90,6 +160,16 @@
                 "DeleteInstance"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSnapshot": {
+              "methods": [
+                "DeleteSnapshot"
+              ]
+            },
             "GetBackup": {
               "methods": [
                 "GetBackup"
@@ -98,6 +178,21 @@
             "GetInstance": {
               "methods": [
                 "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSnapshot": {
+              "methods": [
+                "GetSnapshot"
               ]
             },
             "ListBackups": {
@@ -110,9 +205,29 @@
                 "ListInstances"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSnapshots": {
+              "methods": [
+                "ListSnapshots"
+              ]
+            },
             "RestoreInstance": {
               "methods": [
                 "RestoreInstance"
+              ]
+            },
+            "RevertInstance": {
+              "methods": [
+                "RevertInstance"
               ]
             },
             "UpdateBackup": {
@@ -123,6 +238,11 @@
             "UpdateInstance": {
               "methods": [
                 "UpdateInstance"
+              ]
+            },
+            "UpdateSnapshot": {
+              "methods": [
+                "UpdateSnapshot"
               ]
             }
           }

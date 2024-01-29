@@ -789,6 +789,11 @@
                 "CreateConversation"
               ]
             },
+            "GenerateStatelessSummary": {
+              "methods": [
+                "GenerateStatelessSummary"
+              ]
+            },
             "GetConversation": {
               "methods": [
                 "GetConversation"
@@ -822,6 +827,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SearchKnowledge": {
+              "methods": [
+                "SearchKnowledge"
+              ]
+            },
+            "SuggestConversationSummary": {
+              "methods": [
+                "SuggestConversationSummary"
               ]
             }
           }
@@ -844,6 +859,11 @@
                 "CreateConversation"
               ]
             },
+            "GenerateStatelessSummary": {
+              "methods": [
+                "GenerateStatelessSummary"
+              ]
+            },
             "GetConversation": {
               "methods": [
                 "GetConversation"
@@ -877,6 +897,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SearchKnowledge": {
+              "methods": [
+                "SearchKnowledge"
+              ]
+            },
+            "SuggestConversationSummary": {
+              "methods": [
+                "SuggestConversationSummary"
               ]
             }
           }

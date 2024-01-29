@@ -22,7 +22,7 @@ import (
 	"context"
 
 	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/apiv1beta1"
-	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
+	"cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb"
 )
 
 func main() {

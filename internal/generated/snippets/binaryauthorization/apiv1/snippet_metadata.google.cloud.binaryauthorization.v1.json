@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/binaryauthorization/apiv1",
-    "version": "1.4.0",
+    "version": "1.8.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_CreateAttestor_sync",
       "title": "binaryauthorization CreateAttestor Sample",
-      "description": "CreateAttestor creates an attestor, and returns a copy of the new\nattestor. Returns NOT_FOUND if the project does not exist,\nINVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the\nattestor already exists.",
+      "description": "CreateAttestor creates an [attestor][google.cloud.binaryauthorization.v1.Attestor], and returns a copy of the new\n[attestor][google.cloud.binaryauthorization.v1.Attestor]. Returns NOT_FOUND if the project does not exist,\nINVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the\n[attestor][google.cloud.binaryauthorization.v1.Attestor] already exists.",
       "file": "BinauthzManagementClient/CreateAttestor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "binaryauthorizationpb.Attestor",
+        "resultType": "*binaryauthorizationpb.Attestor",
         "client": {
           "shortName": "BinauthzManagementClient",
           "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
@@ -60,7 +60,7 @@
     {
       "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_DeleteAttestor_sync",
       "title": "binaryauthorization DeleteAttestor Sample",
-      "description": "DeleteAttestor deletes an attestor. Returns NOT_FOUND if the\nattestor does not exist.",
+      "description": "DeleteAttestor deletes an [attestor][google.cloud.binaryauthorization.v1.Attestor]. Returns NOT_FOUND if the\n[attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.",
       "file": "BinauthzManagementClient/DeleteAttestor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -105,7 +105,7 @@
     {
       "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_GetAttestor_sync",
       "title": "binaryauthorization GetAttestor Sample",
-      "description": "GetAttestor gets an attestor.\nReturns NOT_FOUND if the attestor does not exist.",
+      "description": "GetAttestor gets an [attestor][google.cloud.binaryauthorization.v1.Attestor].\nReturns NOT_FOUND if the [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.",
       "file": "BinauthzManagementClient/GetAttestor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "binaryauthorizationpb.Attestor",
+        "resultType": "*binaryauthorizationpb.Attestor",
         "client": {
           "shortName": "BinauthzManagementClient",
           "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
@@ -151,7 +151,7 @@
     {
       "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_GetPolicy_sync",
       "title": "binaryauthorization GetPolicy Sample",
-      "description": "GetPolicy a policy specifies the attestors that must attest to\na container image, before the project is allowed to deploy that\nimage. There is at most one policy per project. All image admission\nrequests are permitted if a project has no policy.\n\nGets the policy for this project. Returns a default\npolicy if the project does not have one.",
+      "description": "GetPolicy a [policy][google.cloud.binaryauthorization.v1.Policy] specifies the [attestors][google.cloud.binaryauthorization.v1.Attestor] that must attest to\na container image, before the project is allowed to deploy that\nimage. There is at most one policy per project. All image admission\nrequests are permitted if a project has no policy.\n\nGets the [policy][google.cloud.binaryauthorization.v1.Policy] for this project. Returns a default\n[policy][google.cloud.binaryauthorization.v1.Policy] if the project does not have one.",
       "file": "BinauthzManagementClient/GetPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "binaryauthorizationpb.Policy",
+        "resultType": "*binaryauthorizationpb.Policy",
         "client": {
           "shortName": "BinauthzManagementClient",
           "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
@@ -197,7 +197,7 @@
     {
       "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_ListAttestors_sync",
       "title": "binaryauthorization ListAttestors Sample",
-      "description": "ListAttestors lists attestors.\nReturns INVALID_ARGUMENT if the project does not exist.",
+      "description": "ListAttestors lists [attestors][google.cloud.binaryauthorization.v1.Attestor].\nReturns INVALID_ARGUMENT if the project does not exist.",
       "file": "BinauthzManagementClient/ListAttestors/main.go",
       "language": "GO",
       "clientMethod": {
@@ -243,7 +243,7 @@
     {
       "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_UpdateAttestor_sync",
       "title": "binaryauthorization UpdateAttestor Sample",
-      "description": "UpdateAttestor updates an attestor.\nReturns NOT_FOUND if the attestor does not exist.",
+      "description": "UpdateAttestor updates an [attestor][google.cloud.binaryauthorization.v1.Attestor].\nReturns NOT_FOUND if the [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.",
       "file": "BinauthzManagementClient/UpdateAttestor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -263,7 +263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "binaryauthorizationpb.Attestor",
+        "resultType": "*binaryauthorizationpb.Attestor",
         "client": {
           "shortName": "BinauthzManagementClient",
           "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
@@ -289,7 +289,7 @@
     {
       "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_UpdatePolicy_sync",
       "title": "binaryauthorization UpdatePolicy Sample",
-      "description": "UpdatePolicy creates or updates a project’s policy, and returns a copy of the\nnew policy. A policy is always updated as a whole, to avoid race\nconditions with concurrent policy enforcement (or management!)\nrequests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT\nif the request is malformed.",
+      "description": "UpdatePolicy creates or updates a project's [policy][google.cloud.binaryauthorization.v1.Policy], and returns a copy of the\nnew [policy][google.cloud.binaryauthorization.v1.Policy]. A policy is always updated as a whole, to avoid race\nconditions with concurrent policy enforcement (or management!)\nrequests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT\nif the request is malformed.",
       "file": "BinauthzManagementClient/UpdatePolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "binaryauthorizationpb.Policy",
+        "resultType": "*binaryauthorizationpb.Policy",
         "client": {
           "shortName": "BinauthzManagementClient",
           "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient"
@@ -355,7 +355,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "binaryauthorizationpb.Policy",
+        "resultType": "*binaryauthorizationpb.Policy",
         "client": {
           "shortName": "SystemPolicyClient",
           "fullName": "google.cloud.binaryauthorization.v1.SystemPolicyClient"
@@ -401,7 +401,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "binaryauthorizationpb.ValidateAttestationOccurrenceResponse",
+        "resultType": "*binaryauthorizationpb.ValidateAttestationOccurrenceResponse",
         "client": {
           "shortName": "ValidationHelperClient",
           "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperClient"

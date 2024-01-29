@@ -27,7 +27,7 @@ import (
 )
 
 func encodeTimestamp(seconds int64, nanos int32) string {
-	val, err := encodeEventTimestamp(&tspb.Timestamp{
+	val, err := EncodeEventTimeAttribute(&tspb.Timestamp{
 		Seconds: seconds,
 		Nanos:   nanos,
 	})

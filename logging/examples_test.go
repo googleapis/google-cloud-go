@@ -203,6 +203,23 @@ func ExampleLogger_StandardLogger() {
 	slg.Println("an informative message")
 }
 
+func ExampleLogger_StandardLoggerFromTemplate() {
+	ctx := context.Background()
+	client, err := logging.NewClient(ctx, "my-project")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	lg := client.Logger("my-log")
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		slg := lg.StandardLoggerFromTemplate(&logging.Entry{
+			Severity:    logging.Info,
+			HTTPRequest: &logging.HTTPRequest{Request: r},
+		})
+		slg.Println("Before hello world")
+		fmt.Fprintf(w, "Hello world!\n")
+	})
+}
+
 func ExampleParseSeverity() {
 	sev := logging.ParseSeverity("ALERT")
 	fmt.Println(sev)

@@ -1,5 +1,96 @@
 # Changes
 
+## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.5...artifactregistry/v1.14.6) (2023-11-01)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.14.5](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.4...artifactregistry/v1.14.5) (2023-10-31)
+
+
+### Documentation
+
+* **artifactregistry:** Use code font for resource name references ([ffb0dda](https://github.com/googleapis/google-cloud-go/commit/ffb0ddabf3d9822ba8120cabaf25515fd32e9615))
+
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.3...artifactregistry/v1.14.4) (2023-10-26)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.2...artifactregistry/v1.14.3) (2023-10-12)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.1...artifactregistry/v1.14.2) (2023-10-04)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Make repository and repository_id in CreateRepository required ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.0...artifactregistry/v1.14.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **artifactregistry:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.13.1...artifactregistry/v1.14.0) (2023-05-30)
+
+
+### Features
+
+* **artifactregistry:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.13.0...artifactregistry/v1.13.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.12.0...artifactregistry/v1.13.0) (2023-04-04)
+
+
+### Features
+
+* **artifactregistry:** Promote to GA ([#7647](https://github.com/googleapis/google-cloud-go/issues/7647)) ([9334a1d](https://github.com/googleapis/google-cloud-go/commit/9334a1db35f9edc1700ca125191d3240cb9b3415))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.11.2...artifactregistry/v1.12.0) (2023-03-15)
+
+
+### Features
+
+* **artifactregistry:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.11.1...artifactregistry/v1.11.2) (2023-03-01)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Remove unintentionally published proto ([aeb6fec](https://github.com/googleapis/google-cloud-go/commit/aeb6fecc7fd3f088ff461a0c068ceb9a7ae7b2a3))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.11.0...artifactregistry/v1.11.1) (2023-02-16)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Remove unintentionally published proto ([#7434](https://github.com/googleapis/google-cloud-go/issues/7434)) ([d42b989](https://github.com/googleapis/google-cloud-go/commit/d42b98943fe71795747e386879ae3b72f6f32a36))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.10.0...artifactregistry/v1.11.0) (2023-02-14)
+
+
+### Features
+
+* **artifactregistry:** Add format-specific resources `MavenArtifact`, `NpmPackage`, `KfpArtifact` and `PythonPackage` feat: add `order_by` to `ListDockerImages` feat: add an API to get and update VPCSC config feat: add `BatchDeleteVersionMetadata` to return version that failed to delete fix!: make `GetFileRequest.name` and `ListFilesRequest.parent` required fix: make `Package` a resource fix: deprecate `REDIRECTION_FROM_GCR_IO_FINALIZED` ([2fef56f](https://github.com/googleapis/google-cloud-go/commit/2fef56f75a63dc4ff6e0eea56c7b26d4831c8e27))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.9.0...artifactregistry/v1.10.0) (2023-01-04)
 
 

@@ -32,6 +32,10 @@ func TestManagedStream_AppendErrorRetries(t *testing.T) {
 		want         bool
 	}{
 		{
+			err:  nil,
+			want: false,
+		},
+		{
 			err:  fmt.Errorf("random error"),
 			want: false,
 		},

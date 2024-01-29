@@ -1,5 +1,144 @@
 # Changes
 
+
+## [2.9.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.9.0...recaptchaenterprise/v2.9.1) (2024-01-22)
+
+
+### Documentation
+
+* **recaptchaenterprise:** Update comment for `AccountVerificationInfo.username` ([00b9900](https://github.com/googleapis/google-cloud-go/commit/00b990061592a20a181e61faa6964b45205b76a7))
+
+## [2.9.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.4...recaptchaenterprise/v2.9.0) (2023-11-27)
+
+
+### Features
+
+* **recaptchaenterprise:** Added AnnotateAssessmentRequest.account_id ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+
+
+### Documentation
+
+* **recaptchaenterprise:** Minor comments updates ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+
+## [2.8.4](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.3...recaptchaenterprise/v2.8.4) (2023-11-09)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Added required annotations ([ba23673](https://github.com/googleapis/google-cloud-go/commit/ba23673da7707c31292e4aa29d65b7ac1446d4a6))
+
+## [2.8.3](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.2...recaptchaenterprise/v2.8.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [2.8.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.1...recaptchaenterprise/v2.8.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [2.8.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.0...recaptchaenterprise/v2.8.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [2.8.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.7.2...recaptchaenterprise/v2.8.0) (2023-10-04)
+
+
+### Features
+
+* **recaptchaenterprise:** Added FraudPreventionAssessment.behavioral_trust_verdict ([481127f](https://github.com/googleapis/google-cloud-go/commit/481127fb8271cab3a754e0e1820b32567e80524a))
+* **recaptchaenterprise:** FirewallPolicy CRUD API ([#8635](https://github.com/googleapis/google-cloud-go/issues/8635)) ([481127f](https://github.com/googleapis/google-cloud-go/commit/481127fb8271cab3a754e0e1820b32567e80524a))
+
+## [2.7.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise-v2.7.1...recaptchaenterprise/v2.7.2) (2023-06-20)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [2.7.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.7.0...recaptchaenterprise/v2.7.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise/v2:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+* **recaptchaenterprise:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [2.7.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.6.0...recaptchaenterprise/v2.7.0) (2023-03-22)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** Add reCAPTCHA Enterprise Fraud Prevention API ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+* **recaptchaenterprise/v2:** Add reCAPTCHA Enterprise Fraud Prevention API ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+## [2.6.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.5.0...recaptchaenterprise/v2.6.0) (2023-01-04)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [2.5.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.4.0...recaptchaenterprise/v2.5.0) (2022-11-03)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [2.4.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.3.0...recaptchaenterprise/v2.4.0) (2022-10-25)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [2.3.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.2.0...recaptchaenterprise/v2.3.0) (2022-10-14)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** add RetrieveLegacySecretKey method feat: add annotation reasons REFUND, REFUND_FRAUD, TRANSACTION_ACCEPTED, TRANSACTION_DECLINED and SOCIAL_SPAM ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+
+## [2.2.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.1.0...recaptchaenterprise/v2.2.0) (2022-09-21)
+
+
+### Features
+
+* **recaptchaenterprise:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [2.1.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.0.1...recaptchaenterprise/v2.1.0) (2022-09-20)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** start generating apiv1beta1 ([4aa2f48](https://github.com/googleapis/google-cloud-go/commit/4aa2f48eeb2b37124b207d3567f2b66f567797a8))
+
+## [2.0.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.0.0...recaptchaenterprise/v2.0.1) (2022-06-16)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise/v2:** set the right field number for reCAPTCHA private password leak ([5e46068](https://github.com/googleapis/google-cloud-go/commit/5e46068329153daf5aa590a6415d4764f1ab2b90))
+
+## [2.0.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v1.3.1...recaptchaenterprise/v2.0.0) (2022-05-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **recaptchaenterprise/v2:** parent changed to project in googleapis/go-genproto#808
+
+### Features
+
+* **recaptchaenterprise/v2:** Release breaking changes as v2 module ([#6062](https://github.com/googleapis/google-cloud-go/issues/6062)) ([1266896](https://github.com/googleapis/google-cloud-go/commit/1266896827d1b788931f348c399ef1fb6fd33ef7))
+
 ### [1.3.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v1.3.0...recaptchaenterprise/v1.3.1) (2022-05-03)
 
 

@@ -322,9 +322,14 @@ func TestDatasetToBQ(t *testing.T) {
 			Name:                       "name",
 			Description:                "desc",
 			DefaultTableExpiration:     time.Hour,
+			MaxTimeTravel:              time.Duration(181 * time.Minute),
 			DefaultPartitionExpiration: 24 * time.Hour,
 			DefaultEncryptionConfig: &EncryptionConfig{
 				KMSKeyName: "some_key",
+			},
+			ExternalDatasetReference: &ExternalDatasetReference{
+				Connection:     "conn",
+				ExternalSource: "external_src",
 			},
 			Location: "EU",
 			Labels:   map[string]string{"x": "y"},
@@ -342,9 +347,14 @@ func TestDatasetToBQ(t *testing.T) {
 			FriendlyName:                 "name",
 			Description:                  "desc",
 			DefaultTableExpirationMs:     60 * 60 * 1000,
+			MaxTimeTravelHours:           3,
 			DefaultPartitionExpirationMs: 24 * 60 * 60 * 1000,
 			DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 				KmsKeyName: "some_key",
+			},
+			ExternalDatasetReference: &bq.ExternalDatasetReference{
+				Connection:     "conn",
+				ExternalSource: "external_src",
 			},
 			Location: "EU",
 			Labels:   map[string]string{"x": "y"},
@@ -397,9 +407,14 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		FriendlyName:                 "name",
 		Description:                  "desc",
 		DefaultTableExpirationMs:     60 * 60 * 1000,
+		MaxTimeTravelHours:           3,
 		DefaultPartitionExpirationMs: 24 * 60 * 60 * 1000,
 		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 			KmsKeyName: "some_key",
+		},
+		ExternalDatasetReference: &bq.ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
 		},
 		Location: "EU",
 		Labels:   map[string]string{"x": "y"},
@@ -428,12 +443,18 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		Name:                       "name",
 		Description:                "desc",
 		DefaultTableExpiration:     time.Hour,
+		MaxTimeTravel:              time.Duration(3 * time.Hour),
 		DefaultPartitionExpiration: 24 * time.Hour,
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
 		},
-		Location: "EU",
-		Labels:   map[string]string{"x": "y"},
+		ExternalDatasetReference: &ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
+		},
+		StorageBillingModel: LogicalStorageBillingModel,
+		Location:            "EU",
+		Labels:              map[string]string{"x": "y"},
 		Access: []*AccessEntry{
 			{Role: ReaderRole, Entity: "joe@example.com", EntityType: UserEmailEntity},
 			{Role: WriterRole, Entity: "users@example.com", EntityType: GroupEmailEntity},
@@ -466,8 +487,14 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Name:                       "name",
 		DefaultTableExpiration:     time.Hour,
 		DefaultPartitionExpiration: 24 * time.Hour,
+		MaxTimeTravel:              time.Duration(181 * time.Minute),
+		StorageBillingModel:        PhysicalStorageBillingModel,
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
+		},
+		ExternalDatasetReference: &ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
 		},
 	}
 	dm.SetLabel("label", "value")
@@ -481,13 +508,19 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Description:                  "desc",
 		FriendlyName:                 "name",
 		DefaultTableExpirationMs:     60 * 60 * 1000,
+		MaxTimeTravelHours:           3,
 		DefaultPartitionExpirationMs: 24 * 60 * 60 * 1000,
+		StorageBillingModel:          string(PhysicalStorageBillingModel),
 		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 			KmsKeyName:      "some_key",
 			ForceSendFields: []string{"KmsKeyName"},
 		},
+		ExternalDatasetReference: &bq.ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
+		},
 		Labels:          map[string]string{"label": "value"},
-		ForceSendFields: []string{"Description", "FriendlyName"},
+		ForceSendFields: []string{"Description", "FriendlyName", "ExternalDatasetReference", "StorageBillingModel"},
 		NullFields:      []string{"Labels.del"},
 	}
 	if diff := testutil.Diff(got, want); diff != "" {

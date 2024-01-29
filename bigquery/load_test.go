@@ -405,6 +405,33 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				return g
+			}(),
+			config: LoadConfig{
+				CreateSession: true,
+				ConnectionProperties: []*ConnectionProperty{
+					{
+						Key:   "session_id",
+						Value: "session_id_1234567890",
+					},
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.CreateSession = true
+				j.Configuration.Load.ConnectionProperties = []*bq.ConnectionProperty{
+					{
+						Key:   "session_id",
+						Value: "session_id_1234567890",
+					},
+				}
+				return j
+			}(),
+		},
 	}
 
 	for i, tc := range testCases {

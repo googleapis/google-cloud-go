@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
-    "version": "1.44.0",
+    "version": "1.58.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.DataExchange",
+        "resultType": "*dataexchangepb.DataExchange",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.Listing",
+        "resultType": "*dataexchangepb.Listing",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -216,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.DataExchange",
+        "resultType": "*dataexchangepb.DataExchange",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -308,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.Listing",
+        "resultType": "*dataexchangepb.Listing",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -354,17 +354,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "AnalyticsHubService",
-            "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -499,10 +499,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "AnalyticsHubService",
-            "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -584,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -610,7 +610,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_SubscribeListing_sync",
       "title": "analyticshub SubscribeListing Sample",
-      "description": "SubscribeListing subscribes to a listing.\n\nCurrently, with Analytics Hub, you can create listings that\nreference only BigQuery datasets.\nUpon subscription to a listing for a BigQuery dataset, Analytics Hub\ncreates a linked dataset in the subscriber’s project.",
+      "description": "SubscribeListing subscribes to a listing.\n\nCurrently, with Analytics Hub, you can create listings that\nreference only BigQuery datasets.\nUpon subscription to a listing for a BigQuery dataset, Analytics Hub\ncreates a linked dataset in the subscriber's project.",
       "file": "AnalyticsHubClient/SubscribeListing/main.go",
       "language": "GO",
       "clientMethod": {
@@ -630,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.SubscribeListingResponse",
+        "resultType": "*dataexchangepb.SubscribeListingResponse",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -676,7 +676,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -722,7 +722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.DataExchange",
+        "resultType": "*dataexchangepb.DataExchange",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -768,7 +768,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.Listing",
+        "resultType": "*dataexchangepb.Listing",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"

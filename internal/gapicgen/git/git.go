@@ -15,24 +15,23 @@
 package git
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
-	"gopkg.in/src-d/go-git.v4"
+	"github.com/go-git/go-git/v5"
+)
+
+const (
+	maxTruncatedTitleLen = 22
 )
 
 // ChangeInfo represents a change and its associated metadata.
 type ChangeInfo struct {
 	Body           string
 	Title          string
-	Package        string
-	PackageDir     string
 	GoogleapisHash string
 }
 
@@ -40,36 +39,27 @@ type ChangeInfo struct {
 // the conventional commit footer pattern. This will allow these changes to be
 // parsed into the changelog.
 func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
+	formatted := truncateAndFormatChanges(changes, onlyGapicChanges, false)
+	if len(formatted) > maxChangesLen {
+		// Retry formatting by truncating
+		return truncateAndFormatChanges(changes, onlyGapicChanges, true)
+	}
+	return formatted
+}
+
+func truncateAndFormatChanges(changes []*ChangeInfo, onlyGapicChanges, truncate bool) string {
 	if len(changes) == 0 {
 		return ""
 	}
 	var sb strings.Builder
 	sb.WriteString("\nChanges:\n\n")
 	for _, c := range changes {
-		if onlyGapicChanges && c.Package == "" {
+		if onlyGapicChanges {
 			continue
 		}
-
 		title := c.Title
-		if c.Package != "" {
-			// Try to add in pkg affected into conventional commit scope.
-			titleParts := strings.SplitN(c.Title, ":", 2)
-			if len(titleParts) == 2 {
-				// If a scope is already provided, remove it.
-				if i := strings.Index(titleParts[0], "("); i > 0 {
-					titleParts[0] = titleParts[0][:i]
-				}
-
-				var breakChangeIndicator string
-				if strings.HasSuffix(titleParts[0], "!") {
-					// If the change is marked as breaking we need to move the
-					// bang to after the added scope.
-					titleParts[0] = titleParts[0][:len(titleParts[0])-1]
-					breakChangeIndicator = "!"
-				}
-				titleParts[0] = fmt.Sprintf("%s(%s)%s", titleParts[0], c.Package, breakChangeIndicator)
-			}
-			title = strings.Join(titleParts, ":")
+		if truncate && len(title) > maxTruncatedTitleLen {
+			title = fmt.Sprintf("%v...", title[:maxTruncatedTitleLen])
 		}
 		sb.WriteString(fmt.Sprintf("%s\n", title))
 
@@ -79,6 +69,14 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 			splitBody[i] = fmt.Sprintf("  %s", splitBody[i])
 		}
 		body := strings.Join(splitBody, "\n")
+
+		if truncate {
+			startBody := strings.Index(body, "PiperOrigin-RevId")
+			if startBody != -1 {
+				body = fmt.Sprintf("  %s", body[startBody:])
+			}
+		}
+
 		sb.WriteString(fmt.Sprintf("%s\n\n", body))
 	}
 	// If the buffer is empty except for the "Changes:" text return an empty
@@ -90,7 +88,7 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 }
 
 // ParseChangeInfo gets the ChangeInfo for a given googleapis hash.
-func ParseChangeInfo(googleapisDir string, hashes []string, gapicPkgs map[string]string) ([]*ChangeInfo, error) {
+func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, error) {
 	var changes []*ChangeInfo
 	for _, hash := range hashes {
 		// Get commit title and body
@@ -110,30 +108,9 @@ func ParseChangeInfo(googleapisDir string, hashes []string, gapicPkgs map[string
 		// Add link so corresponding googleapis commit.
 		body = fmt.Sprintf("%s\nSource-Link: https://github.com/googleapis/googleapis/commit/%s", body, hash)
 
-		// Try to map files updated to a package in google-cloud-go. Assumes only
-		// one servies protos are updated per commit. Multile versions are okay.
-		files, err := filesChanged(googleapisDir, hash)
-		if err != nil {
-			return nil, err
-		}
-		var pkg, pkgDir string
-		for _, file := range files {
-			if file == "" {
-				continue
-			}
-			importPath := gapicPkgs[filepath.Dir(file)]
-			if importPath != "" {
-				pkg = parseConventionalCommitPkg(importPath)
-				pkgDir = strings.TrimPrefix(importPath, "cloud.google.com/go/")
-				break
-			}
-		}
-
 		changes = append(changes, &ChangeInfo{
 			Title:          title,
 			Body:           body,
-			Package:        pkg,
-			PackageDir:     pkgDir,
 			GoogleapisHash: hash,
 		})
 	}
@@ -203,52 +180,6 @@ func DeepClone(repo, dir string) error {
 		Progress: os.Stdout,
 	})
 	return err
-}
-
-// FindModifiedFiles locates modified files in the git directory provided.
-func FindModifiedFiles(dir string) ([]string, error) {
-	return findModifiedFiles(dir, "-m")
-}
-
-// FindModifiedAndUntrackedFiles locates modified and untracked files in the git
-// directory provided.
-func FindModifiedAndUntrackedFiles(dir string) ([]string, error) {
-	return findModifiedFiles(dir, "-mo")
-}
-
-func findModifiedFiles(dir string, filter string) ([]string, error) {
-	c := execv.Command("git", "ls-files", filter)
-	c.Dir = dir
-	out, err := c.Output()
-	if err != nil {
-		return nil, err
-	}
-	return strings.Split(string(bytes.TrimSpace(out)), "\n"), nil
-}
-
-// ResetFile reverts all changes made to a file in the provided directory.
-func ResetFile(dir, filename string) error {
-	c := exec.Command("git", "checkout", "HEAD", "--", filename)
-	c.Dir = dir
-	return c.Run()
-}
-
-// FileDiff returns the git diff for the specified file.
-func FileDiff(dir, filename string) (string, error) {
-	c := exec.Command("git", "diff", "--unified=0", filename)
-	c.Dir = dir
-	out, err := c.Output()
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(string(out)), nil
-}
-
-// CheckoutRef checks out the ref in the provided git project directory.
-func CheckoutRef(dir, ref string) error {
-	cmd := execv.Command("git", "checkout", ref)
-	cmd.Dir = dir
-	return cmd.Run()
 }
 
 // filesChanged returns a list of files changed in a commit for the provdied

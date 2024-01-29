@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/apigateway/apiv1",
-    "version": "1.4.0",
+    "version": "1.6.4",
     "language": "GO",
     "apis": [
       {
@@ -310,7 +310,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigatewaypb.Api",
+        "resultType": "*apigatewaypb.Api",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.apigateway.v1.Client"
@@ -356,7 +356,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigatewaypb.ApiConfig",
+        "resultType": "*apigatewaypb.ApiConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.apigateway.v1.Client"
@@ -402,7 +402,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apigatewaypb.Gateway",
+        "resultType": "*apigatewaypb.Gateway",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.apigateway.v1.Client"
