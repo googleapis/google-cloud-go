@@ -21,12 +21,11 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -252,6 +251,7 @@ func (x *ModelMonitoringObjectiveConfig) GetExplanationConfig() *ModelMonitoring
 	return nil
 }
 
+// The alert config for model monitoring.
 type ModelMonitoringAlertConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
