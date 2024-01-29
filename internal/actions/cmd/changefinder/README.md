@@ -20,6 +20,8 @@ The available flags are as follows:
  * `-content-pattern=[regex]`: A regex to match on diff contents.
  * `-commit-message=[commit message]`: Message to use in the nested commit block
  * `-commit-scope=[conventional commit scope]`: Scope to use for the commit e.g. `fix`
+ * `-touch`: touches the `CHANGES.md` file to elicit a submodule change - only
+ works when used with `-format=commit`
 
 Example usages from this repo root:
 
@@ -32,4 +34,11 @@ go run ./internal/actions/cmd/changefinder -q -format=github
 
 # quiet mode, github format, github var name "foo"
 go run ./internal/actions/cmd/changefinder -q -format=github -gh-var=foo
+
+# bumping all modules that changed e.g., via generator version update
+go run ./internal/actions/cmd/changefinder -q \
+  -format=commit \
+  -commit-scope=fix \
+  -commit-message="describe the change" \
+  -touch
 ```
