@@ -2555,7 +2555,7 @@
     "description": "Vision AI API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/visionai/apiv1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/visionai/latest/apiv1",
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
