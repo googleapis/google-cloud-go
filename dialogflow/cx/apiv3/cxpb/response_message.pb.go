@@ -21,13 +21,12 @@
 package cxpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -430,10 +429,10 @@ func (x *ResponseMessage_Text) GetAllowPlaybackInterruption() bool {
 // [entry_fulfillment][google.cloud.dialogflow.cx.v3.Page.entry_fulfillment]
 // of a [Page][google.cloud.dialogflow.cx.v3.Page] if
 //
-//		entering the page indicates something went extremely wrong in the
-//		conversation.
-//	  - In a webhook response when you determine that the customer issue can only
-//	    be handled by a human.
+//	entering the page indicates something went extremely wrong in the
+//	conversation.
+//   - In a webhook response when you determine that the customer issue can only
+//     be handled by a human.
 type ResponseMessage_LiveAgentHandoff struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -497,9 +496,9 @@ func (x *ResponseMessage_LiveAgentHandoff) GetMetadata() *structpb.Struct {
 // [entry_fulfillment][google.cloud.dialogflow.cx.v3.Page.entry_fulfillment]
 // of a [Page][google.cloud.dialogflow.cx.v3.Page] if
 //
-//		entering the page indicates that the conversation succeeded.
-//	  - In a webhook response when you determine that you handled the customer
-//	    issue.
+//	entering the page indicates that the conversation succeeded.
+//   - In a webhook response when you determine that you handled the customer
+//     issue.
 type ResponseMessage_ConversationSuccess struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
