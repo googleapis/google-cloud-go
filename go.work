@@ -157,6 +157,7 @@ use (
 	./video
 	./videointelligence
 	./vision
+	./visionai
 	./vmmigration
 	./vmwareengine
 	./vpcaccess
