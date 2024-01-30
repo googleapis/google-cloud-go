@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.0...dataplex/v1.14.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **dataplex:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.13.0...dataplex/v1.14.0) (2024-01-03)
 
 
@@ -209,4 +216,3 @@
 ## v0.1.0
 
 - feat(dataplex): start generating clients
-

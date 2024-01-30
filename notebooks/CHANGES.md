@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.11.2...notebooks/v1.11.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **notebooks:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.11.1...notebooks/v1.11.2) (2023-11-01)
 
 
@@ -160,4 +167,3 @@
 
 This is the first tag to carve out notebooks as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

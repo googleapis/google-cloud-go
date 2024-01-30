@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.8.4...orchestration/v1.8.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **orchestration:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.8.3...orchestration/v1.8.4) (2023-11-01)
 
 
@@ -102,4 +109,3 @@
 ## v0.1.0
 
 - feat(orchestration): start generating clients
-

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.5.4](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.3...workstations/v0.5.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **workstations:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.5.3](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.2...workstations/v0.5.3) (2023-11-01)
 
 
@@ -73,4 +80,3 @@
 * **workstations:** Start generating apiv1beta ([#7599](https://github.com/googleapis/google-cloud-go/issues/7599)) ([e3d6afe](https://github.com/googleapis/google-cloud-go/commit/e3d6afe79ddc4579b54934b4884891f35cc3d1a3))
 
 ## Changes
-

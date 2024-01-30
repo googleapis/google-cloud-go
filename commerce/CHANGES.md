@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/commerce/v0.1.3...commerce/v0.1.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **commerce:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/commerce/v0.1.2...commerce/v0.1.3) (2023-11-01)
 
 
@@ -30,4 +37,3 @@
 * **commerce:** Start generating apiv1 ([#8322](https://github.com/googleapis/google-cloud-go/issues/8322)) ([db4f48b](https://github.com/googleapis/google-cloud-go/commit/db4f48bc9d5366f524f1fce82f2fea8094ea8c1e))
 
 ## Changes
-

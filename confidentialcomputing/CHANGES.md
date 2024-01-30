@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.4.0...confidentialcomputing/v1.4.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.3.3...confidentialcomputing/v1.4.0) (2023-11-16)
 
 
@@ -92,4 +99,3 @@
 ### Features
 
 * **confidentialcomputing:** Start generating apiv1alpha1 ([#7846](https://github.com/googleapis/google-cloud-go/issues/7846)) ([d0a5d6e](https://github.com/googleapis/google-cloud-go/commit/d0a5d6eda292a7c87ec6d1a4147b037970242641))
-

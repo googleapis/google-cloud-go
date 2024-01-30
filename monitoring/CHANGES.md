@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.17.0...monitoring/v1.17.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **monitoring:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.16.3...monitoring/v1.17.0) (2023-12-13)
 
 
@@ -185,4 +192,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out monitoring as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

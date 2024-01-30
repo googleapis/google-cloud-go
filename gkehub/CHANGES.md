@@ -1,5 +1,12 @@
 # Changes
 
+## [0.14.5](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.4...gkehub/v0.14.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **gkehub:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.14.4](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.3...gkehub/v0.14.4) (2023-11-01)
 
 
@@ -131,4 +138,3 @@
 
 This is the first tag to carve out gkehub as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

@@ -1,5 +1,12 @@
 # Changes
 
+## [0.9.5](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.9.4...lifesciences/v0.9.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **lifesciences:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.9.4](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.9.3...lifesciences/v0.9.4) (2023-11-01)
 
 
@@ -95,4 +102,3 @@
 
 This is the first tag to carve out lifesciences as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

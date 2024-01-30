@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.1.0...gkemulticloud/v1.1.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.0.3...gkemulticloud/v1.1.0) (2024-01-03)
 
 
@@ -92,4 +99,3 @@
 ### Features
 
 * **gkemulticloud:** start generating apiv1 ([#6036](https://github.com/googleapis/google-cloud-go/issues/6036)) ([dc2b168](https://github.com/googleapis/google-cloud-go/commit/dc2b168162ba358435c7191f9d02edaea17d19bb))
-

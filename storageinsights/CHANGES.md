@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.5](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v1.0.4...storageinsights/v1.0.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **storageinsights:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.0.4](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v1.0.3...storageinsights/v1.0.4) (2023-11-01)
 
 
@@ -65,4 +72,3 @@
 * **storageinsights:** Start generating apiv1 ([#7862](https://github.com/googleapis/google-cloud-go/issues/7862)) ([07a5ac1](https://github.com/googleapis/google-cloud-go/commit/07a5ac1965154b471d5a45e0c566803ea9edb15f))
 
 ## Changes
-

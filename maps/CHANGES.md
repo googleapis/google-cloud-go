@@ -2,6 +2,19 @@
 
 
 
+## [1.6.4](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.3...maps/v1.6.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **maps:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+
+### Documentation
+
+* **maps/fleetengine:** Update comment on Waypoint ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+* **maps/fleetengine:** Update comment on Waypoint ([#9291](https://github.com/googleapis/google-cloud-go/issues/9291)) ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
 ## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.2...maps/v1.6.3) (2024-01-11)
 
 
@@ -180,4 +193,3 @@
 
 * **maps/addressvalidation:** Start generating apiv1 ([#7012](https://github.com/googleapis/google-cloud-go/issues/7012)) ([3e88250](https://github.com/googleapis/google-cloud-go/commit/3e882501ea196ff4f122989e5726bfd4c72e5133))
 * **maps/routing:** Start generating apiv2 ([#7056](https://github.com/googleapis/google-cloud-go/issues/7056)) ([1b7993d](https://github.com/googleapis/google-cloud-go/commit/1b7993d6931cf33bab07124da4180eeb3faffe7e))
-

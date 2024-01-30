@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.4.0...discoveryengine/v1.4.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.3.0...discoveryengine/v1.4.0) (2023-12-13)
 
 
@@ -120,4 +127,3 @@
 * **discoveryengine:** Start generating apiv1beta ([#7427](https://github.com/googleapis/google-cloud-go/issues/7427)) ([0d289a0](https://github.com/googleapis/google-cloud-go/commit/0d289a07106226b4398935357ab0f30a3a30340d))
 
 ## Changes
-

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.3.4](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.3...run/v1.3.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **run:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.3.3](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.2...run/v1.3.3) (2023-11-01)
 
 
@@ -170,4 +177,3 @@
 ### Features
 
 * **run:** start generating apiv2 ([#5825](https://github.com/googleapis/google-cloud-go/issues/5825)) ([2602a20](https://github.com/googleapis/google-cloud-go/commit/2602a20ca8eba1ba2b1e59bb27a7b44132d63032))
-
