@@ -49,7 +49,9 @@ type CaseAttachmentCallOptions struct {
 func defaultCaseAttachmentGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudsupport.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudsupport.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudsupport.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudsupport.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -250,7 +252,9 @@ func NewCaseAttachmentRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultCaseAttachmentRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudsupport.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudsupport.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudsupport.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudsupport.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

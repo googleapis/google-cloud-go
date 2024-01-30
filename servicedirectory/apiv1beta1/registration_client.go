@@ -71,7 +71,9 @@ type RegistrationCallOptions struct {
 func defaultRegistrationGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("servicedirectory.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("servicedirectory.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("servicedirectory.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicedirectory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -865,7 +867,9 @@ func NewRegistrationRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultRegistrationRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://servicedirectory.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://servicedirectory.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://servicedirectory.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicedirectory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

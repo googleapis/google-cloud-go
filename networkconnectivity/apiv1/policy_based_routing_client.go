@@ -61,7 +61,9 @@ type PolicyBasedRoutingCallOptions struct {
 func defaultPolicyBasedRoutingGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("networkconnectivity.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("networkconnectivity.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("networkconnectivity.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://networkconnectivity.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),

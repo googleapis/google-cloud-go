@@ -164,6 +164,11 @@ type AnalyticsAdminCallOptions struct {
 	DeleteEventCreateRule                        []gax.CallOption
 	UpdateDataRedactionSettings                  []gax.CallOption
 	GetDataRedactionSettings                     []gax.CallOption
+	GetCalculatedMetric                          []gax.CallOption
+	CreateCalculatedMetric                       []gax.CallOption
+	ListCalculatedMetrics                        []gax.CallOption
+	UpdateCalculatedMetric                       []gax.CallOption
+	DeleteCalculatedMetric                       []gax.CallOption
 	CreateRollupProperty                         []gax.CallOption
 	GetRollupPropertySourceLink                  []gax.CallOption
 	ListRollupPropertySourceLinks                []gax.CallOption
@@ -180,7 +185,9 @@ type AnalyticsAdminCallOptions struct {
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("analyticsadmin.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("analyticsadmin.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("analyticsadmin.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://analyticsadmin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -1539,6 +1546,71 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		GetDataRedactionSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCalculatedMetric: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCalculatedMetric: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListCalculatedMetrics: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateCalculatedMetric: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteCalculatedMetric: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -2959,6 +3031,66 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		GetCalculatedMetric: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateCalculatedMetric: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListCalculatedMetrics: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateCalculatedMetric: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteCalculatedMetric: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 		CreateRollupProperty: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -3219,6 +3351,11 @@ type internalAnalyticsAdminClient interface {
 	DeleteEventCreateRule(context.Context, *adminpb.DeleteEventCreateRuleRequest, ...gax.CallOption) error
 	UpdateDataRedactionSettings(context.Context, *adminpb.UpdateDataRedactionSettingsRequest, ...gax.CallOption) (*adminpb.DataRedactionSettings, error)
 	GetDataRedactionSettings(context.Context, *adminpb.GetDataRedactionSettingsRequest, ...gax.CallOption) (*adminpb.DataRedactionSettings, error)
+	GetCalculatedMetric(context.Context, *adminpb.GetCalculatedMetricRequest, ...gax.CallOption) (*adminpb.CalculatedMetric, error)
+	CreateCalculatedMetric(context.Context, *adminpb.CreateCalculatedMetricRequest, ...gax.CallOption) (*adminpb.CalculatedMetric, error)
+	ListCalculatedMetrics(context.Context, *adminpb.ListCalculatedMetricsRequest, ...gax.CallOption) *CalculatedMetricIterator
+	UpdateCalculatedMetric(context.Context, *adminpb.UpdateCalculatedMetricRequest, ...gax.CallOption) (*adminpb.CalculatedMetric, error)
+	DeleteCalculatedMetric(context.Context, *adminpb.DeleteCalculatedMetricRequest, ...gax.CallOption) error
 	CreateRollupProperty(context.Context, *adminpb.CreateRollupPropertyRequest, ...gax.CallOption) (*adminpb.CreateRollupPropertyResponse, error)
 	GetRollupPropertySourceLink(context.Context, *adminpb.GetRollupPropertySourceLinkRequest, ...gax.CallOption) (*adminpb.RollupPropertySourceLink, error)
 	ListRollupPropertySourceLinks(context.Context, *adminpb.ListRollupPropertySourceLinksRequest, ...gax.CallOption) *RollupPropertySourceLinkIterator
@@ -3960,6 +4097,31 @@ func (c *AnalyticsAdminClient) GetDataRedactionSettings(ctx context.Context, req
 	return c.internalClient.GetDataRedactionSettings(ctx, req, opts...)
 }
 
+// GetCalculatedMetric lookup for a single CalculatedMetric.
+func (c *AnalyticsAdminClient) GetCalculatedMetric(ctx context.Context, req *adminpb.GetCalculatedMetricRequest, opts ...gax.CallOption) (*adminpb.CalculatedMetric, error) {
+	return c.internalClient.GetCalculatedMetric(ctx, req, opts...)
+}
+
+// CreateCalculatedMetric creates a CalculatedMetric.
+func (c *AnalyticsAdminClient) CreateCalculatedMetric(ctx context.Context, req *adminpb.CreateCalculatedMetricRequest, opts ...gax.CallOption) (*adminpb.CalculatedMetric, error) {
+	return c.internalClient.CreateCalculatedMetric(ctx, req, opts...)
+}
+
+// ListCalculatedMetrics lists CalculatedMetrics on a property.
+func (c *AnalyticsAdminClient) ListCalculatedMetrics(ctx context.Context, req *adminpb.ListCalculatedMetricsRequest, opts ...gax.CallOption) *CalculatedMetricIterator {
+	return c.internalClient.ListCalculatedMetrics(ctx, req, opts...)
+}
+
+// UpdateCalculatedMetric updates a CalculatedMetric on a property.
+func (c *AnalyticsAdminClient) UpdateCalculatedMetric(ctx context.Context, req *adminpb.UpdateCalculatedMetricRequest, opts ...gax.CallOption) (*adminpb.CalculatedMetric, error) {
+	return c.internalClient.UpdateCalculatedMetric(ctx, req, opts...)
+}
+
+// DeleteCalculatedMetric deletes a CalculatedMetric on a property.
+func (c *AnalyticsAdminClient) DeleteCalculatedMetric(ctx context.Context, req *adminpb.DeleteCalculatedMetricRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteCalculatedMetric(ctx, req, opts...)
+}
+
 // CreateRollupProperty create a roll-up property and all roll-up property source links.
 func (c *AnalyticsAdminClient) CreateRollupProperty(ctx context.Context, req *adminpb.CreateRollupPropertyRequest, opts ...gax.CallOption) (*adminpb.CreateRollupPropertyResponse, error) {
 	return c.internalClient.CreateRollupProperty(ctx, req, opts...)
@@ -4135,7 +4297,9 @@ func NewAnalyticsAdminRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultAnalyticsAdminRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://analyticsadmin.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://analyticsadmin.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://analyticsadmin.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://analyticsadmin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -6825,6 +6989,120 @@ func (c *analyticsAdminGRPCClient) GetDataRedactionSettings(ctx context.Context,
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetCalculatedMetric(ctx context.Context, req *adminpb.GetCalculatedMetricRequest, opts ...gax.CallOption) (*adminpb.CalculatedMetric, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetCalculatedMetric[0:len((*c.CallOptions).GetCalculatedMetric):len((*c.CallOptions).GetCalculatedMetric)], opts...)
+	var resp *adminpb.CalculatedMetric
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetCalculatedMetric(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) CreateCalculatedMetric(ctx context.Context, req *adminpb.CreateCalculatedMetricRequest, opts ...gax.CallOption) (*adminpb.CalculatedMetric, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateCalculatedMetric[0:len((*c.CallOptions).CreateCalculatedMetric):len((*c.CallOptions).CreateCalculatedMetric)], opts...)
+	var resp *adminpb.CalculatedMetric
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateCalculatedMetric(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListCalculatedMetrics(ctx context.Context, req *adminpb.ListCalculatedMetricsRequest, opts ...gax.CallOption) *CalculatedMetricIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListCalculatedMetrics[0:len((*c.CallOptions).ListCalculatedMetrics):len((*c.CallOptions).ListCalculatedMetrics)], opts...)
+	it := &CalculatedMetricIterator{}
+	req = proto.Clone(req).(*adminpb.ListCalculatedMetricsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CalculatedMetric, string, error) {
+		resp := &adminpb.ListCalculatedMetricsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListCalculatedMetrics(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCalculatedMetrics(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) UpdateCalculatedMetric(ctx context.Context, req *adminpb.UpdateCalculatedMetricRequest, opts ...gax.CallOption) (*adminpb.CalculatedMetric, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "calculated_metric.name", url.QueryEscape(req.GetCalculatedMetric().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateCalculatedMetric[0:len((*c.CallOptions).UpdateCalculatedMetric):len((*c.CallOptions).UpdateCalculatedMetric)], opts...)
+	var resp *adminpb.CalculatedMetric
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateCalculatedMetric(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteCalculatedMetric(ctx context.Context, req *adminpb.DeleteCalculatedMetricRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteCalculatedMetric[0:len((*c.CallOptions).DeleteCalculatedMetric):len((*c.CallOptions).DeleteCalculatedMetric)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteCalculatedMetric(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *analyticsAdminGRPCClient) CreateRollupProperty(ctx context.Context, req *adminpb.CreateRollupPropertyRequest, opts ...gax.CallOption) (*adminpb.CreateRollupPropertyResponse, error) {
@@ -15134,6 +15412,339 @@ func (c *analyticsAdminRESTClient) GetDataRedactionSettings(ctx context.Context,
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetCalculatedMetric lookup for a single CalculatedMetric.
+func (c *analyticsAdminRESTClient) GetCalculatedMetric(ctx context.Context, req *adminpb.GetCalculatedMetricRequest, opts ...gax.CallOption) (*adminpb.CalculatedMetric, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetCalculatedMetric[0:len((*c.CallOptions).GetCalculatedMetric):len((*c.CallOptions).GetCalculatedMetric)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.CalculatedMetric{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateCalculatedMetric creates a CalculatedMetric.
+func (c *analyticsAdminRESTClient) CreateCalculatedMetric(ctx context.Context, req *adminpb.CreateCalculatedMetricRequest, opts ...gax.CallOption) (*adminpb.CalculatedMetric, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCalculatedMetric()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/calculatedMetrics", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("calculatedMetricId", fmt.Sprintf("%v", req.GetCalculatedMetricId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateCalculatedMetric[0:len((*c.CallOptions).CreateCalculatedMetric):len((*c.CallOptions).CreateCalculatedMetric)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.CalculatedMetric{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListCalculatedMetrics lists CalculatedMetrics on a property.
+func (c *analyticsAdminRESTClient) ListCalculatedMetrics(ctx context.Context, req *adminpb.ListCalculatedMetricsRequest, opts ...gax.CallOption) *CalculatedMetricIterator {
+	it := &CalculatedMetricIterator{}
+	req = proto.Clone(req).(*adminpb.ListCalculatedMetricsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CalculatedMetric, string, error) {
+		resp := &adminpb.ListCalculatedMetricsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/calculatedMetrics", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetCalculatedMetrics(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateCalculatedMetric updates a CalculatedMetric on a property.
+func (c *analyticsAdminRESTClient) UpdateCalculatedMetric(ctx context.Context, req *adminpb.UpdateCalculatedMetricRequest, opts ...gax.CallOption) (*adminpb.CalculatedMetric, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCalculatedMetric()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetCalculatedMetric().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "calculated_metric.name", url.QueryEscape(req.GetCalculatedMetric().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateCalculatedMetric[0:len((*c.CallOptions).UpdateCalculatedMetric):len((*c.CallOptions).UpdateCalculatedMetric)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.CalculatedMetric{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteCalculatedMetric deletes a CalculatedMetric on a property.
+func (c *analyticsAdminRESTClient) DeleteCalculatedMetric(ctx context.Context, req *adminpb.DeleteCalculatedMetricRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
 }
 
 // CreateRollupProperty create a roll-up property and all roll-up property source links.

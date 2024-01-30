@@ -71,7 +71,9 @@ type GkeHubMembershipCallOptions struct {
 func defaultGkeHubMembershipGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gkehub.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("gkehub.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("gkehub.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkehub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -674,7 +676,9 @@ func NewGkeHubMembershipRESTClient(ctx context.Context, opts ...option.ClientOpt
 func defaultGkeHubMembershipRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://gkehub.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://gkehub.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://gkehub.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkehub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

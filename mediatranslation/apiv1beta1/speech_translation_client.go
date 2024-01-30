@@ -38,7 +38,9 @@ type SpeechTranslationCallOptions struct {
 func defaultSpeechTranslationGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("mediatranslation.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("mediatranslation.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("mediatranslation.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://mediatranslation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),

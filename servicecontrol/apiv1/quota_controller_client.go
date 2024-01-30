@@ -46,7 +46,9 @@ type QuotaControllerCallOptions struct {
 func defaultQuotaControllerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("servicecontrol.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("servicecontrol.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("servicecontrol.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicecontrol.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -245,7 +247,9 @@ func NewQuotaControllerRESTClient(ctx context.Context, opts ...option.ClientOpti
 func defaultQuotaControllerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://servicecontrol.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://servicecontrol.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://servicecontrol.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicecontrol.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

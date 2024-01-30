@@ -72,7 +72,9 @@ type RepositoryManagerCallOptions struct {
 func defaultRepositoryManagerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudbuild.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudbuild.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudbuild.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudbuild.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -659,7 +661,9 @@ func NewRepositoryManagerRESTClient(ctx context.Context, opts ...option.ClientOp
 func defaultRepositoryManagerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudbuild.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudbuild.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudbuild.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudbuild.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
