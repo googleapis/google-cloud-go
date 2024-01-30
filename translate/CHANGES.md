@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.0...translate/v1.10.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **translate:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/translate/v1.9.3...translate/v1.10.0) (2024-01-03)
 
 
@@ -128,4 +135,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out translate as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

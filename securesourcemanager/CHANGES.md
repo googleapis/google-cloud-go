@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v0.1.2...securesourcemanager/v0.1.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v0.1.1...securesourcemanager/v0.1.2) (2023-11-01)
 
 
@@ -22,4 +29,3 @@
 * **securesourcemanager:** New clients ([#8738](https://github.com/googleapis/google-cloud-go/issues/8738)) ([b02ab73](https://github.com/googleapis/google-cloud-go/commit/b02ab733edd1a74f74b244298524f72d84046c0c))
 
 ## Changes
-
