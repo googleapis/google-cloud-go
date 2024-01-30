@@ -21,15 +21,14 @@
 package kmspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1485,7 +1484,7 @@ func (x *CryptoKeyVersion) GetReimportEligible() bool {
 	return false
 }
 
-// The public key for a given
+// The public keys for a given
 // [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]. Obtained via
 // [GetPublicKey][google.cloud.kms.v1.KeyManagementService.GetPublicKey].
 type PublicKey struct {
@@ -1493,18 +1492,22 @@ type PublicKey struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The public key, encoded in PEM format. For more information, see the
-	// [RFC 7468](https://tools.ietf.org/html/rfc7468) sections for
-	// [General Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
-	// [Textual Encoding of Subject Public Key Info]
+	// A public key encoded in PEM format, populated only when
+	// [GetPublicKey][google.cloud.kms.v1.KeyManagementService.GetPublicKey]
+	// returns one key. For more information, see the [RFC
+	// 7468](https://tools.ietf.org/html/rfc7468) sections for [General
+	// Considerations](https://tools.ietf.org/html/rfc7468#section-2) and [Textual
+	// Encoding of Subject Public Key Info]
 	// (https://tools.ietf.org/html/rfc7468#section-13).
 	Pem string `protobuf:"bytes,1,opt,name=pem,proto3" json:"pem,omitempty"`
 	// The
 	// [Algorithm][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithm]
 	// associated with this key.
 	Algorithm CryptoKeyVersion_CryptoKeyVersionAlgorithm `protobuf:"varint,2,opt,name=algorithm,proto3,enum=google.cloud.kms.v1.CryptoKeyVersion_CryptoKeyVersionAlgorithm" json:"algorithm,omitempty"`
-	// Integrity verification field. A CRC32C checksum of the returned
-	// [PublicKey.pem][google.cloud.kms.v1.PublicKey.pem]. An integrity check of
+	// Integrity verification field: A CRC32C checksum of the returned
+	// [PublicKey.pem][google.cloud.kms.v1.PublicKey.pem]. It is only populated
+	// when [GetPublicKey][google.cloud.kms.v1.KeyManagementService.GetPublicKey]
+	// returns one key. An integrity check of
 	// [PublicKey.pem][google.cloud.kms.v1.PublicKey.pem] can be performed by
 	// computing the CRC32C checksum of
 	// [PublicKey.pem][google.cloud.kms.v1.PublicKey.pem] and comparing your
