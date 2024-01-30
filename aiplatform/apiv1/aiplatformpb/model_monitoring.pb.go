@@ -167,6 +167,7 @@ func (x *ModelMonitoringObjectiveConfig) GetExplanationConfig() *ModelMonitoring
 	return nil
 }
 
+// The alert config for model monitoring.
 type ModelMonitoringAlertConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
