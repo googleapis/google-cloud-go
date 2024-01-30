@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.5](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.11.4...secretmanager/v1.11.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **secretmanager:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.11.3...secretmanager/v1.11.4) (2023-11-01)
 
 
