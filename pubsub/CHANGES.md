@@ -1,5 +1,12 @@
 # Changes
 
+## [1.36.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.36.0...pubsub/v1.36.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **pubsub:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.35.0...pubsub/v1.36.0) (2024-01-26)
 
 
@@ -546,4 +553,3 @@ Small fix to a package name.
 
 This is the first tag to carve out pubsub as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
