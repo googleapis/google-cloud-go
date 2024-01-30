@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.3...netapp/v0.2.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **netapp:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.2...netapp/v0.2.3) (2023-11-01)
 
 
@@ -36,4 +43,3 @@
 * **netapp:** Start generating apiv1 ([#8353](https://github.com/googleapis/google-cloud-go/issues/8353)) ([f609b3c](https://github.com/googleapis/google-cloud-go/commit/f609b3cf831fb89c45386f81d0047560120cb3f4))
 
 ## Changes
-

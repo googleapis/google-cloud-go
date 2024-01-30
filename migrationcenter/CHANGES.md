@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.3...migrationcenter/v0.2.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **migrationcenter:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.2...migrationcenter/v0.2.3) (2023-11-01)
 
 
@@ -36,4 +43,3 @@
 * **migrationcenter:** Migration Center API ([fa91b47](https://github.com/googleapis/google-cloud-go/commit/fa91b478a55d6347f5c4fd29f2490316b2f31072))
 
 ## Changes
-

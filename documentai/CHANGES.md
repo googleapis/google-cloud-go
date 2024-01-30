@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.23.8](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.7...documentai/v1.23.8) (2024-01-30)
+
+
+### Bug Fixes
+
+* **documentai:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.23.7](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.6...documentai/v1.23.7) (2023-12-13)
 
 
@@ -384,4 +391,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out documentai as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

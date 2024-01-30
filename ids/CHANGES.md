@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.4.5](https://github.com/googleapis/google-cloud-go/compare/ids/v1.4.4...ids/v1.4.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **ids:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.4.4](https://github.com/googleapis/google-cloud-go/compare/ids/v1.4.3...ids/v1.4.4) (2023-11-01)
 
 
@@ -93,4 +100,3 @@
 ## v0.1.0
 
 - feat(ids): start generating clients
-

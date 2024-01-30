@@ -2,6 +2,13 @@
 
 
 
+## [1.3.5](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.3.4...gkebackup/v1.3.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **gkebackup:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.3.4](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.3.3...gkebackup/v1.3.4) (2023-11-01)
 
 
@@ -104,4 +111,3 @@
 ### Features
 
 * **gkebackup:** start generating apiv1 ([#6031](https://github.com/googleapis/google-cloud-go/issues/6031)) ([4816e84](https://github.com/googleapis/google-cloud-go/commit/4816e84076d62c0952eec0a7de80a230dc9074fe))
-

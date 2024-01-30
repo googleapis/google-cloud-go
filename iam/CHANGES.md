@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/iam/v1.1.5...iam/v1.1.6) (2024-01-30)
+
+
+### Bug Fixes
+
+* **iam:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.1.5](https://github.com/googleapis/google-cloud-go/compare/iam/v1.1.4...iam/v1.1.5) (2023-11-01)
 
 
@@ -152,4 +159,3 @@
 
 This is the first tag to carve out iam as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
