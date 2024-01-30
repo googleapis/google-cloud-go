@@ -4120,8 +4120,8 @@ type TransactionOptionsTestCase struct {
 }
 
 func transactionOptionsTestCases() []TransactionOptionsTestCase {
-     duration, _ := time.ParseDuration("100ms")
-     
+	duration, _ := time.ParseDuration("100ms")
+
 	return []TransactionOptionsTestCase{
 		{
 			name:   "Client level",
