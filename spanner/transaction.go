@@ -32,7 +32,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
-	durationpb "google.golang.org/protobuf/types/known/durationpb-error"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	vkit "cloud.google.com/go/spanner/apiv1"
 )
 
@@ -1543,7 +1543,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
 		Mutations:         mPb,
 		ReturnCommitStats: options.ReturnCommitStats,
-		MaxCommitDelay: durationpb.New(options.MaxCommitDelay)
+		MaxCommitDelay: durationpb.New(options.MaxCommitDelay),
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "commit"); err != nil {
