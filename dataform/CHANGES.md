@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.2](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.9.1...dataform/v0.9.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **dataform:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.9.0...dataform/v0.9.1) (2023-11-01)
 
 
@@ -98,4 +105,3 @@
 
 * **dataform:** remove unused filter field from alpha2 version of API before release ([8a1ad06](https://github.com/googleapis/google-cloud-go/commit/8a1ad06572a65afa91a0a77a85b849e766876671))
 * **dataform:** start generating apiv1alpha2 ([#6299](https://github.com/googleapis/google-cloud-go/issues/6299)) ([1c434c6](https://github.com/googleapis/google-cloud-go/commit/1c434c6657b9bd8529760681c95aef9373c66120))
-

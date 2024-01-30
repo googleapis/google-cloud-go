@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.4](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v1.0.3...beyondcorp/v1.0.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **beyondcorp:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v1.0.2...beyondcorp/v1.0.3) (2023-11-01)
 
 
@@ -102,4 +109,3 @@
 * **beyondcorp/appgateways:** start generating apiv1 ([7066fed](https://github.com/googleapis/google-cloud-go/commit/7066fedc31fa4c19e851477792bd8de8e50541ab))
 * **beyondcorp/clientconnectorservices:** start generating apiv1 ([7066fed](https://github.com/googleapis/google-cloud-go/commit/7066fedc31fa4c19e851477792bd8de8e50541ab))
 * **beyondcorp/clientgateways:** start generating apiv1 ([7066fed](https://github.com/googleapis/google-cloud-go/commit/7066fedc31fa4c19e851477792bd8de8e50541ab))
-

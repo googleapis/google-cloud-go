@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.8.0...binaryauthorization/v1.8.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **binaryauthorization:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.7.3...binaryauthorization/v1.8.0) (2023-11-29)
 
 
@@ -145,4 +152,3 @@
 
 This is the first tag to carve out binaryauthorization as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
