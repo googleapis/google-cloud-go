@@ -95,6 +95,15 @@ const (
 
 	// Part of the error message when the payload contains invalid UTF-8 characters.
 	utfErrorString = "string field contains invalid UTF-8"
+
+	// DetectProjectID is a sentinel value that instructs NewClient to detect the
+	// project ID. It is given in place of the projectID argument. NewClient will
+	// use the project ID from the given credentials or the default credentials
+	// (https://developers.google.com/accounts/docs/application-default-credentials)
+	// if no credentials were provided. When providing credentials, not all
+	// options will allow NewClient to extract the project ID. Specifically a JWT
+	// does not have the project ID encoded.
+	DetectProjectID = "*detect-project-id*"
 )
 
 var (
@@ -103,8 +112,9 @@ var (
 	ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
 
 	// For testing:
-	now                = time.Now
-	toLogEntryInternal = toLogEntryInternalImpl
+	now                    = time.Now
+	toLogEntryInternal     = toLogEntryInternalImpl
+	detectResourceInternal = detectResource
 
 	// ErrOverflow signals that the number of buffered entries for a Logger
 	// exceeds its BufferLimit.
@@ -148,8 +158,11 @@ type Client struct {
 //	billingAccounts/ACCOUNT_ID
 //	organizations/ORG_ID
 //
-// for backwards compatibility, a string with no '/' is also allowed and is interpreted
+// For backwards compatibility, a string with no '/' is also allowed and is interpreted
 // as a project ID.
+//
+// If logging.DetectProjectId is provided as the parent, the parent will be interpreted as a project
+// ID, and its value will be inferred from the environment.
 //
 // By default NewClient uses WriteScope. To use a different scope, call
 // NewClient using a WithScopes option (see https://godoc.org/google.golang.org/api/option#WithScopes).
@@ -192,6 +205,13 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 
 func makeParent(parent string) (string, error) {
 	if !strings.ContainsRune(parent, '/') {
+		if parent == DetectProjectID {
+			resource := detectResourceInternal()
+			if resource == nil {
+				return parent, fmt.Errorf("could not determine project ID from environment")
+			}
+			parent = resource.Labels["project_id"]
+		}
 		return "projects/" + parent, nil
 	}
 	prefix := strings.Split(parent, "/")[0]
@@ -301,7 +321,7 @@ func (r *loggerRetryer) Retry(err error) (pause time.Duration, shouldRetry bool)
 // characters: [A-Za-z0-9]; and punctuation characters: forward-slash,
 // underscore, hyphen, and period.
 func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
-	r := detectResource()
+	r := detectResourceInternal()
 	if r == nil {
 		r = monitoredResource(c.parent)
 	}

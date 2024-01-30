@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,6 +60,11 @@ type CloudDeployCallOptions struct {
 	CreateTarget           []gax.CallOption
 	UpdateTarget           []gax.CallOption
 	DeleteTarget           []gax.CallOption
+	ListCustomTargetTypes  []gax.CallOption
+	GetCustomTargetType    []gax.CallOption
+	CreateCustomTargetType []gax.CallOption
+	UpdateCustomTargetType []gax.CallOption
+	DeleteCustomTargetType []gax.CallOption
 	ListReleases           []gax.CallOption
 	GetRelease             []gax.CallOption
 	CreateRelease          []gax.CallOption
@@ -98,7 +103,9 @@ type CloudDeployCallOptions struct {
 func defaultCloudDeployGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("clouddeploy.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("clouddeploy.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouddeploy.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouddeploy.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -174,6 +181,39 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListCustomTargetTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCustomTargetType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCustomTargetType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateCustomTargetType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteCustomTargetType: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListReleases: []gax.CallOption{
@@ -424,6 +464,37 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 		DeleteTarget: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListCustomTargetTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetCustomTargetType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateCustomTargetType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateCustomTargetType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteCustomTargetType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListReleases: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -618,6 +689,14 @@ type internalCloudDeployClient interface {
 	UpdateTargetOperation(name string) *UpdateTargetOperation
 	DeleteTarget(context.Context, *deploypb.DeleteTargetRequest, ...gax.CallOption) (*DeleteTargetOperation, error)
 	DeleteTargetOperation(name string) *DeleteTargetOperation
+	ListCustomTargetTypes(context.Context, *deploypb.ListCustomTargetTypesRequest, ...gax.CallOption) *CustomTargetTypeIterator
+	GetCustomTargetType(context.Context, *deploypb.GetCustomTargetTypeRequest, ...gax.CallOption) (*deploypb.CustomTargetType, error)
+	CreateCustomTargetType(context.Context, *deploypb.CreateCustomTargetTypeRequest, ...gax.CallOption) (*CreateCustomTargetTypeOperation, error)
+	CreateCustomTargetTypeOperation(name string) *CreateCustomTargetTypeOperation
+	UpdateCustomTargetType(context.Context, *deploypb.UpdateCustomTargetTypeRequest, ...gax.CallOption) (*UpdateCustomTargetTypeOperation, error)
+	UpdateCustomTargetTypeOperation(name string) *UpdateCustomTargetTypeOperation
+	DeleteCustomTargetType(context.Context, *deploypb.DeleteCustomTargetTypeRequest, ...gax.CallOption) (*DeleteCustomTargetTypeOperation, error)
+	DeleteCustomTargetTypeOperation(name string) *DeleteCustomTargetTypeOperation
 	ListReleases(context.Context, *deploypb.ListReleasesRequest, ...gax.CallOption) *ReleaseIterator
 	GetRelease(context.Context, *deploypb.GetReleaseRequest, ...gax.CallOption) (*deploypb.Release, error)
 	CreateRelease(context.Context, *deploypb.CreateReleaseRequest, ...gax.CallOption) (*CreateReleaseOperation, error)
@@ -788,6 +867,49 @@ func (c *CloudDeployClient) DeleteTarget(ctx context.Context, req *deploypb.Dele
 // The name must be that of a previously created DeleteTargetOperation, possibly from a different process.
 func (c *CloudDeployClient) DeleteTargetOperation(name string) *DeleteTargetOperation {
 	return c.internalClient.DeleteTargetOperation(name)
+}
+
+// ListCustomTargetTypes lists CustomTargetTypes in a given project and location.
+func (c *CloudDeployClient) ListCustomTargetTypes(ctx context.Context, req *deploypb.ListCustomTargetTypesRequest, opts ...gax.CallOption) *CustomTargetTypeIterator {
+	return c.internalClient.ListCustomTargetTypes(ctx, req, opts...)
+}
+
+// GetCustomTargetType gets details of a single CustomTargetType.
+func (c *CloudDeployClient) GetCustomTargetType(ctx context.Context, req *deploypb.GetCustomTargetTypeRequest, opts ...gax.CallOption) (*deploypb.CustomTargetType, error) {
+	return c.internalClient.GetCustomTargetType(ctx, req, opts...)
+}
+
+// CreateCustomTargetType creates a new CustomTargetType in a given project and location.
+func (c *CloudDeployClient) CreateCustomTargetType(ctx context.Context, req *deploypb.CreateCustomTargetTypeRequest, opts ...gax.CallOption) (*CreateCustomTargetTypeOperation, error) {
+	return c.internalClient.CreateCustomTargetType(ctx, req, opts...)
+}
+
+// CreateCustomTargetTypeOperation returns a new CreateCustomTargetTypeOperation from a given name.
+// The name must be that of a previously created CreateCustomTargetTypeOperation, possibly from a different process.
+func (c *CloudDeployClient) CreateCustomTargetTypeOperation(name string) *CreateCustomTargetTypeOperation {
+	return c.internalClient.CreateCustomTargetTypeOperation(name)
+}
+
+// UpdateCustomTargetType updates a single CustomTargetType.
+func (c *CloudDeployClient) UpdateCustomTargetType(ctx context.Context, req *deploypb.UpdateCustomTargetTypeRequest, opts ...gax.CallOption) (*UpdateCustomTargetTypeOperation, error) {
+	return c.internalClient.UpdateCustomTargetType(ctx, req, opts...)
+}
+
+// UpdateCustomTargetTypeOperation returns a new UpdateCustomTargetTypeOperation from a given name.
+// The name must be that of a previously created UpdateCustomTargetTypeOperation, possibly from a different process.
+func (c *CloudDeployClient) UpdateCustomTargetTypeOperation(name string) *UpdateCustomTargetTypeOperation {
+	return c.internalClient.UpdateCustomTargetTypeOperation(name)
+}
+
+// DeleteCustomTargetType deletes a single CustomTargetType.
+func (c *CloudDeployClient) DeleteCustomTargetType(ctx context.Context, req *deploypb.DeleteCustomTargetTypeRequest, opts ...gax.CallOption) (*DeleteCustomTargetTypeOperation, error) {
+	return c.internalClient.DeleteCustomTargetType(ctx, req, opts...)
+}
+
+// DeleteCustomTargetTypeOperation returns a new DeleteCustomTargetTypeOperation from a given name.
+// The name must be that of a previously created DeleteCustomTargetTypeOperation, possibly from a different process.
+func (c *CloudDeployClient) DeleteCustomTargetTypeOperation(name string) *DeleteCustomTargetTypeOperation {
+	return c.internalClient.DeleteCustomTargetTypeOperation(name)
 }
 
 // ListReleases lists Releases in a given project and location.
@@ -1152,7 +1274,9 @@ func NewCloudDeployRESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultCloudDeployRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://clouddeploy.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://clouddeploy.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://clouddeploy.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouddeploy.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1443,6 +1567,130 @@ func (c *cloudDeployGRPCClient) DeleteTarget(ctx context.Context, req *deploypb.
 		return nil, err
 	}
 	return &DeleteTargetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudDeployGRPCClient) ListCustomTargetTypes(ctx context.Context, req *deploypb.ListCustomTargetTypesRequest, opts ...gax.CallOption) *CustomTargetTypeIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListCustomTargetTypes[0:len((*c.CallOptions).ListCustomTargetTypes):len((*c.CallOptions).ListCustomTargetTypes)], opts...)
+	it := &CustomTargetTypeIterator{}
+	req = proto.Clone(req).(*deploypb.ListCustomTargetTypesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.CustomTargetType, string, error) {
+		resp := &deploypb.ListCustomTargetTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudDeployClient.ListCustomTargetTypes(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCustomTargetTypes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudDeployGRPCClient) GetCustomTargetType(ctx context.Context, req *deploypb.GetCustomTargetTypeRequest, opts ...gax.CallOption) (*deploypb.CustomTargetType, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetCustomTargetType[0:len((*c.CallOptions).GetCustomTargetType):len((*c.CallOptions).GetCustomTargetType)], opts...)
+	var resp *deploypb.CustomTargetType
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.GetCustomTargetType(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudDeployGRPCClient) CreateCustomTargetType(ctx context.Context, req *deploypb.CreateCustomTargetTypeRequest, opts ...gax.CallOption) (*CreateCustomTargetTypeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateCustomTargetType[0:len((*c.CallOptions).CreateCustomTargetType):len((*c.CallOptions).CreateCustomTargetType)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.CreateCustomTargetType(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateCustomTargetTypeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudDeployGRPCClient) UpdateCustomTargetType(ctx context.Context, req *deploypb.UpdateCustomTargetTypeRequest, opts ...gax.CallOption) (*UpdateCustomTargetTypeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "custom_target_type.name", url.QueryEscape(req.GetCustomTargetType().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateCustomTargetType[0:len((*c.CallOptions).UpdateCustomTargetType):len((*c.CallOptions).UpdateCustomTargetType)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.UpdateCustomTargetType(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateCustomTargetTypeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudDeployGRPCClient) DeleteCustomTargetType(ctx context.Context, req *deploypb.DeleteCustomTargetTypeRequest, opts ...gax.CallOption) (*DeleteCustomTargetTypeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteCustomTargetType[0:len((*c.CallOptions).DeleteCustomTargetType):len((*c.CallOptions).DeleteCustomTargetType)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.DeleteCustomTargetType(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteCustomTargetTypeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -3095,6 +3343,402 @@ func (c *cloudDeployRESTClient) DeleteTarget(ctx context.Context, req *deploypb.
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteTargetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListCustomTargetTypes lists CustomTargetTypes in a given project and location.
+func (c *cloudDeployRESTClient) ListCustomTargetTypes(ctx context.Context, req *deploypb.ListCustomTargetTypesRequest, opts ...gax.CallOption) *CustomTargetTypeIterator {
+	it := &CustomTargetTypeIterator{}
+	req = proto.Clone(req).(*deploypb.ListCustomTargetTypesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.CustomTargetType, string, error) {
+		resp := &deploypb.ListCustomTargetTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/customTargetTypes", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetCustomTargetTypes(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetCustomTargetType gets details of a single CustomTargetType.
+func (c *cloudDeployRESTClient) GetCustomTargetType(ctx context.Context, req *deploypb.GetCustomTargetTypeRequest, opts ...gax.CallOption) (*deploypb.CustomTargetType, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetCustomTargetType[0:len((*c.CallOptions).GetCustomTargetType):len((*c.CallOptions).GetCustomTargetType)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &deploypb.CustomTargetType{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateCustomTargetType creates a new CustomTargetType in a given project and location.
+func (c *cloudDeployRESTClient) CreateCustomTargetType(ctx context.Context, req *deploypb.CreateCustomTargetTypeRequest, opts ...gax.CallOption) (*CreateCustomTargetTypeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCustomTargetType()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/customTargetTypes", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("customTargetTypeId", fmt.Sprintf("%v", req.GetCustomTargetTypeId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateCustomTargetTypeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateCustomTargetType updates a single CustomTargetType.
+func (c *cloudDeployRESTClient) UpdateCustomTargetType(ctx context.Context, req *deploypb.UpdateCustomTargetTypeRequest, opts ...gax.CallOption) (*UpdateCustomTargetTypeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCustomTargetType()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCustomTargetType().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "custom_target_type.name", url.QueryEscape(req.GetCustomTargetType().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateCustomTargetTypeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteCustomTargetType deletes a single CustomTargetType.
+func (c *cloudDeployRESTClient) DeleteCustomTargetType(ctx context.Context, req *deploypb.DeleteCustomTargetTypeRequest, opts ...gax.CallOption) (*DeleteCustomTargetTypeOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteCustomTargetTypeOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -5484,6 +6128,24 @@ func (c *cloudDeployRESTClient) CreateAutomationOperation(name string) *CreateAu
 	}
 }
 
+// CreateCustomTargetTypeOperation returns a new CreateCustomTargetTypeOperation from a given name.
+// The name must be that of a previously created CreateCustomTargetTypeOperation, possibly from a different process.
+func (c *cloudDeployGRPCClient) CreateCustomTargetTypeOperation(name string) *CreateCustomTargetTypeOperation {
+	return &CreateCustomTargetTypeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateCustomTargetTypeOperation returns a new CreateCustomTargetTypeOperation from a given name.
+// The name must be that of a previously created CreateCustomTargetTypeOperation, possibly from a different process.
+func (c *cloudDeployRESTClient) CreateCustomTargetTypeOperation(name string) *CreateCustomTargetTypeOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateCustomTargetTypeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateDeliveryPipelineOperation returns a new CreateDeliveryPipelineOperation from a given name.
 // The name must be that of a previously created CreateDeliveryPipelineOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) CreateDeliveryPipelineOperation(name string) *CreateDeliveryPipelineOperation {
@@ -5574,6 +6236,24 @@ func (c *cloudDeployRESTClient) DeleteAutomationOperation(name string) *DeleteAu
 	}
 }
 
+// DeleteCustomTargetTypeOperation returns a new DeleteCustomTargetTypeOperation from a given name.
+// The name must be that of a previously created DeleteCustomTargetTypeOperation, possibly from a different process.
+func (c *cloudDeployGRPCClient) DeleteCustomTargetTypeOperation(name string) *DeleteCustomTargetTypeOperation {
+	return &DeleteCustomTargetTypeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteCustomTargetTypeOperation returns a new DeleteCustomTargetTypeOperation from a given name.
+// The name must be that of a previously created DeleteCustomTargetTypeOperation, possibly from a different process.
+func (c *cloudDeployRESTClient) DeleteCustomTargetTypeOperation(name string) *DeleteCustomTargetTypeOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteCustomTargetTypeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteDeliveryPipelineOperation returns a new DeleteDeliveryPipelineOperation from a given name.
 // The name must be that of a previously created DeleteDeliveryPipelineOperation, possibly from a different process.
 func (c *cloudDeployGRPCClient) DeleteDeliveryPipelineOperation(name string) *DeleteDeliveryPipelineOperation {
@@ -5623,6 +6303,24 @@ func (c *cloudDeployGRPCClient) UpdateAutomationOperation(name string) *UpdateAu
 func (c *cloudDeployRESTClient) UpdateAutomationOperation(name string) *UpdateAutomationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAutomationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateCustomTargetTypeOperation returns a new UpdateCustomTargetTypeOperation from a given name.
+// The name must be that of a previously created UpdateCustomTargetTypeOperation, possibly from a different process.
+func (c *cloudDeployGRPCClient) UpdateCustomTargetTypeOperation(name string) *UpdateCustomTargetTypeOperation {
+	return &UpdateCustomTargetTypeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateCustomTargetTypeOperation returns a new UpdateCustomTargetTypeOperation from a given name.
+// The name must be that of a previously created UpdateCustomTargetTypeOperation, possibly from a different process.
+func (c *cloudDeployRESTClient) UpdateCustomTargetTypeOperation(name string) *UpdateCustomTargetTypeOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateCustomTargetTypeOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

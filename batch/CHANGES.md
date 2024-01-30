@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.3...batch/v1.7.0) (2023-11-27)
+
+
+### Features
+
+* **batch:** Add a CloudLoggingOption and use_generic_task_monitored_resource fields for users to opt out new batch monitored resource in cloud logging ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+
 ## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.2...batch/v1.6.3) (2023-11-01)
 
 

@@ -724,6 +724,12 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 		for element != nil {
 			sh := element.Value.(*sessionHandle)
 			sh.mu.Lock()
+			if sh.session == nil {
+				// sessionHandle has already been recycled/destroyed.
+				sh.mu.Unlock()
+				element = element.Next()
+				continue
+			}
 			diff := time.Now().Sub(sh.lastUseTime)
 			if !sh.eligibleForLongRunning && diff.Seconds() >= p.idleTimeThreshold.Seconds() {
 				if (p.ActionOnInactiveTransaction == Warn || p.ActionOnInactiveTransaction == WarnAndClose) && !sh.isSessionLeakLogged {

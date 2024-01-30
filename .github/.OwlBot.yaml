@@ -4,6 +4,8 @@ docker:
 deep-remove-regex:
   - /accessapproval/apiv1/
   - /accesscontextmanager/apiv1/
+  - /ai/generativelanguage/apiv1/
+  - /ai/generativelanguage/apiv1beta/
   - /ai/generativelanguage/apiv1beta2/
   - /aiplatform/apiv1/
   - /aiplatform/apiv1beta1/
@@ -20,6 +22,7 @@ deep-remove-regex:
   - /apigeeregistry/apiv1/
   - /apikeys/apiv2/
   - /appengine/apiv1/
+  - /apps/meet/apiv2beta/
   - /area120/tables/apiv1alpha1/
   - /artifactregistry/apiv1/
   - /artifactregistry/apiv1beta2/
@@ -63,6 +66,7 @@ deep-remove-regex:
   - /cloudbuild/apiv2/
   - /clouddms/apiv1/
   - /cloudprofiler/apiv2/
+  - /cloudquotas/v1/
   - /cloudtasks/apiv2/
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
@@ -96,6 +100,7 @@ deep-remove-regex:
   - /dialogflow/cx/apiv3beta1/
   - /discoveryengine/apiv1/
   - /discoveryengine/apiv1beta/
+  - /discoveryengine/apiv1alpha/
   - /dlp/apiv2/
   - /documentai/apiv1/
   - /documentai/apiv1beta3/
@@ -125,6 +130,8 @@ deep-remove-regex:
   # START snippets
   - /internal/generated/snippets/accessapproval/apiv1/
   - /internal/generated/snippets/accesscontextmanager/apiv1/
+  - /internal/generated/snippets/ai/generativelanguage/apiv1/
+  - /internal/generated/snippets/ai/generativelanguage/apiv1beta/
   - /internal/generated/snippets/ai/generativelanguage/apiv1beta2/
   - /internal/generated/snippets/aiplatform/apiv1/
   - /internal/generated/snippets/aiplatform/apiv1beta1/
@@ -138,6 +145,7 @@ deep-remove-regex:
   - /internal/generated/snippets/apigeeregistry/apiv1/
   - /internal/generated/snippets/apikeys/apiv2/
   - /internal/generated/snippets/appengine/apiv1/
+  - /internal/generated/snippets/apps/meet/apiv2beta/
   - /internal/generated/snippets/area120/tables/apiv1alpha1/
   - /internal/generated/snippets/artifactregistry/apiv1/
   - /internal/generated/snippets/artifactregistry/apiv1beta2/
@@ -181,6 +189,7 @@ deep-remove-regex:
   - /internal/generated/snippets/cloudbuild/apiv2/
   - /internal/generated/snippets/clouddms/apiv1/
   - /internal/generated/snippets/cloudprofiler/apiv2/
+  - /internal/generated/snippets/cloudquotas/apiv1/
   - /internal/generated/snippets/cloudtasks/apiv2/
   - /internal/generated/snippets/cloudtasks/apiv2beta2/
   - /internal/generated/snippets/cloudtasks/apiv2beta3/
@@ -213,6 +222,7 @@ deep-remove-regex:
   - /internal/generated/snippets/dialogflow/cx/apiv3beta1/
   - /internal/generated/snippets/discoveryengine/apiv1/
   - /internal/generated/snippets/discoveryengine/apiv1beta/
+  - /internal/generated/snippets/discoveryengine/apiv1alpha/
   - /internal/generated/snippets/dlp/apiv2/
   - /internal/generated/snippets/documentai/apiv1/
   - /internal/generated/snippets/documentai/apiv1beta3/
@@ -316,12 +326,16 @@ deep-remove-regex:
   - /internal/generated/snippets/securitycenter/apiv1beta1/
   - /internal/generated/snippets/securitycenter/apiv1p1beta1/
   - /internal/generated/snippets/securitycenter/settings/apiv1beta1/
+  - /internal/generated/snippets/securitycentermanagement/apiv1/
+  - /internal/generated/snippets/securityposture/apiv1/
   - /internal/generated/snippets/servicecontrol/apiv1/
   - /internal/generated/snippets/servicedirectory/apiv1/
   - /internal/generated/snippets/servicedirectory/apiv1beta1/
-  - /internal/generated/snippets/serviceusage/apiv1/
+  - /internal/generated/snippets/servicehealth/apiv1/
   - /internal/generated/snippets/servicemanagement/apiv1/
+  - /internal/generated/snippets/serviceusage/apiv1/
   - /internal/generated/snippets/shell/apiv1/
+  - /internal/generated/snippets/shopping/css/apiv1/
   - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
   - /internal/generated/snippets/spanner/admin/database/apiv1/
   - /internal/generated/snippets/spanner/admin/instance/apiv1/
@@ -348,6 +362,7 @@ deep-remove-regex:
   - /internal/generated/snippets/videointelligence/apiv1p3beta1/
   - /internal/generated/snippets/vision/v2/apiv1/
   - /internal/generated/snippets/vision/v2/apiv1p1beta1/
+  - /internal/generated/snippets/visionai/apiv1/
   - /internal/generated/snippets/vmmigration/apiv1/
   - /internal/generated/snippets/vmwareengine/apiv1/
   - /internal/generated/snippets/vpcaccess/apiv1/
@@ -440,17 +455,22 @@ deep-remove-regex:
   - /securitycenter/apiv1beta1/
   - /securitycenter/apiv1p1beta1/
   - /securitycenter/settings/apiv1beta1/
+  - /securitycentermanagement/apiv1/
+  - /securityposture/apiv1/
   - /servicecontrol/apiv1/
   - /servicedirectory/apiv1/
   - /servicedirectory/apiv1beta1/
-  - /serviceusage/apiv1/
+  - /servicehealth/apiv1/
   - /servicemanagement/apiv1/
+  - /serviceusage/apiv1/
   - /shell/apiv1/
+  - /shopping/css/apiv1/
   - /shopping/merchant/inventories/apiv1beta/
   - /shopping/type/
   - /spanner/admin/database/apiv1/
   - /spanner/admin/instance/apiv1/
   - /spanner/apiv1/
+  - /spanner/executor/apiv1/
   - /speech/apiv1/
   - /speech/apiv1p1beta1/
   - /speech/apiv2/
@@ -474,6 +494,7 @@ deep-remove-regex:
   - /videointelligence/apiv1p3beta1/
   - /vision/apiv1/
   - /vision/apiv1p1beta1/
+  - /visionai/apiv1/
   - /vmmigration/apiv1/
   - /vmwareengine/apiv1/
   - /vpcaccess/apiv1/
@@ -530,6 +551,10 @@ deep-copy-regex:
     dest: /
   - source: /google/identity/accesscontextmanager/v1/cloud.google.com/go
     dest: /
+  - source: /google/ai/generativelanguage/v1/cloud.google.com/go
+    dest: /
+  - source: /google/ai/generativelanguage/v1beta/cloud.google.com/go
+    dest: /
   - source: /google/ai/generativelanguage/v1beta2/cloud.google.com/go
     dest: /
   - source: /google/cloud/aiplatform/v1/cloud.google.com/go
@@ -566,7 +591,11 @@ deep-copy-regex:
     dest: /
   - source: /google/api/apikeys/v2/cloud.google.com/go
     dest: /
+  - source: /google/api/cloudquotas/v1/cloud.google.com/go
+    dest: /
   - source: /google/appengine/v1/cloud.google.com/go
+    dest: /
+  - source: /google/apps/meet/v2beta/cloud.google.com/go
     dest: /
   - source: /google/area120/tables/v1alpha1/cloud.google.com/go
     dest: /
@@ -715,6 +744,8 @@ deep-copy-regex:
   - source: /google/cloud/discoveryengine/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/discoveryengine/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/discoveryengine/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/privacy/dlp/v2/cloud.google.com/go
     dest: /
@@ -930,17 +961,25 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/securitycenter/settings/v1beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/securitycentermanagement/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/securityposture/v1/cloud.google.com/go
+    dest: /
   - source: /google/api/servicecontrol/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/servicedirectory/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/servicedirectory/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/api/serviceusage/v1/cloud.google.com/go
+  - source: /google/cloud/servicehealth/v1/cloud.google.com/go
     dest: /
   - source: /google/api/servicemanagement/v1/cloud.google.com/go
     dest: /
+  - source: /google/api/serviceusage/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/shell/v1/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/css/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/inventories/v1beta/cloud.google.com/go
     dest: /
@@ -951,6 +990,8 @@ deep-copy-regex:
   - source: /google/spanner/admin/instance/v1/cloud.google.com/go
     dest: /
   - source: /google/spanner/v1/cloud.google.com/go
+    dest: /
+  - source: /google/spanner/executor/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/speech/v1/cloud.google.com/go
     dest: /
@@ -1002,6 +1043,8 @@ deep-copy-regex:
     dest: /vision/apiv1p1beta1
   - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go/internal/generated/snippets/vision/v2/apiv1p1beta1
     dest: /internal/generated/snippets/vision/apiv1p1beta1
+  - source: /google/cloud/visionai/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/vmmigration/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/vmwareengine/v1/cloud.google.com/go

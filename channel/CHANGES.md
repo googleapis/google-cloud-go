@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.3...channel/v1.17.4) (2024-01-03)
+
+
+### Documentation
+
+* **channel:** A comment for service `CloudChannelReportsService` is changed ([cbe96af](https://github.com/googleapis/google-cloud-go/commit/cbe96af778ec9152b528714281de9e534f01c237))
+
 ## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.2...channel/v1.17.3) (2023-11-01)
 
 

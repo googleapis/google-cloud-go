@@ -73,7 +73,38 @@ func TestFormatChanges(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := FormatChanges(tc.changes, tc.onlyGapics); got != tc.want {
-				t.Errorf("FormatChanges() = %q, want %q", got, tc.want)
+				t.Errorf("%s: FormatChanges() = %q, want %q", tc.name, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestFormatChanges_MaxChangesLen(t *testing.T) {
+	tests := []struct {
+		name          string
+		changes       []*ChangeInfo
+		maxChangesLen int
+		want          string
+	}{
+		{
+			name:          "truncate long title",
+			changes:       []*ChangeInfo{{Title: "fix: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod", Body: "tempor incididunt ut\nPiperOrigin-RevId: bar"}},
+			maxChangesLen: 100,
+			want:          "\nChanges:\n\nfix: Lorem ipsum dolor...\n  PiperOrigin-RevId: bar\n\n",
+		},
+		{
+			name:          "no truncate short title",
+			changes:       []*ChangeInfo{{Title: "fix: Lorem ipsum dolor", Body: "tempor incididunt ut\n PiperOrigin-RevId: bar"}},
+			maxChangesLen: 50,
+			want:          "\nChanges:\n\nfix: Lorem ipsum dolor\n  PiperOrigin-RevId: bar\n\n",
+		},
+	}
+
+	for _, tc := range tests {
+		maxChangesLen = tc.maxChangesLen
+		t.Run(tc.name, func(t *testing.T) {
+			if got := FormatChanges(tc.changes, false); got != tc.want {
+				t.Errorf("%s: FormatChanges() = %q, want %q", tc.name, got, tc.want)
 			}
 		})
 	}

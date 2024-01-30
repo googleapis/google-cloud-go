@@ -27,6 +27,7 @@ import (
 	"runtime"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -160,7 +161,9 @@ func createIndexes(ctx context.Context, dbPath string) {
 	indexNames = make([]string, len(indexFields))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
 
+	var wg sync.WaitGroup
 	for i, fields := range indexFields {
+		wg.Add(1)
 		var adminPbIndexFields []*adminpb.Index_IndexField
 		for _, field := range fields {
 			adminPbIndexFields = append(adminPbIndexFields, &adminpb.Index_IndexField{
@@ -181,13 +184,23 @@ func createIndexes(ctx context.Context, dbPath string) {
 		if createErr != nil {
 			log.Fatalf("CreateIndex: %v", createErr)
 		}
-
-		createdIndex, waitErr := op.Wait(ctx)
-		if waitErr != nil {
-			log.Fatalf("Wait: %v", waitErr)
+		if i == 0 {
+			// Seed first index to prevent FirestoreMetadataWrite.BootstrapDatabase Concurrent access error
+			handleCreateIndexResp(ctx, &wg, i, op)
+		} else {
+			go handleCreateIndexResp(ctx, &wg, i, op)
 		}
-		indexNames[i] = createdIndex.Name
 	}
+	wg.Wait()
+}
+
+func handleCreateIndexResp(ctx context.Context, wg *sync.WaitGroup, i int, op *apiv1.CreateIndexOperation) {
+	defer wg.Done()
+	createdIndex, waitErr := op.Wait(ctx)
+	if waitErr != nil {
+		log.Fatalf("Wait: %v", waitErr)
+	}
+	indexNames[i] = createdIndex.Name
 }
 
 // deleteIndexes deletes composite indexes created in createIndexes function
@@ -2303,6 +2316,54 @@ func TestIntegration_BulkWriter_Set(t *testing.T) {
 	})
 }
 
+func TestIntegration_BulkWriter_Create(t *testing.T) {
+	c := integrationClient(t)
+	ctx := context.Background()
+
+	type BWDoc struct {
+		A int
+	}
+
+	docRef := iColl.Doc(fmt.Sprintf("bw_create_1_%d", time.Now().Unix()))
+	_, err := docRef.Create(ctx, BWDoc{A: 6})
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+
+	doc := BWDoc{A: 5}
+	testcases := []struct {
+		desc           string
+		ref            *DocumentRef
+		wantStatusCode codes.Code
+	}{
+		{
+			desc:           "Successful",
+			ref:            iColl.Doc(fmt.Sprintf("bw_create_2_%d", time.Now().Unix())),
+			wantStatusCode: codes.OK,
+		},
+		{
+			desc:           "Already exists error",
+			ref:            docRef,
+			wantStatusCode: codes.AlreadyExists,
+		},
+	}
+	for _, testcase := range testcases {
+		bw := c.BulkWriter(ctx)
+
+		bwJob, err := bw.Create(testcase.ref, doc)
+		if err != nil {
+			t.Errorf("%v Create %v", testcase.desc, err)
+			continue
+		}
+		bw.Flush()
+
+		_, gotErr := bwJob.Results()
+		if status.Code(gotErr) != testcase.wantStatusCode {
+			t.Errorf("%q: Mismatch in error got: %v, want: %q", testcase.desc, status.Code(gotErr), testcase.wantStatusCode)
+		}
+	}
+}
+
 func TestIntegration_BulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
 	docRefs := []*DocumentRef{doc}
@@ -2659,7 +2720,7 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		}
 	}
 
-	tm := time.Now()
+	tm := time.Now().Add(-time.Minute)
 	c.WithReadOptions(ReadTime(tm))
 
 	ds, err := c.GetAll(ctx, docs)
@@ -2667,10 +2728,9 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// TODO(6894): Re-enable this test when snapshot reads is available on test project.
-	t.SkipNow()
+	wantReadTime := tm.Truncate(time.Second)
 	for _, d := range ds {
-		if !tm.Equal(d.ReadTime) {
+		if !wantReadTime.Equal(d.ReadTime) {
 			t.Errorf("wanted read time: %v; got: %v",
 				tm.UnixNano(), d.ReadTime.UnixNano())
 		}

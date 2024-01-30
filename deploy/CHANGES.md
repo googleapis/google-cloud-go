@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.16.0...deploy/v1.17.0) (2024-01-08)
+
+
+### Features
+
+* **deploy:** Add stable cutback duration configuration to the k8s gateway service mesh deployment strategy. This allows configuring the amount of time to migrate traffic back to the original Service in the stable phase ([#9227](https://github.com/googleapis/google-cloud-go/issues/9227)) ([bd30055](https://github.com/googleapis/google-cloud-go/commit/bd3005532fbffa9894b11149e9693b7c33227d79))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.15.0...deploy/v1.16.0) (2023-12-07)
+
+
+### Features
+
+* **deploy:** Add custom target type support ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.14.2...deploy/v1.15.0) (2023-11-09)
 
 
