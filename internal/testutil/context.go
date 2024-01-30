@@ -32,6 +32,7 @@ const (
 	envProjID      = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
 	envPrivateKey  = "GCLOUD_TESTS_GOLANG_KEY"
 	envImpersonate = "GCLOUD_TESTS_IMPERSONATE_CREDENTIALS"
+	envUniverse    = "GCLOUD_TESTS_UNIVERSE_DOMAIN"
 )
 
 // ProjID returns the project ID to use in integration tests, or the empty
@@ -45,6 +46,19 @@ func ProjID() string {
 // this repo.
 func Credentials(ctx context.Context, scopes ...string) *google.Credentials {
 	return CredentialsEnv(ctx, envPrivateKey, scopes...)
+}
+
+// UniverseFromEnv will try to extract the universe to use in integrations tests,
+// using the standard environment variables for tests in this repo.
+func UniverseFromEnv(ctx context.Context, scopes ...string) (string, error) {
+	if v, ok := os.LookupEnv(envUniverse); ok && v != "" {
+		return v, nil
+	}
+	ce := CredentialsEnv(ctx, envPrivateKey, scopes...)
+	if ce == nil {
+		return "", errors.New("no credentials returned")
+	}
+	return ce.GetUniverseDomain()
 }
 
 // CredentialsEnv returns the credentials to use in integration tests, or nil
@@ -107,11 +121,15 @@ func TokenSourceEnv(ctx context.Context, envVar string, scopes ...string) oauth2
 		}
 		return ts
 	}
-	conf, err := jwtConfigFromFile(key, scopes)
+
+	creds, err := credsFromFile(ctx, key, scopes)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return conf.TokenSource(ctx)
+	if creds == nil {
+		log.Fatal("credential generation yielded nil creds")
+	}
+	return creds.TokenSource
 }
 
 func impersonatedTokenSource(ctx context.Context, scopes []string) oauth2.TokenSource {
@@ -149,6 +167,20 @@ func jwtConfigFromFile(filename string, scopes []string) (*jwt.Config, error) {
 		return nil, fmt.Errorf("google.JWTConfigFromJSON: %v", err)
 	}
 	return conf, nil
+}
+
+// credsFromFile reads the given JSON private key file, and returns the credentials
+// built from the file.
+// If the filename is empty, it returns (nil, nil).
+func credsFromFile(ctx context.Context, filename string, scopes []string) (*google.Credentials, error) {
+	if filename == "" {
+		return nil, nil
+	}
+	jsonKey, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("cannot read the JSON key file, err: %v", err)
+	}
+	return google.CredentialsFromJSON(ctx, jsonKey, scopes...)
 }
 
 // CanReplay reports whether an integration test can be run in replay mode.
