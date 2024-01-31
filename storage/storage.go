@@ -146,8 +146,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// Prepend default options to avoid overriding options passed by the user.
 		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"), option.WithUserAgent(userAgent)}, opts...)
 
-		opts = append(opts, internaloption.WithDefaultEndpoint("https://storage.googleapis.com/storage/v1/"))
-		opts = append(opts, internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"))
+		opts = append(opts, internaloption.WithDefaultEndpointTemplate("https://storage.UNIVERSE_DOMAIN/storage/v1/"),
+			internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"),
+			internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		)
 
 		// Don't error out here. The user may have passed in their own HTTP
 		// client which does not auth with ADC or other common conventions.
