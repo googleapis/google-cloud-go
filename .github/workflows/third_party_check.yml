@@ -24,12 +24,12 @@ jobs:
         dirs=$(go run ./internal/actions/cmd/changefinder -q -internal --base=HEAD~1 --diff-filter=d --path-filter='*go.mod')
         if [ -z "$dirs" ]
         then
-          echo "skip=1" >> $GITHUB_OUTPUT
+          echo "skip=1" >> "$GITHUB_OUTPUT"
           echo "No new/modified go.mod files!"
         else
           for d in $dirs; do list=${list},\"${d}\"; done
-          echo "mods={\"mods\":[${list#,}]}" >> $GITHUB_OUTPUT
-          echo "skip=" >> $GITHUB_OUTPUT
+          echo "mods={\"mods\":[${list#,}]}" >> "$GITHUB_OUTPUT"
+          echo "skip=" >> "$GITHUB_OUTPUT"
         fi
     outputs:
       mods: ${{ steps.modfiles.outputs.mods }}
