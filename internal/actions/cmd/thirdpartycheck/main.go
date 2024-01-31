@@ -44,7 +44,7 @@ var (
 		"go.opentelemetry.io/",
 
 		// Third party deps (temporary exception(s)).
-		// "go.einride.tech/aip", // https://github.com/googleapis/google-cloud-go/issues/9338
+		"go.einride.tech/aip", // https://github.com/googleapis/google-cloud-go/issues/9338
 	}
 )
 
