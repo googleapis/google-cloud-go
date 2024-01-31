@@ -21,7 +21,7 @@ jobs:
     - name: Find modified go.mod files
       id: modfiles
       run: |
-        dirs=$(go run ./internal/actions/cmd/changefinder -q -internal --base=HEAD~1 --diff-filter=d --path-filter='*go.mod')
+        dirs="$(go run ./internal/actions/cmd/changefinder -q -internal --base=HEAD~1 --diff-filter=d --path-filter='*go.mod')"
         if [ -z "$dirs" ]
         then
           echo "skip=1" >> $GITHUB_OUTPUT
