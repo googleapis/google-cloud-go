@@ -21,14 +21,13 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -532,7 +531,7 @@ const (
 	GovernanceEvent_GOVERNANCE_RULE_SEARCH_LIMIT_EXCEEDS GovernanceEvent_EventType = 16
 	// Rule processing errors.
 	GovernanceEvent_GOVERNANCE_RULE_ERRORS GovernanceEvent_EventType = 17
-	// Governance rule prcoessing Event.
+	// Governance rule processing Event.
 	GovernanceEvent_GOVERNANCE_RULE_PROCESSING GovernanceEvent_EventType = 18
 )
 
