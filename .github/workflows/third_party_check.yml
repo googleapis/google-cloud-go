@@ -32,7 +32,7 @@ jobs:
           echo "skip=" >> $GITHUB_OUTPUT
         fi
     outputs:
-      modfiles: ${{ steps.modfiles.outputs.mods }}
+      mods: ${{ steps.modfiles.outputs.mods }}
       skip: ${{ steps.modfiles.outputs.skip }}
   check_deps:
     needs: changed_gomods
