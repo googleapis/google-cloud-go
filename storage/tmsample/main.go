@@ -1,0 +1,88 @@
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+	"time"
+
+	"cloud.google.com/go/storage"
+	"cloud.google.com/go/storage/transfermanager"
+)
+
+func main() {
+	ctx := context.Background()
+
+	// Pass in any client opts or set retry policy here
+	client, err := storage.NewClient(ctx) // can also use NewGRPCClient
+	if err != nil {
+		// handle error
+	}
+
+	// Create Downloader with desired options, including number of workers,
+	// part size, per operation timeout, etc.
+	d, err := transfermanager.NewDownloader(client, transfermanager.WithWorkers(16))
+	if err != nil {
+		// handle error
+	}
+
+	// Create go routine to wait on & process download results.
+	// This is maybe too much to expect from users -- would making results
+	// available at the end of the job and/or a callback be preferable?
+	go func() {
+		for {
+			select {
+			case out := <- d.Output:
+				if out.Err != nil {
+					log.Printf("download of %v failed with error %v", out.Name, out.Err)
+				} else {
+					log.Printf("download of %v succeeded", out.Name)
+				}
+			case <- d.Done:
+				log.Printf("all downloads complete")
+				return
+			}
+		}()
+	}
+
+	// Sharded and/or parallelized download
+	// Create local file writer for output
+	f, err := os.Create("/path/to/localfile")
+	if err != nil {
+		// handle error
+	}
+
+	// Create download input
+	in := &transfermanager.DownloadObjectInput{
+		Bucket:      "mybucket",
+		Source:      "myblob",
+		Destination: f,
+		// Optionally specify params to apply to download.
+		EncryptionKey: []byte("mykey"),
+	}
+
+	// Can set timeout on this download using context.
+	ctx, cancel = context.WithTimeout(ctx, 1*time.Minute)
+	defer cancel()
+
+	// Add to Downloader
+	d.DownloadObject(ctx, in)
+
+	// Repeat if desired
+
+	// Download many files to path
+	// Create query, using any GCS list objects options
+	dirIn := &transfermanager.DownloadDirectoryInput{
+		Bucket:         "mybucket",
+		LocalDirectory: "/path/to/dir",
+
+		// Optional filtering within bucket.
+		Prefix:    "objectprefix/",
+		MatchGlob: "objectprefix/**abc**",
+	}
+
+	d.DownloadDirectory(ctx, dirIn)
+
+	// Wait for all downloads to complete.
+	d.WaitAndClose()
+}
