@@ -78,6 +78,8 @@ func main() {
 	}
 }
 
+// check reads & parses the specified go.mod, then validates that
+// all direct dependencies are part of the allowlist.
 func check(file string) ([]string, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
