@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.7.0...batch/v1.8.0) (2024-01-30)
+
+
+### Features
+
+* **batch:** Add `run_as_non_root` field to allow user's runnable be executed as non root ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+
+### Bug Fixes
+
+* **batch:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.3...batch/v1.7.0) (2023-11-27)
 
 

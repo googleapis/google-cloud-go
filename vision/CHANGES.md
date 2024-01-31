@@ -1,5 +1,12 @@
 # Changes
 
+## [2.7.6](https://github.com/googleapis/google-cloud-go/compare/vision/v2.7.5...vision/v2.7.6) (2024-01-30)
+
+
+### Bug Fixes
+
+* **vision:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [2.7.5](https://github.com/googleapis/google-cloud-go/compare/vision/v2.7.4...vision/v2.7.5) (2023-11-01)
 
 

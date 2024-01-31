@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.4](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.3...metastore/v1.13.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **metastore:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.13.3](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.2...metastore/v1.13.3) (2023-11-01)
 
 

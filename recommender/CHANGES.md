@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.12.0...recommender/v1.12.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **recommender:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.3...recommender/v1.12.0) (2023-12-13)
 
 

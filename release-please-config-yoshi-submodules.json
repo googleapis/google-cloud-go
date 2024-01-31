@@ -393,6 +393,9 @@
         "vision": {
             "component": "vision"
         },
+        "visionai": {
+            "component": "visionai"
+        },
         "vmmigration": {
             "component": "vmmigration"
         },
