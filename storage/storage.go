@@ -146,8 +146,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// Prepend default options to avoid overriding options passed by the user.
 		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"), option.WithUserAgent(userAgent)}, opts...)
 
-		opts = append(opts, internaloption.WithDefaultEndpoint("https://storage.googleapis.com/storage/v1/"))
-		opts = append(opts, internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"))
+		opts = append(opts, internaloption.WithDefaultEndpointTemplate("https://storage.UNIVERSE_DOMAIN/storage/v1/"),
+			internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"),
+			internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		)
 
 		// Don't error out here. The user may have passed in their own HTTP
 		// client which does not auth with ADC or other common conventions.
@@ -1620,6 +1622,11 @@ type Query struct {
 	// for syntax details. When Delimiter is set in conjunction with MatchGlob,
 	// it must be set to /.
 	MatchGlob string
+
+	// IncludeFoldersAsPrefixes includes Folders and Managed Folders in the set of
+	// prefixes returned by the query. Only applicable if Delimiter is set to /.
+	// IncludeFoldersAsPrefixes is not yet implemented in the gRPC API.
+	IncludeFoldersAsPrefixes bool
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
@@ -2076,6 +2083,26 @@ func (wb *withBackoff) apply(config *retryConfig) {
 	config.backoff = &wb.backoff
 }
 
+// WithMaxAttempts configures the maximum number of times an API call can be made
+// in the case of retryable errors.
+// For example, if you set WithMaxAttempts(5), the operation will be attempted up to 5
+// times total (initial call plus 4 retries).
+// Without this setting, operations will continue retrying indefinitely
+// until either the context is canceled or a deadline is reached.
+func WithMaxAttempts(maxAttempts int) RetryOption {
+	return &withMaxAttempts{
+		maxAttempts: maxAttempts,
+	}
+}
+
+type withMaxAttempts struct {
+	maxAttempts int
+}
+
+func (wb *withMaxAttempts) apply(config *retryConfig) {
+	config.maxAttempts = &wb.maxAttempts
+}
+
 // RetryPolicy describes the available policies for which operations should be
 // retried. The default is `RetryIdempotent`.
 type RetryPolicy int
@@ -2148,6 +2175,7 @@ type retryConfig struct {
 	backoff     *gax.Backoff
 	policy      RetryPolicy
 	shouldRetry func(err error) bool
+	maxAttempts *int
 }
 
 func (r *retryConfig) clone() *retryConfig {
@@ -2168,6 +2196,7 @@ func (r *retryConfig) clone() *retryConfig {
 		backoff:     bo,
 		policy:      r.policy,
 		shouldRetry: r.shouldRetry,
+		maxAttempts: r.maxAttempts,
 	}
 }
 

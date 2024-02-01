@@ -326,19 +326,33 @@ type MaterializedViewDefinition struct {
 	// RefreshInterval defines the maximum frequency, in millisecond precision,
 	// at which this this materialized view will be refreshed.
 	RefreshInterval time.Duration
+
+	// AllowNonIncrementalDefinition for materialized view definition.
+	// The default value is false.
+	AllowNonIncrementalDefinition bool
+
+	// MaxStaleness of data that could be returned when materialized
+	// view is queried.
+	MaxStaleness *IntervalValue
 }
 
 func (mvd *MaterializedViewDefinition) toBQ() *bq.MaterializedViewDefinition {
 	if mvd == nil {
 		return nil
 	}
+	maxStaleness := ""
+	if mvd.MaxStaleness != nil {
+		maxStaleness = mvd.MaxStaleness.String()
+	}
 	return &bq.MaterializedViewDefinition{
-		EnableRefresh:     mvd.EnableRefresh,
-		Query:             mvd.Query,
-		LastRefreshTime:   mvd.LastRefreshTime.UnixNano() / 1e6,
-		RefreshIntervalMs: int64(mvd.RefreshInterval) / 1e6,
+		EnableRefresh:                 mvd.EnableRefresh,
+		Query:                         mvd.Query,
+		LastRefreshTime:               mvd.LastRefreshTime.UnixNano() / 1e6,
+		RefreshIntervalMs:             int64(mvd.RefreshInterval) / 1e6,
+		AllowNonIncrementalDefinition: mvd.AllowNonIncrementalDefinition,
+		MaxStaleness:                  maxStaleness,
 		// force sending the bool in all cases due to how Go handles false.
-		ForceSendFields: []string{"EnableRefresh"},
+		ForceSendFields: []string{"EnableRefresh", "AllowNonIncrementalDefinition"},
 	}
 }
 
@@ -346,11 +360,17 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 	if q == nil {
 		return nil
 	}
+	var maxStaleness *IntervalValue
+	if q.MaxStaleness != "" {
+		maxStaleness, _ = ParseInterval(q.MaxStaleness)
+	}
 	return &MaterializedViewDefinition{
-		EnableRefresh:   q.EnableRefresh,
-		Query:           q.Query,
-		LastRefreshTime: unixMillisToTime(q.LastRefreshTime),
-		RefreshInterval: time.Duration(q.RefreshIntervalMs) * time.Millisecond,
+		EnableRefresh:                 q.EnableRefresh,
+		Query:                         q.Query,
+		LastRefreshTime:               unixMillisToTime(q.LastRefreshTime),
+		RefreshInterval:               time.Duration(q.RefreshIntervalMs) * time.Millisecond,
+		AllowNonIncrementalDefinition: q.AllowNonIncrementalDefinition,
+		MaxStaleness:                  maxStaleness,
 	}
 }
 

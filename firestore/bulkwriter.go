@@ -25,6 +25,8 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"golang.org/x/time/rate"
 	"google.golang.org/api/support/bundler"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -332,7 +334,7 @@ func (bw *BulkWriter) send(i interface{}) {
 					// Bundler is set to accept an unlimited amount of bytes
 					_ = bw.bundler.Add(j, 0)
 				} else {
-					j.setError(fmt.Errorf("firestore: write failed with status: %v", s))
+					j.setError(status.Error(codes.Code(s.Code), s.Message))
 				}
 				continue
 			}

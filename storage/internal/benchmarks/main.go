@@ -469,7 +469,7 @@ func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) erro
 	switch opts.workload {
 	default:
 		concurrentBenchmarkRuns = opts.numWorkers
-	case 6:
+	case 6, 9:
 		// Directory benchmarks parallelize on the object level, so only run one
 		// benchmark at a time
 		concurrentBenchmarkRuns = 1
@@ -487,6 +487,8 @@ func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) erro
 				benchmark = &w1r3{opts: opts, bucketName: opts.bucket}
 			case 6:
 				benchmark = &directoryBenchmark{opts: opts, bucketName: opts.bucket, numWorkers: opts.numWorkers}
+			case 9:
+				benchmark = &continuousReads{opts: opts, bucketName: opts.bucket, numWorkers: opts.numWorkers}
 			}
 
 			if err := benchmark.setup(ctx); err != nil {

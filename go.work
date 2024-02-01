@@ -34,6 +34,7 @@ use (
 	./cloudbuild
 	./clouddms
 	./cloudprofiler
+	./cloudquotas
 	./cloudtasks
 	./commerce
 	./compute
@@ -131,8 +132,10 @@ use (
 	./security
 	./securitycenter
 	./securitycentermanagement
+	./securityposture
 	./servicecontrol
 	./servicedirectory
+	./servicehealth
 	./servicemanagement
 	./serviceusage
 	./shell
@@ -154,6 +157,7 @@ use (
 	./video
 	./videointelligence
 	./vision
+	./visionai
 	./vmmigration
 	./vmwareengine
 	./vpcaccess
