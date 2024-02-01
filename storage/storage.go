@@ -749,7 +749,7 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 	}
 
 	var headersWithValue []string
-	headersWithValue = append(headersWithValue, "host:"+u.Host)
+	headersWithValue = append(headersWithValue, "host:"+u.Hostname())
 	headersWithValue = append(headersWithValue, opts.Headers...)
 	if opts.ContentType != "" {
 		headersWithValue = append(headersWithValue, "content-type:"+opts.ContentType)
