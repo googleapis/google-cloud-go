@@ -2129,6 +2129,14 @@ func TestIntegration_SignedURL(t *testing.T) {
 				headers: map[string][]string{"X-Goog-Foo": {"bar baz"}},
 				fail:    true,
 			},
+			{
+				desc: "Hostname v4",
+				opts: SignedURLOptions{
+					Hostname: "storage.googleapis.com:443",
+					Scheme:   SigningSchemeV4,
+				},
+				fail: false,
+			},
 		} {
 			opts := test.opts
 			opts.GoogleAccessID = jwtConf.Email
