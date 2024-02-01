@@ -174,9 +174,7 @@ func TestSigningV4Conformance(t *testing.T) {
 					style = BucketBoundHostname(tc.BucketBoundHostname)
 				}
 
-				if tc.EmulatorHostname != "" {
-					t.Setenv("STORAGE_EMULATOR_HOST", tc.EmulatorHostname)
-				}
+				t.Setenv("STORAGE_EMULATOR_HOST", tc.EmulatorHostname)
 
 				opts := []option.ClientOption{option.WithoutAuthentication()}
 				if tc.ClientEndpoint != "" {
