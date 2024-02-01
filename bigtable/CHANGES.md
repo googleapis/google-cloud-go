@@ -1,5 +1,94 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.20.0...bigtable/v1.21.0) (2023-12-04)
+
+
+### Features
+
+* **bigtable:** Add support for reverse scans ([#8755](https://github.com/googleapis/google-cloud-go/issues/8755)) ([244d135](https://github.com/googleapis/google-cloud-go/commit/244d1357cb1b6ce3b971d367693f6cb6090018d4))
+* **bigtable:** Support copy backup in admin client ([#9005](https://github.com/googleapis/google-cloud-go/issues/9005)) ([834c47f](https://github.com/googleapis/google-cloud-go/commit/834c47fb3bd9e8a21082325780b2dcfd4c6d52c6))
+
+
+### Bug Fixes
+
+* **bigtable:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+* **bigtable:** Return cluster error for Update when populated ([#8657](https://github.com/googleapis/google-cloud-go/issues/8657)) ([2105434](https://github.com/googleapis/google-cloud-go/commit/2105434f27a16ac05790c40b74d3a251ec584527))
+* **bigtable:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+* **bigtable:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **bigtable:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.19.0...bigtable/v1.20.0) (2023-10-02)
+
+
+### Features
+
+* **bigtable/bttest:** Support reverse scans ([#8198](https://github.com/googleapis/google-cloud-go/issues/8198)) ([b8f164f](https://github.com/googleapis/google-cloud-go/commit/b8f164fcdf2be3a6fcf7918b3703e224801cc513))
+* **bigtable:** Support last_scanned_row in the bigtable client ([#8345](https://github.com/googleapis/google-cloud-go/issues/8345)) ([961dd38](https://github.com/googleapis/google-cloud-go/commit/961dd38f9e461d487ba8b6ee26ea14d872991eaf))
+* **bigtable:** Support last_scanned_row_key in emulator ([#8343](https://github.com/googleapis/google-cloud-go/issues/8343)) ([d53ef45](https://github.com/googleapis/google-cloud-go/commit/d53ef459893b29e7050f943da00bcd0a3f3ff900))
+
+
+### Bug Fixes
+
+* **bigtable:** Add missing veneer header ([#8607](https://github.com/googleapis/google-cloud-go/issues/8607)) ([b56f557](https://github.com/googleapis/google-cloud-go/commit/b56f557ff713d70025d2ee0e0acc2169fda77c77))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.18.1...bigtable/v1.19.0) (2023-07-06)
+
+
+### Features
+
+* **bigtable:** Add change stream config to create and update table ([#8180](https://github.com/googleapis/google-cloud-go/issues/8180)) ([32897ce](https://github.com/googleapis/google-cloud-go/commit/32897cec9be7413fa09b403199980e782ae52107))
+* **bigtable:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+* **bigtable:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+
+### Bug Fixes
+
+* **bigtable:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+* **bigtable:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+* **bigtable:** Use fieldmask directly instead of field_mask genproto alias ([#8032](https://github.com/googleapis/google-cloud-go/issues/8032)) ([cae6cd6](https://github.com/googleapis/google-cloud-go/commit/cae6cd6d0e09e98157879fb03fb23f718f4d2bb3))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.18.0...bigtable/v1.18.1) (2022-12-02)
+
+
+### Bug Fixes
+
+* **bigtable:** downgrade some dependencies ([7540152](https://github.com/googleapis/google-cloud-go/commit/754015236d5af7c82a75da218b71a87b9ead6eb5))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.17.0...bigtable/v1.18.0) (2022-11-10)
+
+
+### Features
+
+* **bigtable:** Add support for request stats ([#6991](https://github.com/googleapis/google-cloud-go/issues/6991)) ([609421e](https://github.com/googleapis/google-cloud-go/commit/609421e87ff25971f3fc29e15dbcdaa7fba02d11))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.16.0...bigtable/v1.17.0) (2022-11-03)
+
+
+### Features
+
+* **bigtable:** Add create table metadata support ([#6813](https://github.com/googleapis/google-cloud-go/issues/6813)) ([d497377](https://github.com/googleapis/google-cloud-go/commit/d4973774b6b31a2091bcff06c01af6acf4378e93))
+* **bigtable:** Add update table metadata support ([#6746](https://github.com/googleapis/google-cloud-go/issues/6746)) ([f19ffad](https://github.com/googleapis/google-cloud-go/commit/f19ffada53d45919e872bec7089f0a540a35755d))
+* **bigtable:** Update genproto ([#6710](https://github.com/googleapis/google-cloud-go/issues/6710)) ([34f3aa4](https://github.com/googleapis/google-cloud-go/commit/34f3aa4c36c9a082e4bde1aad6f18951eb48cb51))
+
+
+### Bug Fixes
+
+* **bigtable:** CellsPer(Row|Column)LimitFilter should error with arguments &lt;= 0. ([#6495](https://github.com/googleapis/google-cloud-go/issues/6495)) ([7724d8f](https://github.com/googleapis/google-cloud-go/commit/7724d8f077db62d543571b11bd17d5494fbd0260))
+* **bigtable:** Fix flaky AdminBackUp test ([#6917](https://github.com/googleapis/google-cloud-go/issues/6917)) ([45cc61e](https://github.com/googleapis/google-cloud-go/commit/45cc61ecad8dd67ac1b17b1f8e03043ff6ab4792))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.15.0...bigtable/v1.16.0) (2022-07-27)
+
+
+### Features
+
+* **bigtable:** add PolicyType for GCPolicy and expose public methods for different types of GC policies ([#6314](https://github.com/googleapis/google-cloud-go/issues/6314)) ([2971037](https://github.com/googleapis/google-cloud-go/commit/2971037040dd5c2cf712e33ef49cfdfc238c02cc))
+* **bigtable:** adds autoscaling target storage per node ([#6317](https://github.com/googleapis/google-cloud-go/issues/6317)) ([5eab4c3](https://github.com/googleapis/google-cloud-go/commit/5eab4c336075ae5aae78794d73bd0d8d1342813c))
+
+
+### Bug Fixes
+
+* **bigtable:** make code buildable ([#6436](https://github.com/googleapis/google-cloud-go/issues/6436)) ([6bd5ce8](https://github.com/googleapis/google-cloud-go/commit/6bd5ce85ba52fff676bdef2a2bb7fc8ed001e766)), refs [#6419](https://github.com/googleapis/google-cloud-go/issues/6419)
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/bigtable-v1.14.0...bigtable/v1.15.0) (2022-07-07)
 
 

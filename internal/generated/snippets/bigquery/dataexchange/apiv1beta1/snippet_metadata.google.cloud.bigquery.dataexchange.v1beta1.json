@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
-    "version": "1.34.1",
+    "version": "1.58.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_CreateDataExchange_sync",
       "title": "analyticshub CreateDataExchange Sample",
-      "description": "CreateDataExchange creates a new DataExchange in a given project and location.",
+      "description": "CreateDataExchange creates a new data exchange.",
       "file": "AnalyticsHubClient/CreateDataExchange/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.DataExchange",
+        "resultType": "*dataexchangepb.DataExchange",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_CreateListing_sync",
       "title": "analyticshub CreateListing Sample",
-      "description": "CreateListing creates a new Listing in a given project and location.",
+      "description": "CreateListing creates a new listing.",
       "file": "AnalyticsHubClient/CreateListing/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.Listing",
+        "resultType": "*dataexchangepb.Listing",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -106,7 +106,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_DeleteDataExchange_sync",
       "title": "analyticshub DeleteDataExchange Sample",
-      "description": "DeleteDataExchange deletes a single DataExchange.",
+      "description": "DeleteDataExchange deletes an existing data exchange.",
       "file": "AnalyticsHubClient/DeleteDataExchange/main.go",
       "language": "GO",
       "clientMethod": {
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -151,7 +151,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_DeleteListing_sync",
       "title": "analyticshub DeleteListing Sample",
-      "description": "DeleteListing deletes a single Listing, as long as there are no subscriptions\nassociated with the source of this Listing.",
+      "description": "DeleteListing deletes a listing.",
       "file": "AnalyticsHubClient/DeleteListing/main.go",
       "language": "GO",
       "clientMethod": {
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -196,7 +196,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_GetDataExchange_sync",
       "title": "analyticshub GetDataExchange Sample",
-      "description": "GetDataExchange gets details of a single DataExchange.",
+      "description": "GetDataExchange gets the details of a data exchange.",
       "file": "AnalyticsHubClient/GetDataExchange/main.go",
       "language": "GO",
       "clientMethod": {
@@ -216,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.DataExchange",
+        "resultType": "*dataexchangepb.DataExchange",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -242,7 +242,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_GetIamPolicy_sync",
       "title": "analyticshub GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the IAM policy for a dataExchange or a listing.",
+      "description": "GetIamPolicy gets the IAM policy.",
       "file": "AnalyticsHubClient/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -288,7 +288,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_GetListing_sync",
       "title": "analyticshub GetListing Sample",
-      "description": "GetListing gets details of a single Listing.",
+      "description": "GetListing gets the details of a listing.",
       "file": "AnalyticsHubClient/GetListing/main.go",
       "language": "GO",
       "clientMethod": {
@@ -308,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.Listing",
+        "resultType": "*dataexchangepb.Listing",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -326,7 +326,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_GetLocation_sync",
+      "title": "analyticshub GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "AnalyticsHubClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "AnalyticsHubClient",
+          "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -334,7 +380,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_ListDataExchanges_sync",
       "title": "analyticshub ListDataExchanges Sample",
-      "description": "ListDataExchanges lists DataExchanges in a given project and location.",
+      "description": "ListDataExchanges lists all data exchanges in a given project and location.",
       "file": "AnalyticsHubClient/ListDataExchanges/main.go",
       "language": "GO",
       "clientMethod": {
@@ -372,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -380,7 +426,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_ListListings_sync",
       "title": "analyticshub ListListings Sample",
-      "description": "ListListings lists Listings in a given project and location.",
+      "description": "ListListings lists all listings in a given project and location.",
       "file": "AnalyticsHubClient/ListListings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -418,7 +464,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_ListLocations_sync",
+      "title": "analyticshub ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "AnalyticsHubClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "AnalyticsHubClient",
+          "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -426,7 +518,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_ListOrgDataExchanges_sync",
       "title": "analyticshub ListOrgDataExchanges Sample",
-      "description": "ListOrgDataExchanges lists DataExchanges from projects in a given organization and location.",
+      "description": "ListOrgDataExchanges lists all data exchanges from projects in a given organization and\nlocation.",
       "file": "AnalyticsHubClient/ListOrgDataExchanges/main.go",
       "language": "GO",
       "clientMethod": {
@@ -464,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -472,7 +564,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_SetIamPolicy_sync",
       "title": "analyticshub SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the IAM policy for a dataExchange or a listing.",
+      "description": "SetIamPolicy sets the IAM policy.",
       "file": "AnalyticsHubClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -492,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -510,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -518,7 +610,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_SubscribeListing_sync",
       "title": "analyticshub SubscribeListing Sample",
-      "description": "SubscribeListing subscribes to a single Listing.\n\nData Exchange currently supports one type of Listing: a BigQuery dataset.\nUpon subscription to a Listing for a BigQuery dataset, Data Exchange\ncreates a linked dataset in the subscriber’s project.",
+      "description": "SubscribeListing subscribes to a listing.\n\nCurrently, with Analytics Hub, you can create listings that\nreference only BigQuery datasets.\nUpon subscription to a listing for a BigQuery dataset, Analytics Hub\ncreates a linked dataset in the subscriber's project.",
       "file": "AnalyticsHubClient/SubscribeListing/main.go",
       "language": "GO",
       "clientMethod": {
@@ -538,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.SubscribeListingResponse",
+        "resultType": "*dataexchangepb.SubscribeListingResponse",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -556,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -564,7 +656,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_TestIamPermissions_sync",
       "title": "analyticshub TestIamPermissions Sample",
-      "description": "TestIamPermissions returns the permissions that a caller has on a specified dataExchange or\nlisting.",
+      "description": "TestIamPermissions returns the permissions that a caller has.",
       "file": "AnalyticsHubClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -584,7 +676,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -602,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -610,7 +702,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_UpdateDataExchange_sync",
       "title": "analyticshub UpdateDataExchange Sample",
-      "description": "UpdateDataExchange updates the parameters of a single DataExchange.",
+      "description": "UpdateDataExchange updates an existing data exchange.",
       "file": "AnalyticsHubClient/UpdateDataExchange/main.go",
       "language": "GO",
       "clientMethod": {
@@ -630,7 +722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.DataExchange",
+        "resultType": "*dataexchangepb.DataExchange",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -648,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -656,7 +748,7 @@
     {
       "regionTag": "analyticshub_v1beta1_generated_AnalyticsHubService_UpdateListing_sync",
       "title": "analyticshub UpdateListing Sample",
-      "description": "UpdateListing updates the parameters of a single Listing.",
+      "description": "UpdateListing updates an existing listing.",
       "file": "AnalyticsHubClient/UpdateListing/main.go",
       "language": "GO",
       "clientMethod": {
@@ -676,7 +768,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataexchangepb.Listing",
+        "resultType": "*dataexchangepb.Listing",
         "client": {
           "shortName": "AnalyticsHubClient",
           "fullName": "google.cloud.bigquery.dataexchange.v1beta1.AnalyticsHubClient"
@@ -694,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]

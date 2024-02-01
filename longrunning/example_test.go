@@ -19,10 +19,10 @@ import (
 	"fmt"
 	"time"
 
+	pb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/duration"
 	"github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func bestMomentInHistory() (*Operation, error) {

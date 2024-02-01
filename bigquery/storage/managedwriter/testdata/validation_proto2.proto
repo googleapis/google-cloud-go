@@ -15,6 +15,10 @@
 syntax = "proto2";
 
 package testdata;
+
+// Source protos located in github.com/googleapis/googleapis
+import "google/cloud/bigquery/storage/v1/annotations.proto";
+
 option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata";
 
 
@@ -88,3 +92,53 @@ message ValidationP2OptionalWithDefaults {
     optional Proto2ExampleEnum enum_field = 16 [default = P2_OTHER_THING];
 }
 
+// Validating the behavior of unpacked repeated scalar values.
+message ValidationP2UnpackedRepeated {
+    optional int64 id = 1;
+    repeated double double_repeated = 2;
+    repeated float float_repeated = 3;
+    repeated int32 int32_repeated = 4;
+    repeated int64 int64_repeated = 5;
+    repeated uint32 uint32_repeated = 6;
+    repeated sint32 sint32_repeated = 7;
+    repeated sint64 sint64_repeated = 8;
+    repeated fixed32 fixed32_repeated = 9;
+    repeated sfixed32 sfixed32_repeated = 10;
+    repeated sfixed64 sfixed64_repeated = 11;
+    repeated bool bool_repeated = 12;
+    repeated Proto2ExampleEnum enum_repeated = 13;
+}
+
+// Validating the behavior of packed repeated scalar values.
+message ValidationP2PackedRepeated {
+    optional int64 id = 1;
+    repeated double double_repeated = 2 [packed = true];
+    repeated float float_repeated = 3 [packed = true];
+    repeated int32 int32_repeated = 4 [packed = true];
+    repeated int64 int64_repeated = 5 [packed = true];
+    repeated uint32 uint32_repeated = 6 [packed = true];
+    repeated sint32 sint32_repeated = 7 [packed = true];
+    repeated sint64 sint64_repeated = 8 [packed = true];
+    repeated fixed32 fixed32_repeated = 9 [packed = true];
+    repeated sfixed32 sfixed32_repeated = 10 [packed = true];
+    repeated sfixed64 sfixed64_repeated = 11 [packed = true];
+    repeated bool bool_repeated = 12 [packed = true];
+    repeated Proto2ExampleEnum enum_repeated = 13 [packed = true];
+}
+
+// Validating the behavior of column annotations to remap from a given
+// proto field name to a custom BigQuery column name.
+message ValidationP2ColumnAnnotations {
+    optional string first = 1;
+    optional string second = 2 [(google.cloud.bigquery.storage.v1.column_name) = "特別コラム"];
+    optional string third = 3 [(google.cloud.bigquery.storage.v1.column_name) = "second"];
+}
+
+message ExampleEmployeeCDC {
+    optional int64 id = 1;  // Primary Key (not enforced)
+    optional string username = 2;
+    optional string given_name = 3;
+    repeated string departments = 4;
+    optional int64 salary = 5;
+    optional string _CHANGE_TYPE = 999; // We give it a high tag number to avoid conflicts with normal evolution of the record.
+}

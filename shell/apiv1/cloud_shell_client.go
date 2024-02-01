@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,23 +17,28 @@
 package shell
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	shellpb "cloud.google.com/go/shell/apiv1/shellpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	shellpb "google.golang.org/genproto/googleapis/cloud/shell/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var newCloudShellClientHook clientHook
@@ -50,7 +55,9 @@ type CloudShellCallOptions struct {
 func defaultCloudShellGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudshell.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudshell.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudshell.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudshell.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -62,6 +69,7 @@ func defaultCloudShellGRPCClientOptions() []option.ClientOption {
 func defaultCloudShellCallOptions() *CloudShellCallOptions {
 	return &CloudShellCallOptions{
 		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -73,10 +81,47 @@ func defaultCloudShellCallOptions() *CloudShellCallOptions {
 				})
 			}),
 		},
-		StartEnvironment:     []gax.CallOption{},
-		AuthorizeEnvironment: []gax.CallOption{},
-		AddPublicKey:         []gax.CallOption{},
-		RemovePublicKey:      []gax.CallOption{},
+		StartEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AuthorizeEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AddPublicKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RemovePublicKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+	}
+}
+
+func defaultCloudShellRESTCallOptions() *CloudShellCallOptions {
+	return &CloudShellCallOptions{
+		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		StartEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AuthorizeEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AddPublicKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RemovePublicKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -136,7 +181,8 @@ func (c *CloudShellClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudShellClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -210,9 +256,6 @@ type cloudShellGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudShellClient
 	CallOptions **CloudShellCallOptions
 
@@ -225,7 +268,7 @@ type cloudShellGRPCClient struct {
 	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewCloudShellClient creates a new cloud shell service client based on gRPC.
@@ -248,11 +291,6 @@ func NewCloudShellClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -261,7 +299,6 @@ func NewCloudShellClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 
 	c := &cloudShellGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		cloudShellClient: shellpb.NewCloudShellServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
@@ -285,7 +322,8 @@ func NewCloudShellClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudShellGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -294,9 +332,9 @@ func (c *cloudShellGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudShellGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -305,15 +343,102 @@ func (c *cloudShellGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *cloudShellGRPCClient) GetEnvironment(ctx context.Context, req *shellpb.GetEnvironmentRequest, opts ...gax.CallOption) (*shellpb.Environment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type cloudShellRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
+
+	// Points back to the CallOptions field of the containing CloudShellClient
+	CallOptions **CloudShellCallOptions
+}
+
+// NewCloudShellRESTClient creates a new cloud shell service rest client.
+//
+// API for interacting with Google Cloud Shell. Each user of Cloud Shell has at
+// least one environment, which has the ID “default”. Environment consists of a
+// Docker image defining what is installed on the environment and a home
+// directory containing the user’s data that will remain across sessions.
+// Clients use this API to start and fetch information about their environment,
+// which can then be used to connect to that environment via a separate SSH
+// client.
+func NewCloudShellRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudShellClient, error) {
+	clientOpts := append(defaultCloudShellRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultCloudShellRESTCallOptions()
+	c := &cloudShellRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &CloudShellClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultCloudShellRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://cloudshell.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudshell.UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint("https://cloudshell.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.WithDefaultAudience("https://cloudshell.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *cloudShellRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *cloudShellRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *cloudShellRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *cloudShellGRPCClient) GetEnvironment(ctx context.Context, req *shellpb.GetEnvironmentRequest, opts ...gax.CallOption) (*shellpb.Environment, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	var resp *shellpb.Environment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -328,14 +453,10 @@ func (c *cloudShellGRPCClient) GetEnvironment(ctx context.Context, req *shellpb.
 }
 
 func (c *cloudShellGRPCClient) StartEnvironment(ctx context.Context, req *shellpb.StartEnvironmentRequest, opts ...gax.CallOption) (*StartEnvironmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).StartEnvironment[0:len((*c.CallOptions).StartEnvironment):len((*c.CallOptions).StartEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -352,14 +473,10 @@ func (c *cloudShellGRPCClient) StartEnvironment(ctx context.Context, req *shellp
 }
 
 func (c *cloudShellGRPCClient) AuthorizeEnvironment(ctx context.Context, req *shellpb.AuthorizeEnvironmentRequest, opts ...gax.CallOption) (*AuthorizeEnvironmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AuthorizeEnvironment[0:len((*c.CallOptions).AuthorizeEnvironment):len((*c.CallOptions).AuthorizeEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -376,14 +493,10 @@ func (c *cloudShellGRPCClient) AuthorizeEnvironment(ctx context.Context, req *sh
 }
 
 func (c *cloudShellGRPCClient) AddPublicKey(ctx context.Context, req *shellpb.AddPublicKeyRequest, opts ...gax.CallOption) (*AddPublicKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AddPublicKey[0:len((*c.CallOptions).AddPublicKey):len((*c.CallOptions).AddPublicKey)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -400,14 +513,10 @@ func (c *cloudShellGRPCClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 }
 
 func (c *cloudShellGRPCClient) RemovePublicKey(ctx context.Context, req *shellpb.RemovePublicKeyRequest, opts ...gax.CallOption) (*RemovePublicKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RemovePublicKey[0:len((*c.CallOptions).RemovePublicKey):len((*c.CallOptions).RemovePublicKey)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -423,9 +532,357 @@ func (c *cloudShellGRPCClient) RemovePublicKey(ctx context.Context, req *shellpb
 	}, nil
 }
 
-// AddPublicKeyOperation manages a long-running operation from AddPublicKey.
-type AddPublicKeyOperation struct {
-	lro *longrunning.Operation
+// GetEnvironment gets an environment. Returns NOT_FOUND if the environment does not exist.
+func (c *cloudShellRESTClient) GetEnvironment(ctx context.Context, req *shellpb.GetEnvironmentRequest, opts ...gax.CallOption) (*shellpb.Environment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &shellpb.Environment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// StartEnvironment starts an existing environment, allowing clients to connect to it. The
+// returned operation will contain an instance of StartEnvironmentMetadata in
+// its metadata field. Users can wait for the environment to start by polling
+// this operation via GetOperation. Once the environment has finished starting
+// and is ready to accept connections, the operation will contain a
+// StartEnvironmentResponse in its response field.
+func (c *cloudShellRESTClient) StartEnvironment(ctx context.Context, req *shellpb.StartEnvironmentRequest, opts ...gax.CallOption) (*StartEnvironmentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &StartEnvironmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// AuthorizeEnvironment sends OAuth credentials to a running environment on behalf of a user. When
+// this completes, the environment will be authorized to run various Google
+// Cloud command line tools without requiring the user to manually
+// authenticate.
+func (c *cloudShellRESTClient) AuthorizeEnvironment(ctx context.Context, req *shellpb.AuthorizeEnvironmentRequest, opts ...gax.CallOption) (*AuthorizeEnvironmentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:authorize", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &AuthorizeEnvironmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// AddPublicKey adds a public SSH key to an environment, allowing clients with the
+// corresponding private key to connect to that environment via SSH. If a key
+// with the same content already exists, this will error with ALREADY_EXISTS.
+func (c *cloudShellRESTClient) AddPublicKey(ctx context.Context, req *shellpb.AddPublicKeyRequest, opts ...gax.CallOption) (*AddPublicKeyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:addPublicKey", req.GetEnvironment())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &AddPublicKeyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// RemovePublicKey removes a public SSH key from an environment. Clients will no longer be
+// able to connect to the environment using the corresponding private key.
+// If a key with the same content is not present, this will error with
+// NOT_FOUND.
+func (c *cloudShellRESTClient) RemovePublicKey(ctx context.Context, req *shellpb.RemovePublicKeyRequest, opts ...gax.CallOption) (*RemovePublicKeyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:removePublicKey", req.GetEnvironment())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &RemovePublicKeyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // AddPublicKeyOperation returns a new AddPublicKeyOperation from a given name.
@@ -436,65 +893,14 @@ func (c *cloudShellGRPCClient) AddPublicKeyOperation(name string) *AddPublicKeyO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AddPublicKeyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*shellpb.AddPublicKeyResponse, error) {
-	var resp shellpb.AddPublicKeyResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// AddPublicKeyOperation returns a new AddPublicKeyOperation from a given name.
+// The name must be that of a previously created AddPublicKeyOperation, possibly from a different process.
+func (c *cloudShellRESTClient) AddPublicKeyOperation(name string) *AddPublicKeyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &AddPublicKeyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AddPublicKeyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*shellpb.AddPublicKeyResponse, error) {
-	var resp shellpb.AddPublicKeyResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AddPublicKeyOperation) Metadata() (*shellpb.AddPublicKeyMetadata, error) {
-	var meta shellpb.AddPublicKeyMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AddPublicKeyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AddPublicKeyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AuthorizeEnvironmentOperation manages a long-running operation from AuthorizeEnvironment.
-type AuthorizeEnvironmentOperation struct {
-	lro *longrunning.Operation
 }
 
 // AuthorizeEnvironmentOperation returns a new AuthorizeEnvironmentOperation from a given name.
@@ -505,65 +911,14 @@ func (c *cloudShellGRPCClient) AuthorizeEnvironmentOperation(name string) *Autho
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AuthorizeEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*shellpb.AuthorizeEnvironmentResponse, error) {
-	var resp shellpb.AuthorizeEnvironmentResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// AuthorizeEnvironmentOperation returns a new AuthorizeEnvironmentOperation from a given name.
+// The name must be that of a previously created AuthorizeEnvironmentOperation, possibly from a different process.
+func (c *cloudShellRESTClient) AuthorizeEnvironmentOperation(name string) *AuthorizeEnvironmentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &AuthorizeEnvironmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AuthorizeEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*shellpb.AuthorizeEnvironmentResponse, error) {
-	var resp shellpb.AuthorizeEnvironmentResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AuthorizeEnvironmentOperation) Metadata() (*shellpb.AuthorizeEnvironmentMetadata, error) {
-	var meta shellpb.AuthorizeEnvironmentMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AuthorizeEnvironmentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AuthorizeEnvironmentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RemovePublicKeyOperation manages a long-running operation from RemovePublicKey.
-type RemovePublicKeyOperation struct {
-	lro *longrunning.Operation
 }
 
 // RemovePublicKeyOperation returns a new RemovePublicKeyOperation from a given name.
@@ -574,65 +929,14 @@ func (c *cloudShellGRPCClient) RemovePublicKeyOperation(name string) *RemovePubl
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RemovePublicKeyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*shellpb.RemovePublicKeyResponse, error) {
-	var resp shellpb.RemovePublicKeyResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// RemovePublicKeyOperation returns a new RemovePublicKeyOperation from a given name.
+// The name must be that of a previously created RemovePublicKeyOperation, possibly from a different process.
+func (c *cloudShellRESTClient) RemovePublicKeyOperation(name string) *RemovePublicKeyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RemovePublicKeyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RemovePublicKeyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*shellpb.RemovePublicKeyResponse, error) {
-	var resp shellpb.RemovePublicKeyResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RemovePublicKeyOperation) Metadata() (*shellpb.RemovePublicKeyMetadata, error) {
-	var meta shellpb.RemovePublicKeyMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RemovePublicKeyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RemovePublicKeyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StartEnvironmentOperation manages a long-running operation from StartEnvironment.
-type StartEnvironmentOperation struct {
-	lro *longrunning.Operation
 }
 
 // StartEnvironmentOperation returns a new StartEnvironmentOperation from a given name.
@@ -643,58 +947,12 @@ func (c *cloudShellGRPCClient) StartEnvironmentOperation(name string) *StartEnvi
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StartEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*shellpb.StartEnvironmentResponse, error) {
-	var resp shellpb.StartEnvironmentResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// StartEnvironmentOperation returns a new StartEnvironmentOperation from a given name.
+// The name must be that of a previously created StartEnvironmentOperation, possibly from a different process.
+func (c *cloudShellRESTClient) StartEnvironmentOperation(name string) *StartEnvironmentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &StartEnvironmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StartEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*shellpb.StartEnvironmentResponse, error) {
-	var resp shellpb.StartEnvironmentResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StartEnvironmentOperation) Metadata() (*shellpb.StartEnvironmentMetadata, error) {
-	var meta shellpb.StartEnvironmentMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StartEnvironmentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StartEnvironmentOperation) Name() string {
-	return op.lro.Name()
 }

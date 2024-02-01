@@ -106,3 +106,27 @@ func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 	}
 	return r.defaultRetryer.Retry(err)
 }
+
+var (
+	exactlyOnceDeliveryTemporaryRetryErrors = map[codes.Code]struct{}{
+		codes.DeadlineExceeded:  {},
+		codes.ResourceExhausted: {},
+		codes.Aborted:           {},
+		codes.Internal:          {},
+		codes.Unavailable:       {},
+	}
+)
+
+// contains checks if grpc code v is in t, a set of retryable error codes.
+func contains(v codes.Code, t map[codes.Code]struct{}) bool {
+	_, ok := t[v]
+	return ok
+}
+
+func newExactlyOnceBackoff() gax.Backoff {
+	return gax.Backoff{
+		Initial:    1 * time.Second,
+		Max:        64 * time.Second,
+		Multiplier: 2,
+	}
+}

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,16 @@ import (
 	"context"
 
 	dataqna "cloud.google.com/go/dataqna/apiv1alpha"
-	dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
+	dataqnapb "cloud.google.com/go/dataqna/apiv1alpha/dataqnapb"
 )
 
 func ExampleNewAutoSuggestionClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataqna.NewAutoSuggestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewAutoSuggestionClient() {
 
 func ExampleNewAutoSuggestionRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataqna.NewAutoSuggestionRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,6 +59,11 @@ func ExampleNewAutoSuggestionRESTClient() {
 
 func ExampleAutoSuggestionClient_SuggestQueries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataqna.NewAutoSuggestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -57,7 +72,7 @@ func ExampleAutoSuggestionClient_SuggestQueries() {
 
 	req := &dataqnapb.SuggestQueriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#SuggestQueriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#SuggestQueriesRequest.
 	}
 	resp, err := c.SuggestQueries(ctx, req)
 	if err != nil {

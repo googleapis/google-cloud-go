@@ -19,6 +19,7 @@ Package bttest contains test helpers for working with the bigtable package.
 
 To use a Server, create it, and then connect to it with no security:
 (The project/instance values are ignored.)
+
 	srv, err := bttest.NewServer("localhost:0")
 	...
 	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
@@ -32,6 +33,7 @@ package bttest // import "cloud.google.com/go/bigtable/bttest"
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/binary"
 	"fmt"
 	"log"
@@ -44,16 +46,22 @@ import (
 	"sync"
 	"time"
 
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	"github.com/golang/protobuf/ptypes/wrappers"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
+
+	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/btree"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
-	"google.golang.org/genproto/googleapis/longrunning"
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"rsc.io/binaryregexp"
 )
 
@@ -145,9 +153,10 @@ func (s *server) CreateTable(ctx context.Context, req *btapb.CreateTableRequest)
 	s.mu.Unlock()
 
 	ct := &btapb.Table{
-		Name:           tbl,
-		ColumnFamilies: req.GetTable().GetColumnFamilies(),
-		Granularity:    req.GetTable().GetGranularity(),
+		Name:               tbl,
+		ColumnFamilies:     req.GetTable().GetColumnFamilies(),
+		Granularity:        req.GetTable().GetGranularity(),
+		DeletionProtection: req.GetTable().GetDeletionProtection(),
 	}
 	if ct.Granularity == 0 {
 		ct.Granularity = btapb.Table_MILLIS
@@ -185,8 +194,9 @@ func (s *server) GetTable(ctx context.Context, req *btapb.GetTableRequest) (*bta
 	}
 
 	return &btapb.Table{
-		Name:           tbl,
-		ColumnFamilies: toColumnFamilies(tblIns.columnFamilies()),
+		Name:               tbl,
+		ColumnFamilies:     toColumnFamilies(tblIns.columnFamilies()),
+		DeletionProtection: tblIns.isProtected,
 	}, nil
 }
 
@@ -196,8 +206,71 @@ func (s *server) DeleteTable(ctx context.Context, req *btapb.DeleteTableRequest)
 	if _, ok := s.tables[req.Name]; !ok {
 		return nil, status.Errorf(codes.NotFound, "table %q not found", req.Name)
 	}
+	if s.tables[req.Name].isProtected {
+		return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
+	}
 	delete(s.tables, req.Name)
 	return &emptypb.Empty{}, nil
+}
+
+func (s *server) UpdateTable(ctx context.Context, req *btapb.UpdateTableRequest) (*longrunning.Operation, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	updateMask := req.UpdateMask
+	if updateMask == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "UpdateTableRequest.UpdateMask required for table update")
+	}
+
+	var utr *btapb.Table
+	if !updateMask.IsValid(utr) {
+		return nil, status.Errorf(codes.InvalidArgument, "incorrect path in UpdateMask; got: %v\n", updateMask)
+	}
+
+	tbl, ok := s.tables[req.GetTable().GetName()]
+	if !ok {
+		return nil, status.Errorf(codes.NotFound, "table %q not found", req.GetTable().GetName())
+	}
+	tbl.mu.Lock()
+	defer tbl.mu.Unlock()
+
+	tbl.isProtected = req.GetTable().GetDeletionProtection()
+
+	res := &longrunning.Operation_Response{}
+	lro := &longrunning.Operation{
+		Name:   "projects/my-project/operations/1234",
+		Done:   true,
+		Result: res,
+	}
+
+	a, err := anypb.New(&btapb.UpdateTableMetadata{
+		Name:      req.GetTable().GetName(),
+		StartTime: timestamppb.Now(),
+		EndTime:   timestamppb.Now(),
+	})
+	if err != nil {
+		lro.Result = &longrunning.Operation_Error{
+			Error: &statpb.Status{
+				Code:    int32(codes.Internal),
+				Message: err.Error(),
+			},
+		}
+		return lro, nil
+	}
+	anyTable, err := anypb.New(req.GetTable())
+	if err != nil {
+		lro.Result = &longrunning.Operation_Error{
+			Error: &statpb.Status{
+				Code:    int32(codes.Internal),
+				Message: err.Error(),
+			},
+		}
+		return lro, nil
+	}
+
+	lro.Metadata = a
+	res.Response = anyTable
+	return lro, nil
 }
 
 func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColumnFamiliesRequest) (*btapb.Table, error) {
@@ -210,6 +283,16 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 
 	tbl.mu.Lock()
 	defer tbl.mu.Unlock()
+
+	// Check table protection status
+	if tbl.isProtected {
+		for _, mod := range req.Modifications {
+			// Cannot delete columns from a protected table
+			if mod.GetDrop() {
+				return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
+			}
+		}
+	}
 
 	for _, mod := range req.Modifications {
 		if create := mod.GetCreate(); create != nil {
@@ -344,7 +427,32 @@ func (s *server) DeleteSnapshot(context.Context, *btapb.DeleteSnapshotRequest) (
 	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
 }
 
+func featureFlagsFromContext(context context.Context) *btpb.FeatureFlags {
+	ff := &btpb.FeatureFlags{}
+
+	var md, ok = metadata.FromIncomingContext(context)
+	if !ok {
+		return ff
+	}
+
+	features := md.Get("bigtable-features")
+	if len(features) == 0 {
+		return ff
+	}
+
+	dec, err := base64.URLEncoding.DecodeString(features[0])
+	if err != nil {
+		return ff
+	}
+
+	_ = proto.Unmarshal(dec, ff)
+	return ff
+}
+
 func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
+	featureFlags := featureFlagsFromContext(stream.Context())
+
+	start := time.Now()
 	s.mu.Lock()
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()
@@ -419,40 +527,85 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 			rows = append(rows, r)
 		}
 	}
-	sort.Sort(byRowKey(rows))
+	if req.Reversed {
+		if !featureFlags.ReverseScans {
+			return status.Errorf(codes.Unimplemented, "Client doesn't support reverse scans yet")
+		}
+
+		sort.Sort(sort.Reverse(byRowKey(rows)))
+	} else {
+		sort.Sort(byRowKey(rows))
+	}
 
 	limit := int(req.RowsLimit)
-	count := 0
+	if limit == 0 {
+		limit = len(rows)
+	}
+
+	iterStats := &btpb.ReadIterationStats{}
+
 	for _, r := range rows {
-		if limit > 0 && count >= limit {
-			return nil
+		if int(iterStats.RowsReturnedCount) >= limit {
+			break
 		}
-		streamed, err := streamRow(stream, r, req.Filter)
-		if err != nil {
+
+		if err := streamRow(stream, r, req.Filter, iterStats, featureFlags); err != nil {
 			return err
 		}
-		if streamed {
-			count++
+	}
+
+	elapsed := time.Since(start)
+	if req.RequestStatsView == btpb.ReadRowsRequest_REQUEST_STATS_FULL {
+		rrr := &btpb.ReadRowsResponse{}
+		rrr.RequestStats = &btpb.RequestStats{
+			StatsView: &btpb.RequestStats_FullReadStatsView{
+				FullReadStatsView: &btpb.FullReadStatsView{
+					ReadIterationStats: iterStats,
+					RequestLatencyStats: &btpb.RequestLatencyStats{
+						FrontendServerLatency: durationpb.New(elapsed),
+					},
+				},
+			},
 		}
+
+		return stream.Send(rrr)
 	}
 	return nil
 }
 
 // streamRow filters the given row and sends it via the given stream.
 // Returns true if at least one cell matched the filter and was streamed, false otherwise.
-func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter) (bool, error) {
+func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s *btpb.ReadIterationStats, ff *btpb.FeatureFlags) error {
 	r.mu.Lock()
 	nr := r.copy()
 	r.mu.Unlock()
 	r = nr
 
+	s.RowsSeenCount++
+	// Count cells in the row before filtering for CellsSeenCount.
+	for _, fam := range r.families {
+		for _, colName := range fam.colNames {
+			s.CellsSeenCount += int64(len(fam.cells[colName]))
+		}
+	}
+
 	match, err := filterRow(f, r)
 	if err != nil {
-		return false, err
+		return err
 	}
 	if !match {
-		return false, nil
+		// if the client requested it, send last_scanned_row responses for rows that didn't match a filter
+		if ff.LastScannedRowResponses {
+			rrr := &btpb.ReadRowsResponse{
+				LastScannedRowKey: []byte(r.key),
+			}
+			return stream.Send(rrr)
+		}
+
+		return nil
 	}
+
+	s.RowsReturnedCount++
 
 	rrr := &btpb.ReadRowsResponse{}
 	families := r.sortedFamilies()
@@ -462,11 +615,12 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter) (
 			if len(cells) == 0 {
 				continue
 			}
+			s.CellsReturnedCount += int64(len(cells))
 			for _, cell := range cells {
 				rrr.Chunks = append(rrr.Chunks, &btpb.ReadRowsResponse_CellChunk{
 					RowKey:          []byte(r.key),
-					FamilyName:      &wrappers.StringValue{Value: fam.name},
-					Qualifier:       &wrappers.BytesValue{Value: []byte(colName)},
+					FamilyName:      &wrapperspb.StringValue{Value: fam.name},
+					Qualifier:       &wrapperspb.BytesValue{Value: []byte(colName)},
 					TimestampMicros: cell.ts,
 					Value:           cell.value,
 					Labels:          cell.labels,
@@ -480,7 +634,7 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter) (
 		rrr.Chunks[len(rrr.Chunks)-1].RowStatus = &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true}
 	}
 
-	return true, stream.Send(rrr)
+	return stream.Send(rrr)
 }
 
 // filterRow modifies a row with the given filter. Returns true if at least one cell from the row matches,
@@ -551,6 +705,9 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 		return count > 0, nil
 	case *btpb.RowFilter_CellsPerColumnLimitFilter:
 		lim := int(f.CellsPerColumnLimitFilter)
+		if lim <= 0 {
+			return false, status.Errorf(codes.InvalidArgument, "Error in field 'cells_per_column_limit_filter' : argument must be > 0")
+		}
 		for _, fam := range r.families {
 			for col, cs := range fam.cells {
 				if len(cs) > lim {
@@ -575,9 +732,12 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 		}
 		return filterRow(f.Condition.FalseFilter, r)
 	case *btpb.RowFilter_RowKeyRegexFilter:
+		if len(f.RowKeyRegexFilter) == 0 {
+			return false, status.Errorf(codes.InvalidArgument, "Error in field 'row_key_regex_filter' : argument must not be empty")
+		}
 		rx, err := newRegexp(f.RowKeyRegexFilter)
 		if err != nil {
-			return false, status.Errorf(codes.InvalidArgument, "Error in field 'rowkey_regex_filter' : %v", err)
+			return false, status.Errorf(codes.InvalidArgument, "Error in field 'row_key_regex_filter' : %v", err)
 		}
 		if !rx.MatchString(r.key) {
 			return false, nil
@@ -585,6 +745,9 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 	case *btpb.RowFilter_CellsPerRowLimitFilter:
 		// Grab the first n cells in the row.
 		lim := int(f.CellsPerRowLimitFilter)
+		if lim <= 0 {
+			return false, status.Errorf(codes.InvalidArgument, "Error in field 'cells_per_row_limit_filter' : argument must be > 0")
+		}
 		for _, fam := range r.families {
 			for _, col := range fam.colNames {
 				cs := fam.cells[col]
@@ -1205,10 +1368,11 @@ func (s *server) gcloop(done <-chan int) {
 }
 
 type table struct {
-	mu       sync.RWMutex
-	counter  uint64                   // increment by 1 when a new family is created
-	families map[string]*columnFamily // keyed by plain family name
-	rows     *btree.BTree             // indexed by row key
+	mu          sync.RWMutex
+	counter     uint64                   // increment by 1 when a new family is created
+	families    map[string]*columnFamily // keyed by plain family name
+	rows        *btree.BTree             // indexed by row key
+	isProtected bool                     // whether this table has deletion protection
 }
 
 const btreeDegree = 16
@@ -1227,9 +1391,10 @@ func newTable(ctr *btapb.CreateTableRequest) *table {
 		}
 	}
 	return &table{
-		families: fams,
-		counter:  c,
-		rows:     btree.New(btreeDegree),
+		families:    fams,
+		counter:     c,
+		rows:        btree.New(btreeDegree),
+		isProtected: ctr.GetTable().GetDeletionProtection(),
 	}
 }
 

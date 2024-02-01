@@ -15,9 +15,114 @@
                 "CancelOperation"
               ]
             },
+            "CreateDatabase": {
+              "methods": [
+                "CreateDatabase"
+              ]
+            },
             "CreateIndex": {
               "methods": [
                 "CreateIndex"
+              ]
+            },
+            "DeleteDatabase": {
+              "methods": [
+                "DeleteDatabase"
+              ]
+            },
+            "DeleteIndex": {
+              "methods": [
+                "DeleteIndex"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExportDocuments": {
+              "methods": [
+                "ExportDocuments"
+              ]
+            },
+            "GetDatabase": {
+              "methods": [
+                "GetDatabase"
+              ]
+            },
+            "GetField": {
+              "methods": [
+                "GetField"
+              ]
+            },
+            "GetIndex": {
+              "methods": [
+                "GetIndex"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
+              ]
+            },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
+              ]
+            },
+            "ListFields": {
+              "methods": [
+                "ListFields"
+              ]
+            },
+            "ListIndexes": {
+              "methods": [
+                "ListIndexes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDatabase": {
+              "methods": [
+                "UpdateDatabase"
+              ]
+            },
+            "UpdateField": {
+              "methods": [
+                "UpdateField"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FirestoreAdminClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDatabase": {
+              "methods": [
+                "CreateDatabase"
+              ]
+            },
+            "CreateIndex": {
+              "methods": [
+                "CreateIndex"
+              ]
+            },
+            "DeleteDatabase": {
+              "methods": [
+                "DeleteDatabase"
               ]
             },
             "DeleteIndex": {

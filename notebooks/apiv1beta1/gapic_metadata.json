@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "NotebookClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateEnvironment": {
               "methods": [
                 "CreateEnvironment"
@@ -30,14 +35,34 @@
                 "DeleteInstance"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetEnvironment": {
               "methods": [
                 "GetEnvironment"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetInstance": {
               "methods": [
                 "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "IsInstanceUpgradeable": {
@@ -55,6 +80,16 @@
                 "ListInstances"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "RegisterInstance": {
               "methods": [
                 "RegisterInstance"
@@ -68,6 +103,11 @@
             "ResetInstance": {
               "methods": [
                 "ResetInstance"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "SetInstanceAccelerator": {
@@ -93,6 +133,156 @@
             "StopInstance": {
               "methods": [
                 "StopInstance"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpgradeInstance": {
+              "methods": [
+                "UpgradeInstance"
+              ]
+            },
+            "UpgradeInstanceInternal": {
+              "methods": [
+                "UpgradeInstanceInternal"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "NotebookClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateEnvironment": {
+              "methods": [
+                "CreateEnvironment"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "DeleteEnvironment": {
+              "methods": [
+                "DeleteEnvironment"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "IsInstanceUpgradeable": {
+              "methods": [
+                "IsInstanceUpgradeable"
+              ]
+            },
+            "ListEnvironments": {
+              "methods": [
+                "ListEnvironments"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RegisterInstance": {
+              "methods": [
+                "RegisterInstance"
+              ]
+            },
+            "ReportInstanceInfo": {
+              "methods": [
+                "ReportInstanceInfo"
+              ]
+            },
+            "ResetInstance": {
+              "methods": [
+                "ResetInstance"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SetInstanceAccelerator": {
+              "methods": [
+                "SetInstanceAccelerator"
+              ]
+            },
+            "SetInstanceLabels": {
+              "methods": [
+                "SetInstanceLabels"
+              ]
+            },
+            "SetInstanceMachineType": {
+              "methods": [
+                "SetInstanceMachineType"
+              ]
+            },
+            "StartInstance": {
+              "methods": [
+                "StartInstance"
+              ]
+            },
+            "StopInstance": {
+              "methods": [
+                "StopInstance"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpgradeInstance": {

@@ -136,7 +136,7 @@ func (r *Recorder) interceptUnary(ctx context.Context, method string, req, res i
 	// without recording the response.
 	if _, ok := status.FromError(ierr); !ok {
 		r.mu.Lock()
-		r.err = fmt.Errorf("saw non-status error in %s response: %v (%T)", method, ierr, ierr)
+		r.err = fmt.Errorf("saw non-status error in %s response: %w (%T)", method, ierr, ierr)
 		r.mu.Unlock()
 		return ierr
 	}
@@ -678,7 +678,7 @@ func writeEntry(w io.Writer, e *entry) error {
 	if e.msg.err != nil && e.msg.err != io.EOF {
 		s, ok := status.FromError(e.msg.err)
 		if !ok {
-			return fmt.Errorf("rpcreplay: error %v is not a Status", e.msg.err)
+			return fmt.Errorf("rpcreplay: error %w is not a Status", e.msg.err)
 		}
 		m = s.Proto()
 	} else {

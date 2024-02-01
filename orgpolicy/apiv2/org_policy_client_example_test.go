@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	orgpolicy "cloud.google.com/go/orgpolicy/apiv2"
+	orgpolicypb "cloud.google.com/go/orgpolicy/apiv2/orgpolicypb"
 	"google.golang.org/api/iterator"
-	orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,8 +41,201 @@ func ExampleNewClient() {
 	_ = c
 }
 
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := orgpolicy.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleClient_CreateCustomConstraint() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := orgpolicy.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &orgpolicypb.CreateCustomConstraintRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#CreateCustomConstraintRequest.
+	}
+	resp, err := c.CreateCustomConstraint(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreatePolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := orgpolicy.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &orgpolicypb.CreatePolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#CreatePolicyRequest.
+	}
+	resp, err := c.CreatePolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteCustomConstraint() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := orgpolicy.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &orgpolicypb.DeleteCustomConstraintRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#DeleteCustomConstraintRequest.
+	}
+	err = c.DeleteCustomConstraint(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeletePolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := orgpolicy.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &orgpolicypb.DeletePolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#DeletePolicyRequest.
+	}
+	err = c.DeletePolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetCustomConstraint() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := orgpolicy.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &orgpolicypb.GetCustomConstraintRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#GetCustomConstraintRequest.
+	}
+	resp, err := c.GetCustomConstraint(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetEffectivePolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := orgpolicy.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &orgpolicypb.GetEffectivePolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#GetEffectivePolicyRequest.
+	}
+	resp, err := c.GetEffectivePolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := orgpolicy.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &orgpolicypb.GetPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#GetPolicyRequest.
+	}
+	resp, err := c.GetPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ListConstraints() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +244,7 @@ func ExampleClient_ListConstraints() {
 
 	req := &orgpolicypb.ListConstraintsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#ListConstraintsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#ListConstraintsRequest.
 	}
 	it := c.ListConstraints(ctx, req)
 	for {
@@ -62,8 +260,44 @@ func ExampleClient_ListConstraints() {
 	}
 }
 
+func ExampleClient_ListCustomConstraints() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := orgpolicy.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &orgpolicypb.ListCustomConstraintsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#ListCustomConstraintsRequest.
+	}
+	it := c.ListCustomConstraints(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_ListPolicies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +306,7 @@ func ExampleClient_ListPolicies() {
 
 	req := &orgpolicypb.ListPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#ListPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#ListPoliciesRequest.
 	}
 	it := c.ListPolicies(ctx, req)
 	for {
@@ -88,59 +322,24 @@ func ExampleClient_ListPolicies() {
 	}
 }
 
-func ExampleClient_GetPolicy() {
+func ExampleClient_UpdateCustomConstraint() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &orgpolicypb.GetPolicyRequest{
+	req := &orgpolicypb.UpdateCustomConstraintRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#GetPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#UpdateCustomConstraintRequest.
 	}
-	resp, err := c.GetPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_GetEffectivePolicy() {
-	ctx := context.Background()
-	c, err := orgpolicy.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &orgpolicypb.GetEffectivePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#GetEffectivePolicyRequest.
-	}
-	resp, err := c.GetEffectivePolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreatePolicy() {
-	ctx := context.Background()
-	c, err := orgpolicy.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &orgpolicypb.CreatePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#CreatePolicyRequest.
-	}
-	resp, err := c.CreatePolicy(ctx, req)
+	resp, err := c.UpdateCustomConstraint(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -150,6 +349,11 @@ func ExampleClient_CreatePolicy() {
 
 func ExampleClient_UpdatePolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -158,7 +362,7 @@ func ExampleClient_UpdatePolicy() {
 
 	req := &orgpolicypb.UpdatePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#UpdatePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#UpdatePolicyRequest.
 	}
 	resp, err := c.UpdatePolicy(ctx, req)
 	if err != nil {
@@ -166,22 +370,4 @@ func ExampleClient_UpdatePolicy() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleClient_DeletePolicy() {
-	ctx := context.Background()
-	c, err := orgpolicy.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &orgpolicypb.DeletePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#DeletePolicyRequest.
-	}
-	err = c.DeletePolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }

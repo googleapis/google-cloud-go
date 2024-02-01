@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	migration "cloud.google.com/go/bigquery/migration/apiv2"
+	migrationpb "cloud.google.com/go/bigquery/migration/apiv2/migrationpb"
 	"google.golang.org/api/iterator"
-	migrationpb "google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateMigrationWorkflow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleClient_CreateMigrationWorkflow() {
 
 	req := &migrationpb.CreateMigrationWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2#CreateMigrationWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2/migrationpb#CreateMigrationWorkflowRequest.
 	}
 	resp, err := c.CreateMigrationWorkflow(ctx, req)
 	if err != nil {
@@ -56,8 +66,61 @@ func ExampleClient_CreateMigrationWorkflow() {
 	_ = resp
 }
 
+func ExampleClient_DeleteMigrationWorkflow() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := migration.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &migrationpb.DeleteMigrationWorkflowRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2/migrationpb#DeleteMigrationWorkflowRequest.
+	}
+	err = c.DeleteMigrationWorkflow(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetMigrationSubtask() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := migration.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &migrationpb.GetMigrationSubtaskRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2/migrationpb#GetMigrationSubtaskRequest.
+	}
+	resp, err := c.GetMigrationSubtask(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetMigrationWorkflow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +129,7 @@ func ExampleClient_GetMigrationWorkflow() {
 
 	req := &migrationpb.GetMigrationWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2#GetMigrationWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2/migrationpb#GetMigrationWorkflowRequest.
 	}
 	resp, err := c.GetMigrationWorkflow(ctx, req)
 	if err != nil {
@@ -76,8 +139,44 @@ func ExampleClient_GetMigrationWorkflow() {
 	_ = resp
 }
 
+func ExampleClient_ListMigrationSubtasks() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := migration.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &migrationpb.ListMigrationSubtasksRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2/migrationpb#ListMigrationSubtasksRequest.
+	}
+	it := c.ListMigrationSubtasks(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_ListMigrationWorkflows() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,7 +185,7 @@ func ExampleClient_ListMigrationWorkflows() {
 
 	req := &migrationpb.ListMigrationWorkflowsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2#ListMigrationWorkflowsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2/migrationpb#ListMigrationWorkflowsRequest.
 	}
 	it := c.ListMigrationWorkflows(ctx, req)
 	for {
@@ -102,26 +201,13 @@ func ExampleClient_ListMigrationWorkflows() {
 	}
 }
 
-func ExampleClient_DeleteMigrationWorkflow() {
-	ctx := context.Background()
-	c, err := migration.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &migrationpb.DeleteMigrationWorkflowRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2#DeleteMigrationWorkflowRequest.
-	}
-	err = c.DeleteMigrationWorkflow(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
 func ExampleClient_StartMigrationWorkflow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,56 +216,10 @@ func ExampleClient_StartMigrationWorkflow() {
 
 	req := &migrationpb.StartMigrationWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2#StartMigrationWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2/migrationpb#StartMigrationWorkflowRequest.
 	}
 	err = c.StartMigrationWorkflow(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_GetMigrationSubtask() {
-	ctx := context.Background()
-	c, err := migration.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &migrationpb.GetMigrationSubtaskRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2#GetMigrationSubtaskRequest.
-	}
-	resp, err := c.GetMigrationSubtask(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListMigrationSubtasks() {
-	ctx := context.Background()
-	c, err := migration.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &migrationpb.ListMigrationSubtasksRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2#ListMigrationSubtasksRequest.
-	}
-	it := c.ListMigrationSubtasks(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
 	}
 }

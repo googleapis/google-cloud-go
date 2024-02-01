@@ -16,8 +16,6 @@ package managedwriter
 
 import (
 	"context"
-	"log"
-	"sync"
 
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
@@ -63,6 +61,10 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestErrors = stats.Int64(statsPrefix+"append_request_errors", "Number of append requests that yielded immediate error", stats.UnitDimensionless)
 
+	// AppendRequestReconnects is a measure of the number of times that sending an append request triggered reconnect.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRequestReconnects = stats.Int64(statsPrefix+"append_reconnections", "Number of append rows reconnections", stats.UnitDimensionless)
+
 	// AppendRequestRows is a measure of the number of append rows sent.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestRows = stats.Int64(statsPrefix+"append_rows", "Number of append rows sent", stats.UnitDimensionless)
@@ -74,6 +76,11 @@ var (
 	// AppendResponseErrors is a measure of the number of append responses received with an error attached.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendResponseErrors = stats.Int64(statsPrefix+"append_response_errors", "Number of append responses with errors attached", stats.UnitDimensionless)
+
+	// AppendRetryCount is a measure of the number of appends that were automatically retried by the library
+	// after receiving a non-successful response.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRetryCount = stats.Int64(statsPrefix+"append_retry_count", "Number of appends that were retried", stats.UnitDimensionless)
 
 	// FlushRequests is a measure of the number of FlushRows requests sent.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
@@ -102,6 +109,10 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestErrorsView *view.View
 
+	// AppendRequestReconnectsView is a cumulative sum of AppendRequestReconnects.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRequestReconnectsView *view.View
+
 	// AppendRequestRowsView is a cumulative sum of AppendRows.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestRowsView *view.View
@@ -114,23 +125,28 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendResponseErrorsView *view.View
 
+	// AppendRetryView is a cumulative sum of AppendRetryCount.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRetryView *view.View
+
 	// FlushRequestsView is a cumulative sum of FlushRequests.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	FlushRequestsView *view.View
 )
 
 func init() {
-	AppendClientOpenView = createSumView(stats.Measure(AppendClientOpenCount), keyStream, keyDataOrigin)
-	AppendClientOpenRetryView = createSumView(stats.Measure(AppendClientOpenRetryCount), keyStream, keyDataOrigin)
+	AppendClientOpenView = createSumView(stats.Measure(AppendClientOpenCount), keyError)
+	AppendClientOpenRetryView = createSumView(stats.Measure(AppendClientOpenRetryCount))
 
 	AppendRequestsView = createSumView(stats.Measure(AppendRequests), keyStream, keyDataOrigin)
 	AppendRequestBytesView = createSumView(stats.Measure(AppendRequestBytes), keyStream, keyDataOrigin)
 	AppendRequestErrorsView = createSumView(stats.Measure(AppendRequestErrors), keyStream, keyDataOrigin, keyError)
+	AppendRequestReconnectsView = createSumView(stats.Measure(AppendRequestReconnects), keyStream, keyDataOrigin, keyError)
 	AppendRequestRowsView = createSumView(stats.Measure(AppendRequestRows), keyStream, keyDataOrigin)
 
 	AppendResponsesView = createSumView(stats.Measure(AppendResponses), keyStream, keyDataOrigin)
 	AppendResponseErrorsView = createSumView(stats.Measure(AppendResponseErrors), keyStream, keyDataOrigin, keyError)
-
+	AppendRetryView = createSumView(stats.Measure(AppendRetryCount), keyStream, keyDataOrigin)
 	FlushRequestsView = createSumView(stats.Measure(FlushRequests), keyStream, keyDataOrigin)
 
 	DefaultOpenCensusViews = []*view.View{
@@ -140,10 +156,12 @@ func init() {
 		AppendRequestsView,
 		AppendRequestBytesView,
 		AppendRequestErrorsView,
+		AppendRequestReconnectsView,
 		AppendRequestRowsView,
 
 		AppendResponsesView,
 		AppendResponseErrorsView,
+		AppendRetryView,
 
 		FlushRequestsView,
 	}
@@ -163,24 +181,37 @@ func createSumView(m stats.Measure, keys ...tag.Key) *view.View {
 	return createView(m, view.Sum(), keys...)
 }
 
-var logTagStreamOnce sync.Once
-var logTagOriginOnce sync.Once
+// setupWriterStatContext returns a new context modified with the instrumentation tags.
+// This will panic if no managedstream is provided
+func setupWriterStatContext(ms *ManagedStream) context.Context {
+	if ms == nil {
+		panic("no ManagedStream provided")
+	}
+	kCtx := ms.ctx
+	if ms.streamSettings == nil {
+		return kCtx
+	}
+	if ms.streamSettings.streamID != "" {
+		ctx, err := tag.New(kCtx, tag.Upsert(keyStream, ms.streamSettings.streamID))
+		if err != nil {
+			return kCtx // failed to add a tag, return the original context.
+		}
+		kCtx = ctx
+	}
+	if ms.streamSettings.dataOrigin != "" {
+		ctx, err := tag.New(kCtx, tag.Upsert(keyDataOrigin, ms.streamSettings.dataOrigin))
+		if err != nil {
+			return kCtx
+		}
+		kCtx = ctx
+	}
+	return kCtx
+}
 
-// keyContextWithStreamID returns a new context modified with the instrumentation tags.
-func keyContextWithTags(ctx context.Context, streamID, dataOrigin string) context.Context {
-	ctx, err := tag.New(ctx, tag.Upsert(keyStream, streamID))
-	if err != nil {
-		logTagStreamOnce.Do(func() {
-			log.Printf("managedwriter: error creating tag map for 'streamID' key: %v", err)
-		})
-	}
-	ctx, err = tag.New(ctx, tag.Upsert(keyDataOrigin, dataOrigin))
-	if err != nil {
-		logTagOriginOnce.Do(func() {
-			log.Printf("managedwriter: error creating tag map for 'dataOrigin' key: %v", err)
-		})
-	}
-	return ctx
+// recordWriterStat records a measure which may optionally contain writer-related tags like stream ID
+// or data origin.
+func recordWriterStat(ms *ManagedStream, m *stats.Int64Measure, n int64) {
+	stats.Record(ms.ctx, m.M(n))
 }
 
 func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {

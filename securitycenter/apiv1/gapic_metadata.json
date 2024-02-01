@@ -40,6 +40,11 @@
                 "CreateNotificationConfig"
               ]
             },
+            "CreateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "CreateSecurityHealthAnalyticsCustomModule"
+              ]
+            },
             "CreateSource": {
               "methods": [
                 "CreateSource"
@@ -65,9 +70,19 @@
                 "DeleteOperation"
               ]
             },
+            "DeleteSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "DeleteSecurityHealthAnalyticsCustomModule"
+              ]
+            },
             "GetBigQueryExport": {
               "methods": [
                 "GetBigQueryExport"
+              ]
+            },
+            "GetEffectiveSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "GetEffectiveSecurityHealthAnalyticsCustomModule"
               ]
             },
             "GetIamPolicy": {
@@ -95,6 +110,11 @@
                 "GetOrganizationSettings"
               ]
             },
+            "GetSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "GetSecurityHealthAnalyticsCustomModule"
+              ]
+            },
             "GetSource": {
               "methods": [
                 "GetSource"
@@ -120,6 +140,16 @@
                 "ListBigQueryExports"
               ]
             },
+            "ListDescendantSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListDescendantSecurityHealthAnalyticsCustomModules"
+              ]
+            },
+            "ListEffectiveSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListEffectiveSecurityHealthAnalyticsCustomModules"
+              ]
+            },
             "ListFindings": {
               "methods": [
                 "ListFindings"
@@ -138,6 +168,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListSecurityHealthAnalyticsCustomModules"
               ]
             },
             "ListSources": {
@@ -163,6 +198,11 @@
             "SetMute": {
               "methods": [
                 "SetMute"
+              ]
+            },
+            "SimulateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "SimulateSecurityHealthAnalyticsCustomModule"
               ]
             },
             "TestIamPermissions": {
@@ -198,6 +238,261 @@
             "UpdateOrganizationSettings": {
               "methods": [
                 "UpdateOrganizationSettings"
+              ]
+            },
+            "UpdateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "UpdateSecurityHealthAnalyticsCustomModule"
+              ]
+            },
+            "UpdateSecurityMarks": {
+              "methods": [
+                "UpdateSecurityMarks"
+              ]
+            },
+            "UpdateSource": {
+              "methods": [
+                "UpdateSource"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BulkMuteFindings": {
+              "methods": [
+                "BulkMuteFindings"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBigQueryExport": {
+              "methods": [
+                "CreateBigQueryExport"
+              ]
+            },
+            "CreateFinding": {
+              "methods": [
+                "CreateFinding"
+              ]
+            },
+            "CreateMuteConfig": {
+              "methods": [
+                "CreateMuteConfig"
+              ]
+            },
+            "CreateNotificationConfig": {
+              "methods": [
+                "CreateNotificationConfig"
+              ]
+            },
+            "CreateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "CreateSecurityHealthAnalyticsCustomModule"
+              ]
+            },
+            "CreateSource": {
+              "methods": [
+                "CreateSource"
+              ]
+            },
+            "DeleteBigQueryExport": {
+              "methods": [
+                "DeleteBigQueryExport"
+              ]
+            },
+            "DeleteMuteConfig": {
+              "methods": [
+                "DeleteMuteConfig"
+              ]
+            },
+            "DeleteNotificationConfig": {
+              "methods": [
+                "DeleteNotificationConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "DeleteSecurityHealthAnalyticsCustomModule"
+              ]
+            },
+            "GetBigQueryExport": {
+              "methods": [
+                "GetBigQueryExport"
+              ]
+            },
+            "GetEffectiveSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "GetEffectiveSecurityHealthAnalyticsCustomModule"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetMuteConfig": {
+              "methods": [
+                "GetMuteConfig"
+              ]
+            },
+            "GetNotificationConfig": {
+              "methods": [
+                "GetNotificationConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetOrganizationSettings": {
+              "methods": [
+                "GetOrganizationSettings"
+              ]
+            },
+            "GetSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "GetSecurityHealthAnalyticsCustomModule"
+              ]
+            },
+            "GetSource": {
+              "methods": [
+                "GetSource"
+              ]
+            },
+            "GroupAssets": {
+              "methods": [
+                "GroupAssets"
+              ]
+            },
+            "GroupFindings": {
+              "methods": [
+                "GroupFindings"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListBigQueryExports": {
+              "methods": [
+                "ListBigQueryExports"
+              ]
+            },
+            "ListDescendantSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListDescendantSecurityHealthAnalyticsCustomModules"
+              ]
+            },
+            "ListEffectiveSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListEffectiveSecurityHealthAnalyticsCustomModules"
+              ]
+            },
+            "ListFindings": {
+              "methods": [
+                "ListFindings"
+              ]
+            },
+            "ListMuteConfigs": {
+              "methods": [
+                "ListMuteConfigs"
+              ]
+            },
+            "ListNotificationConfigs": {
+              "methods": [
+                "ListNotificationConfigs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListSecurityHealthAnalyticsCustomModules"
+              ]
+            },
+            "ListSources": {
+              "methods": [
+                "ListSources"
+              ]
+            },
+            "RunAssetDiscovery": {
+              "methods": [
+                "RunAssetDiscovery"
+              ]
+            },
+            "SetFindingState": {
+              "methods": [
+                "SetFindingState"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SetMute": {
+              "methods": [
+                "SetMute"
+              ]
+            },
+            "SimulateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "SimulateSecurityHealthAnalyticsCustomModule"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateBigQueryExport": {
+              "methods": [
+                "UpdateBigQueryExport"
+              ]
+            },
+            "UpdateExternalSystem": {
+              "methods": [
+                "UpdateExternalSystem"
+              ]
+            },
+            "UpdateFinding": {
+              "methods": [
+                "UpdateFinding"
+              ]
+            },
+            "UpdateMuteConfig": {
+              "methods": [
+                "UpdateMuteConfig"
+              ]
+            },
+            "UpdateNotificationConfig": {
+              "methods": [
+                "UpdateNotificationConfig"
+              ]
+            },
+            "UpdateOrganizationSettings": {
+              "methods": [
+                "UpdateOrganizationSettings"
+              ]
+            },
+            "UpdateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "UpdateSecurityHealthAnalyticsCustomModule"
               ]
             },
             "UpdateSecurityMarks": {

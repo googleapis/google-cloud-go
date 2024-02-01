@@ -1,4 +1,4 @@
-// Copyright 2019, Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -177,6 +177,7 @@ enum Resource {
 message Method {
   string name = 1;  // e.g. storage.objects.get
   repeated Resource resources = 2;
+  string group = 3; // e.g. storage.resumable.upload
 }
 
 // Schema for a retry test, corresponding to a single scenario from the design

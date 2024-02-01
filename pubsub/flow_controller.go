@@ -46,7 +46,7 @@ const (
 
 // FlowControlSettings controls flow control for messages while publishing or subscribing.
 type FlowControlSettings struct {
-	// MaxOutstandingMessages is the maximum number of bufered messages to be published.
+	// MaxOutstandingMessages is the maximum number of buffered messages to be published.
 	// If less than or equal to zero, this is disabled.
 	MaxOutstandingMessages int
 

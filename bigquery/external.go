@@ -38,6 +38,7 @@ const (
 	TFSavedModel DataFormat = "ML_TF_SAVED_MODEL"
 	// For BQ ML Models, xgBoost Booster format.
 	XGBoostBooster DataFormat = "ML_XGBOOST_BOOSTER"
+	Iceberg        DataFormat = "ICEBERG"
 )
 
 // ExternalData is a table which is stored outside of BigQuery. It is implemented by
@@ -109,6 +110,10 @@ type ExternalDataConfig struct {
 	// Connections are managed through the BigQuery Connection API:
 	// https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1
 	ConnectionID string
+
+	// When creating an external table, the user can provide a reference file with the table schema.
+	// This is enabled for the following formats: AVRO, PARQUET, ORC.
+	ReferenceFileSchemaURI string
 }
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
@@ -121,6 +126,7 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 		MaxBadRecords:           e.MaxBadRecords,
 		HivePartitioningOptions: e.HivePartitioningOptions.toBQ(),
 		ConnectionId:            e.ConnectionID,
+		ReferenceFileSchemaUri:  e.ReferenceFileSchemaURI,
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
@@ -145,6 +151,7 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		Schema:                  bqToSchema(q.Schema),
 		HivePartitioningOptions: bqToHivePartitioningOptions(q.HivePartitioningOptions),
 		ConnectionID:            q.ConnectionId,
+		ReferenceFileSchemaURI:  q.ReferenceFileSchemaUri,
 	}
 	for _, v := range q.DecimalTargetTypes {
 		e.DecimalTargetTypes = append(e.DecimalTargetTypes, DecimalTargetType(v))
@@ -230,17 +237,22 @@ type CSVOptions struct {
 	// An optional custom string that will represent a NULL
 	// value in CSV import data.
 	NullMarker string
+
+	// Preserves the embedded ASCII control characters (the first 32 characters in the ASCII-table,
+	// from '\\x00' to '\\x1F') when loading from CSV. Only applicable to CSV, ignored for other formats.
+	PreserveASCIIControlCharacters bool
 }
 
 func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
 	c.CsvOptions = &bq.CsvOptions{
-		AllowJaggedRows:     o.AllowJaggedRows,
-		AllowQuotedNewlines: o.AllowQuotedNewlines,
-		Encoding:            string(o.Encoding),
-		FieldDelimiter:      o.FieldDelimiter,
-		Quote:               o.quote(),
-		SkipLeadingRows:     o.SkipLeadingRows,
-		NullMarker:          o.NullMarker,
+		AllowJaggedRows:                o.AllowJaggedRows,
+		AllowQuotedNewlines:            o.AllowQuotedNewlines,
+		Encoding:                       string(o.Encoding),
+		FieldDelimiter:                 o.FieldDelimiter,
+		Quote:                          o.quote(),
+		SkipLeadingRows:                o.SkipLeadingRows,
+		NullMarker:                     o.NullMarker,
+		PreserveAsciiControlCharacters: o.PreserveASCIIControlCharacters,
 	}
 }
 
@@ -267,12 +279,13 @@ func (o *CSVOptions) setQuote(ps *string) {
 
 func bqToCSVOptions(q *bq.CsvOptions) *CSVOptions {
 	o := &CSVOptions{
-		AllowJaggedRows:     q.AllowJaggedRows,
-		AllowQuotedNewlines: q.AllowQuotedNewlines,
-		Encoding:            Encoding(q.Encoding),
-		FieldDelimiter:      q.FieldDelimiter,
-		SkipLeadingRows:     q.SkipLeadingRows,
-		NullMarker:          q.NullMarker,
+		AllowJaggedRows:                q.AllowJaggedRows,
+		AllowQuotedNewlines:            q.AllowQuotedNewlines,
+		Encoding:                       Encoding(q.Encoding),
+		FieldDelimiter:                 q.FieldDelimiter,
+		SkipLeadingRows:                q.SkipLeadingRows,
+		NullMarker:                     q.NullMarker,
+		PreserveASCIIControlCharacters: q.PreserveAsciiControlCharacters,
 	}
 	o.setQuote(q.Quote)
 	return o

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,13 +19,19 @@ package storagetransfer_test
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	storagetransfer "cloud.google.com/go/storagetransfer/apiv1"
+	storagetransferpb "cloud.google.com/go/storagetransfer/apiv1/storagetransferpb"
 	"google.golang.org/api/iterator"
-	storagetransferpb "google.golang.org/genproto/googleapis/storagetransfer/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,19 +42,41 @@ func ExampleNewClient() {
 	_ = c
 }
 
-func ExampleClient_GetGoogleServiceAccount() {
+func ExampleNewRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storagetransfer.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleClient_CreateAgentPool() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &storagetransferpb.GetGoogleServiceAccountRequest{
+	req := &storagetransferpb.CreateAgentPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#GetGoogleServiceAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#CreateAgentPoolRequest.
 	}
-	resp, err := c.GetGoogleServiceAccount(ctx, req)
+	resp, err := c.CreateAgentPool(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -58,6 +86,11 @@ func ExampleClient_GetGoogleServiceAccount() {
 
 func ExampleClient_CreateTransferJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +99,7 @@ func ExampleClient_CreateTransferJob() {
 
 	req := &storagetransferpb.CreateTransferJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#CreateTransferJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#CreateTransferJobRequest.
 	}
 	resp, err := c.CreateTransferJob(ctx, req)
 	if err != nil {
@@ -76,19 +109,95 @@ func ExampleClient_CreateTransferJob() {
 	_ = resp
 }
 
-func ExampleClient_UpdateTransferJob() {
+func ExampleClient_DeleteAgentPool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &storagetransferpb.UpdateTransferJobRequest{
+	req := &storagetransferpb.DeleteAgentPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#UpdateTransferJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#DeleteAgentPoolRequest.
 	}
-	resp, err := c.UpdateTransferJob(ctx, req)
+	err = c.DeleteAgentPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteTransferJob() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagetransferpb.DeleteTransferJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#DeleteTransferJobRequest.
+	}
+	err = c.DeleteTransferJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetAgentPool() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagetransferpb.GetAgentPoolRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#GetAgentPoolRequest.
+	}
+	resp, err := c.GetAgentPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetGoogleServiceAccount() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagetransferpb.GetGoogleServiceAccountRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#GetGoogleServiceAccountRequest.
+	}
+	resp, err := c.GetGoogleServiceAccount(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -98,6 +207,11 @@ func ExampleClient_UpdateTransferJob() {
 
 func ExampleClient_GetTransferJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -106,7 +220,7 @@ func ExampleClient_GetTransferJob() {
 
 	req := &storagetransferpb.GetTransferJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#GetTransferJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#GetTransferJobRequest.
 	}
 	resp, err := c.GetTransferJob(ctx, req)
 	if err != nil {
@@ -116,8 +230,44 @@ func ExampleClient_GetTransferJob() {
 	_ = resp
 }
 
+func ExampleClient_ListAgentPools() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagetransferpb.ListAgentPoolsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#ListAgentPoolsRequest.
+	}
+	it := c.ListAgentPools(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_ListTransferJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -126,7 +276,7 @@ func ExampleClient_ListTransferJobs() {
 
 	req := &storagetransferpb.ListTransferJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#ListTransferJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#ListTransferJobsRequest.
 	}
 	it := c.ListTransferJobs(ctx, req)
 	for {
@@ -144,6 +294,11 @@ func ExampleClient_ListTransferJobs() {
 
 func ExampleClient_PauseTransferOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -152,7 +307,7 @@ func ExampleClient_PauseTransferOperation() {
 
 	req := &storagetransferpb.PauseTransferOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#PauseTransferOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#PauseTransferOperationRequest.
 	}
 	err = c.PauseTransferOperation(ctx, req)
 	if err != nil {
@@ -162,6 +317,11 @@ func ExampleClient_PauseTransferOperation() {
 
 func ExampleClient_ResumeTransferOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -170,7 +330,7 @@ func ExampleClient_ResumeTransferOperation() {
 
 	req := &storagetransferpb.ResumeTransferOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#ResumeTransferOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#ResumeTransferOperationRequest.
 	}
 	err = c.ResumeTransferOperation(ctx, req)
 	if err != nil {
@@ -180,6 +340,11 @@ func ExampleClient_ResumeTransferOperation() {
 
 func ExampleClient_RunTransferJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -188,7 +353,7 @@ func ExampleClient_RunTransferJob() {
 
 	req := &storagetransferpb.RunTransferJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#RunTransferJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#RunTransferJobRequest.
 	}
 	op, err := c.RunTransferJob(ctx, req)
 	if err != nil {
@@ -201,28 +366,13 @@ func ExampleClient_RunTransferJob() {
 	}
 }
 
-func ExampleClient_CreateAgentPool() {
-	ctx := context.Background()
-	c, err := storagetransfer.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagetransferpb.CreateAgentPoolRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#CreateAgentPoolRequest.
-	}
-	resp, err := c.CreateAgentPool(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_UpdateAgentPool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -231,7 +381,7 @@ func ExampleClient_UpdateAgentPool() {
 
 	req := &storagetransferpb.UpdateAgentPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#UpdateAgentPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#UpdateAgentPoolRequest.
 	}
 	resp, err := c.UpdateAgentPool(ctx, req)
 	if err != nil {
@@ -241,19 +391,24 @@ func ExampleClient_UpdateAgentPool() {
 	_ = resp
 }
 
-func ExampleClient_GetAgentPool() {
+func ExampleClient_UpdateTransferJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &storagetransferpb.GetAgentPoolRequest{
+	req := &storagetransferpb.UpdateTransferJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#GetAgentPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#UpdateTransferJobRequest.
 	}
-	resp, err := c.GetAgentPool(ctx, req)
+	resp, err := c.UpdateTransferJob(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -261,19 +416,72 @@ func ExampleClient_GetAgentPool() {
 	_ = resp
 }
 
-func ExampleClient_ListAgentPools() {
+func ExampleClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &storagetransferpb.ListAgentPoolsRequest{
+	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#ListAgentPoolsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
-	it := c.ListAgentPools(ctx, req)
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -284,23 +492,5 @@ func ExampleClient_ListAgentPools() {
 		}
 		// TODO: Use resp.
 		_ = resp
-	}
-}
-
-func ExampleClient_DeleteAgentPool() {
-	ctx := context.Background()
-	c, err := storagetransfer.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storagetransferpb.DeleteAgentPoolRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#DeleteAgentPoolRequest.
-	}
-	err = c.DeleteAgentPool(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
 	}
 }

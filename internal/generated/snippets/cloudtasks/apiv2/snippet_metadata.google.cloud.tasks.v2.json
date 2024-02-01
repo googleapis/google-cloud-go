@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudtasks/apiv2",
-    "version": "1.4.0",
+    "version": "1.12.6",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudtasks_v2_generated_CloudTasks_CreateQueue_sync",
       "title": "cloudtasks CreateQueue Sample",
-      "description": "CreateQueue creates a queue.\n\nQueues created with this method allow tasks to live for a maximum of 31\ndays. After a task is 31 days old, the task will be deleted regardless of whether\nit was dispatched or not.\n\nWARNING: Using this method may have unintended side effects if you are\nusing an App Engine queue.yaml or queue.xml file to manage your queues.\nRead\nOverview of Queue Management and\nqueue.yaml (at https: //cloud.google.com/tasks/docs/queue-yaml) before using\nthis method.",
+      "description": "CreateQueue creates a queue.\n\nQueues created with this method allow tasks to live for a maximum of 31\ndays. After a task is 31 days old, the task will be deleted regardless of\nwhether it was dispatched or not.\n\nWARNING: Using this method may have unintended side effects if you are\nusing an App Engine `queue.yaml` or `queue.xml` file to manage your queues.\nRead\n[Overview of Queue Management and\nqueue.yaml](https: //cloud.google.com/tasks/docs/queue-yaml) before using\nthis method.",
       "file": "Client/CreateQueue/main.go",
       "language": "GO",
       "clientMethod": {
@@ -26,7 +26,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.CreateQueueRequest",
+            "type": "cloudtaskspb.CreateQueueRequest",
             "name": "req"
           },
           {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "*cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "cloudtasks_v2_generated_CloudTasks_CreateTask_sync",
       "title": "cloudtasks CreateTask Sample",
-      "description": "CreateTask creates a task and adds it to a queue.\n\nTasks cannot be updated after creation; there is no UpdateTask command.\n\n  The maximum task size is 100KB.",
+      "description": "CreateTask creates a task and adds it to a queue.\n\nTasks cannot be updated after creation; there is no UpdateTask command.\n\n* The maximum task size is 100KB.",
       "file": "Client/CreateTask/main.go",
       "language": "GO",
       "clientMethod": {
@@ -72,7 +72,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.CreateTaskRequest",
+            "type": "cloudtaskspb.CreateTaskRequest",
             "name": "req"
           },
           {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Task",
+        "resultType": "*cloudtaskspb.Task",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -106,7 +106,7 @@
     {
       "regionTag": "cloudtasks_v2_generated_CloudTasks_DeleteQueue_sync",
       "title": "cloudtasks DeleteQueue Sample",
-      "description": "DeleteQueue deletes a queue.\n\nThis command will delete the queue even if it has tasks in it.\n\nNote: If you delete a queue, a queue with the same name can’t be created\nfor 7 days.\n\nWARNING: Using this method may have unintended side effects if you are\nusing an App Engine queue.yaml or queue.xml file to manage your queues.\nRead\nOverview of Queue Management and\nqueue.yaml (at https: //cloud.google.com/tasks/docs/queue-yaml) before using\nthis method.",
+      "description": "DeleteQueue deletes a queue.\n\nThis command will delete the queue even if it has tasks in it.\n\nNote: If you delete a queue, a queue with the same name can't be created\nfor 7 days.\n\nWARNING: Using this method may have unintended side effects if you are\nusing an App Engine `queue.yaml` or `queue.xml` file to manage your queues.\nRead\n[Overview of Queue Management and\nqueue.yaml](https: //cloud.google.com/tasks/docs/queue-yaml) before using\nthis method.",
       "file": "Client/DeleteQueue/main.go",
       "language": "GO",
       "clientMethod": {
@@ -118,7 +118,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.DeleteQueueRequest",
+            "type": "cloudtaskspb.DeleteQueueRequest",
             "name": "req"
           },
           {
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -163,7 +163,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.DeleteTaskRequest",
+            "type": "cloudtaskspb.DeleteTaskRequest",
             "name": "req"
           },
           {
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -196,7 +196,7 @@
     {
       "regionTag": "cloudtasks_v2_generated_CloudTasks_GetIamPolicy_sync",
       "title": "cloudtasks GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a Queue.\nReturns an empty policy if the resource exists and does not have a policy\nset.\n\nAuthorization requires the following\nGoogle IAM (at https: //cloud.google.com/iam) permission on the specified\nresource parent: \n\n  cloudtasks.queues.getIamPolicy",
+      "description": "GetIamPolicy gets the access control policy for a [Queue][google.cloud.tasks.v2.Queue].\nReturns an empty policy if the resource exists and does not have a policy\nset.\n\nAuthorization requires the following\n[Google IAM](https: //cloud.google.com/iam) permission on the specified\nresource parent: \n\n* `cloudtasks.queues.getIamPolicy`",
       "file": "Client/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -216,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -234,7 +234,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudtasks_v2_generated_CloudTasks_GetLocation_sync",
+      "title": "cloudtasks GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.tasks.v2.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.tasks.v2.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -254,7 +300,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.GetQueueRequest",
+            "type": "cloudtaskspb.GetQueueRequest",
             "name": "req"
           },
           {
@@ -262,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "*cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -280,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -300,7 +346,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.GetTaskRequest",
+            "type": "cloudtaskspb.GetTaskRequest",
             "name": "req"
           },
           {
@@ -308,7 +354,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Task",
+        "resultType": "*cloudtaskspb.Task",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -326,7 +372,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudtasks_v2_generated_CloudTasks_ListLocations_sync",
+      "title": "cloudtasks ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.tasks.v2.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.tasks.v2.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -346,7 +438,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.ListQueuesRequest",
+            "type": "cloudtaskspb.ListQueuesRequest",
             "name": "req"
           },
           {
@@ -372,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -380,7 +472,7 @@
     {
       "regionTag": "cloudtasks_v2_generated_CloudTasks_ListTasks_sync",
       "title": "cloudtasks ListTasks Sample",
-      "description": "ListTasks lists the tasks in a queue.\n\nBy default, only the BASIC view is retrieved\ndue to performance considerations;\nresponse_view controls the\nsubset of information which is returned.\n\nThe tasks may be returned in any order. The ordering may change at any\ntime.",
+      "description": "ListTasks lists the tasks in a queue.\n\nBy default, only the [BASIC][google.cloud.tasks.v2.Task.View.BASIC] view is\nretrieved due to performance considerations;\n[response_view][google.cloud.tasks.v2.ListTasksRequest.response_view]\ncontrols the subset of information which is returned.\n\nThe tasks may be returned in any order. The ordering may change at any\ntime.",
       "file": "Client/ListTasks/main.go",
       "language": "GO",
       "clientMethod": {
@@ -392,7 +484,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.ListTasksRequest",
+            "type": "cloudtaskspb.ListTasksRequest",
             "name": "req"
           },
           {
@@ -418,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -426,7 +518,7 @@
     {
       "regionTag": "cloudtasks_v2_generated_CloudTasks_PauseQueue_sync",
       "title": "cloudtasks PauseQueue Sample",
-      "description": "PauseQueue pauses the queue.\n\nIf a queue is paused then the system will stop dispatching tasks\nuntil the queue is resumed via\nResumeQueue. Tasks can still be added\nwhen the queue is paused. A queue is paused if its\nstate is PAUSED.",
+      "description": "PauseQueue pauses the queue.\n\nIf a queue is paused then the system will stop dispatching tasks\nuntil the queue is resumed via\n[ResumeQueue][google.cloud.tasks.v2.CloudTasks.ResumeQueue]. Tasks can\nstill be added when the queue is paused. A queue is paused if its\n[state][google.cloud.tasks.v2.Queue.state] is\n[PAUSED][google.cloud.tasks.v2.Queue.State.PAUSED].",
       "file": "Client/PauseQueue/main.go",
       "language": "GO",
       "clientMethod": {
@@ -438,7 +530,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.PauseQueueRequest",
+            "type": "cloudtaskspb.PauseQueueRequest",
             "name": "req"
           },
           {
@@ -446,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "*cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -464,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -484,7 +576,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.PurgeQueueRequest",
+            "type": "cloudtaskspb.PurgeQueueRequest",
             "name": "req"
           },
           {
@@ -492,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "*cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -510,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -518,7 +610,7 @@
     {
       "regionTag": "cloudtasks_v2_generated_CloudTasks_ResumeQueue_sync",
       "title": "cloudtasks ResumeQueue Sample",
-      "description": "ResumeQueue resume a queue.\n\nThis method resumes a queue after it has been\nPAUSED or\nDISABLED. The state of a queue is stored\nin the queue’s state; after calling this method it\nwill be set to RUNNING.\n\nWARNING: Resuming many high-QPS queues at the same time can\nlead to target overloading. If you are resuming high-QPS\nqueues, follow the 500/50/5 pattern described in\nManaging Cloud Tasks Scaling\nRisks (at https: //cloud.google.com/tasks/docs/manage-cloud-task-scaling).",
+      "description": "ResumeQueue resume a queue.\n\nThis method resumes a queue after it has been\n[PAUSED][google.cloud.tasks.v2.Queue.State.PAUSED] or\n[DISABLED][google.cloud.tasks.v2.Queue.State.DISABLED]. The state of a\nqueue is stored in the queue's [state][google.cloud.tasks.v2.Queue.state];\nafter calling this method it will be set to\n[RUNNING][google.cloud.tasks.v2.Queue.State.RUNNING].\n\nWARNING: Resuming many high-QPS queues at the same time can\nlead to target overloading. If you are resuming high-QPS\nqueues, follow the 500/50/5 pattern described in\n[Managing Cloud Tasks Scaling\nRisks](https: //cloud.google.com/tasks/docs/manage-cloud-task-scaling).",
       "file": "Client/ResumeQueue/main.go",
       "language": "GO",
       "clientMethod": {
@@ -530,7 +622,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.ResumeQueueRequest",
+            "type": "cloudtaskspb.ResumeQueueRequest",
             "name": "req"
           },
           {
@@ -538,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "*cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -556,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -564,7 +656,7 @@
     {
       "regionTag": "cloudtasks_v2_generated_CloudTasks_RunTask_sync",
       "title": "cloudtasks RunTask Sample",
-      "description": "RunTask forces a task to run now.\n\nWhen this method is called, Cloud Tasks will dispatch the task, even if\nthe task is already running, the queue has reached its RateLimits or\nis PAUSED.\n\nThis command is meant to be used for manual debugging. For\nexample, RunTask can be used to retry a failed\ntask after a fix has been made or to manually force a task to be\ndispatched now.\n\nThe dispatched task is returned. That is, the task that is returned\ncontains the status after the task is dispatched but\nbefore the task is received by its target.\n\nIf Cloud Tasks receives a successful response from the task’s\ntarget, then the task will be deleted; otherwise the task’s\nschedule_time will be reset to the time that\nRunTask was called plus the retry delay specified\nin the queue’s RetryConfig.\n\nRunTask returns\nNOT_FOUND when it is called on a\ntask that has already succeeded or permanently failed.",
+      "description": "RunTask forces a task to run now.\n\nWhen this method is called, Cloud Tasks will dispatch the task, even if\nthe task is already running, the queue has reached its\n[RateLimits][google.cloud.tasks.v2.RateLimits] or is\n[PAUSED][google.cloud.tasks.v2.Queue.State.PAUSED].\n\nThis command is meant to be used for manual debugging. For\nexample, [RunTask][google.cloud.tasks.v2.CloudTasks.RunTask] can be used to\nretry a failed task after a fix has been made or to manually force a task\nto be dispatched now.\n\nThe dispatched task is returned. That is, the task that is returned\ncontains the [status][Task.status] after the task is dispatched but\nbefore the task is received by its target.\n\nIf Cloud Tasks receives a successful response from the task's\ntarget, then the task will be deleted; otherwise the task's\n[schedule_time][google.cloud.tasks.v2.Task.schedule_time] will be reset to\nthe time that [RunTask][google.cloud.tasks.v2.CloudTasks.RunTask] was\ncalled plus the retry delay specified in the queue's\n[RetryConfig][google.cloud.tasks.v2.RetryConfig].\n\n[RunTask][google.cloud.tasks.v2.CloudTasks.RunTask] returns\n[NOT_FOUND][google.rpc.Code.NOT_FOUND] when it is called on a\ntask that has already succeeded or permanently failed.",
       "file": "Client/RunTask/main.go",
       "language": "GO",
       "clientMethod": {
@@ -576,7 +668,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.RunTaskRequest",
+            "type": "cloudtaskspb.RunTaskRequest",
             "name": "req"
           },
           {
@@ -584,7 +676,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Task",
+        "resultType": "*cloudtaskspb.Task",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -602,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -610,7 +702,7 @@
     {
       "regionTag": "cloudtasks_v2_generated_CloudTasks_SetIamPolicy_sync",
       "title": "cloudtasks SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy for a Queue. Replaces any existing\npolicy.\n\nNote: The Cloud Console does not check queue-level IAM permissions yet.\nProject-level permissions are required to use the Cloud Console.\n\nAuthorization requires the following\nGoogle IAM (at https: //cloud.google.com/iam) permission on the specified\nresource parent: \n\n  cloudtasks.queues.setIamPolicy",
+      "description": "SetIamPolicy sets the access control policy for a [Queue][google.cloud.tasks.v2.Queue].\nReplaces any existing policy.\n\nNote: The Cloud Console does not check queue-level IAM permissions yet.\nProject-level permissions are required to use the Cloud Console.\n\nAuthorization requires the following\n[Google IAM](https: //cloud.google.com/iam) permission on the specified\nresource parent: \n\n* `cloudtasks.queues.setIamPolicy`",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -630,7 +722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -648,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -656,7 +748,7 @@
     {
       "regionTag": "cloudtasks_v2_generated_CloudTasks_TestIamPermissions_sync",
       "title": "cloudtasks TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on a Queue.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on a\n[Queue][google.cloud.tasks.v2.Queue]. If the resource does not exist, this\nwill return an empty set of permissions, not a\n[NOT_FOUND][google.rpc.Code.NOT_FOUND] error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
       "file": "Client/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -676,7 +768,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -694,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -702,7 +794,7 @@
     {
       "regionTag": "cloudtasks_v2_generated_CloudTasks_UpdateQueue_sync",
       "title": "cloudtasks UpdateQueue Sample",
-      "description": "UpdateQueue updates a queue.\n\nThis method creates the queue if it does not exist and updates\nthe queue if it does exist.\n\nQueues created with this method allow tasks to live for a maximum of 31\ndays. After a task is 31 days old, the task will be deleted regardless of whether\nit was dispatched or not.\n\nWARNING: Using this method may have unintended side effects if you are\nusing an App Engine queue.yaml or queue.xml file to manage your queues.\nRead\nOverview of Queue Management and\nqueue.yaml (at https: //cloud.google.com/tasks/docs/queue-yaml) before using\nthis method.",
+      "description": "UpdateQueue updates a queue.\n\nThis method creates the queue if it does not exist and updates\nthe queue if it does exist.\n\nQueues created with this method allow tasks to live for a maximum of 31\ndays. After a task is 31 days old, the task will be deleted regardless of\nwhether it was dispatched or not.\n\nWARNING: Using this method may have unintended side effects if you are\nusing an App Engine `queue.yaml` or `queue.xml` file to manage your queues.\nRead\n[Overview of Queue Management and\nqueue.yaml](https: //cloud.google.com/tasks/docs/queue-yaml) before using\nthis method.",
       "file": "Client/UpdateQueue/main.go",
       "language": "GO",
       "clientMethod": {
@@ -714,7 +806,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.UpdateQueueRequest",
+            "type": "cloudtaskspb.UpdateQueueRequest",
             "name": "req"
           },
           {
@@ -722,7 +814,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "*cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2.Client"
@@ -740,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]

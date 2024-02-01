@@ -17,11 +17,13 @@ package datastore
 import (
 	"context"
 	"errors"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ErrConcurrentTransaction is returned when a transaction is rolled back due
@@ -34,6 +36,7 @@ type transactionSettings struct {
 	attempts int
 	readOnly bool
 	prevID   []byte // ID of the transaction to retry
+	readTime *timestamppb.Timestamp
 }
 
 // newTransactionSettings creates a transactionSettings with a given TransactionOption slice.
@@ -64,6 +67,22 @@ type maxAttempts int
 func (w maxAttempts) apply(s *transactionSettings) {
 	if w > 0 {
 		s.attempts = int(w)
+	}
+}
+
+// WithReadTime returns a TransactionOption that specifies a snapshot of the
+// database to view.
+func WithReadTime(t time.Time) TransactionOption {
+	return readTime{t}
+}
+
+type readTime struct {
+	time.Time
+}
+
+func (rt readTime) apply(s *transactionSettings) {
+	if !rt.Time.IsZero() {
+		s.readTime = timestamppb.New(rt.Time)
 	}
 }
 
@@ -111,14 +130,23 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 }
 
 func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ *Transaction, err error) {
-	req := &pb.BeginTransactionRequest{ProjectId: c.dataset}
+	req := &pb.BeginTransactionRequest{
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+	}
 	if s.readOnly {
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction")
 		defer func() { trace.EndSpan(ctx, err) }()
 
-		req.TransactionOptions = &pb.TransactionOptions{
-			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
+		ro := &pb.TransactionOptions_ReadOnly{}
+		if !s.readTime.AsTime().IsZero() {
+			ro.ReadTime = s.readTime
 		}
+
+		req.TransactionOptions = &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: ro},
+		}
+
 	} else if s.prevID != nil {
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadWriteTransaction")
 		defer func() { trace.EndSpan(ctx, err) }()
@@ -200,6 +228,7 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 	}
 	req := &pb.CommitRequest{
 		ProjectId:           t.client.dataset,
+		DatabaseId:          t.client.databaseID,
 		TransactionSelector: &pb.CommitRequest_Transaction{Transaction: t.id},
 		Mutations:           t.mutations,
 		Mode:                pb.CommitRequest_TRANSACTIONAL,
@@ -242,6 +271,7 @@ func (t *Transaction) Rollback() (err error) {
 	t.id = nil
 	_, err = t.client.client.Rollback(t.ctx, &pb.RollbackRequest{
 		ProjectId:   t.client.dataset,
+		DatabaseId:  t.client.databaseID,
 		Transaction: id,
 	})
 	return err
@@ -259,7 +289,9 @@ func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
 	opts := &pb.ReadOptions{
 		ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
 	}
-	err = t.client.get(t.ctx, []*Key{key}, []interface{}{dst}, opts)
+
+	// TODO: Use transaction ID returned by get
+	_, err = t.client.get(t.ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
 	}
@@ -277,7 +309,10 @@ func (t *Transaction) GetMulti(keys []*Key, dst interface{}) (err error) {
 	opts := &pb.ReadOptions{
 		ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
 	}
-	return t.client.get(t.ctx, keys, dst, opts)
+
+	// TODO: Use transaction ID returned by get
+	_, err = t.client.get(t.ctx, keys, dst, opts)
+	return err
 }
 
 // Put is the transaction-specific version of the package function Put.

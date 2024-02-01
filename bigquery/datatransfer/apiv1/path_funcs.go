@@ -17,7 +17,9 @@ package datatransfer
 // ProjectPath returns the path for the project resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s", project)
+//
+//	fmt.Sprintf("projects/%s", project)
+//
 // instead.
 func ProjectPath(project string) string {
 	return "" +
@@ -29,7 +31,9 @@ func ProjectPath(project string) string {
 // LocationPath returns the path for the location resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/locations/%s", project, location)
+//
+//	fmt.Sprintf("projects/%s/locations/%s", project, location)
+//
 // instead.
 func LocationPath(project, location string) string {
 	return "" +
@@ -43,7 +47,9 @@ func LocationPath(project, location string) string {
 // LocationDataSourcePath returns the path for the location data source resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/locations/%s/dataSources/%s", project, location, dataSource)
+//
+//	fmt.Sprintf("projects/%s/locations/%s/dataSources/%s", project, location, dataSource)
+//
 // instead.
 func LocationDataSourcePath(project, location, dataSource string) string {
 	return "" +
@@ -59,7 +65,9 @@ func LocationDataSourcePath(project, location, dataSource string) string {
 // LocationTransferConfigPath returns the path for the location transfer config resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/locations/%s/transferConfigs/%s", project, location, transferConfig)
+//
+//	fmt.Sprintf("projects/%s/locations/%s/transferConfigs/%s", project, location, transferConfig)
+//
 // instead.
 func LocationTransferConfigPath(project, location, transferConfig string) string {
 	return "" +
@@ -75,7 +83,9 @@ func LocationTransferConfigPath(project, location, transferConfig string) string
 // LocationRunPath returns the path for the location run resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/locations/%s/transferConfigs/%s/runs/%s", project, location, transferConfig, run)
+//
+//	fmt.Sprintf("projects/%s/locations/%s/transferConfigs/%s/runs/%s", project, location, transferConfig, run)
+//
 // instead.
 func LocationRunPath(project, location, transferConfig, run string) string {
 	return "" +
@@ -93,7 +103,9 @@ func LocationRunPath(project, location, transferConfig, run string) string {
 // DataSourcePath returns the path for the data source resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/dataSources/%s", project, dataSource)
+//
+//	fmt.Sprintf("projects/%s/dataSources/%s", project, dataSource)
+//
 // instead.
 func DataSourcePath(project, dataSource string) string {
 	return "" +
@@ -107,7 +119,9 @@ func DataSourcePath(project, dataSource string) string {
 // TransferConfigPath returns the path for the transfer config resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/transferConfigs/%s", project, transferConfig)
+//
+//	fmt.Sprintf("projects/%s/transferConfigs/%s", project, transferConfig)
+//
 // instead.
 func TransferConfigPath(project, transferConfig string) string {
 	return "" +
@@ -121,7 +135,9 @@ func TransferConfigPath(project, transferConfig string) string {
 // RunPath returns the path for the run resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s/transferConfigs/%s/runs/%s", project, transferConfig, run)
+//
+//	fmt.Sprintf("projects/%s/transferConfigs/%s/runs/%s", project, transferConfig, run)
+//
 // instead.
 func RunPath(project, transferConfig, run string) string {
 	return "" +

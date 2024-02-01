@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkehub/apiv1beta1",
-    "version": "0.8.0",
+    "version": "0.14.5",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "GkeHubMembershipService",
-            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -59,7 +59,7 @@
     {
       "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_CreateMembership_sync",
       "title": "gkehub CreateMembership Sample",
-      "description": "CreateMembership creates a new Membership.\n\nThis is currently only supported for GKE clusters on Google Cloud.\nTo register other clusters, follow the instructions at\nhttps: //cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster (at https: //cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster).",
+      "description": "CreateMembership creates a new Membership.\n\n**This is currently only supported for GKE clusters on Google Cloud**.\nTo register other clusters, follow the instructions at\nhttps: //cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster.",
       "file": "GkeHubMembershipClient/CreateMembership/main.go",
       "language": "GO",
       "clientMethod": {
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -105,7 +105,7 @@
     {
       "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_DeleteMembership_sync",
       "title": "gkehub DeleteMembership Sample",
-      "description": "DeleteMembership removes a Membership.\n\nThis is currently only supported for GKE clusters on Google Cloud.\nTo unregister other clusters, follow the instructions at\nhttps: //cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster (at https: //cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster).",
+      "description": "DeleteMembership removes a Membership.\n\n**This is currently only supported for GKE clusters on Google Cloud**.\nTo unregister other clusters, follow the instructions at\nhttps: //cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster.",
       "file": "GkeHubMembershipClient/DeleteMembership/main.go",
       "language": "GO",
       "clientMethod": {
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -177,10 +177,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "GkeHubMembershipService",
-            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -196,7 +196,7 @@
     {
       "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_GenerateConnectManifest_sync",
       "title": "gkehub GenerateConnectManifest Sample",
-      "description": "GenerateConnectManifest generates the manifest for deployment of the GKE connect agent.\n\nThis method is used internally by Google-provided libraries.\nMost clients should not need to call this method directly.",
+      "description": "GenerateConnectManifest generates the manifest for deployment of the GKE connect agent.\n\n**This method is used internally by Google-provided libraries.**\nMost clients should not need to call this method directly.",
       "file": "GkeHubMembershipClient/GenerateConnectManifest/main.go",
       "language": "GO",
       "clientMethod": {
@@ -216,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkehubpb.GenerateConnectManifestResponse",
+        "resultType": "*gkehubpb.GenerateConnectManifestResponse",
         "client": {
           "shortName": "GkeHubMembershipClient",
           "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkehubpb.GenerateExclusivityManifestResponse",
+        "resultType": "*gkehubpb.GenerateExclusivityManifestResponse",
         "client": {
           "shortName": "GkeHubMembershipClient",
           "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -308,17 +308,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "GkeHubMembershipClient",
           "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "GkeHubMembershipService",
-            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -354,17 +354,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "GkeHubMembershipClient",
           "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "GkeHubMembershipService",
-            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -400,7 +400,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkehubpb.Membership",
+        "resultType": "*gkehubpb.Membership",
         "client": {
           "shortName": "GkeHubMembershipClient",
           "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -446,17 +446,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "GkeHubMembershipClient",
           "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "GkeHubMembershipService",
-            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -499,10 +499,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "GkeHubMembershipService",
-            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -591,10 +591,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "GkeHubMembershipService",
-            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -610,7 +610,7 @@
     {
       "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_SetIamPolicy_sync",
       "title": "gkehub SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "GkeHubMembershipClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -630,17 +630,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "GkeHubMembershipClient",
           "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "GkeHubMembershipService",
-            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -656,7 +656,7 @@
     {
       "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_TestIamPermissions_sync",
       "title": "gkehub TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "GkeHubMembershipClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -676,17 +676,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "GkeHubMembershipClient",
           "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "GkeHubMembershipService",
-            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -740,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -768,7 +768,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkehubpb.ValidateExclusivityResponse",
+        "resultType": "*gkehubpb.ValidateExclusivityResponse",
         "client": {
           "shortName": "GkeHubMembershipClient",
           "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
@@ -786,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]

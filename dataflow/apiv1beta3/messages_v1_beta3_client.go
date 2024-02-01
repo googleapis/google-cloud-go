@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,11 +19,13 @@ package dataflow
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -31,9 +33,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -48,7 +48,9 @@ type MessagesV1Beta3CallOptions struct {
 func defaultMessagesV1Beta3GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dataflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dataflow.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dataflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -59,13 +61,17 @@ func defaultMessagesV1Beta3GRPCClientOptions() []option.ClientOption {
 
 func defaultMessagesV1Beta3CallOptions() *MessagesV1Beta3CallOptions {
 	return &MessagesV1Beta3CallOptions{
-		ListJobMessages: []gax.CallOption{},
+		ListJobMessages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultMessagesV1Beta3RESTCallOptions() *MessagesV1Beta3CallOptions {
 	return &MessagesV1Beta3CallOptions{
-		ListJobMessages: []gax.CallOption{},
+		ListJobMessages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -107,7 +113,8 @@ func (c *MessagesV1Beta3Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *MessagesV1Beta3Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -130,9 +137,6 @@ type messagesV1Beta3GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing MessagesV1Beta3Client
 	CallOptions **MessagesV1Beta3CallOptions
 
@@ -140,7 +144,7 @@ type messagesV1Beta3GRPCClient struct {
 	messagesV1Beta3Client dataflowpb.MessagesV1Beta3Client
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewMessagesV1Beta3Client creates a new messages v1 beta3 client based on gRPC.
@@ -158,11 +162,6 @@ func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) 
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -171,7 +170,6 @@ func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) 
 
 	c := &messagesV1Beta3GRPCClient{
 		connPool:              connPool,
-		disableDeadlines:      disableDeadlines,
 		messagesV1Beta3Client: dataflowpb.NewMessagesV1Beta3Client(connPool),
 		CallOptions:           &client.CallOptions,
 	}
@@ -184,7 +182,8 @@ func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) 
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *messagesV1Beta3GRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -193,9 +192,9 @@ func (c *messagesV1Beta3GRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *messagesV1Beta3GRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -212,8 +211,8 @@ type messagesV1Beta3RESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing MessagesV1Beta3Client
 	CallOptions **MessagesV1Beta3CallOptions
@@ -244,7 +243,9 @@ func NewMessagesV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOpti
 func defaultMessagesV1Beta3RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dataflow.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dataflow.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dataflow.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -254,9 +255,9 @@ func defaultMessagesV1Beta3RESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *messagesV1Beta3RESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -269,14 +270,15 @@ func (c *messagesV1Beta3RESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *messagesV1Beta3RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *messagesV1Beta3GRPCClient) ListJobMessages(ctx context.Context, req *dataflowpb.ListJobMessagesRequest, opts ...gax.CallOption) *JobMessageIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListJobMessages[0:len((*c.CallOptions).ListJobMessages):len((*c.CallOptions).ListJobMessages)], opts...)
 	it := &JobMessageIterator{}
 	req = proto.Clone(req).(*dataflowpb.ListJobMessagesRequest)
@@ -346,11 +348,13 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/messages", req.GetProjectId(), req.GetLocation(), req.GetJobId())
 
 		params := url.Values{}
-		if req.GetEndTime().GetNanos() != 0 {
-			params.Add("endTime.nanos", fmt.Sprintf("%v", req.GetEndTime().GetNanos()))
-		}
-		if req.GetEndTime().GetSeconds() != 0 {
-			params.Add("endTime.seconds", fmt.Sprintf("%v", req.GetEndTime().GetSeconds()))
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetEndTime() != nil {
+			endTime, err := protojson.Marshal(req.GetEndTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("endTime", string(endTime[1:len(endTime)-1]))
 		}
 		if req.GetMinimumImportance() != 0 {
 			params.Add("minimumImportance", fmt.Sprintf("%v", req.GetMinimumImportance()))
@@ -361,17 +365,19 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req.GetStartTime().GetNanos() != 0 {
-			params.Add("startTime.nanos", fmt.Sprintf("%v", req.GetStartTime().GetNanos()))
-		}
-		if req.GetStartTime().GetSeconds() != 0 {
-			params.Add("startTime.seconds", fmt.Sprintf("%v", req.GetStartTime().GetSeconds()))
+		if req.GetStartTime() != nil {
+			startTime, err := protojson.Marshal(req.GetStartTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("startTime", string(startTime[1:len(startTime)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -392,13 +398,13 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -424,51 +430,4 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// JobMessageIterator manages a stream of *dataflowpb.JobMessage.
-type JobMessageIterator struct {
-	items    []*dataflowpb.JobMessage
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataflowpb.JobMessage, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *JobMessageIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *JobMessageIterator) Next() (*dataflowpb.JobMessage, error) {
-	var item *dataflowpb.JobMessage
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *JobMessageIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *JobMessageIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

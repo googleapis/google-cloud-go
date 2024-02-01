@@ -25,6 +25,11 @@
                 "GetFeed"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListFeeds": {
               "methods": [
                 "ListFeeds"
@@ -53,6 +58,11 @@
             "GetFeed": {
               "methods": [
                 "GetFeed"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ListFeeds": {

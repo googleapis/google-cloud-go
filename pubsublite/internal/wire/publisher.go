@@ -21,11 +21,12 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/google/uuid"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 var (
@@ -36,17 +37,17 @@ var (
 // singlePartitionPublisher publishes messages to a single topic partition.
 //
 // Life of a successfully published message:
-// - Publish() receives the message from the user.
-// - It is added to `batcher.msgBundler`, which performs batching in accordance
-//   with user-configured PublishSettings.
-// - onNewBatch() receives new message batches from the bundler. The batch is
-//   added to `batcher.publishQueue` (in-flight batches) and sent to the publish
-//   stream, if connected. If the stream is currently reconnecting, the entire
-//   queue is resent to the stream immediately after it has reconnected, in
-//   onStreamStatusChange().
-// - onResponse() receives the first cursor offset for the first batch in
-//   `batcher.publishQueue`. It assigns the cursor offsets for each message and
-//   releases the publish results to the user.
+//   - Publish() receives the message from the user.
+//   - It is added to `batcher.msgBundler`, which performs batching in accordance
+//     with user-configured PublishSettings.
+//   - onNewBatch() receives new message batches from the bundler. The batch is
+//     added to `batcher.publishQueue` (in-flight batches) and sent to the publish
+//     stream, if connected. If the stream is currently reconnecting, the entire
+//     queue is resent to the stream immediately after it has reconnected, in
+//     onStreamStatusChange().
+//   - onResponse() receives the first cursor offset for the first batch in
+//     `batcher.publishQueue`. It assigns the cursor offsets for each message and
+//     releases the publish results to the user.
 //
 // See comments for unsafeInitiateShutdown() for error scenarios.
 type singlePartitionPublisher struct {
@@ -67,13 +68,15 @@ type singlePartitionPublisher struct {
 // singlePartitionPublisherFactory creates instances of singlePartitionPublisher
 // for given partition numbers.
 type singlePartitionPublisherFactory struct {
-	ctx       context.Context
-	pubClient *vkit.PublisherClient
-	settings  PublishSettings
-	topicPath string
+	ctx         context.Context
+	pubClient   *vkit.PublisherClient
+	settings    PublishSettings
+	topicPath   string
+	clientID    publisherClientID
+	unloadDelay time.Duration
 }
 
-func (f *singlePartitionPublisherFactory) New(partition int) *singlePartitionPublisher {
+func (f *singlePartitionPublisherFactory) New(partition int, initialSeqNum publishSequenceNumber) *singlePartitionPublisher {
 	pp := &singlePartitionPublisher{
 		pubClient: f.pubClient,
 		topic:     topicPartition{Path: f.topicPath, Partition: partition},
@@ -82,12 +85,13 @@ func (f *singlePartitionPublisherFactory) New(partition int) *singlePartitionPub
 				InitialRequest: &pb.InitialPublishRequest{
 					Topic:     f.topicPath,
 					Partition: int64(partition),
+					ClientId:  f.clientID,
 				},
 			},
 		},
 		metadata: newPubsubMetadata(),
 	}
-	pp.batcher = newPublishMessageBatcher(&f.settings, partition, pp.onNewBatch)
+	pp.batcher = newPublishMessageBatcher(&f.settings, f.clientID, initialSeqNum, partition, pp.onNewBatch)
 	pp.stream = newRetryableStream(f.ctx, pp, f.settings.Timeout, streamIdleTimeout(f.settings.Timeout), reflect.TypeOf(pb.PublishResponse{}))
 	pp.metadata.AddTopicRoutingMetadata(pp.topic)
 	pp.metadata.AddClientInfo(f.settings.Framework)
@@ -113,9 +117,6 @@ func (pp *singlePartitionPublisher) Stop() {
 
 // Publish a pub/sub message.
 func (pp *singlePartitionPublisher) Publish(msg *pb.PubSubMessage, onResult PublishResultFunc) {
-	pp.mu.Lock()
-	defer pp.mu.Unlock()
-
 	processMessage := func() error {
 		// Messages are accepted while the service is starting up or active. During
 		// startup, messages are queued in the batcher and will be published once
@@ -134,12 +135,25 @@ func (pp *singlePartitionPublisher) Publish(msg *pb.PubSubMessage, onResult Publ
 		return nil
 	}
 
+	pp.mu.Lock()
+	err := processMessage()
 	// If the new message cannot be published, flush pending messages and then
 	// terminate the stream once results are received.
-	if err := processMessage(); err != nil {
+	if err != nil {
 		pp.unsafeInitiateShutdown(serviceTerminating, err)
+	}
+	pp.mu.Unlock()
+
+	if err != nil {
+		// Invoke callback without lock held.
 		onResult(nil, err)
 	}
+}
+
+func (pp *singlePartitionPublisher) NextSequenceNumber() publishSequenceNumber {
+	pp.mu.Lock()
+	defer pp.mu.Unlock()
+	return pp.batcher.NextSequenceNumber()
 }
 
 func (pp *singlePartitionPublisher) newStream(ctx context.Context) (grpc.ClientStream, error) {
@@ -199,36 +213,38 @@ func (pp *singlePartitionPublisher) onNewBatch(batch *publishBatch) {
 }
 
 func (pp *singlePartitionPublisher) onResponse(response interface{}) {
-	pp.mu.Lock()
-	defer pp.mu.Unlock()
-
-	processResponse := func() error {
+	processResponse := func() ([]*publishResult, error) {
 		pubResponse, _ := response.(*pb.PublishResponse)
 		if pubResponse.GetMessageResponse() == nil {
-			return errInvalidMsgPubResponse
+			return nil, errInvalidMsgPubResponse
 		}
-		firstOffset := pubResponse.GetMessageResponse().GetStartCursor().GetOffset()
-		if err := pp.batcher.OnPublishResponse(firstOffset); err != nil {
-			return err
-		}
-		pp.unsafeCheckDone()
-		return nil
+		return pp.batcher.OnPublishResponse(pubResponse.GetMessageResponse())
 	}
-	if err := processResponse(); err != nil {
+
+	pp.mu.Lock()
+	results, err := processResponse()
+	if err != nil {
 		pp.unsafeInitiateShutdown(serviceTerminated, err)
+	}
+	pp.unsafeCheckDone()
+	pp.mu.Unlock()
+
+	// Invoke callbacks without lock held.
+	for _, r := range results {
+		r.OnResult(r.Metadata, nil)
 	}
 }
 
 // unsafeInitiateShutdown must be provided a target serviceStatus, which must be
 // one of:
-// * serviceTerminating: attempts to successfully publish all pending messages
-//   before terminating the publisher. Occurs when:
+//   - serviceTerminating: attempts to successfully publish all pending messages
+//     before terminating the publisher. Occurs when:
 //   - The user calls Stop().
 //   - A new message fails preconditions. This should block the publish of
 //     subsequent messages to ensure ordering, but all pending messages should
 //     be flushed.
-// * serviceTerminated: immediately terminates the publisher and errors all
-//   in-flight batches and pending messages in the bundler. Occurs when:
+//   - serviceTerminated: immediately terminates the publisher and errors all
+//     in-flight batches and pending messages in the bundler. Occurs when:
 //   - The publish stream terminates with a non-retryable error.
 //   - An inconsistency is detected in the server's publish responses. Assume
 //     there is a bug on the server and terminate the publisher, as correct
@@ -274,6 +290,110 @@ func (pp *singlePartitionPublisher) unsafeCheckDone() {
 	}
 }
 
+// lazyPartitionPublisher lazily creates an underlying singlePartitionPublisher
+// and unloads it after a period of inactivity.
+type lazyPartitionPublisher struct {
+	// Immutable after creation.
+	pubFactory *singlePartitionPublisherFactory
+	partition  int
+	idleTimer  *streamIdleTimer
+
+	// Fields below must be guarded with mu.
+	publisher           *singlePartitionPublisher
+	outstandingMessages int
+	initialSequence     publishSequenceNumber
+
+	abstractService
+}
+
+func newLazyPartitionPublisher(partition int, pubFactory *singlePartitionPublisherFactory) *lazyPartitionPublisher {
+	pub := &lazyPartitionPublisher{
+		pubFactory: pubFactory,
+		partition:  partition,
+	}
+	pub.idleTimer = newStreamIdleTimer(pubFactory.unloadDelay, pub.onIdle)
+	return pub
+}
+
+func (lp *lazyPartitionPublisher) Start() {
+	lp.mu.Lock()
+	defer lp.mu.Unlock()
+	lp.unsafeUpdateStatus(serviceActive, nil)
+}
+
+func (lp *lazyPartitionPublisher) Stop() {
+	lp.mu.Lock()
+	defer lp.mu.Unlock()
+
+	lp.idleTimer.Shutdown()
+	if lp.publisher == nil {
+		lp.unsafeUpdateStatus(serviceTerminated, nil)
+	} else if lp.unsafeUpdateStatus(serviceTerminating, nil) {
+		lp.publisher.Stop()
+	}
+}
+
+func (lp *lazyPartitionPublisher) Publish(msg *pb.PubSubMessage, onResult PublishResultFunc) {
+	publisher, err := func() (*singlePartitionPublisher, error) {
+		lp.mu.Lock()
+		defer lp.mu.Unlock()
+
+		if lp.status >= serviceTerminating {
+			return nil, ErrServiceStopped
+		}
+		if lp.publisher == nil {
+			lp.publisher = lp.pubFactory.New(lp.partition, lp.initialSequence)
+			lp.publisher.AddStatusChangeReceiver(lp.Handle(), lp.onStatusChange)
+			lp.publisher.Start()
+		}
+		lp.idleTimer.Stop() // Prevent the underlying publisher from being unloaded
+		lp.outstandingMessages++
+		return lp.publisher, nil
+	}()
+	if err != nil {
+		onResult(nil, err)
+		return
+	}
+	// Publish without lock held, as the callback may be invoked inline.
+	publisher.Publish(msg, func(metadata *MessageMetadata, err error) {
+		lp.onResult()
+		onResult(metadata, err)
+	})
+}
+
+func (lp *lazyPartitionPublisher) onStatusChange(handle serviceHandle, status serviceStatus, err error) {
+	if status >= serviceTerminating {
+		lp.mu.Lock()
+		defer lp.mu.Unlock()
+		lp.unsafeUpdateStatus(status, err)
+	}
+}
+
+func (lp *lazyPartitionPublisher) onResult() {
+	lp.mu.Lock()
+	defer lp.mu.Unlock()
+
+	lp.outstandingMessages--
+	if lp.outstandingMessages == 0 {
+		// Schedule the underlying publisher for unload if no new messages are
+		// published before the timer expires.
+		lp.idleTimer.Restart()
+	}
+}
+
+func (lp *lazyPartitionPublisher) onIdle() {
+	lp.mu.Lock()
+	defer lp.mu.Unlock()
+
+	if lp.outstandingMessages == 0 && lp.publisher != nil {
+		lp.publisher.RemoveStatusChangeReceiver(lp.Handle())
+		lp.publisher.Stop()
+		// Resume from the next sequence number when the publisher is recreated.
+		lp.initialSequence = lp.publisher.NextSequenceNumber()
+		lp.publisher = nil
+	}
+}
+
 // routingPublisher publishes messages to multiple topic partitions, each
 // managed by a singlePartitionPublisher. It supports increasing topic partition
 // count, but not decreasing.
@@ -285,18 +405,18 @@ type routingPublisher struct {
 
 	// Fields below must be guarded with mu.
 	msgRouter  messageRouter
-	publishers []*singlePartitionPublisher
+	publishers []*lazyPartitionPublisher
 
-	apiClientService
+	compositeService
 }
 
 func newRoutingPublisher(allClients apiClients, adminClient *vkit.AdminClient, msgRouterFactory *messageRouterFactory, pubFactory *singlePartitionPublisherFactory) *routingPublisher {
 	pub := &routingPublisher{
-		apiClientService: apiClientService{clients: allClients},
 		msgRouterFactory: msgRouterFactory,
 		pubFactory:       pubFactory,
 	}
 	pub.init()
+	pub.toClose = allClients
 	pub.partitionWatcher = newPartitionCountWatcher(pubFactory.ctx, adminClient, pubFactory.settings, pubFactory.topicPath, pub.onPartitionCountChanged)
 	pub.unsafeAddServices(pub.partitionWatcher)
 	return pub
@@ -319,7 +439,7 @@ func (rp *routingPublisher) onPartitionCountChanged(partitionCount int) {
 
 	prevPartitionCount := len(rp.publishers)
 	for i := prevPartitionCount; i < partitionCount; i++ {
-		pub := rp.pubFactory.New(i)
+		pub := newLazyPartitionPublisher(i, rp.pubFactory)
 		rp.publishers = append(rp.publishers, pub)
 		rp.unsafeAddServices(pub)
 	}
@@ -335,7 +455,7 @@ func (rp *routingPublisher) Publish(msg *pb.PubSubMessage, onResult PublishResul
 	pub.Publish(msg, onResult)
 }
 
-func (rp *routingPublisher) routeToPublisher(msg *pb.PubSubMessage) (*singlePartitionPublisher, error) {
+func (rp *routingPublisher) routeToPublisher(msg *pb.PubSubMessage) (*lazyPartitionPublisher, error) {
 	rp.mu.Lock()
 	defer rp.mu.Unlock()
 
@@ -378,6 +498,15 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 	if err := validatePublishSettings(settings); err != nil {
 		return nil, err
 	}
+	var clientID publisherClientID
+	if settings.EnableIdempotence {
+		var randomID uuid.UUID
+		var err error
+		if randomID, err = uuid.NewRandom(); err != nil {
+			return nil, err
+		}
+		clientID = publisherClientID(randomID[:])
+	}
 
 	var allClients apiClients
 	pubClient, err := newPublisherClient(ctx, region, opts...)
@@ -395,10 +524,12 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 
 	msgRouterFactory := newMessageRouterFactory(rand.New(rand.NewSource(time.Now().UnixNano())))
 	pubFactory := &singlePartitionPublisherFactory{
-		ctx:       ctx,
-		pubClient: pubClient,
-		settings:  settings,
-		topicPath: topicPath,
+		ctx:         ctx,
+		pubClient:   pubClient,
+		settings:    settings,
+		topicPath:   topicPath,
+		clientID:    clientID,
+		unloadDelay: time.Minute * 5,
 	}
 	return newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory), nil
 }

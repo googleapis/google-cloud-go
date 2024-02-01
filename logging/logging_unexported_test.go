@@ -18,19 +18,56 @@ package logging
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"github.com/golang/protobuf/proto"
 	durpb "github.com/golang/protobuf/ptypes/duration"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/api/support/bundler"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
+
+func TestLoggerRetryer_Retry(t *testing.T) {
+	for _, tst := range []struct {
+		name      string
+		err       error
+		wantRetry bool
+	}{
+		{
+			name:      "non_status_no_retry",
+			err:       fmt.Errorf("non-API error, do not retry"),
+			wantRetry: false,
+		},
+		{
+			name:      "invalid_utf_no_retry",
+			err:       status.Error(codes.Internal, utfErrorString),
+			wantRetry: false,
+		},
+		{
+			// Just testing one of the configured codes to ensure the default
+			// retryer is triggered.
+			name:      "unavailable_retry",
+			err:       status.Error(codes.Unavailable, "Unavailable"),
+			wantRetry: true,
+		},
+	} {
+		t.Run(tst.name, func(t *testing.T) {
+			_, gotRetry := newLoggerRetryer().Retry(tst.err)
+			if gotRetry != tst.wantRetry {
+				t.Errorf("Retry(%v) = shouldRetry got %v want %v", tst.err, gotRetry, tst.wantRetry)
+			}
+		})
+	}
+}
 
 func TestLoggerCreation(t *testing.T) {
 	const logID = "testing"
@@ -353,5 +390,15 @@ func TestMonitoredResource(t *testing.T) {
 // Used by the tests in logging_test.
 func SetNow(f func() time.Time) func() time.Time {
 	now, f = f, now
+	return f
+}
+
+func SetToLogEntryInternal(f func(Entry, *Logger, string, int) (*logpb.LogEntry, error)) func(Entry, *Logger, string, int) (*logpb.LogEntry, error) {
+	toLogEntryInternal, f = f, toLogEntryInternal
+	return f
+}
+
+func SetDetectResourceInternal(f func() *mrpb.MonitoredResource) func() *mrpb.MonitoredResource {
+	detectResourceInternal, f = f, detectResourceInternal
 	return f
 }

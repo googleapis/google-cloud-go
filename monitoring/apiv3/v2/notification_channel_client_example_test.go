@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"google.golang.org/api/iterator"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
 func ExampleNewNotificationChannelClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,8 +41,136 @@ func ExampleNewNotificationChannelClient() {
 	_ = c
 }
 
+func ExampleNotificationChannelClient_CreateNotificationChannel() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewNotificationChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.CreateNotificationChannelRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateNotificationChannelRequest.
+	}
+	resp, err := c.CreateNotificationChannel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleNotificationChannelClient_DeleteNotificationChannel() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewNotificationChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.DeleteNotificationChannelRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteNotificationChannelRequest.
+	}
+	err = c.DeleteNotificationChannel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleNotificationChannelClient_GetNotificationChannel() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewNotificationChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.GetNotificationChannelRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetNotificationChannelRequest.
+	}
+	resp, err := c.GetNotificationChannel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleNotificationChannelClient_GetNotificationChannelDescriptor() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewNotificationChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.GetNotificationChannelDescriptorRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetNotificationChannelDescriptorRequest.
+	}
+	resp, err := c.GetNotificationChannelDescriptor(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleNotificationChannelClient_GetNotificationChannelVerificationCode() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewNotificationChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.GetNotificationChannelVerificationCodeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetNotificationChannelVerificationCodeRequest.
+	}
+	resp, err := c.GetNotificationChannelVerificationCode(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleNotificationChannelClient_ListNotificationChannelDescriptors() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +179,7 @@ func ExampleNotificationChannelClient_ListNotificationChannelDescriptors() {
 
 	req := &monitoringpb.ListNotificationChannelDescriptorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListNotificationChannelDescriptorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListNotificationChannelDescriptorsRequest.
 	}
 	it := c.ListNotificationChannelDescriptors(ctx, req)
 	for {
@@ -62,28 +195,13 @@ func ExampleNotificationChannelClient_ListNotificationChannelDescriptors() {
 	}
 }
 
-func ExampleNotificationChannelClient_GetNotificationChannelDescriptor() {
-	ctx := context.Background()
-	c, err := monitoring.NewNotificationChannelClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.GetNotificationChannelDescriptorRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetNotificationChannelDescriptorRequest.
-	}
-	resp, err := c.GetNotificationChannelDescriptor(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleNotificationChannelClient_ListNotificationChannels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +210,7 @@ func ExampleNotificationChannelClient_ListNotificationChannels() {
 
 	req := &monitoringpb.ListNotificationChannelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListNotificationChannelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListNotificationChannelsRequest.
 	}
 	it := c.ListNotificationChannels(ctx, req)
 	for {
@@ -108,48 +226,36 @@ func ExampleNotificationChannelClient_ListNotificationChannels() {
 	}
 }
 
-func ExampleNotificationChannelClient_GetNotificationChannel() {
+func ExampleNotificationChannelClient_SendNotificationChannelVerificationCode() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &monitoringpb.GetNotificationChannelRequest{
+	req := &monitoringpb.SendNotificationChannelVerificationCodeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetNotificationChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#SendNotificationChannelVerificationCodeRequest.
 	}
-	resp, err := c.GetNotificationChannel(ctx, req)
+	err = c.SendNotificationChannelVerificationCode(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleNotificationChannelClient_CreateNotificationChannel() {
-	ctx := context.Background()
-	c, err := monitoring.NewNotificationChannelClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.CreateNotificationChannelRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateNotificationChannelRequest.
-	}
-	resp, err := c.CreateNotificationChannel(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleNotificationChannelClient_UpdateNotificationChannel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -158,7 +264,7 @@ func ExampleNotificationChannelClient_UpdateNotificationChannel() {
 
 	req := &monitoringpb.UpdateNotificationChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateNotificationChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#UpdateNotificationChannelRequest.
 	}
 	resp, err := c.UpdateNotificationChannel(ctx, req)
 	if err != nil {
@@ -168,64 +274,13 @@ func ExampleNotificationChannelClient_UpdateNotificationChannel() {
 	_ = resp
 }
 
-func ExampleNotificationChannelClient_DeleteNotificationChannel() {
-	ctx := context.Background()
-	c, err := monitoring.NewNotificationChannelClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.DeleteNotificationChannelRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteNotificationChannelRequest.
-	}
-	err = c.DeleteNotificationChannel(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleNotificationChannelClient_SendNotificationChannelVerificationCode() {
-	ctx := context.Background()
-	c, err := monitoring.NewNotificationChannelClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.SendNotificationChannelVerificationCodeRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#SendNotificationChannelVerificationCodeRequest.
-	}
-	err = c.SendNotificationChannelVerificationCode(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleNotificationChannelClient_GetNotificationChannelVerificationCode() {
-	ctx := context.Background()
-	c, err := monitoring.NewNotificationChannelClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.GetNotificationChannelVerificationCodeRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetNotificationChannelVerificationCodeRequest.
-	}
-	resp, err := c.GetNotificationChannelVerificationCode(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleNotificationChannelClient_VerifyNotificationChannel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -234,7 +289,7 @@ func ExampleNotificationChannelClient_VerifyNotificationChannel() {
 
 	req := &monitoringpb.VerifyNotificationChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#VerifyNotificationChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#VerifyNotificationChannelRequest.
 	}
 	resp, err := c.VerifyNotificationChannel(ctx, req)
 	if err != nil {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataflow/apiv1beta3",
-    "version": "0.5.0",
+    "version": "0.9.5",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.LaunchFlexTemplateResponse",
+        "resultType": "*dataflowpb.LaunchFlexTemplateResponse",
         "client": {
           "shortName": "FlexTemplatesClient",
           "fullName": "google.dataflow.v1beta3.FlexTemplatesClient"
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.CheckActiveJobsResponse",
+        "resultType": "*dataflowpb.CheckActiveJobsResponse",
         "client": {
           "shortName": "JobsV1Beta3Client",
           "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client"
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -152,7 +152,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_CreateJob_sync",
       "title": "dataflow CreateJob Sample",
-      "description": "CreateJob creates a Cloud Dataflow job.\n\nTo create a job, we recommend using projects.locations.jobs.create with a\n[regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using\nprojects.jobs.create is not recommended, as your job will always start\nin us-central1.",
+      "description": "CreateJob creates a Cloud Dataflow job.\n\nTo create a job, we recommend using `projects.locations.jobs.create` with a\n[regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.create` is not recommended, as your job will always start\nin `us-central1`.",
       "file": "JobsV1Beta3Client/CreateJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.Job",
+        "resultType": "*dataflowpb.Job",
         "client": {
           "shortName": "JobsV1Beta3Client",
           "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client"
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -198,7 +198,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_GetJob_sync",
       "title": "dataflow GetJob Sample",
-      "description": "GetJob gets the state of the specified Cloud Dataflow job.\n\nTo get the state of a job, we recommend using projects.locations.jobs.get\nwith a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using\nprojects.jobs.get is not recommended, as you can only get the state of\njobs that are running in us-central1.",
+      "description": "GetJob gets the state of the specified Cloud Dataflow job.\n\nTo get the state of a job, we recommend using `projects.locations.jobs.get`\nwith a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.get` is not recommended, as you can only get the state of\njobs that are running in `us-central1`.",
       "file": "JobsV1Beta3Client/GetJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.Job",
+        "resultType": "*dataflowpb.Job",
         "client": {
           "shortName": "JobsV1Beta3Client",
           "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client"
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -244,7 +244,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_ListJobs_sync",
       "title": "dataflow ListJobs Sample",
-      "description": "ListJobs list the jobs of a project.\n\nTo list the jobs of a project in a region, we recommend using\nprojects.locations.jobs.list with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints)). To\nlist the all jobs across all regions, use projects.jobs.aggregated. Using\nprojects.jobs.list is not recommended, as you can only get the list of\njobs that are running in us-central1.",
+      "description": "ListJobs list the jobs of a project.\n\nTo list the jobs of a project in a region, we recommend using\n`projects.locations.jobs.list` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). To\nlist the all jobs across all regions, use `projects.jobs.aggregated`. Using\n`projects.jobs.list` is not recommended, as you can only get the list of\njobs that are running in `us-central1`.",
       "file": "JobsV1Beta3Client/ListJobs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -310,7 +310,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.Snapshot",
+        "resultType": "*dataflowpb.Snapshot",
         "client": {
           "shortName": "JobsV1Beta3Client",
           "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client"
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -336,7 +336,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_UpdateJob_sync",
       "title": "dataflow UpdateJob Sample",
-      "description": "UpdateJob updates the state of an existing Cloud Dataflow job.\n\nTo update the state of an existing job, we recommend using\nprojects.locations.jobs.update with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using\nprojects.jobs.update is not recommended, as you can only update the state\nof jobs that are running in us-central1.",
+      "description": "UpdateJob updates the state of an existing Cloud Dataflow job.\n\nTo update the state of an existing job, we recommend using\n`projects.locations.jobs.update` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.update` is not recommended, as you can only update the state\nof jobs that are running in `us-central1`.",
       "file": "JobsV1Beta3Client/UpdateJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -356,7 +356,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.Job",
+        "resultType": "*dataflowpb.Job",
         "client": {
           "shortName": "JobsV1Beta3Client",
           "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client"
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -382,7 +382,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_MessagesV1Beta3_ListJobMessages_sync",
       "title": "dataflow ListJobMessages Sample",
-      "description": "ListJobMessages request the job status.\n\nTo request the status of a job, we recommend using\nprojects.locations.jobs.messages.list with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using\nprojects.jobs.messages.list is not recommended, as you can only request\nthe status of jobs that are running in us-central1.",
+      "description": "ListJobMessages request the job status.\n\nTo request the status of a job, we recommend using\n`projects.locations.jobs.messages.list` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.messages.list` is not recommended, as you can only request\nthe status of jobs that are running in `us-central1`.",
       "file": "MessagesV1Beta3Client/ListJobMessages/main.go",
       "language": "GO",
       "clientMethod": {
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -466,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -474,7 +474,7 @@
     {
       "regionTag": "dataflow_v1beta3_generated_MetricsV1Beta3_GetJobMetrics_sync",
       "title": "dataflow GetJobMetrics Sample",
-      "description": "GetJobMetrics request the job status.\n\nTo request the status of a job, we recommend using\nprojects.locations.jobs.getMetrics with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints (at https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints)). Using\nprojects.jobs.getMetrics is not recommended, as you can only request the\nstatus of jobs that are running in us-central1.",
+      "description": "GetJobMetrics request the job status.\n\nTo request the status of a job, we recommend using\n`projects.locations.jobs.getMetrics` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.getMetrics` is not recommended, as you can only request the\nstatus of jobs that are running in `us-central1`.",
       "file": "MetricsV1Beta3Client/GetJobMetrics/main.go",
       "language": "GO",
       "clientMethod": {
@@ -494,7 +494,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.JobMetrics",
+        "resultType": "*dataflowpb.JobMetrics",
         "client": {
           "shortName": "MetricsV1Beta3Client",
           "fullName": "google.dataflow.v1beta3.MetricsV1Beta3Client"
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -558,7 +558,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -586,7 +586,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.DeleteSnapshotResponse",
+        "resultType": "*dataflowpb.DeleteSnapshotResponse",
         "client": {
           "shortName": "SnapshotsV1Beta3Client",
           "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3Client"
@@ -604,7 +604,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -632,7 +632,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.Snapshot",
+        "resultType": "*dataflowpb.Snapshot",
         "client": {
           "shortName": "SnapshotsV1Beta3Client",
           "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3Client"
@@ -650,7 +650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -678,7 +678,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.ListSnapshotsResponse",
+        "resultType": "*dataflowpb.ListSnapshotsResponse",
         "client": {
           "shortName": "SnapshotsV1Beta3Client",
           "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3Client"
@@ -696,7 +696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -724,7 +724,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.Job",
+        "resultType": "*dataflowpb.Job",
         "client": {
           "shortName": "TemplatesClient",
           "fullName": "google.dataflow.v1beta3.TemplatesClient"
@@ -742,7 +742,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -770,7 +770,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.GetTemplateResponse",
+        "resultType": "*dataflowpb.GetTemplateResponse",
         "client": {
           "shortName": "TemplatesClient",
           "fullName": "google.dataflow.v1beta3.TemplatesClient"
@@ -788,7 +788,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -816,7 +816,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataflowpb.LaunchTemplateResponse",
+        "resultType": "*dataflowpb.LaunchTemplateResponse",
         "client": {
           "shortName": "TemplatesClient",
           "fullName": "google.dataflow.v1beta3.TemplatesClient"
@@ -834,7 +834,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]

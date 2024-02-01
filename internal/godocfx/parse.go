@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build go1.15
-// +build go1.15
-
 // TODO:
 //   IDs for const/var groups have every name, not just the one to link to.
 //   Preserve IDs when sanitizing then use the right ID for linking.
@@ -25,23 +22,23 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"go/doc"
 	"go/format"
 	"go/printer"
 	"go/token"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 
-	goldmarkcodeblock "cloud.google.com/go/internal/godocfx/goldmark-codeblock"
 	"cloud.google.com/go/internal/godocfx/pkgload"
-	"cloud.google.com/go/third_party/go/doc"
 	"cloud.google.com/go/third_party/pkgsite"
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/renderer/html"
 	"golang.org/x/tools/go/packages"
 )
 
@@ -84,18 +81,19 @@ type example struct {
 
 // item represents a DocFX item.
 type item struct {
-	UID      string    `yaml:"uid"`
-	Name     string    `yaml:"name,omitempty"`
-	ID       string    `yaml:"id,omitempty"`
-	Summary  string    `yaml:"summary,omitempty"`
-	Parent   string    `yaml:"parent,omitempty"`
-	Type     string    `yaml:"type,omitempty"`
-	Langs    []string  `yaml:"langs,omitempty"`
-	Syntax   syntax    `yaml:"syntax,omitempty"`
-	Examples []example `yaml:"codeexamples,omitempty"`
-	Children []child   `yaml:"children,omitempty"`
-	AltLink  string    `yaml:"alt_link,omitempty"`
-	Status   string    `yaml:"status,omitempty"`
+	UID             string    `yaml:"uid"`
+	Name            string    `yaml:"name,omitempty"`
+	ID              string    `yaml:"id,omitempty"`
+	Summary         string    `yaml:"summary,omitempty"`
+	Parent          string    `yaml:"parent,omitempty"`
+	Type            string    `yaml:"type,omitempty"`
+	Langs           []string  `yaml:"langs,omitempty"`
+	Syntax          syntax    `yaml:"syntax,omitempty"`
+	Examples        []example `yaml:"codeexamples,omitempty"`
+	Children        []child   `yaml:"children,omitempty"`
+	AltLink         string    `yaml:"alt_link,omitempty"`
+	Status          string    `yaml:"status,omitempty"`
+	FriendlyAPIName string    `yaml:"friendlyApiName,omitempty"`
 }
 
 func (p *page) addItem(i *item) {
@@ -125,7 +123,7 @@ type result struct {
 // workingDir is the directory to use to run go commands.
 //
 // optionalExtraFiles is a list of paths relative to the module root to include.
-func parse(glob string, workingDir string, optionalExtraFiles []string, filter []string) (*result, error) {
+func parse(glob string, workingDir string, optionalExtraFiles []string, filter []string, namer *friendlyAPINamer) (*result, error) {
 	pages := map[string]*page{}
 
 	pkgInfos, err := pkgload.Load(glob, workingDir, filter)
@@ -162,16 +160,21 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 	for _, pi := range pkgInfos {
 		link := newLinker(pi)
 		topLevelDecls := pkgsite.TopLevelDecls(pi.Doc)
+		friendly, err := namer.friendlyAPIName(pi.Doc.ImportPath)
+		if err != nil {
+			return nil, err
+		}
 		pkgItem := &item{
-			UID:      pi.Doc.ImportPath,
-			Name:     pi.Doc.ImportPath,
-			ID:       pi.Doc.Name,
-			Summary:  toHTML(pi.Doc.Doc),
-			Langs:    onlyGo,
-			Type:     "package",
-			Examples: processExamples(pi.Doc.Examples, pi.Fset),
-			AltLink:  "https://pkg.go.dev/" + pi.Doc.ImportPath,
-			Status:   pi.Status,
+			UID:             pi.Doc.ImportPath,
+			Name:            pi.Doc.ImportPath,
+			ID:              pi.Doc.Name,
+			Summary:         toHTML(pi.Doc, pi.Doc.Doc),
+			Langs:           onlyGo,
+			Type:            "package",
+			Examples:        processExamples(pi.Doc.Examples, pi.Fset),
+			AltLink:         "https://pkg.go.dev/" + pi.Doc.ImportPath,
+			Status:          pi.Status,
+			FriendlyAPIName: friendly,
 		}
 		pkgPage := &page{Items: []*item{pkgItem}}
 		pages[pi.Doc.ImportPath] = pkgPage
@@ -613,23 +616,33 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 	return toc
 }
 
-func toHTML(s string) string {
-	buf := &bytes.Buffer{}
-	// First, convert to Markdown.
-	doc.ToMarkdown(buf, s, nil)
+func toHTML(p *doc.Package, s string) string {
+	printer := p.Printer()
 
-	// Then, handle Markdown stuff, like lists and links.
-	md := goldmark.New(goldmark.WithRendererOptions(html.WithUnsafe()), goldmark.WithExtensions(goldmarkcodeblock.CodeBlock))
-	mdBuf := &bytes.Buffer{}
-	if err := md.Convert(buf.Bytes(), mdBuf); err != nil {
-		panic(err)
-	}
+	// Set the DocLinkBaseURL to pkg.go.dev so links to other packages work.
+	//
+	// This will send users to pkg.go.dev for other cloud.google.com packages
+	// that do have docs hosted on cloud.google.com. The link structure for
+	// docs on cloud.google.com is [prefix]/[module]/[version]/[pkg]. At this
+	// point, we don't know what the module path is for any given import path.
+	// So, for simplicity, we're choosing to have working links to pkg.go.dev
+	// (with occasional links that could be served on cloud.google.com) rather
+	// than broken links on cloud.google.com.
+	printer.DocLinkBaseURL = "https://pkg.go.dev"
+
+	// Set the default heading level to 2 so we go from H1 to H2.
+	printer.HeadingLevel = 2
+
+	html := printer.HTML(p.Parser().Parse(s))
 
 	// Replace * with &#42; to avoid confusing the DocFX Markdown processor,
 	// which sometimes interprets * as <em>.
-	result := string(bytes.ReplaceAll(mdBuf.Bytes(), []byte("*"), []byte("&#42;")))
+	html = bytes.ReplaceAll(html, []byte("*"), []byte("&#42;"))
 
-	return result
+	// Add prettyprint class to all pre elements.
+	html = bytes.ReplaceAll(html, []byte("<pre>"), []byte("<pre class=\"prettyprint\">"))
+
+	return string(html)
 }
 
 func hasPrefix(s string, prefixes []string) bool {
@@ -639,4 +652,69 @@ func hasPrefix(s string, prefixes []string) bool {
 		}
 	}
 	return false
+}
+
+// repoMetadata is the JSON format of the .repo-metadata-full.json file.
+// See https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json.
+type repoMetadata map[string]repoMetadataItem
+
+type repoMetadataItem struct {
+	Description string `json:"description"`
+}
+
+type friendlyAPINamer struct {
+	// metaURL is the URL to .repo-metadata-full.json, which contains metadata
+	// about packages in this repo. See
+	// https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json.
+	metaURL string
+
+	// metadata caches the repo metadata results.
+	metadata repoMetadata
+	// getOnce ensures we only fetch the metadata JSON once.
+	getOnce sync.Once
+}
+
+// vNumberRE is a heuristic for API versions.
+var vNumberRE = regexp.MustCompile(`apiv[0-9][^/]*`)
+
+// friendlyAPIName returns the friendlyAPIName for the given import path.
+// We rely on the .repo-metadata-full.json file to get the description of the
+// API for the given import path. We use the importPath to parse out the
+// API version, since that isn't included in the metadata.
+//
+// If no API description is found, friendlyAPIName returns "".
+// If no API version is found, friendlyAPIName only returns the description.
+//
+// See https://github.com/googleapis/google-cloud-go/issues/5949.
+func (d *friendlyAPINamer) friendlyAPIName(importPath string) (string, error) {
+	var err error
+	d.getOnce.Do(func() {
+		resp, getErr := http.Get(d.metaURL)
+		if err != nil {
+			err = fmt.Errorf("error getting repo metadata: %v", getErr)
+			return
+		}
+		defer resp.Body.Close()
+		if decodeErr := json.NewDecoder(resp.Body).Decode(&d.metadata); err != nil {
+			err = fmt.Errorf("failed to decode repo metadata: %v", decodeErr)
+			return
+		}
+	})
+	if err != nil {
+		return "", err
+	}
+	if d.metadata == nil {
+		return "", fmt.Errorf("no metadata found: earlier error fetching?")
+	}
+	pkg, ok := d.metadata[importPath]
+	if !ok {
+		return "", nil
+	}
+
+	if apiV := vNumberRE.FindString(importPath); apiV != "" {
+		version := strings.TrimPrefix(apiV, "api")
+		return fmt.Sprintf("%s %s", pkg.Description, version), nil
+	}
+
+	return pkg.Description, nil
 }

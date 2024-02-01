@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@ import (
 	"net/url"
 	"time"
 
+	errorreportingpb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -74,7 +74,7 @@ type internalReportErrorsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	ReportErrorEvent(context.Context, *clouderrorreportingpb.ReportErrorEventRequest, ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error)
+	ReportErrorEvent(context.Context, *errorreportingpb.ReportErrorEventRequest, ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error)
 }
 
 // ReportErrorsClient is a client for interacting with Error Reporting API.
@@ -106,7 +106,8 @@ func (c *ReportErrorsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ReportErrorsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -123,11 +124,7 @@ func (c *ReportErrorsClient) Connection() *grpc.ClientConn {
 // Note: Error Reporting (at /error-reporting) is a global service built
 // on Cloud Logging and doesn’t analyze logs stored
 // in regional log buckets or logs routed to other Google Cloud projects.
-//
-// For more information, see
-// Using Error Reporting with regionalized
-// logs (at /error-reporting/docs/regionalization).
-func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
+func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	return c.internalClient.ReportErrorEvent(ctx, req, opts...)
 }
 
@@ -145,7 +142,7 @@ type reportErrorsGRPCClient struct {
 	CallOptions **ReportErrorsCallOptions
 
 	// The gRPC API client.
-	reportErrorsClient clouderrorreportingpb.ReportErrorsServiceClient
+	reportErrorsClient errorreportingpb.ReportErrorsServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -179,7 +176,7 @@ func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*R
 	c := &reportErrorsGRPCClient{
 		connPool:           connPool,
 		disableDeadlines:   disableDeadlines,
-		reportErrorsClient: clouderrorreportingpb.NewReportErrorsServiceClient(connPool),
+		reportErrorsClient: errorreportingpb.NewReportErrorsServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
@@ -191,7 +188,8 @@ func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*R
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *reportErrorsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -200,7 +198,7 @@ func (c *reportErrorsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *reportErrorsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -260,7 +258,7 @@ func defaultReportErrorsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *reportErrorsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -275,11 +273,11 @@ func (c *reportErrorsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *reportErrorsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
+func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -289,7 +287,7 @@ func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *clou
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReportErrorEvent[0:len((*c.CallOptions).ReportErrorEvent):len((*c.CallOptions).ReportErrorEvent)], opts...)
-	var resp *clouderrorreportingpb.ReportErrorEventResponse
+	var resp *errorreportingpb.ReportErrorEventResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.reportErrorsClient.ReportErrorEvent(ctx, req, settings.GRPC...)
@@ -313,11 +311,7 @@ func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *clou
 // Note: Error Reporting (at /error-reporting) is a global service built
 // on Cloud Logging and doesn’t analyze logs stored
 // in regional log buckets or logs routed to other Google Cloud projects.
-//
-// For more information, see
-// Using Error Reporting with regionalized
-// logs (at /error-reporting/docs/regionalization).
-func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
+func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEvent()
 	jsonReq, err := m.Marshal(body)
@@ -331,13 +325,18 @@ func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *clou
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/events:report", req.GetProjectName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).ReportErrorEvent[0:len((*c.CallOptions).ReportErrorEvent):len((*c.CallOptions).ReportErrorEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &clouderrorreportingpb.ReportErrorEventResponse{}
+	resp := &errorreportingpb.ReportErrorEventResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -365,7 +364,7 @@ func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *clou
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

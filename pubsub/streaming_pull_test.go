@@ -28,10 +28,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -66,10 +66,10 @@ func TestStreamingPullMultipleFetches(t *testing.T) {
 
 func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer, msgs []*pb.ReceivedMessage) {
 	sub := client.Subscription("S")
-	gotMsgs, err := pullN(context.Background(), sub, len(msgs), func(_ context.Context, m *Message) {
+	gotMsgs, err := pullN(context.Background(), sub, len(msgs), 0, func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
-			panic(err)
+			t.Fatalf("pullN err: %v", err)
 		}
 		// ack evens, nack odds
 		if id%2 == 0 {
@@ -90,14 +90,24 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 		if err != nil {
 			t.Fatal(err)
 		}
-		wantAckh, _ := msgAckHandler(want)
+		wantAckh, _ := msgAckHandler(want, false)
 		wantAckh.calledDone = true
 		got := gotMap[wantAckh.ackID]
 		if got == nil {
 			t.Errorf("%d: no message for ackID %q", i, wantAckh.ackID)
 			continue
 		}
-		if !testutil.Equal(got, want, cmp.AllowUnexported(Message{}, psAckHandler{}), cmpopts.IgnoreTypes(time.Time{}, func(string, bool, time.Time) {})) {
+		opts := []cmp.Option{
+			cmp.AllowUnexported(Message{}, psAckHandler{}),
+			cmpopts.IgnoreTypes(
+				time.Time{},
+				func(string, bool,
+					*AckResult, time.Time) {
+				},
+				AckResult{},
+			),
+		}
+		if !testutil.Equal(got, want, opts...) {
 			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
 		}
 	}
@@ -184,7 +194,66 @@ func TestStreamingPullRetry(t *testing.T) {
 	server.addStreamingPullError(status.Errorf(codes.Unavailable, ""))
 	server.addStreamingPullMessages(testMessages[2:])
 
-	testStreamingPullIteration(t, client, server, testMessages)
+	sub := client.Subscription("S")
+	sub.ReceiveSettings.NumGoroutines = 1
+	gotMsgs, err := pullN(context.Background(), sub, len(testMessages), 0, func(_ context.Context, m *Message) {
+		id, err := strconv.Atoi(msgAckID(m))
+		if err != nil {
+			t.Fatalf("pullN err: %v", err)
+		}
+		// ack evens, nack odds
+		if id%2 == 0 {
+			m.Ack()
+		} else {
+			m.Nack()
+		}
+	})
+	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
+		t.Fatalf("Pull: %v", err)
+	}
+	gotMap := map[string]*Message{}
+	for _, m := range gotMsgs {
+		gotMap[msgAckID(m)] = m
+	}
+	for i, msg := range testMessages {
+		want, err := toMessage(msg, time.Time{}, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		wantAckh, _ := msgAckHandler(want, false)
+		wantAckh.calledDone = true
+		got := gotMap[wantAckh.ackID]
+		if got == nil {
+			t.Errorf("%d: no message for ackID %q", i, wantAckh.ackID)
+			continue
+		}
+		opts := []cmp.Option{
+			cmp.AllowUnexported(Message{}, psAckHandler{}),
+			cmpopts.IgnoreTypes(
+				time.Time{},
+				func(string, bool,
+					*AckResult, time.Time) {
+				},
+				AckResult{},
+			),
+		}
+		if !testutil.Equal(got, want, opts...) {
+			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
+		}
+	}
+	server.wait()
+	for i := 0; i < len(testMessages); i++ {
+		id := testMessages[i].AckId
+		if i%2 == 0 {
+			if !server.Acked[id] {
+				t.Errorf("msg %q should have been acked but wasn't", id)
+			}
+		} else {
+			if dl, ok := server.Deadlines[id]; !ok || dl != 0 {
+				t.Errorf("msg %q should have been nacked but wasn't", id)
+			}
+		}
+	}
 }
 
 func TestStreamingPullOneActive(t *testing.T) {
@@ -228,7 +297,7 @@ func TestStreamingPullConcurrent(t *testing.T) {
 	sub := client.Subscription("S")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	gotMsgs, err := pullN(ctx, sub, nMessages, func(ctx context.Context, m *Message) {
+	gotMsgs, err := pullN(ctx, sub, nMessages, 0, func(ctx context.Context, m *Message) {
 		m.Ack()
 	})
 	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
@@ -444,7 +513,8 @@ func newMock(t *testing.T) (*Client, *mockServer) {
 }
 
 // pullN calls sub.Receive until at least n messages are received.
-func pullN(ctx context.Context, sub *Subscription, n int, f func(context.Context, *Message)) ([]*Message, error) {
+// Wait a provided duration before cancelling.
+func pullN(ctx context.Context, sub *Subscription, n int, wait time.Duration, f func(context.Context, *Message)) ([]*Message, error) {
 	var (
 		mu   sync.Mutex
 		msgs []*Message
@@ -457,6 +527,9 @@ func pullN(ctx context.Context, sub *Subscription, n int, f func(context.Context
 		mu.Unlock()
 		f(ctx, m)
 		if nSeen >= n {
+			// Wait a specified amount of time so that for exactly once delivery,
+			// Acks aren't cancelled immediately.
+			time.Sleep(wait)
 			cancel()
 		}
 	})

@@ -1,5 +1,178 @@
 # Changes
 
+## [1.24.4](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.3...securitycenter/v1.24.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **securitycenter:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.24.3](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.2...securitycenter/v1.24.3) (2023-11-27)
+
+
+### Documentation
+
+* **securitycenter:** Modify documentation of SimulateSecurityHealthAnalyticsCustomModuleRequest ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+
+## [1.24.2](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.1...securitycenter/v1.24.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **securitycenter:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.24.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.0...securitycenter/v1.24.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **securitycenter:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.23.1...securitycenter/v1.24.0) (2023-10-19)
+
+
+### Features
+
+* **securitycenter:** Add SimulateSecurityHealthAnalyticsCustomModule API for testing SHA custom module ([#8743](https://github.com/googleapis/google-cloud-go/issues/8743)) ([f3e2b05](https://github.com/googleapis/google-cloud-go/commit/f3e2b05129582f599fa9f53598f0cd7abe177493))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.23.0...securitycenter/v1.23.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **securitycenter:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.22.1...securitycenter/v1.23.0) (2023-06-27)
+
+
+### Features
+
+* **securitycenter:** Mark the Asset APIs as deprecated in client libraries ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.22.0...securitycenter/v1.22.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **securitycenter:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.21.0...securitycenter/v1.22.0) (2023-06-13)
+
+
+### Features
+
+* **securitycenter:** Add user agent and DLP parent type fields to finding's list of attributes ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.20.1...securitycenter/v1.21.0) (2023-05-30)
+
+
+### Features
+
+* **securitycenter:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.20.0...securitycenter/v1.20.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **securitycenter:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.19.0...securitycenter/v1.20.0) (2023-04-25)
+
+
+### Features
+
+* **securitycenter:** Add cloud_dlp_inspection and cloud_dlp_data_profile fields to finding's list of attributes ([#7808](https://github.com/googleapis/google-cloud-go/issues/7808)) ([2c9b4cf](https://github.com/googleapis/google-cloud-go/commit/2c9b4cf95c5af845537e204cbcf3034f423ea10c))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.18.1...securitycenter/v1.19.0) (2023-03-15)
+
+
+### Features
+
+* **securitycenter:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.18.0...securitycenter/v1.18.1) (2023-01-18)
+
+
+### Documentation
+
+* **securitycenter:** Update documentation for Security Command Center *.assets.list "parent" parameter ([8b3b76d](https://github.com/googleapis/google-cloud-go/commit/8b3b76d4c896e3f3338ccd357a5b2b7a6155c773))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.17.0...securitycenter/v1.18.0) (2023-01-04)
+
+
+### Features
+
+* **securitycenter:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.16.0...securitycenter/v1.17.0) (2022-11-16)
+
+
+### Features
+
+* **securitycenter:** Add files field to finding's list of attributes ([ac0c5c2](https://github.com/googleapis/google-cloud-go/commit/ac0c5c21221e8d055e6b8b1c473600c58e306b00))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.15.0...securitycenter/v1.16.0) (2022-11-03)
+
+
+### Features
+
+* **securitycenter:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.14.0...securitycenter/v1.15.0) (2022-10-25)
+
+
+### Features
+
+* **securitycenter:** Adding project/folder level parents to notification configs in SCC ([caf4afa](https://github.com/googleapis/google-cloud-go/commit/caf4afa139ad7b38b6df3e3b17b8357c81e1fd6c))
+* **securitycenter:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.13.0...securitycenter/v1.14.0) (2022-09-21)
+
+
+### Features
+
+* **securitycenter:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.12.0...securitycenter/v1.13.0) (2022-09-19)
+
+
+### Features
+
+* **securitycenter:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.11.0...securitycenter/v1.12.0) (2022-09-15)
+
+
+### Features
+
+* **securitycenter/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **securitycenter/apiv1p1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **securitycenter/settings/apiv1beta1:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **securitycenter:** Added parent display name i.e. source display name for a finding as one of the finding attributes ([a679a5a](https://github.com/googleapis/google-cloud-go/commit/a679a5a9b1ea60cb155eb6c8be4afcc43d3b121f))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.10.0...securitycenter/v1.11.0) (2022-09-06)
+
+
+### Features
+
+* **securitycenter:** Adding database access information, such as queries field to a finding. A database may be a sub-resource of an instance (as in the case of CloudSQL instances or Cloud Spanner instances), or the database instance itself ([3bc37e2](https://github.com/googleapis/google-cloud-go/commit/3bc37e28626df5f7ec37b00c0c2f0bfb91c30495))
+* **securitycenter:** serviceAccountKeyName, serviceAccountDelegationInfo, and principalSubject attributes added to the existing access attribute. These new attributes provide additional context about the principals that are associated with the finding ([3bc37e2](https://github.com/googleapis/google-cloud-go/commit/3bc37e28626df5f7ec37b00c0c2f0bfb91c30495))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.9.0...securitycenter/v1.10.0) (2022-07-26)
+
+
+### Features
+
+* **securitycenter:** Added container field to findings attributes feat: Added kubernetes field to findings attribute. This field is populated only when the container is a kubernetes cluster explicitly ([1ffeb95](https://github.com/googleapis/google-cloud-go/commit/1ffeb9557bf1f18cc131aff40ec7e0e15a9f4ead))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.8.0...securitycenter/v1.9.0) (2022-07-12)
+
+
+### Features
+
+* **securitycenter:** Added contacts field to findings attributes, specifying Essential Contacts defined at org, folder or project level within a GCP org feat: Added process signature fields to the indicator attribute that helps surface multiple types of signature defined IOCs ([8a1ad06](https://github.com/googleapis/google-cloud-go/commit/8a1ad06572a65afa91a0a77a85b849e766876671))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.7.0...securitycenter/v1.8.0) (2022-06-01)
 
 

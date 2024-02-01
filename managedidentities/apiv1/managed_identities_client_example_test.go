@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	managedidentities "cloud.google.com/go/managedidentities/apiv1"
+	managedidentitiespb "cloud.google.com/go/managedidentities/apiv1/managedidentitiespb"
 	"google.golang.org/api/iterator"
-	managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,8 +41,43 @@ func ExampleNewClient() {
 	_ = c
 }
 
+func ExampleClient_AttachTrust() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := managedidentities.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &managedidentitiespb.AttachTrustRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#AttachTrustRequest.
+	}
+	op, err := c.AttachTrust(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateMicrosoftAdDomain() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +86,7 @@ func ExampleClient_CreateMicrosoftAdDomain() {
 
 	req := &managedidentitiespb.CreateMicrosoftAdDomainRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#CreateMicrosoftAdDomainRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#CreateMicrosoftAdDomainRequest.
 	}
 	op, err := c.CreateMicrosoftAdDomain(ctx, req)
 	if err != nil {
@@ -61,19 +101,82 @@ func ExampleClient_CreateMicrosoftAdDomain() {
 	_ = resp
 }
 
-func ExampleClient_ResetAdminPassword() {
+func ExampleClient_DeleteDomain() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &managedidentitiespb.ResetAdminPasswordRequest{
+	req := &managedidentitiespb.DeleteDomainRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#ResetAdminPasswordRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#DeleteDomainRequest.
 	}
-	resp, err := c.ResetAdminPassword(ctx, req)
+	op, err := c.DeleteDomain(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DetachTrust() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := managedidentities.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &managedidentitiespb.DetachTrustRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#DetachTrustRequest.
+	}
+	op, err := c.DetachTrust(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetDomain() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := managedidentities.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &managedidentitiespb.GetDomainRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#GetDomainRequest.
+	}
+	resp, err := c.GetDomain(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -83,6 +186,11 @@ func ExampleClient_ResetAdminPassword() {
 
 func ExampleClient_ListDomains() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -91,7 +199,7 @@ func ExampleClient_ListDomains() {
 
 	req := &managedidentitiespb.ListDomainsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#ListDomainsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#ListDomainsRequest.
 	}
 	it := c.ListDomains(ctx, req)
 	for {
@@ -107,101 +215,13 @@ func ExampleClient_ListDomains() {
 	}
 }
 
-func ExampleClient_GetDomain() {
-	ctx := context.Background()
-	c, err := managedidentities.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &managedidentitiespb.GetDomainRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#GetDomainRequest.
-	}
-	resp, err := c.GetDomain(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateDomain() {
-	ctx := context.Background()
-	c, err := managedidentities.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &managedidentitiespb.UpdateDomainRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#UpdateDomainRequest.
-	}
-	op, err := c.UpdateDomain(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteDomain() {
-	ctx := context.Background()
-	c, err := managedidentities.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &managedidentitiespb.DeleteDomainRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#DeleteDomainRequest.
-	}
-	op, err := c.DeleteDomain(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_AttachTrust() {
-	ctx := context.Background()
-	c, err := managedidentities.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &managedidentitiespb.AttachTrustRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#AttachTrustRequest.
-	}
-	op, err := c.AttachTrust(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_ReconfigureTrust() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -210,7 +230,7 @@ func ExampleClient_ReconfigureTrust() {
 
 	req := &managedidentitiespb.ReconfigureTrustRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#ReconfigureTrustRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#ReconfigureTrustRequest.
 	}
 	op, err := c.ReconfigureTrust(ctx, req)
 	if err != nil {
@@ -225,19 +245,49 @@ func ExampleClient_ReconfigureTrust() {
 	_ = resp
 }
 
-func ExampleClient_DetachTrust() {
+func ExampleClient_ResetAdminPassword() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &managedidentitiespb.DetachTrustRequest{
+	req := &managedidentitiespb.ResetAdminPasswordRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#DetachTrustRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#ResetAdminPasswordRequest.
 	}
-	op, err := c.DetachTrust(ctx, req)
+	resp, err := c.ResetAdminPassword(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateDomain() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := managedidentities.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &managedidentitiespb.UpdateDomainRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#UpdateDomainRequest.
+	}
+	op, err := c.UpdateDomain(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -252,6 +302,11 @@ func ExampleClient_DetachTrust() {
 
 func ExampleClient_ValidateTrust() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -260,7 +315,7 @@ func ExampleClient_ValidateTrust() {
 
 	req := &managedidentitiespb.ValidateTrustRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#ValidateTrustRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#ValidateTrustRequest.
 	}
 	op, err := c.ValidateTrust(ctx, req)
 	if err != nil {

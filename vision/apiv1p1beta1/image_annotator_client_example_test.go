@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +19,17 @@ package vision_test
 import (
 	"context"
 
-	vision "cloud.google.com/go/vision/apiv1p1beta1"
-	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1"
+	vision "cloud.google.com/go/vision/v2/apiv1p1beta1"
+	visionpb "cloud.google.com/go/vision/v2/apiv1p1beta1/visionpb"
 )
 
 func ExampleNewImageAnnotatorClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewImageAnnotatorClient() {
 
 func ExampleNewImageAnnotatorRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewImageAnnotatorRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,6 +59,11 @@ func ExampleNewImageAnnotatorRESTClient() {
 
 func ExampleImageAnnotatorClient_BatchAnnotateImages() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -57,7 +72,7 @@ func ExampleImageAnnotatorClient_BatchAnnotateImages() {
 
 	req := &visionpb.BatchAnnotateImagesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1#BatchAnnotateImagesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1p1beta1/visionpb#BatchAnnotateImagesRequest.
 	}
 	resp, err := c.BatchAnnotateImages(ctx, req)
 	if err != nil {

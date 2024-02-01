@@ -26,11 +26,11 @@ import (
 
 	"cloud.google.com/go/internal/protostruct"
 	"cloud.google.com/go/internal/trace"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 )
 
@@ -60,6 +60,7 @@ func stream(
 		logger,
 		rpc,
 		nil,
+		nil,
 		setTimestamp,
 		release,
 	)
@@ -73,18 +74,27 @@ func streamWithReplaceSessionFunc(
 	logger *log.Logger,
 	rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error),
 	replaceSession func(ctx context.Context) error,
+	setTransactionID func(transactionID),
 	setTimestamp func(time.Time),
 	release func(error),
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
 	return &RowIterator{
-		streamd:      newResumableStreamDecoder(ctx, logger, rpc, replaceSession),
-		rowd:         &partialResultSetDecoder{},
-		setTimestamp: setTimestamp,
-		release:      release,
-		cancel:       cancel,
+		streamd:          newResumableStreamDecoder(ctx, logger, rpc, replaceSession),
+		rowd:             &partialResultSetDecoder{},
+		setTransactionID: setTransactionID,
+		setTimestamp:     setTimestamp,
+		release:          release,
+		cancel:           cancel,
 	}
+}
+
+// rowIterator is an interface for iterating over Rows.
+type rowIterator interface {
+	Next() (*Row, error)
+	Do(f func(r *Row) error) error
+	Stop()
 }
 
 // RowIterator is an iterator over Rows.
@@ -107,15 +117,19 @@ type RowIterator struct {
 	// RowIterator.Next() returned an error that is not equal to iterator.Done.
 	Metadata *sppb.ResultSetMetadata
 
-	streamd      *resumableStreamDecoder
-	rowd         *partialResultSetDecoder
-	setTimestamp func(time.Time)
-	release      func(error)
-	cancel       func()
-	err          error
-	rows         []*Row
-	sawStats     bool
+	streamd          *resumableStreamDecoder
+	rowd             *partialResultSetDecoder
+	setTransactionID func(transactionID)
+	setTimestamp     func(time.Time)
+	release          func(error)
+	cancel           func()
+	err              error
+	rows             []*Row
+	sawStats         bool
 }
+
+// this is for safety from future changes to RowIterator making sure that it implements rowIterator interface.
+var _ rowIterator = (*RowIterator)(nil)
 
 // Next returns the next result. Its second return value is iterator.Done if
 // there are no more results. Once Next returns Done, all subsequent calls
@@ -126,6 +140,21 @@ func (r *RowIterator) Next() (*Row, error) {
 	}
 	for len(r.rows) == 0 && r.streamd.next() {
 		prs := r.streamd.get()
+		if r.setTransactionID != nil {
+			// this is when Read/Query is executed using ReadWriteTransaction
+			// and server returned the first stream response.
+			if prs.Metadata != nil && prs.Metadata.Transaction != nil {
+				r.setTransactionID(prs.Metadata.Transaction.GetId())
+			} else {
+				// This code block should never run ideally, server is expected to return a transactionID in response
+				// if request contains TransactionSelector::Begin option, this is here as fallback to retry with
+				// explicit transactionID after a retry.
+				r.setTransactionID(nil)
+				r.err = errInlineBeginTransactionFailed()
+				return nil, r.err
+			}
+			r.setTransactionID = nil
+		}
 		if prs.Stats != nil {
 			r.sawStats = true
 			r.QueryPlan = prs.Stats.QueryPlan

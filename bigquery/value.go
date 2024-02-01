@@ -178,6 +178,14 @@ func setGeography(v reflect.Value, x interface{}) error {
 	return nil
 }
 
+func setJSON(v reflect.Value, x interface{}) error {
+	if x == nil {
+		return errNoNulls
+	}
+	v.SetString(x.(string))
+	return nil
+}
+
 func setBytes(v reflect.Value, x interface{}) error {
 	if x == nil {
 		v.SetBytes(nil)
@@ -309,6 +317,18 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			}
 		}
 
+	case JSONFieldType:
+		if ftype.Kind() == reflect.String {
+			return setJSON
+		}
+		if ftype == typeOfNullJSON {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} {
+					return NullJSON{JSONVal: x.(string), Valid: true}
+				})
+			}
+		}
+
 	case BytesFieldType:
 		if ftype == typeOfByteSlice {
 			return setBytes
@@ -435,6 +455,10 @@ func runOps(ops []structLoaderOp, vstruct reflect.Value, values []Value) error {
 			err = setRepeated(field, values[op.valueIndex].([]Value), op.setFunc)
 		} else {
 			err = op.setFunc(field, values[op.valueIndex])
+			if errors.Is(err, errNoNulls) {
+				f := vstruct.Type().FieldByIndex(op.fieldIndex)
+				err = fmt.Errorf("bigquery: NULL cannot be assigned to field `%s` of type %s", f.Name, f.Type.Name())
+			}
 		}
 		if err != nil {
 			return err
@@ -959,6 +983,8 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 		}
 		return Value(r), nil
 	case GeographyFieldType:
+		return val, nil
+	case JSONFieldType:
 		return val, nil
 	case IntervalFieldType:
 		i, err := ParseInterval(val)

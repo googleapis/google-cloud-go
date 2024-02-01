@@ -26,13 +26,13 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -1778,6 +1778,7 @@ func createSession(client *vkit.Client) (*sppb.Session, error) {
 	var formattedDatabase string = fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
 	var request = &sppb.CreateSessionRequest{
 		Database: formattedDatabase,
+		Session:  &sppb.Session{},
 	}
 	return client.CreateSession(context.Background(), request)
 }

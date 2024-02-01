@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datastream/apiv1",
-    "version": "1.0.0",
+    "version": "1.10.4",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,51 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "datastream_v1_generated_Datastream_CancelOperation_sync",
+      "title": "datastream CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.datastream.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datastream.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "datastream_v1_generated_Datastream_CreateConnectionProfile_sync",
       "title": "datastream CreateConnectionProfile Sample",
@@ -52,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -98,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -144,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -190,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -236,7 +281,52 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastream_v1_generated_Datastream_DeleteOperation_sync",
+      "title": "datastream DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.datastream.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datastream.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -282,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -328,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -374,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -382,7 +472,7 @@
     {
       "regionTag": "datastream_v1_generated_Datastream_DiscoverConnectionProfile_sync",
       "title": "datastream DiscoverConnectionProfile Sample",
-      "description": "DiscoverConnectionProfile use this method to discover a connection profile.\nThe discover API call exposes the data objects and metadata belonging to\nthe profile. Typically, a request returns children data objects of a\nparent data object that’s optionally supplied in the request.",
+      "description": "DiscoverConnectionProfile use this method to discover a connection profile.\nThe discover API call exposes the data objects and metadata belonging to\nthe profile. Typically, a request returns children data objects of a\nparent data object that's optionally supplied in the request.",
       "file": "Client/DiscoverConnectionProfile/main.go",
       "language": "GO",
       "clientMethod": {
@@ -402,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.DiscoverConnectionProfileResponse",
+        "resultType": "*datastreampb.DiscoverConnectionProfileResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -420,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -466,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -494,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.ConnectionProfile",
+        "resultType": "*datastreampb.ConnectionProfile",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -512,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -540,17 +630,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.datastream.v1.Datastream.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -558,7 +648,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastream_v1_generated_Datastream_GetOperation_sync",
+      "title": "datastream GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.datastream.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datastream.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -586,7 +722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.PrivateConnection",
+        "resultType": "*datastreampb.PrivateConnection",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -604,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -632,7 +768,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.Route",
+        "resultType": "*datastreampb.Route",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -650,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -678,7 +814,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.Stream",
+        "resultType": "*datastreampb.Stream",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -696,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -724,7 +860,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StreamObject",
+        "resultType": "*datastreampb.StreamObject",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -742,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -788,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -823,10 +959,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.datastream.v1.Datastream.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -834,7 +970,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "datastream_v1_generated_Datastream_ListOperations_sync",
+      "title": "datastream ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.datastream.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datastream.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -880,7 +1062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -926,7 +1108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -972,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1018,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1046,7 +1228,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StreamObject",
+        "resultType": "*datastreampb.StreamObject",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -1064,7 +1246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1092,7 +1274,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StartBackfillJobResponse",
+        "resultType": "*datastreampb.StartBackfillJobResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -1110,7 +1292,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1138,7 +1320,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StopBackfillJobResponse",
+        "resultType": "*datastreampb.StopBackfillJobResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -1156,7 +1338,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1202,7 +1384,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1248,7 +1430,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]

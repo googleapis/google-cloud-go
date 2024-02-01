@@ -75,6 +75,26 @@ func (ah *pslAckHandler) OnNack() {
 	ah.subInstance = nil
 }
 
+// OnAckWithResult is required implementation for the ack handler
+// for Cloud Pub/Sub's exactly once delivery feature. This will
+// ack the message and return an AckResult that always resolves to success.
+func (ah *pslAckHandler) OnAckWithResult() *ipubsub.AckResult {
+	ah.OnAck()
+	ar := ipubsub.NewAckResult()
+	ipubsub.SetAckResult(ar, ipubsub.AcknowledgeStatusSuccess, nil)
+	return ar
+}
+
+// OnNackWithResult is required implementation for the ack handler
+// for Cloud Pub/Sub's exactly once delivery feature. This will
+// nack the message and return an AckResult that always resolves to success.
+func (ah *pslAckHandler) OnNackWithResult() *ipubsub.AckResult {
+	ah.OnNack()
+	ar := ipubsub.NewAckResult()
+	ipubsub.SetAckResult(ar, ipubsub.AcknowledgeStatusSuccess, nil)
+	return ar
+}
+
 // wireSubscriberFactory is a factory for creating wire subscribers, which can
 // be overridden with a mock in unit tests.
 type wireSubscriberFactory interface {
@@ -293,9 +313,9 @@ func NewSubscriberClientWithSettings(ctx context.Context, subscription string, s
 //
 // The standard way to terminate a Receive is to cancel its context:
 //
-//   cctx, cancel := context.WithCancel(ctx)
-//   err := sub.Receive(cctx, callback)
-//   // Call cancel from callback, or another goroutine.
+//	cctx, cancel := context.WithCancel(ctx)
+//	err := sub.Receive(cctx, callback)
+//	// Call cancel from callback, or another goroutine.
 //
 // If there is a fatal service error, Receive returns that error after all of
 // the outstanding calls to f have returned. If ctx is done, Receive returns nil
@@ -309,7 +329,8 @@ func NewSubscriberClientWithSettings(ctx context.Context, subscription string, s
 // callback f will block the delivery of subsequent messages for the partition.
 //
 // All messages received by f must be ACKed or NACKed. Failure to do so can
-// prevent Receive from returning.
+// prevent Receive from returning. Messages may be processed by the client
+// concurrently and ACKed asynchronously to increase throughput.
 //
 // Each SubscriberClient may have only one invocation of Receive active at a
 // time.

@@ -121,17 +121,51 @@ type FieldSchema struct {
 	//
 	// See the Precision field for additional guidance about valid values.
 	Scale int64
+
+	// DefaultValueExpression is used to specify the default value of a field
+	// using a SQL expression.  It can only be set for top level fields (columns).
+	//
+	// You can use struct or array expression to specify default value for the
+	// entire struct or array. The valid SQL expressions are:
+	//
+	// - Literals for all data types, including STRUCT and ARRAY.
+	// - The following functions:
+	//   - CURRENT_TIMESTAMP
+	//   - CURRENT_TIME
+	//   - CURRENT_DATE
+	//   - CURRENT_DATETIME
+	//   - GENERATE_UUID
+	//   - RAND
+	//   - SESSION_USER
+	//   - ST_GEOGPOINT
+	//   - Struct or array composed with the above allowed functions, for example:
+	//       [CURRENT_DATE(), DATE '2020-01-01']"
+	DefaultValueExpression string
+
+	// Collation can be set only when the type of field is STRING.
+	// The following values are supported:
+	//   - 'und:ci': undetermined locale, case insensitive.
+	//   - '': empty string. Default to case-sensitive behavior.
+	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
+	Collation string
+
+	// Information about the range.
+	// If the type is RANGE, this field is required.
+	RangeElementType *RangeElementType
 }
 
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 	tfs := &bq.TableFieldSchema{
-		Description: fs.Description,
-		Name:        fs.Name,
-		Type:        string(fs.Type),
-		PolicyTags:  fs.PolicyTags.toBQ(),
-		MaxLength:   fs.MaxLength,
-		Precision:   fs.Precision,
-		Scale:       fs.Scale,
+		Description:            fs.Description,
+		Name:                   fs.Name,
+		Type:                   string(fs.Type),
+		PolicyTags:             fs.PolicyTags.toBQ(),
+		MaxLength:              fs.MaxLength,
+		Precision:              fs.Precision,
+		Scale:                  fs.Scale,
+		DefaultValueExpression: fs.DefaultValueExpression,
+		Collation:              string(fs.Collation),
+		RangeElementType:       fs.RangeElementType.toBQ(),
 	}
 
 	if fs.Repeated {
@@ -145,6 +179,32 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 	}
 
 	return tfs
+}
+
+// RangeElementType describes information about the range type.
+type RangeElementType struct {
+	// The subtype of the RANGE, if the type of this field is RANGE.
+	// Possible values for the field element type of a RANGE include:
+	// DATE, DATETIME, or TIMESTAMP.
+	Type FieldType
+}
+
+func (rt *RangeElementType) toBQ() *bq.TableFieldSchemaRangeElementType {
+	if rt == nil {
+		return nil
+	}
+	return &bq.TableFieldSchemaRangeElementType{
+		Type: string(rt.Type),
+	}
+}
+
+func bqToRangeElementType(rt *bq.TableFieldSchemaRangeElementType) *RangeElementType {
+	if rt == nil {
+		return nil
+	}
+	return &RangeElementType{
+		Type: FieldType(rt.Type),
+	}
 }
 
 // PolicyTagList represents the annotations on a schema column for enforcing column-level security.
@@ -181,15 +241,18 @@ func (s Schema) toBQ() *bq.TableSchema {
 
 func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 	fs := &FieldSchema{
-		Description: tfs.Description,
-		Name:        tfs.Name,
-		Repeated:    tfs.Mode == "REPEATED",
-		Required:    tfs.Mode == "REQUIRED",
-		Type:        FieldType(tfs.Type),
-		PolicyTags:  bqToPolicyTagList(tfs.PolicyTags),
-		MaxLength:   tfs.MaxLength,
-		Precision:   tfs.Precision,
-		Scale:       tfs.Scale,
+		Description:            tfs.Description,
+		Name:                   tfs.Name,
+		Repeated:               tfs.Mode == "REPEATED",
+		Required:               tfs.Mode == "REQUIRED",
+		Type:                   FieldType(tfs.Type),
+		PolicyTags:             bqToPolicyTagList(tfs.PolicyTags),
+		MaxLength:              tfs.MaxLength,
+		Precision:              tfs.Precision,
+		Scale:                  tfs.Scale,
+		DefaultValueExpression: tfs.DefaultValueExpression,
+		Collation:              tfs.Collation,
+		RangeElementType:       bqToRangeElementType(tfs.RangeElementType),
 	}
 
 	for _, f := range tfs.Fields {
@@ -244,6 +307,10 @@ const (
 	BigNumericFieldType FieldType = "BIGNUMERIC"
 	// IntervalFieldType is a representation of a duration or an amount of time.
 	IntervalFieldType FieldType = "INTERVAL"
+	// JSONFieldType is a representation of a json object.
+	JSONFieldType FieldType = "JSON"
+	// RangeFieldType represents a continuous range of values.
+	RangeFieldType FieldType = "RANGE"
 )
 
 var (
@@ -263,6 +330,8 @@ var (
 		GeographyFieldType:  true,
 		BigNumericFieldType: true,
 		IntervalFieldType:   true,
+		JSONFieldType:       true,
+		RangeFieldType:      true,
 	}
 	// The API will accept alias names for the types based on the Standard SQL type names.
 	fieldAliases = map[FieldType]FieldType{
@@ -284,16 +353,16 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 // (This is the same mapping as that used for RowIterator.Next.) Fields inferred
 // from these types are marked required (non-nullable).
 //
-//   STRING      string
-//   BOOL        bool
-//   INTEGER     int, int8, int16, int32, int64, uint8, uint16, uint32
-//   FLOAT       float32, float64
-//   BYTES       []byte
-//   TIMESTAMP   time.Time
-//   DATE        civil.Date
-//   TIME        civil.Time
-//   DATETIME    civil.DateTime
-//   NUMERIC     *big.Rat
+//	STRING      string
+//	BOOL        bool
+//	INTEGER     int, int8, int16, int32, int64, uint8, uint16, uint32
+//	FLOAT       float32, float64
+//	BYTES       []byte
+//	TIMESTAMP   time.Time
+//	DATE        civil.Date
+//	TIME        civil.Time
+//	DATETIME    civil.DateTime
+//	NUMERIC     *big.Rat
 //
 // The big.Rat type supports numbers of arbitrary size and precision. Values
 // will be rounded to 9 digits after the decimal point before being transmitted
@@ -308,15 +377,15 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 //
 // Nullable fields are inferred from the NullXXX types, declared in this package:
 //
-//   STRING      NullString
-//   BOOL        NullBool
-//   INTEGER     NullInt64
-//   FLOAT       NullFloat64
-//   TIMESTAMP   NullTimestamp
-//   DATE        NullDate
-//   TIME        NullTime
-//   DATETIME    NullDateTime
-//   GEOGRAPHY   NullGeography
+//	STRING      NullString
+//	BOOL        NullBool
+//	INTEGER     NullInt64
+//	FLOAT       NullFloat64
+//	TIMESTAMP   NullTimestamp
+//	DATE        NullDate
+//	TIME        NullTime
+//	DATETIME    NullDateTime
+//	GEOGRAPHY   NullGeography
 //
 // For a nullable BYTES field, use the type []byte and tag the field "nullable" (see below).
 // For a nullable NUMERIC field, use the type *big.Rat and tag the field "nullable".
@@ -334,15 +403,20 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 //
 // Struct fields may be tagged in a way similar to the encoding/json package.
 // A tag of the form
-//     bigquery:"name"
+//
+//	bigquery:"name"
+//
 // uses "name" instead of the struct field name as the BigQuery field name.
 // A tag of the form
-//     bigquery:"-"
+//
+//	bigquery:"-"
+//
 // omits the field from the inferred schema.
 // The "nullable" option marks the field as nullable (not required). It is only
 // needed for []byte, *big.Rat and pointer-to-struct fields, and cannot appear on other
 // fields. In this example, the Go name of the field is retained:
-//     bigquery:",nullable"
+//
+//	bigquery:",nullable"
 func InferSchema(st interface{}) (Schema, error) {
 	return inferSchemaReflectCached(reflect.TypeOf(st))
 }

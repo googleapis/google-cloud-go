@@ -67,7 +67,7 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 		}
 		val, err := time.Parse(format, x.String())
 		if err != nil {
-			return fmt.Errorf("datastore: error while parsing civil.Time: %v", err)
+			return fmt.Errorf("datastore: error while parsing civil.Time: %w", err)
 		}
 		p.Value = val
 		*props = append(*props, p)
@@ -166,7 +166,7 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 		if pSaver, ok := vi.(PropertyLoadSaver); ok {
 			val, err := pSaver.Save()
 			if err != nil {
-				return fmt.Errorf("field save error: %v", err)
+				return fmt.Errorf("field save error: %w", err)
 			}
 			p.Value = val
 		}

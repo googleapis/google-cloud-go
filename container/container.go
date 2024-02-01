@@ -76,12 +76,12 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	o = append(o, opts...)
 	httpClient, endpoint, err := htransport.NewClient(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
 	svc, err := raw.New(httpClient)
 	if err != nil {
-		return nil, fmt.Errorf("constructing container client: %v", err)
+		return nil, fmt.Errorf("constructing container client: %w", err)
 	}
 	svc.BasePath = endpoint
 

@@ -23,15 +23,16 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	vkit "cloud.google.com/go/spanner/apiv1"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+
+	vkit "cloud.google.com/go/spanner/apiv1"
 )
 
 // transactionID stores a transaction ID which uniquely identifies a transaction
@@ -44,11 +45,16 @@ type txReadEnv interface {
 	// acquire returns a read-transaction environment that can be used to
 	// perform a transactional read.
 	acquire(ctx context.Context) (*sessionHandle, *sppb.TransactionSelector, error)
+	// getTransactionSelector returns the transaction selector based on state of the transaction it is in
+	getTransactionSelector() *sppb.TransactionSelector
+	// sets the transactionID
+	setTransactionID(id transactionID)
 	// sets the transaction's read timestamp
 	setTimestamp(time.Time)
 	// release should be called at the end of every transactional read to deal
 	// with session recycling.
 	release(error)
+	setSessionEligibilityForLongRunning(sh *sessionHandle)
 }
 
 // txReadOnly contains methods for doing transactional reads.
@@ -76,11 +82,18 @@ type txReadOnly struct {
 	// qo provides options for executing a sql query.
 	qo QueryOptions
 
+	// ro provides options for reading rows from a database.
+	ro ReadOptions
+
 	// txOpts provides options for a transaction.
 	txOpts TransactionOptions
 
 	// commonTags for opencensus metrics
 	ct *commonTags
+
+	// disableRouteToLeader specifies if all the requests of type read-write and PDML
+	// need to be routed to the leader region.
+	disableRouteToLeader bool
 }
 
 // TransactionOptions provides options for a transaction.
@@ -95,14 +108,30 @@ type TransactionOptions struct {
 	// CommitPriority is the priority to use for the Commit RPC for the
 	// transaction.
 	CommitPriority sppb.RequestOptions_Priority
+
+	// the transaction lock mode is used to specify a concurrency mode for the
+	// read/query operations. It works for a read/write transaction only.
+	ReadLockMode sppb.TransactionOptions_ReadWrite_ReadLockMode
 }
 
-func (to *TransactionOptions) requestPriority() sppb.RequestOptions_Priority {
-	return to.CommitPriority
-}
-
-func (to *TransactionOptions) requestTag() string {
-	return ""
+// merge combines two TransactionOptions that the input parameter will have higher
+// order of precedence.
+func (to TransactionOptions) merge(opts TransactionOptions) TransactionOptions {
+	merged := TransactionOptions{
+		CommitOptions:  to.CommitOptions.merge(opts.CommitOptions),
+		TransactionTag: to.TransactionTag,
+		CommitPriority: to.CommitPriority,
+	}
+	if opts.TransactionTag != "" {
+		merged.TransactionTag = opts.TransactionTag
+	}
+	if opts.CommitPriority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		merged.CommitPriority = opts.CommitPriority
+	}
+	if opts.ReadLockMode != sppb.TransactionOptions_ReadWrite_READ_LOCK_MODE_UNSPECIFIED {
+		merged.ReadLockMode = opts.ReadLockMode
+	}
+	return merged
 }
 
 // errSessionClosed returns error for using a recycled/destroyed session
@@ -137,6 +166,46 @@ type ReadOptions struct {
 
 	// The request tag to use for this request.
 	RequestTag string
+
+	// If this is for a partitioned read and DataBoostEnabled field is set to true, the request will be executed
+	// via Spanner independent compute resources. Setting this option for regular read operations has no effect.
+	DataBoostEnabled bool
+
+	// ReadOptions option used to set the DirectedReadOptions for all ReadRequests which indicate
+	// which replicas or regions should be used for running read operations.
+	DirectedReadOptions *sppb.DirectedReadOptions
+}
+
+// merge combines two ReadOptions that the input parameter will have higher
+// order of precedence.
+func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
+	merged := ReadOptions{
+		Index:               ro.Index,
+		Limit:               ro.Limit,
+		Priority:            ro.Priority,
+		RequestTag:          ro.RequestTag,
+		DataBoostEnabled:    ro.DataBoostEnabled,
+		DirectedReadOptions: ro.DirectedReadOptions,
+	}
+	if opts.Index != "" {
+		merged.Index = opts.Index
+	}
+	if opts.Limit > 0 {
+		merged.Limit = opts.Limit
+	}
+	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		merged.Priority = opts.Priority
+	}
+	if opts.RequestTag != "" {
+		merged.RequestTag = opts.RequestTag
+	}
+	if opts.DataBoostEnabled {
+		merged.DataBoostEnabled = opts.DataBoostEnabled
+	}
+	if opts.DirectedReadOptions != nil {
+		merged.DirectedReadOptions = opts.DirectedReadOptions
+	}
+	return merged
 }
 
 // ReadWithOptions returns a RowIterator for reading multiple rows from the
@@ -162,10 +231,12 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		// Might happen if transaction is closed in the middle of a API call.
 		return &RowIterator{err: errSessionClosed(sh)}
 	}
-	index := ""
-	limit := 0
-	prio := sppb.RequestOptions_PRIORITY_UNSPECIFIED
-	requestTag := ""
+	index := t.ro.Index
+	limit := t.ro.Limit
+	prio := t.ro.Priority
+	requestTag := t.ro.RequestTag
+	dataBoostEnabled := t.ro.DataBoostEnabled
+	directedReadOptions := t.ro.DirectedReadOptions
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
@@ -173,24 +244,45 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		}
 		prio = opts.Priority
 		requestTag = opts.RequestTag
+		if opts.DataBoostEnabled {
+			dataBoostEnabled = opts.DataBoostEnabled
+		}
+		if opts.DirectedReadOptions != nil {
+			directedReadOptions = opts.DirectedReadOptions
+		}
+	}
+	var setTransactionID func(transactionID)
+	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
+		setTransactionID = t.setTransactionID
+	} else {
+		setTransactionID = nil
 	}
 	return streamWithReplaceSessionFunc(
-		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
+		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
+			if t.sh != nil {
+				t.sh.updateLastUseTime()
+			}
 			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
-					Session:        t.sh.getID(),
-					Transaction:    ts,
-					Table:          table,
-					Index:          index,
-					Columns:        columns,
-					KeySet:         kset,
-					ResumeToken:    resumeToken,
-					Limit:          int64(limit),
-					RequestOptions: createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					Session:             t.sh.getID(),
+					Transaction:         t.getTransactionSelector(),
+					Table:               table,
+					Index:               index,
+					Columns:             columns,
+					KeySet:              kset,
+					ResumeToken:         resumeToken,
+					Limit:               int64(limit),
+					RequestOptions:      createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					DataBoostEnabled:    dataBoostEnabled,
+					DirectedReadOptions: directedReadOptions,
 				})
 			if err != nil {
+				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
+					t.setTransactionID(nil)
+					return client, errInlineBeginTransactionFailed()
+				}
 				return client, err
 			}
 			md, err := client.Header()
@@ -202,6 +294,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			return client, err
 		},
 		t.replaceSessionFunc,
+		setTransactionID,
 		t.setTimestamp,
 		t.release,
 	)
@@ -221,6 +314,11 @@ func errRowNotFoundByIndex(table string, key Key, index string) error {
 // errMultipleRowsFound returns error for receiving more than one row when reading a single row using an index.
 func errMultipleRowsFound(table string, key Key, index string) error {
 	return spannerErrorf(codes.FailedPrecondition, "more than one row found by index(Table: %v, IndexKey: %v, Index: %v)", table, key, index)
+}
+
+// errInlineBeginTransactionFailed returns error for read-write transaction to explicitly begin the transaction
+func errInlineBeginTransactionFailed() error {
+	return spannerErrorf(codes.Internal, "failed inline begin transaction")
 }
 
 // ReadRow reads a single row from the database.
@@ -289,16 +387,26 @@ type QueryOptions struct {
 
 	// The request tag to use for this request.
 	RequestTag string
+
+	// If this is for a partitioned query and DataBoostEnabled field is set to true, the request will be executed
+	// via Spanner independent compute resources. Setting this option for regular query operations has no effect.
+	DataBoostEnabled bool
+
+	// QueryOptions option used to set the DirectedReadOptions for all ExecuteSqlRequests which indicate
+	// which replicas or regions should be used for executing queries.
+	DirectedReadOptions *sppb.DirectedReadOptions
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:       qo.Mode,
-		Options:    &sppb.ExecuteSqlRequest_QueryOptions{},
-		RequestTag: qo.RequestTag,
-		Priority:   qo.Priority,
+		Mode:                qo.Mode,
+		Options:             &sppb.ExecuteSqlRequest_QueryOptions{},
+		RequestTag:          qo.RequestTag,
+		Priority:            qo.Priority,
+		DataBoostEnabled:    qo.DataBoostEnabled,
+		DirectedReadOptions: qo.DirectedReadOptions,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -308,6 +416,12 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	}
 	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
 		merged.Priority = opts.Priority
+	}
+	if opts.DataBoostEnabled {
+		merged.DataBoostEnabled = opts.DataBoostEnabled
+	}
+	if opts.DirectedReadOptions != nil {
+		merged.DirectedReadOptions = opts.DirectedReadOptions
 	}
 	proto.Merge(merged.Options, qo.Options)
 	proto.Merge(merged.Options, opts.Options)
@@ -337,9 +451,10 @@ func createRequestOptions(prio sppb.RequestOptions_Priority, requestTag, transac
 func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_NORMAL
 	return t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 }
 
@@ -356,9 +471,10 @@ func (t *txReadOnly) QueryWithOptions(ctx context.Context, statement Statement, 
 func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_PROFILE
 	return t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 }
 
@@ -366,9 +482,10 @@ func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *R
 func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sppb.QueryPlan, error) {
 	mode := sppb.ExecuteSqlRequest_PLAN
 	iter := t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 	defer iter.Stop()
 	for {
@@ -393,15 +510,28 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	if err != nil {
 		return &RowIterator{err: err}
 	}
+	var setTransactionID func(transactionID)
+	if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
+		setTransactionID = t.setTransactionID
+	} else {
+		setTransactionID = nil
+	}
 	client := sh.getClient()
 	return streamWithReplaceSessionFunc(
-		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
+		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
+			req.Transaction = t.getTransactionSelector()
+			t.sh.updateLastUseTime()
+
 			client, err := client.ExecuteStreamingSql(ctx, req)
 			if err != nil {
+				if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
+					t.setTransactionID(nil)
+					return client, errInlineBeginTransactionFailed()
+				}
 				return client, err
 			}
 			md, err := client.Header()
@@ -413,6 +543,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			return client, err
 		},
 		t.replaceSessionFunc,
+		setTransactionID,
 		t.setTimestamp,
 		t.release)
 }
@@ -437,15 +568,17 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		mode = *options.Mode
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:        sid,
-		Transaction:    ts,
-		Sql:            stmt.SQL,
-		QueryMode:      mode,
-		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
-		Params:         params,
-		ParamTypes:     paramTypes,
-		QueryOptions:   options.Options,
-		RequestOptions: createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		Session:             sid,
+		Transaction:         ts,
+		Sql:                 stmt.SQL,
+		QueryMode:           mode,
+		Seqno:               atomic.AddInt64(&t.sequenceNumber, 1),
+		Params:              params,
+		ParamTypes:          paramTypes,
+		QueryOptions:        options.Options,
+		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		DataBoostEnabled:    options.DataBoostEnabled,
+		DirectedReadOptions: options.DirectedReadOptions,
 	}
 	return req, sh, nil
 }
@@ -515,6 +648,8 @@ type ReadOnlyTransaction struct {
 	rts time.Time
 	// tb is the read staleness bound specification for transactional reads.
 	tb TimestampBound
+	// isLongRunningTransaction indicates whether the transaction is long-running or not.
+	isLongRunningTransaction bool
 }
 
 // errTxInitTimeout returns error for timeout in waiting for initialization of
@@ -570,8 +705,10 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+		t.setSessionEligibilityForLongRunning(sh)
+		sh.updateLastUseTime()
 		var md metadata.MD
-		res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.BeginTransactionRequest{
+		res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.BeginTransactionRequest{
 			Session: sh.getID(),
 			Options: &sppb.TransactionOptions{
 				Mode: &sppb.TransactionOptions_ReadOnly_{
@@ -728,6 +865,27 @@ func (t *ReadOnlyTransaction) acquireMultiUse(ctx context.Context) (*sessionHand
 	}
 }
 
+func (t *ReadOnlyTransaction) getTransactionSelector() *sppb.TransactionSelector {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	if t.singleUse {
+		return &sppb.TransactionSelector{
+			Selector: &sppb.TransactionSelector_SingleUse{
+				SingleUse: &sppb.TransactionOptions{
+					Mode: &sppb.TransactionOptions_ReadOnly_{
+						ReadOnly: buildTransactionOptionsReadOnly(t.tb, true),
+					},
+				},
+			},
+		}
+	}
+	return &sppb.TransactionSelector{
+		Selector: &sppb.TransactionSelector_Id{
+			Id: t.tx,
+		},
+	}
+}
+
 func (t *ReadOnlyTransaction) setTimestamp(ts time.Time) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -742,7 +900,7 @@ func (t *ReadOnlyTransaction) release(err error) {
 	sh := t.sh
 	t.mu.Unlock()
 	if sh != nil { // sh could be nil if t.acquire() fails.
-		if isSessionNotFoundError(err) {
+		if isSessionNotFoundError(err) || isClientClosing(err) {
 			sh.destroy()
 		}
 		if t.singleUse {
@@ -805,6 +963,16 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 	return t
 }
 
+func (t *ReadOnlyTransaction) setSessionEligibilityForLongRunning(sh *sessionHandle) {
+	if t != nil && sh != nil {
+		sh.mu.Lock()
+		t.mu.Lock()
+		sh.eligibleForLongRunning = t.isLongRunningTransaction
+		t.mu.Unlock()
+		sh.mu.Unlock()
+	}
+}
+
 // ReadWriteTransaction provides a locking read-write transaction.
 //
 // This type of transaction is the only way to write data into Cloud Spanner;
@@ -831,7 +999,7 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 //
 // See (*Client).ReadWriteTransaction for an example.
 //
-// Semantics
+// # Semantics
 //
 // Cloud Spanner can commit the transaction if all read locks it acquired are
 // still valid at commit time, and it is able to acquire write locks for all
@@ -844,7 +1012,7 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 // Spanner locks for any sort of mutual exclusion other than between Cloud
 // Spanner transactions themselves.
 //
-// Aborted transactions
+// # Aborted transactions
 //
 // Application code does not need to retry explicitly; RunInTransaction will
 // automatically retry a transaction if an attempt results in an abort. The lock
@@ -858,7 +1026,7 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 // retries a transaction can attempt; instead, it is better to limit the total
 // amount of wall time spent retrying.
 //
-// Idle transactions
+// # Idle transactions
 //
 // A transaction is considered idle if it has no outstanding reads or SQL
 // queries and has not started a read or SQL query within the last 10
@@ -876,6 +1044,9 @@ type ReadWriteTransaction struct {
 	// ReadWriteTransaction. It is set only once in ReadWriteTransaction.begin()
 	// during the initialization of ReadWriteTransaction.
 	tx transactionID
+	// txReadyOrClosed is for broadcasting that transaction ID has been returned
+	// by Cloud Spanner or that transaction is closed.
+	txReadyOrClosed chan struct{}
 	// mu protects concurrent access to the internal states of
 	// ReadWriteTransaction.
 	mu sync.Mutex
@@ -883,6 +1054,8 @@ type ReadWriteTransaction struct {
 	state txState
 	// wb is the set of buffered mutations waiting to be committed.
 	wb []*Mutation
+	// isLongRunningTransaction indicates whether the transaction is long-running or not.
+	isLongRunningTransaction bool
 }
 
 // BufferWrite adds a list of mutations to the set of updates that will be
@@ -897,9 +1070,6 @@ func (t *ReadWriteTransaction) BufferWrite(ms []*Mutation) error {
 	defer t.mu.Unlock()
 	if t.state == txClosed {
 		return errTxClosed()
-	}
-	if t.state != txActive {
-		return errUnexpectedTxState(t.state)
 	}
 	t.wb = append(t.wb, ms...)
 	return nil
@@ -932,8 +1102,14 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	if err != nil {
 		return 0, err
 	}
+	hasInlineBeginTransaction := false
+	if _, ok := req.GetTransaction().GetSelector().(*sppb.TransactionSelector_Begin); ok {
+		hasInlineBeginTransaction = true
+	}
+
+	sh.updateLastUseTime()
 	var md metadata.MD
-	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
+	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "update"); err != nil {
@@ -941,11 +1117,26 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 		}
 	}
 	if err != nil {
+		if hasInlineBeginTransaction {
+			t.setTransactionID(nil)
+			return 0, errInlineBeginTransactionFailed()
+		}
 		return 0, ToSpannerError(err)
+	}
+	if hasInlineBeginTransaction {
+		if resultSet != nil && resultSet.GetMetadata() != nil && resultSet.GetMetadata().GetTransaction() != nil &&
+			resultSet.GetMetadata().GetTransaction().GetId() != nil {
+			t.setTransactionID(resultSet.GetMetadata().GetTransaction().GetId())
+		} else {
+			//  retry with explicit begin transaction
+			t.setTransactionID(nil)
+			return 0, errInlineBeginTransactionFailed()
+		}
 	}
 	if resultSet.Stats == nil {
 		return 0, spannerErrorf(codes.InvalidArgument, "query passed to Update: %q", stmt.SQL)
 	}
+
 	return extractRowCount(resultSet.Stats)
 }
 
@@ -981,12 +1172,19 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	if err != nil {
 		return nil, err
 	}
+
 	// Cloud Spanner will return "Session not found" on bad sessions.
 	sid := sh.getID()
 	if sid == "" {
 		// Might happen if transaction is closed in the middle of a API call.
 		return nil, errSessionClosed(sh)
 	}
+
+	// mark transaction and session to be eligible for long-running
+	t.mu.Lock()
+	t.isLongRunningTransaction = true
+	t.mu.Unlock()
+	t.setSessionEligibilityForLongRunning(sh)
 
 	var sppbStmts []*sppb.ExecuteBatchDmlRequest_Statement
 	for _, st := range stmts {
@@ -1001,8 +1199,14 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		})
 	}
 
+	hasInlineBeginTransaction := false
+	if _, ok := ts.GetSelector().(*sppb.TransactionSelector_Begin); ok {
+		hasInlineBeginTransaction = true
+	}
+
+	sh.updateLastUseTime()
 	var md metadata.MD
-	resp, err := sh.getClient().ExecuteBatchDml(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.ExecuteBatchDmlRequest{
+	resp, err := sh.getClient().ExecuteBatchDml(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.ExecuteBatchDmlRequest{
 		Session:        sh.getID(),
 		Transaction:    ts,
 		Statements:     sppbStmts,
@@ -1016,16 +1220,31 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		}
 	}
 	if err != nil {
+		if hasInlineBeginTransaction {
+			t.setTransactionID(nil)
+			return nil, errInlineBeginTransactionFailed()
+		}
 		return nil, ToSpannerError(err)
 	}
 
+	haveTransactionID := false
 	var counts []int64
 	for _, rs := range resp.ResultSets {
+		if hasInlineBeginTransaction && !haveTransactionID && rs != nil && rs.GetMetadata() != nil &&
+			rs.GetMetadata().GetTransaction() != nil && rs.GetMetadata().GetTransaction().GetId() != nil {
+			t.setTransactionID(rs.GetMetadata().GetTransaction().GetId())
+			haveTransactionID = true
+		}
 		count, err := extractRowCount(rs.Stats)
 		if err != nil {
 			return nil, err
 		}
 		counts = append(counts, count)
+	}
+	if hasInlineBeginTransaction && !haveTransactionID {
+		// retry with explicit BeginTransaction
+		t.setTransactionID(nil)
+		return counts, errInlineBeginTransactionFailed()
 	}
 	if resp.Status != nil && resp.Status.Code != 0 {
 		return counts, spannerErrorf(codes.Code(uint32(resp.Status.Code)), resp.Status.Message)
@@ -1034,39 +1253,145 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 }
 
 // acquire implements txReadEnv.acquire.
+// This will make sure that only one operation will be running with TransactionSelector::begin option
+// in a ReadWriteTransaction by changing the state to init, all other operations will wait for state
+// to become active/closed. If state is active transactionID is already set, if closed returns error.
 func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sppb.TransactionSelector, error) {
-	ts := &sppb.TransactionSelector{
-		Selector: &sppb.TransactionSelector_Id{
-			Id: t.tx,
-		},
+	for {
+		t.mu.Lock()
+		switch t.state {
+		case txClosed:
+			if t.tx == nil {
+				t.mu.Unlock()
+				return nil, nil, errInlineBeginTransactionFailed()
+			}
+			t.mu.Unlock()
+			return nil, nil, errTxClosed()
+		case txNew:
+			// State transit to txInit so that only one TransactionSelector::begin
+			// is accepted.
+			t.state = txInit
+			sh := t.sh
+			ts := &sppb.TransactionSelector{
+				Selector: &sppb.TransactionSelector_Begin{
+					Begin: &sppb.TransactionOptions{
+						Mode: &sppb.TransactionOptions_ReadWrite_{
+							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+						},
+					},
+				},
+			}
+			t.mu.Unlock()
+			return sh, ts, nil
+		case txInit:
+			if t.tx == nil {
+				// Wait for a transaction ID to become ready.
+				txReadyOrClosed := t.txReadyOrClosed
+				t.mu.Unlock()
+				select {
+				case <-txReadyOrClosed:
+					// Need to check transaction state again.
+					continue
+				case <-ctx.Done():
+					// The waiting for initialization is timeout, return error
+					// directly.
+					return nil, nil, errTxInitTimeout()
+				}
+			}
+			t.mu.Unlock()
+			// If first statement with TransactionSelector::begin succeeded, t.state should have been changed to
+			// txActive, so we can just continue here.
+			continue
+		case txActive:
+			sh := t.sh
+			ts := &sppb.TransactionSelector{
+				Selector: &sppb.TransactionSelector_Id{
+					Id: t.tx,
+				},
+			}
+			t.mu.Unlock()
+			return sh, ts, nil
+		default:
+			state := t.state
+			t.mu.Unlock()
+			return nil, nil, errUnexpectedTxState(state)
+		}
 	}
+}
+
+func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelector {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	switch t.state {
-	case txClosed:
-		return nil, nil, errTxClosed()
-	case txActive:
-		return t.sh, ts, nil
+	if t.state == txActive {
+		return &sppb.TransactionSelector{
+			Selector: &sppb.TransactionSelector_Id{
+				Id: t.tx,
+			},
+		}
 	}
-	return nil, nil, errUnexpectedTxState(t.state)
+	return &sppb.TransactionSelector{
+		Selector: &sppb.TransactionSelector_Begin{
+			Begin: &sppb.TransactionOptions{
+				Mode: &sppb.TransactionOptions_ReadWrite_{
+					ReadWrite: &sppb.TransactionOptions_ReadWrite{
+						ReadLockMode: t.txOpts.ReadLockMode,
+					},
+				},
+			},
+		},
+	}
+}
+
+func (t *ReadWriteTransaction) setTransactionID(tx transactionID) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	// When inline begin transaction fails close the transaction to retry with explicit begin transaction
+	if tx == nil {
+		t.state = txClosed
+		// unblock other waiting operations to abort and retry with explicit begin transaction.
+		close(t.txReadyOrClosed)
+		t.txReadyOrClosed = make(chan struct{})
+		return
+	}
+	t.tx = tx
+	t.state = txActive
+	close(t.txReadyOrClosed)
+	t.txReadyOrClosed = make(chan struct{})
 }
 
 // release implements txReadEnv.release.
 func (t *ReadWriteTransaction) release(err error) {
 	t.mu.Lock()
 	sh := t.sh
+	state := t.state
 	t.mu.Unlock()
 	if sh != nil && isSessionNotFoundError(err) {
 		sh.destroy()
 	}
+	// if transaction is released during initialization then do explicit begin transaction
+	if state == txInit {
+		t.setTransactionID(nil)
+	}
 }
 
-func beginTransaction(ctx context.Context, sid string, client *vkit.Client) (transactionID, error) {
+func (t *ReadWriteTransaction) setSessionEligibilityForLongRunning(sh *sessionHandle) {
+	if t != nil && sh != nil {
+		sh.mu.Lock()
+		t.mu.Lock()
+		sh.eligibleForLongRunning = t.isLongRunningTransaction
+		t.mu.Unlock()
+		sh.mu.Unlock()
+	}
+}
+
+func beginTransaction(ctx context.Context, sid string, client *vkit.Client, opts TransactionOptions) (transactionID, error) {
 	res, err := client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: sid,
 		Options: &sppb.TransactionOptions{
 			Mode: &sppb.TransactionOptions_ReadWrite_{
-				ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+				ReadWrite: &sppb.TransactionOptions_ReadWrite{
+					ReadLockMode: opts.ReadLockMode,
+				},
 			},
 		},
 	})
@@ -1079,21 +1404,73 @@ func beginTransaction(ctx context.Context, sid string, client *vkit.Client) (tra
 	return res.Id, nil
 }
 
-// begin starts a read-write transacton on Cloud Spanner, it is always called
-// before any of the public APIs.
+// shouldExplicitBegin checks if ReadWriteTransaction should do an explicit BeginTransaction
+func (t *ReadWriteTransaction) shouldExplicitBegin(attempt int) bool {
+	// don't begin during the first attempt
+	if attempt == 0 {
+		return false
+	}
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	// don't begin if transactionId is already set
+	if t == nil || t.tx != nil || t.state == txNew {
+		return false
+	}
+	return true
+}
+
+// begin starts a read-write transaction on Cloud Spanner.
 func (t *ReadWriteTransaction) begin(ctx context.Context) error {
+	t.mu.Lock()
 	if t.tx != nil {
 		t.state = txActive
 		return nil
 	}
-	tx, err := beginTransaction(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), t.sh.getID(), t.sh.getClient())
-	if err == nil {
-		t.tx = tx
-		t.state = txActive
-		return nil
+	sh := t.sh
+	t.mu.Unlock()
+
+	var (
+		tx  transactionID
+		err error
+	)
+	defer func() {
+		if err != nil && sh != nil {
+			// Got a valid session handle, but failed to initialize transaction=
+			// on Cloud Spanner.
+			if isSessionNotFoundError(err) {
+				sh.destroy()
+			}
+			// If sh.destroy was already executed, this becomes a noop.
+			sh.recycle()
+		}
+	}()
+	// Retry the BeginTransaction call if a 'Session not found' is returned.
+	for {
+		if sh != nil {
+			sh.updateLastUseTime()
+		}
+		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts)
+		if isSessionNotFoundError(err) {
+			sh.destroy()
+			sh, err = t.sp.take(ctx)
+			if err != nil {
+				return err
+			}
+			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
+			t.setSessionEligibilityForLongRunning(sh)
+			continue
+		} else {
+			err = ToSpannerError(err)
+		}
+		break
 	}
-	if isSessionNotFoundError(err) {
-		t.sh.destroy()
+	if err == nil {
+		t.mu.Lock()
+		t.tx = tx
+		t.sh = sh
+		// Transition state to txActive.
+		t.state = txActive
+		t.mu.Unlock()
 	}
 	return err
 }
@@ -1106,9 +1483,17 @@ type CommitResponse struct {
 	CommitStats *sppb.CommitResponse_CommitStats
 }
 
-// CommitOptions provides options for commiting a transaction in a database.
+// CommitOptions provides options for committing a transaction in a database.
 type CommitOptions struct {
 	ReturnCommitStats bool
+}
+
+// merge combines two CommitOptions that the input parameter will have higher
+// order of precedence.
+func (co CommitOptions) merge(opts CommitOptions) CommitOptions {
+	return CommitOptions{
+		ReturnCommitStats: co.ReturnCommitStats || opts.ReturnCommitStats,
+	}
 }
 
 // commit tries to commit a readwrite transaction to Cloud Spanner. It also
@@ -1116,8 +1501,23 @@ type CommitOptions struct {
 func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions) (CommitResponse, error) {
 	resp := CommitResponse{}
 	t.mu.Lock()
+	if t.tx == nil {
+		if t.state == txClosed {
+			// inline begin transaction failed
+			t.mu.Unlock()
+			return resp, errInlineBeginTransactionFailed()
+		}
+		t.mu.Unlock()
+		// mutations or empty transaction body only
+		if err := t.begin(ctx); err != nil {
+			return resp, err
+		}
+		t.mu.Lock()
+	}
 	t.state = txClosed // No further operations after commit.
+	close(t.txReadyOrClosed)
 	mPb, err := mutationsProto(t.wb)
+
 	t.mu.Unlock()
 	if err != nil {
 		return resp, err
@@ -1129,9 +1529,10 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	if sid == "" || client == nil {
 		return resp, errSessionClosed(t.sh)
 	}
+	t.sh.updateLastUseTime()
 
 	var md metadata.MD
-	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), &sppb.CommitRequest{
+	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
 		Session: sid,
 		Transaction: &sppb.CommitRequest_TransactionId{
 			TransactionId: t.tx,
@@ -1166,6 +1567,10 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 	t.mu.Lock()
 	// Forbid further operations on rollbacked transaction.
 	t.state = txClosed
+	if t.tx == nil {
+		t.mu.Unlock()
+		return
+	}
 	t.mu.Unlock()
 	// In case that sessionHandle was destroyed but transaction body fails to
 	// report it.
@@ -1173,7 +1578,8 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 	if sid == "" || client == nil {
 		return
 	}
-	err := client.Rollback(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), &sppb.RollbackRequest{
+	t.sh.updateLastUseTime()
+	err := client.Rollback(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.RollbackRequest{
 		Session:       sid,
 		TransactionId: t.tx,
 	})
@@ -1205,6 +1611,10 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 			t.sh.destroy()
 			return resp, err
 		}
+		if isFailedInlineBeginTransaction(err) {
+			return resp, err
+		}
+
 		// Rollback the transaction unless the error occurred during the
 		// commit. Executing a rollback after a commit has failed will
 		// otherwise cause an error. Note that transient errors, such as
@@ -1262,22 +1672,25 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 		err error
 		t   *ReadWriteStmtBasedTransaction
 	)
-	sh, err = c.idleSessions.takeWriteSession(ctx)
+	sh, err = c.idleSessions.take(ctx)
 	if err != nil {
 		// If session retrieval fails, just fail the transaction.
 		return nil, err
 	}
 	t = &ReadWriteStmtBasedTransaction{
 		ReadWriteTransaction: ReadWriteTransaction{
-			tx: sh.getTransactionID(),
+			txReadyOrClosed: make(chan struct{}),
 		},
 	}
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	t.txOpts = options
+	t.txReadOnly.ro = c.ro
+	t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
+	t.txOpts = c.txo.merge(options)
 	t.ct = c.ct
 
+	// always explicit begin the transactions
 	if err = t.begin(ctx); err != nil {
 		if sh != nil {
 			sh.recycle()
@@ -1328,64 +1741,80 @@ type writeOnlyTransaction struct {
 	transactionTag string
 	// commitPriority is the RPC priority to use for the commit operation.
 	commitPriority sppb.RequestOptions_Priority
+	// disableRouteToLeader specifies if we want to disable RW/PDML requests to be routed to leader.
+	disableRouteToLeader bool
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
 // unless one of the following happens:
 //
-//     1) Context times out.
-//     2) An unretryable error (e.g. database not found) occurs.
-//     3) There is a malformed Mutation object.
+//  1. Context times out.
+//  2. An unretryable error (e.g. database not found) occurs.
+//  3. There is a malformed Mutation object.
 func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Mutation) (time.Time, error) {
 	var (
 		ts time.Time
 		sh *sessionHandle
 	)
+	defer func() {
+		if sh != nil {
+			sh.recycle()
+		}
+	}()
 	mPb, err := mutationsProto(ms)
 	if err != nil {
 		// Malformed mutation found, just return the error.
 		return ts, err
 	}
 
-	// Retry-loop for aborted transactions.
-	// TODO: Replace with generic retryer.
-	for {
-		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
-			// No usable session for doing the commit, take one from pool.
-			sh, err = t.sp.take(ctx)
-			if err != nil {
-				// sessionPool.Take already retries for session
-				// creations/retrivals.
-				return ts, err
+	// Make a retryer for Aborted and certain Internal errors.
+	retryer := onCodes(DefaultRetryBackoff, codes.Aborted, codes.Internal)
+	// Apply the mutation and retry if the commit is aborted.
+	applyMutationWithRetry := func(ctx context.Context) error {
+		for {
+			if sh == nil || sh.getID() == "" || sh.getClient() == nil {
+				// No usable session for doing the commit, take one from pool.
+				sh, err = t.sp.take(ctx)
+				if err != nil {
+					// sessionPool.Take already retries for session
+					// creations/retrivals.
+					return ToSpannerError(err)
+				}
 			}
-			defer sh.recycle()
-		}
-		res, err := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.CommitRequest{
-			Session: sh.getID(),
-			Transaction: &sppb.CommitRequest_SingleUseTransaction{
-				SingleUseTransaction: &sppb.TransactionOptions{
-					Mode: &sppb.TransactionOptions_ReadWrite_{
-						ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+			sh.updateLastUseTime()
+			res, err := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
+				Session: sh.getID(),
+				Transaction: &sppb.CommitRequest_SingleUseTransaction{
+					SingleUseTransaction: &sppb.TransactionOptions{
+						Mode: &sppb.TransactionOptions_ReadWrite_{
+							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+						},
 					},
 				},
-			},
-			Mutations:      mPb,
-			RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag),
-		})
-		if err != nil && !isAbortedErr(err) {
-			if isSessionNotFoundError(err) {
-				// Discard the bad session.
-				sh.destroy()
+				Mutations:      mPb,
+				RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag),
+			})
+			if err != nil && !isAbortedErr(err) {
+				if isSessionNotFoundError(err) {
+					// Discard the bad session.
+					sh.destroy()
+				}
+				return toSpannerErrorWithCommitInfo(err, true)
+			} else if err == nil {
+				if tstamp := res.GetCommitTimestamp(); tstamp != nil {
+					ts = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
+				}
 			}
-			return ts, toSpannerErrorWithCommitInfo(err, true)
-		} else if err == nil {
-			if tstamp := res.GetCommitTimestamp(); tstamp != nil {
-				ts = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
+			delay, shouldRetry := retryer.Retry(err)
+			if !shouldRetry {
+				return err
 			}
-			break
+			if err := gax.Sleep(ctx, delay); err != nil {
+				return err
+			}
 		}
 	}
-	return ts, ToSpannerError(err)
+	return ts, applyMutationWithRetry(ctx)
 }
 
 // isAbortedErr returns true if the error indicates that an gRPC call is

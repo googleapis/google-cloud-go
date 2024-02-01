@@ -17,12 +17,12 @@ package storage
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
@@ -30,9 +30,8 @@ import (
 
 	"cloud.google.com/go/internal/uid"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
-	htransport "google.golang.org/api/transport/http"
 )
 
 var (
@@ -43,6 +42,8 @@ var (
 	projectID           = "my-project-id"
 	serviceAccountEmail = "my-sevice-account@my-project-id.iam.gserviceaccount.com"
 	randomBytesToWrite  = []byte("abcdef")
+	randomBytes9MB      = generateRandomBytes(size9MB)
+	size9MB             = 9437184 // 9 MiB
 )
 
 type retryFunc func(ctx context.Context, c *Client, fs *resources, preconditions bool) error
@@ -199,8 +200,95 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
-			_, err = io.Copy(ioutil.Discard, r)
+			wr, err := io.Copy(ioutil.Discard, r)
+			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
 			return err
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Test JSON reads.
+			client, ok := c.tc.(*httpStorageClient)
+			if ok {
+				client.config.readAPIWasSet = true
+				client.config.useJSONforReads = true
+				defer func() {
+					client.config.readAPIWasSet = false
+					client.config.useJSONforReads = false
+				}()
+			}
+
+			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			wr, err := io.Copy(ioutil.Discard, r)
+			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return err
+		},
+	},
+	"storage.objects.download": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Before running the test method, populate a large test object of 9 MiB.
+			objName := objectIDs.New()
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
+				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
+			}
+			// Download the large test object for the S8 download method group.
+			r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+			data, err := ioutil.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("failed to ReadAll, err: %v", err)
+			}
+			if got, want := len(data), size9MB; got != want {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if got, want := data, randomBytes9MB; !bytes.Equal(got, want) {
+				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return nil
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Test JSON reads.
+			// Before running the test method, populate a large test object of 9 MiB.
+			objName := objectIDs.New()
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
+				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
+			}
+
+			client, ok := c.tc.(*httpStorageClient)
+			if ok {
+				client.config.readAPIWasSet = true
+				client.config.useJSONforReads = true
+				defer func() {
+					client.config.readAPIWasSet = false
+					client.config.useJSONforReads = false
+				}()
+			}
+
+			// Download the large test object for the S8 download method group.
+			r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+			data, err := ioutil.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("failed to ReadAll, err: %v", err)
+			}
+			if got, want := len(data), size9MB; got != want {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if got, want := data, randomBytes9MB; !bytes.Equal(got, want) {
+				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return nil
 		},
 	},
 	"storage.objects.list": {
@@ -224,7 +312,6 @@ var methods = map[string][]retryFunc{
 		},
 	},
 	// Conditionally idempotent operations
-	// (all conditionally idempotent operations currently fail)
 	"storage.buckets.patch": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
@@ -302,6 +389,25 @@ var methods = map[string][]retryFunc{
 			}
 			if err := objW.Close(); err != nil {
 				return fmt.Errorf("Writer.Close: %v", err)
+			}
+			return nil
+		},
+	},
+	"storage.resumable.upload": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			obj := c.Bucket(fs.bucket.Name).Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+			w := obj.NewWriter(ctx)
+			// Set Writer.ChunkSize to 2 MiB to perform resumable uploads.
+			w.ChunkSize = 2097152
+
+			if _, err := w.Write(randomBytes9MB); err != nil {
+				return fmt.Errorf("writing object: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				return fmt.Errorf("closing object: %v", err)
 			}
 			return nil
 		},
@@ -405,38 +511,51 @@ func TestRetryConformance(t *testing.T) {
 		for _, retryTest := range testFile.RetryTests {
 			for _, instructions := range retryTest.Cases {
 				for _, method := range retryTest.Methods {
-					if len(methods[method.Name]) == 0 {
-						t.Logf("No tests for operation %v", method.Name)
+					methodName := method.Name
+					if method.Group != "" {
+						methodName = method.Group
 					}
-					for i, fn := range methods[method.Name] {
-						testName := fmt.Sprintf("%v-%v-%v-%v", retryTest.Id, instructions.Instructions, method.Name, i)
-						t.Run(testName, func(t *testing.T) {
+					if len(methods[methodName]) == 0 {
+						t.Logf("No tests for operation %v", methodName)
+					}
+					for i, fn := range methods[methodName] {
+						transports := []string{"http", "grpc"}
+						for _, transport := range transports {
+							if transport == "grpc" && method.Name == "storage.objects.insert" {
+								t.Skip("Implementation in testbench pending: https://github.com/googleapis/storage-testbench/issues/568")
+							}
+							testName := fmt.Sprintf("%v-%v-%v-%v-%v", transport, retryTest.Id, instructions.Instructions, methodName, i)
+							t.Run(testName, func(t *testing.T) {
 
-							// Create the retry subtest
-							subtest := &emulatorTest{T: t, name: testName, host: endpoint}
-							subtest.create(map[string][]string{
-								method.Name: instructions.Instructions,
+								// Create the retry subtest
+								subtest := &emulatorTest{T: t, name: testName, host: endpoint}
+								subtest.create(map[string][]string{
+									method.Name: instructions.Instructions,
+								}, transport)
+
+								// Create necessary test resources in the emulator
+								subtest.populateResources(ctx, client, method.Resources)
+
+								// Test
+								// Set retry test id through headers per test call
+								ctx := context.Background()
+								ctx = callctx.SetHeaders(ctx, "x-retry-test-id", subtest.id)
+								err = fn(ctx, subtest.transportClient, &subtest.resources, retryTest.PreconditionProvided)
+								if retryTest.ExpectSuccess && err != nil {
+									t.Errorf("want success, got %v", err)
+								}
+								if !retryTest.ExpectSuccess && err == nil {
+									t.Errorf("want failure, got success")
+								}
+
+								// Verify that all instructions were used up during the test
+								// (indicates that the client sent the correct requests).
+								subtest.check()
+
+								// Close out test in emulator.
+								subtest.delete()
 							})
-
-							// Create necessary test resources in the emulator
-							subtest.populateResources(ctx, client, method.Resources)
-
-							// Test
-							err = fn(ctx, subtest.wrappedClient, &subtest.resources, retryTest.PreconditionProvided)
-							if retryTest.ExpectSuccess && err != nil {
-								t.Errorf("want success, got %v", err)
-							}
-							if !retryTest.ExpectSuccess && err == nil {
-								t.Errorf("want failure, got success")
-							}
-
-							// Verify that all instructions were used up during the test
-							// (indicates that the client sent the correct requests).
-							subtest.check()
-
-							// Close out test in emulator.
-							subtest.delete()
-						})
+						}
 					}
 				}
 			}
@@ -446,11 +565,11 @@ func TestRetryConformance(t *testing.T) {
 
 type emulatorTest struct {
 	*testing.T
-	name          string
-	id            string // ID to pass as a header in the test execution
-	resources     resources
-	host          *url.URL // set the path when using; path is not guaranteed between calls
-	wrappedClient *Client
+	name            string
+	id              string // ID to pass as a header in the test execution
+	resources       resources
+	host            *url.URL // set the path when using; path is not guaranteed between calls
+	transportClient *Client
 }
 
 // Holds the resources for a particular test case. Only the necessary fields will
@@ -512,13 +631,41 @@ func (et *emulatorTest) populateResources(ctx context.Context, c *Client, resour
 	}
 }
 
+// Generates size random bytes.
+func generateRandomBytes(n int) []byte {
+	b := make([]byte, n)
+	_, _ = rand.Read(b)
+	return b
+}
+
+// Upload test object with given bytes.
+func uploadTestObject(bucketName, objName string, n []byte) error {
+	// Create non-wrapped client to create test object.
+	ctx := context.Background()
+	c, err := NewClient(ctx)
+	if err != nil {
+		return fmt.Errorf("storage.NewClient: %v", err)
+	}
+	obj := c.Bucket(bucketName).Object(objName)
+	w := obj.NewWriter(ctx)
+	if _, err := w.Write(n); err != nil {
+		return fmt.Errorf("writing test object: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		return fmt.Errorf("closing object: %v", err)
+	}
+	return nil
+}
+
 // Creates a retry test resource in the emulator
-func (et *emulatorTest) create(instructions map[string][]string) {
+func (et *emulatorTest) create(instructions map[string][]string, transport string) {
 	c := http.DefaultClient
 	data := struct {
 		Instructions map[string][]string `json:"instructions"`
+		Transport    string              `json:"transport"`
 	}{
 		Instructions: instructions,
+		Transport:    transport,
 	}
 
 	buf := new(bytes.Buffer)
@@ -528,6 +675,9 @@ func (et *emulatorTest) create(instructions map[string][]string) {
 
 	et.host.Path = "retry_test"
 	resp, err := c.Post(et.host.String(), "application/json", buf)
+	if resp.StatusCode == 501 {
+		et.T.Skip("This retry test case is not yet supported in the testbench.")
+	}
 	if err != nil || resp.StatusCode != 200 {
 		et.Fatalf("creating retry test: err: %v, resp: %+v", err, resp)
 	}
@@ -545,14 +695,21 @@ func (et *emulatorTest) create(instructions map[string][]string) {
 	}
 
 	et.id = testRes.TestID
-
-	// Create wrapped client which will send emulator instructions
 	et.host.Path = ""
-	client, err := wrappedClient(et.T, et.id)
+
+	// Create transportClient for http or grpc
+	ctx := context.Background()
+	transportClient, err := NewClient(ctx)
 	if err != nil {
-		et.Fatalf("creating wrapped client: %v", err)
+		et.Fatalf("HTTP transportClient: %v", err)
 	}
-	et.wrappedClient = client
+	if transport == "grpc" {
+		transportClient, err = NewGRPCClient(ctx)
+		if err != nil {
+			et.Fatalf("GRPC transportClient: %v", err)
+		}
+	}
+	et.transportClient = transportClient
 }
 
 // Verifies that all instructions for a given retry testID have been used up
@@ -593,48 +750,4 @@ func (et *emulatorTest) delete() {
 	if err != nil || resp.StatusCode != 200 {
 		et.Errorf("deleting test: err: %v, resp: %+v", err, resp)
 	}
-}
-
-// retryTestRoundTripper sends the retry test ID to the emulator with each request
-type retryTestRoundTripper struct {
-	*testing.T
-	rt     http.RoundTripper
-	testID string
-}
-
-func (wt *retryTestRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
-	r.Header.Set("x-retry-test-id", wt.testID)
-
-	requestDump, err := httputil.DumpRequest(r, false)
-	if err != nil {
-		wt.Logf("error creating request dump: %v", err)
-	}
-
-	resp, err := wt.rt.RoundTrip(r)
-	if err != nil {
-		wt.Logf("roundtrip error (may be expected): %v\nrequest: %s", err, requestDump)
-	}
-	return resp, err
-}
-
-// Create custom client that sends instructions to the storage testbench Retry Test API
-func wrappedClient(t *testing.T, testID string) (*Client, error) {
-	ctx := context.Background()
-	base := http.DefaultTransport
-
-	trans, err := htransport.NewTransport(ctx, base, option.WithoutAuthentication(), option.WithUserAgent("custom-user-agent"))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create http client: %v", err)
-	}
-
-	c := http.Client{Transport: trans}
-
-	// Add RoundTripper to the created HTTP client
-	wrappedTrans := &retryTestRoundTripper{rt: c.Transport, testID: testID, T: t}
-	c.Transport = wrappedTrans
-
-	// Supply this client to storage.NewClient
-	// STORAGE_EMULATOR_HOST takes care of setting the correct endpoint
-	client, err := NewClient(ctx, option.WithHTTPClient(&c))
-	return client, err
 }

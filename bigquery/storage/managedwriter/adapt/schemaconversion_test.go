@@ -18,9 +18,9 @@ import (
 	"testing"
 
 	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/testing/protocmp"
 )
 

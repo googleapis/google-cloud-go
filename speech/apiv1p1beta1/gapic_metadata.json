@@ -35,6 +35,11 @@
                 "GetCustomClass"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetPhraseSet": {
               "methods": [
                 "GetPhraseSet"
@@ -43,6 +48,11 @@
             "ListCustomClasses": {
               "methods": [
                 "ListCustomClasses"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListPhraseSet": {
@@ -90,6 +100,11 @@
                 "GetCustomClass"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetPhraseSet": {
               "methods": [
                 "GetPhraseSet"
@@ -98,6 +113,11 @@
             "ListCustomClasses": {
               "methods": [
                 "ListCustomClasses"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListPhraseSet": {
@@ -124,6 +144,16 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "LongRunningRecognize": {
               "methods": [
                 "LongRunningRecognize"
@@ -144,6 +174,16 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "LongRunningRecognize": {
               "methods": [
                 "LongRunningRecognize"

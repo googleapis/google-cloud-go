@@ -16,14 +16,266 @@ package bigtable
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"testing"
+	"time"
 
+	"cloud.google.com/go/internal/pretty"
+	"cloud.google.com/go/internal/testutil"
+	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/go-cmp/cmp"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	"google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+type mockTableAdminClock struct {
+	btapb.BigtableTableAdminClient
+
+	createTableReq   *btapb.CreateTableRequest
+	updateTableReq   *btapb.UpdateTableRequest
+	createTableResp  *btapb.Table
+	updateTableError error
+
+	copyBackupReq   *btapb.CopyBackupRequest
+	copyBackupError error
+}
+
+func (c *mockTableAdminClock) CreateTable(
+	ctx context.Context, in *btapb.CreateTableRequest, opts ...grpc.CallOption,
+) (*btapb.Table, error) {
+	c.createTableReq = in
+	return c.createTableResp, nil
+}
+
+func (c *mockTableAdminClock) UpdateTable(
+	ctx context.Context, in *btapb.UpdateTableRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.updateTableReq = in
+	return &longrunning.Operation{
+		Done: true,
+		Result: &longrunning.Operation_Response{
+			Response: &anypb.Any{TypeUrl: "google.bigtable.admin.v2.Table"},
+		},
+	}, c.updateTableError
+}
+
+func (c *mockTableAdminClock) CopyBackup(
+	ctx context.Context, in *btapb.CopyBackupRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.copyBackupReq = in
+	c.copyBackupError = fmt.Errorf("Mock error from client API")
+	return nil, c.copyBackupError
+}
+
+func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminClient {
+	ctx := context.Background()
+	c, err := NewAdminClient(ctx, "my-cool-project", "my-cool-instance")
+	if err != nil {
+		t.Fatalf("NewAdminClient failed: %v", err)
+	}
+	c.tClient = ac
+	return c
+}
+
+func TestTableAdmin_CreateTableFromConf_DeletionProtection_Protected(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	deletionProtection := Protected
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: deletionProtection})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.DeletionProtection, true) {
+		t.Errorf("Unexpected table deletion protection: %v, expected %v", createTableReq.Table.DeletionProtection, true)
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_DeletionProtection_Unprotected(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	deletionProtection := Unprotected
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: deletionProtection})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.DeletionProtection, false) {
+		t.Errorf("Unexpected table deletion protection: %v, expected %v", createTableReq.Table.DeletionProtection, false)
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_ChangeStream_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	changeStreamRetention, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("ChangeStreamRetention not valid: %v", err)
+	}
+	err = c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", ChangeStreamRetention: changeStreamRetention})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.ChangeStreamConfig.RetentionPeriod.Seconds, int64(changeStreamRetention.Seconds())) {
+		t.Errorf("Unexpected table change stream retention: %v, expected %v", createTableReq.Table.ChangeStreamConfig.RetentionPeriod.Seconds, changeStreamRetention.Seconds())
+	}
+}
+
+func TestTableAdmin_CopyBackup_ErrorFromClient(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	currTime := time.Now()
+	err := c.CopyBackup(context.Background(), "source-cluster", "source-backup", "dest-project", "dest-instance", "dest-cluster", "dest-backup", currTime)
+	if err == nil {
+		t.Errorf("CopyBackup got: nil, want: non-nil error")
+	}
+
+	got := mock.copyBackupReq
+	want := &btapb.CopyBackupRequest{
+		Parent:       "projects/dest-project/instances/dest-instance/clusters/dest-cluster",
+		BackupId:     "dest-backup",
+		SourceBackup: "projects/my-cool-project/instances/my-cool-instance/clusters/source-cluster/backups/source-backup",
+		ExpireTime:   timestamppb.New(currTime),
+	}
+	if diff := testutil.Diff(got, want, cmp.AllowUnexported(btapb.CopyBackupRequest{})); diff != "" {
+		t.Errorf("CopyBackupRequest \ngot:\n%v,\nwant:\n%v,\ndiff:\n%v", pretty.Value(got), pretty.Value(want), diff)
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_ChangeStream_Disable(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	changeStreamRetention := time.Duration(0)
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", ChangeStreamRetention: changeStreamRetention})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if createTableReq.Table.ChangeStreamConfig != nil {
+		t.Errorf("Unexpected table change stream retention: %v should be empty", createTableReq.Table.ChangeStreamConfig)
+	}
+}
+
+func TestTableAdmin_UpdateTableWithDeletionProtection(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	deletionProtection := Protected
+
+	// Check if the deletion protection updates correctly
+	err := c.UpdateTableWithDeletionProtection(context.Background(), "My-table", deletionProtection)
+	if err != nil {
+		t.Fatalf("UpdateTableWithDeletionProtection failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(updateTableReq.Table.DeletionProtection, true) {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "deletion_protection") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+}
+
+func TestTableAdmin_UpdateTable_WithError(t *testing.T) {
+	mock := &mockTableAdminClock{updateTableError: errors.New("update table failure error")}
+	c := setupTableClient(t, mock)
+	deletionProtection := Protected
+
+	// Check if the update fails when update table returns an error
+	err := c.UpdateTableWithDeletionProtection(context.Background(), "My-table", deletionProtection)
+
+	if fmt.Sprint(err) != "error from update: update table failure error" {
+		t.Fatalf("UpdateTable updated by mistake: %v", err)
+	}
+}
+
+func TestTableAdmin_UpdateTable_TableID_NotProvided(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	deletionProtection := Protected
+
+	// Check if the update fails when TableID is not provided
+	err := c.UpdateTableWithDeletionProtection(context.Background(), "", deletionProtection)
+	if fmt.Sprint(err) != "TableID is required" {
+		t.Fatalf("UpdateTable failed: %v", err)
+	}
+}
+
+func TestTableAdmin_UpdateTableWithChangeStreamRetention(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	changeStreamRetention, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("ChangeStreamRetention not valid: %v", err)
+	}
+
+	err = c.UpdateTableWithChangeStream(context.Background(), "My-table", changeStreamRetention)
+	if err != nil {
+		t.Fatalf("UpdateTableWithChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(updateTableReq.Table.ChangeStreamConfig.RetentionPeriod.Seconds, int64(changeStreamRetention.Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, ChangeStreamConfig: %v", updateTableReq.Table.ChangeStreamConfig)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "change_stream_config.retention_period") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateTableDisableChangeStream(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("UpdateTableDisableChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if updateTableReq.Table.ChangeStreamConfig != nil {
+		t.Errorf("UpdateTableRequest does not match, ChangeStreamConfig: %v should be empty", updateTableReq.Table.ChangeStreamConfig)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "change_stream_config") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
 
 type mockAdminClock struct {
 	btapb.BigtableInstanceAdminClient
@@ -129,13 +381,14 @@ func TestInstanceAdmin_GetCluster(t *testing.T) {
 								MaxServeNodes: 2,
 							},
 							AutoscalingTargets: &btapb.AutoscalingTargets{
-								CpuUtilizationPercent: 10,
+								CpuUtilizationPercent:        10,
+								StorageUtilizationGibPerNode: 3000,
 							},
 						},
 					},
 				},
 			},
-			wantConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+			wantConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 		},
 	}
 
@@ -186,13 +439,14 @@ func TestInstanceAdmin_Clusters(t *testing.T) {
 								MaxServeNodes: 2,
 							},
 							AutoscalingTargets: &btapb.AutoscalingTargets{
-								CpuUtilizationPercent: 10,
+								CpuUtilizationPercent:        10,
+								StorageUtilizationGibPerNode: 3000,
 							},
 						},
 					},
 				},
 			},
-			wantConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+			wantConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 		},
 	}
 
@@ -221,9 +475,10 @@ func TestInstanceAdmin_SetAutoscaling(t *testing.T) {
 	c := setupClient(t, mock)
 
 	err := c.SetAutoscaling(context.Background(), "myinst", "mycluster", AutoscalingConfig{
-		MinNodes:         1,
-		MaxNodes:         2,
-		CPUTargetPercent: 10,
+		MinNodes:                  1,
+		MaxNodes:                  2,
+		CPUTargetPercent:          10,
+		StorageUtilizationPerNode: 3000,
 	})
 	if err != nil {
 		t.Fatalf("SetAutoscaling failed: %v", err)
@@ -255,6 +510,11 @@ func TestInstanceAdmin_SetAutoscaling(t *testing.T) {
 	wantCPU := int32(10)
 	if gotCPU := gotConfig.AutoscalingTargets.CpuUtilizationPercent; wantCPU != gotCPU {
 		t.Fatalf("want autoscaling cpu = %v, got = %v", wantCPU, gotCPU)
+	}
+
+	wantStorage := int32(3000)
+	if gotStorage := gotConfig.AutoscalingTargets.StorageUtilizationGibPerNode; wantStorage != gotStorage {
+		t.Fatalf("want autoscaling storage = %v, got = %v", wantStorage, gotStorage)
 	}
 }
 
@@ -288,7 +548,7 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 		ClusterId:         "mycluster",
 		Zone:              "us-central1-a",
 		StorageType:       SSD,
-		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 	})
 	if err != nil {
 		t.Fatalf("CreateInstance failed: %v", err)
@@ -346,7 +606,7 @@ func TestInstanceAdmin_CreateInstanceWithClusters_WithAutoscaling(t *testing.T) 
 				ClusterID:         "mycluster",
 				Zone:              "us-central1-a",
 				StorageType:       SSD,
-				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 			},
 		},
 	})
@@ -382,7 +642,7 @@ func TestInstanceAdmin_CreateCluster_WithAutoscaling(t *testing.T) {
 		ClusterID:         "mycluster",
 		Zone:              "us-central1-a",
 		StorageType:       SSD,
-		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 	})
 	if err != nil {
 		t.Fatalf("CreateCluster failed: %v", err)
@@ -404,6 +664,11 @@ func TestInstanceAdmin_CreateCluster_WithAutoscaling(t *testing.T) {
 	wantCPU := int32(10)
 	if gotCPU := gotConfig.AutoscalingTargets.CpuUtilizationPercent; wantCPU != gotCPU {
 		t.Fatalf("want autoscaling cpu = %v, got = %v", wantCPU, gotCPU)
+	}
+
+	wantStorage := int32(3000)
+	if gotStorage := gotConfig.AutoscalingTargets.StorageUtilizationGibPerNode; wantStorage != gotStorage {
+		t.Fatalf("want autoscaling storage = %v, got = %v", wantStorage, gotStorage)
 	}
 
 	err = c.CreateCluster(context.Background(), &ClusterConfig{
@@ -459,7 +724,7 @@ func TestInstanceAdmin_UpdateInstanceWithClusters_WithAutoscaling(t *testing.T) 
 			{
 				ClusterID:         "mycluster",
 				Zone:              "us-central1-a",
-				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 			},
 		},
 	})
@@ -483,6 +748,11 @@ func TestInstanceAdmin_UpdateInstanceWithClusters_WithAutoscaling(t *testing.T) 
 	wantCPU := int32(10)
 	if gotCPU := gotConfig.AutoscalingTargets.CpuUtilizationPercent; wantCPU != gotCPU {
 		t.Fatalf("want autoscaling cpu = %v, got = %v", wantCPU, gotCPU)
+	}
+
+	wantStorage := int32(3000)
+	if gotStorage := gotConfig.AutoscalingTargets.StorageUtilizationGibPerNode; wantStorage != gotStorage {
+		t.Fatalf("want autoscaling storage = %v, got = %v", wantStorage, gotStorage)
 	}
 
 	err = c.UpdateInstanceWithClusters(context.Background(), &InstanceWithClustersConfig{
@@ -522,7 +792,8 @@ func TestInstanceAdmin_UpdateInstanceAndSyncClusters_WithAutoscaling(t *testing.
 							MaxServeNodes: 2,
 						},
 						AutoscalingTargets: &btapb.AutoscalingTargets{
-							CpuUtilizationPercent: 10,
+							CpuUtilizationPercent:        10,
+							StorageUtilizationGibPerNode: 3000,
 						},
 					},
 				},
@@ -538,7 +809,7 @@ func TestInstanceAdmin_UpdateInstanceAndSyncClusters_WithAutoscaling(t *testing.
 			{
 				ClusterID:         "mycluster",
 				Zone:              "us-central1-a",
-				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10, StorageUtilizationPerNode: 3000},
 			},
 		},
 	})
@@ -562,6 +833,11 @@ func TestInstanceAdmin_UpdateInstanceAndSyncClusters_WithAutoscaling(t *testing.
 	wantCPU := int32(10)
 	if gotCPU := gotConfig.AutoscalingTargets.CpuUtilizationPercent; wantCPU != gotCPU {
 		t.Fatalf("want autoscaling cpu = %v, got = %v", wantCPU, gotCPU)
+	}
+
+	wantStorage := int32(3000)
+	if gotStorage := gotConfig.AutoscalingTargets.StorageUtilizationGibPerNode; wantStorage != gotStorage {
+		t.Fatalf("want autoscaling storage = %v, got = %v", wantStorage, gotStorage)
 	}
 
 	_, err = UpdateInstanceAndSyncClusters(context.Background(), c, &InstanceWithClustersConfig{

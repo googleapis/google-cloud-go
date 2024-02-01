@@ -20,10 +20,11 @@ Package spannertest contains test helpers for working with Cloud Spanner.
 This package is EXPERIMENTAL, and is lacking several features. See the README.md
 file in this directory for more details.
 
-In-memory fake
+# In-memory fake
 
 This package has an in-memory fake implementation of spanner. To use it,
 create a Server, and then connect to it with no security:
+
 	srv, err := spannertest.NewServer("localhost:0")
 	...
 	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithInsecure())
@@ -33,6 +34,7 @@ create a Server, and then connect to it with no security:
 
 Alternatively, create a Server, then set the SPANNER_EMULATOR_HOST environment
 variable and use the regular spanner.NewClient:
+
 	srv, err := spannertest.NewServer("localhost:0")
 	...
 	os.Setenv("SPANNER_EMULATOR_HOST", srv.Addr)
@@ -64,13 +66,13 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	lropb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	adminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
+	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	anypb "github.com/golang/protobuf/ptypes/any"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
-	lropb "google.golang.org/genproto/googleapis/longrunning"
-	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
@@ -489,6 +491,20 @@ func (s *server) readTx(ctx context.Context, session string, tsel *spannerpb.Tra
 			return nil, nil, fmt.Errorf("no transaction with id %q", sel.Id)
 		}
 		return tx, func() {}, nil
+	case *spannerpb.TransactionSelector_Begin:
+		tr, err := s.BeginTransaction(ctx, &spannerpb.BeginTransactionRequest{
+			Session: sess.name,
+		})
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed initializing the transaction %v", err)
+		}
+		sess.mu.Lock()
+		tx, ok := sess.transactions[string(tr.Id)]
+		sess.mu.Unlock()
+		if !ok {
+			return nil, nil, fmt.Errorf("no transaction with id %q", string(tr.Id))
+		}
+		return tx, func() {}, err
 	}
 }
 
@@ -506,11 +522,26 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 		return s.resultSet(ri)
 	}
 
+	var tid string
 	obj, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Id)
-	if !ok {
-		return nil, fmt.Errorf("unsupported transaction type %T", req.Transaction.Selector)
+	if ok {
+		tid = string(obj.Id)
 	}
-	tid := string(obj.Id)
+	isTransactionBegin := false
+	if !ok {
+		if _, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Begin); !ok {
+			return nil, fmt.Errorf("unsupported transaction type %T", req.Transaction.Selector)
+		}
+		isTransactionBegin = true
+		tx, err := s.BeginTransaction(ctx, &spannerpb.BeginTransactionRequest{
+			Session: req.Session,
+		})
+		if err != nil {
+			return nil, err
+		}
+		tid = string(tx.Id)
+	}
+
 	_ = tid // TODO: lookup an existing transaction by ID.
 
 	stmt, err := spansql.ParseDMLStmt(req.Sql)
@@ -531,11 +562,15 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 	if err != nil {
 		return nil, err
 	}
-	return &spannerpb.ResultSet{
+	rs := &spannerpb.ResultSet{
 		Stats: &spannerpb.ResultSetStats{
-			RowCount: &spannerpb.ResultSetStats_RowCountExact{int64(n)},
+			RowCount: &spannerpb.ResultSetStats_RowCountExact{RowCountExact: int64(n)},
 		},
-	}, nil
+	}
+	if isTransactionBegin {
+		rs.Metadata = &spannerpb.ResultSetMetadata{Transaction: &spannerpb.Transaction{Id: []byte(tid)}}
+	}
+	return rs, nil
 }
 
 func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {
@@ -614,7 +649,7 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 }
 
 func (s *server) resultSet(ri rowIter) (*spannerpb.ResultSet, error) {
-	rsm, err := s.buildResultSetMetadata(ri)
+	rsm, err := s.buildResultSetMetadata(ri, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -643,11 +678,10 @@ func (s *server) resultSet(ri rowIter) (*spannerpb.ResultSet, error) {
 }
 
 func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spannerpb.PartialResultSet) error, ri rowIter) error {
-	rsm, err := s.buildResultSetMetadata(ri)
+	rsm, err := s.buildResultSetMetadata(ri, tx)
 	if err != nil {
 		return err
 	}
-
 	for {
 		row, err := ri.Next()
 		if err == io.EOF {
@@ -676,15 +710,23 @@ func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spa
 		// ResultSetMetadata is only set for the first PartialResultSet.
 		rsm = nil
 	}
-
+	if rsm != nil {
+		// If we didn't send any partial results, send the metadata
+		// which may contain an implicitly-opened transaction id.
+		return send(&spannerpb.PartialResultSet{
+			Metadata: rsm,
+		})
+	}
 	return nil
 }
 
-func (s *server) buildResultSetMetadata(ri rowIter) (*spannerpb.ResultSetMetadata, error) {
+func (s *server) buildResultSetMetadata(ri rowIter, tx *transaction) (*spannerpb.ResultSetMetadata, error) {
 	// Build the result set metadata.
 	rsm := &spannerpb.ResultSetMetadata{
 		RowType: &spannerpb.StructType{},
-		// TODO: transaction info?
+	}
+	if tx != nil {
+		rsm.Transaction = &spannerpb.Transaction{Id: []byte(tx.id)}
 	}
 	for _, ci := range ri.Cols() {
 		st, err := spannerTypeFromType(ci.Type)
@@ -710,15 +752,14 @@ func (s *server) BeginTransaction(ctx context.Context, req *spannerpb.BeginTrans
 		return nil, status.Errorf(codes.NotFound, "unknown session %q", req.Session)
 	}
 
-	id := genRandomTransaction()
 	tx := s.db.NewTransaction()
 
 	sess.mu.Lock()
 	sess.lastUse = time.Now()
-	sess.transactions[id] = tx
+	sess.transactions[tx.id] = tx
 	sess.mu.Unlock()
 
-	tr := &spannerpb.Transaction{Id: []byte(id)}
+	tr := &spannerpb.Transaction{Id: []byte(tx.id)}
 
 	if req.GetOptions().GetReadOnly().GetReturnReadTimestamp() {
 		// Return the last commit timestamp.

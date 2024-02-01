@@ -50,6 +50,81 @@
                 "MarkRecommendationClaimed"
               ]
             },
+            "MarkRecommendationDismissed": {
+              "methods": [
+                "MarkRecommendationDismissed"
+              ]
+            },
+            "MarkRecommendationFailed": {
+              "methods": [
+                "MarkRecommendationFailed"
+              ]
+            },
+            "MarkRecommendationSucceeded": {
+              "methods": [
+                "MarkRecommendationSucceeded"
+              ]
+            },
+            "UpdateInsightTypeConfig": {
+              "methods": [
+                "UpdateInsightTypeConfig"
+              ]
+            },
+            "UpdateRecommenderConfig": {
+              "methods": [
+                "UpdateRecommenderConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetInsight": {
+              "methods": [
+                "GetInsight"
+              ]
+            },
+            "GetInsightTypeConfig": {
+              "methods": [
+                "GetInsightTypeConfig"
+              ]
+            },
+            "GetRecommendation": {
+              "methods": [
+                "GetRecommendation"
+              ]
+            },
+            "GetRecommenderConfig": {
+              "methods": [
+                "GetRecommenderConfig"
+              ]
+            },
+            "ListInsights": {
+              "methods": [
+                "ListInsights"
+              ]
+            },
+            "ListRecommendations": {
+              "methods": [
+                "ListRecommendations"
+              ]
+            },
+            "MarkInsightAccepted": {
+              "methods": [
+                "MarkInsightAccepted"
+              ]
+            },
+            "MarkRecommendationClaimed": {
+              "methods": [
+                "MarkRecommendationClaimed"
+              ]
+            },
+            "MarkRecommendationDismissed": {
+              "methods": [
+                "MarkRecommendationDismissed"
+              ]
+            },
             "MarkRecommendationFailed": {
               "methods": [
                 "MarkRecommendationFailed"

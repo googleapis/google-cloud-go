@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewImagesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewImagesRESTClient() {
 
 func ExampleImagesClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleImagesClient_Delete() {
 
 	req := &computepb.DeleteImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteImageRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -61,6 +71,11 @@ func ExampleImagesClient_Delete() {
 
 func ExampleImagesClient_Deprecate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +84,7 @@ func ExampleImagesClient_Deprecate() {
 
 	req := &computepb.DeprecateImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeprecateImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeprecateImageRequest.
 	}
 	op, err := c.Deprecate(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleImagesClient_Deprecate() {
 
 func ExampleImagesClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleImagesClient_Get() {
 
 	req := &computepb.GetImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetImageRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -104,6 +124,11 @@ func ExampleImagesClient_Get() {
 
 func ExampleImagesClient_GetFromFamily() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +137,7 @@ func ExampleImagesClient_GetFromFamily() {
 
 	req := &computepb.GetFromFamilyImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetFromFamilyImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetFromFamilyImageRequest.
 	}
 	resp, err := c.GetFromFamily(ctx, req)
 	if err != nil {
@@ -124,6 +149,11 @@ func ExampleImagesClient_GetFromFamily() {
 
 func ExampleImagesClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +162,7 @@ func ExampleImagesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyImageRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -144,6 +174,11 @@ func ExampleImagesClient_GetIamPolicy() {
 
 func ExampleImagesClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -152,7 +187,7 @@ func ExampleImagesClient_Insert() {
 
 	req := &computepb.InsertImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertImageRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -167,6 +202,11 @@ func ExampleImagesClient_Insert() {
 
 func ExampleImagesClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -175,7 +215,7 @@ func ExampleImagesClient_List() {
 
 	req := &computepb.ListImagesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListImagesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListImagesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -193,6 +233,11 @@ func ExampleImagesClient_List() {
 
 func ExampleImagesClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -201,7 +246,7 @@ func ExampleImagesClient_Patch() {
 
 	req := &computepb.PatchImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchImageRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -216,6 +261,11 @@ func ExampleImagesClient_Patch() {
 
 func ExampleImagesClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -224,7 +274,7 @@ func ExampleImagesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyImageRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -236,6 +286,11 @@ func ExampleImagesClient_SetIamPolicy() {
 
 func ExampleImagesClient_SetLabels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -244,7 +299,7 @@ func ExampleImagesClient_SetLabels() {
 
 	req := &computepb.SetLabelsImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetLabelsImageRequest.
 	}
 	op, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -259,6 +314,11 @@ func ExampleImagesClient_SetLabels() {
 
 func ExampleImagesClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -267,7 +327,7 @@ func ExampleImagesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsImageRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

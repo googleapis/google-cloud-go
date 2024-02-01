@@ -19,9 +19,9 @@ import (
 	"io"
 	"time"
 
+	"cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 // TODO(noahdietz): Move existing factory methods to this file.
@@ -44,7 +44,7 @@ type storageClient interface {
 	// Top-level methods.
 
 	GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error)
-	CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error)
+	CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, enableObjectRetention *bool, opts ...storageOption) (*BucketAttrs, error)
 	ListBuckets(ctx context.Context, project string, opts ...storageOption) *BucketIterator
 	Close() error
 
@@ -60,25 +60,25 @@ type storageClient interface {
 
 	DeleteObject(ctx context.Context, bucket, object string, gen int64, conds *Conditions, opts ...storageOption) error
 	GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
-	UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
+	UpdateObject(ctx context.Context, params *updateObjectParams, opts ...storageOption) (*ObjectAttrs, error)
 
 	// Default Object ACL methods.
 
 	DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error
 	ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error)
-	UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (*ACLRule, error)
+	UpdateDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) error
 
 	// Bucket ACL methods.
 
 	DeleteBucketACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error
 	ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error)
-	UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error)
+	UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) error
 
 	// Object ACL methods.
 
 	DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error
 	ListObjectACLs(ctx context.Context, bucket, object string, opts ...storageOption) ([]ACLRule, error)
-	UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error)
+	UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) error
 
 	// Media operations.
 
@@ -160,6 +160,20 @@ func callSettings(defaults *settings, opts ...storageOption) *settings {
 	cs := *defaults
 	resolveOptions(&cs, opts...)
 	return &cs
+}
+
+// makeStorageOpts is a helper for generating a set of storageOption based on
+// idempotency, retryConfig, and userProject. All top-level client operations
+// will generally have to pass these options through the interface.
+func makeStorageOpts(isIdempotent bool, retry *retryConfig, userProject string) []storageOption {
+	opts := []storageOption{idempotent(isIdempotent)}
+	if retry != nil {
+		opts = append(opts, withRetryConfig(retry))
+	}
+	if userProject != "" {
+		opts = append(opts, withUserProject(userProject))
+	}
+	return opts
 }
 
 // storageOption is the transport-agnostic call option for the storageClient
@@ -267,40 +281,62 @@ type openWriterParams struct {
 }
 
 type newRangeReaderParams struct {
-	bucket        string
-	conds         *Conditions
-	encryptionKey []byte
-	gen           int64
-	length        int64
-	object        string
-	offset        int64
+	bucket         string
+	conds          *Conditions
+	encryptionKey  []byte
+	gen            int64
+	length         int64
+	object         string
+	offset         int64
+	readCompressed bool // Use accept-encoding: gzip. Only works for HTTP currently.
+}
+
+type updateObjectParams struct {
+	bucket, object    string
+	uattrs            *ObjectAttrsToUpdate
+	gen               int64
+	encryptionKey     []byte
+	conds             *Conditions
+	overrideRetention *bool
 }
 
 type composeObjectRequest struct {
 	dstBucket     string
-	dstObject     string
-	srcs          []string
+	dstObject     destinationObject
+	srcs          []sourceObject
+	predefinedACL string
+	sendCRC32C    bool
+}
+
+type sourceObject struct {
+	name          string
+	bucket        string
 	gen           int64
 	conds         *Conditions
-	predefinedACL string
+	encryptionKey []byte
+}
+
+type destinationObject struct {
+	name          string
+	bucket        string
+	conds         *Conditions
+	attrs         *ObjectAttrs // attrs to set on the destination object.
+	encryptionKey []byte
+	keyName       string
 }
 
 type rewriteObjectRequest struct {
-	srcBucket     string
-	srcObject     string
-	dstBucket     string
-	dstObject     string
-	dstKeyName    string
-	attrs         *ObjectAttrs
-	gen           int64
-	conds         *Conditions
-	predefinedACL string
-	token         string
+	srcObject                sourceObject
+	dstObject                destinationObject
+	predefinedACL            string
+	token                    string
+	maxBytesRewrittenPerCall int64
 }
 
 type rewriteObjectResponse struct {
 	resource *ObjectAttrs
 	done     bool
 	written  int64
+	size     int64
 	token    string
 }

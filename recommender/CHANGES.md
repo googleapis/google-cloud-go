@@ -1,5 +1,104 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.12.0...recommender/v1.12.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **recommender:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.3...recommender/v1.12.0) (2023-12-13)
+
+
+### Features
+
+* **recommender:** Support cost_in_local_currency field in the cost projection ([3d9f556](https://github.com/googleapis/google-cloud-go/commit/3d9f55678654fe678d44f3f4a08bf26c3830b653))
+
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.2...recommender/v1.11.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **recommender:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.1...recommender/v1.11.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **recommender:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.0...recommender/v1.11.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **recommender:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.10.1...recommender/v1.11.0) (2023-09-11)
+
+
+### Features
+
+* **recommender:** Add MarkRecommendationDismissed method ([15be57b](https://github.com/googleapis/google-cloud-go/commit/15be57b9264a793494cedc3966034fa20f56d7c5))
+* **recommender:** ListRecommenders and ListInsightTypes RPC methods ([9d1c775](https://github.com/googleapis/google-cloud-go/commit/9d1c7757ab28a4fe7dd58bffa3ccc651037b230b))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.10.0...recommender/v1.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **recommender:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.9.1...recommender/v1.10.0) (2023-05-30)
+
+
+### Features
+
+* **recommender:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.9.0...recommender/v1.9.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **recommender:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.8.0...recommender/v1.9.0) (2023-01-04)
+
+
+### Features
+
+* **recommender:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.7.0...recommender/v1.8.0) (2022-11-03)
+
+
+### Features
+
+* **recommender:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.6.0...recommender/v1.7.0) (2022-10-25)
+
+
+### Features
+
+* **recommender:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.5.0...recommender/v1.6.0) (2022-09-21)
+
+
+### Features
+
+* **recommender:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.4.0...recommender/v1.5.0) (2022-09-19)
+
+
+### Features
+
+* **recommender:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.3.0...recommender/v1.4.0) (2022-06-29)
 
 

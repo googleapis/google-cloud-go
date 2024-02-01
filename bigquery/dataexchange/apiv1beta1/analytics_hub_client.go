@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
+	dataexchangepb "cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,11 +35,9 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dataexchangepb "google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -61,12 +61,16 @@ type AnalyticsHubCallOptions struct {
 	GetIamPolicy         []gax.CallOption
 	SetIamPolicy         []gax.CallOption
 	TestIamPermissions   []gax.CallOption
+	GetLocation          []gax.CallOption
+	ListLocations        []gax.CallOption
 }
 
 func defaultAnalyticsHubGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("analyticshub.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("analyticshub.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("analyticshub.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://analyticshub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -78,6 +82,7 @@ func defaultAnalyticsHubGRPCClientOptions() []option.ClientOption {
 func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 	return &AnalyticsHubCallOptions{
 		ListDataExchanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -90,6 +95,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		ListOrgDataExchanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -102,6 +108,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -114,6 +121,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		CreateDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -126,6 +134,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		UpdateDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -138,6 +147,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		DeleteDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -150,6 +160,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		ListListings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -162,6 +173,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -174,6 +186,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		CreateListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -186,6 +199,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		UpdateListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -198,6 +212,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		DeleteListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -210,6 +225,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		SubscribeListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -222,6 +238,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -234,6 +251,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -246,6 +264,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -257,12 +276,15 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 				})
 			}),
 		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 
 func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 	return &AnalyticsHubCallOptions{
 		ListDataExchanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -274,6 +296,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		ListOrgDataExchanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -285,6 +308,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -296,6 +320,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		CreateDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -307,6 +332,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		UpdateDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -318,6 +344,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		DeleteDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -329,6 +356,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		ListListings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -340,6 +368,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -351,6 +380,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		CreateListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -362,6 +392,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		UpdateListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -373,6 +404,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		DeleteListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -384,6 +416,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		SubscribeListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -395,6 +428,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -406,6 +440,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -417,6 +452,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -427,6 +463,8 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 
@@ -450,16 +488,19 @@ type internalAnalyticsHubClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
 
 // AnalyticsHubClient is a client for interacting with Analytics Hub API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The AnalyticsHubService API facilitates data sharing within and across
-// organizations. It allows data providers to publish Listings — a
-// discoverable and searchable SKU representing a dataset. Data consumers can
-// subscribe to Listings. Upon subscription, AnalyticsHub provisions a “Linked
-// Datasets” surfacing the data in the consumer’s project.
+// organizations. It allows data providers to publish listings that reference
+// shared datasets. With Analytics Hub, users can discover and search for
+// listings that they have access to. Subscribers can view and subscribe to
+// listings. When you subscribe to a listing, Analytics Hub creates a linked
+// dataset in your project.
 type AnalyticsHubClient struct {
 	// The internal transport-dependent client.
 	internalClient internalAnalyticsHubClient
@@ -485,90 +526,101 @@ func (c *AnalyticsHubClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AnalyticsHubClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListDataExchanges lists DataExchanges in a given project and location.
+// ListDataExchanges lists all data exchanges in a given project and location.
 func (c *AnalyticsHubClient) ListDataExchanges(ctx context.Context, req *dataexchangepb.ListDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	return c.internalClient.ListDataExchanges(ctx, req, opts...)
 }
 
-// ListOrgDataExchanges lists DataExchanges from projects in a given organization and location.
+// ListOrgDataExchanges lists all data exchanges from projects in a given organization and
+// location.
 func (c *AnalyticsHubClient) ListOrgDataExchanges(ctx context.Context, req *dataexchangepb.ListOrgDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	return c.internalClient.ListOrgDataExchanges(ctx, req, opts...)
 }
 
-// GetDataExchange gets details of a single DataExchange.
+// GetDataExchange gets the details of a data exchange.
 func (c *AnalyticsHubClient) GetDataExchange(ctx context.Context, req *dataexchangepb.GetDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	return c.internalClient.GetDataExchange(ctx, req, opts...)
 }
 
-// CreateDataExchange creates a new DataExchange in a given project and location.
+// CreateDataExchange creates a new data exchange.
 func (c *AnalyticsHubClient) CreateDataExchange(ctx context.Context, req *dataexchangepb.CreateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	return c.internalClient.CreateDataExchange(ctx, req, opts...)
 }
 
-// UpdateDataExchange updates the parameters of a single DataExchange.
+// UpdateDataExchange updates an existing data exchange.
 func (c *AnalyticsHubClient) UpdateDataExchange(ctx context.Context, req *dataexchangepb.UpdateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	return c.internalClient.UpdateDataExchange(ctx, req, opts...)
 }
 
-// DeleteDataExchange deletes a single DataExchange.
+// DeleteDataExchange deletes an existing data exchange.
 func (c *AnalyticsHubClient) DeleteDataExchange(ctx context.Context, req *dataexchangepb.DeleteDataExchangeRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteDataExchange(ctx, req, opts...)
 }
 
-// ListListings lists Listings in a given project and location.
+// ListListings lists all listings in a given project and location.
 func (c *AnalyticsHubClient) ListListings(ctx context.Context, req *dataexchangepb.ListListingsRequest, opts ...gax.CallOption) *ListingIterator {
 	return c.internalClient.ListListings(ctx, req, opts...)
 }
 
-// GetListing gets details of a single Listing.
+// GetListing gets the details of a listing.
 func (c *AnalyticsHubClient) GetListing(ctx context.Context, req *dataexchangepb.GetListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	return c.internalClient.GetListing(ctx, req, opts...)
 }
 
-// CreateListing creates a new Listing in a given project and location.
+// CreateListing creates a new listing.
 func (c *AnalyticsHubClient) CreateListing(ctx context.Context, req *dataexchangepb.CreateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	return c.internalClient.CreateListing(ctx, req, opts...)
 }
 
-// UpdateListing updates the parameters of a single Listing.
+// UpdateListing updates an existing listing.
 func (c *AnalyticsHubClient) UpdateListing(ctx context.Context, req *dataexchangepb.UpdateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	return c.internalClient.UpdateListing(ctx, req, opts...)
 }
 
-// DeleteListing deletes a single Listing, as long as there are no subscriptions
-// associated with the source of this Listing.
+// DeleteListing deletes a listing.
 func (c *AnalyticsHubClient) DeleteListing(ctx context.Context, req *dataexchangepb.DeleteListingRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteListing(ctx, req, opts...)
 }
 
-// SubscribeListing subscribes to a single Listing.
+// SubscribeListing subscribes to a listing.
 //
-// Data Exchange currently supports one type of Listing: a BigQuery dataset.
-// Upon subscription to a Listing for a BigQuery dataset, Data Exchange
+// Currently, with Analytics Hub, you can create listings that
+// reference only BigQuery datasets.
+// Upon subscription to a listing for a BigQuery dataset, Analytics Hub
 // creates a linked dataset in the subscriber’s project.
 func (c *AnalyticsHubClient) SubscribeListing(ctx context.Context, req *dataexchangepb.SubscribeListingRequest, opts ...gax.CallOption) (*dataexchangepb.SubscribeListingResponse, error) {
 	return c.internalClient.SubscribeListing(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the IAM policy for a dataExchange or a listing.
+// GetIamPolicy gets the IAM policy.
 func (c *AnalyticsHubClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the IAM policy for a dataExchange or a listing.
+// SetIamPolicy sets the IAM policy.
 func (c *AnalyticsHubClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// TestIamPermissions returns the permissions that a caller has on a specified dataExchange or
-// listing.
+// TestIamPermissions returns the permissions that a caller has.
 func (c *AnalyticsHubClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// GetLocation gets information about a location.
+func (c *AnalyticsHubClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *AnalyticsHubClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
 }
 
 // analyticsHubGRPCClient is a client for interacting with Analytics Hub API over gRPC transport.
@@ -578,27 +630,27 @@ type analyticsHubGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing AnalyticsHubClient
 	CallOptions **AnalyticsHubCallOptions
 
 	// The gRPC API client.
 	analyticsHubClient dataexchangepb.AnalyticsHubServiceClient
 
+	locationsClient locationpb.LocationsClient
+
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewAnalyticsHubClient creates a new analytics hub service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The AnalyticsHubService API facilitates data sharing within and across
-// organizations. It allows data providers to publish Listings — a
-// discoverable and searchable SKU representing a dataset. Data consumers can
-// subscribe to Listings. Upon subscription, AnalyticsHub provisions a “Linked
-// Datasets” surfacing the data in the consumer’s project.
+// organizations. It allows data providers to publish listings that reference
+// shared datasets. With Analytics Hub, users can discover and search for
+// listings that they have access to. Subscribers can view and subscribe to
+// listings. When you subscribe to a listing, Analytics Hub creates a linked
+// dataset in your project.
 func NewAnalyticsHubClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsHubClient, error) {
 	clientOpts := defaultAnalyticsHubGRPCClientOptions()
 	if newAnalyticsHubClientHook != nil {
@@ -609,11 +661,6 @@ func NewAnalyticsHubClient(ctx context.Context, opts ...option.ClientOption) (*A
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -622,9 +669,9 @@ func NewAnalyticsHubClient(ctx context.Context, opts ...option.ClientOption) (*A
 
 	c := &analyticsHubGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		analyticsHubClient: dataexchangepb.NewAnalyticsHubServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		locationsClient:    locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -635,7 +682,8 @@ func NewAnalyticsHubClient(ctx context.Context, opts ...option.ClientOption) (*A
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *analyticsHubGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -644,9 +692,9 @@ func (c *analyticsHubGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *analyticsHubGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -663,8 +711,8 @@ type analyticsHubRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing AnalyticsHubClient
 	CallOptions **AnalyticsHubCallOptions
@@ -673,10 +721,11 @@ type analyticsHubRESTClient struct {
 // NewAnalyticsHubRESTClient creates a new analytics hub service rest client.
 //
 // The AnalyticsHubService API facilitates data sharing within and across
-// organizations. It allows data providers to publish Listings — a
-// discoverable and searchable SKU representing a dataset. Data consumers can
-// subscribe to Listings. Upon subscription, AnalyticsHub provisions a “Linked
-// Datasets” surfacing the data in the consumer’s project.
+// organizations. It allows data providers to publish listings that reference
+// shared datasets. With Analytics Hub, users can discover and search for
+// listings that they have access to. Subscribers can view and subscribe to
+// listings. When you subscribe to a listing, Analytics Hub creates a linked
+// dataset in your project.
 func NewAnalyticsHubRESTClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsHubClient, error) {
 	clientOpts := append(defaultAnalyticsHubRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -698,7 +747,9 @@ func NewAnalyticsHubRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultAnalyticsHubRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://analyticshub.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://analyticshub.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://analyticshub.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://analyticshub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -708,9 +759,9 @@ func defaultAnalyticsHubRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *analyticsHubRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -723,14 +774,15 @@ func (c *analyticsHubRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *analyticsHubRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *analyticsHubGRPCClient) ListDataExchanges(ctx context.Context, req *dataexchangepb.ListDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDataExchanges[0:len((*c.CallOptions).ListDataExchanges):len((*c.CallOptions).ListDataExchanges)], opts...)
 	it := &DataExchangeIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListDataExchangesRequest)
@@ -773,9 +825,10 @@ func (c *analyticsHubGRPCClient) ListDataExchanges(ctx context.Context, req *dat
 }
 
 func (c *analyticsHubGRPCClient) ListOrgDataExchanges(ctx context.Context, req *dataexchangepb.ListOrgDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "organization", url.QueryEscape(req.GetOrganization())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "organization", url.QueryEscape(req.GetOrganization()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOrgDataExchanges[0:len((*c.CallOptions).ListOrgDataExchanges):len((*c.CallOptions).ListOrgDataExchanges)], opts...)
 	it := &DataExchangeIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListOrgDataExchangesRequest)
@@ -818,14 +871,10 @@ func (c *analyticsHubGRPCClient) ListOrgDataExchanges(ctx context.Context, req *
 }
 
 func (c *analyticsHubGRPCClient) GetDataExchange(ctx context.Context, req *dataexchangepb.GetDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataExchange[0:len((*c.CallOptions).GetDataExchange):len((*c.CallOptions).GetDataExchange)], opts...)
 	var resp *dataexchangepb.DataExchange
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -840,14 +889,10 @@ func (c *analyticsHubGRPCClient) GetDataExchange(ctx context.Context, req *datae
 }
 
 func (c *analyticsHubGRPCClient) CreateDataExchange(ctx context.Context, req *dataexchangepb.CreateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataExchange[0:len((*c.CallOptions).CreateDataExchange):len((*c.CallOptions).CreateDataExchange)], opts...)
 	var resp *dataexchangepb.DataExchange
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -862,14 +907,10 @@ func (c *analyticsHubGRPCClient) CreateDataExchange(ctx context.Context, req *da
 }
 
 func (c *analyticsHubGRPCClient) UpdateDataExchange(ctx context.Context, req *dataexchangepb.UpdateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_exchange.name", url.QueryEscape(req.GetDataExchange().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_exchange.name", url.QueryEscape(req.GetDataExchange().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDataExchange[0:len((*c.CallOptions).UpdateDataExchange):len((*c.CallOptions).UpdateDataExchange)], opts...)
 	var resp *dataexchangepb.DataExchange
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -884,14 +925,10 @@ func (c *analyticsHubGRPCClient) UpdateDataExchange(ctx context.Context, req *da
 }
 
 func (c *analyticsHubGRPCClient) DeleteDataExchange(ctx context.Context, req *dataexchangepb.DeleteDataExchangeRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDataExchange[0:len((*c.CallOptions).DeleteDataExchange):len((*c.CallOptions).DeleteDataExchange)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -902,9 +939,10 @@ func (c *analyticsHubGRPCClient) DeleteDataExchange(ctx context.Context, req *da
 }
 
 func (c *analyticsHubGRPCClient) ListListings(ctx context.Context, req *dataexchangepb.ListListingsRequest, opts ...gax.CallOption) *ListingIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListListings[0:len((*c.CallOptions).ListListings):len((*c.CallOptions).ListListings)], opts...)
 	it := &ListingIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListListingsRequest)
@@ -947,14 +985,10 @@ func (c *analyticsHubGRPCClient) ListListings(ctx context.Context, req *dataexch
 }
 
 func (c *analyticsHubGRPCClient) GetListing(ctx context.Context, req *dataexchangepb.GetListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetListing[0:len((*c.CallOptions).GetListing):len((*c.CallOptions).GetListing)], opts...)
 	var resp *dataexchangepb.Listing
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -969,14 +1003,10 @@ func (c *analyticsHubGRPCClient) GetListing(ctx context.Context, req *dataexchan
 }
 
 func (c *analyticsHubGRPCClient) CreateListing(ctx context.Context, req *dataexchangepb.CreateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateListing[0:len((*c.CallOptions).CreateListing):len((*c.CallOptions).CreateListing)], opts...)
 	var resp *dataexchangepb.Listing
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -991,14 +1021,10 @@ func (c *analyticsHubGRPCClient) CreateListing(ctx context.Context, req *dataexc
 }
 
 func (c *analyticsHubGRPCClient) UpdateListing(ctx context.Context, req *dataexchangepb.UpdateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "listing.name", url.QueryEscape(req.GetListing().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "listing.name", url.QueryEscape(req.GetListing().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateListing[0:len((*c.CallOptions).UpdateListing):len((*c.CallOptions).UpdateListing)], opts...)
 	var resp *dataexchangepb.Listing
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1013,14 +1039,10 @@ func (c *analyticsHubGRPCClient) UpdateListing(ctx context.Context, req *dataexc
 }
 
 func (c *analyticsHubGRPCClient) DeleteListing(ctx context.Context, req *dataexchangepb.DeleteListingRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteListing[0:len((*c.CallOptions).DeleteListing):len((*c.CallOptions).DeleteListing)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1031,14 +1053,10 @@ func (c *analyticsHubGRPCClient) DeleteListing(ctx context.Context, req *dataexc
 }
 
 func (c *analyticsHubGRPCClient) SubscribeListing(ctx context.Context, req *dataexchangepb.SubscribeListingRequest, opts ...gax.CallOption) (*dataexchangepb.SubscribeListingResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SubscribeListing[0:len((*c.CallOptions).SubscribeListing):len((*c.CallOptions).SubscribeListing)], opts...)
 	var resp *dataexchangepb.SubscribeListingResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1053,14 +1071,10 @@ func (c *analyticsHubGRPCClient) SubscribeListing(ctx context.Context, req *data
 }
 
 func (c *analyticsHubGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1075,14 +1089,10 @@ func (c *analyticsHubGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 }
 
 func (c *analyticsHubGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1097,14 +1107,10 @@ func (c *analyticsHubGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 }
 
 func (c *analyticsHubGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1118,7 +1124,71 @@ func (c *analyticsHubGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 	return resp, nil
 }
 
-// ListDataExchanges lists DataExchanges in a given project and location.
+func (c *analyticsHubGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsHubGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListDataExchanges lists all data exchanges in a given project and location.
 func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dataexchangepb.ListDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	it := &DataExchangeIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListDataExchangesRequest)
@@ -1150,7 +1220,8 @@ func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dat
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1171,13 +1242,13 @@ func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dat
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1205,7 +1276,8 @@ func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dat
 	return it
 }
 
-// ListOrgDataExchanges lists DataExchanges from projects in a given organization and location.
+// ListOrgDataExchanges lists all data exchanges from projects in a given organization and
+// location.
 func (c *analyticsHubRESTClient) ListOrgDataExchanges(ctx context.Context, req *dataexchangepb.ListOrgDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	it := &DataExchangeIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListOrgDataExchangesRequest)
@@ -1237,7 +1309,8 @@ func (c *analyticsHubRESTClient) ListOrgDataExchanges(ctx context.Context, req *
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1258,13 +1331,13 @@ func (c *analyticsHubRESTClient) ListOrgDataExchanges(ctx context.Context, req *
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1292,7 +1365,7 @@ func (c *analyticsHubRESTClient) ListOrgDataExchanges(ctx context.Context, req *
 	return it
 }
 
-// GetDataExchange gets details of a single DataExchange.
+// GetDataExchange gets the details of a data exchange.
 func (c *analyticsHubRESTClient) GetDataExchange(ctx context.Context, req *dataexchangepb.GetDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1301,9 +1374,11 @@ func (c *analyticsHubRESTClient) GetDataExchange(ctx context.Context, req *datae
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataExchange[0:len((*c.CallOptions).GetDataExchange):len((*c.CallOptions).GetDataExchange)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.DataExchange{}
@@ -1328,13 +1403,13 @@ func (c *analyticsHubRESTClient) GetDataExchange(ctx context.Context, req *datae
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1345,7 +1420,7 @@ func (c *analyticsHubRESTClient) GetDataExchange(ctx context.Context, req *datae
 	return resp, nil
 }
 
-// CreateDataExchange creates a new DataExchange in a given project and location.
+// CreateDataExchange creates a new data exchange.
 func (c *analyticsHubRESTClient) CreateDataExchange(ctx context.Context, req *dataexchangepb.CreateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataExchange()
@@ -1366,9 +1441,11 @@ func (c *analyticsHubRESTClient) CreateDataExchange(ctx context.Context, req *da
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataExchange[0:len((*c.CallOptions).CreateDataExchange):len((*c.CallOptions).CreateDataExchange)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.DataExchange{}
@@ -1393,13 +1470,13 @@ func (c *analyticsHubRESTClient) CreateDataExchange(ctx context.Context, req *da
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1410,7 +1487,7 @@ func (c *analyticsHubRESTClient) CreateDataExchange(ctx context.Context, req *da
 	return resp, nil
 }
 
-// UpdateDataExchange updates the parameters of a single DataExchange.
+// UpdateDataExchange updates an existing data exchange.
 func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *dataexchangepb.UpdateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataExchange()
@@ -1426,16 +1503,22 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDataExchange().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_exchange.name", url.QueryEscape(req.GetDataExchange().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_exchange.name", url.QueryEscape(req.GetDataExchange().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDataExchange[0:len((*c.CallOptions).UpdateDataExchange):len((*c.CallOptions).UpdateDataExchange)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.DataExchange{}
@@ -1460,13 +1543,13 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1477,7 +1560,7 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 	return resp, nil
 }
 
-// DeleteDataExchange deletes a single DataExchange.
+// DeleteDataExchange deletes an existing data exchange.
 func (c *analyticsHubRESTClient) DeleteDataExchange(ctx context.Context, req *dataexchangepb.DeleteDataExchangeRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1486,9 +1569,11 @@ func (c *analyticsHubRESTClient) DeleteDataExchange(ctx context.Context, req *da
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1512,7 +1597,7 @@ func (c *analyticsHubRESTClient) DeleteDataExchange(ctx context.Context, req *da
 	}, opts...)
 }
 
-// ListListings lists Listings in a given project and location.
+// ListListings lists all listings in a given project and location.
 func (c *analyticsHubRESTClient) ListListings(ctx context.Context, req *dataexchangepb.ListListingsRequest, opts ...gax.CallOption) *ListingIterator {
 	it := &ListingIterator{}
 	req = proto.Clone(req).(*dataexchangepb.ListListingsRequest)
@@ -1544,7 +1629,8 @@ func (c *analyticsHubRESTClient) ListListings(ctx context.Context, req *dataexch
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1565,13 +1651,13 @@ func (c *analyticsHubRESTClient) ListListings(ctx context.Context, req *dataexch
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1599,7 +1685,7 @@ func (c *analyticsHubRESTClient) ListListings(ctx context.Context, req *dataexch
 	return it
 }
 
-// GetListing gets details of a single Listing.
+// GetListing gets the details of a listing.
 func (c *analyticsHubRESTClient) GetListing(ctx context.Context, req *dataexchangepb.GetListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1608,9 +1694,11 @@ func (c *analyticsHubRESTClient) GetListing(ctx context.Context, req *dataexchan
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetListing[0:len((*c.CallOptions).GetListing):len((*c.CallOptions).GetListing)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.Listing{}
@@ -1635,13 +1723,13 @@ func (c *analyticsHubRESTClient) GetListing(ctx context.Context, req *dataexchan
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1652,7 +1740,7 @@ func (c *analyticsHubRESTClient) GetListing(ctx context.Context, req *dataexchan
 	return resp, nil
 }
 
-// CreateListing creates a new Listing in a given project and location.
+// CreateListing creates a new listing.
 func (c *analyticsHubRESTClient) CreateListing(ctx context.Context, req *dataexchangepb.CreateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetListing()
@@ -1673,9 +1761,11 @@ func (c *analyticsHubRESTClient) CreateListing(ctx context.Context, req *dataexc
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateListing[0:len((*c.CallOptions).CreateListing):len((*c.CallOptions).CreateListing)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.Listing{}
@@ -1700,13 +1790,13 @@ func (c *analyticsHubRESTClient) CreateListing(ctx context.Context, req *dataexc
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1717,7 +1807,7 @@ func (c *analyticsHubRESTClient) CreateListing(ctx context.Context, req *dataexc
 	return resp, nil
 }
 
-// UpdateListing updates the parameters of a single Listing.
+// UpdateListing updates an existing listing.
 func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexchangepb.UpdateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetListing()
@@ -1733,16 +1823,22 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetListing().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "listing.name", url.QueryEscape(req.GetListing().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "listing.name", url.QueryEscape(req.GetListing().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateListing[0:len((*c.CallOptions).UpdateListing):len((*c.CallOptions).UpdateListing)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.Listing{}
@@ -1767,13 +1863,13 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1784,8 +1880,7 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 	return resp, nil
 }
 
-// DeleteListing deletes a single Listing, as long as there are no subscriptions
-// associated with the source of this Listing.
+// DeleteListing deletes a listing.
 func (c *analyticsHubRESTClient) DeleteListing(ctx context.Context, req *dataexchangepb.DeleteListingRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1794,9 +1889,11 @@ func (c *analyticsHubRESTClient) DeleteListing(ctx context.Context, req *dataexc
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1820,10 +1917,11 @@ func (c *analyticsHubRESTClient) DeleteListing(ctx context.Context, req *dataexc
 	}, opts...)
 }
 
-// SubscribeListing subscribes to a single Listing.
+// SubscribeListing subscribes to a listing.
 //
-// Data Exchange currently supports one type of Listing: a BigQuery dataset.
-// Upon subscription to a Listing for a BigQuery dataset, Data Exchange
+// Currently, with Analytics Hub, you can create listings that
+// reference only BigQuery datasets.
+// Upon subscription to a listing for a BigQuery dataset, Analytics Hub
 // creates a linked dataset in the subscriber’s project.
 func (c *analyticsHubRESTClient) SubscribeListing(ctx context.Context, req *dataexchangepb.SubscribeListingRequest, opts ...gax.CallOption) (*dataexchangepb.SubscribeListingResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1839,9 +1937,11 @@ func (c *analyticsHubRESTClient) SubscribeListing(ctx context.Context, req *data
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:subscribe", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SubscribeListing[0:len((*c.CallOptions).SubscribeListing):len((*c.CallOptions).SubscribeListing)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataexchangepb.SubscribeListingResponse{}
@@ -1866,13 +1966,13 @@ func (c *analyticsHubRESTClient) SubscribeListing(ctx context.Context, req *data
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1883,7 +1983,7 @@ func (c *analyticsHubRESTClient) SubscribeListing(ctx context.Context, req *data
 	return resp, nil
 }
 
-// GetIamPolicy gets the IAM policy for a dataExchange or a listing.
+// GetIamPolicy gets the IAM policy.
 func (c *analyticsHubRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1898,9 +1998,11 @@ func (c *analyticsHubRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1925,13 +2027,13 @@ func (c *analyticsHubRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1942,7 +2044,7 @@ func (c *analyticsHubRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	return resp, nil
 }
 
-// SetIamPolicy sets the IAM policy for a dataExchange or a listing.
+// SetIamPolicy sets the IAM policy.
 func (c *analyticsHubRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1957,9 +2059,11 @@ func (c *analyticsHubRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1984,13 +2088,13 @@ func (c *analyticsHubRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2001,8 +2105,7 @@ func (c *analyticsHubRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	return resp, nil
 }
 
-// TestIamPermissions returns the permissions that a caller has on a specified dataExchange or
-// listing.
+// TestIamPermissions returns the permissions that a caller has.
 func (c *analyticsHubRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2017,9 +2120,11 @@ func (c *analyticsHubRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -2044,13 +2149,13 @@ func (c *analyticsHubRESTClient) TestIamPermissions(ctx context.Context, req *ia
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2061,96 +2166,148 @@ func (c *analyticsHubRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	return resp, nil
 }
 
-// DataExchangeIterator manages a stream of *dataexchangepb.DataExchange.
-type DataExchangeIterator struct {
-	items    []*dataexchangepb.DataExchange
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataexchangepb.DataExchange, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataExchangeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataExchangeIterator) Next() (*dataexchangepb.DataExchange, error) {
-	var item *dataexchangepb.DataExchange
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// GetLocation gets information about a location.
+func (c *analyticsHubRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
-func (it *DataExchangeIterator) bufLen() int {
-	return len(it.items)
-}
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-func (it *DataExchangeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &locationpb.Location{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
 
-// ListingIterator manages a stream of *dataexchangepb.Listing.
-type ListingIterator struct {
-	items    []*dataexchangepb.Listing
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
 
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataexchangepb.Listing, nextPageToken string, err error)
-}
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
 
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ListingIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
 
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ListingIterator) Next() (*dataexchangepb.Listing, error) {
-	var item *dataexchangepb.Listing
-	if err := it.nextFunc(); err != nil {
-		return item, err
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	return resp, nil
 }
 
-func (it *ListingIterator) bufLen() int {
-	return len(it.items)
-}
+// ListLocations lists information about the supported locations for this service.
+func (c *analyticsHubRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/locations", req.GetName())
 
-func (it *ListingIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }

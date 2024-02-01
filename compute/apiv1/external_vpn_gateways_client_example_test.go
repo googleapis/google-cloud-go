@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewExternalVpnGatewaysRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewExternalVpnGatewaysRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewExternalVpnGatewaysRESTClient() {
 
 func ExampleExternalVpnGatewaysClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewExternalVpnGatewaysRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleExternalVpnGatewaysClient_Delete() {
 
 	req := &computepb.DeleteExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteExternalVpnGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteExternalVpnGatewayRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -61,6 +71,11 @@ func ExampleExternalVpnGatewaysClient_Delete() {
 
 func ExampleExternalVpnGatewaysClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewExternalVpnGatewaysRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +84,7 @@ func ExampleExternalVpnGatewaysClient_Get() {
 
 	req := &computepb.GetExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetExternalVpnGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetExternalVpnGatewayRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -81,6 +96,11 @@ func ExampleExternalVpnGatewaysClient_Get() {
 
 func ExampleExternalVpnGatewaysClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewExternalVpnGatewaysRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -89,7 +109,7 @@ func ExampleExternalVpnGatewaysClient_Insert() {
 
 	req := &computepb.InsertExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertExternalVpnGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertExternalVpnGatewayRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -104,6 +124,11 @@ func ExampleExternalVpnGatewaysClient_Insert() {
 
 func ExampleExternalVpnGatewaysClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewExternalVpnGatewaysRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +137,7 @@ func ExampleExternalVpnGatewaysClient_List() {
 
 	req := &computepb.ListExternalVpnGatewaysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListExternalVpnGatewaysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListExternalVpnGatewaysRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -130,6 +155,11 @@ func ExampleExternalVpnGatewaysClient_List() {
 
 func ExampleExternalVpnGatewaysClient_SetLabels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewExternalVpnGatewaysRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,7 +168,7 @@ func ExampleExternalVpnGatewaysClient_SetLabels() {
 
 	req := &computepb.SetLabelsExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsExternalVpnGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetLabelsExternalVpnGatewayRequest.
 	}
 	op, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -153,6 +183,11 @@ func ExampleExternalVpnGatewaysClient_SetLabels() {
 
 func ExampleExternalVpnGatewaysClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewExternalVpnGatewaysRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -161,7 +196,7 @@ func ExampleExternalVpnGatewaysClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsExternalVpnGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsExternalVpnGatewayRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

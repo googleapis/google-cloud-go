@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewInstanceGroupsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewInstanceGroupsRESTClient() {
 
 func ExampleInstanceGroupsClient_AddInstances() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleInstanceGroupsClient_AddInstances() {
 
 	req := &computepb.AddInstancesInstanceGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddInstancesInstanceGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddInstancesInstanceGroupRequest.
 	}
 	op, err := c.AddInstances(ctx, req)
 	if err != nil {
@@ -61,6 +71,11 @@ func ExampleInstanceGroupsClient_AddInstances() {
 
 func ExampleInstanceGroupsClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +84,7 @@ func ExampleInstanceGroupsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListInstanceGroupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListInstanceGroupsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,6 +102,11 @@ func ExampleInstanceGroupsClient_AggregatedList() {
 
 func ExampleInstanceGroupsClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -95,7 +115,7 @@ func ExampleInstanceGroupsClient_Delete() {
 
 	req := &computepb.DeleteInstanceGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInstanceGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteInstanceGroupRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -110,6 +130,11 @@ func ExampleInstanceGroupsClient_Delete() {
 
 func ExampleInstanceGroupsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,7 +143,7 @@ func ExampleInstanceGroupsClient_Get() {
 
 	req := &computepb.GetInstanceGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInstanceGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetInstanceGroupRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -130,6 +155,11 @@ func ExampleInstanceGroupsClient_Get() {
 
 func ExampleInstanceGroupsClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,7 +168,7 @@ func ExampleInstanceGroupsClient_Insert() {
 
 	req := &computepb.InsertInstanceGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInstanceGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertInstanceGroupRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -153,6 +183,11 @@ func ExampleInstanceGroupsClient_Insert() {
 
 func ExampleInstanceGroupsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -161,7 +196,7 @@ func ExampleInstanceGroupsClient_List() {
 
 	req := &computepb.ListInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstanceGroupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListInstanceGroupsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -179,6 +214,11 @@ func ExampleInstanceGroupsClient_List() {
 
 func ExampleInstanceGroupsClient_ListInstances() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -187,7 +227,7 @@ func ExampleInstanceGroupsClient_ListInstances() {
 
 	req := &computepb.ListInstancesInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstancesInstanceGroupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListInstancesInstanceGroupsRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -205,6 +245,11 @@ func ExampleInstanceGroupsClient_ListInstances() {
 
 func ExampleInstanceGroupsClient_RemoveInstances() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -213,7 +258,7 @@ func ExampleInstanceGroupsClient_RemoveInstances() {
 
 	req := &computepb.RemoveInstancesInstanceGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveInstancesInstanceGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemoveInstancesInstanceGroupRequest.
 	}
 	op, err := c.RemoveInstances(ctx, req)
 	if err != nil {
@@ -228,6 +273,11 @@ func ExampleInstanceGroupsClient_RemoveInstances() {
 
 func ExampleInstanceGroupsClient_SetNamedPorts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceGroupsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -236,7 +286,7 @@ func ExampleInstanceGroupsClient_SetNamedPorts() {
 
 	req := &computepb.SetNamedPortsInstanceGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetNamedPortsInstanceGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetNamedPortsInstanceGroupRequest.
 	}
 	op, err := c.SetNamedPorts(ctx, req)
 	if err != nil {

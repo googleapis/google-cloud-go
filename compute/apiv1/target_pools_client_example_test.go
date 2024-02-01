@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewTargetPoolsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewTargetPoolsRESTClient() {
 
 func ExampleTargetPoolsClient_AddHealthCheck() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleTargetPoolsClient_AddHealthCheck() {
 
 	req := &computepb.AddHealthCheckTargetPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddHealthCheckTargetPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddHealthCheckTargetPoolRequest.
 	}
 	op, err := c.AddHealthCheck(ctx, req)
 	if err != nil {
@@ -61,6 +71,11 @@ func ExampleTargetPoolsClient_AddHealthCheck() {
 
 func ExampleTargetPoolsClient_AddInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +84,7 @@ func ExampleTargetPoolsClient_AddInstance() {
 
 	req := &computepb.AddInstanceTargetPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddInstanceTargetPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddInstanceTargetPoolRequest.
 	}
 	op, err := c.AddInstance(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleTargetPoolsClient_AddInstance() {
 
 func ExampleTargetPoolsClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleTargetPoolsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListTargetPoolsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListTargetPoolsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListTargetPoolsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -110,6 +130,11 @@ func ExampleTargetPoolsClient_AggregatedList() {
 
 func ExampleTargetPoolsClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,7 +143,7 @@ func ExampleTargetPoolsClient_Delete() {
 
 	req := &computepb.DeleteTargetPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteTargetPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteTargetPoolRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -133,6 +158,11 @@ func ExampleTargetPoolsClient_Delete() {
 
 func ExampleTargetPoolsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -141,7 +171,7 @@ func ExampleTargetPoolsClient_Get() {
 
 	req := &computepb.GetTargetPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetTargetPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetTargetPoolRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -153,6 +183,11 @@ func ExampleTargetPoolsClient_Get() {
 
 func ExampleTargetPoolsClient_GetHealth() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -161,7 +196,7 @@ func ExampleTargetPoolsClient_GetHealth() {
 
 	req := &computepb.GetHealthTargetPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetHealthTargetPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetHealthTargetPoolRequest.
 	}
 	resp, err := c.GetHealth(ctx, req)
 	if err != nil {
@@ -173,6 +208,11 @@ func ExampleTargetPoolsClient_GetHealth() {
 
 func ExampleTargetPoolsClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -181,7 +221,7 @@ func ExampleTargetPoolsClient_Insert() {
 
 	req := &computepb.InsertTargetPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertTargetPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertTargetPoolRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -196,6 +236,11 @@ func ExampleTargetPoolsClient_Insert() {
 
 func ExampleTargetPoolsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -204,7 +249,7 @@ func ExampleTargetPoolsClient_List() {
 
 	req := &computepb.ListTargetPoolsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListTargetPoolsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListTargetPoolsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -222,6 +267,11 @@ func ExampleTargetPoolsClient_List() {
 
 func ExampleTargetPoolsClient_RemoveHealthCheck() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -230,7 +280,7 @@ func ExampleTargetPoolsClient_RemoveHealthCheck() {
 
 	req := &computepb.RemoveHealthCheckTargetPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveHealthCheckTargetPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemoveHealthCheckTargetPoolRequest.
 	}
 	op, err := c.RemoveHealthCheck(ctx, req)
 	if err != nil {
@@ -245,6 +295,11 @@ func ExampleTargetPoolsClient_RemoveHealthCheck() {
 
 func ExampleTargetPoolsClient_RemoveInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -253,7 +308,7 @@ func ExampleTargetPoolsClient_RemoveInstance() {
 
 	req := &computepb.RemoveInstanceTargetPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveInstanceTargetPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemoveInstanceTargetPoolRequest.
 	}
 	op, err := c.RemoveInstance(ctx, req)
 	if err != nil {
@@ -268,6 +323,11 @@ func ExampleTargetPoolsClient_RemoveInstance() {
 
 func ExampleTargetPoolsClient_SetBackup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewTargetPoolsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -276,9 +336,37 @@ func ExampleTargetPoolsClient_SetBackup() {
 
 	req := &computepb.SetBackupTargetPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetBackupTargetPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetBackupTargetPoolRequest.
 	}
 	op, err := c.SetBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleTargetPoolsClient_SetSecurityPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewTargetPoolsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetSecurityPolicyTargetPoolRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetSecurityPolicyTargetPoolRequest.
+	}
+	op, err := c.SetSecurityPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

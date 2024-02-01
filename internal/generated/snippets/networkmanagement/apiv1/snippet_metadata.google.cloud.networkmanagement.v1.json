@@ -1,0 +1,291 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/networkmanagement/apiv1",
+    "version": "1.9.4",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.networkmanagement.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_CreateConnectivityTest_sync",
+      "title": "networkmanagement CreateConnectivityTest Sample",
+      "description": "CreateConnectivityTest creates a new Connectivity Test.\nAfter you create a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\n\nIf the endpoint specifications in `ConnectivityTest` are invalid\n(for example, containing non-existent resources in the network, or you\ndon't have read permissions to the network configurations of listed\nprojects), then the reachability result returns a value of `UNKNOWN`.\n\nIf the endpoint specifications in `ConnectivityTest` are\nincomplete, the reachability result returns a value of\n<code>AMBIGUOUS</code>. For more information,\nsee the Connectivity Test documentation.",
+      "file": "ReachabilityClient/CreateConnectivityTest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConnectivityTest",
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.CreateConnectivityTest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkmanagementpb.CreateConnectivityTestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateConnectivityTestOperation",
+        "client": {
+          "shortName": "ReachabilityClient",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
+        },
+        "method": {
+          "shortName": "CreateConnectivityTest",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.CreateConnectivityTest",
+          "service": {
+            "shortName": "ReachabilityService",
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_DeleteConnectivityTest_sync",
+      "title": "networkmanagement DeleteConnectivityTest Sample",
+      "description": "DeleteConnectivityTest deletes a specific `ConnectivityTest`.",
+      "file": "ReachabilityClient/DeleteConnectivityTest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConnectivityTest",
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.DeleteConnectivityTest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkmanagementpb.DeleteConnectivityTestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteConnectivityTestOperation",
+        "client": {
+          "shortName": "ReachabilityClient",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
+        },
+        "method": {
+          "shortName": "DeleteConnectivityTest",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.DeleteConnectivityTest",
+          "service": {
+            "shortName": "ReachabilityService",
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetConnectivityTest_sync",
+      "title": "networkmanagement GetConnectivityTest Sample",
+      "description": "GetConnectivityTest gets the details of a specific Connectivity Test.",
+      "file": "ReachabilityClient/GetConnectivityTest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConnectivityTest",
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.GetConnectivityTest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkmanagementpb.GetConnectivityTestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*networkmanagementpb.ConnectivityTest",
+        "client": {
+          "shortName": "ReachabilityClient",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
+        },
+        "method": {
+          "shortName": "GetConnectivityTest",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.GetConnectivityTest",
+          "service": {
+            "shortName": "ReachabilityService",
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_ListConnectivityTests_sync",
+      "title": "networkmanagement ListConnectivityTests Sample",
+      "description": "ListConnectivityTests lists all Connectivity Tests owned by a project.",
+      "file": "ReachabilityClient/ListConnectivityTests/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConnectivityTests",
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.ListConnectivityTests",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkmanagementpb.ListConnectivityTestsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConnectivityTestIterator",
+        "client": {
+          "shortName": "ReachabilityClient",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
+        },
+        "method": {
+          "shortName": "ListConnectivityTests",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.ListConnectivityTests",
+          "service": {
+            "shortName": "ReachabilityService",
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_RerunConnectivityTest_sync",
+      "title": "networkmanagement RerunConnectivityTest Sample",
+      "description": "RerunConnectivityTest rerun an existing `ConnectivityTest`.\nAfter the user triggers the rerun, the reachability analysis is performed\nas part of the long running operation, which completes when the analysis\ncompletes.\n\nEven though the test configuration remains the same, the reachability\nresult may change due to underlying network configuration changes.\n\nIf the endpoint specifications in `ConnectivityTest` become invalid (for\nexample, specified resources are deleted in the network, or you lost\nread permissions to the network configurations of listed projects), then\nthe reachability result returns a value of `UNKNOWN`.",
+      "file": "ReachabilityClient/RerunConnectivityTest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RerunConnectivityTest",
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.RerunConnectivityTest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkmanagementpb.RerunConnectivityTestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RerunConnectivityTestOperation",
+        "client": {
+          "shortName": "ReachabilityClient",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
+        },
+        "method": {
+          "shortName": "RerunConnectivityTest",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.RerunConnectivityTest",
+          "service": {
+            "shortName": "ReachabilityService",
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "networkmanagement_v1_generated_ReachabilityService_UpdateConnectivityTest_sync",
+      "title": "networkmanagement UpdateConnectivityTest Sample",
+      "description": "UpdateConnectivityTest updates the configuration of an existing `ConnectivityTest`.\nAfter you update a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\nThe Reachability state in the test resource is updated with the new result.\n\nIf the endpoint specifications in `ConnectivityTest` are invalid\n(for example, they contain non-existent resources in the network, or the\nuser does not have read permissions to the network configurations of\nlisted projects), then the reachability result returns a value of\n<code>UNKNOWN</code>.\n\nIf the endpoint specifications in `ConnectivityTest` are incomplete, the\nreachability result returns a value of `AMBIGUOUS`. See the documentation\nin `ConnectivityTest` for for more details.",
+      "file": "ReachabilityClient/UpdateConnectivityTest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConnectivityTest",
+        "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient.UpdateConnectivityTest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "networkmanagementpb.UpdateConnectivityTestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateConnectivityTestOperation",
+        "client": {
+          "shortName": "ReachabilityClient",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
+        },
+        "method": {
+          "shortName": "UpdateConnectivityTest",
+          "fullName": "google.cloud.networkmanagement.v1.ReachabilityService.UpdateConnectivityTest",
+          "service": {
+            "shortName": "ReachabilityService",
+            "fullName": "google.cloud.networkmanagement.v1.ReachabilityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

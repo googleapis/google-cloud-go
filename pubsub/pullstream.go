@@ -16,12 +16,14 @@ package pubsub
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"net/url"
 	"sync"
 	"time"
 
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	gax "github.com/googleapis/gax-go/v2"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 )
 
@@ -42,6 +44,8 @@ type streamingPullFunc func(context.Context, ...gax.CallOption) (pb.Subscriber_S
 
 func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName string, maxOutstandingMessages, maxOutstandingBytes int, maxDurationPerLeaseExtension time.Duration) *pullStream {
 	ctx = withSubscriptionKey(ctx, subName)
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(subName))}
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	ctx, cancel := context.WithCancel(ctx)
 	return &pullStream{
 		ctx:    ctx,

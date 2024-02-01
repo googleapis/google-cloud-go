@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/firestore/apiv1",
-    "version": "1.6.1",
+    "version": "1.14.0",
     "language": "GO",
     "apis": [
       {
@@ -12,54 +12,9 @@
   },
   "snippets": [
     {
-      "regionTag": "firestore_v1_generated_Firestore_BatchGetDocuments_sync",
-      "title": "firestore BatchGetDocuments Sample",
-      "description": "BatchGetDocuments gets multiple documents.\n\nDocuments returned by this method are not guaranteed to be returned in the\nsame order that they were requested.",
-      "file": "Client/BatchGetDocuments/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "BatchGetDocuments",
-        "fullName": "google.firestore.v1.Client.BatchGetDocuments",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "firestorepb.BatchGetDocumentsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.firestore.v1.Client"
-        },
-        "method": {
-          "shortName": "BatchGetDocuments",
-          "fullName": "google.firestore.v1.Firestore.BatchGetDocuments",
-          "service": {
-            "shortName": "Firestore",
-            "fullName": "google.firestore.v1.Firestore"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 1,
-          "end": -1,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "firestore_v1_generated_Firestore_BatchWrite_sync",
       "title": "firestore BatchWrite Sample",
-      "description": "BatchWrite applies a batch of write operations.\n\nThe BatchWrite method does not apply the write operations atomically\nand can apply them out of order. Method does not allow more than one write\nper document. Each write succeeds or fails independently. See the\nBatchWriteResponse for the success status of each write.\n\nIf you require an atomically applied set of writes, use\nCommit instead.",
+      "description": "BatchWrite applies a batch of write operations.\n\nThe BatchWrite method does not apply the write operations atomically\nand can apply them out of order. Method does not allow more than one write\nper document. Each write succeeds or fails independently. See the\n[BatchWriteResponse][google.firestore.v1.BatchWriteResponse] for the\nsuccess status of each write.\n\nIf you require an atomically applied set of writes, use\n[Commit][google.firestore.v1.Firestore.Commit] instead.",
       "file": "Client/BatchWrite/main.go",
       "language": "GO",
       "clientMethod": {
@@ -79,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "firestorepb.BatchWriteResponse",
+        "resultType": "*firestorepb.BatchWriteResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.firestore.v1.Client"
@@ -97,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -125,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "firestorepb.BeginTransactionResponse",
+        "resultType": "*firestorepb.BeginTransactionResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.firestore.v1.Client"
@@ -143,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -177,10 +132,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.firestore.v1.Firestore.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Firestore",
-            "fullName": "google.firestore.v1.Firestore"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -188,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -216,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "firestorepb.CommitResponse",
+        "resultType": "*firestorepb.CommitResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.firestore.v1.Client"
@@ -234,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -262,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "firestorepb.Document",
+        "resultType": "*firestorepb.Document",
         "client": {
           "shortName": "Client",
           "fullName": "google.firestore.v1.Client"
@@ -280,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -325,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -359,10 +314,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.firestore.v1.Firestore.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Firestore",
-            "fullName": "google.firestore.v1.Firestore"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -370,7 +325,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -398,7 +353,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "firestorepb.Document",
+        "resultType": "*firestorepb.Document",
         "client": {
           "shortName": "Client",
           "fullName": "google.firestore.v1.Client"
@@ -416,7 +371,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -444,17 +399,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.firestore.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.firestore.v1.Firestore.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Firestore",
-            "fullName": "google.firestore.v1.Firestore"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -462,7 +417,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -508,7 +463,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -554,7 +509,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -589,10 +544,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.firestore.v1.Firestore.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Firestore",
-            "fullName": "google.firestore.v1.Firestore"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -600,7 +555,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -608,7 +563,7 @@
     {
       "regionTag": "firestore_v1_generated_Firestore_Listen_sync",
       "title": "firestore Listen Sample",
-      "description": "Listen listens to changes.",
+      "description": "Listen listens to changes. This method is only available via gRPC or WebChannel\n(not REST).\n\n\nThis method is not supported for the REST transport.",
       "file": "Client/Listen/main.go",
       "language": "GO",
       "clientMethod": {
@@ -624,6 +579,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "firestorepb.Firestore_ListenClient",
         "client": {
           "shortName": "Client",
           "fullName": "google.firestore.v1.Client"
@@ -641,7 +597,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 63,
+          "end": 69,
           "type": "FULL"
         }
       ]
@@ -687,7 +643,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -732,52 +688,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "firestore_v1_generated_Firestore_RunQuery_sync",
-      "title": "firestore RunQuery Sample",
-      "description": "RunQuery runs a query.",
-      "file": "Client/RunQuery/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "RunQuery",
-        "fullName": "google.firestore.v1.Client.RunQuery",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "firestorepb.RunQueryRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.firestore.v1.Client"
-        },
-        "method": {
-          "shortName": "RunQuery",
-          "fullName": "google.firestore.v1.Firestore.RunQuery",
-          "service": {
-            "shortName": "Firestore",
-            "fullName": "google.firestore.v1.Firestore"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 1,
-          "end": -1,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -805,7 +716,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "firestorepb.Document",
+        "resultType": "*firestorepb.Document",
         "client": {
           "shortName": "Client",
           "fullName": "google.firestore.v1.Client"
@@ -823,7 +734,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -831,7 +742,7 @@
     {
       "regionTag": "firestore_v1_generated_Firestore_Write_sync",
       "title": "firestore Write Sample",
-      "description": "Write streams batches of document updates and deletes, in order.",
+      "description": "Write streams batches of document updates and deletes, in order. This method is\nonly available via gRPC or WebChannel (not REST).\n\n\nThis method is not supported for the REST transport.",
       "file": "Client/Write/main.go",
       "language": "GO",
       "clientMethod": {
@@ -847,6 +758,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "firestorepb.Firestore_WriteClient",
         "client": {
           "shortName": "Client",
           "fullName": "google.firestore.v1.Client"
@@ -864,7 +776,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 63,
+          "end": 69,
           "type": "FULL"
         }
       ]

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,16 @@ import (
 	"context"
 
 	phishingprotection "cloud.google.com/go/phishingprotection/apiv1beta1"
-	phishingprotectionpb "google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1"
+	phishingprotectionpb "cloud.google.com/go/phishingprotection/apiv1beta1/phishingprotectionpb"
 )
 
 func ExampleNewPhishingProtectionServiceV1Beta1Client() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := phishingprotection.NewPhishingProtectionServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewPhishingProtectionServiceV1Beta1Client() {
 
 func ExampleNewPhishingProtectionServiceV1Beta1RESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := phishingprotection.NewPhishingProtectionServiceV1Beta1RESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,6 +59,11 @@ func ExampleNewPhishingProtectionServiceV1Beta1RESTClient() {
 
 func ExamplePhishingProtectionServiceV1Beta1Client_ReportPhishing() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := phishingprotection.NewPhishingProtectionServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -57,7 +72,7 @@ func ExamplePhishingProtectionServiceV1Beta1Client_ReportPhishing() {
 
 	req := &phishingprotectionpb.ReportPhishingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1#ReportPhishingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/phishingprotection/apiv1beta1/phishingprotectionpb#ReportPhishingRequest.
 	}
 	resp, err := c.ReportPhishing(ctx, req)
 	if err != nil {

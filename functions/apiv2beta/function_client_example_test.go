@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,20 @@ import (
 	"context"
 
 	functions "cloud.google.com/go/functions/apiv2beta"
+	functionspb "cloud.google.com/go/functions/apiv2beta/functionspb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v2beta"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewFunctionClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -41,6 +46,11 @@ func ExampleNewFunctionClient() {
 
 func ExampleNewFunctionRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -51,8 +61,121 @@ func ExampleNewFunctionRESTClient() {
 	_ = c
 }
 
+func ExampleFunctionClient_CreateFunction() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := functions.NewFunctionClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &functionspb.CreateFunctionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#CreateFunctionRequest.
+	}
+	op, err := c.CreateFunction(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFunctionClient_DeleteFunction() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := functions.NewFunctionClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &functionspb.DeleteFunctionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#DeleteFunctionRequest.
+	}
+	op, err := c.DeleteFunction(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleFunctionClient_GenerateDownloadUrl() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := functions.NewFunctionClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &functionspb.GenerateDownloadUrlRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#GenerateDownloadUrlRequest.
+	}
+	resp, err := c.GenerateDownloadUrl(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFunctionClient_GenerateUploadUrl() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := functions.NewFunctionClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &functionspb.GenerateUploadUrlRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#GenerateUploadUrlRequest.
+	}
+	resp, err := c.GenerateUploadUrl(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleFunctionClient_GetFunction() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -61,7 +184,7 @@ func ExampleFunctionClient_GetFunction() {
 
 	req := &functionspb.GetFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#GetFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#GetFunctionRequest.
 	}
 	resp, err := c.GetFunction(ctx, req)
 	if err != nil {
@@ -73,6 +196,11 @@ func ExampleFunctionClient_GetFunction() {
 
 func ExampleFunctionClient_ListFunctions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -81,7 +209,7 @@ func ExampleFunctionClient_ListFunctions() {
 
 	req := &functionspb.ListFunctionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#ListFunctionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#ListFunctionsRequest.
 	}
 	it := c.ListFunctions(ctx, req)
 	for {
@@ -97,24 +225,24 @@ func ExampleFunctionClient_ListFunctions() {
 	}
 }
 
-func ExampleFunctionClient_CreateFunction() {
+func ExampleFunctionClient_ListRuntimes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &functionspb.CreateFunctionRequest{
+	req := &functionspb.ListRuntimesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#CreateFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#ListRuntimesRequest.
 	}
-	op, err := c.CreateFunction(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
+	resp, err := c.ListRuntimes(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -124,6 +252,11 @@ func ExampleFunctionClient_CreateFunction() {
 
 func ExampleFunctionClient_UpdateFunction() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +265,7 @@ func ExampleFunctionClient_UpdateFunction() {
 
 	req := &functionspb.UpdateFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#UpdateFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#UpdateFunctionRequest.
 	}
 	op, err := c.UpdateFunction(ctx, req)
 	if err != nil {
@@ -147,91 +280,13 @@ func ExampleFunctionClient_UpdateFunction() {
 	_ = resp
 }
 
-func ExampleFunctionClient_DeleteFunction() {
-	ctx := context.Background()
-	c, err := functions.NewFunctionClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &functionspb.DeleteFunctionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#DeleteFunctionRequest.
-	}
-	op, err := c.DeleteFunction(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleFunctionClient_GenerateUploadUrl() {
-	ctx := context.Background()
-	c, err := functions.NewFunctionClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &functionspb.GenerateUploadUrlRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#GenerateUploadUrlRequest.
-	}
-	resp, err := c.GenerateUploadUrl(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleFunctionClient_GenerateDownloadUrl() {
-	ctx := context.Background()
-	c, err := functions.NewFunctionClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &functionspb.GenerateDownloadUrlRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#GenerateDownloadUrlRequest.
-	}
-	resp, err := c.GenerateDownloadUrl(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleFunctionClient_ListRuntimes() {
-	ctx := context.Background()
-	c, err := functions.NewFunctionClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &functionspb.ListRuntimesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#ListRuntimesRequest.
-	}
-	resp, err := c.ListRuntimes(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleFunctionClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -258,6 +313,11 @@ func ExampleFunctionClient_ListLocations() {
 
 func ExampleFunctionClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -266,7 +326,7 @@ func ExampleFunctionClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -278,6 +338,11 @@ func ExampleFunctionClient_GetIamPolicy() {
 
 func ExampleFunctionClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -286,7 +351,7 @@ func ExampleFunctionClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -298,6 +363,11 @@ func ExampleFunctionClient_SetIamPolicy() {
 
 func ExampleFunctionClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -306,7 +376,7 @@ func ExampleFunctionClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -318,6 +388,11 @@ func ExampleFunctionClient_TestIamPermissions() {
 
 func ExampleFunctionClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -326,7 +401,7 @@ func ExampleFunctionClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -338,6 +413,11 @@ func ExampleFunctionClient_GetOperation() {
 
 func ExampleFunctionClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -346,7 +426,7 @@ func ExampleFunctionClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

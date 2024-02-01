@@ -35,6 +35,7 @@ import (
 
 	"cloud.google.com/go/logging"
 	vkit "cloud.google.com/go/logging/apiv2"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"cloud.google.com/go/logging/internal"
 	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
@@ -43,7 +44,6 @@ import (
 	_ "google.golang.org/genproto/googleapis/appengine/logging/v1" // Import the following so EntryIterator can unmarshal log protos.
 	_ "google.golang.org/genproto/googleapis/cloud/audit"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc/codes"
 )
 
@@ -316,7 +316,7 @@ func fromLogEntry(le *logpb.LogEntry) (*logging.Entry, error) {
 	case *logpb.LogEntry_ProtoPayload:
 		var d ptypes.DynamicAny
 		if err := ptypes.UnmarshalAny(x.ProtoPayload, &d); err != nil {
-			return nil, fmt.Errorf("logging: unmarshalling proto payload: %v", err)
+			return nil, fmt.Errorf("logging: unmarshalling proto payload: %w", err)
 		}
 		payload = d.Message
 

@@ -1,5 +1,110 @@
 # Changes
 
+## [0.11.4](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.3...containeranalysis/v0.11.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.11.3](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.2...containeranalysis/v0.11.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [0.11.2](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.1...containeranalysis/v0.11.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [0.11.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.0...containeranalysis/v0.11.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.10.1...containeranalysis/v0.11.0) (2023-09-11)
+
+
+### Features
+
+* **containeranalysis:** Add ExportSBOM API method ([#8518](https://github.com/googleapis/google-cloud-go/issues/8518)) ([9d1c775](https://github.com/googleapis/google-cloud-go/commit/9d1c7757ab28a4fe7dd58bffa3ccc651037b230b))
+
+## [0.10.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.10.0...containeranalysis/v0.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **containeranalysis:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.9.2...containeranalysis/v0.10.0) (2023-05-30)
+
+
+### Features
+
+* **containeranalysis:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [0.9.2](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.9.1...containeranalysis/v0.9.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.9.0...containeranalysis/v0.9.1) (2023-04-25)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Scope GeneratePackagesSummary method to v1beta1 http path ([#7805](https://github.com/googleapis/google-cloud-go/issues/7805)) ([97ebb21](https://github.com/googleapis/google-cloud-go/commit/97ebb214c800a366c068dc7cab97d71e7150226d))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.8.0...containeranalysis/v0.9.0) (2023-03-22)
+
+
+### Features
+
+* **containeranalysis:** Remove the unimplemented ScanConfig API method and resources ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.7.0...containeranalysis/v0.8.0) (2023-03-15)
+
+
+### Features
+
+* **containeranalysis:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.6.0...containeranalysis/v0.7.0) (2023-01-04)
+
+
+### Features
+
+* **containeranalysis:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.5.1...containeranalysis/v0.6.0) (2022-09-26)
+
+
+### Features
+
+* **containeranalysis:** Rewrite beta methods in terms of new stub location ([#6738](https://github.com/googleapis/google-cloud-go/issues/6738)) ([85f3ae2](https://github.com/googleapis/google-cloud-go/commit/85f3ae20a18b0a85157d5aedd1ffc5cf2c5714ce))
+
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.5.0...containeranalysis/v0.5.1) (2022-09-23)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Move grafeas stubs to proper folder ([#6732](https://github.com/googleapis/google-cloud-go/issues/6732)) ([16b5fd7](https://github.com/googleapis/google-cloud-go/commit/16b5fd7c5e4ddd8028feca60c5780ca1d1af8532))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.4.0...containeranalysis/v0.5.0) (2022-09-22)
+
+
+### Features
+
+* **containeranalysis:** Generate container stubs for betas ([#6722](https://github.com/googleapis/google-cloud-go/issues/6722)) ([3f1232b](https://github.com/googleapis/google-cloud-go/commit/3f1232b2aeaedfecfec3df0fa85c2f70227af2b1))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.3.0...containeranalysis/v0.4.0) (2022-06-29)
 
 

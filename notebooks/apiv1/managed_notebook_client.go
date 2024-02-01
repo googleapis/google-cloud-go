@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,18 +23,19 @@ import (
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	notebookspb "cloud.google.com/go/notebooks/apiv1/notebookspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	notebookspb "google.golang.org/genproto/googleapis/cloud/notebooks/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -45,19 +46,33 @@ type ManagedNotebookCallOptions struct {
 	ListRuntimes                []gax.CallOption
 	GetRuntime                  []gax.CallOption
 	CreateRuntime               []gax.CallOption
+	UpdateRuntime               []gax.CallOption
 	DeleteRuntime               []gax.CallOption
 	StartRuntime                []gax.CallOption
 	StopRuntime                 []gax.CallOption
 	SwitchRuntime               []gax.CallOption
 	ResetRuntime                []gax.CallOption
+	UpgradeRuntime              []gax.CallOption
 	ReportRuntimeEvent          []gax.CallOption
 	RefreshRuntimeTokenInternal []gax.CallOption
+	DiagnoseRuntime             []gax.CallOption
+	GetLocation                 []gax.CallOption
+	ListLocations               []gax.CallOption
+	GetIamPolicy                []gax.CallOption
+	SetIamPolicy                []gax.CallOption
+	TestIamPermissions          []gax.CallOption
+	CancelOperation             []gax.CallOption
+	DeleteOperation             []gax.CallOption
+	GetOperation                []gax.CallOption
+	ListOperations              []gax.CallOption
 }
 
 func defaultManagedNotebookGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("notebooks.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("notebooks.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("notebooks.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://notebooks.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -68,14 +83,32 @@ func defaultManagedNotebookGRPCClientOptions() []option.ClientOption {
 
 func defaultManagedNotebookCallOptions() *ManagedNotebookCallOptions {
 	return &ManagedNotebookCallOptions{
-		ListRuntimes:  []gax.CallOption{},
-		GetRuntime:    []gax.CallOption{},
-		CreateRuntime: []gax.CallOption{},
-		DeleteRuntime: []gax.CallOption{},
-		StartRuntime:  []gax.CallOption{},
-		StopRuntime:   []gax.CallOption{},
-		SwitchRuntime: []gax.CallOption{},
+		ListRuntimes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SwitchRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ResetRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -86,14 +119,53 @@ func defaultManagedNotebookCallOptions() *ManagedNotebookCallOptions {
 				})
 			}),
 		},
-		ReportRuntimeEvent: []gax.CallOption{},
-		RefreshRuntimeTokenInternal: []gax.CallOption{
+		UpgradeRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ReportRuntimeEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RefreshRuntimeTokenInternal: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DiagnoseRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        300000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -110,6 +182,8 @@ type internalManagedNotebookClient interface {
 	GetRuntime(context.Context, *notebookspb.GetRuntimeRequest, ...gax.CallOption) (*notebookspb.Runtime, error)
 	CreateRuntime(context.Context, *notebookspb.CreateRuntimeRequest, ...gax.CallOption) (*CreateRuntimeOperation, error)
 	CreateRuntimeOperation(name string) *CreateRuntimeOperation
+	UpdateRuntime(context.Context, *notebookspb.UpdateRuntimeRequest, ...gax.CallOption) (*UpdateRuntimeOperation, error)
+	UpdateRuntimeOperation(name string) *UpdateRuntimeOperation
 	DeleteRuntime(context.Context, *notebookspb.DeleteRuntimeRequest, ...gax.CallOption) (*DeleteRuntimeOperation, error)
 	DeleteRuntimeOperation(name string) *DeleteRuntimeOperation
 	StartRuntime(context.Context, *notebookspb.StartRuntimeRequest, ...gax.CallOption) (*StartRuntimeOperation, error)
@@ -120,9 +194,22 @@ type internalManagedNotebookClient interface {
 	SwitchRuntimeOperation(name string) *SwitchRuntimeOperation
 	ResetRuntime(context.Context, *notebookspb.ResetRuntimeRequest, ...gax.CallOption) (*ResetRuntimeOperation, error)
 	ResetRuntimeOperation(name string) *ResetRuntimeOperation
+	UpgradeRuntime(context.Context, *notebookspb.UpgradeRuntimeRequest, ...gax.CallOption) (*UpgradeRuntimeOperation, error)
+	UpgradeRuntimeOperation(name string) *UpgradeRuntimeOperation
 	ReportRuntimeEvent(context.Context, *notebookspb.ReportRuntimeEventRequest, ...gax.CallOption) (*ReportRuntimeEventOperation, error)
 	ReportRuntimeEventOperation(name string) *ReportRuntimeEventOperation
 	RefreshRuntimeTokenInternal(context.Context, *notebookspb.RefreshRuntimeTokenInternalRequest, ...gax.CallOption) (*notebookspb.RefreshRuntimeTokenInternalResponse, error)
+	DiagnoseRuntime(context.Context, *notebookspb.DiagnoseRuntimeRequest, ...gax.CallOption) (*DiagnoseRuntimeOperation, error)
+	DiagnoseRuntimeOperation(name string) *DiagnoseRuntimeOperation
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // ManagedNotebookClient is a client for interacting with Notebooks API.
@@ -159,7 +246,8 @@ func (c *ManagedNotebookClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ManagedNotebookClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -184,6 +272,17 @@ func (c *ManagedNotebookClient) CreateRuntime(ctx context.Context, req *notebook
 // The name must be that of a previously created CreateRuntimeOperation, possibly from a different process.
 func (c *ManagedNotebookClient) CreateRuntimeOperation(name string) *CreateRuntimeOperation {
 	return c.internalClient.CreateRuntimeOperation(name)
+}
+
+// UpdateRuntime update Notebook Runtime configuration.
+func (c *ManagedNotebookClient) UpdateRuntime(ctx context.Context, req *notebookspb.UpdateRuntimeRequest, opts ...gax.CallOption) (*UpdateRuntimeOperation, error) {
+	return c.internalClient.UpdateRuntime(ctx, req, opts...)
+}
+
+// UpdateRuntimeOperation returns a new UpdateRuntimeOperation from a given name.
+// The name must be that of a previously created UpdateRuntimeOperation, possibly from a different process.
+func (c *ManagedNotebookClient) UpdateRuntimeOperation(name string) *UpdateRuntimeOperation {
+	return c.internalClient.UpdateRuntimeOperation(name)
 }
 
 // DeleteRuntime deletes a single Runtime.
@@ -249,6 +348,17 @@ func (c *ManagedNotebookClient) ResetRuntimeOperation(name string) *ResetRuntime
 	return c.internalClient.ResetRuntimeOperation(name)
 }
 
+// UpgradeRuntime upgrades a Managed Notebook Runtime to the latest version.
+func (c *ManagedNotebookClient) UpgradeRuntime(ctx context.Context, req *notebookspb.UpgradeRuntimeRequest, opts ...gax.CallOption) (*UpgradeRuntimeOperation, error) {
+	return c.internalClient.UpgradeRuntime(ctx, req, opts...)
+}
+
+// UpgradeRuntimeOperation returns a new UpgradeRuntimeOperation from a given name.
+// The name must be that of a previously created UpgradeRuntimeOperation, possibly from a different process.
+func (c *ManagedNotebookClient) UpgradeRuntimeOperation(name string) *UpgradeRuntimeOperation {
+	return c.internalClient.UpgradeRuntimeOperation(name)
+}
+
 // ReportRuntimeEvent report and process a runtime event.
 func (c *ManagedNotebookClient) ReportRuntimeEvent(ctx context.Context, req *notebookspb.ReportRuntimeEventRequest, opts ...gax.CallOption) (*ReportRuntimeEventOperation, error) {
 	return c.internalClient.ReportRuntimeEvent(ctx, req, opts...)
@@ -266,15 +376,79 @@ func (c *ManagedNotebookClient) RefreshRuntimeTokenInternal(ctx context.Context,
 	return c.internalClient.RefreshRuntimeTokenInternal(ctx, req, opts...)
 }
 
+// DiagnoseRuntime creates a Diagnostic File and runs Diagnostic Tool given a Runtime.
+func (c *ManagedNotebookClient) DiagnoseRuntime(ctx context.Context, req *notebookspb.DiagnoseRuntimeRequest, opts ...gax.CallOption) (*DiagnoseRuntimeOperation, error) {
+	return c.internalClient.DiagnoseRuntime(ctx, req, opts...)
+}
+
+// DiagnoseRuntimeOperation returns a new DiagnoseRuntimeOperation from a given name.
+// The name must be that of a previously created DiagnoseRuntimeOperation, possibly from a different process.
+func (c *ManagedNotebookClient) DiagnoseRuntimeOperation(name string) *DiagnoseRuntimeOperation {
+	return c.internalClient.DiagnoseRuntimeOperation(name)
+}
+
+// GetLocation gets information about a location.
+func (c *ManagedNotebookClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *ManagedNotebookClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *ManagedNotebookClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *ManagedNotebookClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *ManagedNotebookClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *ManagedNotebookClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *ManagedNotebookClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *ManagedNotebookClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *ManagedNotebookClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // managedNotebookGRPCClient is a client for interacting with Notebooks API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type managedNotebookGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ManagedNotebookClient
 	CallOptions **ManagedNotebookCallOptions
@@ -287,8 +461,14 @@ type managedNotebookGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
+	iamPolicyClient iampb.IAMPolicyClient
+
+	locationsClient locationpb.LocationsClient
+
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewManagedNotebookClient creates a new managed notebook service client based on gRPC.
@@ -305,11 +485,6 @@ func NewManagedNotebookClient(ctx context.Context, opts ...option.ClientOption) 
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -318,9 +493,11 @@ func NewManagedNotebookClient(ctx context.Context, opts ...option.ClientOption) 
 
 	c := &managedNotebookGRPCClient{
 		connPool:              connPool,
-		disableDeadlines:      disableDeadlines,
 		managedNotebookClient: notebookspb.NewManagedNotebookServiceClient(connPool),
 		CallOptions:           &client.CallOptions,
+		operationsClient:      longrunningpb.NewOperationsClient(connPool),
+		iamPolicyClient:       iampb.NewIAMPolicyClient(connPool),
+		locationsClient:       locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -342,7 +519,8 @@ func NewManagedNotebookClient(ctx context.Context, opts ...option.ClientOption) 
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *managedNotebookGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -351,9 +529,9 @@ func (c *managedNotebookGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *managedNotebookGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -363,9 +541,10 @@ func (c *managedNotebookGRPCClient) Close() error {
 }
 
 func (c *managedNotebookGRPCClient) ListRuntimes(ctx context.Context, req *notebookspb.ListRuntimesRequest, opts ...gax.CallOption) *RuntimeIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListRuntimes[0:len((*c.CallOptions).ListRuntimes):len((*c.CallOptions).ListRuntimes)], opts...)
 	it := &RuntimeIterator{}
 	req = proto.Clone(req).(*notebookspb.ListRuntimesRequest)
@@ -408,14 +587,10 @@ func (c *managedNotebookGRPCClient) ListRuntimes(ctx context.Context, req *noteb
 }
 
 func (c *managedNotebookGRPCClient) GetRuntime(ctx context.Context, req *notebookspb.GetRuntimeRequest, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetRuntime[0:len((*c.CallOptions).GetRuntime):len((*c.CallOptions).GetRuntime)], opts...)
 	var resp *notebookspb.Runtime
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -430,14 +605,10 @@ func (c *managedNotebookGRPCClient) GetRuntime(ctx context.Context, req *noteboo
 }
 
 func (c *managedNotebookGRPCClient) CreateRuntime(ctx context.Context, req *notebookspb.CreateRuntimeRequest, opts ...gax.CallOption) (*CreateRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateRuntime[0:len((*c.CallOptions).CreateRuntime):len((*c.CallOptions).CreateRuntime)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -453,15 +624,31 @@ func (c *managedNotebookGRPCClient) CreateRuntime(ctx context.Context, req *note
 	}, nil
 }
 
-func (c *managedNotebookGRPCClient) DeleteRuntime(ctx context.Context, req *notebookspb.DeleteRuntimeRequest, opts ...gax.CallOption) (*DeleteRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *managedNotebookGRPCClient) UpdateRuntime(ctx context.Context, req *notebookspb.UpdateRuntimeRequest, opts ...gax.CallOption) (*UpdateRuntimeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "runtime.name", url.QueryEscape(req.GetRuntime().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateRuntime[0:len((*c.CallOptions).UpdateRuntime):len((*c.CallOptions).UpdateRuntime)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.managedNotebookClient.UpdateRuntime(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateRuntimeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *managedNotebookGRPCClient) DeleteRuntime(ctx context.Context, req *notebookspb.DeleteRuntimeRequest, opts ...gax.CallOption) (*DeleteRuntimeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteRuntime[0:len((*c.CallOptions).DeleteRuntime):len((*c.CallOptions).DeleteRuntime)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -478,14 +665,10 @@ func (c *managedNotebookGRPCClient) DeleteRuntime(ctx context.Context, req *note
 }
 
 func (c *managedNotebookGRPCClient) StartRuntime(ctx context.Context, req *notebookspb.StartRuntimeRequest, opts ...gax.CallOption) (*StartRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).StartRuntime[0:len((*c.CallOptions).StartRuntime):len((*c.CallOptions).StartRuntime)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -502,14 +685,10 @@ func (c *managedNotebookGRPCClient) StartRuntime(ctx context.Context, req *noteb
 }
 
 func (c *managedNotebookGRPCClient) StopRuntime(ctx context.Context, req *notebookspb.StopRuntimeRequest, opts ...gax.CallOption) (*StopRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).StopRuntime[0:len((*c.CallOptions).StopRuntime):len((*c.CallOptions).StopRuntime)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -526,14 +705,10 @@ func (c *managedNotebookGRPCClient) StopRuntime(ctx context.Context, req *notebo
 }
 
 func (c *managedNotebookGRPCClient) SwitchRuntime(ctx context.Context, req *notebookspb.SwitchRuntimeRequest, opts ...gax.CallOption) (*SwitchRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SwitchRuntime[0:len((*c.CallOptions).SwitchRuntime):len((*c.CallOptions).SwitchRuntime)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -550,14 +725,10 @@ func (c *managedNotebookGRPCClient) SwitchRuntime(ctx context.Context, req *note
 }
 
 func (c *managedNotebookGRPCClient) ResetRuntime(ctx context.Context, req *notebookspb.ResetRuntimeRequest, opts ...gax.CallOption) (*ResetRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ResetRuntime[0:len((*c.CallOptions).ResetRuntime):len((*c.CallOptions).ResetRuntime)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -573,15 +744,31 @@ func (c *managedNotebookGRPCClient) ResetRuntime(ctx context.Context, req *noteb
 	}, nil
 }
 
-func (c *managedNotebookGRPCClient) ReportRuntimeEvent(ctx context.Context, req *notebookspb.ReportRuntimeEventRequest, opts ...gax.CallOption) (*ReportRuntimeEventOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *managedNotebookGRPCClient) UpgradeRuntime(ctx context.Context, req *notebookspb.UpgradeRuntimeRequest, opts ...gax.CallOption) (*UpgradeRuntimeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpgradeRuntime[0:len((*c.CallOptions).UpgradeRuntime):len((*c.CallOptions).UpgradeRuntime)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.managedNotebookClient.UpgradeRuntime(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpgradeRuntimeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *managedNotebookGRPCClient) ReportRuntimeEvent(ctx context.Context, req *notebookspb.ReportRuntimeEventRequest, opts ...gax.CallOption) (*ReportRuntimeEventOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ReportRuntimeEvent[0:len((*c.CallOptions).ReportRuntimeEvent):len((*c.CallOptions).ReportRuntimeEvent)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -598,14 +785,10 @@ func (c *managedNotebookGRPCClient) ReportRuntimeEvent(ctx context.Context, req 
 }
 
 func (c *managedNotebookGRPCClient) RefreshRuntimeTokenInternal(ctx context.Context, req *notebookspb.RefreshRuntimeTokenInternalRequest, opts ...gax.CallOption) (*notebookspb.RefreshRuntimeTokenInternalResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RefreshRuntimeTokenInternal[0:len((*c.CallOptions).RefreshRuntimeTokenInternal):len((*c.CallOptions).RefreshRuntimeTokenInternal)], opts...)
 	var resp *notebookspb.RefreshRuntimeTokenInternalResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -619,9 +802,234 @@ func (c *managedNotebookGRPCClient) RefreshRuntimeTokenInternal(ctx context.Cont
 	return resp, nil
 }
 
-// CreateRuntimeOperation manages a long-running operation from CreateRuntime.
-type CreateRuntimeOperation struct {
-	lro *longrunning.Operation
+func (c *managedNotebookGRPCClient) DiagnoseRuntime(ctx context.Context, req *notebookspb.DiagnoseRuntimeRequest, opts ...gax.CallOption) (*DiagnoseRuntimeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DiagnoseRuntime[0:len((*c.CallOptions).DiagnoseRuntime):len((*c.CallOptions).DiagnoseRuntime)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.managedNotebookClient.DiagnoseRuntime(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DiagnoseRuntimeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *managedNotebookGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *managedNotebookGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *managedNotebookGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *managedNotebookGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *managedNotebookGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *managedNotebookGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *managedNotebookGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *managedNotebookGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *managedNotebookGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateRuntimeOperation returns a new CreateRuntimeOperation from a given name.
@@ -632,67 +1040,6 @@ func (c *managedNotebookGRPCClient) CreateRuntimeOperation(name string) *CreateR
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteRuntimeOperation manages a long-running operation from DeleteRuntime.
-type DeleteRuntimeOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteRuntimeOperation returns a new DeleteRuntimeOperation from a given name.
 // The name must be that of a previously created DeleteRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) DeleteRuntimeOperation(name string) *DeleteRuntimeOperation {
@@ -701,54 +1048,12 @@ func (c *managedNotebookGRPCClient) DeleteRuntimeOperation(name string) *DeleteR
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// DiagnoseRuntimeOperation returns a new DiagnoseRuntimeOperation from a given name.
+// The name must be that of a previously created DiagnoseRuntimeOperation, possibly from a different process.
+func (c *managedNotebookGRPCClient) DiagnoseRuntimeOperation(name string) *DiagnoseRuntimeOperation {
+	return &DiagnoseRuntimeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ReportRuntimeEventOperation manages a long-running operation from ReportRuntimeEvent.
-type ReportRuntimeEventOperation struct {
-	lro *longrunning.Operation
 }
 
 // ReportRuntimeEventOperation returns a new ReportRuntimeEventOperation from a given name.
@@ -759,134 +1064,12 @@ func (c *managedNotebookGRPCClient) ReportRuntimeEventOperation(name string) *Re
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ReportRuntimeEventOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ReportRuntimeEventOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ReportRuntimeEventOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ReportRuntimeEventOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ReportRuntimeEventOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ResetRuntimeOperation manages a long-running operation from ResetRuntime.
-type ResetRuntimeOperation struct {
-	lro *longrunning.Operation
-}
-
 // ResetRuntimeOperation returns a new ResetRuntimeOperation from a given name.
 // The name must be that of a previously created ResetRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) ResetRuntimeOperation(name string) *ResetRuntimeOperation {
 	return &ResetRuntimeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ResetRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ResetRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ResetRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ResetRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ResetRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StartRuntimeOperation manages a long-running operation from StartRuntime.
-type StartRuntimeOperation struct {
-	lro *longrunning.Operation
 }
 
 // StartRuntimeOperation returns a new StartRuntimeOperation from a given name.
@@ -897,134 +1080,12 @@ func (c *managedNotebookGRPCClient) StartRuntimeOperation(name string) *StartRun
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StartRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StartRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StartRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StartRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StartRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StopRuntimeOperation manages a long-running operation from StopRuntime.
-type StopRuntimeOperation struct {
-	lro *longrunning.Operation
-}
-
 // StopRuntimeOperation returns a new StopRuntimeOperation from a given name.
 // The name must be that of a previously created StopRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) StopRuntimeOperation(name string) *StopRuntimeOperation {
 	return &StopRuntimeOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StopRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StopRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StopRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StopRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StopRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SwitchRuntimeOperation manages a long-running operation from SwitchRuntime.
-type SwitchRuntimeOperation struct {
-	lro *longrunning.Operation
 }
 
 // SwitchRuntimeOperation returns a new SwitchRuntimeOperation from a given name.
@@ -1035,105 +1096,18 @@ func (c *managedNotebookGRPCClient) SwitchRuntimeOperation(name string) *SwitchR
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SwitchRuntimeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// UpdateRuntimeOperation returns a new UpdateRuntimeOperation from a given name.
+// The name must be that of a previously created UpdateRuntimeOperation, possibly from a different process.
+func (c *managedNotebookGRPCClient) UpdateRuntimeOperation(name string) *UpdateRuntimeOperation {
+	return &UpdateRuntimeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
 }
 
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SwitchRuntimeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	var resp notebookspb.Runtime
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
+// UpgradeRuntimeOperation returns a new UpgradeRuntimeOperation from a given name.
+// The name must be that of a previously created UpgradeRuntimeOperation, possibly from a different process.
+func (c *managedNotebookGRPCClient) UpgradeRuntimeOperation(name string) *UpgradeRuntimeOperation {
+	return &UpgradeRuntimeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SwitchRuntimeOperation) Metadata() (*notebookspb.OperationMetadata, error) {
-	var meta notebookspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SwitchRuntimeOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SwitchRuntimeOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RuntimeIterator manages a stream of *notebookspb.Runtime.
-type RuntimeIterator struct {
-	items    []*notebookspb.Runtime
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*notebookspb.Runtime, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RuntimeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RuntimeIterator) Next() (*notebookspb.Runtime, error) {
-	var item *notebookspb.Runtime
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RuntimeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RuntimeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

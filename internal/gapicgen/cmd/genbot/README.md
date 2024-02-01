@@ -103,6 +103,19 @@ This will speed up the build a bit:
 -v `go env GOMODCACHE`:/root/go/pkg/mod
 ```
 
+### Generating new stubs
+
+Flip status in aliasfix for gapics being migrated to in progress.
+
+```shell
+cd /path/to/internal/gapicgen
+go run cloud.google.com/go/internal/gapicgen/cmd/genbot \
+   -local \
+   -only-gapics \
+   -gocloud-dir=/path/to/google-cloud-go \
+   -gapic=cloud.google.com/go/foo/apiv1
+```
+
 ## FAQ
 
 ### How to bump to a later version of the microgenerator

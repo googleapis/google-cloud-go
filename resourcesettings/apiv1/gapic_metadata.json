@@ -26,6 +26,26 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetSetting": {
+              "methods": [
+                "GetSetting"
+              ]
+            },
+            "ListSettings": {
+              "methods": [
+                "ListSettings"
+              ]
+            },
+            "UpdateSetting": {
+              "methods": [
+                "UpdateSetting"
+              ]
+            }
+          }
         }
       }
     }

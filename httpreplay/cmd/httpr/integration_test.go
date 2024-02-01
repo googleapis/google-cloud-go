@@ -23,7 +23,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -49,7 +49,7 @@ func TestIntegration_HTTPR(t *testing.T) {
 		t.Fatal("set GCLOUD_TESTS_GOLANG_PROJECT_ID and GCLOUD_TESTS_GOLANG_KEY")
 	}
 	// Get a unique temporary filename.
-	f, err := ioutil.TempFile("", "httpreplay")
+	f, err := os.CreateTemp("", "httpreplay")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +71,7 @@ func TestIntegration_HTTPR(t *testing.T) {
 }
 
 func runRecord(t *testing.T, filename string) string {
-	cmd, tr, cport, err := start("-record", filename)
+	cmd, tr, cport, err := start(t, "-record", filename)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,7 +102,7 @@ func runRecord(t *testing.T, filename string) string {
 }
 
 func runReplay(t *testing.T, filename string) string {
-	cmd, tr, cport, err := start("-replay", filename)
+	cmd, tr, cport, err := start(t, "-replay", filename)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -116,7 +116,7 @@ func runReplay(t *testing.T, filename string) string {
 	if res.StatusCode != 200 {
 		t.Fatalf("from GET: %s", res.Status)
 	}
-	bytes, err := ioutil.ReadAll(res.Body)
+	bytes, err := io.ReadAll(res.Body)
 	res.Body.Close()
 	if err != nil {
 		t.Fatal(err)
@@ -134,7 +134,7 @@ func runReplay(t *testing.T, filename string) string {
 // Start the proxy binary and wait for it to come up.
 // Return a transport that talks to the proxy, as well as the control port.
 // modeFlag must be either "-record" or "-replay".
-func start(modeFlag, filename string) (*exec.Cmd, *http.Transport, string, error) {
+func start(t *testing.T, modeFlag, filename string) (*exec.Cmd, *http.Transport, string, error) {
 	pport, err := pickPort()
 	if err != nil {
 		return nil, nil, "", err
@@ -143,7 +143,13 @@ func start(modeFlag, filename string) (*exec.Cmd, *http.Transport, string, error
 	if err != nil {
 		return nil, nil, "", err
 	}
-	cmd := exec.Command("./httpr", "-port", pport, "-control-port", cport, modeFlag, filename, "-debug-headers")
+	cmd := exec.Command("./httpr",
+		"-port", pport,
+		"-control-port", cport,
+		modeFlag,
+		filename,
+		"-debug-headers",
+	)
 	if err := cmd.Start(); err != nil {
 		return nil, nil, "", err
 	}
@@ -160,7 +166,7 @@ func start(modeFlag, filename string) (*exec.Cmd, *http.Transport, string, error
 	if !serverUp {
 		return nil, nil, "", errors.New("server never came up")
 	}
-	tr, err := proxyTransport(pport, cport)
+	tr, err := proxyTransport(t, pport, cport)
 	if err != nil {
 		return nil, nil, "", err
 	}
@@ -188,8 +194,15 @@ func pickPort() (string, error) {
 	return port, nil
 }
 
-func proxyTransport(pport, cport string) (*http.Transport, error) {
-	caCert, err := getBody(fmt.Sprintf("http://localhost:%s/authority.cer", cport))
+func proxyTransport(t *testing.T, pport, cport string) (*http.Transport, error) {
+	var caCert []byte
+	var err error
+	// GET localhost authority.cer can be flaky; retry 10 times before marking as failing.
+	testutil.Retry(t, 10, 1*time.Second, func(r *testutil.R) {
+		if caCert, err = getBody(fmt.Sprintf("http://localhost:%s/authority.cer", cport)); err != nil {
+			r.Errorf("proxyTransport Retry: %v", err)
+		}
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -204,6 +217,9 @@ func proxyTransport(pport, cport string) (*http.Transport, error) {
 }
 
 func getBucketInfo(ctx context.Context, hc *http.Client) (string, error) {
+	ctx, cc := context.WithTimeout(ctx, 10*time.Second)
+	defer cc()
+
 	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		return "", err
@@ -227,5 +243,5 @@ func getBody(url string) ([]byte, error) {
 		return nil, fmt.Errorf("response: %s", res.Status)
 	}
 	defer res.Body.Close()
-	return ioutil.ReadAll(res.Body)
+	return io.ReadAll(res.Body)
 }

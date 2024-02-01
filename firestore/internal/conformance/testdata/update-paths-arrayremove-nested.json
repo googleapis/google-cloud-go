@@ -39,31 +39,26 @@
                   "b"
                 ]
               },
+              "updateTransforms": [
+                {
+                  "fieldPath": "b.c",
+                  "removeAllFromArray": {
+                    "values": [
+                      {
+                        "integerValue": "1"
+                      },
+                      {
+                        "integerValue": "2"
+                      },
+                      {
+                        "integerValue": "3"
+                      }
+                    ]
+                  }
+                }
+              ],
               "currentDocument": {
                 "exists": true
-              }
-            },
-            {
-              "transform": {
-                "document": "projects/projectID/databases/(default)/documents/C/d",
-                "fieldTransforms": [
-                  {
-                    "fieldPath": "b.c",
-                    "removeAllFromArray": {
-                      "values": [
-                        {
-                          "integerValue": "1"
-                        },
-                        {
-                          "integerValue": "2"
-                        },
-                        {
-                          "integerValue": "3"
-                        }
-                      ]
-                    }
-                  }
-                ]
               }
             }
           ]

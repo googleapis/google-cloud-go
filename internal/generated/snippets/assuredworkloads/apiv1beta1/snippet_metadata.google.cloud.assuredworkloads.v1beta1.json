@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/assuredworkloads/apiv1beta1",
-    "version": "1.0.0",
+    "version": "1.11.5",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_AnalyzeWorkloadMove_sync",
+      "title": "assuredworkloads AnalyzeWorkloadMove Sample",
+      "description": "AnalyzeWorkloadMove analyze if the source Assured Workloads can be moved to the target Assured\nWorkload",
+      "file": "Client/AnalyzeWorkloadMove/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnalyzeWorkloadMove",
+        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.AnalyzeWorkloadMove",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assuredworkloadspb.AnalyzeWorkloadMoveRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*assuredworkloadspb.AnalyzeWorkloadMoveResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "AnalyzeWorkloadMove",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.AnalyzeWorkloadMove",
+          "service": {
+            "shortName": "AssuredWorkloadsService",
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_CreateWorkload_sync",
       "title": "assuredworkloads CreateWorkload Sample",
@@ -52,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -60,7 +106,7 @@
     {
       "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_DeleteWorkload_sync",
       "title": "assuredworkloads DeleteWorkload Sample",
-      "description": "DeleteWorkload deletes the workload. Make sure that workload’s direct children are already\nin a deleted state, otherwise the request will fail with a\nFAILED_PRECONDITION error.",
+      "description": "DeleteWorkload deletes the workload. Make sure that workload's direct children are already\nin a deleted state, otherwise the request will fail with a\nFAILED_PRECONDITION error.\nIn addition to assuredworkloads.workload.delete permission, the user should\nalso have orgpolicy.policy.set permission on the deleted folder to remove\nAssured Workloads OrgPolicies.",
       "file": "Client/DeleteWorkload/main.go",
       "language": "GO",
       "clientMethod": {
@@ -97,7 +143,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_GetOperation_sync",
+      "title": "assuredworkloads GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -125,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "assuredworkloadspb.Workload",
+        "resultType": "*assuredworkloadspb.Workload",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
@@ -143,7 +235,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_ListOperations_sync",
+      "title": "assuredworkloads ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -189,7 +327,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_RestrictAllowedResources_sync",
+      "title": "assuredworkloads RestrictAllowedResources Sample",
+      "description": "RestrictAllowedResources restrict the list of resources allowed in the Workload environment.\nThe current list of allowed products can be found at\nhttps: //cloud.google.com/assured-workloads/docs/supported-products\nIn addition to assuredworkloads.workload.update permission, the user should\nalso have orgpolicy.policy.set permission on the folder resource\nto use this functionality.",
+      "file": "Client/RestrictAllowedResources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestrictAllowedResources",
+        "fullName": "google.cloud.assuredworkloads.v1beta1.Client.RestrictAllowedResources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assuredworkloadspb.RestrictAllowedResourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*assuredworkloadspb.RestrictAllowedResourcesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "RestrictAllowedResources",
+          "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService.RestrictAllowedResources",
+          "service": {
+            "shortName": "AssuredWorkloadsService",
+            "fullName": "google.cloud.assuredworkloads.v1beta1.AssuredWorkloadsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -197,7 +381,7 @@
     {
       "regionTag": "assuredworkloads_v1beta1_generated_AssuredWorkloadsService_UpdateWorkload_sync",
       "title": "assuredworkloads UpdateWorkload Sample",
-      "description": "UpdateWorkload updates an existing workload.\nCurrently allows updating of workload display_name and labels.\nFor force updates don’t set etag field in the Workload.\nOnly one update operation per workload can be in progress.",
+      "description": "UpdateWorkload updates an existing workload.\nCurrently allows updating of workload display_name and labels.\nFor force updates don't set etag field in the Workload.\nOnly one update operation per workload can be in progress.",
       "file": "Client/UpdateWorkload/main.go",
       "language": "GO",
       "clientMethod": {
@@ -217,7 +401,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "assuredworkloadspb.Workload",
+        "resultType": "*assuredworkloadspb.Workload",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.assuredworkloads.v1beta1.Client"
@@ -235,7 +419,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]

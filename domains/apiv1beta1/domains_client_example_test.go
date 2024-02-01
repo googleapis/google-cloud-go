@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	domains "cloud.google.com/go/domains/apiv1beta1"
+	domainspb "cloud.google.com/go/domains/apiv1beta1/domainspb"
 	"google.golang.org/api/iterator"
-	domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleNewRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := domains.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -48,59 +58,24 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_SearchDomains() {
+func ExampleClient_ConfigureContactSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &domainspb.SearchDomainsRequest{
+	req := &domainspb.ConfigureContactSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#SearchDomainsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ConfigureContactSettingsRequest.
 	}
-	resp, err := c.SearchDomains(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_RetrieveRegisterParameters() {
-	ctx := context.Background()
-	c, err := domains.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &domainspb.RetrieveRegisterParametersRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveRegisterParametersRequest.
-	}
-	resp, err := c.RetrieveRegisterParameters(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_RegisterDomain() {
-	ctx := context.Background()
-	c, err := domains.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &domainspb.RegisterDomainRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RegisterDomainRequest.
-	}
-	op, err := c.RegisterDomain(ctx, req)
+	op, err := c.ConfigureContactSettings(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -113,19 +88,29 @@ func ExampleClient_RegisterDomain() {
 	_ = resp
 }
 
-func ExampleClient_RetrieveTransferParameters() {
+func ExampleClient_ConfigureDnsSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &domainspb.RetrieveTransferParametersRequest{
+	req := &domainspb.ConfigureDnsSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveTransferParametersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ConfigureDnsSettingsRequest.
 	}
-	resp, err := c.RetrieveTransferParameters(ctx, req)
+	op, err := c.ConfigureDnsSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -133,24 +118,112 @@ func ExampleClient_RetrieveTransferParameters() {
 	_ = resp
 }
 
-func ExampleClient_TransferDomain() {
+func ExampleClient_ConfigureManagementSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &domainspb.TransferDomainRequest{
+	req := &domainspb.ConfigureManagementSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#TransferDomainRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ConfigureManagementSettingsRequest.
 	}
-	op, err := c.TransferDomain(ctx, req)
+	op, err := c.ConfigureManagementSettings(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
 	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteRegistration() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.DeleteRegistrationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#DeleteRegistrationRequest.
+	}
+	op, err := c.DeleteRegistration(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_ExportRegistration() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.ExportRegistrationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ExportRegistrationRequest.
+	}
+	op, err := c.ExportRegistration(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetRegistration() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.GetRegistrationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#GetRegistrationRequest.
+	}
+	resp, err := c.GetRegistration(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -160,6 +233,11 @@ func ExampleClient_TransferDomain() {
 
 func ExampleClient_ListRegistrations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -168,7 +246,7 @@ func ExampleClient_ListRegistrations() {
 
 	req := &domainspb.ListRegistrationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ListRegistrationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ListRegistrationsRequest.
 	}
 	it := c.ListRegistrations(ctx, req)
 	for {
@@ -184,187 +262,29 @@ func ExampleClient_ListRegistrations() {
 	}
 }
 
-func ExampleClient_GetRegistration() {
+func ExampleClient_RegisterDomain() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &domainspb.GetRegistrationRequest{
+	req := &domainspb.RegisterDomainRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#GetRegistrationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#RegisterDomainRequest.
 	}
-	resp, err := c.GetRegistration(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateRegistration() {
-	ctx := context.Background()
-	c, err := domains.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &domainspb.UpdateRegistrationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#UpdateRegistrationRequest.
-	}
-	op, err := c.UpdateRegistration(ctx, req)
+	op, err := c.RegisterDomain(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
 	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ConfigureManagementSettings() {
-	ctx := context.Background()
-	c, err := domains.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &domainspb.ConfigureManagementSettingsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ConfigureManagementSettingsRequest.
-	}
-	op, err := c.ConfigureManagementSettings(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ConfigureDnsSettings() {
-	ctx := context.Background()
-	c, err := domains.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &domainspb.ConfigureDnsSettingsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ConfigureDnsSettingsRequest.
-	}
-	op, err := c.ConfigureDnsSettings(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ConfigureContactSettings() {
-	ctx := context.Background()
-	c, err := domains.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &domainspb.ConfigureContactSettingsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ConfigureContactSettingsRequest.
-	}
-	op, err := c.ConfigureContactSettings(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ExportRegistration() {
-	ctx := context.Background()
-	c, err := domains.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &domainspb.ExportRegistrationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ExportRegistrationRequest.
-	}
-	op, err := c.ExportRegistration(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteRegistration() {
-	ctx := context.Background()
-	c, err := domains.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &domainspb.DeleteRegistrationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#DeleteRegistrationRequest.
-	}
-	op, err := c.DeleteRegistration(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_RetrieveAuthorizationCode() {
-	ctx := context.Background()
-	c, err := domains.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &domainspb.RetrieveAuthorizationCodeRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveAuthorizationCodeRequest.
-	}
-	resp, err := c.RetrieveAuthorizationCode(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -374,6 +294,11 @@ func ExampleClient_RetrieveAuthorizationCode() {
 
 func ExampleClient_ResetAuthorizationCode() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -382,9 +307,169 @@ func ExampleClient_ResetAuthorizationCode() {
 
 	req := &domainspb.ResetAuthorizationCodeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ResetAuthorizationCodeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#ResetAuthorizationCodeRequest.
 	}
 	resp, err := c.ResetAuthorizationCode(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_RetrieveAuthorizationCode() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.RetrieveAuthorizationCodeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#RetrieveAuthorizationCodeRequest.
+	}
+	resp, err := c.RetrieveAuthorizationCode(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_RetrieveRegisterParameters() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.RetrieveRegisterParametersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#RetrieveRegisterParametersRequest.
+	}
+	resp, err := c.RetrieveRegisterParameters(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_RetrieveTransferParameters() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.RetrieveTransferParametersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#RetrieveTransferParametersRequest.
+	}
+	resp, err := c.RetrieveTransferParameters(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_SearchDomains() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.SearchDomainsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#SearchDomainsRequest.
+	}
+	resp, err := c.SearchDomains(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_TransferDomain() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.TransferDomainRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#TransferDomainRequest.
+	}
+	op, err := c.TransferDomain(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateRegistration() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.UpdateRegistrationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/domains/apiv1beta1/domainspb#UpdateRegistrationRequest.
+	}
+	op, err := c.UpdateRegistration(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

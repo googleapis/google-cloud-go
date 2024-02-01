@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/domains/apiv1beta1",
-    "version": "0.5.0",
+    "version": "0.9.5",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_ConfigureContactSettings_sync",
       "title": "domains ConfigureContactSettings Sample",
-      "description": "ConfigureContactSettings updates a Registration's contact settings. Some changes require\nconfirmation by the domain’s registrant contact .",
+      "description": "ConfigureContactSettings updates a `Registration`'s contact settings. Some changes require\nconfirmation by the domain's registrant contact .",
       "file": "Client/ConfigureContactSettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_ConfigureDnsSettings_sync",
       "title": "domains ConfigureDnsSettings Sample",
-      "description": "ConfigureDnsSettings updates a Registration's DNS settings.",
+      "description": "ConfigureDnsSettings updates a `Registration`'s DNS settings.",
       "file": "Client/ConfigureDnsSettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -106,7 +106,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_ConfigureManagementSettings_sync",
       "title": "domains ConfigureManagementSettings Sample",
-      "description": "ConfigureManagementSettings updates a Registration's management settings.",
+      "description": "ConfigureManagementSettings updates a `Registration`'s management settings.",
       "file": "Client/ConfigureManagementSettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -152,7 +152,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_DeleteRegistration_sync",
       "title": "domains DeleteRegistration Sample",
-      "description": "DeleteRegistration deletes a Registration resource.\n\nThis method works on any Registration resource using Subscription or\nCommitment billing (at /domains/pricing#billing-models), provided that the\nresource was created at least 1 day in the past.\n\nFor Registration resources using\nMonthly billing (at /domains/pricing#billing-models), this method works if: \n\n  state is EXPORTED with expire_time in the past\n\n  state is REGISTRATION_FAILED\n\n  state is TRANSFER_FAILED\n\nWhen an active registration is successfully deleted, you can continue to\nuse the domain in Google Domains (at https: //domains.google/) until it\nexpires. The calling user becomes the domain’s sole owner in Google\nDomains, and permissions for the domain are subsequently managed there. The\ndomain does not renew automatically unless the new owner sets up billing in\nGoogle Domains.",
+      "description": "DeleteRegistration deletes a `Registration` resource.\n\nThis method works on any `Registration` resource using [Subscription or\nCommitment billing](/domains/pricing#billing-models), provided that the\nresource was created at least 1 day in the past.\n\nFor `Registration` resources using\n[Monthly billing](/domains/pricing#billing-models), this method works if: \n\n* `state` is `EXPORTED` with `expire_time` in the past\n* `state` is `REGISTRATION_FAILED`\n* `state` is `TRANSFER_FAILED`\n\nWhen an active registration is successfully deleted, you can continue to\nuse the domain in [Google Domains](https: //domains.google/) until it\nexpires. The calling user becomes the domain's sole owner in Google\nDomains, and permissions for the domain are subsequently managed there. The\ndomain does not renew automatically unless the new owner sets up billing in\nGoogle Domains.",
       "file": "Client/DeleteRegistration/main.go",
       "language": "GO",
       "clientMethod": {
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -198,7 +198,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_ExportRegistration_sync",
       "title": "domains ExportRegistration Sample",
-      "description": "ExportRegistration exports a Registration resource, such that it is no longer managed by\nCloud Domains.\n\nWhen an active domain is successfully exported, you can continue to use the\ndomain in Google Domains (at https: //domains.google/) until it expires. The\ncalling user becomes the domain’s sole owner in Google Domains, and\npermissions for the domain are subsequently managed there. The domain does\nnot renew automatically unless the new owner sets up billing in Google\nDomains.",
+      "description": "ExportRegistration exports a `Registration` resource, such that it is no longer managed by\nCloud Domains.\n\nWhen an active domain is successfully exported, you can continue to use the\ndomain in [Google Domains](https: //domains.google/) until it expires. The\ncalling user becomes the domain's sole owner in Google Domains, and\npermissions for the domain are subsequently managed there. The domain does\nnot renew automatically unless the new owner sets up billing in Google\nDomains.",
       "file": "Client/ExportRegistration/main.go",
       "language": "GO",
       "clientMethod": {
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -244,7 +244,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_GetRegistration_sync",
       "title": "domains GetRegistration Sample",
-      "description": "GetRegistration gets the details of a Registration resource.",
+      "description": "GetRegistration gets the details of a `Registration` resource.",
       "file": "Client/GetRegistration/main.go",
       "language": "GO",
       "clientMethod": {
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "domainspb.Registration",
+        "resultType": "*domainspb.Registration",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.domains.v1beta1.Client"
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -290,7 +290,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_ListRegistrations_sync",
       "title": "domains ListRegistrations Sample",
-      "description": "ListRegistrations lists the Registration resources in a project.",
+      "description": "ListRegistrations lists the `Registration` resources in a project.",
       "file": "Client/ListRegistrations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -336,7 +336,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_RegisterDomain_sync",
       "title": "domains RegisterDomain Sample",
-      "description": "RegisterDomain registers a new domain name and creates a corresponding Registration\nresource.\n\nCall RetrieveRegisterParameters first to check availability of the domain\nname and determine parameters like price that are needed to build a call to\nthis method.\n\nA successful call creates a Registration resource in state\nREGISTRATION_PENDING, which resolves to ACTIVE within 1-2\nminutes, indicating that the domain was successfully registered. If the\nresource ends up in state REGISTRATION_FAILED, it indicates that the\ndomain was not registered successfully, and you can safely delete the\nresource and retry registration.",
+      "description": "RegisterDomain registers a new domain name and creates a corresponding `Registration`\nresource.\n\nCall `RetrieveRegisterParameters` first to check availability of the domain\nname and determine parameters like price that are needed to build a call to\nthis method.\n\nA successful call creates a `Registration` resource in state\n`REGISTRATION_PENDING`, which resolves to `ACTIVE` within 1-2\nminutes, indicating that the domain was successfully registered. If the\nresource ends up in state `REGISTRATION_FAILED`, it indicates that the\ndomain was not registered successfully, and you can safely delete the\nresource and retry registration.",
       "file": "Client/RegisterDomain/main.go",
       "language": "GO",
       "clientMethod": {
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -382,7 +382,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_ResetAuthorizationCode_sync",
       "title": "domains ResetAuthorizationCode Sample",
-      "description": "ResetAuthorizationCode resets the authorization code of the Registration to a new random string.\n\nYou can call this method only after 60 days have elapsed since the initial\ndomain registration.",
+      "description": "ResetAuthorizationCode resets the authorization code of the `Registration` to a new random string.\n\nYou can call this method only after 60 days have elapsed since the initial\ndomain registration.",
       "file": "Client/ResetAuthorizationCode/main.go",
       "language": "GO",
       "clientMethod": {
@@ -402,7 +402,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "domainspb.AuthorizationCode",
+        "resultType": "*domainspb.AuthorizationCode",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.domains.v1beta1.Client"
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -428,7 +428,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_RetrieveAuthorizationCode_sync",
       "title": "domains RetrieveAuthorizationCode Sample",
-      "description": "RetrieveAuthorizationCode gets the authorization code of the Registration for the purpose of\ntransferring the domain to another registrar.\n\nYou can call this method only after 60 days have elapsed since the initial\ndomain registration.",
+      "description": "RetrieveAuthorizationCode gets the authorization code of the `Registration` for the purpose of\ntransferring the domain to another registrar.\n\nYou can call this method only after 60 days have elapsed since the initial\ndomain registration.",
       "file": "Client/RetrieveAuthorizationCode/main.go",
       "language": "GO",
       "clientMethod": {
@@ -448,7 +448,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "domainspb.AuthorizationCode",
+        "resultType": "*domainspb.AuthorizationCode",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.domains.v1beta1.Client"
@@ -466,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -474,7 +474,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_RetrieveRegisterParameters_sync",
       "title": "domains RetrieveRegisterParameters Sample",
-      "description": "RetrieveRegisterParameters gets parameters needed to register a new domain name, including price and\nup-to-date availability. Use the returned values to call RegisterDomain.",
+      "description": "RetrieveRegisterParameters gets parameters needed to register a new domain name, including price and\nup-to-date availability. Use the returned values to call `RegisterDomain`.",
       "file": "Client/RetrieveRegisterParameters/main.go",
       "language": "GO",
       "clientMethod": {
@@ -494,7 +494,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "domainspb.RetrieveRegisterParametersResponse",
+        "resultType": "*domainspb.RetrieveRegisterParametersResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.domains.v1beta1.Client"
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -520,7 +520,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_RetrieveTransferParameters_sync",
       "title": "domains RetrieveTransferParameters Sample",
-      "description": "RetrieveTransferParameters gets parameters needed to transfer a domain name from another registrar to\nCloud Domains. For domains managed by Google Domains, transferring to Cloud\nDomains is not supported.\n\nUse the returned values to call TransferDomain.",
+      "description": "RetrieveTransferParameters gets parameters needed to transfer a domain name from another registrar to\nCloud Domains. For domains managed by Google Domains, transferring to Cloud\nDomains is not supported.\n\n\nUse the returned values to call `TransferDomain`.",
       "file": "Client/RetrieveTransferParameters/main.go",
       "language": "GO",
       "clientMethod": {
@@ -540,7 +540,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "domainspb.RetrieveTransferParametersResponse",
+        "resultType": "*domainspb.RetrieveTransferParametersResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.domains.v1beta1.Client"
@@ -558,7 +558,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -566,7 +566,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_SearchDomains_sync",
       "title": "domains SearchDomains Sample",
-      "description": "SearchDomains searches for available domain names similar to the provided query.\n\nAvailability results from this method are approximate; call\nRetrieveRegisterParameters on a domain before registering to confirm\navailability.",
+      "description": "SearchDomains searches for available domain names similar to the provided query.\n\nAvailability results from this method are approximate; call\n`RetrieveRegisterParameters` on a domain before registering to confirm\navailability.",
       "file": "Client/SearchDomains/main.go",
       "language": "GO",
       "clientMethod": {
@@ -586,7 +586,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "domainspb.SearchDomainsResponse",
+        "resultType": "*domainspb.SearchDomainsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.domains.v1beta1.Client"
@@ -604,7 +604,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -612,7 +612,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_TransferDomain_sync",
       "title": "domains TransferDomain Sample",
-      "description": "TransferDomain transfers a domain name from another registrar to Cloud Domains.  For\ndomains managed by Google Domains, transferring to Cloud Domains is not\nsupported.\n\nBefore calling this method, go to the domain’s current registrar to unlock\nthe domain for transfer and retrieve the domain’s transfer authorization\ncode. Then call RetrieveTransferParameters to confirm that the domain is\nunlocked and to get values needed to build a call to this method.\n\nA successful call creates a Registration resource in state\nTRANSFER_PENDING. It can take several days to complete the transfer\nprocess. The registrant can often speed up this process by approving the\ntransfer through the current registrar, either by clicking a link in an\nemail from the registrar or by visiting the registrar’s website.\n\nA few minutes after transfer approval, the resource transitions to state\nACTIVE, indicating that the transfer was successful. If the transfer is\nrejected or the request expires without being approved, the resource can\nend up in state TRANSFER_FAILED. If transfer fails, you can safely delete\nthe resource and retry the transfer.",
+      "description": "TransferDomain transfers a domain name from another registrar to Cloud Domains.  For\ndomains managed by Google Domains, transferring to Cloud Domains is not\nsupported.\n\n\nBefore calling this method, go to the domain's current registrar to unlock\nthe domain for transfer and retrieve the domain's transfer authorization\ncode. Then call `RetrieveTransferParameters` to confirm that the domain is\nunlocked and to get values needed to build a call to this method.\n\nA successful call creates a `Registration` resource in state\n`TRANSFER_PENDING`. It can take several days to complete the transfer\nprocess. The registrant can often speed up this process by approving the\ntransfer through the current registrar, either by clicking a link in an\nemail from the registrar or by visiting the registrar's website.\n\nA few minutes after transfer approval, the resource transitions to state\n`ACTIVE`, indicating that the transfer was successful. If the transfer is\nrejected or the request expires without being approved, the resource can\nend up in state `TRANSFER_FAILED`. If transfer fails, you can safely delete\nthe resource and retry the transfer.",
       "file": "Client/TransferDomain/main.go",
       "language": "GO",
       "clientMethod": {
@@ -650,7 +650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -658,7 +658,7 @@
     {
       "regionTag": "domains_v1beta1_generated_Domains_UpdateRegistration_sync",
       "title": "domains UpdateRegistration Sample",
-      "description": "UpdateRegistration updates select fields of a Registration resource, notably labels. To\nupdate other fields, use the appropriate custom update method: \n\n  To update management settings, see ConfigureManagementSettings\n\n  To update DNS configuration, see ConfigureDnsSettings\n\n  To update contact information, see ConfigureContactSettings",
+      "description": "UpdateRegistration updates select fields of a `Registration` resource, notably `labels`. To\nupdate other fields, use the appropriate custom update method: \n\n* To update management settings, see `ConfigureManagementSettings`\n* To update DNS configuration, see `ConfigureDnsSettings`\n* To update contact information, see `ConfigureContactSettings`",
       "file": "Client/UpdateRegistration/main.go",
       "language": "GO",
       "clientMethod": {
@@ -696,7 +696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 58,
           "type": "FULL"
         }
       ]

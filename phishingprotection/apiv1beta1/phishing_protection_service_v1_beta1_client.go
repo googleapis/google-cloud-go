@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,21 +20,20 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
+	phishingprotectionpb "cloud.google.com/go/phishingprotection/apiv1beta1/phishingprotectionpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	phishingprotectionpb "google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -48,7 +47,9 @@ type PhishingProtectionServiceV1Beta1CallOptions struct {
 func defaultPhishingProtectionServiceV1Beta1GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("phishingprotection.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("phishingprotection.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("phishingprotection.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://phishingprotection.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -59,13 +60,17 @@ func defaultPhishingProtectionServiceV1Beta1GRPCClientOptions() []option.ClientO
 
 func defaultPhishingProtectionServiceV1Beta1CallOptions() *PhishingProtectionServiceV1Beta1CallOptions {
 	return &PhishingProtectionServiceV1Beta1CallOptions{
-		ReportPhishing: []gax.CallOption{},
+		ReportPhishing: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultPhishingProtectionServiceV1Beta1RESTCallOptions() *PhishingProtectionServiceV1Beta1CallOptions {
 	return &PhishingProtectionServiceV1Beta1CallOptions{
-		ReportPhishing: []gax.CallOption{},
+		ReportPhishing: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -106,7 +111,8 @@ func (c *PhishingProtectionServiceV1Beta1Client) setGoogleClientInfo(keyval ...s
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PhishingProtectionServiceV1Beta1Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -129,9 +135,6 @@ type phishingProtectionServiceV1Beta1GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PhishingProtectionServiceV1Beta1Client
 	CallOptions **PhishingProtectionServiceV1Beta1CallOptions
 
@@ -139,7 +142,7 @@ type phishingProtectionServiceV1Beta1GRPCClient struct {
 	phishingProtectionServiceV1Beta1Client phishingprotectionpb.PhishingProtectionServiceV1Beta1Client
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewPhishingProtectionServiceV1Beta1Client creates a new phishing protection service v1 beta1 client based on gRPC.
@@ -156,11 +159,6 @@ func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...opti
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -169,7 +167,6 @@ func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...opti
 
 	c := &phishingProtectionServiceV1Beta1GRPCClient{
 		connPool:                               connPool,
-		disableDeadlines:                       disableDeadlines,
 		phishingProtectionServiceV1Beta1Client: phishingprotectionpb.NewPhishingProtectionServiceV1Beta1Client(connPool),
 		CallOptions:                            &client.CallOptions,
 	}
@@ -182,7 +179,8 @@ func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...opti
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *phishingProtectionServiceV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -191,9 +189,9 @@ func (c *phishingProtectionServiceV1Beta1GRPCClient) Connection() *grpc.ClientCo
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *phishingProtectionServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -210,8 +208,8 @@ type phishingProtectionServiceV1Beta1RESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing PhishingProtectionServiceV1Beta1Client
 	CallOptions **PhishingProtectionServiceV1Beta1CallOptions
@@ -241,7 +239,9 @@ func NewPhishingProtectionServiceV1Beta1RESTClient(ctx context.Context, opts ...
 func defaultPhishingProtectionServiceV1Beta1RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://phishingprotection.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://phishingprotection.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://phishingprotection.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://phishingprotection.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -251,9 +251,9 @@ func defaultPhishingProtectionServiceV1Beta1RESTClientOptions() []option.ClientO
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *phishingProtectionServiceV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -266,19 +266,15 @@ func (c *phishingProtectionServiceV1Beta1RESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *phishingProtectionServiceV1Beta1RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *phishingProtectionServiceV1Beta1GRPCClient) ReportPhishing(ctx context.Context, req *phishingprotectionpb.ReportPhishingRequest, opts ...gax.CallOption) (*phishingprotectionpb.ReportPhishingResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ReportPhishing[0:len((*c.CallOptions).ReportPhishing):len((*c.CallOptions).ReportPhishing)], opts...)
 	var resp *phishingprotectionpb.ReportPhishingResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -312,10 +308,17 @@ func (c *phishingProtectionServiceV1Beta1RESTClient) ReportPhishing(ctx context.
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/phishing:report", req.GetParent())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ReportPhishing[0:len((*c.CallOptions).ReportPhishing):len((*c.CallOptions).ReportPhishing)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &phishingprotectionpb.ReportPhishingResponse{}
@@ -340,13 +343,13 @@ func (c *phishingProtectionServiceV1Beta1RESTClient) ReportPhishing(ctx context.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

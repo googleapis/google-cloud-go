@@ -56,14 +56,14 @@ func (c *Client) JobFromIDLocation(ctx context.Context, id, location string) (j 
 	return c.JobFromProject(ctx, c.projectID, id, location)
 }
 
-// JobFromProject creates a Job which refers to an existing BigQuery job.  The job
+// JobFromProject creates a Job which refers to an existing BigQuery job. The job
 // need not have been created by this package, nor does it need to reside within the same
 // project or location as the instantiated client.
 func (c *Client) JobFromProject(ctx context.Context, projectID, jobID, location string) (j *Job, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.JobFromProject")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	bqjob, err := c.getJobInternal(ctx, jobID, location, projectID, "configuration", "jobReference", "status", "statistics")
+	bqjob, err := c.getJobInternal(ctx, jobID, location, projectID, "user_email", "configuration", "jobReference", "status", "statistics")
 	if err != nil {
 		return nil, err
 	}
@@ -170,17 +170,22 @@ type JobIDConfig struct {
 
 	// Location is the location for the job.
 	Location string
+
+	// ProjectID is the Google Cloud project associated with the job.
+	ProjectID string
 }
 
 // createJobRef creates a JobReference.
 func (j *JobIDConfig) createJobRef(c *Client) *bq.JobReference {
-	// We don't check whether projectID is empty; the server will return an
-	// error when it encounters the resulting JobReference.
+	projectID := j.ProjectID
+	if projectID == "" { // Use Client.ProjectID as a default.
+		projectID = c.projectID
+	}
 	loc := j.Location
 	if loc == "" { // Use Client.Location as a default.
 		loc = c.Location
 	}
-	jr := &bq.JobReference{ProjectId: c.projectID, Location: loc}
+	jr := &bq.JobReference{ProjectId: projectID, Location: loc}
 	if j.JobID == "" {
 		jr.JobId = randomIDFn()
 	} else if j.AddJobIDSuffix {
@@ -240,7 +245,9 @@ func (j *Job) Cancel(ctx context.Context) error {
 		Context(ctx)
 	setClientHeader(call.Header())
 	return runWithRetry(ctx, func() error {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.cancel")
 		_, err := call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 }
@@ -257,7 +264,9 @@ func (j *Job) Delete(ctx context.Context) (err error) {
 	setClientHeader(call.Header())
 
 	return runWithRetry(ctx, func() (err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.delete")
 		err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 }
@@ -317,16 +326,25 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 	if err != nil {
 		return nil, err
 	}
-	// Shave off some potential overhead by only retaining the minimal job representation in the iterator.
-	itJob := &Job{
-		c:         j.c,
-		projectID: j.projectID,
-		jobID:     j.jobID,
-		location:  j.location,
+	var it *RowIterator
+	if j.c.isStorageReadAvailable() {
+		it, err = newStorageRowIteratorFromJob(ctx, j)
+		if err != nil {
+			it = nil
+		}
 	}
-	it := newRowIterator(ctx, &rowSource{j: itJob}, pf)
+	if it == nil {
+		// Shave off some potential overhead by only retaining the minimal job representation in the iterator.
+		itJob := &Job{
+			c:         j.c,
+			projectID: j.projectID,
+			jobID:     j.jobID,
+			location:  j.location,
+		}
+		it = newRowIterator(ctx, &rowSource{j: itJob}, pf)
+		it.TotalRows = totalRows
+	}
 	it.Schema = schema
-	it.TotalRows = totalRows
 	return it, nil
 }
 
@@ -343,7 +361,9 @@ func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint6
 	}
 	var res *bq.GetQueryResultsResponse
 	err := internal.Retry(ctx, backoff, func() (stop bool, err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.getQueryResults")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		if err != nil {
 			return !retryableError(err, jobRetryReasons), err
 		}
@@ -694,18 +714,18 @@ func bqToScriptStatistics(bs *bq.ScriptStatistics) *ScriptStatistics {
 //
 // Line and column numbers are defined as follows:
 //
-// - Line and column numbers start with one.  That is, line 1 column 1 denotes
-//   the start of the script.
-// - When inside a stored procedure, all line/column numbers are relative
-//   to the procedure body, not the script in which the procedure was defined.
-// - Start/end positions exclude leading/trailing comments and whitespace.
-//   The end position always ends with a ";", when present.
-// - Multi-byte Unicode characters are treated as just one column.
-// - If the original script (or procedure definition) contains TAB characters,
-//   a tab "snaps" the indentation forward to the nearest multiple of 8
-//   characters, plus 1. For example, a TAB on column 1, 2, 3, 4, 5, 6 , or 8
-//   will advance the next character to column 9.  A TAB on column 9, 10, 11,
-//   12, 13, 14, 15, or 16 will advance the next character to column 17.
+//   - Line and column numbers start with one.  That is, line 1 column 1 denotes
+//     the start of the script.
+//   - When inside a stored procedure, all line/column numbers are relative
+//     to the procedure body, not the script in which the procedure was defined.
+//   - Start/end positions exclude leading/trailing comments and whitespace.
+//     The end position always ends with a ";", when present.
+//   - Multi-byte Unicode characters are treated as just one column.
+//   - If the original script (or procedure definition) contains TAB characters,
+//     a tab "snaps" the indentation forward to the nearest multiple of 8
+//     characters, plus 1. For example, a TAB on column 1, 2, 3, 4, 5, 6 , or 8
+//     will advance the next character to column 9.  A TAB on column 9, 10, 11,
+//     12, 13, 14, 15, or 16 will advance the next character to column 17.
 type ScriptStackFrame struct {
 	StartLine   int64
 	StartColumn int64
@@ -837,7 +857,14 @@ func (it *JobIterator) fetch(pageSize int, pageToken string) (string, error) {
 	if it.ParentJobID != "" {
 		req.ParentJobId(it.ParentJobID)
 	}
-	res, err := req.Do()
+	var res *bq.JobList
+	err := runWithRetry(it.ctx, func() (err error) {
+		sCtx := trace.StartSpan(it.ctx, "bigquery.jobs.list")
+		res, err = req.Do()
+		trace.EndSpan(sCtx, err)
+		return err
+	})
+
 	if err != nil {
 		return "", err
 	}
@@ -870,7 +897,9 @@ func (c *Client) getJobInternal(ctx context.Context, jobID, location, projectID 
 	}
 	setClientHeader(call.Header())
 	err := runWithRetry(ctx, func() (err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.get")
 		job, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	})
 	if err != nil {
@@ -908,6 +937,28 @@ func (j *Job) setConfig(config *bq.JobConfiguration) {
 
 func (j *Job) isQuery() bool {
 	return j.config != nil && j.config.Query != nil
+}
+
+func (j *Job) isScript() bool {
+	return j.hasStatementType("SCRIPT")
+}
+
+func (j *Job) isSelectQuery() bool {
+	return j.hasStatementType("SELECT")
+}
+
+func (j *Job) hasStatementType(statementType string) bool {
+	if !j.isQuery() {
+		return false
+	}
+	if j.lastStatus == nil {
+		return false
+	}
+	queryStats, ok := j.lastStatus.Statistics.Details.(*QueryStatistics)
+	if !ok {
+		return false
+	}
+	return queryStats.StatementType == statementType
 }
 
 var stateMap = map[string]State{"PENDING": Pending, "RUNNING": Running, "DONE": Done}

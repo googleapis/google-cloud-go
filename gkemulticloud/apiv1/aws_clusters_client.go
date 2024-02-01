@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,18 +23,17 @@ import (
 	"net/url"
 	"time"
 
+	gkemulticloudpb "cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	gkemulticloudpb "google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -42,24 +41,34 @@ var newAwsClustersClientHook clientHook
 
 // AwsClustersCallOptions contains the retry settings for each method of AwsClustersClient.
 type AwsClustersCallOptions struct {
-	CreateAwsCluster       []gax.CallOption
-	UpdateAwsCluster       []gax.CallOption
-	GetAwsCluster          []gax.CallOption
-	ListAwsClusters        []gax.CallOption
-	DeleteAwsCluster       []gax.CallOption
-	GenerateAwsAccessToken []gax.CallOption
-	CreateAwsNodePool      []gax.CallOption
-	UpdateAwsNodePool      []gax.CallOption
-	GetAwsNodePool         []gax.CallOption
-	ListAwsNodePools       []gax.CallOption
-	DeleteAwsNodePool      []gax.CallOption
-	GetAwsServerConfig     []gax.CallOption
+	CreateAwsCluster             []gax.CallOption
+	UpdateAwsCluster             []gax.CallOption
+	GetAwsCluster                []gax.CallOption
+	ListAwsClusters              []gax.CallOption
+	DeleteAwsCluster             []gax.CallOption
+	GenerateAwsClusterAgentToken []gax.CallOption
+	GenerateAwsAccessToken       []gax.CallOption
+	CreateAwsNodePool            []gax.CallOption
+	UpdateAwsNodePool            []gax.CallOption
+	RollbackAwsNodePoolUpdate    []gax.CallOption
+	GetAwsNodePool               []gax.CallOption
+	ListAwsNodePools             []gax.CallOption
+	DeleteAwsNodePool            []gax.CallOption
+	GetAwsOpenIdConfig           []gax.CallOption
+	GetAwsJsonWebKeys            []gax.CallOption
+	GetAwsServerConfig           []gax.CallOption
+	CancelOperation              []gax.CallOption
+	DeleteOperation              []gax.CallOption
+	GetOperation                 []gax.CallOption
+	ListOperations               []gax.CallOption
 }
 
 func defaultAwsClustersGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gkemulticloud.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("gkemulticloud.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("gkemulticloud.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkemulticloud.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -70,9 +79,14 @@ func defaultAwsClustersGRPCClientOptions() []option.ClientOption {
 
 func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 	return &AwsClustersCallOptions{
-		CreateAwsCluster: []gax.CallOption{},
-		UpdateAwsCluster: []gax.CallOption{},
+		CreateAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -84,6 +98,7 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 			}),
 		},
 		ListAwsClusters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -94,8 +109,23 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 				})
 			}),
 		},
-		DeleteAwsCluster: []gax.CallOption{},
+		DeleteAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GenerateAwsClusterAgentToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GenerateAwsAccessToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -106,9 +136,17 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 				})
 			}),
 		},
-		CreateAwsNodePool: []gax.CallOption{},
-		UpdateAwsNodePool: []gax.CallOption{},
+		CreateAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RollbackAwsNodePoolUpdate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -120,6 +158,7 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 			}),
 		},
 		ListAwsNodePools: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -130,8 +169,35 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 				})
 			}),
 		},
-		DeleteAwsNodePool: []gax.CallOption{},
+		DeleteAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAwsOpenIdConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAwsJsonWebKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetAwsServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -142,6 +208,10 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 				})
 			}),
 		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -158,16 +228,25 @@ type internalAwsClustersClient interface {
 	ListAwsClusters(context.Context, *gkemulticloudpb.ListAwsClustersRequest, ...gax.CallOption) *AwsClusterIterator
 	DeleteAwsCluster(context.Context, *gkemulticloudpb.DeleteAwsClusterRequest, ...gax.CallOption) (*DeleteAwsClusterOperation, error)
 	DeleteAwsClusterOperation(name string) *DeleteAwsClusterOperation
+	GenerateAwsClusterAgentToken(context.Context, *gkemulticloudpb.GenerateAwsClusterAgentTokenRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAwsClusterAgentTokenResponse, error)
 	GenerateAwsAccessToken(context.Context, *gkemulticloudpb.GenerateAwsAccessTokenRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAwsAccessTokenResponse, error)
 	CreateAwsNodePool(context.Context, *gkemulticloudpb.CreateAwsNodePoolRequest, ...gax.CallOption) (*CreateAwsNodePoolOperation, error)
 	CreateAwsNodePoolOperation(name string) *CreateAwsNodePoolOperation
 	UpdateAwsNodePool(context.Context, *gkemulticloudpb.UpdateAwsNodePoolRequest, ...gax.CallOption) (*UpdateAwsNodePoolOperation, error)
 	UpdateAwsNodePoolOperation(name string) *UpdateAwsNodePoolOperation
+	RollbackAwsNodePoolUpdate(context.Context, *gkemulticloudpb.RollbackAwsNodePoolUpdateRequest, ...gax.CallOption) (*RollbackAwsNodePoolUpdateOperation, error)
+	RollbackAwsNodePoolUpdateOperation(name string) *RollbackAwsNodePoolUpdateOperation
 	GetAwsNodePool(context.Context, *gkemulticloudpb.GetAwsNodePoolRequest, ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error)
 	ListAwsNodePools(context.Context, *gkemulticloudpb.ListAwsNodePoolsRequest, ...gax.CallOption) *AwsNodePoolIterator
 	DeleteAwsNodePool(context.Context, *gkemulticloudpb.DeleteAwsNodePoolRequest, ...gax.CallOption) (*DeleteAwsNodePoolOperation, error)
 	DeleteAwsNodePoolOperation(name string) *DeleteAwsNodePoolOperation
+	GetAwsOpenIdConfig(context.Context, *gkemulticloudpb.GetAwsOpenIdConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AwsOpenIdConfig, error)
+	GetAwsJsonWebKeys(context.Context, *gkemulticloudpb.GetAwsJsonWebKeysRequest, ...gax.CallOption) (*gkemulticloudpb.AwsJsonWebKeys, error)
 	GetAwsServerConfig(context.Context, *gkemulticloudpb.GetAwsServerConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AwsServerConfig, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // AwsClustersClient is a client for interacting with Anthos Multi-Cloud API.
@@ -205,12 +284,14 @@ func (c *AwsClustersClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AwsClustersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateAwsCluster creates a new AwsCluster resource on a given GCP project and region.
+// CreateAwsCluster creates a new AwsCluster
+// resource on a given Google Cloud Platform project and region.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -236,21 +317,23 @@ func (c *AwsClustersClient) UpdateAwsClusterOperation(name string) *UpdateAwsClu
 	return c.internalClient.UpdateAwsClusterOperation(name)
 }
 
-// GetAwsCluster describes a specific AwsCluster resource.
+// GetAwsCluster describes a specific AwsCluster
+// resource.
 func (c *AwsClustersClient) GetAwsCluster(ctx context.Context, req *gkemulticloudpb.GetAwsClusterRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsCluster, error) {
 	return c.internalClient.GetAwsCluster(ctx, req, opts...)
 }
 
-// ListAwsClusters lists all AwsCluster resources on a given Google Cloud project and
-// region.
+// ListAwsClusters lists all AwsCluster resources
+// on a given Google Cloud project and region.
 func (c *AwsClustersClient) ListAwsClusters(ctx context.Context, req *gkemulticloudpb.ListAwsClustersRequest, opts ...gax.CallOption) *AwsClusterIterator {
 	return c.internalClient.ListAwsClusters(ctx, req, opts...)
 }
 
-// DeleteAwsCluster deletes a specific AwsCluster resource.
+// DeleteAwsCluster deletes a specific AwsCluster
+// resource.
 //
-// Fails if the cluster has one or more associated AwsNodePool
-// resources.
+// Fails if the cluster has one or more associated
+// AwsNodePool resources.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -265,13 +348,19 @@ func (c *AwsClustersClient) DeleteAwsClusterOperation(name string) *DeleteAwsClu
 	return c.internalClient.DeleteAwsClusterOperation(name)
 }
 
+// GenerateAwsClusterAgentToken generates an access token for a cluster agent.
+func (c *AwsClustersClient) GenerateAwsClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsClusterAgentTokenResponse, error) {
+	return c.internalClient.GenerateAwsClusterAgentToken(ctx, req, opts...)
+}
+
 // GenerateAwsAccessToken generates a short-lived access token to authenticate to a given
 // AwsCluster resource.
 func (c *AwsClustersClient) GenerateAwsAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsAccessTokenResponse, error) {
 	return c.internalClient.GenerateAwsAccessToken(ctx, req, opts...)
 }
 
-// CreateAwsNodePool creates a new AwsNodePool, attached to a given AwsCluster.
+// CreateAwsNodePool creates a new AwsNodePool,
+// attached to a given AwsCluster.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -297,17 +386,37 @@ func (c *AwsClustersClient) UpdateAwsNodePoolOperation(name string) *UpdateAwsNo
 	return c.internalClient.UpdateAwsNodePoolOperation(name)
 }
 
-// GetAwsNodePool describes a specific AwsNodePool resource.
+// RollbackAwsNodePoolUpdate rolls back a previously aborted or failed
+// AwsNodePool update request.
+// Makes no changes if the last update request successfully finished.
+// If an update request is in progress, you cannot rollback the update.
+// You must first cancel or let it finish unsuccessfully before you can
+// rollback.
+func (c *AwsClustersClient) RollbackAwsNodePoolUpdate(ctx context.Context, req *gkemulticloudpb.RollbackAwsNodePoolUpdateRequest, opts ...gax.CallOption) (*RollbackAwsNodePoolUpdateOperation, error) {
+	return c.internalClient.RollbackAwsNodePoolUpdate(ctx, req, opts...)
+}
+
+// RollbackAwsNodePoolUpdateOperation returns a new RollbackAwsNodePoolUpdateOperation from a given name.
+// The name must be that of a previously created RollbackAwsNodePoolUpdateOperation, possibly from a different process.
+func (c *AwsClustersClient) RollbackAwsNodePoolUpdateOperation(name string) *RollbackAwsNodePoolUpdateOperation {
+	return c.internalClient.RollbackAwsNodePoolUpdateOperation(name)
+}
+
+// GetAwsNodePool describes a specific
+// AwsNodePool resource.
 func (c *AwsClustersClient) GetAwsNodePool(ctx context.Context, req *gkemulticloudpb.GetAwsNodePoolRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
 	return c.internalClient.GetAwsNodePool(ctx, req, opts...)
 }
 
-// ListAwsNodePools lists all AwsNodePool resources on a given AwsCluster.
+// ListAwsNodePools lists all AwsNodePool
+// resources on a given
+// AwsCluster.
 func (c *AwsClustersClient) ListAwsNodePools(ctx context.Context, req *gkemulticloudpb.ListAwsNodePoolsRequest, opts ...gax.CallOption) *AwsNodePoolIterator {
 	return c.internalClient.ListAwsNodePools(ctx, req, opts...)
 }
 
-// DeleteAwsNodePool deletes a specific AwsNodePool resource.
+// DeleteAwsNodePool deletes a specific AwsNodePool
+// resource.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -322,10 +431,45 @@ func (c *AwsClustersClient) DeleteAwsNodePoolOperation(name string) *DeleteAwsNo
 	return c.internalClient.DeleteAwsNodePoolOperation(name)
 }
 
+// GetAwsOpenIdConfig gets the OIDC discovery document for the cluster.
+// See the
+// OpenID Connect Discovery 1.0
+// specification (at https://openid.net/specs/openid-connect-discovery-1_0.html)
+// for details.
+func (c *AwsClustersClient) GetAwsOpenIdConfig(ctx context.Context, req *gkemulticloudpb.GetAwsOpenIdConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsOpenIdConfig, error) {
+	return c.internalClient.GetAwsOpenIdConfig(ctx, req, opts...)
+}
+
+// GetAwsJsonWebKeys gets the public component of the cluster signing keys in
+// JSON Web Key format.
+func (c *AwsClustersClient) GetAwsJsonWebKeys(ctx context.Context, req *gkemulticloudpb.GetAwsJsonWebKeysRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsJsonWebKeys, error) {
+	return c.internalClient.GetAwsJsonWebKeys(ctx, req, opts...)
+}
+
 // GetAwsServerConfig returns information, such as supported AWS regions and Kubernetes
 // versions, on a given Google Cloud location.
 func (c *AwsClustersClient) GetAwsServerConfig(ctx context.Context, req *gkemulticloudpb.GetAwsServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsServerConfig, error) {
 	return c.internalClient.GetAwsServerConfig(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *AwsClustersClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *AwsClustersClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *AwsClustersClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *AwsClustersClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // awsClustersGRPCClient is a client for interacting with Anthos Multi-Cloud API over gRPC transport.
@@ -334,9 +478,6 @@ func (c *AwsClustersClient) GetAwsServerConfig(ctx context.Context, req *gkemult
 type awsClustersGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing AwsClustersClient
 	CallOptions **AwsClustersCallOptions
@@ -349,8 +490,10 @@ type awsClustersGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewAwsClustersClient creates a new aws clusters client based on gRPC.
@@ -368,11 +511,6 @@ func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*Aw
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -381,9 +519,9 @@ func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*Aw
 
 	c := &awsClustersGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		awsClustersClient: gkemulticloudpb.NewAwsClustersClient(connPool),
 		CallOptions:       &client.CallOptions,
+		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -405,7 +543,8 @@ func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*Aw
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *awsClustersGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -414,9 +553,9 @@ func (c *awsClustersGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *awsClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -426,14 +565,10 @@ func (c *awsClustersGRPCClient) Close() error {
 }
 
 func (c *awsClustersGRPCClient) CreateAwsCluster(ctx context.Context, req *gkemulticloudpb.CreateAwsClusterRequest, opts ...gax.CallOption) (*CreateAwsClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateAwsCluster[0:len((*c.CallOptions).CreateAwsCluster):len((*c.CallOptions).CreateAwsCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -450,14 +585,10 @@ func (c *awsClustersGRPCClient) CreateAwsCluster(ctx context.Context, req *gkemu
 }
 
 func (c *awsClustersGRPCClient) UpdateAwsCluster(ctx context.Context, req *gkemulticloudpb.UpdateAwsClusterRequest, opts ...gax.CallOption) (*UpdateAwsClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster.name", url.QueryEscape(req.GetAwsCluster().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster.name", url.QueryEscape(req.GetAwsCluster().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateAwsCluster[0:len((*c.CallOptions).UpdateAwsCluster):len((*c.CallOptions).UpdateAwsCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -474,14 +605,10 @@ func (c *awsClustersGRPCClient) UpdateAwsCluster(ctx context.Context, req *gkemu
 }
 
 func (c *awsClustersGRPCClient) GetAwsCluster(ctx context.Context, req *gkemulticloudpb.GetAwsClusterRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsCluster, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetAwsCluster[0:len((*c.CallOptions).GetAwsCluster):len((*c.CallOptions).GetAwsCluster)], opts...)
 	var resp *gkemulticloudpb.AwsCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -496,9 +623,10 @@ func (c *awsClustersGRPCClient) GetAwsCluster(ctx context.Context, req *gkemulti
 }
 
 func (c *awsClustersGRPCClient) ListAwsClusters(ctx context.Context, req *gkemulticloudpb.ListAwsClustersRequest, opts ...gax.CallOption) *AwsClusterIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListAwsClusters[0:len((*c.CallOptions).ListAwsClusters):len((*c.CallOptions).ListAwsClusters)], opts...)
 	it := &AwsClusterIterator{}
 	req = proto.Clone(req).(*gkemulticloudpb.ListAwsClustersRequest)
@@ -541,14 +669,10 @@ func (c *awsClustersGRPCClient) ListAwsClusters(ctx context.Context, req *gkemul
 }
 
 func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemulticloudpb.DeleteAwsClusterRequest, opts ...gax.CallOption) (*DeleteAwsClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteAwsCluster[0:len((*c.CallOptions).DeleteAwsCluster):len((*c.CallOptions).DeleteAwsCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -564,15 +688,29 @@ func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemu
 	}, nil
 }
 
-func (c *awsClustersGRPCClient) GenerateAwsAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsAccessTokenResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster", url.QueryEscape(req.GetAwsCluster())))
+func (c *awsClustersGRPCClient) GenerateAwsClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsClusterAgentTokenResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster", url.QueryEscape(req.GetAwsCluster()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateAwsClusterAgentToken[0:len((*c.CallOptions).GenerateAwsClusterAgentToken):len((*c.CallOptions).GenerateAwsClusterAgentToken)], opts...)
+	var resp *gkemulticloudpb.GenerateAwsClusterAgentTokenResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.awsClustersClient.GenerateAwsClusterAgentToken(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *awsClustersGRPCClient) GenerateAwsAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsAccessTokenResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster", url.QueryEscape(req.GetAwsCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GenerateAwsAccessToken[0:len((*c.CallOptions).GenerateAwsAccessToken):len((*c.CallOptions).GenerateAwsAccessToken)], opts...)
 	var resp *gkemulticloudpb.GenerateAwsAccessTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -587,14 +725,10 @@ func (c *awsClustersGRPCClient) GenerateAwsAccessToken(ctx context.Context, req 
 }
 
 func (c *awsClustersGRPCClient) CreateAwsNodePool(ctx context.Context, req *gkemulticloudpb.CreateAwsNodePoolRequest, opts ...gax.CallOption) (*CreateAwsNodePoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateAwsNodePool[0:len((*c.CallOptions).CreateAwsNodePool):len((*c.CallOptions).CreateAwsNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -611,14 +745,10 @@ func (c *awsClustersGRPCClient) CreateAwsNodePool(ctx context.Context, req *gkem
 }
 
 func (c *awsClustersGRPCClient) UpdateAwsNodePool(ctx context.Context, req *gkemulticloudpb.UpdateAwsNodePoolRequest, opts ...gax.CallOption) (*UpdateAwsNodePoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "aws_node_pool.name", url.QueryEscape(req.GetAwsNodePool().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "aws_node_pool.name", url.QueryEscape(req.GetAwsNodePool().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateAwsNodePool[0:len((*c.CallOptions).UpdateAwsNodePool):len((*c.CallOptions).UpdateAwsNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -634,15 +764,31 @@ func (c *awsClustersGRPCClient) UpdateAwsNodePool(ctx context.Context, req *gkem
 	}, nil
 }
 
-func (c *awsClustersGRPCClient) GetAwsNodePool(ctx context.Context, req *gkemulticloudpb.GetAwsNodePoolRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdate(ctx context.Context, req *gkemulticloudpb.RollbackAwsNodePoolUpdateRequest, opts ...gax.CallOption) (*RollbackAwsNodePoolUpdateOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RollbackAwsNodePoolUpdate[0:len((*c.CallOptions).RollbackAwsNodePoolUpdate):len((*c.CallOptions).RollbackAwsNodePoolUpdate)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.awsClustersClient.RollbackAwsNodePoolUpdate(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RollbackAwsNodePoolUpdateOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *awsClustersGRPCClient) GetAwsNodePool(ctx context.Context, req *gkemulticloudpb.GetAwsNodePoolRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetAwsNodePool[0:len((*c.CallOptions).GetAwsNodePool):len((*c.CallOptions).GetAwsNodePool)], opts...)
 	var resp *gkemulticloudpb.AwsNodePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -657,9 +803,10 @@ func (c *awsClustersGRPCClient) GetAwsNodePool(ctx context.Context, req *gkemult
 }
 
 func (c *awsClustersGRPCClient) ListAwsNodePools(ctx context.Context, req *gkemulticloudpb.ListAwsNodePoolsRequest, opts ...gax.CallOption) *AwsNodePoolIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListAwsNodePools[0:len((*c.CallOptions).ListAwsNodePools):len((*c.CallOptions).ListAwsNodePools)], opts...)
 	it := &AwsNodePoolIterator{}
 	req = proto.Clone(req).(*gkemulticloudpb.ListAwsNodePoolsRequest)
@@ -702,14 +849,10 @@ func (c *awsClustersGRPCClient) ListAwsNodePools(ctx context.Context, req *gkemu
 }
 
 func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkemulticloudpb.DeleteAwsNodePoolRequest, opts ...gax.CallOption) (*DeleteAwsNodePoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteAwsNodePool[0:len((*c.CallOptions).DeleteAwsNodePool):len((*c.CallOptions).DeleteAwsNodePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -725,15 +868,47 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkem
 	}, nil
 }
 
-func (c *awsClustersGRPCClient) GetAwsServerConfig(ctx context.Context, req *gkemulticloudpb.GetAwsServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsServerConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *awsClustersGRPCClient) GetAwsOpenIdConfig(ctx context.Context, req *gkemulticloudpb.GetAwsOpenIdConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsOpenIdConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster", url.QueryEscape(req.GetAwsCluster()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAwsOpenIdConfig[0:len((*c.CallOptions).GetAwsOpenIdConfig):len((*c.CallOptions).GetAwsOpenIdConfig)], opts...)
+	var resp *gkemulticloudpb.AwsOpenIdConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.awsClustersClient.GetAwsOpenIdConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *awsClustersGRPCClient) GetAwsJsonWebKeys(ctx context.Context, req *gkemulticloudpb.GetAwsJsonWebKeysRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsJsonWebKeys, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster", url.QueryEscape(req.GetAwsCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAwsJsonWebKeys[0:len((*c.CallOptions).GetAwsJsonWebKeys):len((*c.CallOptions).GetAwsJsonWebKeys)], opts...)
+	var resp *gkemulticloudpb.AwsJsonWebKeys
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.awsClustersClient.GetAwsJsonWebKeys(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *awsClustersGRPCClient) GetAwsServerConfig(ctx context.Context, req *gkemulticloudpb.GetAwsServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsServerConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetAwsServerConfig[0:len((*c.CallOptions).GetAwsServerConfig):len((*c.CallOptions).GetAwsServerConfig)], opts...)
 	var resp *gkemulticloudpb.AwsServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -747,9 +922,96 @@ func (c *awsClustersGRPCClient) GetAwsServerConfig(ctx context.Context, req *gke
 	return resp, nil
 }
 
-// CreateAwsClusterOperation manages a long-running operation from CreateAwsCluster.
-type CreateAwsClusterOperation struct {
-	lro *longrunning.Operation
+func (c *awsClustersGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *awsClustersGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *awsClustersGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *awsClustersGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateAwsClusterOperation returns a new CreateAwsClusterOperation from a given name.
@@ -760,134 +1022,12 @@ func (c *awsClustersGRPCClient) CreateAwsClusterOperation(name string) *CreateAw
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateAwsClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AwsCluster, error) {
-	var resp gkemulticloudpb.AwsCluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateAwsClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AwsCluster, error) {
-	var resp gkemulticloudpb.AwsCluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateAwsClusterOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateAwsClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateAwsClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateAwsNodePoolOperation manages a long-running operation from CreateAwsNodePool.
-type CreateAwsNodePoolOperation struct {
-	lro *longrunning.Operation
-}
-
 // CreateAwsNodePoolOperation returns a new CreateAwsNodePoolOperation from a given name.
 // The name must be that of a previously created CreateAwsNodePoolOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) CreateAwsNodePoolOperation(name string) *CreateAwsNodePoolOperation {
 	return &CreateAwsNodePoolOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateAwsNodePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
-	var resp gkemulticloudpb.AwsNodePool
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateAwsNodePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
-	var resp gkemulticloudpb.AwsNodePool
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateAwsNodePoolOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateAwsNodePoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateAwsNodePoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteAwsClusterOperation manages a long-running operation from DeleteAwsCluster.
-type DeleteAwsClusterOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteAwsClusterOperation returns a new DeleteAwsClusterOperation from a given name.
@@ -898,56 +1038,6 @@ func (c *awsClustersGRPCClient) DeleteAwsClusterOperation(name string) *DeleteAw
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteAwsClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteAwsClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteAwsClusterOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteAwsClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteAwsClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteAwsNodePoolOperation manages a long-running operation from DeleteAwsNodePool.
-type DeleteAwsNodePoolOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteAwsNodePoolOperation returns a new DeleteAwsNodePoolOperation from a given name.
 // The name must be that of a previously created DeleteAwsNodePoolOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) DeleteAwsNodePoolOperation(name string) *DeleteAwsNodePoolOperation {
@@ -956,54 +1046,12 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePoolOperation(name string) *DeleteA
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteAwsNodePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteAwsNodePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteAwsNodePoolOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// RollbackAwsNodePoolUpdateOperation returns a new RollbackAwsNodePoolUpdateOperation from a given name.
+// The name must be that of a previously created RollbackAwsNodePoolUpdateOperation, possibly from a different process.
+func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdateOperation(name string) *RollbackAwsNodePoolUpdateOperation {
+	return &RollbackAwsNodePoolUpdateOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteAwsNodePoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteAwsNodePoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateAwsClusterOperation manages a long-running operation from UpdateAwsCluster.
-type UpdateAwsClusterOperation struct {
-	lro *longrunning.Operation
 }
 
 // UpdateAwsClusterOperation returns a new UpdateAwsClusterOperation from a given name.
@@ -1014,221 +1062,10 @@ func (c *awsClustersGRPCClient) UpdateAwsClusterOperation(name string) *UpdateAw
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateAwsClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AwsCluster, error) {
-	var resp gkemulticloudpb.AwsCluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateAwsClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AwsCluster, error) {
-	var resp gkemulticloudpb.AwsCluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateAwsClusterOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateAwsClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateAwsClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateAwsNodePoolOperation manages a long-running operation from UpdateAwsNodePool.
-type UpdateAwsNodePoolOperation struct {
-	lro *longrunning.Operation
-}
-
 // UpdateAwsNodePoolOperation returns a new UpdateAwsNodePoolOperation from a given name.
 // The name must be that of a previously created UpdateAwsNodePoolOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) UpdateAwsNodePoolOperation(name string) *UpdateAwsNodePoolOperation {
 	return &UpdateAwsNodePoolOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateAwsNodePoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
-	var resp gkemulticloudpb.AwsNodePool
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateAwsNodePoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
-	var resp gkemulticloudpb.AwsNodePool
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateAwsNodePoolOperation) Metadata() (*gkemulticloudpb.OperationMetadata, error) {
-	var meta gkemulticloudpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateAwsNodePoolOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateAwsNodePoolOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AwsClusterIterator manages a stream of *gkemulticloudpb.AwsCluster.
-type AwsClusterIterator struct {
-	items    []*gkemulticloudpb.AwsCluster
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AwsCluster, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AwsClusterIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AwsClusterIterator) Next() (*gkemulticloudpb.AwsCluster, error) {
-	var item *gkemulticloudpb.AwsCluster
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AwsClusterIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AwsClusterIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// AwsNodePoolIterator manages a stream of *gkemulticloudpb.AwsNodePool.
-type AwsNodePoolIterator struct {
-	items    []*gkemulticloudpb.AwsNodePool
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkemulticloudpb.AwsNodePool, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AwsNodePoolIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AwsNodePoolIterator) Next() (*gkemulticloudpb.AwsNodePool, error) {
-	var item *gkemulticloudpb.AwsNodePool
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AwsNodePoolIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AwsNodePoolIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

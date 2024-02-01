@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/migration/apiv2",
-    "version": "1.34.1",
+    "version": "1.58.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "migrationpb.MigrationWorkflow",
+        "resultType": "*migrationpb.MigrationWorkflow",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.migration.v2.Client"
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "migrationpb.MigrationSubtask",
+        "resultType": "*migrationpb.MigrationSubtask",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.migration.v2.Client"
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "migrationpb.MigrationWorkflow",
+        "resultType": "*migrationpb.MigrationWorkflow",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.migration.v2.Client"
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -235,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -281,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]

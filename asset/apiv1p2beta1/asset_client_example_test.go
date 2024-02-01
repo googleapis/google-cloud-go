@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,17 @@ import (
 	"context"
 
 	asset "cloud.google.com/go/asset/apiv1p2beta1"
-	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1"
+	assetpb "cloud.google.com/go/asset/apiv1p2beta1/assetpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleNewRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := asset.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,6 +60,11 @@ func ExampleNewRESTClient() {
 
 func ExampleClient_CreateFeed() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -57,7 +73,7 @@ func ExampleClient_CreateFeed() {
 
 	req := &assetpb.CreateFeedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#CreateFeedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1p2beta1/assetpb#CreateFeedRequest.
 	}
 	resp, err := c.CreateFeed(ctx, req)
 	if err != nil {
@@ -67,8 +83,36 @@ func ExampleClient_CreateFeed() {
 	_ = resp
 }
 
+func ExampleClient_DeleteFeed() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assetpb.DeleteFeedRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1p2beta1/assetpb#DeleteFeedRequest.
+	}
+	err = c.DeleteFeed(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_GetFeed() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -77,7 +121,7 @@ func ExampleClient_GetFeed() {
 
 	req := &assetpb.GetFeedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#GetFeedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1p2beta1/assetpb#GetFeedRequest.
 	}
 	resp, err := c.GetFeed(ctx, req)
 	if err != nil {
@@ -89,6 +133,11 @@ func ExampleClient_GetFeed() {
 
 func ExampleClient_ListFeeds() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -97,7 +146,7 @@ func ExampleClient_ListFeeds() {
 
 	req := &assetpb.ListFeedsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#ListFeedsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1p2beta1/assetpb#ListFeedsRequest.
 	}
 	resp, err := c.ListFeeds(ctx, req)
 	if err != nil {
@@ -109,6 +158,11 @@ func ExampleClient_ListFeeds() {
 
 func ExampleClient_UpdateFeed() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +171,7 @@ func ExampleClient_UpdateFeed() {
 
 	req := &assetpb.UpdateFeedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#UpdateFeedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1p2beta1/assetpb#UpdateFeedRequest.
 	}
 	resp, err := c.UpdateFeed(ctx, req)
 	if err != nil {
@@ -127,20 +181,27 @@ func ExampleClient_UpdateFeed() {
 	_ = resp
 }
 
-func ExampleClient_DeleteFeed() {
+func ExampleClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &assetpb.DeleteFeedRequest{
+	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#DeleteFeedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
-	err = c.DeleteFeed(ctx, req)
+	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }

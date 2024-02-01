@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	recommendationengine "cloud.google.com/go/recommendationengine/apiv1beta1"
+	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	"google.golang.org/api/iterator"
-	recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
 )
 
 func ExampleNewUserEventClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,27 +41,30 @@ func ExampleNewUserEventClient() {
 	_ = c
 }
 
-func ExampleUserEventClient_WriteUserEvent() {
+func ExampleNewUserEventRESTClient() {
 	ctx := context.Background()
-	c, err := recommendationengine.NewUserEventClient(ctx)
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommendationengine.NewUserEventRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &recommendationenginepb.WriteUserEventRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.WriteUserEvent(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
+	// TODO: Use client.
+	_ = c
 }
 
 func ExampleUserEventClient_CollectUserEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,6 +73,7 @@ func ExampleUserEventClient_CollectUserEvent() {
 
 	req := &recommendationenginepb.CollectUserEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#CollectUserEventRequest.
 	}
 	resp, err := c.CollectUserEvent(ctx, req)
 	if err != nil {
@@ -74,8 +83,43 @@ func ExampleUserEventClient_CollectUserEvent() {
 	_ = resp
 }
 
+func ExampleUserEventClient_ImportUserEvents() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommendationengine.NewUserEventClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommendationenginepb.ImportUserEventsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#ImportUserEventsRequest.
+	}
+	op, err := c.ImportUserEvents(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleUserEventClient_ListUserEvents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +128,7 @@ func ExampleUserEventClient_ListUserEvents() {
 
 	req := &recommendationenginepb.ListUserEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#ListUserEventsRequest.
 	}
 	it := c.ListUserEvents(ctx, req)
 	for {
@@ -101,6 +146,11 @@ func ExampleUserEventClient_ListUserEvents() {
 
 func ExampleUserEventClient_PurgeUserEvents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,6 +159,7 @@ func ExampleUserEventClient_PurgeUserEvents() {
 
 	req := &recommendationenginepb.PurgeUserEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#PurgeUserEventsRequest.
 	}
 	op, err := c.PurgeUserEvents(ctx, req)
 	if err != nil {
@@ -123,23 +174,24 @@ func ExampleUserEventClient_PurgeUserEvents() {
 	_ = resp
 }
 
-func ExampleUserEventClient_ImportUserEvents() {
+func ExampleUserEventClient_WriteUserEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &recommendationenginepb.ImportUserEventsRequest{
+	req := &recommendationenginepb.WriteUserEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#WriteUserEventRequest.
 	}
-	op, err := c.ImportUserEvents(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
+	resp, err := c.WriteUserEvent(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
