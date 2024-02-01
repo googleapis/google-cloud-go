@@ -2130,6 +2130,14 @@ func TestIntegration_SignedURL(t *testing.T) {
 				fail:    true,
 			},
 			{
+				desc: "Virtual hosted style with custom hostname",
+				opts: SignedURLOptions{
+					Style:    VirtualHostedStyle(),
+					Hostname: "storage.googleapis.com:443",
+				},
+				fail: false,
+			},
+			{
 				desc: "Hostname v4",
 				opts: SignedURLOptions{
 					Hostname: "storage.googleapis.com:443",

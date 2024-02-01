@@ -1411,8 +1411,8 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 		},
 		{
 			desc:         "VirtualHostedStyle - endpoint overrides emulator",
-			emulatorHost: "localhost:9000",
-			endpoint:     &localhost6000Https,
+			emulatorHost: "localhost:8000",
+			endpoint:     &localhost9000,
 			now:          expires.Add(-24 * time.Hour),
 			opts: &SignedURLOptions{
 				GoogleAccessID: "xxx@clientid",
