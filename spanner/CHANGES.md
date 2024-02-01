@@ -1,5 +1,37 @@
 # Changes
 
+## [1.56.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.55.0...spanner/v1.56.0) (2024-01-30)
+
+
+### Features
+
+* **spanner/admin/database:** Add proto descriptors for proto and enum types in create/update/get database ddl requests ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+* **spanner/spansql:** Add support for CREATE VIEW with SQL SECURITY DEFINER ([#8754](https://github.com/googleapis/google-cloud-go/issues/8754)) ([5f156e8](https://github.com/googleapis/google-cloud-go/commit/5f156e8c88f4729f569ee5b4ac9378dda3907997))
+* **spanner:** Add FLOAT32 enum to TypeCode ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+* **spanner:** Add max_commit_delay API ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+* **spanner:** Add proto and enum types ([00b9900](https://github.com/googleapis/google-cloud-go/commit/00b990061592a20a181e61faa6964b45205b76a7))
+* **spanner:** Add SelectAll method to decode from Spanner iterator.Rows to golang struct ([#9206](https://github.com/googleapis/google-cloud-go/issues/9206)) ([802088f](https://github.com/googleapis/google-cloud-go/commit/802088f1322752bb9ce9bab1315c3fed6b3a99aa))
+
+## [1.55.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.54.0...spanner/v1.55.0) (2024-01-08)
+
+
+### Features
+
+* **spanner:** Add directed reads feature ([#7668](https://github.com/googleapis/google-cloud-go/issues/7668)) ([a42604a](https://github.com/googleapis/google-cloud-go/commit/a42604a3a6ea90c38a2ff90d036a79fd070174fd))
+
+## [1.54.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.53.1...spanner/v1.54.0) (2023-12-14)
+
+
+### Features
+
+* **spanner/executor:** Add autoscaling config in the instance to support autoscaling in systests ([29effe6](https://github.com/googleapis/google-cloud-go/commit/29effe600e16f24a127a1422ec04263c4f7a600a))
+* **spanner:** New clients ([#9127](https://github.com/googleapis/google-cloud-go/issues/9127)) ([2c97389](https://github.com/googleapis/google-cloud-go/commit/2c97389ddacdfc140a06f74498cc2753bb040a4d))
+
+
+### Bug Fixes
+
+* **spanner:** Use json.Number for decoding unknown values from spanner ([#9054](https://github.com/googleapis/google-cloud-go/issues/9054)) ([40d1392](https://github.com/googleapis/google-cloud-go/commit/40d139297bd484408c63c9d6ad1d7035d9673c1c))
+
 ## [1.53.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.53.0...spanner/v1.53.1) (2023-12-01)
 
 

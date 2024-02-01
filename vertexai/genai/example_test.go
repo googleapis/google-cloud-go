@@ -24,9 +24,14 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+// Your GCP project
 const projectID = "your-project"
+
+// A GCP location like "us-central1"
+const location = "some-gcp-location"
+
+// A model name like "gemini-pro"
 const model = "some-model"
-const location = "some-location"
 
 func ExampleGenerativeModel_GenerateContent() {
 	ctx := context.Background()
@@ -37,7 +42,7 @@ func ExampleGenerativeModel_GenerateContent() {
 	defer client.Close()
 
 	model := client.GenerativeModel(model)
-	model.Temperature = 0.9
+	model.SetTemperature(0.9)
 	resp, err := model.GenerateContent(ctx, genai.Text("What is the average size of a swallow?"))
 	if err != nil {
 		log.Fatal(err)

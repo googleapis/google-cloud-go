@@ -149,6 +149,52 @@
       ]
     },
     {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_DeleteDatabase_sync",
+      "title": "firestore DeleteDatabase Sample",
+      "description": "DeleteDatabase deletes a database.",
+      "file": "FirestoreAdminClient/DeleteDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDatabase",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.DeleteDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDatabaseOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteDatabase",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.DeleteDatabase",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_DeleteIndex_sync",
       "title": "firestore DeleteIndex Sample",
       "description": "DeleteIndex deletes a composite index.",
@@ -563,7 +609,7 @@
     {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_ListFields_sync",
       "title": "firestore ListFields Sample",
-      "description": "ListFields lists the field configuration and metadata for this database.\n\nCurrently,\n[FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]\nonly supports listing fields that have been explicitly overridden. To issue\nthis query, call\n[FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]\nwith the filter set to `indexConfig.usesAncestorConfig: false` .",
+      "description": "ListFields lists the field configuration and metadata for this database.\n\nCurrently,\n[FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]\nonly supports listing fields that have been explicitly overridden. To issue\nthis query, call\n[FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]\nwith the filter set to `indexConfig.usesAncestorConfig: false` or\n`ttlConfig: *`.",
       "file": "FirestoreAdminClient/ListFields/main.go",
       "language": "GO",
       "clientMethod": {

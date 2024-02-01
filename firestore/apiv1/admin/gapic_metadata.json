@@ -25,6 +25,11 @@
                 "CreateIndex"
               ]
             },
+            "DeleteDatabase": {
+              "methods": [
+                "DeleteDatabase"
+              ]
+            },
             "DeleteIndex": {
               "methods": [
                 "DeleteIndex"
@@ -113,6 +118,11 @@
             "CreateIndex": {
               "methods": [
                 "CreateIndex"
+              ]
+            },
+            "DeleteDatabase": {
+              "methods": [
+                "DeleteDatabase"
               ]
             },
             "DeleteIndex": {

@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.23.8](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.7...documentai/v1.23.8) (2024-01-30)
+
+
+### Bug Fixes
+
+* **documentai:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.23.7](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.6...documentai/v1.23.7) (2023-12-13)
+
+
+### Documentation
+
+* **documentai:** Clarify Properties documentation ([757c1b0](https://github.com/googleapis/google-cloud-go/commit/757c1b0dcca95058aedd091d1e89d5d14f2fbc1c))
+
 ## [1.23.6](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.5...documentai/v1.23.6) (2023-11-27)
 
 

@@ -1,6 +1,33 @@
 # Changes
 
 
+## [1.58.2](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.58.1...aiplatform/v1.58.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **aiplatform:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+
+### Documentation
+
+* **aiplatform:** Add comments for FeatureOnlineStoreService and ModelMonitoringAlertConfig ([#9326](https://github.com/googleapis/google-cloud-go/issues/9326)) ([4d56af1](https://github.com/googleapis/google-cloud-go/commit/4d56af183d42ff12862c0c35226e767ed8763118))
+
+## [1.58.1](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.58.0...aiplatform/v1.58.1) (2024-01-22)
+
+
+### Bug Fixes
+
+* **aiplatform:** Fix rpc tensorboard_service.proto definitions for BatchCreateTensorboardTimeSeries and BatchReadTensorboardTimeSeriesData ([04ce84d](https://github.com/googleapis/google-cloud-go/commit/04ce84d23e734bbbb84e65bbf840d5ea294a2384))
+* **aiplatform:** Fix rpc tensorboard_service.proto definitions for BatchCreateTensorboardTimeSeries and BatchReadTensorboardTimeSeriesData ([#9247](https://github.com/googleapis/google-cloud-go/issues/9247)) ([04ce84d](https://github.com/googleapis/google-cloud-go/commit/04ce84d23e734bbbb84e65bbf840d5ea294a2384))
+
+## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.57.0...aiplatform/v1.58.0) (2023-12-13)
+
+
+### Features
+
+* **aiplatform:** Expose ability to set headers ([#9150](https://github.com/googleapis/google-cloud-go/issues/9150)) ([2007541](https://github.com/googleapis/google-cloud-go/commit/20075417dfd3e7ba47f77586d5ec366fa68285a2))
+
 ## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.56.0...aiplatform/v1.57.0) (2023-12-11)
 
 

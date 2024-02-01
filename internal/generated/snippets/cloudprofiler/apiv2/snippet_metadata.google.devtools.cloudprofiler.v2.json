@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudprofiler/apiv2",
-    "version": "0.1.0",
+    "version": "0.2.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "cloudprofiler_v2_generated_ExportService_ListProfiles_sync",
+      "title": "cloudprofiler ListProfiles Sample",
+      "description": "ListProfiles lists profiles which have been collected so far and for which the caller\nhas permission to view.",
+      "file": "ExportClient/ListProfiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProfiles",
+        "fullName": "google.devtools.cloudprofiler.v2.ExportClient.ListProfiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudprofilerpb.ListProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProfileIterator",
+        "client": {
+          "shortName": "ExportClient",
+          "fullName": "google.devtools.cloudprofiler.v2.ExportClient"
+        },
+        "method": {
+          "shortName": "ListProfiles",
+          "fullName": "google.devtools.cloudprofiler.v2.ExportService.ListProfiles",
+          "service": {
+            "shortName": "ExportService",
+            "fullName": "google.devtools.cloudprofiler.v2.ExportService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "cloudprofiler_v2_generated_ProfilerService_CreateOfflineProfile_sync",
       "title": "cloudprofiler CreateOfflineProfile Sample",

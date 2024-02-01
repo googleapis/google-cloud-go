@@ -7,10 +7,9 @@ on:
       - main
     paths:
       - '**/version.go'
-  
+
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   new_versions:

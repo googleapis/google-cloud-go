@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.57.0",
+    "version": "1.58.2",
     "language": "GO",
     "apis": [
       {
@@ -11052,6 +11052,52 @@
         "method": {
           "shortName": "ComputeTokens",
           "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService.ComputeTokens",
+          "service": {
+            "shortName": "LlmUtilityService",
+            "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_CountTokens_sync",
+      "title": "aiplatform CountTokens Sample",
+      "description": "CountTokens perform a token counting.",
+      "file": "LlmUtilityClient/CountTokens/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CountTokens",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.CountTokens",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CountTokensRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.CountTokensResponse",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "CountTokens",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService.CountTokens",
           "service": {
             "shortName": "LlmUtilityService",
             "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService"

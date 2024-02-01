@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -62,7 +62,9 @@ type EngineCallOptions struct {
 func defaultEngineGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("discoveryengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("discoveryengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("discoveryengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -250,7 +252,7 @@ func (c *EngineClient) PauseEngine(ctx context.Context, req *discoveryenginepb.P
 }
 
 // ResumeEngine resumes the training of an existing engine. Only applicable if
-// solution_type is
+// SolutionType is
 // SOLUTION_TYPE_RECOMMENDATION.
 func (c *EngineClient) ResumeEngine(ctx context.Context, req *discoveryenginepb.ResumeEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
 	return c.internalClient.ResumeEngine(ctx, req, opts...)
@@ -425,7 +427,9 @@ func NewEngineRESTClient(ctx context.Context, opts ...option.ClientOption) (*Eng
 func defaultEngineRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://discoveryengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://discoveryengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://discoveryengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1128,7 +1132,7 @@ func (c *engineRESTClient) PauseEngine(ctx context.Context, req *discoveryengine
 }
 
 // ResumeEngine resumes the training of an existing engine. Only applicable if
-// solution_type is
+// SolutionType is
 // SOLUTION_TYPE_RECOMMENDATION.
 func (c *engineRESTClient) ResumeEngine(ctx context.Context, req *discoveryenginepb.ResumeEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}

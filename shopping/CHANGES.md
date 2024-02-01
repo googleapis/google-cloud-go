@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.3.0...shopping/v0.3.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **shopping:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.2.2...shopping/v0.3.0) (2023-12-13)
+
+
+### Features
+
+* **shopping:** New clients ([#9141](https://github.com/googleapis/google-cloud-go/issues/9141)) ([4f49b79](https://github.com/googleapis/google-cloud-go/commit/4f49b796ed219869920668698726bee445bf5ff4))
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.2.1...shopping/v0.2.2) (2023-11-01)
 
 
@@ -37,4 +51,3 @@
 * **shopping:** New clients ([#8699](https://github.com/googleapis/google-cloud-go/issues/8699)) ([0e43b40](https://github.com/googleapis/google-cloud-go/commit/0e43b40184bacac8d355ea2cfd00ebe58bd9e30b))
 
 ## Changes
-

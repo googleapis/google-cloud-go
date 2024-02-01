@@ -113,3 +113,24 @@ func ImageData(format string, data []byte) Blob {
 		Data:     data,
 	}
 }
+
+// Ptr returns a pointer to its argument.
+// It can be used to initialize pointer fields:
+//
+//	model.Temperature = genai.Ptr[float32](0.1)
+func Ptr[T any](t T) *T { return &t }
+
+// SetCandidateCount sets the CandidateCount field.
+func (c *GenerationConfig) SetCandidateCount(x int32) { c.CandidateCount = &x }
+
+// SetMaxOutputTokens sets the MaxOutputTokens field.
+func (c *GenerationConfig) SetMaxOutputTokens(x int32) { c.MaxOutputTokens = &x }
+
+// SetTemperature sets the Temperature field.
+func (c *GenerationConfig) SetTemperature(x float32) { c.Temperature = &x }
+
+// SetTopP sets the TopP field.
+func (c *GenerationConfig) SetTopP(x float32) { c.TopP = &x }
+
+// SetTopK sets the TopK field.
+func (c *GenerationConfig) SetTopK(x float32) { c.TopK = &x }

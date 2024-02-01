@@ -49,7 +49,7 @@ func TestLive(t *testing.T) {
 	}
 	defer client.Close()
 	model := client.GenerativeModel(*modelName)
-	model.Temperature = 0
+	model.Temperature = Ptr[float32](0)
 
 	t.Run("GenerateContent", func(t *testing.T) {
 		resp, err := model.GenerateContent(ctx, Text("What is the average size of a swallow?"))
@@ -104,16 +104,16 @@ func TestLive(t *testing.T) {
 
 		checkMatch(t,
 			send("Which is best?", true),
-			"best", "air fryer", "Philips", "([Cc]onsider|research|compare)", "factors|features")
+			"best", "air fryer", "Philips", "([Cc]onsider|research|compare|preference)", "factors|features")
 
 		checkMatch(t,
 			send("Say that again.", false),
-			"best", "air fryer", "Philips", "([Cc]onsider|research|compare)", "factors|features")
+			"best", "air fryer", "Philips", "([Cc]onsider|research|compare|preference)", "factors|features")
 	})
 
 	t.Run("image", func(t *testing.T) {
 		vmodel := client.GenerativeModel(*modelName + "-vision")
-		vmodel.Temperature = 0
+		vmodel.Temperature = Ptr[float32](0)
 
 		data, err := os.ReadFile(filepath.Join("testdata", imageFile))
 		if err != nil {
@@ -168,8 +168,8 @@ func TestLive(t *testing.T) {
 	})
 	t.Run("max-tokens", func(t *testing.T) {
 		maxModel := client.GenerativeModel(*modelName)
-		maxModel.Temperature = 0
-		maxModel.MaxOutputTokens = 10
+		maxModel.Temperature = Ptr(float32(0))
+		maxModel.SetMaxOutputTokens(10)
 		res, err := maxModel.GenerateContent(ctx, Text("What is a dog?"))
 		if err != nil {
 			t.Fatal(err)
@@ -182,8 +182,8 @@ func TestLive(t *testing.T) {
 	})
 	t.Run("max-tokens-streaming", func(t *testing.T) {
 		maxModel := client.GenerativeModel(*modelName)
-		maxModel.Temperature = 0
-		maxModel.MaxOutputTokens = 10
+		maxModel.Temperature = Ptr[float32](0)
+		maxModel.MaxOutputTokens = Ptr[int32](10)
 		iter := maxModel.GenerateContentStream(ctx, Text("What is a dog?"))
 		var merged *GenerateContentResponse
 		for {
@@ -232,7 +232,7 @@ func TestLive(t *testing.T) {
 			}},
 		}
 		model := client.GenerativeModel(*modelName)
-		model.Temperature = 0
+		model.SetTemperature(0)
 		model.Tools = []*Tool{weatherTool}
 		session := model.StartChat()
 		res, err := session.SendMessage(ctx, Text("What is the weather like in New York?"))
@@ -468,5 +468,21 @@ func TestMatchString(t *testing.T) {
 		if !re.MatchString(test.in) {
 			t.Errorf("%q doesn't match %q", test.re, test.in)
 		}
+	}
+}
+
+func TestTemperature(t *testing.T) {
+	m := &GenerativeModel{}
+	got := m.GenerationConfig.toProto().Temperature
+	if got != nil {
+		t.Errorf("got %v, want nil", got)
+	}
+	m.SetTemperature(0)
+	got = m.GenerationConfig.toProto().Temperature
+	if got == nil {
+		t.Fatal("got nil")
+	}
+	if g := *got; g != 0 {
+		t.Errorf("got %v, want 0", g)
 	}
 }

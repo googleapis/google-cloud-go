@@ -1,5 +1,12 @@
 # Changes
 
+## [1.23.4](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.3...compute/v1.23.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **compute:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.23.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.2...compute/v1.23.3) (2023-11-01)
 
 

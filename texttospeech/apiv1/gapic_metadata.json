@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListVoices": {
               "methods": [
                 "ListVoices"
@@ -25,6 +35,16 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListVoices": {
               "methods": [
                 "ListVoices"
@@ -44,6 +64,16 @@
         "grpc": {
           "libraryClient": "TextToSpeechLongAudioSynthesizeClient",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "SynthesizeLongAudio": {
               "methods": [
                 "SynthesizeLongAudio"
@@ -54,6 +84,16 @@
         "rest": {
           "libraryClient": "TextToSpeechLongAudioSynthesizeClient",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "SynthesizeLongAudio": {
               "methods": [
                 "SynthesizeLongAudio"

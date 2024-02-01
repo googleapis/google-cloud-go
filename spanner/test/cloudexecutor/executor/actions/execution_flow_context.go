@@ -22,8 +22,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner"
+	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/utility"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -48,7 +48,7 @@ type ExecutionFlowContext struct {
 	rwTxn                    *spanner.ReadWriteStmtBasedTransaction // Current read-write transaction
 	roTxn                    *spanner.ReadOnlyTransaction           // Current read-only transaction
 	batchTxn                 *spanner.BatchReadOnlyTransaction      // Current batch read-only transaction
-	dbClient                 *spanner.Client                        // Current database client
+	DbClient                 *spanner.Client                        // Current database client
 	tableMetadata            *utility.TableMetadataHelper           // If in a txn (except batch), this has metadata info about table columns
 	numPendingReads          int64                                  // Number of pending read/query actions.
 	readAborted              bool                                   // Indicate whether there's a read/query action got aborted and the transaction need to be reset.

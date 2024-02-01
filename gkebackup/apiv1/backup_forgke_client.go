@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -87,7 +87,9 @@ type BackupForGKECallOptions struct {
 func defaultBackupForGKEGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gkebackup.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("gkebackup.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("gkebackup.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkebackup.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -966,7 +968,9 @@ func NewBackupForGKERESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultBackupForGKERESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://gkebackup.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://gkebackup.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://gkebackup.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkebackup.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

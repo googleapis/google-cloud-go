@@ -1,5 +1,19 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.12.0...orgpolicy/v1.12.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.11.4...orgpolicy/v1.12.0) (2024-01-03)
+
+
+### Features
+
+* **orgpolicy:** Add custom constraints CRUD APIs, proper etag support in Org Policy Update/Delete API ([#9181](https://github.com/googleapis/google-cloud-go/issues/9181)) ([902d842](https://github.com/googleapis/google-cloud-go/commit/902d84299b5073543ade684aa311b791bed3a999))
+
 ## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.11.3...orgpolicy/v1.11.4) (2023-11-01)
 
 

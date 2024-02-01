@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,7 +68,9 @@ type AnalyticsHubCallOptions struct {
 func defaultAnalyticsHubGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("analyticshub.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("analyticshub.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("analyticshub.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://analyticshub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -745,7 +747,9 @@ func NewAnalyticsHubRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultAnalyticsHubRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://analyticshub.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://analyticshub.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://analyticshub.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://analyticshub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

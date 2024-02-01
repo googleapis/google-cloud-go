@@ -34,6 +34,11 @@ model in the Google Cloud documentation: https://cloud.google.com/vertex-ai/docs
 You can also find information about this SDK in the
 [Go package documentation](https://pkg.go.dev/cloud.google.com/go/vertexai).
 
+Check out some usage samples:
+
+* In the [package documentation](https://pkg.go.dev/cloud.google.com/go/vertexai/genai#pkg-examples)
+* In the [vertexai golang-samples repository](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/vertexai)
+
 ## Contributing
 
 See [Contributing](https://github.com/googleapis/google-cloud-go/blob/main/CONTRIBUTING.md)
@@ -42,6 +47,6 @@ for more information on contributing to the Vertex AI Go SDK.
 ## License
 
 The contents of this repository are licensed under the
-Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+[Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 

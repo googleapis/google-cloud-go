@@ -1,5 +1,4 @@
 # Configuration for the protoveneer tool.
-# See ../internal/cmd/protoveneer.
 
 package: genai
 
@@ -60,17 +59,6 @@ types:
     FunctionResponse:
 
     GenerationConfig:
-      fields:
-        Temperature:
-          type: float32
-        TopP:
-          type: float32
-        TopK:
-          type: float32
-        CandidateCount:
-          type: int32
-        MaxOutputTokens:
-          type: int32
 
     SafetyRating:
       docVerb: 'is the'
@@ -87,9 +75,15 @@ types:
           type: string
 
 
+    GenerateContentResponse:
+      doc: 'is the response from a GenerateContent or GenerateContentStream call.'
+
     GenerateContentResponse_PromptFeedback:
       name: PromptFeedback
       docVerb: contains
+
+    GenerateContentResponse_UsageMetadata:
+      name: UsageMetadata
 
     CountTokensResponse:
 
@@ -101,42 +95,13 @@ types:
         Example:
           omit: true
 
+    CitationMetadata:
+    FunctionDeclaration:
+    SafetySetting:
 
+# Omit everything that is not explicitly configured.
 omitTypes:
-  - Attribution
-  - BigQuery*
-  - BlurBaselineConfig
-  - Context
-  - DataItem
-  - Direct*
-  - EnvVar
-  - Event*
-  - Example*
-  - Execution*
-  - ExplainResponse*
-  - Feature*
-  - GenerateContentResponse
-  - GenerateContentResponse_UsageMetadata
-  - MetadataSchema*
-  - Neighbor
-  - Part
-  - Part_*
-  - Presets*
-  - Sampled*
-  - SmoothGrad*
-  - Tensor*
-  - Unimplemented*
-  - Value*
-  - VideoMetadata
-  - '*Annotation*'
-  - '*Array'
-  - '*Attribution'
-  - '*Destination'
-  - '*Explanation*'
-  - '*Operation*'
-  - '*Predict*'
-  - '*Request'
-  - '*Source'
+  - '*'
 
 
 converters:

@@ -442,18 +442,52 @@ func (FunctionResponse) fromProto(p *pb.FunctionResponse) *FunctionResponse {
 	}
 }
 
+// GenerateContentResponse is the response from a GenerateContent or GenerateContentStream call.
+type GenerateContentResponse struct {
+	// Output only. Generated candidates.
+	Candidates []*Candidate
+	// Output only. Content filter results for a prompt sent in the request.
+	// Note: Sent only in the first stream chunk.
+	// Only happens when no candidates were generated due to content violations.
+	PromptFeedback *PromptFeedback
+	// Usage metadata about the response(s).
+	UsageMetadata *UsageMetadata
+}
+
+func (v *GenerateContentResponse) toProto() *pb.GenerateContentResponse {
+	if v == nil {
+		return nil
+	}
+	return &pb.GenerateContentResponse{
+		Candidates:     support.TransformSlice(v.Candidates, (*Candidate).toProto),
+		PromptFeedback: v.PromptFeedback.toProto(),
+		UsageMetadata:  v.UsageMetadata.toProto(),
+	}
+}
+
+func (GenerateContentResponse) fromProto(p *pb.GenerateContentResponse) *GenerateContentResponse {
+	if p == nil {
+		return nil
+	}
+	return &GenerateContentResponse{
+		Candidates:     support.TransformSlice(p.Candidates, (Candidate{}).fromProto),
+		PromptFeedback: (PromptFeedback{}).fromProto(p.PromptFeedback),
+		UsageMetadata:  (UsageMetadata{}).fromProto(p.UsageMetadata),
+	}
+}
+
 // GenerationConfig is generation config.
 type GenerationConfig struct {
 	// Optional. Controls the randomness of predictions.
-	Temperature float32
+	Temperature *float32
 	// Optional. If specified, nucleus sampling will be used.
-	TopP float32
+	TopP *float32
 	// Optional. If specified, top-k sampling will be used.
-	TopK float32
+	TopK *float32
 	// Optional. Number of candidates to generate.
-	CandidateCount int32
+	CandidateCount *int32
 	// Optional. The maximum number of output tokens to generate per message.
-	MaxOutputTokens int32
+	MaxOutputTokens *int32
 	// Optional. Stop sequences.
 	StopSequences []string
 }
@@ -463,11 +497,11 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 		return nil
 	}
 	return &pb.GenerationConfig{
-		Temperature:     support.AddrOrNil(v.Temperature),
-		TopP:            support.AddrOrNil(v.TopP),
-		TopK:            support.AddrOrNil(v.TopK),
-		CandidateCount:  support.AddrOrNil(v.CandidateCount),
-		MaxOutputTokens: support.AddrOrNil(v.MaxOutputTokens),
+		Temperature:     v.Temperature,
+		TopP:            v.TopP,
+		TopK:            v.TopK,
+		CandidateCount:  v.CandidateCount,
+		MaxOutputTokens: v.MaxOutputTokens,
 		StopSequences:   v.StopSequences,
 	}
 }
@@ -477,11 +511,11 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 		return nil
 	}
 	return &GenerationConfig{
-		Temperature:     support.DerefOrZero(p.Temperature),
-		TopP:            support.DerefOrZero(p.TopP),
-		TopK:            support.DerefOrZero(p.TopK),
-		CandidateCount:  support.DerefOrZero(p.CandidateCount),
-		MaxOutputTokens: support.DerefOrZero(p.MaxOutputTokens),
+		Temperature:     p.Temperature,
+		TopP:            p.TopP,
+		TopK:            p.TopK,
+		CandidateCount:  p.CandidateCount,
+		MaxOutputTokens: p.MaxOutputTokens,
 		StopSequences:   p.StopSequences,
 	}
 }
@@ -803,4 +837,35 @@ func (v Type) String() string {
 		return n
 	}
 	return fmt.Sprintf("Type(%d)", v)
+}
+
+// UsageMetadata is usage metadata about response(s).
+type UsageMetadata struct {
+	// Number of tokens in the request.
+	PromptTokenCount int32
+	// Number of tokens in the response(s).
+	CandidatesTokenCount int32
+	TotalTokenCount      int32
+}
+
+func (v *UsageMetadata) toProto() *pb.GenerateContentResponse_UsageMetadata {
+	if v == nil {
+		return nil
+	}
+	return &pb.GenerateContentResponse_UsageMetadata{
+		PromptTokenCount:     v.PromptTokenCount,
+		CandidatesTokenCount: v.CandidatesTokenCount,
+		TotalTokenCount:      v.TotalTokenCount,
+	}
+}
+
+func (UsageMetadata) fromProto(p *pb.GenerateContentResponse_UsageMetadata) *UsageMetadata {
+	if p == nil {
+		return nil
+	}
+	return &UsageMetadata{
+		PromptTokenCount:     p.PromptTokenCount,
+		CandidatesTokenCount: p.CandidatesTokenCount,
+		TotalTokenCount:      p.TotalTokenCount,
+	}
 }

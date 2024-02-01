@@ -29,10 +29,13 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
+// See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#timestamp-type.
 var (
-	// See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#timestamp-type.
 	timestampFormat = "2006-01-02 15:04:05.999999-07:00"
+	dateTimeFormat  = "2006-01-02 15:04:05"
+)
 
+var (
 	// See https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#schema.fields.name
 	validFieldName = regexp.MustCompile("^[a-zA-Z_][a-zA-Z0-9_]{0,127}$")
 )
@@ -590,14 +593,17 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 		if isNullScalar(qval) {
 			return NullTimestamp{Valid: false}, nil
 		}
-		t, err := time.Parse(timestampFormat, qval.Value)
-		if err != nil {
-			t, err = time.Parse(time.RFC3339Nano, qval.Value)
+		formats := []string{timestampFormat, time.RFC3339Nano, dateTimeFormat}
+		var lastParseErr error
+		for _, format := range formats {
+			t, err := time.Parse(format, qval.Value)
 			if err != nil {
-				return nil, err
+				lastParseErr = err
+				continue
 			}
+			return t, nil
 		}
-		return t, nil
+		return nil, lastParseErr
 
 	case "DATETIME":
 		if isNullScalar(qval) {

@@ -621,6 +621,9 @@ func TestNewBucket(t *testing.T) {
 			RetentionPeriod: 3,
 			EffectiveTime:   aTime.Format(time.RFC3339),
 		},
+		ObjectRetention: &raw.BucketObjectRetention{
+			Mode: "Enabled",
+		},
 		IamConfiguration: &raw.BucketIamConfiguration{
 			BucketPolicyOnly: &raw.BucketIamConfigurationBucketPolicyOnly{
 				Enabled:    true,
@@ -686,6 +689,7 @@ func TestNewBucket(t *testing.T) {
 			EffectiveTime:   aTime,
 			RetentionPeriod: 3 * time.Second,
 		},
+		ObjectRetentionMode:      "Enabled",
 		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true, LockedTime: aTime},
 		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true, LockedTime: aTime},
 		CORS: []CORS{
@@ -714,7 +718,7 @@ func TestNewBucket(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
@@ -817,7 +821,7 @@ func TestNewBucketFromProto(t *testing.T) {
 		},
 	}
 	got := newBucketFromProto(pb)
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
@@ -1067,6 +1071,7 @@ func TestBucketRetryer(t *testing.T) {
 						Multiplier: 3,
 					}),
 					WithPolicy(RetryAlways),
+					WithMaxAttempts(5),
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
@@ -1076,6 +1081,7 @@ func TestBucketRetryer(t *testing.T) {
 					Multiplier: 3,
 				},
 				policy:      RetryAlways,
+				maxAttempts: expectedAttempts(5),
 				shouldRetry: func(err error) bool { return false },
 			},
 		},
@@ -1099,6 +1105,15 @@ func TestBucketRetryer(t *testing.T) {
 			},
 			want: &retryConfig{
 				policy: RetryNever,
+			},
+		},
+		{
+			name: "set max retry attempts only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(WithMaxAttempts(5))
+			},
+			want: &retryConfig{
+				maxAttempts: expectedAttempts(5),
 			},
 		},
 		{
@@ -1195,6 +1210,41 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 				return ""
 			},
 			expectSuccess: false,
+		},
+		{
+			name:           "malformed creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"type": "service_account"
+					"project_id": "my-project",
+					"private_key_id": "my1",
+					"private_key": "-----BEGIN PRIVATE KEY-----\nkey\n-----END PRIVATE KEY-----\n",
+					"client_email": "%s",
+				}`, sa)
+			},
+			expectSuccess: false,
+		},
+		{
+			name:           "external creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"type": "external_account",
+					"audience": "//iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL_ID/providers/$PROVIDER_ID",
+					"subject_token_type": "urn:ietf:params:aws:token-type:aws4_request",
+					"service_account_impersonation_url": "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s:generateAccessToken",
+					"token_url": "https://sts.googleapis.com/v1/token",
+					"credential_source": {
+					  "environment_id": "id",
+					  "region_url": "region_url",
+					  "url": "url",
+					  "regional_cred_verification_url": "ver_url",
+					  "imdsv2_session_token_url": "tok_url"
+					}
+				  }`, sa)
+			},
+			expectSuccess: true,
 		},
 	}
 
