@@ -281,7 +281,7 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 				start, end := strings.LastIndex(sa.SAImpersonationURL, "/"), strings.LastIndex(sa.SAImpersonationURL, ":")
 
 				if end <= start {
-					returnErr = errors.New("error parsing impersonated service account credentials")
+					returnErr = errors.New("error parsing external or impersonated service account credentials")
 				} else {
 					return sa.SAImpersonationURL[start+1 : end], nil
 				}
