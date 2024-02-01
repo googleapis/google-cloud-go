@@ -1211,6 +1211,41 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 			},
 			expectSuccess: false,
 		},
+		{
+			name:           "malformed creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"type": "service_account"
+					"project_id": "my-project",
+					"private_key_id": "my1",
+					"private_key": "-----BEGIN PRIVATE KEY-----\nkey\n-----END PRIVATE KEY-----\n",
+					"client_email": "%s",
+				}`, sa)
+			},
+			expectSuccess: false,
+		},
+		{
+			name:           "external creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"type": "external_account",
+					"audience": "//iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL_ID/providers/$PROVIDER_ID",
+					"subject_token_type": "urn:ietf:params:aws:token-type:aws4_request",
+					"service_account_impersonation_url": "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s:generateAccessToken",
+					"token_url": "https://sts.googleapis.com/v1/token",
+					"credential_source": {
+					  "environment_id": "id",
+					  "region_url": "region_url",
+					  "url": "url",
+					  "regional_cred_verification_url": "ver_url",
+					  "imdsv2_session_token_url": "tok_url"
+					}
+				  }`, sa)
+			},
+			expectSuccess: true,
+		},
 	}
 
 	for _, tc := range testCases {
