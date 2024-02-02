@@ -56,10 +56,10 @@ type Subscription struct {
 
 	enableOrdering bool
 
-	// disableTracing disables tracing of Pub/Sub messages on this subscription.
-	// This is configured at client instantiation, and is an addition option
-	// to disable tracing even when a tracer provider is detectd.
-	disableTracing bool
+	// enableTracing enable OTel tracing of Pub/Sub messages on this subscription.
+	// This is configured at client instantiation, and allows
+	// dsabling of tracing even when a tracer provider is detectd.
+	enableTracing bool
 }
 
 // Subscription creates a reference to a subscription.
@@ -77,7 +77,7 @@ func newSubscription(c *Client, name string) *Subscription {
 		c:               c,
 		name:            name,
 		ReceiveSettings: DefaultReceiveSettings,
-		disableTracing:  c.disableTracing,
+		enableTracing:   c.enableTracing,
 	}
 }
 
@@ -1329,7 +1329,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		// canceling that context would immediately stop the iterator without
 		// waiting for unacked messages.
 		iter := newMessageIterator(s.c.subc, s.name, po)
-		iter.enableTracing = s.disableTracing
+		iter.enableTracing = s.enableTracing
 
 		// We cannot use errgroup from Receive here. Receive might already be
 		// calling group.Wait, and group.Wait cannot be called concurrently with
@@ -1398,14 +1398,15 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					iter.eoMu.RLock()
 					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
-					if msg.Attributes != nil {
-						delete(msg.Attributes, "googclient_traceparent")
+					ctx := context.Background()
+					var fcSpan trace.Span
+					if iter.enableTracing {
+						c, _ := iter.activeSpan.Load(ackh.ackID)
+						sc := c.(trace.Span)
+						ctx = trace.ContextWithSpanContext(ctx, sc.SpanContext())
+						ctx, fcSpan = startSpan(ctx, fcSpanName, "")
 					}
-					c, _ := iter.activeSpan.Load(ackh.ackID)
-					sc := c.(trace.Span)
-					ctx4 := trace.ContextWithSpanContext(context.Background(), sc.SpanContext())
-					ctx3, fcSpan := tracer(s.disableTracing).Start(ctx4, subscriberFlowControlSpanName)
-					if err := fc.acquire(ctx3, len(msg.Data)); err != nil {
+					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
 						for _, m := range msgs[i:] {
 							m.Nack()
@@ -1428,13 +1429,19 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					}
 					// TODO(deklerk): Can we have a generic handler at the
 					// constructor level?
-					ctx3, schedulerSpan := tracer(s.disableTracing).Start(ctx3, subscribeSchedulerSpanName)
+					var schedulerSpan trace.Span
+					if iter.enableTracing {
+						ctx, schedulerSpan = startSpan(ctx, scheduleSpanName, "")
+					}
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						m := msg.(*Message)
 						schedulerSpan.End()
 						defer wg.Done()
-						_, cSpan := tracer(s.disableTracing).Start(ctx3, fmt.Sprintf("%s %s", s.ID(), subscribeProcessSpanName))
-						defer cSpan.End()
+						var ps trace.Span
+						if s.c.enableTracing {
+							_, ps = startSpan(ctx, processSpanName, s.ID())
+							defer ps.End()
+						}
 						old2 := ackh.doneFunc
 						ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
 							var eventString string
@@ -1443,8 +1450,8 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 							} else {
 								eventString = "msg.Nack() called"
 							}
-							cSpan.AddEvent(eventString)
-							cSpan.SetAttributes(semconv.MessagingOperationProcess)
+							ps.AddEvent(eventString)
+							ps.SetAttributes(semconv.MessagingOperationProcess)
 							old2(ackID, ack, r, receiveTime)
 						}
 						f(ctx2, m)

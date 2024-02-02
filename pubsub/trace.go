@@ -20,6 +20,7 @@ import (
 	"log"
 	"sync"
 
+	"cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
@@ -30,8 +31,6 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
-	"go.opentelemetry.io/otel/trace/noop"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -270,11 +269,7 @@ func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 
 const defaultTracerName = "cloud.google.com/go/pubsub"
 
-func tracer(disable bool) trace.Tracer {
-	if disable {
-		// If tracing is not enabled on the client, return a no-op tracer even if a tracer provider is registered.
-		return noop.NewTracerProvider().Tracer("")
-	}
+func tracer() trace.Tracer {
 	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))
 }
 
@@ -315,19 +310,19 @@ func (c messageCarrier) Keys() []string {
 
 const (
 	// publish span names
-	publisherSpanName          = "create"
-	publishFlowControlSpanName = "publisher flow control"
-	publishBatcherSpanName     = "publisher batching"
-	publishRPCSpanName         = "publish"
+	publisherSpanName  = "create"
+	publishFCSpanName  = "publisher flow control"
+	batcherSpanName    = "publisher batching"
+	publishRPCSpanName = "publish"
 
 	// subscribe span names
-	subscribeSpanName             = "subscribe"
-	subscriberFlowControlSpanName = "subscriber flow control"
-	subscribeProcessSpanName      = "process"
-	subscribeSchedulerSpanName    = "subscribe scheduler"
-	modAckSpanName                = "modify ack deadline"
-	ackSpanName                   = "ack"
-	nackSpanName                  = "nack"
+	subscribeSpanName = "subscribe"
+	fcSpanName        = "subscriber flow control"
+	processSpanName   = "process"
+	scheduleSpanName  = "subscribe scheduler"
+	modackSpanName    = "modack"
+	ackSpanName       = "ack"
+	nackSpanName      = "nack"
 
 	// custom pubsub specific attributes
 	pubsubPrefix             = "messaging.gcp_pubsub."
@@ -340,28 +335,16 @@ const (
 	receiptModackAttribute   = pubsubPrefix + "is_receipt_modack"
 )
 
-func startCreateSpan(ctx context.Context, m *Message, topicID string, disableTrace bool) (context.Context, trace.Span) {
+func startCreateSpan(ctx context.Context, m *Message, topicID string) (context.Context, trace.Span) {
 	opts := getPublishSpanAttributes(topicID, m)
-	return tracer(disableTrace).Start(ctx, fmt.Sprintf("%s %s", topicID, publisherSpanName), opts...)
-}
-
-func startPublishFlowControlSpan(ctx context.Context, disableTrace bool) (context.Context, trace.Span) {
-	return tracer(disableTrace).Start(ctx, publishFlowControlSpanName)
-}
-
-func startBatcherSpan(ctx context.Context, disableTrace bool) (context.Context, trace.Span) {
-	return tracer(disableTrace).Start(ctx, publishBatcherSpanName)
-}
-
-func startPublishSpan(ctx context.Context, topicID string, disableTrace bool, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
-	return tracer(disableTrace).Start(ctx, publishRPCSpanName, opts...)
+	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicID, publisherSpanName), opts...)
 }
 
 func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
 	// TODO(hongalex): benchmark this to make sure no significant performance degradation
 	// when calculating proto.Size in receive paths.
 	// TODO(hongalex): find way to incorporate pubsub client library version in attribute.
-	msgSize := proto.Size(&pb.PubsubMessage{
+	msgSize := proto.Size(&pubsubpb.PubsubMessage{
 		Data:        msg.Data,
 		Attributes:  msg.Attributes,
 		OrderingKey: msg.OrderingKey,
@@ -392,8 +375,16 @@ func injectPropagation(ctx context.Context, msg *Message) {
 	}
 }
 
+func startSpan(ctx context.Context, spanType, resourceID string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	spanName := spanType
+	if resourceID != "" {
+		spanName = fmt.Sprintf("%s %s", resourceID, spanType)
+	}
+	return tracer().Start(ctx, spanName, opts...)
+}
+
 func getSubSpanAttributes(sub string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
-	msgSize := proto.Size(&pb.PubsubMessage{
+	msgSize := proto.Size(&pubsubpb.PubsubMessage{
 		Data:        msg.Data,
 		Attributes:  msg.Attributes,
 		OrderingKey: msg.OrderingKey,

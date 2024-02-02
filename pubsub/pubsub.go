@@ -48,10 +48,10 @@ const (
 // Clients should be reused rather than being created as needed.
 // A Client may be shared by multiple goroutines.
 type Client struct {
-	projectID      string
-	pubc           *vkit.PublisherClient
-	subc           *vkit.SubscriberClient
-	disableTracing bool
+	projectID     string
+	pubc          *vkit.PublisherClient
+	subc          *vkit.SubscriberClient
+	enableTracing bool
 }
 
 // ClientConfig has configurations for the client.
@@ -59,10 +59,10 @@ type ClientConfig struct {
 	PublisherCallOptions  *vkit.PublisherCallOptions
 	SubscriberCallOptions *vkit.SubscriberCallOptions
 
-	// DisableOpenTelemetryTracing disables span creation for this client.
-	// By default, spans will be created if a tracer provider is defined.
+	// EnableOpenTelemetryTracing enables span creation for this client.
 	// This option allows selectively disabling Pub/Sub traces.
-	DisableOpenTelemetryTracing bool
+	// This defaults to false.
+	EnableOpenTelemetryTracing bool
 }
 
 // mergePublisherCallOptions merges two PublisherCallOptions into one and the first argument has
@@ -195,7 +195,7 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 		subc:      subc,
 	}
 	if config != nil {
-		c.disableTracing = config.DisableOpenTelemetryTracing
+		c.enableTracing = config.EnableOpenTelemetryTracing
 	}
 	return c, nil
 }

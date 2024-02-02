@@ -37,6 +37,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -112,14 +113,14 @@ func TestTrace_PublishSpan(t *testing.T) {
 			},
 		},
 		tracetest.SpanStub{
-			Name: publishFlowControlSpanName,
+			Name: publishFCSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
 			},
 		},
 		tracetest.SpanStub{
-			Name: publishBatcherSpanName,
+			Name: batcherSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
@@ -340,7 +341,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 
 	expectedSpans := tracetest.SpanStubs{
 		tracetest.SpanStub{
-			Name: fmt.Sprintf("%s %s", subName, subscribeProcessSpanName),
+			Name: fmt.Sprintf("%s %s", subName, processSpanName),
 			Attributes: []attribute.KeyValue{
 				attribute.String(resultAttribute, "ack"),
 			},
@@ -373,14 +374,14 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			},
 		},
 		tracetest.SpanStub{
-			Name: subscribeSchedulerSpanName,
+			Name: scheduleSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
 			},
 		},
 		tracetest.SpanStub{
-			Name: subscriberFlowControlSpanName,
+			Name: fcSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
@@ -394,7 +395,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			},
 		},
 		tracetest.SpanStub{
-			Name: modAckSpanName,
+			Name: modackSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
@@ -419,14 +420,14 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 	}
 }
 
-func TestTrace_WithTracingDisabled(t *testing.T) {
+func TestTrace_TracingNotEnabled(t *testing.T) {
 	ctx := context.Background()
 	srv := pstest.NewServer()
 	c, err := NewClientWithConfig(ctx, projName,
-		&ClientConfig{DisableOpenTelemetryTracing: true},
+		&ClientConfig{EnableOpenTelemetryTracing: false},
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithInsecure()),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -522,7 +523,7 @@ func getPublishSpanStubsWithError(topicName string, m *Message, msgSize int, err
 func getFlowControlSpanStubs(err error) tracetest.SpanStubs {
 	return tracetest.SpanStubs{
 		tracetest.SpanStub{
-			Name: publishFlowControlSpanName,
+			Name: publishFCSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,

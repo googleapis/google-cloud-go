@@ -87,10 +87,10 @@ type Topic struct {
 	// EnableMessageOrdering enables delivery of ordered keys.
 	EnableMessageOrdering bool
 
-	// disableTracing disables tracing of Pub/Sub messages on this topic.
-	// This is configured at client instantiation, and is an addition option
-	// to disable tracing even when a tracer provider is detectd.
-	disableTracing bool
+	// enableTracing enables OTel tracing of Pub/Sub messages on this topic.
+	// This is configured at client instantiation, and allows
+	// disabling tracing even when a tracer provider is detectd.
+	enableTracing bool
 }
 
 // PublishSettings control the bundling of published messages.
@@ -208,7 +208,7 @@ func newTopic(c *Client, name string) *Topic {
 		c:               c,
 		name:            name,
 		PublishSettings: DefaultPublishSettings,
-		disableTracing:  c.disableTracing,
+		enableTracing:   c.enableTracing,
 	}
 }
 
@@ -577,8 +577,11 @@ var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, 
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
-	ctx, createSpan := startCreateSpan(ctx, msg, t.ID(), t.disableTracing)
-	createSpan.SetAttributes(semconv.CodeFunction("topic.Publish"))
+	var createSpan trace.Span
+	if t.enableTracing {
+		ctx, createSpan = startCreateSpan(ctx, msg, t.ID())
+		createSpan.SetAttributes(semconv.CodeFunction("topic.Publish"))
+	}
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
@@ -610,27 +613,33 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		return r
 	}
 
-	ctx2, fcSpan := startPublishFlowControlSpan(ctx, t.disableTracing)
-	if err := t.flowController.acquire(ctx2, msgSize); err != nil {
-		t.scheduler.Pause(msg.OrderingKey)
-		ipubsub.SetPublishResult(r, "", err)
-		spanRecordError(fcSpan, err)
-		return r
-	}
-	fcSpan.End()
+	var batcherSpan trace.Span
+	if t.enableTracing {
+		ctx2, fcSpan := startSpan(ctx, publishFCSpanName, "")
+		if err := t.flowController.acquire(ctx2, msgSize); err != nil {
+			t.scheduler.Pause(msg.OrderingKey)
+			ipubsub.SetPublishResult(r, "", err)
+			spanRecordError(fcSpan, err)
+			return r
+		}
+		fcSpan.End()
 
-	_, batcherSpan := startBatcherSpan(ctx, t.disableTracing)
+		_, batcherSpan = startSpan(ctx, batcherSpanName, "")
+	}
 
 	bmsg := &bundledMessage{
-		msg:         msg,
-		res:         r,
-		size:        msgSize,
-		createSpan:  createSpan,
-		batcherSpan: batcherSpan,
+		msg:        msg,
+		res:        r,
+		size:       msgSize,
+		createSpan: createSpan,
 	}
 
-	// Inject the context from the first publish span rather than from flow control / batching.
-	injectPropagation(ctx, msg)
+	if t.enableTracing {
+		bmsg.batcherSpan = batcherSpan
+
+		// Inject the context from the first publish span rather than from flow control / batching.
+		injectPropagation(ctx, msg)
+	}
 
 	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
@@ -779,9 +788,11 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	}
 
 	topicID := strings.Split(t.name, "/")[3]
-	_, pSpan := startPublishSpan(ctx, topicID, t.disableTracing, trace.WithLinks(links...))
-	pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("topic.publishMessageBundle"))
-	defer pSpan.End()
+	if t.enableTracing {
+		_, pSpan := startSpan(ctx, publishRPCSpanName, topicID, trace.WithLinks(links...))
+		pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("topic.publishMessageBundle"))
+		defer pSpan.End()
+	}
 
 	for i, bm := range bms {
 		pbMsgs[i] = &pb.PubsubMessage{

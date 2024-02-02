@@ -17,7 +17,6 @@ package pubsub
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"strings"
@@ -306,23 +305,24 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			}
 		}
 
-		ctx := context.Background()
-
-		opts := getSubSpanAttributes(it.subName, m, semconv.MessagingOperationReceive)
-		if m.Attributes != nil {
-			ctx = propagation.TraceContext{}.Extract(ctx, newMessageCarrier(m))
+		if it.enableTracing {
+			ctx := context.Background()
+			if m.Attributes != nil {
+				ctx = propagation.TraceContext{}.Extract(ctx, newMessageCarrier(m))
+			}
+			attr := getSubSpanAttributes(it.subID, m)
+			_, span := startSpan(ctx, subscribeSpanName, it.subID, attr...)
+			span.SetAttributes(
+				attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
+				attribute.String(ackIDAttribute, ackID),
+				semconv.MessagingBatchMessageCount(len(pendingMessages)),
+				semconv.CodeFunction("iterator.receive"),
+			)
+			if m.DeliveryAttempt != nil {
+				span.SetAttributes(attribute.Int(deliveryAttemptAttribute, *m.DeliveryAttempt))
+			}
+			it.activeSpan.Store(ackID, span)
 		}
-		_, span := tracer(it.enableTracing).Start(ctx, fmt.Sprintf("%s %s", it.subID, subscribeSpanName), opts...)
-		span.SetAttributes(
-			attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
-			attribute.String(ackIDAttribute, ackID),
-			semconv.MessagingBatchMessageCount(len(pendingMessages)),
-			semconv.CodeFunction("iterator.receive"),
-		)
-		if m.DeliveryAttempt != nil {
-			span.SetAttributes(attribute.Int(deliveryAttemptAttribute, *m.DeliveryAttempt))
-		}
-		it.activeSpan.Store(ackID, span)
 	}
 	deadline := it.ackDeadline()
 	it.mu.Unlock()
@@ -546,11 +546,12 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
 				}
 			}
-			_, ackSpan := tracer(it.enableTracing).Start(context.Background(), fmt.Sprintf("%s %s", it.subID, ackSpanName), trace.WithLinks(links...))
-			defer ackSpan.End()
-			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
-				semconv.CodeFunction("messageIterator.sendAck"))
-
+			if it.enableTracing {
+				_, ackSpan := startSpan(context.Background(), ackSpanName, it.subID, trace.WithLinks(links...))
+				defer ackSpan.End()
+				ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
+					semconv.CodeFunction("messageIterator.sendAck"))
+			}
 			recordStat(it.ctx, AckCount, int64(len(toSend)))
 			addAcks(toSend)
 			// Use context.Background() as the call's context, not it.ctx. We don't
@@ -610,7 +611,7 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 			eventName = "nack"
 		} else {
 			recordStat(it.ctx, ModAckCount, int64(len(toSend)))
-			spanName = spanName + modAckSpanName
+			spanName = spanName + modackSpanName
 			eventName = "modack"
 		}
 
@@ -619,28 +620,30 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 			numBatch := len(toSend)
 			links := make([]trace.Link, 0, numBatch)
 			for _, ackID := range toSend {
-				// get the parent span context for this ackID for otel tracing.
-				s, _ := it.activeSpan.Load(ackID)
-				parentSpan := s.(trace.Span)
-				if isNack {
-					defer parentSpan.End()
-					defer parentSpan.SetAttributes(attribute.String(resultAttribute, "nack"))
-				}
-				parentSpan.AddEvent(eventName+" start", trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
-				defer parentSpan.AddEvent(eventName + " end")
-				if parentSpan.IsRecording() {
-					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
-				}
+				if it.enableTracing {
+					// get the parent span context for this ackID for otel tracing.
+					s, _ := it.activeSpan.Load(ackID)
+					parentSpan := s.(trace.Span)
+					if isNack {
+						defer parentSpan.End()
+						defer parentSpan.SetAttributes(attribute.String(resultAttribute, "nack"))
+					}
+					parentSpan.AddEvent(eventName+" start", trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
+					defer parentSpan.AddEvent(eventName + " end")
+					if parentSpan.IsRecording() {
+						links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
+					}
 
-				_, mSpan := tracer(it.enableTracing).Start(context.Background(), spanName, trace.WithLinks(links...))
-				defer mSpan.End()
-				if !isNack {
-					mSpan.SetAttributes(
-						attribute.Int(ackDeadlineSecAttribute, int(deadlineSec)),
-						attribute.Bool(receiptModackAttribute, isReceipt))
+					_, mSpan := startSpan(context.Background(), modackSpanName, it.subID, trace.WithLinks(links...))
+					defer mSpan.End()
+					if !isNack {
+						mSpan.SetAttributes(
+							attribute.Int(ackDeadlineSecAttribute, int(deadlineSec)),
+							attribute.Bool(receiptModackAttribute, isReceipt))
+					}
+					mSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
+						semconv.CodeFunction("messageIterator.sendModAck"))
 				}
-				mSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
-					semconv.CodeFunction("messageIterator.sendModAck"))
 			}
 			addModAcks(toSend, deadlineSec)
 			// Use context.Background() as the call's context, not it.ctx. We don't
