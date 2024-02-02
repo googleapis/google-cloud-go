@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.15.4...functions/v1.16.0) (2024-01-30)
+
+
+### Features
+
+* **functions:** Updated description for `docker_registry` to reflect transition to Artifact Registry ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+
+### Bug Fixes
+
+* **functions:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.15.4](https://github.com/googleapis/google-cloud-go/compare/functions/v1.15.3...functions/v1.15.4) (2023-11-01)
 
 

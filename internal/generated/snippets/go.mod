@@ -481,3 +481,5 @@ replace cloud.google.com/go/cloudquotas => ../../../cloudquotas
 replace cloud.google.com/go/servicehealth => ../../../servicehealth
 
 replace cloud.google.com/go/securityposture => ../../../securityposture
+
+replace cloud.google.com/go/visionai => ../../../visionai

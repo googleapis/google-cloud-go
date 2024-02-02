@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.20.4](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.3...video/v1.20.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **video:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.20.3](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.2...video/v1.20.3) (2023-11-01)
 
 

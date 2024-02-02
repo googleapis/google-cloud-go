@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.6.6](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.5...talent/v1.6.6) (2024-01-30)
+
+
+### Bug Fixes
+
+* **talent:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.6.5](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.4...talent/v1.6.5) (2023-11-01)
 
 
