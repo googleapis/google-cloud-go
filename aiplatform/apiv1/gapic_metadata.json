@@ -2077,6 +2077,11 @@
                 "Explain"
               ]
             },
+            "GenerateContent": {
+              "methods": [
+                "GenerateContent"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -2122,9 +2127,24 @@
                 "SetIamPolicy"
               ]
             },
+            "StreamDirectPredict": {
+              "methods": [
+                "StreamDirectPredict"
+              ]
+            },
+            "StreamDirectRawPredict": {
+              "methods": [
+                "StreamDirectRawPredict"
+              ]
+            },
             "StreamGenerateContent": {
               "methods": [
                 "StreamGenerateContent"
+              ]
+            },
+            "StreamRawPredict": {
+              "methods": [
+                "StreamRawPredict"
               ]
             },
             "StreamingPredict": {

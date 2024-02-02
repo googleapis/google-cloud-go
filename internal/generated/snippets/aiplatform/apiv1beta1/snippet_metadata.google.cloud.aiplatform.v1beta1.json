@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.58.2",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -18181,7 +18181,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PredictionService_DirectPredict_sync",
       "title": "aiplatform DirectPredict Sample",
-      "description": "DirectPredict perform an unary online prediction request for Vertex first-party products\nand frameworks.",
+      "description": "DirectPredict perform an unary online prediction request to a gRPC model server for\nVertex first-party products and frameworks.",
       "file": "PredictionClient/DirectPredict/main.go",
       "language": "GO",
       "clientMethod": {
@@ -18227,7 +18227,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PredictionService_DirectRawPredict_sync",
       "title": "aiplatform DirectRawPredict Sample",
-      "description": "DirectRawPredict perform an online prediction request through gRPC.",
+      "description": "DirectRawPredict perform an unary online prediction request to a gRPC model server for\ncustom containers.",
       "file": "PredictionClient/DirectRawPredict/main.go",
       "language": "GO",
       "clientMethod": {
@@ -18301,6 +18301,52 @@
         "method": {
           "shortName": "Explain",
           "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.Explain",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_GenerateContent_sync",
+      "title": "aiplatform GenerateContent Sample",
+      "description": "GenerateContent generate content with multimodal inputs.",
+      "file": "PredictionClient/GenerateContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateContent",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.GenerateContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GenerateContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.GenerateContentResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "GenerateContent",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.GenerateContent",
           "service": {
             "shortName": "PredictionService",
             "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
@@ -18680,6 +18726,90 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_StreamDirectPredict_sync",
+      "title": "aiplatform StreamDirectPredict Sample",
+      "description": "StreamDirectPredict perform a streaming online prediction request to a gRPC model server for\nVertex first-party products and frameworks.\n\n\nThis method is not supported for the REST transport.",
+      "file": "PredictionClient/StreamDirectPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamDirectPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.StreamDirectPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.PredictionService_StreamDirectPredictClient",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "StreamDirectPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.StreamDirectPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_StreamDirectRawPredict_sync",
+      "title": "aiplatform StreamDirectRawPredict Sample",
+      "description": "StreamDirectRawPredict perform a streaming online prediction request to a gRPC model server for\ncustom containers.\n\n\nThis method is not supported for the REST transport.",
+      "file": "PredictionClient/StreamDirectRawPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamDirectRawPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.StreamDirectRawPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.PredictionService_StreamDirectRawPredictClient",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "StreamDirectRawPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.StreamDirectRawPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]
