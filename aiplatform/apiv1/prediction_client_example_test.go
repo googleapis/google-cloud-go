@@ -120,31 +120,6 @@ func ExamplePredictionClient_Explain() {
 	_ = resp
 }
 
-func ExamplePredictionClient_GenerateContent() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewPredictionClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.GenerateContentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GenerateContentRequest.
-	}
-	resp, err := c.GenerateContent(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExamplePredictionClient_Predict() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -193,86 +168,6 @@ func ExamplePredictionClient_RawPredict() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExamplePredictionClient_StreamDirectPredict() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewPredictionClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-	stream, err := c.StreamDirectPredict(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	go func() {
-		reqs := []*aiplatformpb.StreamDirectPredictRequest{
-			// TODO: Create requests.
-		}
-		for _, req := range reqs {
-			if err := stream.Send(req); err != nil {
-				// TODO: Handle error.
-			}
-		}
-		stream.CloseSend()
-	}()
-	for {
-		resp, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			// TODO: handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExamplePredictionClient_StreamDirectRawPredict() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewPredictionClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-	stream, err := c.StreamDirectRawPredict(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	go func() {
-		reqs := []*aiplatformpb.StreamDirectRawPredictRequest{
-			// TODO: Create requests.
-		}
-		for _, req := range reqs {
-			if err := stream.Send(req); err != nil {
-				// TODO: Handle error.
-			}
-		}
-		stream.CloseSend()
-	}()
-	for {
-		resp, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			// TODO: handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
 }
 
 func ExamplePredictionClient_StreamingPredict() {
