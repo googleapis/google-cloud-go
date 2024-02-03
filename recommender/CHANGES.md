@@ -1,5 +1,40 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.12.0...recommender/v1.12.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **recommender:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.3...recommender/v1.12.0) (2023-12-13)
+
+
+### Features
+
+* **recommender:** Support cost_in_local_currency field in the cost projection ([3d9f556](https://github.com/googleapis/google-cloud-go/commit/3d9f55678654fe678d44f3f4a08bf26c3830b653))
+
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.2...recommender/v1.11.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **recommender:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.1...recommender/v1.11.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **recommender:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.0...recommender/v1.11.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **recommender:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.10.1...recommender/v1.11.0) (2023-09-11)
 
 

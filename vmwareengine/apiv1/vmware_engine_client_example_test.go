@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_ListPrivateClouds() {
+func ExampleClient_CreateCluster() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -74,25 +74,24 @@ func ExampleClient_ListPrivateClouds() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.ListPrivateCloudsRequest{
+	req := &vmwareenginepb.CreateClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListPrivateCloudsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateClusterRequest.
 	}
-	it := c.ListPrivateClouds(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	op, err := c.CreateCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
-func ExampleClient_GetPrivateCloud() {
+func ExampleClient_CreateExternalAccessRule() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -105,11 +104,196 @@ func ExampleClient_GetPrivateCloud() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.GetPrivateCloudRequest{
+	req := &vmwareenginepb.CreateExternalAccessRuleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetPrivateCloudRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateExternalAccessRuleRequest.
 	}
-	resp, err := c.GetPrivateCloud(ctx, req)
+	op, err := c.CreateExternalAccessRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateExternalAddress() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.CreateExternalAddressRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateExternalAddressRequest.
+	}
+	op, err := c.CreateExternalAddress(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateHcxActivationKey() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.CreateHcxActivationKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateHcxActivationKeyRequest.
+	}
+	op, err := c.CreateHcxActivationKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateLoggingServer() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.CreateLoggingServerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateLoggingServerRequest.
+	}
+	op, err := c.CreateLoggingServer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateManagementDnsZoneBinding() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.CreateManagementDnsZoneBindingRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateManagementDnsZoneBindingRequest.
+	}
+	op, err := c.CreateManagementDnsZoneBinding(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateNetworkPeering() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.CreateNetworkPeeringRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateNetworkPeeringRequest.
+	}
+	op, err := c.CreateNetworkPeering(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateNetworkPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.CreateNetworkPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateNetworkPolicyRequest.
+	}
+	op, err := c.CreateNetworkPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -147,7 +331,7 @@ func ExampleClient_CreatePrivateCloud() {
 	_ = resp
 }
 
-func ExampleClient_UpdatePrivateCloud() {
+func ExampleClient_CreatePrivateConnection() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -160,11 +344,11 @@ func ExampleClient_UpdatePrivateCloud() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.UpdatePrivateCloudRequest{
+	req := &vmwareenginepb.CreatePrivateConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdatePrivateCloudRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreatePrivateConnectionRequest.
 	}
-	op, err := c.UpdatePrivateCloud(ctx, req)
+	op, err := c.CreatePrivateConnection(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -175,6 +359,232 @@ func ExampleClient_UpdatePrivateCloud() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleClient_CreateVmwareEngineNetwork() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.CreateVmwareEngineNetworkRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateVmwareEngineNetworkRequest.
+	}
+	op, err := c.CreateVmwareEngineNetwork(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteCluster() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.DeleteClusterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeleteClusterRequest.
+	}
+	op, err := c.DeleteCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteExternalAccessRule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.DeleteExternalAccessRuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeleteExternalAccessRuleRequest.
+	}
+	op, err := c.DeleteExternalAccessRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteExternalAddress() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.DeleteExternalAddressRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeleteExternalAddressRequest.
+	}
+	op, err := c.DeleteExternalAddress(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteLoggingServer() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.DeleteLoggingServerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeleteLoggingServerRequest.
+	}
+	op, err := c.DeleteLoggingServer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteManagementDnsZoneBinding() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.DeleteManagementDnsZoneBindingRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeleteManagementDnsZoneBindingRequest.
+	}
+	op, err := c.DeleteManagementDnsZoneBinding(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteNetworkPeering() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.DeleteNetworkPeeringRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeleteNetworkPeeringRequest.
+	}
+	op, err := c.DeleteNetworkPeering(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteNetworkPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.DeleteNetworkPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeleteNetworkPolicyRequest.
+	}
+	op, err := c.DeleteNetworkPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleClient_DeletePrivateCloud() {
@@ -207,7 +617,7 @@ func ExampleClient_DeletePrivateCloud() {
 	_ = resp
 }
 
-func ExampleClient_UndeletePrivateCloud() {
+func ExampleClient_DeletePrivateConnection() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -220,11 +630,498 @@ func ExampleClient_UndeletePrivateCloud() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.UndeletePrivateCloudRequest{
+	req := &vmwareenginepb.DeletePrivateConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UndeletePrivateCloudRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeletePrivateConnectionRequest.
 	}
-	op, err := c.UndeletePrivateCloud(ctx, req)
+	op, err := c.DeletePrivateConnection(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteVmwareEngineNetwork() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.DeleteVmwareEngineNetworkRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeleteVmwareEngineNetworkRequest.
+	}
+	op, err := c.DeleteVmwareEngineNetwork(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_FetchNetworkPolicyExternalAddresses() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.FetchNetworkPolicyExternalAddressesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#FetchNetworkPolicyExternalAddressesRequest.
+	}
+	it := c.FetchNetworkPolicyExternalAddresses(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_GetCluster() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetClusterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetClusterRequest.
+	}
+	resp, err := c.GetCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetDnsBindPermission() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetDnsBindPermissionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetDnsBindPermissionRequest.
+	}
+	resp, err := c.GetDnsBindPermission(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetDnsForwarding() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetDnsForwardingRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetDnsForwardingRequest.
+	}
+	resp, err := c.GetDnsForwarding(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetExternalAccessRule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetExternalAccessRuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetExternalAccessRuleRequest.
+	}
+	resp, err := c.GetExternalAccessRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetExternalAddress() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetExternalAddressRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetExternalAddressRequest.
+	}
+	resp, err := c.GetExternalAddress(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetHcxActivationKey() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetHcxActivationKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetHcxActivationKeyRequest.
+	}
+	resp, err := c.GetHcxActivationKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetLoggingServer() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetLoggingServerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetLoggingServerRequest.
+	}
+	resp, err := c.GetLoggingServer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetManagementDnsZoneBinding() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetManagementDnsZoneBindingRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetManagementDnsZoneBindingRequest.
+	}
+	resp, err := c.GetManagementDnsZoneBinding(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetNetworkPeering() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetNetworkPeeringRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetNetworkPeeringRequest.
+	}
+	resp, err := c.GetNetworkPeering(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetNetworkPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetNetworkPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetNetworkPolicyRequest.
+	}
+	resp, err := c.GetNetworkPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetNode() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetNodeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetNodeRequest.
+	}
+	resp, err := c.GetNode(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetNodeType() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetNodeTypeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetNodeTypeRequest.
+	}
+	resp, err := c.GetNodeType(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetPrivateCloud() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetPrivateCloudRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetPrivateCloudRequest.
+	}
+	resp, err := c.GetPrivateCloud(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetPrivateConnection() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetPrivateConnectionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetPrivateConnectionRequest.
+	}
+	resp, err := c.GetPrivateConnection(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetSubnet() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetSubnetRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetSubnetRequest.
+	}
+	resp, err := c.GetSubnet(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetVmwareEngineNetwork() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GetVmwareEngineNetworkRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetVmwareEngineNetworkRequest.
+	}
+	resp, err := c.GetVmwareEngineNetwork(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GrantDnsBindPermission() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.GrantDnsBindPermissionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GrantDnsBindPermissionRequest.
+	}
+	op, err := c.GrantDnsBindPermission(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -268,7 +1165,7 @@ func ExampleClient_ListClusters() {
 	}
 }
 
-func ExampleClient_GetCluster() {
+func ExampleClient_ListExternalAccessRules() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -281,19 +1178,25 @@ func ExampleClient_GetCluster() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.GetClusterRequest{
+	req := &vmwareenginepb.ListExternalAccessRulesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListExternalAccessRulesRequest.
 	}
-	resp, err := c.GetCluster(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListExternalAccessRules(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleClient_CreateCluster() {
+func ExampleClient_ListExternalAddresses() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -306,24 +1209,25 @@ func ExampleClient_CreateCluster() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.CreateClusterRequest{
+	req := &vmwareenginepb.ListExternalAddressesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListExternalAddressesRequest.
 	}
-	op, err := c.CreateCluster(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListExternalAddresses(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleClient_UpdateCluster() {
+func ExampleClient_ListHcxActivationKeys() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -336,24 +1240,25 @@ func ExampleClient_UpdateCluster() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.UpdateClusterRequest{
+	req := &vmwareenginepb.ListHcxActivationKeysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdateClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListHcxActivationKeysRequest.
 	}
-	op, err := c.UpdateCluster(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListHcxActivationKeys(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleClient_DeleteCluster() {
+func ExampleClient_ListLoggingServers() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -366,18 +1271,300 @@ func ExampleClient_DeleteCluster() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.DeleteClusterRequest{
+	req := &vmwareenginepb.ListLoggingServersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeleteClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListLoggingServersRequest.
 	}
-	op, err := c.DeleteCluster(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListLoggingServers(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
+}
 
-	err = op.Wait(ctx)
+func ExampleClient_ListManagementDnsZoneBindings() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.ListManagementDnsZoneBindingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListManagementDnsZoneBindingsRequest.
+	}
+	it := c.ListManagementDnsZoneBindings(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListNetworkPeerings() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.ListNetworkPeeringsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListNetworkPeeringsRequest.
+	}
+	it := c.ListNetworkPeerings(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListNetworkPolicies() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.ListNetworkPoliciesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListNetworkPoliciesRequest.
+	}
+	it := c.ListNetworkPolicies(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListNodeTypes() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.ListNodeTypesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListNodeTypesRequest.
+	}
+	it := c.ListNodeTypes(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListNodes() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.ListNodesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListNodesRequest.
+	}
+	it := c.ListNodes(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListPeeringRoutes() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.ListPeeringRoutesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListPeeringRoutesRequest.
+	}
+	it := c.ListPeeringRoutes(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListPrivateClouds() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.ListPrivateCloudsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListPrivateCloudsRequest.
+	}
+	it := c.ListPrivateClouds(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListPrivateConnectionPeeringRoutes() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListPrivateConnectionPeeringRoutesRequest.
+	}
+	it := c.ListPrivateConnectionPeeringRoutes(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListPrivateConnections() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.ListPrivateConnectionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListPrivateConnectionsRequest.
+	}
+	it := c.ListPrivateConnections(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }
 
@@ -412,7 +1599,7 @@ func ExampleClient_ListSubnets() {
 	}
 }
 
-func ExampleClient_GetSubnet() {
+func ExampleClient_ListVmwareEngineNetworks() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -425,66 +1612,11 @@ func ExampleClient_GetSubnet() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.GetSubnetRequest{
+	req := &vmwareenginepb.ListVmwareEngineNetworksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetSubnetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListVmwareEngineNetworksRequest.
 	}
-	resp, err := c.GetSubnet(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateSubnet() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.UpdateSubnetRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdateSubnetRequest.
-	}
-	op, err := c.UpdateSubnet(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListNodeTypes() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.ListNodeTypesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListNodeTypesRequest.
-	}
-	it := c.ListNodeTypes(ctx, req)
+	it := c.ListVmwareEngineNetworks(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -498,7 +1630,7 @@ func ExampleClient_ListNodeTypes() {
 	}
 }
 
-func ExampleClient_GetNodeType() {
+func ExampleClient_RepairManagementDnsZoneBinding() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -511,61 +1643,16 @@ func ExampleClient_GetNodeType() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.GetNodeTypeRequest{
+	req := &vmwareenginepb.RepairManagementDnsZoneBindingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetNodeTypeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#RepairManagementDnsZoneBindingRequest.
 	}
-	resp, err := c.GetNodeType(ctx, req)
+	op, err := c.RepairManagementDnsZoneBinding(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
-}
 
-func ExampleClient_ShowNsxCredentials() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.ShowNsxCredentialsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ShowNsxCredentialsRequest.
-	}
-	resp, err := c.ShowNsxCredentials(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ShowVcenterCredentials() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.ShowVcenterCredentialsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ShowVcenterCredentialsRequest.
-	}
-	resp, err := c.ShowVcenterCredentials(ctx, req)
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -633,7 +1720,7 @@ func ExampleClient_ResetVcenterCredentials() {
 	_ = resp
 }
 
-func ExampleClient_CreateHcxActivationKey() {
+func ExampleClient_RevokeDnsBindPermission() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -646,11 +1733,11 @@ func ExampleClient_CreateHcxActivationKey() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.CreateHcxActivationKeyRequest{
+	req := &vmwareenginepb.RevokeDnsBindPermissionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateHcxActivationKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#RevokeDnsBindPermissionRequest.
 	}
-	op, err := c.CreateHcxActivationKey(ctx, req)
+	op, err := c.RevokeDnsBindPermission(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -663,7 +1750,7 @@ func ExampleClient_CreateHcxActivationKey() {
 	_ = resp
 }
 
-func ExampleClient_ListHcxActivationKeys() {
+func ExampleClient_ShowNsxCredentials() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -676,42 +1763,11 @@ func ExampleClient_ListHcxActivationKeys() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.ListHcxActivationKeysRequest{
+	req := &vmwareenginepb.ShowNsxCredentialsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListHcxActivationKeysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ShowNsxCredentialsRequest.
 	}
-	it := c.ListHcxActivationKeys(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetHcxActivationKey() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.GetHcxActivationKeyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetHcxActivationKeyRequest.
-	}
-	resp, err := c.GetHcxActivationKey(ctx, req)
+	resp, err := c.ShowNsxCredentials(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -719,7 +1775,7 @@ func ExampleClient_GetHcxActivationKey() {
 	_ = resp
 }
 
-func ExampleClient_GetNetworkPolicy() {
+func ExampleClient_ShowVcenterCredentials() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -732,11 +1788,11 @@ func ExampleClient_GetNetworkPolicy() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.GetNetworkPolicyRequest{
+	req := &vmwareenginepb.ShowVcenterCredentialsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetNetworkPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ShowVcenterCredentialsRequest.
 	}
-	resp, err := c.GetNetworkPolicy(ctx, req)
+	resp, err := c.ShowVcenterCredentials(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -744,7 +1800,7 @@ func ExampleClient_GetNetworkPolicy() {
 	_ = resp
 }
 
-func ExampleClient_ListNetworkPolicies() {
+func ExampleClient_UndeletePrivateCloud() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -757,25 +1813,24 @@ func ExampleClient_ListNetworkPolicies() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.ListNetworkPoliciesRequest{
+	req := &vmwareenginepb.UndeletePrivateCloudRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListNetworkPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UndeletePrivateCloudRequest.
 	}
-	it := c.ListNetworkPolicies(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	op, err := c.UndeletePrivateCloud(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
-func ExampleClient_CreateNetworkPolicy() {
+func ExampleClient_UpdateCluster() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -788,11 +1843,191 @@ func ExampleClient_CreateNetworkPolicy() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.CreateNetworkPolicyRequest{
+	req := &vmwareenginepb.UpdateClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateNetworkPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdateClusterRequest.
 	}
-	op, err := c.CreateNetworkPolicy(ctx, req)
+	op, err := c.UpdateCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateDnsForwarding() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.UpdateDnsForwardingRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdateDnsForwardingRequest.
+	}
+	op, err := c.UpdateDnsForwarding(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateExternalAccessRule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.UpdateExternalAccessRuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdateExternalAccessRuleRequest.
+	}
+	op, err := c.UpdateExternalAccessRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateExternalAddress() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.UpdateExternalAddressRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdateExternalAddressRequest.
+	}
+	op, err := c.UpdateExternalAddress(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateLoggingServer() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.UpdateLoggingServerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdateLoggingServerRequest.
+	}
+	op, err := c.UpdateLoggingServer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateManagementDnsZoneBinding() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.UpdateManagementDnsZoneBindingRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdateManagementDnsZoneBindingRequest.
+	}
+	op, err := c.UpdateManagementDnsZoneBinding(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateNetworkPeering() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.UpdateNetworkPeeringRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdateNetworkPeeringRequest.
+	}
+	op, err := c.UpdateNetworkPeering(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -835,7 +2070,7 @@ func ExampleClient_UpdateNetworkPolicy() {
 	_ = resp
 }
 
-func ExampleClient_DeleteNetworkPolicy() {
+func ExampleClient_UpdatePrivateCloud() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -848,22 +2083,24 @@ func ExampleClient_DeleteNetworkPolicy() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.DeleteNetworkPolicyRequest{
+	req := &vmwareenginepb.UpdatePrivateCloudRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeleteNetworkPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdatePrivateCloudRequest.
 	}
-	op, err := c.DeleteNetworkPolicy(ctx, req)
+	op, err := c.UpdatePrivateCloud(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	err = op.Wait(ctx)
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
-func ExampleClient_CreateVmwareEngineNetwork() {
+func ExampleClient_UpdatePrivateConnection() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -876,11 +2113,41 @@ func ExampleClient_CreateVmwareEngineNetwork() {
 	}
 	defer c.Close()
 
-	req := &vmwareenginepb.CreateVmwareEngineNetworkRequest{
+	req := &vmwareenginepb.UpdatePrivateConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreateVmwareEngineNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdatePrivateConnectionRequest.
 	}
-	op, err := c.CreateVmwareEngineNetwork(ctx, req)
+	op, err := c.UpdatePrivateConnection(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateSubnet() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vmwareengine.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &vmwareenginepb.UpdateSubnetRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdateSubnetRequest.
+	}
+	op, err := c.UpdateSubnet(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -921,265 +2188,6 @@ func ExampleClient_UpdateVmwareEngineNetwork() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleClient_DeleteVmwareEngineNetwork() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.DeleteVmwareEngineNetworkRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeleteVmwareEngineNetworkRequest.
-	}
-	op, err := c.DeleteVmwareEngineNetwork(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_GetVmwareEngineNetwork() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.GetVmwareEngineNetworkRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetVmwareEngineNetworkRequest.
-	}
-	resp, err := c.GetVmwareEngineNetwork(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListVmwareEngineNetworks() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.ListVmwareEngineNetworksRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListVmwareEngineNetworksRequest.
-	}
-	it := c.ListVmwareEngineNetworks(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_CreatePrivateConnection() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.CreatePrivateConnectionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#CreatePrivateConnectionRequest.
-	}
-	op, err := c.CreatePrivateConnection(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_GetPrivateConnection() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.GetPrivateConnectionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#GetPrivateConnectionRequest.
-	}
-	resp, err := c.GetPrivateConnection(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListPrivateConnections() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.ListPrivateConnectionsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListPrivateConnectionsRequest.
-	}
-	it := c.ListPrivateConnections(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_UpdatePrivateConnection() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.UpdatePrivateConnectionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#UpdatePrivateConnectionRequest.
-	}
-	op, err := c.UpdatePrivateConnection(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeletePrivateConnection() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.DeletePrivateConnectionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#DeletePrivateConnectionRequest.
-	}
-	op, err := c.DeletePrivateConnection(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_ListPrivateConnectionPeeringRoutes() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := vmwareengine.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb#ListPrivateConnectionPeeringRoutesRequest.
-	}
-	it := c.ListPrivateConnectionPeeringRoutes(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
 }
 
 func ExampleClient_GetLocation() {

@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -38,17 +39,8 @@ var (
 // and using credentials loaded from Application Default Credentials as the base
 // credentials if not provided with the opts.
 func NewCredentialTokenProvider(opts *CredentialOptions) (auth.TokenProvider, error) {
-	if opts == nil {
-		return nil, fmt.Errorf("impersonate: opts must be provided")
-	}
-	if opts.TargetPrincipal == "" {
-		return nil, fmt.Errorf("impersonate: a target service account must be provided")
-	}
-	if len(opts.Scopes) == 0 {
-		return nil, fmt.Errorf("impersonate: scopes must be provided")
-	}
-	if opts.Lifetime.Hours() > 12 {
-		return nil, fmt.Errorf("impersonate: max lifetime is 12 hours")
+	if err := opts.validate(); err != nil {
+		return nil, err
 	}
 
 	var isStaticToken bool
@@ -139,6 +131,22 @@ type CredentialOptions struct {
 	// when fetching tokens. If provided the client should provide it's own
 	// credentials at call time. Optional.
 	Client *http.Client
+}
+
+func (o *CredentialOptions) validate() error {
+	if o == nil {
+		return errors.New("impersonate: options must be provided")
+	}
+	if o.TargetPrincipal == "" {
+		return errors.New("impersonate: target service account must be provided")
+	}
+	if len(o.Scopes) == 0 {
+		return errors.New("impersonate: scopes must be provided")
+	}
+	if o.Lifetime.Hours() > 12 {
+		return errors.New("impersonate: max lifetime is 12 hours")
+	}
+	return nil
 }
 
 func formatIAMServiceAccountName(name string) string {

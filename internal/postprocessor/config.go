@@ -47,16 +47,22 @@ type libraryInfo struct {
 	ServiceConfig string
 	// RelPath is the relative path to the client from the repo root.
 	RelPath string
+	// ReleaseLevel is an override for the release level of a library. It is
+	// used in cases where a release level can't be determined by looking at
+	// the import path and/or reading service `doc.go` files because there are
+	// no associated services.
+	ReleaseLevel string
 }
 
 func (p *postProcessor) loadConfig() error {
 	var postProcessorConfig struct {
 		Modules        []string `yaml:"modules"`
 		ServiceConfigs []*struct {
-			InputDirectory string `yaml:"input-directory"`
-			ServiceConfig  string `yaml:"service-config"`
-			ImportPath     string `yaml:"import-path"`
-			RelPath        string `yaml:"rel-path"`
+			InputDirectory       string `yaml:"input-directory"`
+			ServiceConfig        string `yaml:"service-config"`
+			ImportPath           string `yaml:"import-path"`
+			RelPath              string `yaml:"rel-path"`
+			ReleaseLevelOverride string `yaml:"release-level-override"`
 		} `yaml:"service-configs"`
 		ManualClients []*ManifestEntry `yaml:"manual-clients"`
 	}
@@ -92,6 +98,7 @@ func (p *postProcessor) loadConfig() error {
 			ServiceConfig: v.ServiceConfig,
 			ImportPath:    v.ImportPath,
 			RelPath:       v.RelPath,
+			ReleaseLevel:  v.ReleaseLevelOverride,
 		}
 	}
 	for _, v := range owlBotConfig.DeepCopyRegex {

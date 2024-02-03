@@ -2,10 +2,9 @@
 name: apidiff
 on:
   pull_request:
-  
+
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   scan_changes:
@@ -20,7 +19,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/setup-go@v4
       with:
-        go-version: '1.20.1'
+        go-version: '1.21.x'
     - name: Get changed directories
       id: changed_dirs
       # Ignore changes to the internal and root directories.
@@ -42,14 +41,16 @@ jobs:
   apidiff:
     needs: scan_changes
     runs-on: ubuntu-latest
-    if: "!needs.scan_changes.outputs.skip && !contains(github.event.pull_request.labels.*.name, 'breaking change allowed')"
+    if: ${{ !needs.scan_changes.outputs.skip && !contains(github.event.pull_request.labels.*.name, 'breaking change allowed') }}
     continue-on-error: true
+    permissions:
+      pull-requests: write
     strategy:
       matrix: ${{ fromJson(needs.scan_changes.outputs.changed_dirs) }}
     steps:
     - uses: actions/setup-go@v4
       with:
-        go-version: '1.20.1'
+        go-version: '1.21.x'
     - name: Install latest apidiff
       run: go install golang.org/x/exp/cmd/apidiff@latest
     - uses: actions/checkout@v3
@@ -78,9 +79,11 @@ jobs:
       # Only ignore Go interface additions when the PR is from OwlBot as it is
       # likely a new method added to the gRPC client stub interface, which is
       # non-breaking.
+      env:
+        PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
       run: |
         cd ${{ matrix.changed }} && apidiff -m -incompatible ${{ steps.baseline.outputs.pkg }} . > diff.txt
-        if [[ ${{ github.event.pull_request.head.ref }} == owl-bot-copy ]]; then
+        if [[ "$PR_HEAD_REF" == owl-bot-copy ]]; then
           sed -i '/: added/d' ./diff.txt
         fi
         cat diff.txt && ! [ -s diff.txt ]

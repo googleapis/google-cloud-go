@@ -20,6 +20,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/detect/internal/externalaccount"
+	"cloud.google.com/go/auth/detect/internal/externalaccountuser"
 	"cloud.google.com/go/auth/detect/internal/gdch"
 	"cloud.google.com/go/auth/detect/internal/impersonate"
 	"cloud.google.com/go/auth/internal/internaldetect"
@@ -31,7 +32,7 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 		return nil, err
 	}
 
-	var projectID, quotaProjectID string
+	var projectID, quotaProjectID, universeDomain string
 	var tp auth.TokenProvider
 	switch fileType {
 	case internaldetect.ServiceAccountKey:
@@ -44,6 +45,7 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 			return nil, err
 		}
 		projectID = f.ProjectID
+		universeDomain = f.UniverseDomain
 	case internaldetect.UserCredentialsKey:
 		f, err := internaldetect.ParseUserCredentials(b)
 		if err != nil {
@@ -64,6 +66,17 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 			return nil, err
 		}
 		quotaProjectID = f.QuotaProjectID
+		universeDomain = f.UniverseDomain
+	case internaldetect.ExternalAccountAuthorizedUserKey:
+		f, err := internaldetect.ParseExternalAccountAuthorizedUser(b)
+		if err != nil {
+			return nil, err
+		}
+		tp, err = handleExternalAccountAuthorizedUser(f, opts)
+		if err != nil {
+			return nil, err
+		}
+		quotaProjectID = f.QuotaProjectID
 	case internaldetect.ImpersonatedServiceAccountKey:
 		f, err := internaldetect.ParseImpersonatedServiceAccount(b)
 		if err != nil {
@@ -73,6 +86,7 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
+		universeDomain = f.UniverseDomain
 	case internaldetect.GDCHServiceAccountKey:
 		f, err := internaldetect.ParseGDCHServiceAccount(b)
 		if err != nil {
@@ -88,7 +102,7 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 	}
 	return newCredentials(auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
 		ExpireEarly: opts.EarlyTokenRefresh,
-	}), b, projectID, quotaProjectID), nil
+	}), b, projectID, quotaProjectID, universeDomain), nil
 }
 
 func handleServiceAccount(f *internaldetect.ServiceAccountFile, opts *Options) (auth.TokenProvider, error) {
@@ -118,8 +132,9 @@ func handleUserCredential(f *internaldetect.UserCredentialsFile, opts *Options) 
 		TokenURL:         opts.tokenURL(),
 		AuthStyle:        auth.StyleInParams,
 		EarlyTokenExpiry: opts.EarlyTokenRefresh,
+		RefreshToken:     f.RefreshToken,
 	}
-	return auth.New3LOTokenProvider(f.RefreshToken, opts3LO)
+	return auth.New3LOTokenProvider(opts3LO)
 }
 
 func handleExternalAccount(f *internaldetect.ExternalAccountFile, opts *Options) (auth.TokenProvider, error) {
@@ -139,6 +154,20 @@ func handleExternalAccount(f *internaldetect.ExternalAccountFile, opts *Options)
 		Client:                   opts.client(),
 	}
 	return externalaccount.NewTokenProvider(externalOpts)
+}
+
+func handleExternalAccountAuthorizedUser(f *internaldetect.ExternalAccountAuthorizedUserFile, opts *Options) (auth.TokenProvider, error) {
+	externalOpts := &externalaccountuser.Options{
+		Audience:     f.Audience,
+		RefreshToken: f.RefreshToken,
+		TokenURL:     f.TokenURL,
+		TokenInfoURL: f.TokenInfoURL,
+		ClientID:     f.ClientID,
+		ClientSecret: f.ClientSecret,
+		Scopes:       opts.scopes(),
+		Client:       opts.client(),
+	}
+	return externalaccountuser.NewTokenProvider(externalOpts)
 }
 
 func handleImpersonatedServiceAccount(f *internaldetect.ImpersonatedServiceAccountFile, opts *Options) (auth.TokenProvider, error) {

@@ -1415,12 +1415,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						return nil
 					}
 					fcSpan.End()
-					msgLen := len(msg.Data)
-					old := ackh.doneFunc
-					ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
-						defer fc.release(ctx, msgLen)
-						old(ackID, ack, r, receiveTime)
-					}
+
 					wg.Add(1)
 					// Make sure the subscription has ordering enabled before adding to scheduler.
 					var key string
@@ -1433,6 +1428,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					if iter.enableTracing {
 						ctx, schedulerSpan = startSpan(ctx, scheduleSpanName, "")
 					}
+					msgLen := len(msg.Data)
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						m := msg.(*Message)
 						schedulerSpan.End()
@@ -1442,7 +1438,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 							_, ps = startSpan(ctx, processSpanName, s.ID())
 							defer ps.End()
 						}
-						old2 := ackh.doneFunc
+						old := ackh.doneFunc
 						ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
 							var eventString string
 							if ack {
@@ -1452,8 +1448,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 							}
 							ps.AddEvent(eventString)
 							ps.SetAttributes(semconv.MessagingOperationProcess)
-							old2(ackID, ack, r, receiveTime)
+							old(ackID, ack, r, receiveTime)
 						}
+						defer fc.release(ctx, msgLen)
 						f(ctx2, m)
 					}); err != nil {
 						wg.Done()

@@ -67,7 +67,9 @@ func TestRetrieveFileSubjectToken(t *testing.T) {
 			} else if test.want != out {
 				t.Errorf("got %v, want %v", out, test.want)
 			}
-
+			if got, want := base.providerType(), fileProviderType; got != want {
+				t.Fatalf("got %q, want %q", got, want)
+			}
 		})
 	}
 }

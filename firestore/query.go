@@ -291,6 +291,29 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 	return docSnapshotOrFieldValues, nil, nil
 }
 
+func (q *Query) processLimitToLast() {
+	if q.limitToLast {
+		// Flip order statements before posting a request.
+		for i := range q.orders {
+			if q.orders[i].dir == Asc {
+				q.orders[i].dir = Desc
+			} else {
+				q.orders[i].dir = Asc
+			}
+		}
+		// Swap cursors.
+		q.startVals, q.endVals = q.endVals, q.startVals
+		q.startDoc, q.endDoc = q.endDoc, q.startDoc
+		if q.endBefore {
+			q.endBefore = false
+			q.startBefore = false
+		} else {
+			q.startBefore, q.endBefore = q.endBefore, q.startBefore
+		}
+		q.limitToLast = false
+	}
+}
+
 func (q Query) query() *Query { return &q }
 
 // Serialize creates a RunQueryRequest wire-format byte slice from a Query object.
@@ -992,26 +1015,7 @@ func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 
 	q := it.q
 	limitedToLast := q.limitToLast
-	if q.limitToLast {
-		// Flip order statements before posting a request.
-		for i := range q.orders {
-			if q.orders[i].dir == Asc {
-				q.orders[i].dir = Desc
-			} else {
-				q.orders[i].dir = Asc
-			}
-		}
-		// Swap cursors.
-		q.startVals, q.endVals = q.endVals, q.startVals
-		q.startDoc, q.endDoc = q.endDoc, q.startDoc
-		if q.endBefore {
-			q.endBefore = false
-			q.startBefore = false
-		} else {
-			q.startBefore, q.endBefore = q.endBefore, q.startBefore
-		}
-		q.limitToLast = false
-	}
+	q.processLimitToLast()
 	var docs []*DocumentSnapshot
 	for {
 		doc, err := it.Next()
@@ -1222,6 +1226,25 @@ type AggregationQuery struct {
 	aggregateQueries []*pb.StructuredAggregationQuery_Aggregation
 	// query contains a reference pointer to the underlying structured query.
 	query *Query
+	//  tx points to an already active transaction within which the AggregationQuery runs
+	tx *Transaction
+}
+
+// Transaction specifies that aggregation query should run within provided transaction
+func (a *AggregationQuery) Transaction(tx *Transaction) *AggregationQuery {
+	a = a.clone()
+	a.tx = tx
+	return a
+}
+
+func (a *AggregationQuery) clone() *AggregationQuery {
+	x := *a
+	// Copy the contents of the slice-typed fields to a new backing store.
+	if len(a.aggregateQueries) > 0 {
+		x.aggregateQueries = make([]*pb.StructuredAggregationQuery_Aggregation, len(a.aggregateQueries))
+		copy(x.aggregateQueries, a.aggregateQueries)
+	}
+	return &x
 }
 
 // WithCount specifies that the aggregation query provide a count of results
@@ -1237,9 +1260,92 @@ func (a *AggregationQuery) WithCount(alias string) *AggregationQuery {
 	return a
 }
 
+// WithSumPath specifies that the aggregation query should provide a sum of the values
+// of the provided field in the results returned by the underlying Query.
+// The path argument can be a single field or a dot-separated sequence of
+// fields, and must not contain any of the runes "˜*/[]".
+// The alias argument can be empty or a valid Firestore document field name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Firestore
+// will autogenerate a key.
+func (a *AggregationQuery) WithSumPath(fp FieldPath, alias string) *AggregationQuery {
+	ref, err := fref(fp)
+	if err != nil {
+		a.query.err = err
+		return a
+	}
+
+	aq := &pb.StructuredAggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.StructuredAggregationQuery_Aggregation_Sum_{
+			Sum: &pb.StructuredAggregationQuery_Aggregation_Sum{
+				Field: ref,
+			},
+		},
+	}
+
+	a.aggregateQueries = append(a.aggregateQueries, aq)
+	return a
+}
+
+// WithSum specifies that the aggregation query should provide a sum of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Firestore document field name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Firestore
+// will autogenerate a key.
+func (a *AggregationQuery) WithSum(path string, alias string) *AggregationQuery {
+	fp, err := parseDotSeparatedString(path)
+	if err != nil {
+		a.query.err = err
+		return a
+	}
+	return a.WithSumPath(fp, alias)
+}
+
+// WithAvgPath specifies that the aggregation query should provide an average of the values
+// of the provided field in the results returned by the underlying Query.
+// The path argument can be a single field or a dot-separated sequence of
+// fields, and must not contain any of the runes "˜*/[]".
+// The alias argument can be empty or a valid Firestore document field name. It can be used
+// as key in the AggregationResult to get the average value. If alias is empty, Firestore
+// will autogenerate a key.
+func (a *AggregationQuery) WithAvgPath(fp FieldPath, alias string) *AggregationQuery {
+	ref, err := fref(fp)
+	if err != nil {
+		a.query.err = err
+		return a
+	}
+
+	aq := &pb.StructuredAggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.StructuredAggregationQuery_Aggregation_Avg_{
+			Avg: &pb.StructuredAggregationQuery_Aggregation_Avg{
+				Field: ref,
+			},
+		},
+	}
+
+	a.aggregateQueries = append(a.aggregateQueries, aq)
+	return a
+}
+
+// WithAvg specifies that the aggregation query should provide an average of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Firestore document field name. It can be used
+// as key in the AggregationResult to get the average value. If alias is empty, Firestore
+// will autogenerate a key.
+func (a *AggregationQuery) WithAvg(path string, alias string) *AggregationQuery {
+	fp, err := parseDotSeparatedString(path)
+	if err != nil {
+		a.query.err = err
+		return a
+	}
+	return a.WithAvgPath(fp, alias)
+}
+
 // Get retrieves the aggregation query results from the service.
 func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 
+	a.query.processLimitToLast()
 	client := a.query.c.c
 	q, err := a.query.toProto()
 	if err != nil {
@@ -1257,6 +1363,13 @@ func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 			},
 		},
 	}
+
+	if a.tx != nil {
+		req.ConsistencySelector = &pb.RunAggregationQueryRequest_Transaction{
+			Transaction: a.tx.id,
+		}
+	}
+
 	ctx = withResourceHeader(ctx, a.query.c.path())
 	stream, err := client.RunAggregationQuery(ctx, req)
 	if err != nil {

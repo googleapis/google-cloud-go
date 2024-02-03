@@ -1,6 +1,66 @@
 # Changelog
 
 
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.8.0...alloydb/v1.8.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **alloydb:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.7.0...alloydb/v1.8.0) (2024-01-03)
+
+
+### Features
+
+* **alloydb:** Added PSC config, PSC interface config, PSC instance config ([#9184](https://github.com/googleapis/google-cloud-go/issues/9184)) ([36fec33](https://github.com/googleapis/google-cloud-go/commit/36fec33b8225f3e7df552839290ddbfefb222816))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.3...alloydb/v1.7.0) (2023-11-09)
+
+
+### Features
+
+* **alloydb:** Add new field in `GenerateClientCertificate` v1 API to allow AlloyDB connectors request client certs with metadata exchange support ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.2...alloydb/v1.6.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **alloydb:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.1...alloydb/v1.6.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **alloydb:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.0...alloydb/v1.6.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **alloydb:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.5.0...alloydb/v1.6.0) (2023-10-04)
+
+
+### Features
+
+* **alloydb/connectors:** Start generating apiv1 ([#8648](https://github.com/googleapis/google-cloud-go/issues/8648)) ([c68448e](https://github.com/googleapis/google-cloud-go/commit/c68448eb1787d56dbd91920f376cc9dad2cb163e))
+* **alloydb:** Add support to generate client certificate and get connection info for auth proxy in AlloyDB v1 ([e9ae601](https://github.com/googleapis/google-cloud-go/commit/e9ae6018983ae09781740e4ff939e6e365863dbb))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.4.0...alloydb/v1.5.0) (2023-09-20)
+
+
+### Features
+
+* **alloydb:** Added enum value for PG15 ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+* **alloydb:** Added enum value for PG15 ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+* **alloydb:** Changed description for recovery_window_days in ContinuousBackupConfig ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.3.0...alloydb/v1.4.0) (2023-07-31)
 
 

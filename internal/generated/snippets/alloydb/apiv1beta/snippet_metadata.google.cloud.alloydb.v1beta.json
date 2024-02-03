@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1beta",
-    "version": "1.4.0",
+    "version": "1.8.1",
     "language": "GO",
     "apis": [
       {
@@ -655,7 +655,7 @@
     {
       "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_GenerateClientCertificate_sync",
       "title": "alloydb GenerateClientCertificate Sample",
-      "description": "GenerateClientCertificate generate a client certificate signed by a Cluster CA.\nThe sole purpose of this endpoint is to support the Auth Proxy client and\nthe endpoint's behavior is subject to change without notice, so do not rely\non its behavior remaining constant. Future changes will not break the Auth\nProxy client.",
+      "description": "GenerateClientCertificate generate a client certificate signed by a Cluster CA.\nThe sole purpose of this endpoint is to support AlloyDB connectors and the\nAuth Proxy client. The endpoint's behavior is subject to change without\nnotice, so do not rely on its behavior remaining constant. Future changes\nwill not break AlloyDB connectors or the Auth Proxy client.",
       "file": "AlloyDBAdminClient/GenerateClientCertificate/main.go",
       "language": "GO",
       "clientMethod": {

@@ -1,5 +1,40 @@
 # Changes
 
+## [1.13.4](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.3...metastore/v1.13.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **metastore:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.13.3](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.2...metastore/v1.13.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **metastore:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.1...metastore/v1.13.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **metastore:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.0...metastore/v1.13.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **metastore:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.12.0...metastore/v1.13.0) (2023-10-04)
+
+
+### Features
+
+* **metastore:** Added EndpointLocation (v1, v1beta, v1alpha) ([e9ae601](https://github.com/googleapis/google-cloud-go/commit/e9ae6018983ae09781740e4ff939e6e365863dbb))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.11.1...metastore/v1.12.0) (2023-07-10)
 
 

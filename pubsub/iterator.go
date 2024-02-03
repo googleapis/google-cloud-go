@@ -603,16 +603,13 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 	for len(ackIDs) > 0 {
 		toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
 
-		spanName := it.subID + " "
 		var eventStart, eventEnd string
 		if isNack {
 			recordStat(it.ctx, NackCount, int64(len(toSend)))
-			spanName += spanName + nackSpanName
 			eventStart = eventNackStart
 			eventEnd = eventNackEnd
 		} else {
 			recordStat(it.ctx, ModAckCount, int64(len(toSend)))
-			spanName = spanName + modackSpanName
 			eventStart = eventModackStart
 			eventEnd = eventModackEnd
 		}

@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"reflect"
 	"sort"
@@ -68,6 +69,10 @@ var (
 		return newClient(ctx, t, nil)
 	}
 	testParams map[string]interface{}
+
+	// xGoogReqParamsHeaderChecker is a HeaderChecker that ensures that the "x-goog-request-params"
+	// header is present on outgoing metadata.
+	xGoogReqParamsHeaderChecker *testutil.HeaderChecker
 )
 
 func TestMain(m *testing.M) {
@@ -121,6 +126,24 @@ func testMain(m *testing.M) int {
 	for _, databaseID := range databaseIDs {
 		log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
 		testParams["databaseID"] = databaseID
+		xGoogReqParamsHeaderChecker = &testutil.HeaderChecker{
+			Key: reqParamsHeader,
+			ValuesValidator: func(values ...string) error {
+				if len(values) == 0 {
+					return fmt.Errorf("missing values")
+				}
+				wantValue := fmt.Sprintf("project_id=%s", url.QueryEscape(testutil.ProjID()))
+				if databaseID != DefaultDatabaseID && databaseID != "" {
+					wantValue = fmt.Sprintf("%s&database_id=%s", wantValue, url.QueryEscape(databaseID))
+				}
+				for _, gotValue := range values {
+					if gotValue != wantValue {
+						return fmt.Errorf("got %s, want %s", gotValue, wantValue)
+					}
+				}
+				return nil
+			},
+		}
 		status := m.Run()
 		if status != 0 {
 			return status
@@ -153,6 +176,7 @@ func initReplay() {
 			OnFailure: t.Fatalf,
 			Checkers: []*testutil.HeaderChecker{
 				testutil.XGoogClientHeaderChecker,
+				xGoogReqParamsHeaderChecker,
 			},
 		}
 
@@ -179,6 +203,7 @@ func newClient(ctx context.Context, t *testing.T, dialOpts []grpc.DialOption) *C
 		OnFailure: t.Fatalf,
 		Checkers: []*testutil.HeaderChecker{
 			testutil.XGoogClientHeaderChecker,
+			xGoogReqParamsHeaderChecker,
 		},
 	}
 	opts := append(grpcHeadersEnforcer.CallOptions(), option.WithTokenSource(ts))
@@ -786,6 +811,10 @@ func TestIntegration_AggregationQueriesInTransaction(t *testing.T) {
 			if readTime.IsZero() {
 				// Use current time as read time if read time is not specified in test case
 				readTime = time.Now().Truncate(time.Microsecond)
+
+				// Read time is truncated to microseconds. If immediately used in NewTransaction call,
+				// it leads to "read_time cannot be in the future" error
+				time.Sleep(time.Second)
 			}
 
 			tx, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
@@ -1193,6 +1222,21 @@ func TestIntegration_Projection(t *testing.T) {
 			0,
 		},
 	})
+}
+
+func TestIntegration_ReserveIDs(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	keys := make([]*Key, 3)
+	for i := range keys {
+		keys[i] = NameKey("ReserveIDs", "id-"+fmt.Sprint(i), nil)
+	}
+	err := client.ReserveIDs(ctx, keys)
+	if err != nil {
+		t.Fatalf("ReserveIDs failed: %v", err)
+	}
 }
 
 func TestIntegration_AllocateIDs(t *testing.T) {

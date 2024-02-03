@@ -15,7 +15,10 @@
 package auth_test
 
 import (
+	"log"
+
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/httptransport"
 )
 
 func ExampleNew2LOTokenProvider() {
@@ -47,15 +50,14 @@ func ExampleNew2LOTokenProvider() {
 
 	tp, err := auth.New2LOTokenProvider(opts)
 	if err != nil {
-		// handler error
+		log.Fatal(err)
 	}
-	// TODO(codyoss): Fixup once more code is merged
-	// client, err := httptransport.NewClient(&httptransport.Options{
-	// 	TokenProvider: tp,
-	// })
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// client.Get("...")
+	client, err := httptransport.NewClient(&httptransport.Options{
+		TokenProvider: tp,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	client.Get("...")
 	_ = tp
 }

@@ -39,6 +39,7 @@ type benchmarkResult struct {
 	timedOut      bool
 	startMem      runtime.MemStats
 	endMem        runtime.MemStats
+	metricName    string // defaults to throughput
 }
 
 func (br *benchmarkResult) calculateThroughput() float64 {
@@ -160,7 +161,12 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 	}
 
 	sb.Grow(380)
-	sb.WriteString("throughput{")
+	if br.metricName != "" {
+		sb.WriteString(br.metricName)
+		sb.WriteRune('{')
+	} else {
+		sb.WriteString("throughput{")
+	}
 	sb.WriteString(makeStringQuoted("library", "go"))
 	sb.WriteString(",")
 	sb.WriteString(makeStringQuoted("api", br.params.api))

@@ -182,6 +182,7 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 		subc.CallOptions = mergeSubscriberCallOptions(subc.CallOptions, config.SubscriberCallOptions)
 	}
 	pubc.SetGoogleClientInfo("gccl", internal.Version)
+	subc.SetGoogleClientInfo("gccl", internal.Version)
 
 	// Handle project autodetection.
 	projectID, err = detect.ProjectID(ctx, projectID, "", opts...)

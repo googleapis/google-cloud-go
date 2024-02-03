@@ -18,11 +18,15 @@ import (
 	"sync"
 	"testing"
 
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 func TestCustomClientOptions(t *testing.T) {
@@ -140,6 +144,7 @@ func TestWriterOptions(t *testing.T) {
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
 				}
 				ms.streamSettings.streamType = BufferedStream
 				return ms
@@ -151,6 +156,7 @@ func TestWriterOptions(t *testing.T) {
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
 				}
 				ms.streamSettings.MaxInflightRequests = 2
 				return ms
@@ -162,6 +168,7 @@ func TestWriterOptions(t *testing.T) {
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
 				}
 				ms.streamSettings.MaxInflightBytes = 5
 				return ms
@@ -173,6 +180,7 @@ func TestWriterOptions(t *testing.T) {
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
 				}
 				ms.streamSettings.TraceID = "foo"
 				return ms
@@ -184,6 +192,7 @@ func TestWriterOptions(t *testing.T) {
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
 				}
 				ms.streamSettings.destinationTable = "foo"
 				return ms
@@ -195,6 +204,7 @@ func TestWriterOptions(t *testing.T) {
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
 				}
 				ms.streamSettings.dataOrigin = "origin"
 				return ms
@@ -206,6 +216,7 @@ func TestWriterOptions(t *testing.T) {
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
 				}
 				ms.streamSettings.appendCallOptions = append(ms.streamSettings.appendCallOptions,
 					gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1)))
@@ -218,8 +229,63 @@ func TestWriterOptions(t *testing.T) {
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
 				}
 				ms.retry = newStatelessRetryer()
+				return ms
+			}(),
+		},
+		{
+			desc:    "WithSchemaDescriptor",
+			options: []WriterOption{WithSchemaDescriptor(&descriptorpb.DescriptorProto{Name: proto.String("name")})},
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
+					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
+				}
+				ms.curTemplate.tmpl = &storagepb.AppendRowsRequest{
+					Rows: &storagepb.AppendRowsRequest_ProtoRows{
+						ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+							WriterSchema: &storagepb.ProtoSchema{
+								ProtoDescriptor: &descriptorpb.DescriptorProto{Name: proto.String("name")},
+							},
+						},
+					},
+				}
+				return ms
+			}(),
+		},
+		{
+			desc:    "WithDefaultMissingValueInterpretation",
+			options: []WriterOption{WithDefaultMissingValueInterpretation(storagepb.AppendRowsRequest_DEFAULT_VALUE)},
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
+					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
+				}
+				ms.curTemplate.tmpl = &storagepb.AppendRowsRequest{
+					DefaultMissingValueInterpretation: storagepb.AppendRowsRequest_DEFAULT_VALUE,
+				}
+				return ms
+			}(),
+		},
+		{
+			desc: "WithtMissingValueInterpretations",
+			options: []WriterOption{WithMissingValueInterpretations(map[string]storagepb.AppendRowsRequest_MissingValueInterpretation{
+				"foo": storagepb.AppendRowsRequest_DEFAULT_VALUE,
+				"bar": storagepb.AppendRowsRequest_NULL_VALUE,
+			})},
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
+					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
+				}
+				ms.curTemplate.tmpl = &storagepb.AppendRowsRequest{
+					MissingValueInterpretations: map[string]storagepb.AppendRowsRequest_MissingValueInterpretation{
+						"foo": storagepb.AppendRowsRequest_DEFAULT_VALUE,
+						"bar": storagepb.AppendRowsRequest_NULL_VALUE,
+					},
+				}
 				return ms
 			}(),
 		},
@@ -230,10 +296,31 @@ func TestWriterOptions(t *testing.T) {
 				WithMaxInflightBytes(5),
 				WithTraceID("traceid"),
 				EnableWriteRetries(true),
+				WithSchemaDescriptor(&descriptorpb.DescriptorProto{Name: proto.String("name")}),
+				WithDefaultMissingValueInterpretation(storagepb.AppendRowsRequest_DEFAULT_VALUE),
+				WithMissingValueInterpretations(map[string]storagepb.AppendRowsRequest_MissingValueInterpretation{
+					"foo": storagepb.AppendRowsRequest_DEFAULT_VALUE,
+					"bar": storagepb.AppendRowsRequest_NULL_VALUE,
+				}),
 			},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
+					curTemplate:    newVersionedTemplate(),
+				}
+				ms.curTemplate.tmpl = &storagepb.AppendRowsRequest{
+					Rows: &storagepb.AppendRowsRequest_ProtoRows{
+						ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+							WriterSchema: &storagepb.ProtoSchema{
+								ProtoDescriptor: &descriptorpb.DescriptorProto{Name: proto.String("name")},
+							},
+						},
+					},
+					MissingValueInterpretations: map[string]storagepb.AppendRowsRequest_MissingValueInterpretation{
+						"foo": storagepb.AppendRowsRequest_DEFAULT_VALUE,
+						"bar": storagepb.AppendRowsRequest_NULL_VALUE,
+					},
+					DefaultMissingValueInterpretation: storagepb.AppendRowsRequest_DEFAULT_VALUE,
 				}
 				ms.streamSettings.MaxInflightBytes = 5
 				ms.streamSettings.streamType = PendingStream
@@ -247,6 +334,7 @@ func TestWriterOptions(t *testing.T) {
 	for _, tc := range testCases {
 		got := &ManagedStream{
 			streamSettings: defaultStreamSettings(),
+			curTemplate:    newVersionedTemplate(),
 		}
 		for _, o := range tc.options {
 			o(got)
@@ -255,8 +343,12 @@ func TestWriterOptions(t *testing.T) {
 		if diff := cmp.Diff(got, tc.want,
 			cmp.AllowUnexported(ManagedStream{}, streamSettings{}),
 			cmp.AllowUnexported(sync.Mutex{}),
+			cmp.AllowUnexported(versionedTemplate{}),
+			cmpopts.IgnoreFields(versionedTemplate{}, "versionTime", "hashVal"),
+			protocmp.Transform(), // versionedTemplate embeds proto messages.
 			cmpopts.IgnoreUnexported(statelessRetryer{})); diff != "" {
 			t.Errorf("diff in case (%s):\n%v", tc.desc, diff)
 		}
+
 	}
 }
