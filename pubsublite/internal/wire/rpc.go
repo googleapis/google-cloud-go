@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -183,7 +182,7 @@ func isStreamResetSignal(err error) bool {
 
 func defaultClientOptions(region string) []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint(region + pubsubLiteDefaultEndpoint),
+		option.WithEndpoint(region + pubsubLiteDefaultEndpoint),
 		// Detect if transport is still alive if there is inactivity.
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
 			Time:                1 * time.Minute,
