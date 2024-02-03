@@ -717,7 +717,9 @@ func (t *Topic) initBundler() {
 		bmsgs := bundle.([]*bundledMessage)
 		for _, m := range bmsgs {
 			m.batcherSpan.End()
+			m.createSpan.AddEvent(eventPublishStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(bmsgs))))
 			defer m.createSpan.End()
+			defer m.createSpan.AddEvent(eventPublishEnd)
 		}
 		t.publishMessageBundle(ctx2, bmsgs)
 	})

@@ -540,8 +540,8 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 				parentSpan := s.(trace.Span)
 				defer parentSpan.End()
 				defer parentSpan.SetAttributes(attribute.String(resultAttribute, "ack"))
-				parentSpan.AddEvent("ack start", trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
-				defer parentSpan.AddEvent("ack end")
+				parentSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
+				defer parentSpan.AddEvent(eventAckEnd)
 				if parentSpan.SpanContext().IsSampled() {
 					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
 				}
@@ -604,15 +604,17 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 		toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
 
 		spanName := it.subID + " "
-		var eventName string
+		var eventStart, eventEnd string
 		if isNack {
 			recordStat(it.ctx, NackCount, int64(len(toSend)))
 			spanName += spanName + nackSpanName
-			eventName = "nack"
+			eventStart = eventNackStart
+			eventEnd = eventNackEnd
 		} else {
 			recordStat(it.ctx, ModAckCount, int64(len(toSend)))
 			spanName = spanName + modackSpanName
-			eventName = "modack"
+			eventStart = eventModackStart
+			eventEnd = eventModackEnd
 		}
 
 		// Use of anonymous local function allows span.End to be deferred to end of each loop.
@@ -628,8 +630,8 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 						defer parentSpan.End()
 						defer parentSpan.SetAttributes(attribute.String(resultAttribute, "nack"))
 					}
-					parentSpan.AddEvent(eventName+" start", trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
-					defer parentSpan.AddEvent(eventName + " end")
+					parentSpan.AddEvent(eventStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
+					defer parentSpan.AddEvent(eventEnd)
 					if parentSpan.IsRecording() {
 						links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
 					}

@@ -324,6 +324,16 @@ const (
 	ackSpanName       = "ack"
 	nackSpanName      = "nack"
 
+	// event names
+	eventPublishStart = "publish start"
+	eventPublishEnd   = "publish end"
+	eventModackStart  = "modack start"
+	eventModackEnd    = "modack end"
+	eventAckStart     = "ack start"
+	eventAckEnd       = "ack end"
+	eventNackStart    = "nack start"
+	eventNackEnd      = "nack end"
+
 	// custom pubsub specific attributes
 	pubsubPrefix             = "messaging.gcp_pubsub."
 	orderingAttribute        = pubsubPrefix + "message.ordering_key"
