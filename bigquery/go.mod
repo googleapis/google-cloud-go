@@ -9,6 +9,7 @@ require (
 	cloud.google.com/go/longrunning v0.5.4
 	cloud.google.com/go/storage v1.37.0
 	github.com/apache/arrow/go/v14 v14.0.2
+	github.com/apache/arrow/go/v15 v15.0.0
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.12.0
