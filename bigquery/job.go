@@ -353,6 +353,7 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint64, error) {
 	// Use GetQueryResults only to wait for completion, not to read results.
 	call := j.c.bqs.Jobs.GetQueryResults(projectID, j.jobID).Location(j.location).Context(ctx).MaxResults(0)
+	call = call.FormatOptionsUseInt64Timestamp(true)
 	setClientHeader(call.Header())
 	backoff := gax.Backoff{
 		Initial:    1 * time.Second,
