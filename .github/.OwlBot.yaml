@@ -22,6 +22,7 @@ deep-remove-regex:
   - /apigeeregistry/apiv1/
   - /apikeys/apiv2/
   - /appengine/apiv1/
+  - /apps/meet/apiv2/
   - /apps/meet/apiv2beta/
   - /area120/tables/apiv1alpha1/
   - /artifactregistry/apiv1/
@@ -145,6 +146,7 @@ deep-remove-regex:
   - /internal/generated/snippets/apigeeregistry/apiv1/
   - /internal/generated/snippets/apikeys/apiv2/
   - /internal/generated/snippets/appengine/apiv1/
+  - /internal/generated/snippets/apps/meet/apiv2/
   - /internal/generated/snippets/apps/meet/apiv2beta/
   - /internal/generated/snippets/area120/tables/apiv1alpha1/
   - /internal/generated/snippets/artifactregistry/apiv1/
@@ -362,6 +364,7 @@ deep-remove-regex:
   - /internal/generated/snippets/videointelligence/apiv1p3beta1/
   - /internal/generated/snippets/vision/v2/apiv1/
   - /internal/generated/snippets/vision/v2/apiv1p1beta1/
+  - /internal/generated/snippets/visionai/apiv1/
   - /internal/generated/snippets/vmmigration/apiv1/
   - /internal/generated/snippets/vmwareengine/apiv1/
   - /internal/generated/snippets/vpcaccess/apiv1/
@@ -493,6 +496,7 @@ deep-remove-regex:
   - /videointelligence/apiv1p3beta1/
   - /vision/apiv1/
   - /vision/apiv1p1beta1/
+  - /visionai/apiv1/
   - /vmmigration/apiv1/
   - /vmwareengine/apiv1/
   - /vpcaccess/apiv1/
@@ -592,6 +596,8 @@ deep-copy-regex:
   - source: /google/api/cloudquotas/v1/cloud.google.com/go
     dest: /
   - source: /google/appengine/v1/cloud.google.com/go
+    dest: /
+  - source: /google/apps/meet/v2/cloud.google.com/go
     dest: /
   - source: /google/apps/meet/v2beta/cloud.google.com/go
     dest: /
@@ -1041,6 +1047,8 @@ deep-copy-regex:
     dest: /vision/apiv1p1beta1
   - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go/internal/generated/snippets/vision/v2/apiv1p1beta1
     dest: /internal/generated/snippets/vision/apiv1p1beta1
+  - source: /google/cloud/visionai/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/vmmigration/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/vmwareengine/v1/cloud.google.com/go

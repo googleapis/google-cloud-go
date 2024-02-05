@@ -70,7 +70,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("bigqueryreservation.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("bigqueryreservation.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("bigqueryreservation.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://bigqueryreservation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -878,7 +880,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://bigqueryreservation.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://bigqueryreservation.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://bigqueryreservation.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://bigqueryreservation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

@@ -62,7 +62,9 @@ type ContextsCallOptions struct {
 func defaultContextsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dialogflow.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -456,7 +458,9 @@ func NewContextsRESTClient(ctx context.Context, opts ...option.ClientOption) (*C
 func defaultContextsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dialogflow.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dialogflow.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dialogflow.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

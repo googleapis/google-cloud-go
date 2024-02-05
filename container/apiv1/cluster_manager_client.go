@@ -77,7 +77,9 @@ type ClusterManagerCallOptions struct {
 func defaultClusterManagerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("container.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("container.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("container.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://container.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),

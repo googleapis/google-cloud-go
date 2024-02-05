@@ -139,6 +139,7 @@ modules:
   - video
   - videointelligence
   - vision
+  - visionai
   - vmmigration
   - vmwareengine
   - vpcaccess
@@ -288,6 +289,9 @@ service-configs:
   - input-directory: google/appengine/v1
     service-config: appengine_v1.yaml
     import-path: cloud.google.com/go/appengine/apiv1
+  - input-directory: google/apps/meet/v2
+    service-config: meet_v2.yaml
+    import-path: cloud.google.com/go/apps/meet/apiv2
   - input-directory: google/apps/meet/v2beta
     service-config: meet_v2beta.yaml
     import-path: cloud.google.com/go/apps/meet/apiv2beta
@@ -897,6 +901,9 @@ service-configs:
     service-config: vision_v1p1beta1.yaml
     import-path: cloud.google.com/go/vision/v2/apiv1p1beta1
     rel-path: /vision/apiv1p1beta1
+  - input-directory: google/cloud/visionai/v1
+    service-config: visionai_v1.yaml
+    import-path: cloud.google.com/go/visionai/apiv1
   - input-directory: google/cloud/vmmigration/v1
     service-config: vmmigration_v1.yaml
     import-path: cloud.google.com/go/vmmigration/apiv1

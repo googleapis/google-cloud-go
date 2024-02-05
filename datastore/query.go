@@ -503,7 +503,7 @@ func (q *Query) toRunQueryRequest(req *pb.RunQueryRequest) error {
 		return err
 	}
 
-	req.ReadOptions, err = parseReadOptions(q)
+	req.ReadOptions, err = parseReadOptions(q.eventual, q.trans)
 	if err != nil {
 		return err
 	}
@@ -730,6 +730,8 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 			ProjectId:  c.dataset,
 			DatabaseId: c.databaseID,
 		},
+		trans:    q.trans,
+		eventual: q.eventual,
 	}
 
 	if q.namespace != "" {
@@ -786,7 +788,7 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	}
 
 	// Parse the read options.
-	req.ReadOptions, err = parseReadOptions(aq.query)
+	req.ReadOptions, err = parseReadOptions(aq.query.eventual, aq.query.trans)
 	if err != nil {
 		return nil, err
 	}
@@ -808,21 +810,33 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	return ar, nil
 }
 
+func validateReadOptions(eventual bool, t *Transaction) error {
+	if t == nil {
+		return nil
+	}
+	if t.id == nil {
+		return errExpiredTransaction
+	}
+	if eventual {
+		return errors.New("datastore: cannot use EventualConsistency query in a transaction")
+	}
+	return nil
+}
+
 // parseReadOptions translates Query read options into protobuf format.
-func parseReadOptions(q *Query) (*pb.ReadOptions, error) {
-	if t := q.trans; t != nil {
-		if t.id == nil {
-			return nil, errExpiredTransaction
-		}
-		if q.eventual {
-			return nil, errors.New("datastore: cannot use EventualConsistency query in a transaction")
-		}
+func parseReadOptions(eventual bool, t *Transaction) (*pb.ReadOptions, error) {
+	err := validateReadOptions(eventual, t)
+	if err != nil {
+		return nil, err
+	}
+
+	if t != nil {
 		return &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
 		}, nil
 	}
 
-	if q.eventual {
+	if eventual {
 		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
 	}
 
@@ -858,6 +872,14 @@ type Iterator struct {
 	pageCursor []byte
 	// entityCursor is the compiled cursor of the next result.
 	entityCursor []byte
+
+	// trans records the transaction in which the query was run
+	// Currently, this value is set but unused
+	trans *Transaction
+
+	// eventual records whether the query was eventual
+	// Currently, this value is set but unused
+	eventual bool
 }
 
 // Next returns the key of the next result. When there are no more results,

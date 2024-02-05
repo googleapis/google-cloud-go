@@ -66,7 +66,9 @@ type DataTaxonomyCallOptions struct {
 func defaultDataTaxonomyGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dataplex.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dataplex.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dataplex.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataplex.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),

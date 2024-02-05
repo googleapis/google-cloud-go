@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.7.5](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.4...vmmigration/v1.7.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **vmmigration:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.7.4](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.3...vmmigration/v1.7.4) (2023-11-01)
 
 

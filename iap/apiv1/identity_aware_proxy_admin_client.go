@@ -59,7 +59,9 @@ type IdentityAwareProxyAdminCallOptions struct {
 func defaultIdentityAwareProxyAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("iap.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("iap.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("iap.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iap.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -363,7 +365,9 @@ func NewIdentityAwareProxyAdminRESTClient(ctx context.Context, opts ...option.Cl
 func defaultIdentityAwareProxyAdminRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://iap.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://iap.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://iap.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iap.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

@@ -57,7 +57,9 @@ type CloudChannelReportsCallOptions struct {
 func defaultCloudChannelReportsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudchannel.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudchannel.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudchannel.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudchannel.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -406,7 +408,9 @@ func NewCloudChannelReportsRESTClient(ctx context.Context, opts ...option.Client
 func defaultCloudChannelReportsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudchannel.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudchannel.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudchannel.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudchannel.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

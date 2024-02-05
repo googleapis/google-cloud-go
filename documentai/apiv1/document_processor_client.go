@@ -80,7 +80,9 @@ type DocumentProcessorCallOptions struct {
 func defaultDocumentProcessorGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("documentai.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("documentai.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("documentai.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -680,7 +682,9 @@ func NewDocumentProcessorRESTClient(ctx context.Context, opts ...option.ClientOp
 func defaultDocumentProcessorRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://documentai.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://documentai.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://documentai.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

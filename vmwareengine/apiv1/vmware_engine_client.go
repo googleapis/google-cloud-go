@@ -136,7 +136,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("vmwareengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("vmwareengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("vmwareengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://vmwareengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -2289,7 +2291,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://vmwareengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://vmwareengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://vmwareengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://vmwareengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

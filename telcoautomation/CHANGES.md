@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.1.1...telcoautomation/v0.1.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **telcoautomation:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.1.0...telcoautomation/v0.1.1) (2023-11-27)
 
 

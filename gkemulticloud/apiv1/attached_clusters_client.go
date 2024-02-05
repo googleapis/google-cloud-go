@@ -59,7 +59,9 @@ type AttachedClustersCallOptions struct {
 func defaultAttachedClustersGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gkemulticloud.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("gkemulticloud.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("gkemulticloud.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkemulticloud.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
