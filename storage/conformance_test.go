@@ -15,20 +15,20 @@
 package storage
 
 import (
-	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
-	"github.com/golang/protobuf/jsonpb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func TestPostPolicyV4Conformance(t *testing.T) {
@@ -223,7 +223,7 @@ func parseFiles(t *testing.T) (googleAccessID, privateKey string, testFiles []*s
 	googleAccessID = serviceAccount["client_email"]
 	privateKey = serviceAccount["private_key"]
 
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -233,13 +233,13 @@ func parseFiles(t *testing.T) (googleAccessID, privateKey string, testFiles []*s
 			continue
 		}
 
-		inBytes, err := ioutil.ReadFile(dir + "/" + f.Name())
+		inBytes, err := os.ReadFile(dir + "/" + f.Name())
 		if err != nil {
 			t.Fatalf("%s: %v", f.Name(), err)
 		}
 
 		testFile := new(storage_v1_tests.TestFile)
-		if err := jsonpb.Unmarshal(bytes.NewReader(inBytes), testFile); err != nil {
+		if err := protojson.Unmarshal(inBytes, testFile); err != nil {
 			t.Fatalf("unmarshalling %s: %v", f.Name(), err)
 		}
 		testFiles = append(testFiles, testFile)

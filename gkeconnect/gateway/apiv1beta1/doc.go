@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@
 //		// TODO: Fill request struct fields.
 //		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/httpbody#HttpBody.
 //	}
-//	resp, err := c.GetResource(ctx, req)
+//	resp, err := c.DeleteResource(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

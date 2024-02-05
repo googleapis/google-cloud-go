@@ -393,6 +393,7 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 		}
 	}
 
+	// TODO: Use transaction ID returned by get
 	_, err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
@@ -426,6 +427,7 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 		}
 	}
 
+	// TODO: Use transaction ID returned by get
 	_, err = c.get(ctx, keys, dst, opts)
 	return err
 }
@@ -502,8 +504,9 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		ReadOptions: opts,
 	}
 	resp, err := c.client.Lookup(ctx, req)
+	txnID := resp.Transaction
 	if err != nil {
-		return nil, err
+		return txnID, err
 	}
 	found := resp.Found
 	missing := resp.Missing
@@ -515,7 +518,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		req.Keys = resp.Deferred
 		resp, err = c.client.Lookup(ctx, req)
 		if err != nil {
-			return nil, err
+			return txnID, err
 		}
 		found = append(found, resp.Found...)
 		missing = append(missing, resp.Missing...)
@@ -525,7 +528,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range found {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return nil, errors.New("datastore: internal error: server returned an invalid key")
+			return txnID, errors.New("datastore: internal error: server returned an invalid key")
 		}
 		filled += len(keyMap[k.String()])
 		for _, index := range keyMap[k.String()] {
@@ -545,7 +548,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range missing {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return nil, errors.New("datastore: internal error: server returned an invalid key")
+			return txnID, errors.New("datastore: internal error: server returned an invalid key")
 		}
 		filled += len(keyMap[k.String()])
 		for _, index := range keyMap[k.String()] {
@@ -555,13 +558,13 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	}
 
 	if filled != len(keys) {
-		return nil, errors.New("datastore: internal error: server returned the wrong number of entities")
+		return txnID, errors.New("datastore: internal error: server returned the wrong number of entities")
 	}
 
 	if any {
-		return nil, multiErr
+		return txnID, multiErr
 	}
-	return resp.Transaction, nil
+	return txnID, nil
 }
 
 // Put saves the entity src into the datastore with the given key. src must be

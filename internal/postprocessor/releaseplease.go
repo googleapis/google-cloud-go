@@ -40,6 +40,7 @@ var individuallyReleasedModules map[string]bool = map[string]bool{
 	"pubsublite":       true,
 	"spanner":          true,
 	"storage":          true,
+	"vertexai":         true,
 }
 
 var defaultReleasePleaseConfig = &releasePleaseConfig{

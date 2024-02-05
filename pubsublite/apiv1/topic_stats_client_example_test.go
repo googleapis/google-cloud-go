@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,31 +42,6 @@ func ExampleNewTopicStatsClient() {
 	_ = c
 }
 
-func ExampleTopicStatsClient_ComputeMessageStats() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsublite.NewTopicStatsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsublitepb.ComputeMessageStatsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ComputeMessageStatsRequest.
-	}
-	resp, err := c.ComputeMessageStats(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleTopicStatsClient_ComputeHeadCursor() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -85,6 +60,31 @@ func ExampleTopicStatsClient_ComputeHeadCursor() {
 		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ComputeHeadCursorRequest.
 	}
 	resp, err := c.ComputeHeadCursor(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTopicStatsClient_ComputeMessageStats() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewTopicStatsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.ComputeMessageStatsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ComputeMessageStatsRequest.
+	}
+	resp, err := c.ComputeMessageStats(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

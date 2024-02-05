@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,32 +48,35 @@ var newPipelineClientHook clientHook
 
 // PipelineCallOptions contains the retry settings for each method of PipelineClient.
 type PipelineCallOptions struct {
-	CreateTrainingPipeline []gax.CallOption
-	GetTrainingPipeline    []gax.CallOption
-	ListTrainingPipelines  []gax.CallOption
-	DeleteTrainingPipeline []gax.CallOption
-	CancelTrainingPipeline []gax.CallOption
-	CreatePipelineJob      []gax.CallOption
-	GetPipelineJob         []gax.CallOption
-	ListPipelineJobs       []gax.CallOption
-	DeletePipelineJob      []gax.CallOption
-	CancelPipelineJob      []gax.CallOption
-	GetLocation            []gax.CallOption
-	ListLocations          []gax.CallOption
-	GetIamPolicy           []gax.CallOption
-	SetIamPolicy           []gax.CallOption
-	TestIamPermissions     []gax.CallOption
-	CancelOperation        []gax.CallOption
-	DeleteOperation        []gax.CallOption
-	GetOperation           []gax.CallOption
-	ListOperations         []gax.CallOption
-	WaitOperation          []gax.CallOption
+	CreateTrainingPipeline  []gax.CallOption
+	GetTrainingPipeline     []gax.CallOption
+	ListTrainingPipelines   []gax.CallOption
+	DeleteTrainingPipeline  []gax.CallOption
+	CancelTrainingPipeline  []gax.CallOption
+	CreatePipelineJob       []gax.CallOption
+	GetPipelineJob          []gax.CallOption
+	ListPipelineJobs        []gax.CallOption
+	DeletePipelineJob       []gax.CallOption
+	BatchDeletePipelineJobs []gax.CallOption
+	CancelPipelineJob       []gax.CallOption
+	GetLocation             []gax.CallOption
+	ListLocations           []gax.CallOption
+	GetIamPolicy            []gax.CallOption
+	SetIamPolicy            []gax.CallOption
+	TestIamPermissions      []gax.CallOption
+	CancelOperation         []gax.CallOption
+	DeleteOperation         []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
+	WaitOperation           []gax.CallOption
 }
 
 func defaultPipelineGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -99,21 +102,22 @@ func defaultPipelineCallOptions() *PipelineCallOptions {
 		CancelTrainingPipeline: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
-		CreatePipelineJob:  []gax.CallOption{},
-		GetPipelineJob:     []gax.CallOption{},
-		ListPipelineJobs:   []gax.CallOption{},
-		DeletePipelineJob:  []gax.CallOption{},
-		CancelPipelineJob:  []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		CreatePipelineJob:       []gax.CallOption{},
+		GetPipelineJob:          []gax.CallOption{},
+		ListPipelineJobs:        []gax.CallOption{},
+		DeletePipelineJob:       []gax.CallOption{},
+		BatchDeletePipelineJobs: []gax.CallOption{},
+		CancelPipelineJob:       []gax.CallOption{},
+		GetLocation:             []gax.CallOption{},
+		ListLocations:           []gax.CallOption{},
+		GetIamPolicy:            []gax.CallOption{},
+		SetIamPolicy:            []gax.CallOption{},
+		TestIamPermissions:      []gax.CallOption{},
+		CancelOperation:         []gax.CallOption{},
+		DeleteOperation:         []gax.CallOption{},
+		GetOperation:            []gax.CallOption{},
+		ListOperations:          []gax.CallOption{},
+		WaitOperation:           []gax.CallOption{},
 	}
 }
 
@@ -134,21 +138,22 @@ func defaultPipelineRESTCallOptions() *PipelineCallOptions {
 		CancelTrainingPipeline: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
-		CreatePipelineJob:  []gax.CallOption{},
-		GetPipelineJob:     []gax.CallOption{},
-		ListPipelineJobs:   []gax.CallOption{},
-		DeletePipelineJob:  []gax.CallOption{},
-		CancelPipelineJob:  []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		CreatePipelineJob:       []gax.CallOption{},
+		GetPipelineJob:          []gax.CallOption{},
+		ListPipelineJobs:        []gax.CallOption{},
+		DeletePipelineJob:       []gax.CallOption{},
+		BatchDeletePipelineJobs: []gax.CallOption{},
+		CancelPipelineJob:       []gax.CallOption{},
+		GetLocation:             []gax.CallOption{},
+		ListLocations:           []gax.CallOption{},
+		GetIamPolicy:            []gax.CallOption{},
+		SetIamPolicy:            []gax.CallOption{},
+		TestIamPermissions:      []gax.CallOption{},
+		CancelOperation:         []gax.CallOption{},
+		DeleteOperation:         []gax.CallOption{},
+		GetOperation:            []gax.CallOption{},
+		ListOperations:          []gax.CallOption{},
+		WaitOperation:           []gax.CallOption{},
 	}
 }
 
@@ -168,6 +173,8 @@ type internalPipelineClient interface {
 	ListPipelineJobs(context.Context, *aiplatformpb.ListPipelineJobsRequest, ...gax.CallOption) *PipelineJobIterator
 	DeletePipelineJob(context.Context, *aiplatformpb.DeletePipelineJobRequest, ...gax.CallOption) (*DeletePipelineJobOperation, error)
 	DeletePipelineJobOperation(name string) *DeletePipelineJobOperation
+	BatchDeletePipelineJobs(context.Context, *aiplatformpb.BatchDeletePipelineJobsRequest, ...gax.CallOption) (*BatchDeletePipelineJobsOperation, error)
+	BatchDeletePipelineJobsOperation(name string) *BatchDeletePipelineJobsOperation
 	CancelPipelineJob(context.Context, *aiplatformpb.CancelPipelineJobRequest, ...gax.CallOption) error
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
@@ -292,6 +299,19 @@ func (c *PipelineClient) DeletePipelineJob(ctx context.Context, req *aiplatformp
 // The name must be that of a previously created DeletePipelineJobOperation, possibly from a different process.
 func (c *PipelineClient) DeletePipelineJobOperation(name string) *DeletePipelineJobOperation {
 	return c.internalClient.DeletePipelineJobOperation(name)
+}
+
+// BatchDeletePipelineJobs batch deletes PipelineJobs
+// The Operation is atomic. If it fails, none of the PipelineJobs are deleted.
+// If it succeeds, all of the PipelineJobs are deleted.
+func (c *PipelineClient) BatchDeletePipelineJobs(ctx context.Context, req *aiplatformpb.BatchDeletePipelineJobsRequest, opts ...gax.CallOption) (*BatchDeletePipelineJobsOperation, error) {
+	return c.internalClient.BatchDeletePipelineJobs(ctx, req, opts...)
+}
+
+// BatchDeletePipelineJobsOperation returns a new BatchDeletePipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchDeletePipelineJobsOperation, possibly from a different process.
+func (c *PipelineClient) BatchDeletePipelineJobsOperation(name string) *BatchDeletePipelineJobsOperation {
+	return c.internalClient.BatchDeletePipelineJobsOperation(name)
 }
 
 // CancelPipelineJob cancels a PipelineJob.
@@ -527,7 +547,9 @@ func NewPipelineRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 func defaultPipelineRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://aiplatform.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://aiplatform.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://aiplatform.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -770,6 +792,26 @@ func (c *pipelineGRPCClient) DeletePipelineJob(ctx context.Context, req *aiplatf
 		return nil, err
 	}
 	return &DeletePipelineJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *pipelineGRPCClient) BatchDeletePipelineJobs(ctx context.Context, req *aiplatformpb.BatchDeletePipelineJobsRequest, opts ...gax.CallOption) (*BatchDeletePipelineJobsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchDeletePipelineJobs[0:len((*c.CallOptions).BatchDeletePipelineJobs):len((*c.CallOptions).BatchDeletePipelineJobs)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.pipelineClient.BatchDeletePipelineJobs(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchDeletePipelineJobsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1631,6 +1673,73 @@ func (c *pipelineRESTClient) DeletePipelineJob(ctx context.Context, req *aiplatf
 	}, nil
 }
 
+// BatchDeletePipelineJobs batch deletes PipelineJobs
+// The Operation is atomic. If it fails, none of the PipelineJobs are deleted.
+// If it succeeds, all of the PipelineJobs are deleted.
+func (c *pipelineRESTClient) BatchDeletePipelineJobs(ctx context.Context, req *aiplatformpb.BatchDeletePipelineJobsRequest, opts ...gax.CallOption) (*BatchDeletePipelineJobsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/pipelineJobs:batchDelete", req.GetParent())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &BatchDeletePipelineJobsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // CancelPipelineJob cancels a PipelineJob.
 // Starts asynchronous cancellation on the PipelineJob. The server
 // makes a best effort to cancel the pipeline, but success is not
@@ -2312,10 +2421,22 @@ func (c *pipelineRESTClient) WaitOperation(ctx context.Context, req *longrunning
 	return resp, nil
 }
 
-// DeletePipelineJobOperation manages a long-running operation from DeletePipelineJob.
-type DeletePipelineJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
+// BatchDeletePipelineJobsOperation returns a new BatchDeletePipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchDeletePipelineJobsOperation, possibly from a different process.
+func (c *pipelineGRPCClient) BatchDeletePipelineJobsOperation(name string) *BatchDeletePipelineJobsOperation {
+	return &BatchDeletePipelineJobsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchDeletePipelineJobsOperation returns a new BatchDeletePipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchDeletePipelineJobsOperation, possibly from a different process.
+func (c *pipelineRESTClient) BatchDeletePipelineJobsOperation(name string) *BatchDeletePipelineJobsOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &BatchDeletePipelineJobsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // DeletePipelineJobOperation returns a new DeletePipelineJobOperation from a given name.
@@ -2336,59 +2457,6 @@ func (c *pipelineRESTClient) DeletePipelineJobOperation(name string) *DeletePipe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeletePipelineJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeletePipelineJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeletePipelineJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeletePipelineJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeletePipelineJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteTrainingPipelineOperation manages a long-running operation from DeleteTrainingPipeline.
-type DeleteTrainingPipelineOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteTrainingPipelineOperation returns a new DeleteTrainingPipelineOperation from a given name.
 // The name must be that of a previously created DeleteTrainingPipelineOperation, possibly from a different process.
 func (c *pipelineGRPCClient) DeleteTrainingPipelineOperation(name string) *DeleteTrainingPipelineOperation {
@@ -2405,145 +2473,4 @@ func (c *pipelineRESTClient) DeleteTrainingPipelineOperation(name string) *Delet
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteTrainingPipelineOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteTrainingPipelineOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteTrainingPipelineOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteTrainingPipelineOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteTrainingPipelineOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PipelineJobIterator manages a stream of *aiplatformpb.PipelineJob.
-type PipelineJobIterator struct {
-	items    []*aiplatformpb.PipelineJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.PipelineJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PipelineJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PipelineJobIterator) Next() (*aiplatformpb.PipelineJob, error) {
-	var item *aiplatformpb.PipelineJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PipelineJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PipelineJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TrainingPipelineIterator manages a stream of *aiplatformpb.TrainingPipeline.
-type TrainingPipelineIterator struct {
-	items    []*aiplatformpb.TrainingPipeline
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TrainingPipeline, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TrainingPipelineIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TrainingPipelineIterator) Next() (*aiplatformpb.TrainingPipeline, error) {
-	var item *aiplatformpb.TrainingPipeline
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TrainingPipelineIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TrainingPipelineIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

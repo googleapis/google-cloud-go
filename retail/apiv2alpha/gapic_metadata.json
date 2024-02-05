@@ -5,6 +5,50 @@
   "protoPackage": "google.cloud.retail.v2alpha",
   "libraryPackage": "cloud.google.com/go/retail/apiv2alpha",
   "services": {
+    "AnalyticsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AnalyticsClient",
+          "rpcs": {
+            "ExportAnalyticsMetrics": {
+              "methods": [
+                "ExportAnalyticsMetrics"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AnalyticsClient",
+          "rpcs": {
+            "ExportAnalyticsMetrics": {
+              "methods": [
+                "ExportAnalyticsMetrics"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "CatalogService": {
       "clients": {
         "grpc": {

@@ -103,6 +103,7 @@ type Client struct {
 	bwo                  BatchWriteOptions
 	ct                   *commonTags
 	disableRouteToLeader bool
+	dro                  *sppb.DirectedReadOptions
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -186,6 +187,11 @@ type ClientConfig struct {
 
 	// BatchTimeout specifies the timeout for a batch of sessions managed sessionClient.
 	BatchTimeout time.Duration
+
+	// ClientConfig options used to set the DirectedReadOptions for all ReadRequests
+	// and ExecuteSqlRequests for the Client which indicate which replicas or regions
+	// should be used for non-transactional reads or queries.
+	DirectedReadOptions *sppb.DirectedReadOptions
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -291,6 +297,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		bwo:                  config.BatchWriteOptions,
 		ct:                   getCommonTags(sc),
 		disableRouteToLeader: config.DisableRouteToLeader,
+		dro:                  config.DirectedReadOptions,
 	}
 	return c, nil
 }
@@ -374,6 +381,8 @@ func (c *Client) Single() *ReadOnlyTransaction {
 		t.sh = sh
 		return nil
 	}
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
 	return t
 }
@@ -397,6 +406,8 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
 	return t
 }
@@ -427,6 +438,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		return nil, err
 	}
 	sh = &sessionHandle{session: s}
+	sh.updateLastUseTime()
 
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.BeginTransactionRequest{
@@ -464,6 +476,8 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
 	return t, nil
 }
@@ -495,6 +509,8 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
 	return t
 }
@@ -568,18 +584,13 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 			// Session handle hasn't been allocated or has been destroyed.
 			sh, err = c.idleSessions.take(ctx)
-			if t != nil {
-				// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
-				sh.mu.Lock()
-				t.mu.Lock()
-				sh.eligibleForLongRunning = t.isLongRunningTransaction
-				t.mu.Unlock()
-				sh.mu.Unlock()
-			}
 			if err != nil {
 				// If session retrieval fails, just fail the transaction.
 				return err
 			}
+
+			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
+			t.setSessionEligibilityForLongRunning(sh)
 		}
 		if t.shouldExplicitBegin(attempt) {
 			// Make sure we set the current session handle before calling BeginTransaction.
@@ -854,6 +865,7 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 
 	rpc := func(ct context.Context) (sppb.Spanner_BatchWriteClient, error) {
 		var md metadata.MD
+		sh.updateLastUseTime()
 		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
 			Session:        sh.getID(),
 			MutationGroups: mgsPb,

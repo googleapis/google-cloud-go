@@ -34,10 +34,17 @@ var ErrConcurrentTransaction = errors.New("datastore: concurrent transaction")
 var errExpiredTransaction = errors.New("datastore: transaction expired")
 
 type transactionSettings struct {
-	attempts   int
-	readOnly   bool
-	prevID     []byte // ID of the transaction to retry
-	readTime   *timestamppb.Timestamp
+	attempts int
+	readOnly bool
+	prevID   []byte // ID of the transaction to retry
+	readTime *timestamppb.Timestamp
+
+	// When set, skips the initial BeginTransaction RPC call to obtain txn id and
+	// uses the piggybacked txn id from first read rpc call.
+	// If there are no read operations on transaction, BeginTransaction RPC call is made
+	// before rollback or commit
+	// Currently, this setting is set but unused
+	// TODO: b/291258189 - Use this setting
 	beginLater bool
 }
 
@@ -103,6 +110,8 @@ func (readOnly) apply(s *transactionSettings) {
 }
 
 // BeginLater is a TransactionOption that can be used to improve transaction performance
+// Currently, it is a no-op
+// TODO: b/291258189 - Add implementation
 var BeginLater TransactionOption
 
 type beginLater struct{}
@@ -114,7 +123,7 @@ func (beginLater) apply(s *transactionSettings) {
 type transactionState int
 
 const (
-	transactionStateNotStarted transactionState = iota
+	transactionStateNotStarted transactionState = iota // Currently unused
 	transactionStateInProgress
 	transactionStateExpired
 )
@@ -136,7 +145,6 @@ type Transaction struct {
 	pending   map[int]*PendingKey // Map from mutation index to incomplete keys pending transaction completion.
 	settings  *transactionSettings
 	state     transactionState
-	stateLock sync.Mutex
 }
 
 // NewTransaction starts a new transaction.
@@ -216,27 +224,16 @@ func (t *Transaction) beginTransaction() (txnID []byte, err error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.Transaction, nil
-}
 
-// beginLaterTransaction makes BeginTransaction rpc if transaction has not yet started
-func (t *Transaction) beginLaterTransaction() (err error) {
-	if t.state != transactionStateNotStarted {
-		return nil
-	}
-
-	t.stateLock.Lock()
-	defer t.stateLock.Unlock()
-	if t.state != transactionStateNotStarted {
-		return nil
-	}
-	txnID, err := t.beginTransaction()
-	if err != nil {
-		return err
-	}
-	t.id = txnID
-	t.state = transactionStateInProgress
-	return nil
+	return &Transaction{
+		id:        resp.Transaction,
+		ctx:       ctx,
+		client:    c,
+		mutations: nil,
+		pending:   make(map[int]*PendingKey),
+		state:     transactionStateInProgress,
+		settings:  s,
+	}, nil
 }
 
 // RunInTransaction runs f in a transaction. f is invoked with a Transaction
@@ -343,12 +340,7 @@ func (t *Transaction) Rollback() (err error) {
 		return errExpiredTransaction
 	}
 
-	err = t.beginLaterTransaction()
-	if err != nil {
-		return err
-	}
-
-	t.state = transactionStateExpired // mark the transaction as expired
+	t.state = transactionStateExpired
 	_, err = t.client.client.Rollback(t.ctx, &pb.RollbackRequest{
 		ProjectId:   t.client.dataset,
 		DatabaseId:  t.client.databaseID,
@@ -410,7 +402,15 @@ func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err er
 // level, another transaction cannot concurrently modify the data that is read
 // or modified by this transaction.
 func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
-	err = t.get("cloud.google.com/go/datastore.Transaction.Get", []*Key{key}, []interface{}{dst})
+	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Get")
+	defer func() { trace.EndSpan(t.ctx, err) }()
+
+	opts := &pb.ReadOptions{
+		ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
+	}
+
+	// TODO: Use transaction ID returned by get
+	_, err = t.client.get(t.ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
 	}
@@ -419,7 +419,19 @@ func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
 
 // GetMulti is a batch version of Get.
 func (t *Transaction) GetMulti(keys []*Key, dst interface{}) (err error) {
-	return t.get("cloud.google.com/go/datastore.Transaction.GetMulti", keys, dst)
+	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.GetMulti")
+	defer func() { trace.EndSpan(t.ctx, err) }()
+
+	if t.state == transactionStateExpired {
+		return errExpiredTransaction
+	}
+	opts := &pb.ReadOptions{
+		ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
+	}
+
+	// TODO: Use transaction ID returned by get
+	_, err = t.client.get(t.ctx, keys, dst, opts)
+	return err
 }
 
 // Put is the transaction-specific version of the package function Put.

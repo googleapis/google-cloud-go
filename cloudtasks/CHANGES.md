@@ -1,5 +1,19 @@
 # Changes
 
+## [1.12.6](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.5...cloudtasks/v1.12.6) (2024-01-30)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.12.5](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.4...cloudtasks/v1.12.5) (2024-01-22)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Remove BufferTask method which cannot be called from client libraries ([#9269](https://github.com/googleapis/google-cloud-go/issues/9269)) ([00b9900](https://github.com/googleapis/google-cloud-go/commit/00b990061592a20a181e61faa6964b45205b76a7))
+
 ## [1.12.4](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.3...cloudtasks/v1.12.4) (2023-11-01)
 
 

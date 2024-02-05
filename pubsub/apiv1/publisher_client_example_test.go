@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ func ExamplePublisherClient_CreateTopic() {
 	_ = resp
 }
 
-func ExamplePublisherClient_UpdateTopic() {
+func ExamplePublisherClient_DeleteTopic() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -97,19 +97,17 @@ func ExamplePublisherClient_UpdateTopic() {
 	}
 	defer c.Close()
 
-	req := &pubsubpb.UpdateTopicRequest{
+	req := &pubsubpb.DeleteTopicRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#UpdateTopicRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteTopicRequest.
 	}
-	resp, err := c.UpdateTopic(ctx, req)
+	err = c.DeleteTopic(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExamplePublisherClient_Publish() {
+func ExamplePublisherClient_DetachSubscription() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -122,11 +120,11 @@ func ExamplePublisherClient_Publish() {
 	}
 	defer c.Close()
 
-	req := &pubsubpb.PublishRequest{
+	req := &pubsubpb.DetachSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#PublishRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DetachSubscriptionRequest.
 	}
-	resp, err := c.Publish(ctx, req)
+	resp, err := c.DetachSubscription(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -159,7 +157,7 @@ func ExamplePublisherClient_GetTopic() {
 	_ = resp
 }
 
-func ExamplePublisherClient_ListTopics() {
+func ExamplePublisherClient_ListTopicSnapshots() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -172,11 +170,11 @@ func ExamplePublisherClient_ListTopics() {
 	}
 	defer c.Close()
 
-	req := &pubsubpb.ListTopicsRequest{
+	req := &pubsubpb.ListTopicSnapshotsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListTopicsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListTopicSnapshotsRequest.
 	}
-	it := c.ListTopics(ctx, req)
+	it := c.ListTopicSnapshots(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -221,7 +219,7 @@ func ExamplePublisherClient_ListTopicSubscriptions() {
 	}
 }
 
-func ExamplePublisherClient_ListTopicSnapshots() {
+func ExamplePublisherClient_ListTopics() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -234,11 +232,11 @@ func ExamplePublisherClient_ListTopicSnapshots() {
 	}
 	defer c.Close()
 
-	req := &pubsubpb.ListTopicSnapshotsRequest{
+	req := &pubsubpb.ListTopicsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListTopicSnapshotsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListTopicsRequest.
 	}
-	it := c.ListTopicSnapshots(ctx, req)
+	it := c.ListTopics(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -252,7 +250,7 @@ func ExamplePublisherClient_ListTopicSnapshots() {
 	}
 }
 
-func ExamplePublisherClient_DeleteTopic() {
+func ExamplePublisherClient_Publish() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -265,17 +263,19 @@ func ExamplePublisherClient_DeleteTopic() {
 	}
 	defer c.Close()
 
-	req := &pubsubpb.DeleteTopicRequest{
+	req := &pubsubpb.PublishRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteTopicRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#PublishRequest.
 	}
-	err = c.DeleteTopic(ctx, req)
+	resp, err := c.Publish(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
-func ExamplePublisherClient_DetachSubscription() {
+func ExamplePublisherClient_UpdateTopic() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -288,11 +288,11 @@ func ExamplePublisherClient_DetachSubscription() {
 	}
 	defer c.Close()
 
-	req := &pubsubpb.DetachSubscriptionRequest{
+	req := &pubsubpb.UpdateTopicRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DetachSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#UpdateTopicRequest.
 	}
-	resp, err := c.DetachSubscription(ctx, req)
+	resp, err := c.UpdateTopic(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,62 +60,6 @@ func ExampleNewServiceManagerRESTClient() {
 	_ = c
 }
 
-func ExampleServiceManagerClient_ListServices() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicemanagement.NewServiceManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicemanagementpb.ListServicesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#ListServicesRequest.
-	}
-	it := c.ListServices(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleServiceManagerClient_GetService() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicemanagement.NewServiceManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicemanagementpb.GetServiceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GetServiceRequest.
-	}
-	resp, err := c.GetService(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleServiceManagerClient_CreateService() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -134,6 +78,61 @@ func ExampleServiceManagerClient_CreateService() {
 		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#CreateServiceRequest.
 	}
 	op, err := c.CreateService(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleServiceManagerClient_CreateServiceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicemanagement.NewServiceManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicemanagementpb.CreateServiceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#CreateServiceConfigRequest.
+	}
+	resp, err := c.CreateServiceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleServiceManagerClient_CreateServiceRollout() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicemanagement.NewServiceManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicemanagementpb.CreateServiceRolloutRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#CreateServiceRolloutRequest.
+	}
+	op, err := c.CreateServiceRollout(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -174,7 +173,7 @@ func ExampleServiceManagerClient_DeleteService() {
 	}
 }
 
-func ExampleServiceManagerClient_UndeleteService() {
+func ExampleServiceManagerClient_GenerateConfigReport() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -187,16 +186,86 @@ func ExampleServiceManagerClient_UndeleteService() {
 	}
 	defer c.Close()
 
-	req := &servicemanagementpb.UndeleteServiceRequest{
+	req := &servicemanagementpb.GenerateConfigReportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#UndeleteServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GenerateConfigReportRequest.
 	}
-	op, err := c.UndeleteService(ctx, req)
+	resp, err := c.GenerateConfigReport(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
+}
 
-	resp, err := op.Wait(ctx)
+func ExampleServiceManagerClient_GetService() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicemanagement.NewServiceManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicemanagementpb.GetServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GetServiceRequest.
+	}
+	resp, err := c.GetService(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleServiceManagerClient_GetServiceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicemanagement.NewServiceManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicemanagementpb.GetServiceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GetServiceConfigRequest.
+	}
+	resp, err := c.GetServiceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleServiceManagerClient_GetServiceRollout() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicemanagement.NewServiceManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicemanagementpb.GetServiceRolloutRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GetServiceRolloutRequest.
+	}
+	resp, err := c.GetServiceRollout(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -235,7 +304,7 @@ func ExampleServiceManagerClient_ListServiceConfigs() {
 	}
 }
 
-func ExampleServiceManagerClient_GetServiceConfig() {
+func ExampleServiceManagerClient_ListServiceRollouts() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -248,19 +317,25 @@ func ExampleServiceManagerClient_GetServiceConfig() {
 	}
 	defer c.Close()
 
-	req := &servicemanagementpb.GetServiceConfigRequest{
+	req := &servicemanagementpb.ListServiceRolloutsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GetServiceConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#ListServiceRolloutsRequest.
 	}
-	resp, err := c.GetServiceConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListServiceRollouts(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleServiceManagerClient_CreateServiceConfig() {
+func ExampleServiceManagerClient_ListServices() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -273,16 +348,22 @@ func ExampleServiceManagerClient_CreateServiceConfig() {
 	}
 	defer c.Close()
 
-	req := &servicemanagementpb.CreateServiceConfigRequest{
+	req := &servicemanagementpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#CreateServiceConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#ListServicesRequest.
 	}
-	resp, err := c.CreateServiceConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListServices(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleServiceManagerClient_SubmitConfigSource() {
@@ -315,7 +396,7 @@ func ExampleServiceManagerClient_SubmitConfigSource() {
 	_ = resp
 }
 
-func ExampleServiceManagerClient_ListServiceRollouts() {
+func ExampleServiceManagerClient_UndeleteService() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -328,97 +409,16 @@ func ExampleServiceManagerClient_ListServiceRollouts() {
 	}
 	defer c.Close()
 
-	req := &servicemanagementpb.ListServiceRolloutsRequest{
+	req := &servicemanagementpb.UndeleteServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#ListServiceRolloutsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#UndeleteServiceRequest.
 	}
-	it := c.ListServiceRollouts(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleServiceManagerClient_GetServiceRollout() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicemanagement.NewServiceManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicemanagementpb.GetServiceRolloutRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GetServiceRolloutRequest.
-	}
-	resp, err := c.GetServiceRollout(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleServiceManagerClient_CreateServiceRollout() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicemanagement.NewServiceManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicemanagementpb.CreateServiceRolloutRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#CreateServiceRolloutRequest.
-	}
-	op, err := c.CreateServiceRollout(ctx, req)
+	op, err := c.UndeleteService(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
 	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleServiceManagerClient_GenerateConfigReport() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := servicemanagement.NewServiceManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicemanagementpb.GenerateConfigReportRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GenerateConfigReportRequest.
-	}
-	resp, err := c.GenerateConfigReport(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

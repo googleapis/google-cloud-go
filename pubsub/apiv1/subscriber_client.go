@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -69,7 +69,9 @@ type SubscriberCallOptions struct {
 func defaultSubscriberGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsub.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("pubsub.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsub.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://pubsub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -582,8 +584,9 @@ func (c *SubscriberClient) GetSubscription(ctx context.Context, req *pubsubpb.Ge
 	return c.internalClient.GetSubscription(ctx, req, opts...)
 }
 
-// UpdateSubscription updates an existing subscription. Note that certain properties of a
-// subscription, such as its topic, are not modifiable.
+// UpdateSubscription updates an existing subscription by updating the fields specified in the
+// update mask. Note that certain properties of a subscription, such as its
+// topic, are not modifiable.
 func (c *SubscriberClient) UpdateSubscription(ctx context.Context, req *pubsubpb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*pubsubpb.Subscription, error) {
 	return c.internalClient.UpdateSubscription(ctx, req, opts...)
 }
@@ -687,7 +690,8 @@ func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.Cre
 	return c.internalClient.CreateSnapshot(ctx, req, opts...)
 }
 
-// UpdateSnapshot updates an existing snapshot. Snapshots are used in
+// UpdateSnapshot updates an existing snapshot by updating the fields specified in the update
+// mask. Snapshots are used in
 // Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations,
 // which allow you to manage message acknowledgments in bulk. That is, you can
 // set the acknowledgment state of messages in an existing subscription to the
@@ -864,7 +868,9 @@ func NewSubscriberRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultSubscriberRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://pubsub.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://pubsub.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://pubsub.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://pubsub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1404,8 +1410,9 @@ func (c *subscriberRESTClient) GetSubscription(ctx context.Context, req *pubsubp
 	return resp, nil
 }
 
-// UpdateSubscription updates an existing subscription. Note that certain properties of a
-// subscription, such as its topic, are not modifiable.
+// UpdateSubscription updates an existing subscription by updating the fields specified in the
+// update mask. Note that certain properties of a subscription, such as its
+// topic, are not modifiable.
 func (c *subscriberRESTClient) UpdateSubscription(ctx context.Context, req *pubsubpb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*pubsubpb.Subscription, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2081,7 +2088,8 @@ func (c *subscriberRESTClient) CreateSnapshot(ctx context.Context, req *pubsubpb
 	return resp, nil
 }
 
-// UpdateSnapshot updates an existing snapshot. Snapshots are used in
+// UpdateSnapshot updates an existing snapshot by updating the fields specified in the update
+// mask. Snapshots are used in
 // Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations,
 // which allow you to manage message acknowledgments in bulk. That is, you can
 // set the acknowledgment state of messages in an existing subscription to the
@@ -2477,98 +2485,4 @@ func (c *subscriberRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 		return nil, e
 	}
 	return resp, nil
-}
-
-// SnapshotIterator manages a stream of *pubsubpb.Snapshot.
-type SnapshotIterator struct {
-	items    []*pubsubpb.Snapshot
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsubpb.Snapshot, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SnapshotIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SnapshotIterator) Next() (*pubsubpb.Snapshot, error) {
-	var item *pubsubpb.Snapshot
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SnapshotIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SnapshotIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SubscriptionIterator manages a stream of *pubsubpb.Subscription.
-type SubscriptionIterator struct {
-	items    []*pubsubpb.Subscription
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*pubsubpb.Subscription, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SubscriptionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SubscriptionIterator) Next() (*pubsubpb.Subscription, error) {
-	var item *pubsubpb.Subscription
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SubscriptionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SubscriptionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

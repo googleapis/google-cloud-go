@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,7 +59,9 @@ type IdentityAwareProxyAdminCallOptions struct {
 func defaultIdentityAwareProxyAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("iap.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("iap.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("iap.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iap.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -363,7 +365,9 @@ func NewIdentityAwareProxyAdminRESTClient(ctx context.Context, opts ...option.Cl
 func defaultIdentityAwareProxyAdminRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://iap.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://iap.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://iap.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iap.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1271,51 +1275,4 @@ func (c *identityAwareProxyAdminRESTClient) UpdateTunnelDestGroup(ctx context.Co
 		return nil, e
 	}
 	return resp, nil
-}
-
-// TunnelDestGroupIterator manages a stream of *iappb.TunnelDestGroup.
-type TunnelDestGroupIterator struct {
-	items    []*iappb.TunnelDestGroup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*iappb.TunnelDestGroup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TunnelDestGroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TunnelDestGroupIterator) Next() (*iappb.TunnelDestGroup, error) {
-	var item *iappb.TunnelDestGroup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TunnelDestGroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TunnelDestGroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

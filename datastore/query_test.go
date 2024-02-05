@@ -761,7 +761,7 @@ func TestReadOptions(t *testing.T) {
 	// Test errors.
 	for _, q := range []*Query{
 		NewQuery("").Transaction(&Transaction{id: nil, state: transactionStateExpired}),
-		NewQuery("").Transaction(&Transaction{id: tid}).EventualConsistency(),
+		NewQuery("").Transaction(&Transaction{id: tid, state: transactionStateInProgress}).EventualConsistency(),
 	} {
 		req := &pb.RunQueryRequest{}
 		if err := q.toRunQueryRequest(req); err == nil {
@@ -858,60 +858,43 @@ func TestAggregationQueryIsNil(t *testing.T) {
 
 func TestValidateReadOptions(t *testing.T) {
 	for _, test := range []struct {
-		desc    string
-		q       *Query
-		wantErr error
+		desc     string
+		eventual bool
+		trans    *Transaction
+		wantErr  error
 	}{
 		{
-			desc: "EventualConsistency query in a transaction",
-			q: &Query{
-				eventual: true,
-				trans: &Transaction{
-					id: []byte("test id"),
-				},
+			desc:     "EventualConsistency query in a transaction",
+			eventual: true,
+			trans: &Transaction{
+				id: []byte("test id"),
 			},
 			wantErr: errors.New("datastore: cannot use EventualConsistency query in a transaction"),
 		},
 		{
 			desc: "Expired transaction in non-eventual query",
-			q: &Query{
-				eventual: false,
-				trans: &Transaction{
-					id:    []byte("test id"),
-					state: transactionStateExpired,
-				},
+			trans: &Transaction{
+				id: nil,
 			},
 			wantErr: errExpiredTransaction,
 		},
 		{
 			desc: "Expired transaction in eventual query",
-			q: &Query{
-				eventual: true,
-				trans: &Transaction{
-					id:    []byte("test id"),
-					state: transactionStateExpired,
-				},
+			trans: &Transaction{
+				id: nil,
 			},
-			wantErr: errExpiredTransaction,
+			eventual: true,
+			wantErr:  errExpiredTransaction,
 		},
 		{
 			desc: "No transaction in non-eventual query",
-			q: &Query{
-				eventual: false,
-				trans:    nil,
-			},
-			wantErr: nil,
 		},
 		{
-			desc: "No transaction in eventual query",
-			q: &Query{
-				eventual: true,
-				trans:    nil,
-			},
-			wantErr: nil,
+			desc:     "No transaction in eventual query",
+			eventual: true,
 		},
 	} {
-		gotErr := validateReadOptions(test.q)
+		gotErr := validateReadOptions(test.eventual, test.trans)
 		gotErrMsg := ""
 		if gotErr != nil {
 			gotErrMsg = gotErr.Error()

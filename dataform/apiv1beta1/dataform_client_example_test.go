@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_ListRepositories() {
+func ExampleClient_CancelWorkflowInvocation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -73,25 +73,17 @@ func ExampleClient_ListRepositories() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.ListRepositoriesRequest{
+	req := &dataformpb.CancelWorkflowInvocationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ListRepositoriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CancelWorkflowInvocationRequest.
 	}
-	it := c.ListRepositories(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	err = c.CancelWorkflowInvocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
 
-func ExampleClient_GetRepository() {
+func ExampleClient_CommitRepositoryChanges() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -104,11 +96,107 @@ func ExampleClient_GetRepository() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.GetRepositoryRequest{
+	req := &dataformpb.CommitRepositoryChangesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetRepositoryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CommitRepositoryChangesRequest.
 	}
-	resp, err := c.GetRepository(ctx, req)
+	err = c.CommitRepositoryChanges(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_CommitWorkspaceChanges() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.CommitWorkspaceChangesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CommitWorkspaceChangesRequest.
+	}
+	err = c.CommitWorkspaceChanges(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_ComputeRepositoryAccessTokenStatus() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.ComputeRepositoryAccessTokenStatusRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ComputeRepositoryAccessTokenStatusRequest.
+	}
+	resp, err := c.ComputeRepositoryAccessTokenStatus(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateCompilationResult() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.CreateCompilationResultRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateCompilationResultRequest.
+	}
+	resp, err := c.CreateCompilationResult(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateReleaseConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.CreateReleaseConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateReleaseConfigRequest.
+	}
+	resp, err := c.CreateReleaseConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -141,7 +229,7 @@ func ExampleClient_CreateRepository() {
 	_ = resp
 }
 
-func ExampleClient_UpdateRepository() {
+func ExampleClient_CreateWorkflowConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -154,16 +242,89 @@ func ExampleClient_UpdateRepository() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.UpdateRepositoryRequest{
+	req := &dataformpb.CreateWorkflowConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#UpdateRepositoryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateWorkflowConfigRequest.
 	}
-	resp, err := c.UpdateRepository(ctx, req)
+	resp, err := c.CreateWorkflowConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleClient_CreateWorkflowInvocation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.CreateWorkflowInvocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateWorkflowInvocationRequest.
+	}
+	resp, err := c.CreateWorkflowInvocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateWorkspace() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.CreateWorkspaceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateWorkspaceRequest.
+	}
+	resp, err := c.CreateWorkspace(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteReleaseConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.DeleteReleaseConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#DeleteReleaseConfigRequest.
+	}
+	err = c.DeleteReleaseConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleClient_DeleteRepository() {
@@ -189,7 +350,7 @@ func ExampleClient_DeleteRepository() {
 	}
 }
 
-func ExampleClient_CommitRepositoryChanges() {
+func ExampleClient_DeleteWorkflowConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -202,17 +363,17 @@ func ExampleClient_CommitRepositoryChanges() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.CommitRepositoryChangesRequest{
+	req := &dataformpb.DeleteWorkflowConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CommitRepositoryChangesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#DeleteWorkflowConfigRequest.
 	}
-	err = c.CommitRepositoryChanges(ctx, req)
+	err = c.DeleteWorkflowConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 }
 
-func ExampleClient_ReadRepositoryFile() {
+func ExampleClient_DeleteWorkflowInvocation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -225,11 +386,57 @@ func ExampleClient_ReadRepositoryFile() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.ReadRepositoryFileRequest{
+	req := &dataformpb.DeleteWorkflowInvocationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ReadRepositoryFileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#DeleteWorkflowInvocationRequest.
 	}
-	resp, err := c.ReadRepositoryFile(ctx, req)
+	err = c.DeleteWorkflowInvocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteWorkspace() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.DeleteWorkspaceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#DeleteWorkspaceRequest.
+	}
+	err = c.DeleteWorkspace(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_FetchFileDiff() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.FetchFileDiffRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#FetchFileDiffRequest.
+	}
+	resp, err := c.FetchFileDiff(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -237,7 +444,7 @@ func ExampleClient_ReadRepositoryFile() {
 	_ = resp
 }
 
-func ExampleClient_QueryRepositoryDirectoryContents() {
+func ExampleClient_FetchFileGitStatuses() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -250,22 +457,66 @@ func ExampleClient_QueryRepositoryDirectoryContents() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.QueryRepositoryDirectoryContentsRequest{
+	req := &dataformpb.FetchFileGitStatusesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#QueryRepositoryDirectoryContentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#FetchFileGitStatusesRequest.
 	}
-	it := c.QueryRepositoryDirectoryContents(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	resp, err := c.FetchFileGitStatuses(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_FetchGitAheadBehind() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.FetchGitAheadBehindRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#FetchGitAheadBehindRequest.
+	}
+	resp, err := c.FetchGitAheadBehind(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_FetchRemoteBranches() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.FetchRemoteBranchesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#FetchRemoteBranchesRequest.
+	}
+	resp, err := c.FetchRemoteBranches(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_FetchRepositoryHistory() {
@@ -299,7 +550,7 @@ func ExampleClient_FetchRepositoryHistory() {
 	}
 }
 
-func ExampleClient_ComputeRepositoryAccessTokenStatus() {
+func ExampleClient_GetCompilationResult() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -312,11 +563,11 @@ func ExampleClient_ComputeRepositoryAccessTokenStatus() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.ComputeRepositoryAccessTokenStatusRequest{
+	req := &dataformpb.GetCompilationResultRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ComputeRepositoryAccessTokenStatusRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetCompilationResultRequest.
 	}
-	resp, err := c.ComputeRepositoryAccessTokenStatus(ctx, req)
+	resp, err := c.GetCompilationResult(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -324,7 +575,7 @@ func ExampleClient_ComputeRepositoryAccessTokenStatus() {
 	_ = resp
 }
 
-func ExampleClient_FetchRemoteBranches() {
+func ExampleClient_GetReleaseConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -337,16 +588,296 @@ func ExampleClient_FetchRemoteBranches() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.FetchRemoteBranchesRequest{
+	req := &dataformpb.GetReleaseConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#FetchRemoteBranchesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetReleaseConfigRequest.
 	}
-	resp, err := c.FetchRemoteBranches(ctx, req)
+	resp, err := c.GetReleaseConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleClient_GetRepository() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.GetRepositoryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetRepositoryRequest.
+	}
+	resp, err := c.GetRepository(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetWorkflowConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.GetWorkflowConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetWorkflowConfigRequest.
+	}
+	resp, err := c.GetWorkflowConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetWorkflowInvocation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.GetWorkflowInvocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetWorkflowInvocationRequest.
+	}
+	resp, err := c.GetWorkflowInvocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetWorkspace() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.GetWorkspaceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetWorkspaceRequest.
+	}
+	resp, err := c.GetWorkspace(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_InstallNpmPackages() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.InstallNpmPackagesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#InstallNpmPackagesRequest.
+	}
+	resp, err := c.InstallNpmPackages(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListCompilationResults() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.ListCompilationResultsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ListCompilationResultsRequest.
+	}
+	it := c.ListCompilationResults(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListReleaseConfigs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.ListReleaseConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ListReleaseConfigsRequest.
+	}
+	it := c.ListReleaseConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListRepositories() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.ListRepositoriesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ListRepositoriesRequest.
+	}
+	it := c.ListRepositories(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListWorkflowConfigs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.ListWorkflowConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ListWorkflowConfigsRequest.
+	}
+	it := c.ListWorkflowConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListWorkflowInvocations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.ListWorkflowInvocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ListWorkflowInvocationsRequest.
+	}
+	it := c.ListWorkflowInvocations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
 
 func ExampleClient_ListWorkspaces() {
@@ -380,7 +911,7 @@ func ExampleClient_ListWorkspaces() {
 	}
 }
 
-func ExampleClient_GetWorkspace() {
+func ExampleClient_MakeDirectory() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -393,11 +924,11 @@ func ExampleClient_GetWorkspace() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.GetWorkspaceRequest{
+	req := &dataformpb.MakeDirectoryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetWorkspaceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#MakeDirectoryRequest.
 	}
-	resp, err := c.GetWorkspace(ctx, req)
+	resp, err := c.MakeDirectory(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -405,7 +936,7 @@ func ExampleClient_GetWorkspace() {
 	_ = resp
 }
 
-func ExampleClient_CreateWorkspace() {
+func ExampleClient_MoveDirectory() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -418,11 +949,11 @@ func ExampleClient_CreateWorkspace() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.CreateWorkspaceRequest{
+	req := &dataformpb.MoveDirectoryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateWorkspaceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#MoveDirectoryRequest.
 	}
-	resp, err := c.CreateWorkspace(ctx, req)
+	resp, err := c.MoveDirectory(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -430,7 +961,7 @@ func ExampleClient_CreateWorkspace() {
 	_ = resp
 }
 
-func ExampleClient_DeleteWorkspace() {
+func ExampleClient_MoveFile() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -443,34 +974,11 @@ func ExampleClient_DeleteWorkspace() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.DeleteWorkspaceRequest{
+	req := &dataformpb.MoveFileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#DeleteWorkspaceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#MoveFileRequest.
 	}
-	err = c.DeleteWorkspace(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_InstallNpmPackages() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.InstallNpmPackagesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#InstallNpmPackagesRequest.
-	}
-	resp, err := c.InstallNpmPackages(ctx, req)
+	resp, err := c.MoveFile(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -524,7 +1032,7 @@ func ExampleClient_PushGitCommits() {
 	}
 }
 
-func ExampleClient_FetchFileGitStatuses() {
+func ExampleClient_QueryCompilationResultActions() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -537,112 +1045,22 @@ func ExampleClient_FetchFileGitStatuses() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.FetchFileGitStatusesRequest{
+	req := &dataformpb.QueryCompilationResultActionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#FetchFileGitStatusesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#QueryCompilationResultActionsRequest.
 	}
-	resp, err := c.FetchFileGitStatuses(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.QueryCompilationResultActions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_FetchGitAheadBehind() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.FetchGitAheadBehindRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#FetchGitAheadBehindRequest.
-	}
-	resp, err := c.FetchGitAheadBehind(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CommitWorkspaceChanges() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.CommitWorkspaceChangesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CommitWorkspaceChangesRequest.
-	}
-	err = c.CommitWorkspaceChanges(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_ResetWorkspaceChanges() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.ResetWorkspaceChangesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ResetWorkspaceChangesRequest.
-	}
-	err = c.ResetWorkspaceChanges(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_FetchFileDiff() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.FetchFileDiffRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#FetchFileDiffRequest.
-	}
-	resp, err := c.FetchFileDiff(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleClient_QueryDirectoryContents() {
@@ -676,7 +1094,7 @@ func ExampleClient_QueryDirectoryContents() {
 	}
 }
 
-func ExampleClient_MakeDirectory() {
+func ExampleClient_QueryRepositoryDirectoryContents() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -689,182 +1107,11 @@ func ExampleClient_MakeDirectory() {
 	}
 	defer c.Close()
 
-	req := &dataformpb.MakeDirectoryRequest{
+	req := &dataformpb.QueryRepositoryDirectoryContentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#MakeDirectoryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#QueryRepositoryDirectoryContentsRequest.
 	}
-	resp, err := c.MakeDirectory(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_RemoveDirectory() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.RemoveDirectoryRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#RemoveDirectoryRequest.
-	}
-	err = c.RemoveDirectory(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_MoveDirectory() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.MoveDirectoryRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#MoveDirectoryRequest.
-	}
-	resp, err := c.MoveDirectory(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ReadFile() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.ReadFileRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ReadFileRequest.
-	}
-	resp, err := c.ReadFile(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_RemoveFile() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.RemoveFileRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#RemoveFileRequest.
-	}
-	err = c.RemoveFile(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_MoveFile() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.MoveFileRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#MoveFileRequest.
-	}
-	resp, err := c.MoveFile(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_WriteFile() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.WriteFileRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#WriteFileRequest.
-	}
-	resp, err := c.WriteFile(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListReleaseConfigs() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.ListReleaseConfigsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ListReleaseConfigsRequest.
-	}
-	it := c.ListReleaseConfigs(ctx, req)
+	it := c.QueryRepositoryDirectoryContents(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -875,472 +1122,6 @@ func ExampleClient_ListReleaseConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
-	}
-}
-
-func ExampleClient_GetReleaseConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.GetReleaseConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetReleaseConfigRequest.
-	}
-	resp, err := c.GetReleaseConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreateReleaseConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.CreateReleaseConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateReleaseConfigRequest.
-	}
-	resp, err := c.CreateReleaseConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateReleaseConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.UpdateReleaseConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#UpdateReleaseConfigRequest.
-	}
-	resp, err := c.UpdateReleaseConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteReleaseConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.DeleteReleaseConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#DeleteReleaseConfigRequest.
-	}
-	err = c.DeleteReleaseConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_ListCompilationResults() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.ListCompilationResultsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ListCompilationResultsRequest.
-	}
-	it := c.ListCompilationResults(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetCompilationResult() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.GetCompilationResultRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetCompilationResultRequest.
-	}
-	resp, err := c.GetCompilationResult(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreateCompilationResult() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.CreateCompilationResultRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateCompilationResultRequest.
-	}
-	resp, err := c.CreateCompilationResult(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_QueryCompilationResultActions() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.QueryCompilationResultActionsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#QueryCompilationResultActionsRequest.
-	}
-	it := c.QueryCompilationResultActions(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_ListWorkflowConfigs() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.ListWorkflowConfigsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ListWorkflowConfigsRequest.
-	}
-	it := c.ListWorkflowConfigs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetWorkflowConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.GetWorkflowConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetWorkflowConfigRequest.
-	}
-	resp, err := c.GetWorkflowConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreateWorkflowConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.CreateWorkflowConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateWorkflowConfigRequest.
-	}
-	resp, err := c.CreateWorkflowConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateWorkflowConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.UpdateWorkflowConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#UpdateWorkflowConfigRequest.
-	}
-	resp, err := c.UpdateWorkflowConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteWorkflowConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.DeleteWorkflowConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#DeleteWorkflowConfigRequest.
-	}
-	err = c.DeleteWorkflowConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_ListWorkflowInvocations() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.ListWorkflowInvocationsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ListWorkflowInvocationsRequest.
-	}
-	it := c.ListWorkflowInvocations(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetWorkflowInvocation() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.GetWorkflowInvocationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#GetWorkflowInvocationRequest.
-	}
-	resp, err := c.GetWorkflowInvocation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreateWorkflowInvocation() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.CreateWorkflowInvocationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CreateWorkflowInvocationRequest.
-	}
-	resp, err := c.CreateWorkflowInvocation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteWorkflowInvocation() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.DeleteWorkflowInvocationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#DeleteWorkflowInvocationRequest.
-	}
-	err = c.DeleteWorkflowInvocation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_CancelWorkflowInvocation() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataform.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataformpb.CancelWorkflowInvocationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#CancelWorkflowInvocationRequest.
-	}
-	err = c.CancelWorkflowInvocation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
 	}
 }
 
@@ -1373,6 +1154,225 @@ func ExampleClient_QueryWorkflowInvocationActions() {
 		// TODO: Use resp.
 		_ = resp
 	}
+}
+
+func ExampleClient_ReadFile() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.ReadFileRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ReadFileRequest.
+	}
+	resp, err := c.ReadFile(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ReadRepositoryFile() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.ReadRepositoryFileRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ReadRepositoryFileRequest.
+	}
+	resp, err := c.ReadRepositoryFile(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_RemoveDirectory() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.RemoveDirectoryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#RemoveDirectoryRequest.
+	}
+	err = c.RemoveDirectory(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_RemoveFile() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.RemoveFileRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#RemoveFileRequest.
+	}
+	err = c.RemoveFile(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_ResetWorkspaceChanges() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.ResetWorkspaceChangesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#ResetWorkspaceChangesRequest.
+	}
+	err = c.ResetWorkspaceChanges(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_UpdateReleaseConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.UpdateReleaseConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#UpdateReleaseConfigRequest.
+	}
+	resp, err := c.UpdateReleaseConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateRepository() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.UpdateRepositoryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#UpdateRepositoryRequest.
+	}
+	resp, err := c.UpdateRepository(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateWorkflowConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.UpdateWorkflowConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#UpdateWorkflowConfigRequest.
+	}
+	resp, err := c.UpdateWorkflowConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_WriteFile() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataform.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataformpb.WriteFileRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataform/apiv1beta1/dataformpb#WriteFileRequest.
+	}
+	resp, err := c.WriteFile(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_GetLocation() {

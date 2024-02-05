@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,7 +47,9 @@ type PhishingProtectionServiceV1Beta1CallOptions struct {
 func defaultPhishingProtectionServiceV1Beta1GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("phishingprotection.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("phishingprotection.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("phishingprotection.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://phishingprotection.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -237,7 +239,9 @@ func NewPhishingProtectionServiceV1Beta1RESTClient(ctx context.Context, opts ...
 func defaultPhishingProtectionServiceV1Beta1RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://phishingprotection.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://phishingprotection.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://phishingprotection.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://phishingprotection.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

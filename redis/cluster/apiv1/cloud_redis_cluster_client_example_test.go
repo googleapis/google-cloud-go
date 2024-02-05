@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ func ExampleNewCloudRedisClusterRESTClient() {
 	_ = c
 }
 
-func ExampleCloudRedisClusterClient_ListClusters() {
+func ExampleCloudRedisClusterClient_CreateCluster() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -73,67 +73,11 @@ func ExampleCloudRedisClusterClient_ListClusters() {
 	}
 	defer c.Close()
 
-	req := &clusterpb.ListClustersRequest{
+	req := &clusterpb.CreateClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#ListClustersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#CreateClusterRequest.
 	}
-	it := c.ListClusters(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleCloudRedisClusterClient_GetCluster() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cluster.NewCloudRedisClusterClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &clusterpb.GetClusterRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#GetClusterRequest.
-	}
-	resp, err := c.GetCluster(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCloudRedisClusterClient_UpdateCluster() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cluster.NewCloudRedisClusterClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &clusterpb.UpdateClusterRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#UpdateClusterRequest.
-	}
-	op, err := c.UpdateCluster(ctx, req)
+	op, err := c.CreateCluster(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -174,7 +118,7 @@ func ExampleCloudRedisClusterClient_DeleteCluster() {
 	}
 }
 
-func ExampleCloudRedisClusterClient_CreateCluster() {
+func ExampleCloudRedisClusterClient_GetCluster() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -187,11 +131,67 @@ func ExampleCloudRedisClusterClient_CreateCluster() {
 	}
 	defer c.Close()
 
-	req := &clusterpb.CreateClusterRequest{
+	req := &clusterpb.GetClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#CreateClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#GetClusterRequest.
 	}
-	op, err := c.CreateCluster(ctx, req)
+	resp, err := c.GetCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudRedisClusterClient_ListClusters() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cluster.NewCloudRedisClusterClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &clusterpb.ListClustersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#ListClustersRequest.
+	}
+	it := c.ListClusters(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCloudRedisClusterClient_UpdateCluster() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cluster.NewCloudRedisClusterClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &clusterpb.UpdateClusterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#UpdateClusterRequest.
+	}
+	op, err := c.UpdateCluster(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

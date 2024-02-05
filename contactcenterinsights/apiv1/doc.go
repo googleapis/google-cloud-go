@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,11 +65,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &contactcenterinsightspb.CreateConversationRequest{
+//	req := &contactcenterinsightspb.BulkAnalyzeConversationsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateConversationRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#BulkAnalyzeConversationsRequest.
 //	}
-//	resp, err := c.CreateConversation(ctx, req)
+//	op, err := c.BulkAnalyzeConversations(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

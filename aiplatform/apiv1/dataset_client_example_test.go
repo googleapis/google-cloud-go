@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ func ExampleDatasetClient_CreateDataset() {
 	_ = resp
 }
 
-func ExampleDatasetClient_GetDataset() {
+func ExampleDatasetClient_CreateDatasetVersion() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -87,72 +87,21 @@ func ExampleDatasetClient_GetDataset() {
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.GetDatasetRequest{
+	req := &aiplatformpb.CreateDatasetVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateDatasetVersionRequest.
 	}
-	resp, err := c.GetDataset(ctx, req)
+	op, err := c.CreateDatasetVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleDatasetClient_UpdateDataset() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.UpdateDatasetRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#UpdateDatasetRequest.
-	}
-	resp, err := c.UpdateDataset(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleDatasetClient_ListDatasets() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.ListDatasetsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListDatasetsRequest.
-	}
-	it := c.ListDatasets(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
 }
 
 func ExampleDatasetClient_DeleteDataset() {
@@ -183,7 +132,7 @@ func ExampleDatasetClient_DeleteDataset() {
 	}
 }
 
-func ExampleDatasetClient_ImportData() {
+func ExampleDatasetClient_DeleteDatasetVersion() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -196,21 +145,47 @@ func ExampleDatasetClient_ImportData() {
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.ImportDataRequest{
+	req := &aiplatformpb.DeleteDatasetVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ImportDataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteDatasetVersionRequest.
 	}
-	op, err := c.ImportData(ctx, req)
+	op, err := c.DeleteDatasetVersion(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	resp, err := op.Wait(ctx)
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+}
+
+func ExampleDatasetClient_DeleteSavedQuery() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewDatasetClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.DeleteSavedQueryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteSavedQueryRequest.
+	}
+	op, err := c.DeleteSavedQuery(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleDatasetClient_ExportData() {
@@ -243,7 +218,7 @@ func ExampleDatasetClient_ExportData() {
 	_ = resp
 }
 
-func ExampleDatasetClient_CreateDatasetVersion() {
+func ExampleDatasetClient_GetAnnotationSpec() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -256,16 +231,11 @@ func ExampleDatasetClient_CreateDatasetVersion() {
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.CreateDatasetVersionRequest{
+	req := &aiplatformpb.GetAnnotationSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateDatasetVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetAnnotationSpecRequest.
 	}
-	op, err := c.CreateDatasetVersion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
+	resp, err := c.GetAnnotationSpec(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -273,7 +243,7 @@ func ExampleDatasetClient_CreateDatasetVersion() {
 	_ = resp
 }
 
-func ExampleDatasetClient_DeleteDatasetVersion() {
+func ExampleDatasetClient_GetDataset() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -286,19 +256,16 @@ func ExampleDatasetClient_DeleteDatasetVersion() {
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.DeleteDatasetVersionRequest{
+	req := &aiplatformpb.GetDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteDatasetVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetDatasetRequest.
 	}
-	op, err := c.DeleteDatasetVersion(ctx, req)
+	resp, err := c.GetDataset(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleDatasetClient_GetDatasetVersion() {
@@ -326,7 +293,7 @@ func ExampleDatasetClient_GetDatasetVersion() {
 	_ = resp
 }
 
-func ExampleDatasetClient_ListDatasetVersions() {
+func ExampleDatasetClient_ImportData() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -339,11 +306,41 @@ func ExampleDatasetClient_ListDatasetVersions() {
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.ListDatasetVersionsRequest{
+	req := &aiplatformpb.ImportDataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListDatasetVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ImportDataRequest.
 	}
-	it := c.ListDatasetVersions(ctx, req)
+	op, err := c.ImportData(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatasetClient_ListAnnotations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewDatasetClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.ListAnnotationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListAnnotationsRequest.
+	}
+	it := c.ListAnnotations(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -355,36 +352,6 @@ func ExampleDatasetClient_ListDatasetVersions() {
 		// TODO: Use resp.
 		_ = resp
 	}
-}
-
-func ExampleDatasetClient_RestoreDatasetVersion() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.RestoreDatasetVersionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#RestoreDatasetVersionRequest.
-	}
-	op, err := c.RestoreDatasetVersion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleDatasetClient_ListDataItems() {
@@ -418,7 +385,7 @@ func ExampleDatasetClient_ListDataItems() {
 	}
 }
 
-func ExampleDatasetClient_SearchDataItems() {
+func ExampleDatasetClient_ListDatasetVersions() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -431,11 +398,42 @@ func ExampleDatasetClient_SearchDataItems() {
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.SearchDataItemsRequest{
+	req := &aiplatformpb.ListDatasetVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#SearchDataItemsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListDatasetVersionsRequest.
 	}
-	it := c.SearchDataItems(ctx, req)
+	it := c.ListDatasetVersions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleDatasetClient_ListDatasets() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewDatasetClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.ListDatasetsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListDatasetsRequest.
+	}
+	it := c.ListDatasets(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -480,7 +478,7 @@ func ExampleDatasetClient_ListSavedQueries() {
 	}
 }
 
-func ExampleDatasetClient_DeleteSavedQuery() {
+func ExampleDatasetClient_RestoreDatasetVersion() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -493,39 +491,16 @@ func ExampleDatasetClient_DeleteSavedQuery() {
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.DeleteSavedQueryRequest{
+	req := &aiplatformpb.RestoreDatasetVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteSavedQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#RestoreDatasetVersionRequest.
 	}
-	op, err := c.DeleteSavedQuery(ctx, req)
+	op, err := c.RestoreDatasetVersion(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleDatasetClient_GetAnnotationSpec() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.GetAnnotationSpecRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetAnnotationSpecRequest.
-	}
-	resp, err := c.GetAnnotationSpec(ctx, req)
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -533,7 +508,7 @@ func ExampleDatasetClient_GetAnnotationSpec() {
 	_ = resp
 }
 
-func ExampleDatasetClient_ListAnnotations() {
+func ExampleDatasetClient_SearchDataItems() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -546,11 +521,11 @@ func ExampleDatasetClient_ListAnnotations() {
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.ListAnnotationsRequest{
+	req := &aiplatformpb.SearchDataItemsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListAnnotationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#SearchDataItemsRequest.
 	}
-	it := c.ListAnnotations(ctx, req)
+	it := c.SearchDataItems(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -562,6 +537,31 @@ func ExampleDatasetClient_ListAnnotations() {
 		// TODO: Use resp.
 		_ = resp
 	}
+}
+
+func ExampleDatasetClient_UpdateDataset() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewDatasetClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.UpdateDatasetRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#UpdateDatasetRequest.
+	}
+	resp, err := c.UpdateDataset(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleDatasetClient_GetLocation() {
