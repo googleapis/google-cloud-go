@@ -393,7 +393,8 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 		}
 	}
 
-	// TODO: Use transaction ID returned by get
+	// Since opts does not contain Transaction option, 'get' call below will return nil
+	// as transaction id which can be ignored
 	_, err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
@@ -427,7 +428,8 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 		}
 	}
 
-	// TODO: Use transaction ID returned by get
+	// Since opts does not contain Transaction option, 'get' call below will return nil
+	// as transaction id which can be ignored
 	_, err = c.get(ctx, keys, dst, opts)
 	return err
 }

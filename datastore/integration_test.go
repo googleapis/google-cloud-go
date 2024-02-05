@@ -792,13 +792,24 @@ func TestIntegration_BeginLaterPerf(t *testing.T) {
 	runOptions := []bool{true, false} // whether BeginLater transaction option is used
 	var avgRunTimes [2]float64        // In seconds
 	numRepetitions := 10
+	numKeys := 10
 
 	res := make(chan RunTransactionResult)
 	for i, runOption := range runOptions {
 		sumRunTime := float64(0)
 
+		// Create client
+		ctx := context.Background()
+		client := newTestClient(ctx, t)
+		defer client.Close()
+
+		// Populate data
+		now := timeNow.Truncate(time.Millisecond).Unix()
+		keys, _, cleanupData := populateData(t, client, numKeys, now, "BeginLaterPerf"+fmt.Sprint(runOption)+fmt.Sprint(now))
+		defer cleanupData()
+
 		for rep := 0; rep < numRepetitions; rep++ {
-			go runTransaction(t, res, runOption)
+			go runTransaction(ctx, client, keys, res, runOption, t)
 		}
 		for rep := 0; rep < numRepetitions; rep++ {
 			runTransactionResult := <-res
@@ -817,17 +828,9 @@ func TestIntegration_BeginLaterPerf(t *testing.T) {
 	}
 }
 
-func runTransaction(t *testing.T, res chan RunTransactionResult, beginLater bool) {
-	ctx := context.Background()
-	client := newTestClient(ctx, t)
-	defer client.Close()
+func runTransaction(ctx context.Context, client *Client, keys []*Key, res chan RunTransactionResult, beginLater bool, t *testing.T) {
 
-	// Populate data
-	now := timeNow.Truncate(time.Millisecond).Unix()
-	numKeys := 10
-	keys, _, cleanupData := populateData(t, client, numKeys, now, "BeginLaterPerf"+fmt.Sprint(beginLater)+fmt.Sprint(now))
-	defer cleanupData()
-
+	numKeys := len(keys)
 	txOpts := []TransactionOption{}
 	if beginLater {
 		txOpts = append(txOpts, BeginLater)
@@ -844,7 +847,7 @@ func runTransaction(t *testing.T, res chan RunTransactionResult, beginLater bool
 		return
 	}
 
-	// Perform operations on transaction
+	// Perform operations in transaction
 	dst := make([]*SQChild, numKeys)
 	if err := tx.GetMulti(keys, dst); err != nil {
 		runTransactionResult := RunTransactionResult{
