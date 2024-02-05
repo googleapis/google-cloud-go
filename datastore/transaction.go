@@ -157,29 +157,6 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 	return c.newTransaction(ctx, newTransactionSettings(opts))
 }
 
-func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ *Transaction, err error) {
-	t := &Transaction{
-		id:        nil,
-		ctx:       ctx,
-		client:    c,
-		mutations: nil,
-		pending:   make(map[int]*PendingKey),
-		settings:  s,
-	}
-
-	t.state = transactionStateNotStarted
-	if !s.beginLater {
-		txnID, err := t.beginTransaction()
-		if err != nil {
-			return nil, err
-		}
-		t.id = txnID
-		t.state = transactionStateInProgress
-	}
-
-	return t, nil
-}
-
 func (t *Transaction) parseTransactionOptions() (*pb.TransactionOptions, string) {
 	if t.settings == nil {
 		return nil, ""
@@ -250,6 +227,29 @@ func (t *Transaction) beginLaterTransaction() (err error) {
 	t.id = txnID
 	t.state = transactionStateInProgress
 	return nil
+}
+
+func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ *Transaction, err error) {
+	t := &Transaction{
+		id:        nil,
+		ctx:       ctx,
+		client:    c,
+		mutations: nil,
+		pending:   make(map[int]*PendingKey),
+		settings:  s,
+	}
+
+	t.state = transactionStateNotStarted
+	if !s.beginLater {
+		txnID, err := t.beginTransaction()
+		if err != nil {
+			return nil, err
+		}
+		t.id = txnID
+		t.state = transactionStateInProgress
+	}
+
+	return t, nil
 }
 
 // RunInTransaction runs f in a transaction. f is invoked with a Transaction

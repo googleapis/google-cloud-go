@@ -972,7 +972,7 @@ func (t *Iterator) nextBatch() error {
 	}
 
 	var err error
-	t.req.ReadOptions, err = parseQueryReadOptions(t.eventual, t.trans)
+	t.req.ReadOptions, err = parseQueryReadOptions(t.eventual, txn)
 	if err != nil {
 		return err
 	}
