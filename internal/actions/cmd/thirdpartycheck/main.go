@@ -42,6 +42,9 @@ var (
 		// Third party deps (allowed).
 		"go.opencensus.io",
 		"go.opentelemetry.io/",
+		"gopkg.in/yaml",
+		"github.com/go-git/go-git",
+		"github.com/apache/arrow/go",
 
 		// Third party deps (temporary exception(s)).
 		"go.einride.tech/aip", // https://github.com/googleapis/google-cloud-go/issues/9338

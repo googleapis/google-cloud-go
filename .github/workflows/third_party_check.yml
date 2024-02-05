@@ -12,10 +12,10 @@ jobs:
   changed_gomods:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 2
-    - uses: actions/setup-go@v4
+    - uses: actions/setup-go@v5
       with:
         go-version: 1.21.x
     - name: Find modified go.mod files
@@ -42,5 +42,5 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.changed_gomods.outputs.mods) }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - run: go run ./internal/actions/cmd/thirdpartycheck -q -mod ${{ matrix.mods }}/go.mod
