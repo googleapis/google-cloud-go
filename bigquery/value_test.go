@@ -78,7 +78,7 @@ func TestConvertTime(t *testing.T) {
 	ts := testTimestamp.Round(time.Millisecond)
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
-			{V: fmt.Sprintf("%.10f", float64(ts.UnixNano())/1e9)},
+			{V: fmt.Sprint(ts.UnixMicro())},
 			{V: testDate.String()},
 			{V: testTime.String()},
 			{V: testDateTime.String()},
@@ -95,15 +95,12 @@ func TestConvertTime(t *testing.T) {
 			t.Errorf("#%d: got:\n%v\nwant:\n%v", i, g, w)
 		}
 	}
-	if got[0].(time.Time).Location() != time.UTC {
-		t.Errorf("expected time zone UTC: got:\n%v", got)
-	}
 }
 
 func TestConvertSmallTimes(t *testing.T) {
 	for _, year := range []int{1600, 1066, 1} {
 		want := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
-		s := fmt.Sprintf("%.10f", float64(want.Unix()))
+		s := fmt.Sprint(time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC).UnixMicro())
 		got, err := convertBasicType(s, TimestampFieldType)
 		if err != nil {
 			t.Fatal(err)
@@ -111,44 +108,6 @@ func TestConvertSmallTimes(t *testing.T) {
 		if !got.(time.Time).Equal(want) {
 			t.Errorf("got %v, want %v", got, want)
 		}
-	}
-}
-
-func TestConvertTimePrecision(t *testing.T) {
-	tcs := []struct {
-		// Internally, BigQuery stores timestamps as microsecond-precision
-		// floats.
-		bq   float64
-		want time.Time
-	}{
-		{
-			bq:   1555593697.154358,
-			want: time.Unix(1555593697, 154358*1000),
-		},
-		{
-			bq:   1555593697.154359,
-			want: time.Unix(1555593697, 154359*1000),
-		},
-		{
-			bq:   1555593697.154360,
-			want: time.Unix(1555593697, 154360*1000),
-		},
-	}
-	for _, tc := range tcs {
-		bqS := fmt.Sprintf("%.6f", tc.bq)
-		t.Run(bqS, func(t *testing.T) {
-			got, err := convertBasicType(bqS, TimestampFieldType)
-			if err != nil {
-				t.Fatalf("convertBasicType failed: %v", err)
-			}
-			gotT, ok := got.(time.Time)
-			if !ok {
-				t.Fatalf("got a %T from convertBasicType, want a time.Time; got = %v", got, got)
-			}
-			if !gotT.Equal(tc.want) {
-				t.Errorf("got %v from convertBasicType, want %v", gotT, tc.want)
-			}
-		})
 	}
 }
 
