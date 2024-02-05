@@ -59,10 +59,9 @@ const (
 
 // InactiveTransactionRemovalOptions has configurations for action on long-running transactions.
 type InactiveTransactionRemovalOptions struct {
-	mu sync.Mutex
-	// actionOnInactiveTransaction is the configuration to choose action for inactive transactions.
+	// ActionOnInactiveTransaction is the configuration to choose action for inactive transactions.
 	// It can be one of Warn, Close, WarnAndClose.
-	actionOnInactiveTransaction ActionOnInactiveTransactionKind
+	ActionOnInactiveTransaction ActionOnInactiveTransactionKind
 	// long-running transactions will be cleaned up if utilisation is
 	// greater than the below value.
 	usedSessionsRatioThreshold float64
@@ -74,9 +73,6 @@ type InactiveTransactionRemovalOptions struct {
 	// variable that keeps track of the last execution time when inactive transactions
 	// were removed by the maintainer task.
 	lastExecutionTime time.Time
-	// indicates the number of leaked sessions removed from the session pool.
-	// This is valid only when ActionOnInactiveTransaction is WarnAndClose or ActionOnInactiveTransaction is Close.
-	numOfLeakedSessionsRemoved uint64
 }
 
 // sessionHandle is an interface for transactions to access Cloud Spanner
@@ -509,7 +505,7 @@ var DefaultSessionPoolConfig = SessionPoolConfig{
 	HealthCheckWorkers:  10,
 	HealthCheckInterval: healthCheckIntervalMins * time.Minute,
 	InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-		actionOnInactiveTransaction: NoAction, // Make default to Warn from NoAction later
+		ActionOnInactiveTransaction: Warn,
 		executionFrequency:          2 * time.Minute,
 		idleTimeThreshold:           60 * time.Minute,
 		usedSessionsRatioThreshold:  0.95,
@@ -613,6 +609,10 @@ type sessionPool struct {
 
 	// tagMap is a map of all tags that are associated with the emitted metrics.
 	tagMap *tag.Map
+
+	// indicates the number of leaked sessions removed from the session pool.
+	// This is valid only when ActionOnInactiveTransaction is WarnAndClose or ActionOnInactiveTransaction is Close in InactiveTransactionRemovalOptions.
+	numOfLeakedSessionsRemoved uint64
 }
 
 // newSessionPool creates a new session pool.
@@ -635,8 +635,8 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	if config.healthCheckSampleInterval == 0 {
 		config.healthCheckSampleInterval = time.Minute
 	}
-	if config.actionOnInactiveTransaction == actionUnspecified {
-		config.actionOnInactiveTransaction = DefaultSessionPoolConfig.actionOnInactiveTransaction
+	if config.ActionOnInactiveTransaction == actionUnspecified {
+		config.ActionOnInactiveTransaction = DefaultSessionPoolConfig.ActionOnInactiveTransaction
 	}
 	if config.idleTimeThreshold == 0 {
 		config.idleTimeThreshold = DefaultSessionPoolConfig.idleTimeThreshold
@@ -724,17 +724,23 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 		for element != nil {
 			sh := element.Value.(*sessionHandle)
 			sh.mu.Lock()
+			if sh.session == nil {
+				// sessionHandle has already been recycled/destroyed.
+				sh.mu.Unlock()
+				element = element.Next()
+				continue
+			}
 			diff := time.Now().Sub(sh.lastUseTime)
 			if !sh.eligibleForLongRunning && diff.Seconds() >= p.idleTimeThreshold.Seconds() {
-				if (p.actionOnInactiveTransaction == Warn || p.actionOnInactiveTransaction == WarnAndClose) && !sh.isSessionLeakLogged {
-					if p.actionOnInactiveTransaction == Warn {
+				if (p.ActionOnInactiveTransaction == Warn || p.ActionOnInactiveTransaction == WarnAndClose) && !sh.isSessionLeakLogged {
+					if p.ActionOnInactiveTransaction == Warn {
 						if sh.stack != nil {
 							logf(p.sc.logger, "session %s checked out of pool at %s is long running due to possible session leak for goroutine: \n%s", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339), sh.stack)
 						} else {
 							logf(p.sc.logger, "session %s checked out of pool at %s is long running due to possible session leak for goroutine: \nEnable SessionPoolConfig.TrackSessionHandles to get stack trace associated with the session", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339))
 						}
 						sh.isSessionLeakLogged = true
-					} else if p.actionOnInactiveTransaction == WarnAndClose {
+					} else if p.ActionOnInactiveTransaction == WarnAndClose {
 						if sh.stack != nil {
 							logf(p.sc.logger, "session %s checked out of pool at %s is long running and will be removed due to possible session leak for goroutine: \n%s", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339), sh.stack)
 						} else {
@@ -742,7 +748,7 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 						}
 					}
 				}
-				if p.actionOnInactiveTransaction == WarnAndClose || p.actionOnInactiveTransaction == Close {
+				if p.ActionOnInactiveTransaction == WarnAndClose || p.ActionOnInactiveTransaction == Close {
 					longRunningSessions = append(longRunningSessions, sh)
 				}
 			}
@@ -760,15 +766,17 @@ func (p *sessionPool) removeLongRunningSessions() {
 	p.mu.Unlock()
 
 	// destroy long-running sessions
-	if p.actionOnInactiveTransaction == WarnAndClose || p.actionOnInactiveTransaction == Close {
+	if p.ActionOnInactiveTransaction == WarnAndClose || p.ActionOnInactiveTransaction == Close {
+		var leakedSessionsRemovedCount uint64
 		for _, sh := range longRunningSessions {
 			// removes inner session out of the pool to reduce the probability of two processes trying
 			// to use the same session at the same time.
 			sh.destroy()
-			p.InactiveTransactionRemovalOptions.mu.Lock()
-			p.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved++
-			p.InactiveTransactionRemovalOptions.mu.Unlock()
+			leakedSessionsRemovedCount++
 		}
+		p.mu.Lock()
+		p.numOfLeakedSessionsRemoved += leakedSessionsRemovedCount
+		p.mu.Unlock()
 	}
 }
 
@@ -893,7 +901,7 @@ var errGetSessionTimeout = spannerErrorf(codes.Canceled, "timeout / context canc
 // sessions being checked out of the pool.
 func (p *sessionPool) newSessionHandle(s *session) (sh *sessionHandle) {
 	sh = &sessionHandle{session: s, checkoutTime: time.Now(), lastUseTime: time.Now()}
-	if p.TrackSessionHandles || p.actionOnInactiveTransaction == Warn || p.actionOnInactiveTransaction == WarnAndClose || p.actionOnInactiveTransaction == Close {
+	if p.TrackSessionHandles || p.ActionOnInactiveTransaction == Warn || p.ActionOnInactiveTransaction == WarnAndClose || p.ActionOnInactiveTransaction == Close {
 		p.mu.Lock()
 		sh.trackedSessionHandle = p.trackedSessionHandles.PushBack(sh)
 		p.mu.Unlock()
@@ -1511,7 +1519,7 @@ func (hc *healthChecker) maintainer() {
 
 		// task to remove or log sessions which are unexpectedly long-running
 		if now.After(hc.pool.InactiveTransactionRemovalOptions.lastExecutionTime.Add(hc.pool.executionFrequency)) {
-			if hc.pool.actionOnInactiveTransaction == Warn || hc.pool.actionOnInactiveTransaction == WarnAndClose || hc.pool.actionOnInactiveTransaction == Close {
+			if hc.pool.ActionOnInactiveTransaction == Warn || hc.pool.ActionOnInactiveTransaction == WarnAndClose || hc.pool.ActionOnInactiveTransaction == Close {
 				hc.pool.removeLongRunningSessions()
 			}
 			hc.pool.InactiveTransactionRemovalOptions.lastExecutionTime = now

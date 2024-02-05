@@ -1,5 +1,33 @@
 # Changes
 
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.2...datacatalog/v1.19.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **datacatalog:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.1...datacatalog/v1.19.2) (2024-01-11)
+
+
+### Bug Fixes
+
+* **datacatalog:** Change field behavior of the property "name" to IDENTIFIER ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.0...datacatalog/v1.19.1) (2024-01-08)
+
+
+### Documentation
+
+* **datacatalog:** Change field behavior of the property "name" to IDENTIFIER ([bd30055](https://github.com/googleapis/google-cloud-go/commit/bd3005532fbffa9894b11149e9693b7c33227d79))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.3...datacatalog/v1.19.0) (2023-11-09)
+
+
+### Features
+
+* **datacatalog/lineage:** Add open lineage support ([#8974](https://github.com/googleapis/google-cloud-go/issues/8974)) ([1a16cbf](https://github.com/googleapis/google-cloud-go/commit/1a16cbf260bb673e07a05e1014868b236e510499))
+
 ## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.2...datacatalog/v1.18.3) (2023-11-01)
 
 

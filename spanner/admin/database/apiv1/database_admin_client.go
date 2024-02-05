@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -77,7 +77,9 @@ type DatabaseAdminCallOptions struct {
 func defaultDatabaseAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("spanner.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("spanner.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("spanner.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -1034,7 +1036,9 @@ func NewDatabaseAdminRESTClient(ctx context.Context, opts ...option.ClientOption
 func defaultDatabaseAdminRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://spanner.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://spanner.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://spanner.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

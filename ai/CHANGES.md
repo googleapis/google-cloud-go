@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.3.2](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.1...ai/v0.3.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **ai/generativelanguage:** Fix content.proto's Schema - `type` should be required ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+* **ai:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.0...ai/v0.3.1) (2024-01-22)
+
+
+### Documentation
+
+* **ai/generativelanguage:** Fixed minor documentation typos for field `function_declarations` in message `.google.ai.generativelanguage.v1beta.Tool` ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.2.0...ai/v0.3.0) (2023-12-13)
+
+
+### Features
+
+* **ai:** Expose ability to set headers ([#9154](https://github.com/googleapis/google-cloud-go/issues/9154)) ([40f2d6a](https://github.com/googleapis/google-cloud-go/commit/40f2d6aadffb43f4661badf83274c84f9908f7c1))
+
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.1.4...ai/v0.2.0) (2023-12-11)
+
+
+### Features
+
+* **ai/generativelanguage:** Add v1beta, adds GenerativeService and RetrievalService ([29effe6](https://github.com/googleapis/google-cloud-go/commit/29effe600e16f24a127a1422ec04263c4f7a600a))
+* **ai:** New clients ([#9126](https://github.com/googleapis/google-cloud-go/issues/9126)) ([c09249e](https://github.com/googleapis/google-cloud-go/commit/c09249e16b01da2b441337416115af7931892aaa))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/ai/v0.1.3...ai/v0.1.4) (2023-11-01)
 
 

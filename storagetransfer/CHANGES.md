@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.4](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.3...storagetransfer/v1.10.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.10.3](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.2...storagetransfer/v1.10.3) (2023-11-01)
 
 

@@ -53,16 +53,16 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 	}
 
 	sh, err := c.idleSessions.take(ctx)
-	// Mark isLongRunningTransaction to true, as the session in case of partitioned dml can be long-running
-	sh.mu.Lock()
-	sh.eligibleForLongRunning = true
-	sh.mu.Unlock()
 	if err != nil {
 		return 0, ToSpannerError(err)
 	}
 	if sh != nil {
 		defer sh.recycle()
 	}
+	// Mark isLongRunningTransaction to true, as the session in case of partitioned dml can be long-running
+	sh.mu.Lock()
+	sh.eligibleForLongRunning = true
+	sh.mu.Unlock()
 
 	// Create the parameters and the SQL request, but without a transaction.
 	// The transaction reference will be added by the executePdml method.

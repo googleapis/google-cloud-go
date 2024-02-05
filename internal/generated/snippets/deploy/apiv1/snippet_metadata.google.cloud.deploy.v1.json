@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/deploy/apiv1",
-    "version": "1.14.2",
+    "version": "1.17.1",
     "language": "GO",
     "apis": [
       {
@@ -333,6 +333,52 @@
       ]
     },
     {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_CreateCustomTargetType_sync",
+      "title": "clouddeploy CreateCustomTargetType Sample",
+      "description": "CreateCustomTargetType creates a new CustomTargetType in a given project and location.",
+      "file": "CloudDeployClient/CreateCustomTargetType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCustomTargetType",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.CreateCustomTargetType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.CreateCustomTargetTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateCustomTargetTypeOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "CreateCustomTargetType",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.CreateCustomTargetType",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "clouddeploy_v1_generated_CloudDeploy_CreateDeliveryPipeline_sync",
       "title": "clouddeploy CreateDeliveryPipeline Sample",
       "description": "CreateDeliveryPipeline creates a new DeliveryPipeline in a given project and location.",
@@ -547,6 +593,52 @@
         "method": {
           "shortName": "DeleteAutomation",
           "fullName": "google.cloud.deploy.v1.CloudDeploy.DeleteAutomation",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_DeleteCustomTargetType_sync",
+      "title": "clouddeploy DeleteCustomTargetType Sample",
+      "description": "DeleteCustomTargetType deletes a single CustomTargetType.",
+      "file": "CloudDeployClient/DeleteCustomTargetType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCustomTargetType",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.DeleteCustomTargetType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.DeleteCustomTargetTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteCustomTargetTypeOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "DeleteCustomTargetType",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.DeleteCustomTargetType",
           "service": {
             "shortName": "CloudDeploy",
             "fullName": "google.cloud.deploy.v1.CloudDeploy"
@@ -822,6 +914,52 @@
         "method": {
           "shortName": "GetConfig",
           "fullName": "google.cloud.deploy.v1.CloudDeploy.GetConfig",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_GetCustomTargetType_sync",
+      "title": "clouddeploy GetCustomTargetType Sample",
+      "description": "GetCustomTargetType gets details of a single CustomTargetType.",
+      "file": "CloudDeployClient/GetCustomTargetType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCustomTargetType",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.GetCustomTargetType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.GetCustomTargetTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*deploypb.CustomTargetType",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "GetCustomTargetType",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.GetCustomTargetType",
           "service": {
             "shortName": "CloudDeploy",
             "fullName": "google.cloud.deploy.v1.CloudDeploy"
@@ -1328,6 +1466,52 @@
         "method": {
           "shortName": "ListAutomations",
           "fullName": "google.cloud.deploy.v1.CloudDeploy.ListAutomations",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_ListCustomTargetTypes_sync",
+      "title": "clouddeploy ListCustomTargetTypes Sample",
+      "description": "ListCustomTargetTypes lists CustomTargetTypes in a given project and location.",
+      "file": "CloudDeployClient/ListCustomTargetTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCustomTargetTypes",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.ListCustomTargetTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.ListCustomTargetTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CustomTargetTypeIterator",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "ListCustomTargetTypes",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.ListCustomTargetTypes",
           "service": {
             "shortName": "CloudDeploy",
             "fullName": "google.cloud.deploy.v1.CloudDeploy"
@@ -1926,6 +2110,52 @@
         "method": {
           "shortName": "UpdateAutomation",
           "fullName": "google.cloud.deploy.v1.CloudDeploy.UpdateAutomation",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_UpdateCustomTargetType_sync",
+      "title": "clouddeploy UpdateCustomTargetType Sample",
+      "description": "UpdateCustomTargetType updates a single CustomTargetType.",
+      "file": "CloudDeployClient/UpdateCustomTargetType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCustomTargetType",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.UpdateCustomTargetType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.UpdateCustomTargetTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateCustomTargetTypeOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "UpdateCustomTargetType",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.UpdateCustomTargetType",
           "service": {
             "shortName": "CloudDeploy",
             "fullName": "google.cloud.deploy.v1.CloudDeploy"

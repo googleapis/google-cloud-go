@@ -1,5 +1,19 @@
 # Changes
 
+## [1.24.4](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.3...securitycenter/v1.24.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **securitycenter:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.24.3](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.2...securitycenter/v1.24.3) (2023-11-27)
+
+
+### Documentation
+
+* **securitycenter:** Modify documentation of SimulateSecurityHealthAnalyticsCustomModuleRequest ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+
 ## [1.24.2](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.1...securitycenter/v1.24.2) (2023-11-01)
 
 

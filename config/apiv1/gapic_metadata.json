@@ -20,6 +20,11 @@
                 "CreateDeployment"
               ]
             },
+            "CreatePreview": {
+              "methods": [
+                "CreatePreview"
+              ]
+            },
             "DeleteDeployment": {
               "methods": [
                 "DeleteDeployment"
@@ -28,6 +33,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeletePreview": {
+              "methods": [
+                "DeletePreview"
               ]
             },
             "DeleteStatefile": {
@@ -43,6 +53,11 @@
             "ExportLockInfo": {
               "methods": [
                 "ExportLockInfo"
+              ]
+            },
+            "ExportPreviewResult": {
+              "methods": [
+                "ExportPreviewResult"
               ]
             },
             "ExportRevisionStatefile": {
@@ -68,6 +83,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetPreview": {
+              "methods": [
+                "GetPreview"
               ]
             },
             "GetResource": {
@@ -98,6 +118,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListPreviews": {
+              "methods": [
+                "ListPreviews"
               ]
             },
             "ListResources": {
@@ -150,6 +175,11 @@
                 "CreateDeployment"
               ]
             },
+            "CreatePreview": {
+              "methods": [
+                "CreatePreview"
+              ]
+            },
             "DeleteDeployment": {
               "methods": [
                 "DeleteDeployment"
@@ -158,6 +188,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeletePreview": {
+              "methods": [
+                "DeletePreview"
               ]
             },
             "DeleteStatefile": {
@@ -173,6 +208,11 @@
             "ExportLockInfo": {
               "methods": [
                 "ExportLockInfo"
+              ]
+            },
+            "ExportPreviewResult": {
+              "methods": [
+                "ExportPreviewResult"
               ]
             },
             "ExportRevisionStatefile": {
@@ -198,6 +238,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetPreview": {
+              "methods": [
+                "GetPreview"
               ]
             },
             "GetResource": {
@@ -228,6 +273,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListPreviews": {
+              "methods": [
+                "ListPreviews"
               ]
             },
             "ListResources": {

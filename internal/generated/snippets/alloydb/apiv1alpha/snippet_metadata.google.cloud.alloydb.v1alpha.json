@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1alpha",
-    "version": "1.6.3",
+    "version": "1.8.1",
     "language": "GO",
     "apis": [
       {
@@ -1143,6 +1143,52 @@
         "method": {
           "shortName": "ListClusters",
           "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin.ListClusters",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1alpha_generated_AlloyDBAdmin_ListDatabases_sync",
+      "title": "alloydb ListDatabases Sample",
+      "description": "ListDatabases lists Databases in a given project and location.",
+      "file": "AlloyDBAdminClient/ListDatabases/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatabases",
+        "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdminClient.ListDatabases",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.ListDatabasesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatabaseIterator",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "ListDatabases",
+          "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin.ListDatabases",
           "service": {
             "shortName": "AlloyDBAdmin",
             "fullName": "google.cloud.alloydb.v1alpha.AlloyDBAdmin"

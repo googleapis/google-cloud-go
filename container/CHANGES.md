@@ -1,5 +1,34 @@
 # Changes
 
+## [1.30.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.30.0...container/v1.30.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **container:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.29.0...container/v1.30.0) (2024-01-22)
+
+
+### Features
+
+* **container:** Add fields desired_in_transit_encryption_config and in_transit_encryption_config ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.28.0...container/v1.29.0) (2023-11-27)
+
+
+### Features
+
+* **container:** Add enable_relay field to advanced_datapath_observability_config ([#9037](https://github.com/googleapis/google-cloud-go/issues/9037)) ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+* **container:** Add Provisioning Request API ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.27.1...container/v1.28.0) (2023-11-09)
+
+
+### Features
+
+* **container:** Added EnterpriseConfig ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
 ## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.27.0...container/v1.27.1) (2023-11-01)
 
 

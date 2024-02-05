@@ -601,13 +601,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	}
 
 	if err != nil {
-		log.Printf("error from Table.ReadRows: %v\n", err)
-		if st, ok := stat.FromError(err); ok {
-			res.Status = &statpb.Status{
-				Code:    st.Proto().Code,
-				Message: st.Message(),
-			}
-		}
+		res.Status = statusFromError(err)
 		return res, nil
 	}
 
@@ -895,7 +889,8 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 
 	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
 	if err != nil {
-		return nil, err
+		res.Status = statusFromError(err)
+		return res, nil
 	}
 
 	rp, err := rowToProto(r)

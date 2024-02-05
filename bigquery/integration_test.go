@@ -2482,6 +2482,22 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 						Type: "TIMESTAMP",
 					},
 					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format(dateTimeFormat),
+					},
+				},
+			},
+			[]Value{ts},
+			ts,
+		},
+		{
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "TIMESTAMP",
+					},
+					ParameterValue: &bq.QueryParameterValue{
 						Value: ts.Format(time.RFC3339),
 					},
 				},

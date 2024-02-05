@@ -54,6 +54,7 @@ type txReadEnv interface {
 	// release should be called at the end of every transactional read to deal
 	// with session recycling.
 	release(error)
+	setSessionEligibilityForLongRunning(sh *sessionHandle)
 }
 
 // txReadOnly contains methods for doing transactional reads.
@@ -169,17 +170,22 @@ type ReadOptions struct {
 	// If this is for a partitioned read and DataBoostEnabled field is set to true, the request will be executed
 	// via Spanner independent compute resources. Setting this option for regular read operations has no effect.
 	DataBoostEnabled bool
+
+	// ReadOptions option used to set the DirectedReadOptions for all ReadRequests which indicate
+	// which replicas or regions should be used for running read operations.
+	DirectedReadOptions *sppb.DirectedReadOptions
 }
 
 // merge combines two ReadOptions that the input parameter will have higher
 // order of precedence.
 func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	merged := ReadOptions{
-		Index:            ro.Index,
-		Limit:            ro.Limit,
-		Priority:         ro.Priority,
-		RequestTag:       ro.RequestTag,
-		DataBoostEnabled: ro.DataBoostEnabled,
+		Index:               ro.Index,
+		Limit:               ro.Limit,
+		Priority:            ro.Priority,
+		RequestTag:          ro.RequestTag,
+		DataBoostEnabled:    ro.DataBoostEnabled,
+		DirectedReadOptions: ro.DirectedReadOptions,
 	}
 	if opts.Index != "" {
 		merged.Index = opts.Index
@@ -195,6 +201,9 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	}
 	if opts.DataBoostEnabled {
 		merged.DataBoostEnabled = opts.DataBoostEnabled
+	}
+	if opts.DirectedReadOptions != nil {
+		merged.DirectedReadOptions = opts.DirectedReadOptions
 	}
 	return merged
 }
@@ -227,6 +236,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	prio := t.ro.Priority
 	requestTag := t.ro.RequestTag
 	dataBoostEnabled := t.ro.DataBoostEnabled
+	directedReadOptions := t.ro.DirectedReadOptions
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
@@ -236,6 +246,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		requestTag = opts.RequestTag
 		if opts.DataBoostEnabled {
 			dataBoostEnabled = opts.DataBoostEnabled
+		}
+		if opts.DirectedReadOptions != nil {
+			directedReadOptions = opts.DirectedReadOptions
 		}
 	}
 	var setTransactionID func(transactionID)
@@ -253,16 +266,17 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			}
 			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
-					Session:          t.sh.getID(),
-					Transaction:      t.getTransactionSelector(),
-					Table:            table,
-					Index:            index,
-					Columns:          columns,
-					KeySet:           kset,
-					ResumeToken:      resumeToken,
-					Limit:            int64(limit),
-					RequestOptions:   createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
-					DataBoostEnabled: dataBoostEnabled,
+					Session:             t.sh.getID(),
+					Transaction:         t.getTransactionSelector(),
+					Table:               table,
+					Index:               index,
+					Columns:             columns,
+					KeySet:              kset,
+					ResumeToken:         resumeToken,
+					Limit:               int64(limit),
+					RequestOptions:      createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					DataBoostEnabled:    dataBoostEnabled,
+					DirectedReadOptions: directedReadOptions,
 				})
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -377,17 +391,22 @@ type QueryOptions struct {
 	// If this is for a partitioned query and DataBoostEnabled field is set to true, the request will be executed
 	// via Spanner independent compute resources. Setting this option for regular query operations has no effect.
 	DataBoostEnabled bool
+
+	// QueryOptions option used to set the DirectedReadOptions for all ExecuteSqlRequests which indicate
+	// which replicas or regions should be used for executing queries.
+	DirectedReadOptions *sppb.DirectedReadOptions
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:             qo.Mode,
-		Options:          &sppb.ExecuteSqlRequest_QueryOptions{},
-		RequestTag:       qo.RequestTag,
-		Priority:         qo.Priority,
-		DataBoostEnabled: qo.DataBoostEnabled,
+		Mode:                qo.Mode,
+		Options:             &sppb.ExecuteSqlRequest_QueryOptions{},
+		RequestTag:          qo.RequestTag,
+		Priority:            qo.Priority,
+		DataBoostEnabled:    qo.DataBoostEnabled,
+		DirectedReadOptions: qo.DirectedReadOptions,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -400,6 +419,9 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	}
 	if opts.DataBoostEnabled {
 		merged.DataBoostEnabled = opts.DataBoostEnabled
+	}
+	if opts.DirectedReadOptions != nil {
+		merged.DirectedReadOptions = opts.DirectedReadOptions
 	}
 	proto.Merge(merged.Options, qo.Options)
 	proto.Merge(merged.Options, opts.Options)
@@ -429,9 +451,10 @@ func createRequestOptions(prio sppb.RequestOptions_Priority, requestTag, transac
 func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_NORMAL
 	return t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 }
 
@@ -448,9 +471,10 @@ func (t *txReadOnly) QueryWithOptions(ctx context.Context, statement Statement, 
 func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_PROFILE
 	return t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 }
 
@@ -458,9 +482,10 @@ func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *R
 func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sppb.QueryPlan, error) {
 	mode := sppb.ExecuteSqlRequest_PLAN
 	iter := t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 	defer iter.Stop()
 	for {
@@ -543,16 +568,17 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		mode = *options.Mode
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:          sid,
-		Transaction:      ts,
-		Sql:              stmt.SQL,
-		QueryMode:        mode,
-		Seqno:            atomic.AddInt64(&t.sequenceNumber, 1),
-		Params:           params,
-		ParamTypes:       paramTypes,
-		QueryOptions:     options.Options,
-		RequestOptions:   createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
-		DataBoostEnabled: options.DataBoostEnabled,
+		Session:             sid,
+		Transaction:         ts,
+		Sql:                 stmt.SQL,
+		QueryMode:           mode,
+		Seqno:               atomic.AddInt64(&t.sequenceNumber, 1),
+		Params:              params,
+		ParamTypes:          paramTypes,
+		QueryOptions:        options.Options,
+		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		DataBoostEnabled:    options.DataBoostEnabled,
+		DirectedReadOptions: options.DirectedReadOptions,
 	}
 	return req, sh, nil
 }
@@ -676,10 +702,10 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
 		sh, err = t.sp.take(ctx)
-		sh.eligibleForLongRunning = t.isLongRunningTransaction
 		if err != nil {
 			return err
 		}
+		t.setSessionEligibilityForLongRunning(sh)
 		sh.updateLastUseTime()
 		var md metadata.MD
 		res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.BeginTransactionRequest{
@@ -937,6 +963,16 @@ func (t *ReadOnlyTransaction) WithTimestampBound(tb TimestampBound) *ReadOnlyTra
 	return t
 }
 
+func (t *ReadOnlyTransaction) setSessionEligibilityForLongRunning(sh *sessionHandle) {
+	if t != nil && sh != nil {
+		sh.mu.Lock()
+		t.mu.Lock()
+		sh.eligibleForLongRunning = t.isLongRunningTransaction
+		t.mu.Unlock()
+		sh.mu.Unlock()
+	}
+}
+
 // ReadWriteTransaction provides a locking read-write transaction.
 //
 // This type of transaction is the only way to write data into Cloud Spanner;
@@ -1136,13 +1172,6 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	if err != nil {
 		return nil, err
 	}
-	// mark transaction and session to be eligible for long-running
-	t.mu.Lock()
-	t.isLongRunningTransaction = true
-	t.mu.Unlock()
-	t.sh.mu.Lock()
-	t.sh.eligibleForLongRunning = true
-	t.sh.mu.Unlock()
 
 	// Cloud Spanner will return "Session not found" on bad sessions.
 	sid := sh.getID()
@@ -1150,6 +1179,12 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		// Might happen if transaction is closed in the middle of a API call.
 		return nil, errSessionClosed(sh)
 	}
+
+	// mark transaction and session to be eligible for long-running
+	t.mu.Lock()
+	t.isLongRunningTransaction = true
+	t.mu.Unlock()
+	t.setSessionEligibilityForLongRunning(sh)
 
 	var sppbStmts []*sppb.ExecuteBatchDmlRequest_Statement
 	for _, st := range stmts {
@@ -1339,6 +1374,16 @@ func (t *ReadWriteTransaction) release(err error) {
 	}
 }
 
+func (t *ReadWriteTransaction) setSessionEligibilityForLongRunning(sh *sessionHandle) {
+	if t != nil && sh != nil {
+		sh.mu.Lock()
+		t.mu.Lock()
+		sh.eligibleForLongRunning = t.isLongRunningTransaction
+		t.mu.Unlock()
+		sh.mu.Unlock()
+	}
+}
+
 func beginTransaction(ctx context.Context, sid string, client *vkit.Client, opts TransactionOptions) (transactionID, error) {
 	res, err := client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: sid,
@@ -1411,14 +1456,8 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-
-			sh.mu.Lock()
-			t.mu.Lock()
-			// for batch update operations, isLongRunningTransaction will be true
-			sh.eligibleForLongRunning = t.isLongRunningTransaction
-			t.mu.Unlock()
-			sh.mu.Unlock()
-
+			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
+			t.setSessionEligibilityForLongRunning(sh)
 			continue
 		} else {
 			err = ToSpannerError(err)
