@@ -43,7 +43,7 @@ type transactionSettings struct {
 	// If there are no read operations on transaction, BeginTransaction RPC call is made
 	// before rollback or commit
 	// Currently, this setting is set but unused
-	// TODO: Use this setting
+	// TODO: b/291258189 - Use this setting
 	beginLater bool
 }
 
@@ -110,7 +110,7 @@ func (readOnly) apply(s *transactionSettings) {
 
 // BeginLater is a TransactionOption that can be used to improve transaction performance
 // Currently, it is a no-op
-// TODO: Add implementation
+// TODO: b/291258189 - Add implementation
 var BeginLater TransactionOption
 
 type beginLater struct{}
