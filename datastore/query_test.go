@@ -763,8 +763,8 @@ func TestReadOptions(t *testing.T) {
 	}
 	// Test errors.
 	for _, q := range []*Query{
-		NewQuery("").Transaction(&Transaction{id: nil}),
-		NewQuery("").Transaction(&Transaction{id: tid}).EventualConsistency(),
+		NewQuery("").Transaction(&Transaction{id: nil, state: transactionStateExpired}),
+		NewQuery("").Transaction(&Transaction{id: tid, state: transactionStateInProgress}).EventualConsistency(),
 	} {
 		req := &pb.RunQueryRequest{}
 		if err := q.toRunQueryRequest(req); err == nil {
