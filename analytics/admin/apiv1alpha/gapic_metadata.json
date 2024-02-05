@@ -75,6 +75,11 @@
                 "CreateAudience"
               ]
             },
+            "CreateCalculatedMetric": {
+              "methods": [
+                "CreateCalculatedMetric"
+              ]
+            },
             "CreateChannelGroup": {
               "methods": [
                 "CreateChannelGroup"
@@ -188,6 +193,11 @@
             "DeleteAdSenseLink": {
               "methods": [
                 "DeleteAdSenseLink"
+              ]
+            },
+            "DeleteCalculatedMetric": {
+              "methods": [
+                "DeleteCalculatedMetric"
               ]
             },
             "DeleteChannelGroup": {
@@ -310,6 +320,11 @@
                 "GetBigQueryLink"
               ]
             },
+            "GetCalculatedMetric": {
+              "methods": [
+                "GetCalculatedMetric"
+              ]
+            },
             "GetChannelGroup": {
               "methods": [
                 "GetChannelGroup"
@@ -410,6 +425,11 @@
                 "GetSearchAds360Link"
               ]
             },
+            "GetSubpropertyEventFilter": {
+              "methods": [
+                "GetSubpropertyEventFilter"
+              ]
+            },
             "ListAccessBindings": {
               "methods": [
                 "ListAccessBindings"
@@ -438,6 +458,11 @@
             "ListBigQueryLinks": {
               "methods": [
                 "ListBigQueryLinks"
+              ]
+            },
+            "ListCalculatedMetrics": {
+              "methods": [
+                "ListCalculatedMetrics"
               ]
             },
             "ListChannelGroups": {
@@ -525,6 +550,11 @@
                 "ListSearchAds360Links"
               ]
             },
+            "ListSubpropertyEventFilters": {
+              "methods": [
+                "ListSubpropertyEventFilters"
+              ]
+            },
             "ProvisionAccountTicket": {
               "methods": [
                 "ProvisionAccountTicket"
@@ -563,6 +593,11 @@
             "UpdateAudience": {
               "methods": [
                 "UpdateAudience"
+              ]
+            },
+            "UpdateCalculatedMetric": {
+              "methods": [
+                "UpdateCalculatedMetric"
               ]
             },
             "UpdateChannelGroup": {
@@ -648,6 +683,11 @@
             "UpdateSearchAds360Link": {
               "methods": [
                 "UpdateSearchAds360Link"
+              ]
+            },
+            "UpdateSubpropertyEventFilter": {
+              "methods": [
+                "UpdateSubpropertyEventFilter"
               ]
             }
           }
@@ -720,6 +760,11 @@
                 "CreateAudience"
               ]
             },
+            "CreateCalculatedMetric": {
+              "methods": [
+                "CreateCalculatedMetric"
+              ]
+            },
             "CreateChannelGroup": {
               "methods": [
                 "CreateChannelGroup"
@@ -833,6 +878,11 @@
             "DeleteAdSenseLink": {
               "methods": [
                 "DeleteAdSenseLink"
+              ]
+            },
+            "DeleteCalculatedMetric": {
+              "methods": [
+                "DeleteCalculatedMetric"
               ]
             },
             "DeleteChannelGroup": {
@@ -955,6 +1005,11 @@
                 "GetBigQueryLink"
               ]
             },
+            "GetCalculatedMetric": {
+              "methods": [
+                "GetCalculatedMetric"
+              ]
+            },
             "GetChannelGroup": {
               "methods": [
                 "GetChannelGroup"
@@ -1055,6 +1110,11 @@
                 "GetSearchAds360Link"
               ]
             },
+            "GetSubpropertyEventFilter": {
+              "methods": [
+                "GetSubpropertyEventFilter"
+              ]
+            },
             "ListAccessBindings": {
               "methods": [
                 "ListAccessBindings"
@@ -1083,6 +1143,11 @@
             "ListBigQueryLinks": {
               "methods": [
                 "ListBigQueryLinks"
+              ]
+            },
+            "ListCalculatedMetrics": {
+              "methods": [
+                "ListCalculatedMetrics"
               ]
             },
             "ListChannelGroups": {
@@ -1170,6 +1235,11 @@
                 "ListSearchAds360Links"
               ]
             },
+            "ListSubpropertyEventFilters": {
+              "methods": [
+                "ListSubpropertyEventFilters"
+              ]
+            },
             "ProvisionAccountTicket": {
               "methods": [
                 "ProvisionAccountTicket"
@@ -1208,6 +1278,11 @@
             "UpdateAudience": {
               "methods": [
                 "UpdateAudience"
+              ]
+            },
+            "UpdateCalculatedMetric": {
+              "methods": [
+                "UpdateCalculatedMetric"
               ]
             },
             "UpdateChannelGroup": {
@@ -1293,6 +1368,11 @@
             "UpdateSearchAds360Link": {
               "methods": [
                 "UpdateSearchAds360Link"
+              ]
+            },
+            "UpdateSubpropertyEventFilter": {
+              "methods": [
+                "UpdateSubpropertyEventFilter"
               ]
             }
           }

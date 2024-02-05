@@ -811,6 +811,10 @@ func TestIntegration_AggregationQueriesInTransaction(t *testing.T) {
 			if readTime.IsZero() {
 				// Use current time as read time if read time is not specified in test case
 				readTime = time.Now().Truncate(time.Microsecond)
+
+				// Read time is truncated to microseconds. If immediately used in NewTransaction call,
+				// it leads to "read_time cannot be in the future" error
+				time.Sleep(time.Second)
 			}
 
 			tx, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
@@ -1218,6 +1222,21 @@ func TestIntegration_Projection(t *testing.T) {
 			0,
 		},
 	})
+}
+
+func TestIntegration_ReserveIDs(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	keys := make([]*Key, 3)
+	for i := range keys {
+		keys[i] = NameKey("ReserveIDs", "id-"+fmt.Sprint(i), nil)
+	}
+	err := client.ReserveIDs(ctx, keys)
+	if err != nil {
+		t.Fatalf("ReserveIDs failed: %v", err)
+	}
 }
 
 func TestIntegration_AllocateIDs(t *testing.T) {

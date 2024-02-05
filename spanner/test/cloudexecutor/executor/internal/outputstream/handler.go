@@ -19,8 +19,8 @@ import (
 
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
+	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/utility"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -125,8 +125,6 @@ func (s *OutcomeSender) FinishWithTransactionRestarted() error {
 // FinishWithError sends the last outcome with given error status.
 func (s *OutcomeSender) FinishWithError(err error) error {
 	s.buildOutcome()
-	//TODO(harsha:oct10) uncomment below line and comment s.partialOutcome.Status = errToStatus(err)
-	//s.partialOutcome.Status = &status.Status{Code: int32(gstatus.Code(err)), Message: err.Error()}
 	s.partialOutcome.Status = utility.ErrToStatus(err)
 	return s.flush()
 }

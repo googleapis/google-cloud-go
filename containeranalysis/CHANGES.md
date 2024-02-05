@@ -1,5 +1,12 @@
 # Changes
 
+## [0.11.4](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.3...containeranalysis/v0.11.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.11.3](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.2...containeranalysis/v0.11.3) (2023-11-01)
 
 

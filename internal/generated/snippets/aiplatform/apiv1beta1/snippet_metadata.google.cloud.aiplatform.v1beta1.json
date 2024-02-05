@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.52.0",
+    "version": "1.58.2",
     "language": "GO",
     "apis": [
       {
@@ -10977,6 +10977,556 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "LlmUtilityClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_ComputeTokens_sync",
+      "title": "aiplatform ComputeTokens Sample",
+      "description": "ComputeTokens return a list of tokens based on the input text.",
+      "file": "LlmUtilityClient/ComputeTokens/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ComputeTokens",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.ComputeTokens",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ComputeTokensRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.ComputeTokensResponse",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "ComputeTokens",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService.ComputeTokens",
+          "service": {
+            "shortName": "LlmUtilityService",
+            "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_CountTokens_sync",
+      "title": "aiplatform CountTokens Sample",
+      "description": "CountTokens perform a token counting.",
+      "file": "LlmUtilityClient/CountTokens/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CountTokens",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.CountTokens",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CountTokensRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.CountTokensResponse",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "CountTokens",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService.CountTokens",
+          "service": {
+            "shortName": "LlmUtilityService",
+            "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "LlmUtilityClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "LlmUtilityClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "LlmUtilityClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "LlmUtilityClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "LlmUtilityClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "LlmUtilityClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "LlmUtilityClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "LlmUtilityClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "LlmUtilityClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "LlmUtilityClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_MatchService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -16531,6 +17081,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_PipelineService_BatchDeletePipelineJobs_sync",
+      "title": "aiplatform BatchDeletePipelineJobs Sample",
+      "description": "BatchDeletePipelineJobs batch deletes PipelineJobs\nThe Operation is atomic. If it fails, none of the PipelineJobs are deleted.\nIf it succeeds, all of the PipelineJobs are deleted.",
+      "file": "PipelineClient/BatchDeletePipelineJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeletePipelineJobs",
+        "fullName": "google.cloud.aiplatform.v1beta1.PipelineClient.BatchDeletePipelineJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchDeletePipelineJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchDeletePipelineJobsOperation",
+        "client": {
+          "shortName": "PipelineClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PipelineClient"
+        },
+        "method": {
+          "shortName": "BatchDeletePipelineJobs",
+          "fullName": "google.cloud.aiplatform.v1beta1.PipelineService.BatchDeletePipelineJobs",
+          "service": {
+            "shortName": "PipelineService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PipelineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_PipelineService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -17583,6 +18179,98 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_DirectPredict_sync",
+      "title": "aiplatform DirectPredict Sample",
+      "description": "DirectPredict perform an unary online prediction request to a gRPC model server for\nVertex first-party products and frameworks.",
+      "file": "PredictionClient/DirectPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DirectPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.DirectPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DirectPredictRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.DirectPredictResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "DirectPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.DirectPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_DirectRawPredict_sync",
+      "title": "aiplatform DirectRawPredict Sample",
+      "description": "DirectRawPredict perform an unary online prediction request to a gRPC model server for\ncustom containers.",
+      "file": "PredictionClient/DirectRawPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DirectRawPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.DirectRawPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DirectRawPredictRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.DirectRawPredictResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "DirectRawPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.DirectRawPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_PredictionService_Explain_sync",
       "title": "aiplatform Explain Sample",
       "description": "Explain perform an online explanation.\n\nIf\n[deployed_model_id][google.cloud.aiplatform.v1beta1.ExplainRequest.deployed_model_id]\nis specified, the corresponding DeployModel must have\n[explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec]\npopulated. If\n[deployed_model_id][google.cloud.aiplatform.v1beta1.ExplainRequest.deployed_model_id]\nis not specified, all DeployedModels must have\n[explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec]\npopulated.",
@@ -17613,6 +18301,52 @@
         "method": {
           "shortName": "Explain",
           "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.Explain",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_GenerateContent_sync",
+      "title": "aiplatform GenerateContent Sample",
+      "description": "GenerateContent generate content with multimodal inputs.",
+      "file": "PredictionClient/GenerateContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateContent",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.GenerateContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GenerateContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.GenerateContentResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "GenerateContent",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.GenerateContent",
           "service": {
             "shortName": "PredictionService",
             "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
@@ -17992,6 +18726,174 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_StreamDirectPredict_sync",
+      "title": "aiplatform StreamDirectPredict Sample",
+      "description": "StreamDirectPredict perform a streaming online prediction request to a gRPC model server for\nVertex first-party products and frameworks.\n\n\nThis method is not supported for the REST transport.",
+      "file": "PredictionClient/StreamDirectPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamDirectPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.StreamDirectPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.PredictionService_StreamDirectPredictClient",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "StreamDirectPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.StreamDirectPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_StreamDirectRawPredict_sync",
+      "title": "aiplatform StreamDirectRawPredict Sample",
+      "description": "StreamDirectRawPredict perform a streaming online prediction request to a gRPC model server for\ncustom containers.\n\n\nThis method is not supported for the REST transport.",
+      "file": "PredictionClient/StreamDirectRawPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamDirectRawPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.StreamDirectRawPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.PredictionService_StreamDirectRawPredictClient",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "StreamDirectRawPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.StreamDirectRawPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_StreamingPredict_sync",
+      "title": "aiplatform StreamingPredict Sample",
+      "description": "StreamingPredict perform a streaming online prediction request for Vertex first-party\nproducts and frameworks.\n\n\nThis method is not supported for the REST transport.",
+      "file": "PredictionClient/StreamingPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamingPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.StreamingPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.PredictionService_StreamingPredictClient",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "StreamingPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.StreamingPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PredictionService_StreamingRawPredict_sync",
+      "title": "aiplatform StreamingRawPredict Sample",
+      "description": "StreamingRawPredict perform a streaming online prediction request through gRPC.\n\n\nThis method is not supported for the REST transport.",
+      "file": "PredictionClient/StreamingRawPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamingRawPredict",
+        "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient.StreamingRawPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.PredictionService_StreamingRawPredictClient",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionClient"
+        },
+        "method": {
+          "shortName": "StreamingRawPredict",
+          "fullName": "google.cloud.aiplatform.v1beta1.PredictionService.StreamingRawPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]

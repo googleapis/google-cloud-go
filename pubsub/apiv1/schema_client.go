@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,7 +63,9 @@ type SchemaCallOptions struct {
 func defaultSchemaGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsub.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("pubsub.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsub.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://pubsub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -563,7 +565,9 @@ func NewSchemaRESTClient(ctx context.Context, opts ...option.ClientOption) (*Sch
 func defaultSchemaRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://pubsub.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://pubsub.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://pubsub.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://pubsub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

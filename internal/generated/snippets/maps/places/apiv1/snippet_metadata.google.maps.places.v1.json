@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/places/apiv1",
-    "version": "1.6.1",
+    "version": "1.6.4",
     "language": "GO",
     "apis": [
       {
@@ -60,7 +60,7 @@
     {
       "regionTag": "places_v1_generated_Places_GetPlace_sync",
       "title": "places GetPlace Sample",
-      "description": "GetPlace get a Place with a place id (in a name) string.",
+      "description": "GetPlace get place details with a place id (in a name) string.",
       "file": "Client/GetPlace/main.go",
       "language": "GO",
       "clientMethod": {

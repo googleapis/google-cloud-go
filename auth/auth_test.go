@@ -114,9 +114,9 @@ func TestToken_isValidWithEarlyExpiry(t *testing.T) {
 		expiry time.Duration
 		want   bool
 	}{
-		{name: "12 seconds", tok: &Token{Expiry: now.Add(12 * time.Second)}, expiry: defaultExpiryDelta, want: true},
-		{name: "10 seconds", tok: &Token{Expiry: now.Add(defaultExpiryDelta)}, expiry: defaultExpiryDelta, want: true},
-		{name: "10 seconds-1ns", tok: &Token{Expiry: now.Add(defaultExpiryDelta - 1*time.Nanosecond)}, expiry: defaultExpiryDelta, want: false},
+		{name: "4 minutes", tok: &Token{Expiry: now.Add(4 * 60 * time.Second)}, expiry: defaultExpiryDelta, want: true},
+		{name: "3 minutes and 45 seconds", tok: &Token{Expiry: now.Add(defaultExpiryDelta)}, expiry: defaultExpiryDelta, want: true},
+		{name: "3 minutes and 45 seconds-1ns", tok: &Token{Expiry: now.Add(defaultExpiryDelta - 1*time.Nanosecond)}, expiry: defaultExpiryDelta, want: false},
 		{name: "-1 hour", tok: &Token{Expiry: now.Add(-1 * time.Hour)}, expiry: defaultExpiryDelta, want: false},
 		{name: "12 seconds, custom expiryDelta", tok: &Token{Expiry: now.Add(12 * time.Second)}, expiry: time.Second * 5, want: true},
 		{name: "5 seconds, custom expiryDelta", tok: &Token{Expiry: now.Add(time.Second * 5)}, expiry: time.Second * 5, want: true},

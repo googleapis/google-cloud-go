@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,7 +49,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("places.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("places.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("places.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://places.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -91,10 +93,11 @@ type internalClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service definition for the Places API.
-// Note: every request actually requires a field mask set outside of the request
-// proto (all/’*’ is not assumed).  That can be set via either a side channel
-// (SystemParameterContext) over RPC, or a header (X-Goog-FieldMask) over HTTP.
-// See: https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
+// Note: every request actually requires a field mask set outside of
+// the request proto (all/’*’, is not assumed).  That can be set via either a
+// side channel (SystemParameterContext) over RPC, or a header
+// (X-Goog-FieldMask) over HTTP. See:
+// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -141,7 +144,7 @@ func (c *Client) GetPhotoMedia(ctx context.Context, req *placespb.GetPhotoMediaR
 	return c.internalClient.GetPhotoMedia(ctx, req, opts...)
 }
 
-// GetPlace get a Place with a place id (in a name) string.
+// GetPlace get place details with a place id (in a name) string.
 func (c *Client) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest, opts ...gax.CallOption) (*placespb.Place, error) {
 	return c.internalClient.GetPlace(ctx, req, opts...)
 }
@@ -167,10 +170,11 @@ type gRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service definition for the Places API.
-// Note: every request actually requires a field mask set outside of the request
-// proto (all/’*’ is not assumed).  That can be set via either a side channel
-// (SystemParameterContext) over RPC, or a header (X-Goog-FieldMask) over HTTP.
-// See: https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
+// Note: every request actually requires a field mask set outside of
+// the request proto (all/’*’, is not assumed).  That can be set via either a
+// side channel (SystemParameterContext) over RPC, or a header
+// (X-Goog-FieldMask) over HTTP. See:
+// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -240,10 +244,11 @@ type restClient struct {
 // NewRESTClient creates a new places rest client.
 //
 // Service definition for the Places API.
-// Note: every request actually requires a field mask set outside of the request
-// proto (all/’*’ is not assumed).  That can be set via either a side channel
-// (SystemParameterContext) over RPC, or a header (X-Goog-FieldMask) over HTTP.
-// See: https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
+// Note: every request actually requires a field mask set outside of
+// the request proto (all/’*’, is not assumed).  That can be set via either a
+// side channel (SystemParameterContext) over RPC, or a header
+// (X-Goog-FieldMask) over HTTP. See:
+// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -265,7 +270,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://places.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://places.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://places.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://places.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -555,7 +562,7 @@ func (c *restClient) GetPhotoMedia(ctx context.Context, req *placespb.GetPhotoMe
 	return resp, nil
 }
 
-// GetPlace get a Place with a place id (in a name) string.
+// GetPlace get place details with a place id (in a name) string.
 func (c *restClient) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest, opts ...gax.CallOption) (*placespb.Place, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -62,7 +62,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("fleetengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("fleetengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("fleetengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://fleetengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -561,7 +563,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://fleetengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://fleetengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://fleetengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://fleetengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1020,6 +1024,9 @@ func (c *restClient) CreateDeliveryVehicle(ctx context.Context, req *deliverypb.
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
 	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1119,6 +1126,9 @@ func (c *restClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 	}
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1232,6 +1242,9 @@ func (c *restClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.
 	}
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
@@ -1422,6 +1435,9 @@ func (c *restClient) CreateTask(ctx context.Context, req *deliverypb.CreateTaskR
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
 	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+	}
 	params.Add("taskId", fmt.Sprintf("%v", req.GetTaskId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1522,6 +1538,9 @@ func (c *restClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 	}
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1638,6 +1657,9 @@ func (c *restClient) SearchTasks(ctx context.Context, req *deliverypb.SearchTask
 		if req.GetHeader().GetSdkVersion() != "" {
 			params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
 		}
+		if req.GetHeader().GetTraceId() != "" {
+			params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1752,6 +1774,9 @@ func (c *restClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 	}
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
@@ -1876,6 +1901,9 @@ func (c *restClient) ListTasks(ctx context.Context, req *deliverypb.ListTasksReq
 		if req.GetHeader().GetSdkVersion() != "" {
 			params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
 		}
+		if req.GetHeader().GetTraceId() != "" {
+			params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1982,6 +2010,9 @@ func (c *restClient) GetTaskTrackingInfo(ctx context.Context, req *deliverypb.Ge
 	}
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2098,6 +2129,9 @@ func (c *restClient) ListDeliveryVehicles(ctx context.Context, req *deliverypb.L
 		}
 		if req.GetHeader().GetSdkVersion() != "" {
 			params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+		}
+		if req.GetHeader().GetTraceId() != "" {
+			params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))

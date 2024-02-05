@@ -37,7 +37,9 @@ const (
 	// Parameter key for Exchange method to support PKCE.
 	codeVerifierKey = "code_verifier"
 
-	defaultExpiryDelta = 10 * time.Second
+	// 3 minutes and 45 seconds before expiration. The shortest MDS cache is 4 minutes,
+	// so we give it 15 seconds to refresh it's cache before attempting to refresh a token.
+	defaultExpiryDelta = 215 * time.Second
 )
 
 var (

@@ -397,3 +397,8 @@ func SetToLogEntryInternal(f func(Entry, *Logger, string, int) (*logpb.LogEntry,
 	toLogEntryInternal, f = f, toLogEntryInternal
 	return f
 }
+
+func SetDetectResourceInternal(f func() *mrpb.MonitoredResource) func() *mrpb.MonitoredResource {
+	detectResourceInternal, f = f, detectResourceInternal
+	return f
+}

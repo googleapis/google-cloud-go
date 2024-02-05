@@ -1,6 +1,46 @@
 # Changes
 
 
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.0...dataplex/v1.14.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **dataplex:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.13.0...dataplex/v1.14.0) (2024-01-03)
+
+
+### Features
+
+* **dataplex:** Added enum value EventType.GOVERNANCE_RULE_PROCESSING ([902d842](https://github.com/googleapis/google-cloud-go/commit/902d84299b5073543ade684aa311b791bed3a999))
+
+
+### Documentation
+
+* **dataplex:** Fix the comment for `ignore_null` field to clarify its applicability on data quality rules ([cbe96af](https://github.com/googleapis/google-cloud-go/commit/cbe96af778ec9152b528714281de9e534f01c237))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.12.0...dataplex/v1.13.0) (2023-12-07)
+
+
+### Features
+
+* **dataplex:** Add data quality score to DataQualityResult ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.11.2...dataplex/v1.12.0) (2023-11-27)
+
+
+### Features
+
+* **dataplex:** Added DataQualityResult.score, dimension_score, column_score ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.11.1...dataplex/v1.11.2) (2023-11-09)
+
+
+### Documentation
+
+* **dataplex:** Updated comments for `DataQualityResult.dimensions` field ([ba23673](https://github.com/googleapis/google-cloud-go/commit/ba23673da7707c31292e4aa29d65b7ac1446d4a6))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.11.0...dataplex/v1.11.1) (2023-11-01)
 
 

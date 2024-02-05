@@ -2,6 +2,27 @@
 
 
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.8.0...alloydb/v1.8.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **alloydb:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.7.0...alloydb/v1.8.0) (2024-01-03)
+
+
+### Features
+
+* **alloydb:** Added PSC config, PSC interface config, PSC instance config ([#9184](https://github.com/googleapis/google-cloud-go/issues/9184)) ([36fec33](https://github.com/googleapis/google-cloud-go/commit/36fec33b8225f3e7df552839290ddbfefb222816))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.3...alloydb/v1.7.0) (2023-11-09)
+
+
+### Features
+
+* **alloydb:** Add new field in `GenerateClientCertificate` v1 API to allow AlloyDB connectors request client certs with metadata exchange support ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
 ## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.2...alloydb/v1.6.3) (2023-11-01)
 
 

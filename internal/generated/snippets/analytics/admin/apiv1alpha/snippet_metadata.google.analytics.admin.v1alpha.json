@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.21.6",
+    "version": "0.23.0",
     "language": "GO",
     "apis": [
       {
@@ -590,6 +590,52 @@
         "method": {
           "shortName": "CreateAudience",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAudience",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateCalculatedMetric_sync",
+      "title": "analyticsadmin CreateCalculatedMetric Sample",
+      "description": "CreateCalculatedMetric creates a CalculatedMetric.",
+      "file": "AnalyticsAdminClient/CreateCalculatedMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCalculatedMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateCalculatedMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateCalculatedMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.CalculatedMetric",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateCalculatedMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCalculatedMetric",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -1645,6 +1691,51 @@
         "method": {
           "shortName": "DeleteAdSenseLink",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAdSenseLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteCalculatedMetric_sync",
+      "title": "analyticsadmin DeleteCalculatedMetric Sample",
+      "description": "DeleteCalculatedMetric deletes a CalculatedMetric on a property.",
+      "file": "AnalyticsAdminClient/DeleteCalculatedMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCalculatedMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteCalculatedMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteCalculatedMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteCalculatedMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteCalculatedMetric",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -2750,6 +2841,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetCalculatedMetric_sync",
+      "title": "analyticsadmin GetCalculatedMetric Sample",
+      "description": "GetCalculatedMetric lookup for a single CalculatedMetric.",
+      "file": "AnalyticsAdminClient/GetCalculatedMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCalculatedMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetCalculatedMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetCalculatedMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.CalculatedMetric",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetCalculatedMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetCalculatedMetric",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetChannelGroup_sync",
       "title": "analyticsadmin GetChannelGroup Sample",
       "description": "GetChannelGroup lookup for a single ChannelGroup.",
@@ -3670,6 +3807,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetSubpropertyEventFilter_sync",
+      "title": "analyticsadmin GetSubpropertyEventFilter Sample",
+      "description": "GetSubpropertyEventFilter lookup for a single subproperty Event Filter.",
+      "file": "AnalyticsAdminClient/GetSubpropertyEventFilter/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSubpropertyEventFilter",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetSubpropertyEventFilter",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetSubpropertyEventFilterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SubpropertyEventFilter",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetSubpropertyEventFilter",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetSubpropertyEventFilter",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAccessBindings_sync",
       "title": "analyticsadmin ListAccessBindings Sample",
       "description": "ListAccessBindings lists all access bindings on an account or property.",
@@ -3930,6 +4113,52 @@
         "method": {
           "shortName": "ListBigQueryLinks",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListBigQueryLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListCalculatedMetrics_sync",
+      "title": "analyticsadmin ListCalculatedMetrics Sample",
+      "description": "ListCalculatedMetrics lists CalculatedMetrics on a property.",
+      "file": "AnalyticsAdminClient/ListCalculatedMetrics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCalculatedMetrics",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListCalculatedMetrics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListCalculatedMetricsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CalculatedMetricIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListCalculatedMetrics",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListCalculatedMetrics",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -4728,6 +4957,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListSubpropertyEventFilters_sync",
+      "title": "analyticsadmin ListSubpropertyEventFilters Sample",
+      "description": "ListSubpropertyEventFilters list all subproperty Event Filters on a property.",
+      "file": "AnalyticsAdminClient/ListSubpropertyEventFilters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSubpropertyEventFilters",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListSubpropertyEventFilters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListSubpropertyEventFiltersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubpropertyEventFilterIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListSubpropertyEventFilters",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListSubpropertyEventFilters",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ProvisionAccountTicket_sync",
       "title": "analyticsadmin ProvisionAccountTicket Sample",
       "description": "ProvisionAccountTicket requests a ticket for creating an account.",
@@ -4776,7 +5051,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_RunAccessReport_sync",
       "title": "analyticsadmin RunAccessReport Sample",
-      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. The property must be\nin Google Analytics 360. This method is only available to Administrators.\n\nThese data access records include GA4 UI Reporting, GA4 UI Explorations,\nGA4 Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).",
+      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. Reports may be\nrequested for any property, but dimensions that aren't related to quota can\nonly be requested on Google Analytics 360 properties. This method is only\navailable to Administrators.\n\nThese data access records include GA4 UI Reporting, GA4 UI Explorations,\nGA4 Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).",
       "file": "AnalyticsAdminClient/RunAccessReport/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5080,6 +5355,52 @@
         "method": {
           "shortName": "UpdateAudience",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAudience",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateCalculatedMetric_sync",
+      "title": "analyticsadmin UpdateCalculatedMetric Sample",
+      "description": "UpdateCalculatedMetric updates a CalculatedMetric on a property.",
+      "file": "AnalyticsAdminClient/UpdateCalculatedMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCalculatedMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateCalculatedMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateCalculatedMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.CalculatedMetric",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateCalculatedMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCalculatedMetric",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -5862,6 +6183,52 @@
         "method": {
           "shortName": "UpdateSearchAds360Link",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSearchAds360Link",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateSubpropertyEventFilter_sync",
+      "title": "analyticsadmin UpdateSubpropertyEventFilter Sample",
+      "description": "UpdateSubpropertyEventFilter updates a subproperty Event Filter.",
+      "file": "AnalyticsAdminClient/UpdateSubpropertyEventFilter/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSubpropertyEventFilter",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateSubpropertyEventFilter",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateSubpropertyEventFilterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.SubpropertyEventFilter",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateSubpropertyEventFilter",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSubpropertyEventFilter",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
