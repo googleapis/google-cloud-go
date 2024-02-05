@@ -26,7 +26,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
-	"8/github"
+	"github.com/google/go-github/v52/github"
 	"golang.org/x/oauth2"
 )
 
