@@ -50,6 +50,7 @@ var (
 
 		// Third party deps (temporary exception(s)).
 		"go.einride.tech/aip", // https://github.com/googleapis/google-cloud-go/issues/9338
+		"rsc.io/binaryregexp", // https://github.com/googleapis/google-cloud-go/issues/9376
 	}
 )
 
