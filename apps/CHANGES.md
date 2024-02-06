@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.2.1...apps/v0.3.0) (2024-02-06)
+
+
+### Features
+
+* **apps:** New clients ([#9358](https://github.com/googleapis/google-cloud-go/issues/9358)) ([9ce3d5b](https://github.com/googleapis/google-cloud-go/commit/9ce3d5b63d2c41119b64e691118303be4ae1b204))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/apps/v0.2.0...apps/v0.2.1) (2024-01-30)
 
 
@@ -22,4 +29,3 @@
 * **apps:** New clients ([#9142](https://github.com/googleapis/google-cloud-go/issues/9142)) ([8095c6e](https://github.com/googleapis/google-cloud-go/commit/8095c6ee342d9cca812c966b708ba48398fd91ed))
 
 ## Changes
-
