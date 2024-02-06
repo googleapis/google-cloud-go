@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.8...documentai/v1.24.0) (2024-02-06)
+
+
+### Features
+
+* **documentai:** Add model_type in v1beta3 processor proto ([#9355](https://github.com/googleapis/google-cloud-go/issues/9355)) ([05e9e1f](https://github.com/googleapis/google-cloud-go/commit/05e9e1f53f2a0c8b3aaadc1811338ca3e682f245))
+
 ## [1.23.8](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.7...documentai/v1.23.8) (2024-01-30)
 
 
