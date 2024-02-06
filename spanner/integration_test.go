@@ -1431,7 +1431,7 @@ func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
 	}
 
 	duration, _ := time.ParseDuration("100ms")
-	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: duration}}
+	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}}
 	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		// Query Foo's balance and Bar's balance.
 		queryAccountByID := "SELECT Balance FROM Accounts WHERE AccountId = @p1"
