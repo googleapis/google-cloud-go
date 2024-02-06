@@ -44,7 +44,8 @@ type RowIterator struct {
 	ctx context.Context
 	src *rowSource
 
-	arrowIterator *arrowIterator
+	arrowIterator ArrowIterator
+	arrowDecoder  *arrowDecoder
 
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
@@ -88,6 +89,14 @@ func (ri *RowIterator) SourceJob() *Job {
 		location:  ri.src.j.location,
 		jobID:     ri.src.j.jobID,
 	}
+}
+
+// QueryID returns a query ID if available, or an empty string.
+func (ri *RowIterator) QueryID() string {
+	if ri.src == nil {
+		return ""
+	}
+	return ri.src.queryID
 }
 
 // We declare a function signature for fetching results.  The primary reason
@@ -209,8 +218,9 @@ func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
 //     want to retain the data unnecessarily, and we expect that the backend
 //     can always provide them if needed.
 type rowSource struct {
-	j *Job
-	t *Table
+	j       *Job
+	t       *Table
+	queryID string
 
 	cachedRows      []*bq.TableRow
 	cachedSchema    *bq.TableSchema
@@ -239,7 +249,11 @@ func fetchPage(ctx context.Context, src *rowSource, schema Schema, startIndex ui
 		if src.j != nil {
 			return fetchJobResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
 		}
-		return fetchTableResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
+		if src.t != nil {
+			return fetchTableResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
+		}
+		// No rows, but no table or job reference.  Return an empty result set.
+		return &fetchPageResult{}, nil
 	}
 	return result, nil
 }
@@ -266,6 +280,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 		}()
 	}
 	call := src.t.c.bqs.Tabledata.List(src.t.ProjectID, src.t.DatasetID, src.t.TableID)
+	call = call.FormatOptionsUseInt64Timestamp(true)
 	setClientHeader(call.Header())
 	if pageToken != "" {
 		call.PageToken(pageToken)
@@ -303,6 +318,7 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 	// reduce data transfered by leveraging api projections
 	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
 	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location).Context(ctx)
+	call = call.FormatOptionsUseInt64Timestamp(true)
 	if schema == nil {
 		// only project schema if we weren't supplied one.
 		projectedFields = append(projectedFields, "schema")

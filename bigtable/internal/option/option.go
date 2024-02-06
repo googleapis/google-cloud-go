@@ -26,6 +26,7 @@ import (
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/protobuf/proto"
 
+	"cloud.google.com/go/bigtable/internal"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -59,6 +60,8 @@ func withGoogleClientInfo() metadata.MD {
 		gax.Version,
 		"grpc",
 		grpc.Version,
+		"gccl",
+		internal.Version,
 	}
 	return metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }

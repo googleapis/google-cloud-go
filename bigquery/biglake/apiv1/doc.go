@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@
 // The BigLake API provides access to BigLake Metastore, a serverless, fully
 // managed, and highly available metastore for open-source data that can be
 // used for querying Apache Iceberg tables in BigQuery.
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation
 //

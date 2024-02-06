@@ -1,5 +1,40 @@
 # Changes
 
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.11.1...dlp/v1.11.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **dlp:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.11.0...dlp/v1.11.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **dlp:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.10.3...dlp/v1.11.0) (2023-10-31)
+
+
+### Features
+
+* **dlp:** Introduce Discovery API protos and methods ([ffb0dda](https://github.com/googleapis/google-cloud-go/commit/ffb0ddabf3d9822ba8120cabaf25515fd32e9615))
+
+## [1.10.3](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.10.2...dlp/v1.10.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **dlp:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.10.1...dlp/v1.10.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **dlp:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.10.0...dlp/v1.10.1) (2023-06-20)
 
 

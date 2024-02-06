@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -85,6 +85,29 @@ func ExampleSecuritySettingsClient_CreateSecuritySettings() {
 	_ = resp
 }
 
+func ExampleSecuritySettingsClient_DeleteSecuritySettings() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cx.NewSecuritySettingsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.DeleteSecuritySettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#DeleteSecuritySettingsRequest.
+	}
+	err = c.DeleteSecuritySettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleSecuritySettingsClient_GetSecuritySettings() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -103,31 +126,6 @@ func ExampleSecuritySettingsClient_GetSecuritySettings() {
 		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#GetSecuritySettingsRequest.
 	}
 	resp, err := c.GetSecuritySettings(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleSecuritySettingsClient_UpdateSecuritySettings() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := cx.NewSecuritySettingsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cxpb.UpdateSecuritySettingsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#UpdateSecuritySettingsRequest.
-	}
-	resp, err := c.UpdateSecuritySettings(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -166,7 +164,7 @@ func ExampleSecuritySettingsClient_ListSecuritySettings() {
 	}
 }
 
-func ExampleSecuritySettingsClient_DeleteSecuritySettings() {
+func ExampleSecuritySettingsClient_UpdateSecuritySettings() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -179,14 +177,16 @@ func ExampleSecuritySettingsClient_DeleteSecuritySettings() {
 	}
 	defer c.Close()
 
-	req := &cxpb.DeleteSecuritySettingsRequest{
+	req := &cxpb.UpdateSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#DeleteSecuritySettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#UpdateSecuritySettingsRequest.
 	}
-	err = c.DeleteSecuritySettings(ctx, req)
+	resp, err := c.UpdateSecuritySettings(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleSecuritySettingsClient_GetLocation() {

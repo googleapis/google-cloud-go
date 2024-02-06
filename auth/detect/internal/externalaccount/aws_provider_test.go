@@ -574,6 +574,10 @@ func TestAWSCredential_BasicRequest(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() failed: %v", err)
 	}
 
+	if got, want := base.providerType(), awsProviderType; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+
 	want := getExpectedSubjectToken(
 		"https://sts.us-east-2.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15",
 		"us-east-2",

@@ -296,4 +296,38 @@ var (
 			Type: bigquery.IntegerFieldType,
 		},
 	}
+
+	DefaultValueSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "id",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "strcol",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name:                   "strcol_withdef",
+			Type:                   bigquery.StringFieldType,
+			DefaultValueExpression: "\"defaultvalue\"",
+		},
+		{
+			Name: "intcol",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name:                   "intcol_withdef",
+			Type:                   bigquery.IntegerFieldType,
+			DefaultValueExpression: "-99",
+		},
+		{
+			Name: "otherstr",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name:                   "otherstr_withdef",
+			Type:                   bigquery.StringFieldType,
+			DefaultValueExpression: "\"otherval\"",
+		},
+	}
 )

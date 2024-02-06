@@ -439,6 +439,9 @@ func TestProbeFastPath(t *testing.T) {
 			wantReq: &bq.QueryRequest{
 				Query:        "foo",
 				UseLegacySql: &pfalse,
+				FormatOptions: &bq.DataFormatOptions{
+					UseInt64Timestamp: true,
+				},
 			},
 		},
 		{
@@ -473,6 +476,9 @@ func TestProbeFastPath(t *testing.T) {
 					},
 				},
 				UseQueryCache: &pfalse,
+				FormatOptions: &bq.DataFormatOptions{
+					UseInt64Timestamp: true,
+				},
 			},
 		},
 		{

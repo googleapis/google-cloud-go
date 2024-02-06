@@ -26,8 +26,9 @@ import (
 )
 
 const (
-	fileTypeText = "text"
-	fileTypeJSON = "json"
+	fileTypeText    = "text"
+	fileTypeJSON    = "json"
+	urlProviderType = "url"
 )
 
 type urlSubjectProvider struct {
@@ -81,5 +82,8 @@ func (sp *urlSubjectProvider) subjectToken(ctx context.Context) (string, error) 
 	default:
 		return "", errors.New("detect: invalid credential_source file format type: " + sp.Format.Type)
 	}
+}
 
+func (sp *urlSubjectProvider) providerType() string {
+	return urlProviderType
 }

@@ -139,7 +139,10 @@ func TestParseClientCredential_Installed(t *testing.T) {
 	want := &ClientCredentialsFile{
 		Installed: &Config3LO{
 			ClientID:     "222-installed.apps.googleusercontent.com",
+			ClientSecret: "shhhh",
 			RedirectURIs: []string{"https://www.example.com/oauth2callback"},
+			AuthURI:      "https://accounts.google.com/o/oauth2/auth",
+			TokenURI:     "https://accounts.google.com/o/oauth2/token",
 		},
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
@@ -272,6 +275,31 @@ func TestParseExternalAccount_Cmd(t *testing.T) {
 	}
 	timeout := 5000
 	want.CredentialSource.Executable.TimeoutMillis = &timeout
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("(-want +got):\n%s", diff)
+	}
+}
+
+func TestParseExternalAccountAuthorizedUser(t *testing.T) {
+	b, err := os.ReadFile("../testdata/exaccount_user.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := ParseExternalAccountAuthorizedUser(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := &ExternalAccountAuthorizedUserFile{
+		Type:           "external_account_authorized_user",
+		Audience:       "//iam.googleapis.com/locations/global/workforcePools/$POOL_ID/providers/$PROVIDER_ID",
+		ClientID:       "abc123.apps.googleusercontent.com",
+		ClientSecret:   "shh",
+		RefreshToken:   "refreshing",
+		TokenURL:       "https://sts.googleapis.com/v1/oauthtoken",
+		TokenInfoURL:   "https://sts.googleapis.com/v1/info",
+		RevokeURL:      "https://sts.googleapis.com/v1/revoke",
+		QuotaProjectID: "fake_project2",
+	}
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("(-want +got):\n%s", diff)
 	}

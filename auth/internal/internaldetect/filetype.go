@@ -33,14 +33,15 @@ type ClientCredentialsFile struct {
 
 // ServiceAccountFile representation.
 type ServiceAccountFile struct {
-	Type         string `json:"type"`
-	ProjectID    string `json:"project_id"`
-	PrivateKeyID string `json:"private_key_id"`
-	PrivateKey   string `json:"private_key"`
-	ClientEmail  string `json:"client_email"`
-	ClientID     string `json:"client_id"`
-	AuthURL      string `json:"auth_uri"`
-	TokenURL     string `json:"token_uri"`
+	Type           string `json:"type"`
+	ProjectID      string `json:"project_id"`
+	PrivateKeyID   string `json:"private_key_id"`
+	PrivateKey     string `json:"private_key"`
+	ClientEmail    string `json:"client_email"`
+	ClientID       string `json:"client_id"`
+	AuthURL        string `json:"auth_uri"`
+	TokenURL       string `json:"token_uri"`
+	UniverseDomain string `json:"universe_domain"`
 }
 
 // UserCredentialsFile representation.
@@ -66,6 +67,20 @@ type ExternalAccountFile struct {
 	ServiceAccountImpersonation    ServiceAccountImpersonationInfo `json:"service_account_impersonation"`
 	QuotaProjectID                 string                          `json:"quota_project_id"`
 	WorkforcePoolUserProject       string                          `json:"workforce_pool_user_project"`
+	UniverseDomain                 string                          `json:"universe_domain"`
+}
+
+// ExternalAccountAuthorizedUserFile representation.
+type ExternalAccountAuthorizedUserFile struct {
+	Type           string `json:"type"`
+	Audience       string `json:"audience"`
+	ClientID       string `json:"client_id"`
+	ClientSecret   string `json:"client_secret"`
+	RefreshToken   string `json:"refresh_token"`
+	TokenURL       string `json:"token_url"`
+	TokenInfoURL   string `json:"token_info_url"`
+	RevokeURL      string `json:"revoke_url"`
+	QuotaProjectID string `json:"quota_project_id"`
 }
 
 // CredentialSource stores the information necessary to retrieve the credentials for the STS exchange.
@@ -112,9 +127,10 @@ type ImpersonatedServiceAccountFile struct {
 	ServiceAccountImpersonationURL string          `json:"service_account_impersonation_url"`
 	Delegates                      []string        `json:"delegates"`
 	CredSource                     json.RawMessage `json:"source_credentials"`
+	UniverseDomain                 string          `json:"universe_domain"`
 }
 
-// GDCHServiceAccountFile representation.
+// GDCHServiceAccountFile represents the Google Distributed Cloud Hosted (GDCH) service identity file.
 type GDCHServiceAccountFile struct {
 	Type          string `json:"type"`
 	FormatVersion string `json:"format_version"`

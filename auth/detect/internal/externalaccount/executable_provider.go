@@ -34,6 +34,7 @@ const (
 	executableSupportedMaxVersion = 1
 	executableDefaultTimeout      = 30 * time.Second
 	executableSource              = "response"
+	executableProviderType        = "executable"
 	outputFileSource              = "output file"
 
 	allowExecutablesEnvVar = "GOOGLE_EXTERNAL_ACCOUNT_ALLOW_EXECUTABLES"
@@ -173,6 +174,10 @@ func (cs *executableSubjectProvider) subjectToken(ctx context.Context) (string, 
 		return token, err
 	}
 	return cs.getTokenFromExecutableCommand(ctx)
+}
+
+func (cs *executableSubjectProvider) providerType() string {
+	return executableProviderType
 }
 
 func (cs *executableSubjectProvider) getTokenFromOutputFile() (token string, err error) {

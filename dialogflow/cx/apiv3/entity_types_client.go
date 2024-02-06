@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,11 +46,11 @@ var newEntityTypesClientHook clientHook
 
 // EntityTypesCallOptions contains the retry settings for each method of EntityTypesClient.
 type EntityTypesCallOptions struct {
-	ListEntityTypes  []gax.CallOption
 	GetEntityType    []gax.CallOption
 	CreateEntityType []gax.CallOption
 	UpdateEntityType []gax.CallOption
 	DeleteEntityType []gax.CallOption
+	ListEntityTypes  []gax.CallOption
 	GetLocation      []gax.CallOption
 	ListLocations    []gax.CallOption
 	CancelOperation  []gax.CallOption
@@ -61,7 +61,9 @@ type EntityTypesCallOptions struct {
 func defaultEntityTypesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dialogflow.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -72,18 +74,6 @@ func defaultEntityTypesGRPCClientOptions() []option.ClientOption {
 
 func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 	return &EntityTypesCallOptions{
-		ListEntityTypes: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
 		GetEntityType: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -121,6 +111,18 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		DeleteEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListEntityTypes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -142,17 +144,6 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 
 func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 	return &EntityTypesCallOptions{
-		ListEntityTypes: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable)
-			}),
-		},
 		GetEntityType: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -187,6 +178,17 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		DeleteEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListEntityTypes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -210,11 +212,11 @@ type internalEntityTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	ListEntityTypes(context.Context, *cxpb.ListEntityTypesRequest, ...gax.CallOption) *EntityTypeIterator
 	GetEntityType(context.Context, *cxpb.GetEntityTypeRequest, ...gax.CallOption) (*cxpb.EntityType, error)
 	CreateEntityType(context.Context, *cxpb.CreateEntityTypeRequest, ...gax.CallOption) (*cxpb.EntityType, error)
 	UpdateEntityType(context.Context, *cxpb.UpdateEntityTypeRequest, ...gax.CallOption) (*cxpb.EntityType, error)
 	DeleteEntityType(context.Context, *cxpb.DeleteEntityTypeRequest, ...gax.CallOption) error
+	ListEntityTypes(context.Context, *cxpb.ListEntityTypesRequest, ...gax.CallOption) *EntityTypeIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -257,11 +259,6 @@ func (c *EntityTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListEntityTypes returns the list of all entity types in the specified agent.
-func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *cxpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
-	return c.internalClient.ListEntityTypes(ctx, req, opts...)
-}
-
 // GetEntityType retrieves the specified entity type.
 func (c *EntityTypesClient) GetEntityType(ctx context.Context, req *cxpb.GetEntityTypeRequest, opts ...gax.CallOption) (*cxpb.EntityType, error) {
 	return c.internalClient.GetEntityType(ctx, req, opts...)
@@ -292,6 +289,11 @@ func (c *EntityTypesClient) UpdateEntityType(ctx context.Context, req *cxpb.Upda
 // documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *cxpb.DeleteEntityTypeRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEntityType(ctx, req, opts...)
+}
+
+// ListEntityTypes returns the list of all entity types in the specified agent.
+func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *cxpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
+	return c.internalClient.ListEntityTypes(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -436,7 +438,9 @@ func NewEntityTypesRESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultEntityTypesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dialogflow.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dialogflow.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dialogflow.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -465,52 +469,6 @@ func (c *entityTypesRESTClient) Close() error {
 func (c *entityTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *cxpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).ListEntityTypes[0:len((*c.CallOptions).ListEntityTypes):len((*c.CallOptions).ListEntityTypes)], opts...)
-	it := &EntityTypeIterator{}
-	req = proto.Clone(req).(*cxpb.ListEntityTypesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.EntityType, string, error) {
-		resp := &cxpb.ListEntityTypesResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.entityTypesClient.ListEntityTypes(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetEntityTypes(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
 func (c *entityTypesGRPCClient) GetEntityType(ctx context.Context, req *cxpb.GetEntityTypeRequest, opts ...gax.CallOption) (*cxpb.EntityType, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -577,6 +535,52 @@ func (c *entityTypesGRPCClient) DeleteEntityType(ctx context.Context, req *cxpb.
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *cxpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListEntityTypes[0:len((*c.CallOptions).ListEntityTypes):len((*c.CallOptions).ListEntityTypes)], opts...)
+	it := &EntityTypeIterator{}
+	req = proto.Clone(req).(*cxpb.ListEntityTypesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.EntityType, string, error) {
+		resp := &cxpb.ListEntityTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.entityTypesClient.ListEntityTypes(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEntityTypes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *entityTypesGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -705,98 +709,6 @@ func (c *entityTypesGRPCClient) ListOperations(ctx context.Context, req *longrun
 		it.Response = resp
 		return resp.GetOperations(), resp.GetNextPageToken(), nil
 	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-// ListEntityTypes returns the list of all entity types in the specified agent.
-func (c *entityTypesRESTClient) ListEntityTypes(ctx context.Context, req *cxpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
-	it := &EntityTypeIterator{}
-	req = proto.Clone(req).(*cxpb.ListEntityTypesRequest)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.EntityType, string, error) {
-		resp := &cxpb.ListEntityTypesResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		baseUrl, err := url.Parse(c.endpoint)
-		if err != nil {
-			return nil, "", err
-		}
-		baseUrl.Path += fmt.Sprintf("/v3/%v/entityTypes", req.GetParent())
-
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-		if req.GetLanguageCode() != "" {
-			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
-		}
-		if req.GetPageSize() != 0 {
-			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
-		}
-		if req.GetPageToken() != "" {
-			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			httpRsp, err := c.httpClient.Do(httpReq)
-			if err != nil {
-				return err
-			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetEntityTypes(), resp.GetNextPageToken(), nil
-	}
-
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
 		if err != nil {
@@ -1078,6 +990,98 @@ func (c *entityTypesRESTClient) DeleteEntityType(ctx context.Context, req *cxpb.
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
+}
+
+// ListEntityTypes returns the list of all entity types in the specified agent.
+func (c *entityTypesRESTClient) ListEntityTypes(ctx context.Context, req *cxpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
+	it := &EntityTypeIterator{}
+	req = proto.Clone(req).(*cxpb.ListEntityTypesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.EntityType, string, error) {
+		resp := &cxpb.ListEntityTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v3/%v/entityTypes", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetLanguageCode() != "" {
+			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEntityTypes(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetLocation gets information about a location.
@@ -1424,51 +1428,4 @@ func (c *entityTypesRESTClient) ListOperations(ctx context.Context, req *longrun
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// EntityTypeIterator manages a stream of *cxpb.EntityType.
-type EntityTypeIterator struct {
-	items    []*cxpb.EntityType
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*cxpb.EntityType, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EntityTypeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EntityTypeIterator) Next() (*cxpb.EntityType, error) {
-	var item *cxpb.EntityType
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EntityTypeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EntityTypeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

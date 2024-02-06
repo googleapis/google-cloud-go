@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &adminpb.ExportEntitiesRequest{
+//	req := &adminpb.CreateIndexRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/datastore/admin/apiv1/adminpb#ExportEntitiesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/datastore/admin/apiv1/adminpb#CreateIndexRequest.
 //	}
-//	op, err := c.ExportEntities(ctx, req)
+//	op, err := c.CreateIndex(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

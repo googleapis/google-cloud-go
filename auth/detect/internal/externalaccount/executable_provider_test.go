@@ -445,6 +445,9 @@ func TestRetrieveExecutableSubjectTokenExecutableErrors(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ecs.env = &tt.testEnvironment
 
+			if got, want := ecs.providerType(), executableProviderType; got != want {
+				t.Fatalf("got %q, want %q", got, want)
+			}
 			if _, err = ecs.subjectToken(context.Background()); err == nil {
 				t.Fatalf("got nil, want an error")
 			} else if tt.skipErrorEquals {

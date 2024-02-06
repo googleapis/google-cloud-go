@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/idtoken"
 	"cloud.google.com/go/auth/impersonate"
 	"cloud.google.com/go/auth/internal/testutil"
 	"cloud.google.com/go/auth/internal/testutil/testgcs"
@@ -32,7 +33,7 @@ import (
 
 const (
 	envAppCreds    = "GOOGLE_APPLICATION_CREDENTIALS"
-	envProjectID   = "GOOGLE_CLOUD_PROJECT"
+	envProjectID   = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
 	envReaderCreds = "GCLOUD_TESTS_IMPERSONATE_READER_KEY"
 	envReaderEmail = "GCLOUD_TESTS_IMPERSONATE_READER_EMAIL"
 	envWriterEmail = "GCLOUD_TESTS_IMPERSONATE_WRITER_EMAIL"
@@ -117,63 +118,61 @@ func TestCredentialsTokenSourceIntegration(t *testing.T) {
 	}
 }
 
-// TODO(codyoss): uncomment after adding idtoken package
+func TestIDTokenSourceIntegration(t *testing.T) {
+	testutil.IntegrationTestCheck(t)
 
-// func TestIDTokenSourceIntegration(t *testing.T) {
-// 	testutil.IntegrationTestCheck(t)
+	ctx := context.Background()
+	tests := []struct {
+		name        string
+		baseKeyFile string
+		delegates   []string
+	}{
+		{
+			name:        "SA -> SA",
+			baseKeyFile: readerKeyFile,
+		},
+		{
+			name:        "SA -> Delegate -> SA",
+			baseKeyFile: baseKeyFile,
+			delegates:   []string{readerEmail},
+		},
+	}
 
-// 	ctx := context.Background()
-// 	tests := []struct {
-// 		name        string
-// 		baseKeyFile string
-// 		delegates   []string
-// 	}{
-// 		{
-// 			name:        "SA -> SA",
-// 			baseKeyFile: readerKeyFile,
-// 		},
-// 		{
-// 			name:        "SA -> Delegate -> SA",
-// 			baseKeyFile: baseKeyFile,
-// 			delegates:   []string{readerEmail},
-// 		},
-// 	}
-
-// 	for _, tt := range tests {
-// 		name := tt.name
-// 		t.Run(name, func(t *testing.T) {
-// 			creds, err := detect.DefaultCredentials(&detect.Options{
-// 				Scopes:   []string{"https://www.googleapis.com/auth/cloud-platform"},
-// 				CredentialsFile: tt.baseKeyFile,
-// 			})
-// 			if err != nil {
-// 				t.Fatalf("detect.DefaultCredentials() = %v", err)
-// 			}
-// 			aud := "http://example.com/"
-// 			tp, err := impersonate.NewIDTokenProvider(&impersonate.IDTokenOptions{
-// 				TargetPrincipal: writerEmail,
-// 				Audience:        aud,
-// 				Delegates:       tt.delegates,
-// 				IncludeEmail:    true,
-// 				TokenProvider:   creds,
-// 			})
-// 			if err != nil {
-// 				t.Fatalf("failed to create ts: %v", err)
-// 			}
-// 			tok, err := tp.Token(ctx)
-// 			if err != nil {
-// 				t.Fatalf("unable to retrieve Token: %v", err)
-// 			}
-// 			validTok, err := idtoken.Validate(ctx, tok.Value, aud)
-// 			if err != nil {
-// 				t.Fatalf("token validation failed: %v", err)
-// 			}
-// 			if validTok.Audience != aud {
-// 				t.Fatalf("got %q, want %q", validTok.Audience, aud)
-// 			}
-// 			if validTok.Claims["email"] != writerEmail {
-// 				t.Fatalf("got %q, want %q", validTok.Claims["email"], writerEmail)
-// 			}
-// 		})
-// 	}
-// }
+	for _, tt := range tests {
+		name := tt.name
+		t.Run(name, func(t *testing.T) {
+			creds, err := detect.DefaultCredentials(&detect.Options{
+				Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+				CredentialsFile: tt.baseKeyFile,
+			})
+			if err != nil {
+				t.Fatalf("detect.DefaultCredentials() = %v", err)
+			}
+			aud := "http://example.com/"
+			tp, err := impersonate.NewIDTokenProvider(&impersonate.IDTokenOptions{
+				TargetPrincipal: writerEmail,
+				Audience:        aud,
+				Delegates:       tt.delegates,
+				IncludeEmail:    true,
+				TokenProvider:   creds,
+			})
+			if err != nil {
+				t.Fatalf("failed to create ts: %v", err)
+			}
+			tok, err := tp.Token(ctx)
+			if err != nil {
+				t.Fatalf("unable to retrieve Token: %v", err)
+			}
+			validTok, err := idtoken.Validate(ctx, tok.Value, aud)
+			if err != nil {
+				t.Fatalf("token validation failed: %v", err)
+			}
+			if validTok.Audience != aud {
+				t.Fatalf("got %q, want %q", validTok.Audience, aud)
+			}
+			if validTok.Claims["email"] != writerEmail {
+				t.Fatalf("got %q, want %q", validTok.Claims["email"], writerEmail)
+			}
+		})
+	}
+}
