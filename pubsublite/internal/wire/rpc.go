@@ -158,11 +158,11 @@ func resourceExhaustedRetryer() gax.CallOption {
 }
 
 const (
-	pubsubLiteDefaultEndpoint 				= "-pubsublite.googleapis.com:443"
+	pubsubLiteDefaultEndpoint         = "-pubsublite.googleapis.com:443"
 	pubsubLiteDefaultEndpointTemplate = "-pubsublite.UNIVERSE_DOMAIN:443"
-	defaultUniverseDomain 					  = "googleapis.com"
-	pubsubLiteErrorDomain     				= "pubsublite.googleapis.com"
-	resetSignal               				= "RESET"
+	defaultUniverseDomain             = "googleapis.com"
+	pubsubLiteErrorDomain             = "pubsublite.googleapis.com"
+	resetSignal                       = "RESET"
 )
 
 // Pub/Sub Lite's RESET signal is a status containing error details that
