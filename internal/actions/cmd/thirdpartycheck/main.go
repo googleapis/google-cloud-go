@@ -33,6 +33,7 @@ var (
 	allowlist = []string{
 		// First party deps.
 		"cloud.google.com/go",
+		"github.com/GoogleCloudPlatform/",
 		"github.com/google/",
 		"github.com/googleapis/",
 		"github.com/golang/",
