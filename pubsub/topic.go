@@ -34,7 +34,6 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	otelcodes "go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
@@ -789,8 +788,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	}
 
 	topicID := strings.Split(t.name, "/")[3]
+	var pSpan trace.Span
 	if t.enableTracing {
-		_, pSpan := startSpan(ctx, publishRPCSpanName, topicID, trace.WithLinks(links...))
+		ctx, pSpan = startSpan(ctx, publishRPCSpanName, topicID, trace.WithLinks(links...))
 		pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("topic.publishMessageBundle"))
 		defer pSpan.End()
 	}
@@ -801,10 +801,6 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
-		if bm.msg.Attributes != nil {
-			ctx = propagation.TraceContext{}.Extract(ctx, newMessageCarrier(bm.msg))
-		}
-
 		bm.msg = nil // release bm.msg for GC
 	}
 

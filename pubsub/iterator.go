@@ -546,17 +546,19 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
 				}
 			}
+			ctx := context.Background()
+			var ackSpan trace.Span
 			if it.enableTracing {
-				_, ackSpan := startSpan(context.Background(), ackSpanName, it.subID, trace.WithLinks(links...))
+				ctx, ackSpan = startSpan(context.Background(), ackSpanName, it.subID, trace.WithLinks(links...))
 				defer ackSpan.End()
 				ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
 					semconv.CodeFunction("messageIterator.sendAck"))
 			}
 			recordStat(it.ctx, AckCount, int64(len(toSend)))
 			addAcks(toSend)
-			// Use context.Background() as the call's context, not it.ctx. We don't
+			// Use a local context as the call's context, not it.ctx. We don't
 			// want to cancel this RPC when the iterator is stopped.
-			cctx2, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
+			cctx2, cancel2 := context.WithTimeout(ctx, 60*time.Second)
 			defer cancel2()
 			err := it.subc.Acknowledge(cctx2, &pb.AcknowledgeRequest{
 				Subscription: it.subName,
@@ -633,21 +635,25 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 						links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
 					}
 
-					_, mSpan := startSpan(context.Background(), modackSpanName, it.subID, trace.WithLinks(links...))
-					defer mSpan.End()
-					if !isNack {
-						mSpan.SetAttributes(
-							attribute.Int(ackDeadlineSecAttribute, int(deadlineSec)),
-							attribute.Bool(receiptModackAttribute, isReceipt))
-					}
-					mSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
-						semconv.CodeFunction("messageIterator.sendModAck"))
 				}
 			}
+			ctx := context.Background()
+			var mSpan trace.Span
+			if it.enableTracing {
+				ctx, mSpan = startSpan(context.Background(), modackSpanName, it.subID, trace.WithLinks(links...))
+				defer mSpan.End()
+				if !isNack {
+					mSpan.SetAttributes(
+						attribute.Int(ackDeadlineSecAttribute, int(deadlineSec)),
+						attribute.Bool(receiptModackAttribute, isReceipt))
+				}
+				mSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
+					semconv.CodeFunction("messageIterator.sendModAck"))
+			}
 			addModAcks(toSend, deadlineSec)
-			// Use context.Background() as the call's context, not it.ctx. We don't
+			// Use a local context as the call's context, not it.ctx. We don't
 			// want to cancel this RPC when the iterator is stopped.
-			cctx, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
+			cctx, cancel2 := context.WithTimeout(ctx, 60*time.Second)
 			defer cancel2()
 			err := it.subc.ModifyAckDeadline(cctx, &pb.ModifyAckDeadlineRequest{
 				Subscription:       it.subName,
