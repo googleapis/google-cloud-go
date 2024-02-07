@@ -506,6 +506,11 @@
                 "ListOperations"
               ]
             },
+            "SearchNearestEntities": {
+              "methods": [
+                "SearchNearestEntities"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"

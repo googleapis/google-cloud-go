@@ -796,9 +796,8 @@ func (c *Client) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req *as
 //
 //	compute.disableNestedVirtualization
 //
-// This RPC only returns either resources of types supported by searchable
-// asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types),
+// This RPC only returns either resources of types supported by search
+// APIs (at https://cloud.google.com/asset-inventory/docs/supported-asset-types)
 // or IAM policies.
 func (c *Client) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	return c.internalClient.AnalyzeOrgPolicyGovernedAssets(ctx, req, opts...)
@@ -3344,9 +3343,8 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 //
 //	compute.disableNestedVirtualization
 //
-// This RPC only returns either resources of types supported by searchable
-// asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types),
+// This RPC only returns either resources of types supported by search
+// APIs (at https://cloud.google.com/asset-inventory/docs/supported-asset-types)
 // or IAM policies.
 func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	it := &AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator{}
