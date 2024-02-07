@@ -66,6 +66,7 @@ type ProductSearchCallOptions struct {
 	ListProductsInProductSet    []gax.CallOption
 	ImportProductSets           []gax.CallOption
 	PurgeProducts               []gax.CallOption
+	GetOperation                []gax.CallOption
 }
 
 func defaultProductSearchGRPCClientOptions() []option.ClientOption {
@@ -316,6 +317,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 				})
 			}),
 		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
@@ -504,6 +506,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 		PurgeProducts: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
@@ -533,6 +536,7 @@ type internalProductSearchClient interface {
 	ImportProductSetsOperation(name string) *ImportProductSetsOperation
 	PurgeProducts(context.Context, *visionpb.PurgeProductsRequest, ...gax.CallOption) (*PurgeProductsOperation, error)
 	PurgeProductsOperation(name string) *PurgeProductsOperation
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // ProductSearchClient is a client for interacting with Cloud Vision API.
@@ -541,16 +545,18 @@ type internalProductSearchClient interface {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//	The API has a collection of ProductSet
+//	resources, named projects/*/locations/*/productSets/*, which acts as a way
+//	to put different products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
+//	The API has a collection of Product
+//	resources, named
 //	projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
+//	Each Product has a collection of
+//	ReferenceImage resources, named
 //	projects/*/locations/*/products/*/referenceImages/*
 type ProductSearchClient struct {
 	// The internal transport-dependent client.
@@ -790,8 +796,8 @@ func (c *ProductSearchClient) ListProductsInProductSet(ctx context.Context, req 
 // ImportProductSets asynchronous API that imports a list of reference images to specified
 // product sets based on a list of image information.
 //
-// The google.longrunning.Operation API can be used to keep track of the
-// progress and results of the request.
+// The google.longrunning.Operation API can be
+// used to keep track of the progress and results of the request.
 // Operation.metadata contains BatchOperationMetadata. (progress)
 // Operation.response contains ImportProductSetsResponse. (results)
 //
@@ -829,8 +835,8 @@ func (c *ProductSearchClient) ImportProductSetsOperation(name string) *ImportPro
 // ProductSet, you must wait until the PurgeProducts operation has finished
 // for that ProductSet.
 //
-// The google.longrunning.Operation API can be used to keep track of the
-// progress and results of the request.
+// The google.longrunning.Operation API can be
+// used to keep track of the progress and results of the request.
 // Operation.metadata contains BatchOperationMetadata. (progress)
 func (c *ProductSearchClient) PurgeProducts(ctx context.Context, req *visionpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
 	return c.internalClient.PurgeProducts(ctx, req, opts...)
@@ -840,6 +846,11 @@ func (c *ProductSearchClient) PurgeProducts(ctx context.Context, req *visionpb.P
 // The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
 func (c *ProductSearchClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
 	return c.internalClient.PurgeProductsOperation(name)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *ProductSearchClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // productSearchGRPCClient is a client for interacting with Cloud Vision API over gRPC transport.
@@ -860,6 +871,8 @@ type productSearchGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
 }
@@ -870,16 +883,18 @@ type productSearchGRPCClient struct {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//	The API has a collection of ProductSet
+//	resources, named projects/*/locations/*/productSets/*, which acts as a way
+//	to put different products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
+//	The API has a collection of Product
+//	resources, named
 //	projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
+//	Each Product has a collection of
+//	ReferenceImage resources, named
 //	projects/*/locations/*/products/*/referenceImages/*
 func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*ProductSearchClient, error) {
 	clientOpts := defaultProductSearchGRPCClientOptions()
@@ -901,6 +916,7 @@ func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		productSearchClient: visionpb.NewProductSearchClient(connPool),
 		CallOptions:         &client.CallOptions,
+		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -968,16 +984,18 @@ type productSearchRESTClient struct {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//	The API has a collection of ProductSet
+//	resources, named projects/*/locations/*/productSets/*, which acts as a way
+//	to put different products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
+//	The API has a collection of Product
+//	resources, named
 //	projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
+//	Each Product has a collection of
+//	ReferenceImage resources, named
 //	projects/*/locations/*/products/*/referenceImages/*
 func NewProductSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProductSearchClient, error) {
 	clientOpts := append(defaultProductSearchRESTClientOptions(), opts...)
@@ -1477,6 +1495,24 @@ func (c *productSearchGRPCClient) PurgeProducts(ctx context.Context, req *vision
 	return &PurgeProductsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *productSearchGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateProductSet creates and returns a new ProductSet resource.
@@ -2712,8 +2748,8 @@ func (c *productSearchRESTClient) ListProductsInProductSet(ctx context.Context, 
 // ImportProductSets asynchronous API that imports a list of reference images to specified
 // product sets based on a list of image information.
 //
-// The google.longrunning.Operation API can be used to keep track of the
-// progress and results of the request.
+// The google.longrunning.Operation API can be
+// used to keep track of the progress and results of the request.
 // Operation.metadata contains BatchOperationMetadata. (progress)
 // Operation.response contains ImportProductSetsResponse. (results)
 //
@@ -2810,8 +2846,8 @@ func (c *productSearchRESTClient) ImportProductSets(ctx context.Context, req *vi
 // ProductSet, you must wait until the PurgeProducts operation has finished
 // for that ProductSet.
 //
-// The google.longrunning.Operation API can be used to keep track of the
-// progress and results of the request.
+// The google.longrunning.Operation API can be
+// used to keep track of the progress and results of the request.
 // Operation.metadata contains BatchOperationMetadata. (progress)
 func (c *productSearchRESTClient) PurgeProducts(ctx context.Context, req *visionpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2880,6 +2916,66 @@ func (c *productSearchRESTClient) PurgeProducts(ctx context.Context, req *vision
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *productSearchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ImportProductSetsOperation returns a new ImportProductSetsOperation from a given name.

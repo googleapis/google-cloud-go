@@ -30,6 +30,7 @@ go.opentelemetry.io/otel/bridge/opencensus v0.40.0/go.mod h1:1NvVHb6tLTe5A9qCYz+
 go.opentelemetry.io/proto/otlp v1.0.0/go.mod h1:Sy6pihPLfYHkr3NkUbEhGHFhINUSI/v80hjKIs5JXpM=
 golang.org/x/mod v0.9.0 h1:KENHtAZL2y3NLMYZeHY9DW8HW8V+kQyJsY/V9JlKvCs=
 golang.org/x/mod v0.11.0 h1:bUO06HqtnRcc/7l71XBe4WcqTZ+3AH1J59zWDDwLKgU=
+golang.org/x/term v0.15.0/go.mod h1:BDl952bC7+uMoWR75FIrCDx79TPU9oHkTZ9yRbYOrX0=
 golang.org/x/tools v0.7.0 h1:W4OVu8VVOaIO0yzWMNdepAulS7YfoS3Zabrm8DOXXU4=
 golang.org/x/tools v0.10.0 h1:tvDr/iQoUqNdohiYm0LmmKcBk+q86lb9EprIUFhHHGg=
 google.golang.org/api v0.157.0/go.mod h1:+z4v4ufbZ1WEpld6yMGHyggs+PmAHiaLNj5ytP3N01g=
@@ -38,4 +39,5 @@ google.golang.org/genproto/googleapis/api v0.0.0-20230725213213-b022f6e96895/go.
 google.golang.org/genproto/googleapis/api v0.0.0-20240116215550-a9fa1716bcac/go.mod h1:B5xPO//w8qmBDjGReYLpR6UJPnkldGkCSMoH/2vxJeg=
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20231120223509-83a465c0220f/go.mod h1:iIgEblxoG4klcXsG0d9cpoxJ4xndv6+1FkDROCHhPRI=
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20240102182953-50ed04b92917/go.mod h1:O9TvT7A9NLgdqqF0JJXJ+axpaoYiEb8txGmkvy+AvLc=
+google.golang.org/genproto/googleapis/bytestream v0.0.0-20240125205218-1f4bbc51befe/go.mod h1:SCz6T5xjNXM4QFPRwxHcfChp7V+9DcXR3ay2TkHR8Tg=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20230725213213-b022f6e96895/go.mod h1:TUfxEVdsvPg18p6AslUXFoLdpED4oBnGwyqk3dV1XzM=
