@@ -52,7 +52,9 @@ type ContainerAnalysisV1Beta1CallOptions struct {
 func defaultContainerAnalysisV1Beta1GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("containeranalysis.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("containeranalysis.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("containeranalysis.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -332,7 +334,9 @@ func NewContainerAnalysisV1Beta1RESTClient(ctx context.Context, opts ...option.C
 func defaultContainerAnalysisV1Beta1RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://containeranalysis.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://containeranalysis.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://containeranalysis.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

@@ -1,5 +1,20 @@
 # Changes
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.15.0...retail/v1.15.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **retail:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.14.4...retail/v1.15.0) (2024-01-22)
+
+
+### Features
+
+* **retail:** Add analytics service ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+* **retail:** Add analytics service ([#9272](https://github.com/googleapis/google-cloud-go/issues/9272)) ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
 ## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/retail/v1.14.3...retail/v1.14.4) (2023-11-01)
 
 

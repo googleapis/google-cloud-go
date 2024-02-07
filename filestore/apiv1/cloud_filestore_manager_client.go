@@ -76,7 +76,9 @@ type CloudFilestoreManagerCallOptions struct {
 func defaultCloudFilestoreManagerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("file.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("file.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("file.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://file.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -745,7 +747,9 @@ func NewCloudFilestoreManagerRESTClient(ctx context.Context, opts ...option.Clie
 func defaultCloudFilestoreManagerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://file.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://file.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://file.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://file.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

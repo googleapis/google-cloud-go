@@ -48,7 +48,9 @@ type PublicCertificateAuthorityCallOptions struct {
 func defaultPublicCertificateAuthorityGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("publicca.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("publicca.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("publicca.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://publicca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -255,7 +257,9 @@ func NewPublicCertificateAuthorityRESTClient(ctx context.Context, opts ...option
 func defaultPublicCertificateAuthorityRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://publicca.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://publicca.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://publicca.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://publicca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

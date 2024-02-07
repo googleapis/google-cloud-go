@@ -470,6 +470,9 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		MaximumBytesBilled: q.QueryConfig.MaxBytesBilled,
 		RequestId:          uid.NewSpace("request", nil).New(),
 		Labels:             q.Labels,
+		FormatOptions: &bq.DataFormatOptions{
+			UseInt64Timestamp: true,
+		},
 	}
 	if q.QueryConfig.DisableQueryCache {
 		qRequest.UseQueryCache = &pfalse

@@ -54,7 +54,9 @@ type OperationsCallOptions struct {
 func defaultOperationsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("longrunning.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("longrunning.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("longrunning.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://longrunning.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -405,7 +407,9 @@ func NewOperationsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultOperationsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://longrunning.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://longrunning.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://longrunning.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://longrunning.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

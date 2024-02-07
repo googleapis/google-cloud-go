@@ -60,7 +60,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("apikeys.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("apikeys.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("apikeys.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://apikeys.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -432,7 +434,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://apikeys.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://apikeys.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://apikeys.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://apikeys.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

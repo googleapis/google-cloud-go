@@ -199,6 +199,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/apps/meet/apiv2": {
+    "api_shortname": "meet",
+    "distribution_name": "cloud.google.com/go/apps/meet/apiv2",
+    "description": "Google Meet API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apps/latest/meet/apiv2",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/apps/meet/apiv2beta": {
     "api_shortname": "meet",
     "distribution_name": "cloud.google.com/go/apps/meet/apiv2beta",
@@ -2159,6 +2169,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/securityposture/apiv1": {
+    "api_shortname": "securityposture",
+    "distribution_name": "cloud.google.com/go/securityposture/apiv1",
+    "description": "Security Posture API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/securityposture/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/servicecontrol/apiv1": {
     "api_shortname": "servicecontrol",
     "distribution_name": "cloud.google.com/go/servicecontrol/apiv1",
@@ -2537,6 +2557,16 @@
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vision/v2/latest/apiv1p1beta1",
     "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/visionai/apiv1": {
+    "api_shortname": "visionai",
+    "distribution_name": "cloud.google.com/go/visionai/apiv1",
+    "description": "Vision AI API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/visionai/latest/apiv1",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/vmmigration/apiv1": {

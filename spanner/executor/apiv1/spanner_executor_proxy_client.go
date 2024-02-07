@@ -38,7 +38,9 @@ type SpannerExecutorProxyCallOptions struct {
 func defaultSpannerExecutorProxyGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("spanner-cloud-executor.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("spanner-cloud-executor.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("spanner-cloud-executor.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner-cloud-executor.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
