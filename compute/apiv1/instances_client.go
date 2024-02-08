@@ -61,6 +61,7 @@ type InstancesCallOptions struct {
 	Insert                             []gax.CallOption
 	List                               []gax.CallOption
 	ListReferrers                      []gax.CallOption
+	PerformMaintenance                 []gax.CallOption
 	RemoveResourcePolicies             []gax.CallOption
 	Reset                              []gax.CallOption
 	Resume                             []gax.CallOption
@@ -238,6 +239,9 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		PerformMaintenance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		RemoveResourcePolicies: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -351,6 +355,7 @@ type internalInstancesClient interface {
 	Insert(context.Context, *computepb.InsertInstanceRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListInstancesRequest, ...gax.CallOption) *InstanceIterator
 	ListReferrers(context.Context, *computepb.ListReferrersInstancesRequest, ...gax.CallOption) *ReferenceIterator
+	PerformMaintenance(context.Context, *computepb.PerformMaintenanceInstanceRequest, ...gax.CallOption) (*Operation, error)
 	RemoveResourcePolicies(context.Context, *computepb.RemoveResourcePoliciesInstanceRequest, ...gax.CallOption) (*Operation, error)
 	Reset(context.Context, *computepb.ResetInstanceRequest, ...gax.CallOption) (*Operation, error)
 	Resume(context.Context, *computepb.ResumeInstanceRequest, ...gax.CallOption) (*Operation, error)
@@ -505,6 +510,11 @@ func (c *InstancesClient) List(ctx context.Context, req *computepb.ListInstances
 // ListReferrers retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed or unmanaged instance group, the referrers list includes the instance group. For more information, read Viewing referrers to VM instances.
 func (c *InstancesClient) ListReferrers(ctx context.Context, req *computepb.ListReferrersInstancesRequest, opts ...gax.CallOption) *ReferenceIterator {
 	return c.internalClient.ListReferrers(ctx, req, opts...)
+}
+
+// PerformMaintenance perform a manual maintenance on the instance.
+func (c *InstancesClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.PerformMaintenance(ctx, req, opts...)
 }
 
 // RemoveResourcePolicies removes resource policies from an instance.
@@ -2068,6 +2078,76 @@ func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.
 	return it
 }
 
+// PerformMaintenance perform a manual maintenance on the instance.
+func (c *instancesRESTClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/performMaintenance", req.GetProject(), req.GetZone(), req.GetInstance())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).PerformMaintenance[0:len((*c.CallOptions).PerformMaintenance):len((*c.CallOptions).PerformMaintenance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
 // RemoveResourcePolicies removes resource policies from an instance.
 func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -3405,6 +3485,9 @@ func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req 
 	params := url.Values{}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req != nil && req.WithExtendedNotifications != nil {
+		params.Add("withExtendedNotifications", fmt.Sprintf("%v", req.GetWithExtendedNotifications()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
