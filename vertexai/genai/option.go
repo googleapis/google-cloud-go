@@ -26,7 +26,7 @@ func WithUseREST(b bool) option.ClientOption {
 	return &withUseREST{useREST: b}
 }
 
-func (w *withUseREST) ApplyVertexaiOpt(c *config) {
+func (w *withUseREST) applyVertexaiOpt(c *config) {
 	c.useREST = w.useREST
 }
 
@@ -41,7 +41,7 @@ func newConfig(opts ...option.ClientOption) config {
 	var conf config
 	for _, opt := range opts {
 		if vOpt, ok := opt.(vertexaiClientOption); ok {
-			vOpt.ApplyVertexaiOpt(&conf)
+			vOpt.applyVertexaiOpt(&conf)
 		}
 	}
 	return conf
@@ -50,7 +50,7 @@ func newConfig(opts ...option.ClientOption) config {
 // A vertexaiClientOption is an option for a vertexai client.
 type vertexaiClientOption interface {
 	option.ClientOption
-	ApplyVertexaiOpt(*config)
+	applyVertexaiOpt(*config)
 }
 
 type withUseREST struct {
