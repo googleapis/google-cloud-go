@@ -33,6 +33,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 )
 
 // transactionID stores a transaction ID which uniquely identifies a transaction
@@ -1503,14 +1504,22 @@ type CommitResponse struct {
 // CommitOptions provides options for committing a transaction in a database.
 type CommitOptions struct {
 	ReturnCommitStats bool
+	MaxCommitDelay    *time.Duration
 }
 
 // merge combines two CommitOptions that the input parameter will have higher
 // order of precedence.
 func (co CommitOptions) merge(opts CommitOptions) CommitOptions {
-	return CommitOptions{
+	var newOpts CommitOptions
+	newOpts = CommitOptions{
 		ReturnCommitStats: co.ReturnCommitStats || opts.ReturnCommitStats,
+		MaxCommitDelay:    opts.MaxCommitDelay,
 	}
+
+	if newOpts.MaxCommitDelay == nil {
+		newOpts.MaxCommitDelay = co.MaxCommitDelay
+	}
+	return newOpts
 }
 
 // commit tries to commit a readwrite transaction to Cloud Spanner. It also
@@ -1549,6 +1558,10 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	t.sh.updateLastUseTime()
 
 	var md metadata.MD
+	var maxCommitDelay *durationpb.Duration
+	if options.MaxCommitDelay != nil {
+		maxCommitDelay = durationpb.New(*(options.MaxCommitDelay))
+	}
 	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
 		Session: sid,
 		Transaction: &sppb.CommitRequest_TransactionId{
@@ -1557,6 +1570,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
 		Mutations:         mPb,
 		ReturnCommitStats: options.ReturnCommitStats,
+		MaxCommitDelay:    maxCommitDelay,
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "commit"); err != nil {
