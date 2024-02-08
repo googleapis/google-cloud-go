@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -302,7 +301,7 @@ type Document_Content_RawBytes struct {
 type Document_Content_Uri struct {
 	// The URI of the content. Only Cloud Storage URIs (e.g.
 	// `gs://bucket-name/path/to/file`) are supported. The maximum file size
-	// is 100 MB.
+	// is 2.5 MB for text-based formats, 100 MB for other formats.
 	Uri string `protobuf:"bytes,3,opt,name=uri,proto3,oneof"`
 }
 
