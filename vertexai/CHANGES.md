@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.6.0...vertexai/v0.7.0) (2024-02-08)
+
+
+### Features
+
+* **vertexai:** Add WithREST option to vertexai client ([#9389](https://github.com/googleapis/google-cloud-go/issues/9389)) ([f5d56eb](https://github.com/googleapis/google-cloud-go/commit/f5d56eb03558fce093a5b9947ae041fba4d844b2))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.5.2...vertexai/v0.6.0) (2023-12-17)
 
 
