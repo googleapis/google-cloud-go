@@ -46,16 +46,40 @@ type Client struct {
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
 //
-// You may configure the client by passing in options from the [google.golang.org/api/option]
-// package.
+// You may configure the client by passing in options from the
+// [google.golang.org/api/option] package. For additional configuration
+// options, see [NewClientWithConfig].
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
+	defaultConfig := ClientConfig{
+		RESTTransport: false,
+	}
+
+	return NewClientWithConfig(ctx, projectID, location, defaultConfig, opts...)
+}
+
+// NewClientWithConfig creates a new Google Vertex AI client.
+//
+// Clients should be reused instead of created as needed. The methods of Client
+// are safe for concurrent use by multiple goroutines.
+//
+// You may configure the client by setting the config parameter and passing in
+// options from the [google.golang.org/api/option] package.
+func NewClientWithConfig(ctx context.Context, projectID, location string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
 	opts = append([]option.ClientOption{
 		option.WithEndpoint(fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)),
 	}, opts...)
-	c, err := aiplatform.NewPredictionClient(ctx, opts...)
+
+	var c *aiplatform.PredictionClient
+	var err error
+	if config.RESTTransport {
+		c, err = aiplatform.NewPredictionRESTClient(ctx, opts...)
+	} else {
+		c, err = aiplatform.NewPredictionClient(ctx, opts...)
+	}
 	if err != nil {
 		return nil, err
 	}
+
 	c.SetGoogleClientInfo("gccl", internal.Version)
 	return &Client{
 		c:         c,
