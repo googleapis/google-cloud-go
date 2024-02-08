@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 
 	"go.opencensus.io/trace"
 	"go.opentelemetry.io/otel"
@@ -59,6 +60,8 @@ var (
 	// original value after each test.
 	OpenTelemetryTracingEnabled bool = strings.EqualFold(strings.TrimSpace(
 		os.Getenv(TelemetryPlatformTracingVar)), TelemetryPlatformTracingOpenTelemetry)
+
+	OpenTelemetryTracingEnabledMu = sync.RWMutex{}
 )
 
 // IsOpenCensusTracingEnabled returns true if the environment variable
@@ -72,6 +75,8 @@ func IsOpenCensusTracingEnabled() bool {
 // GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING is set to the
 // case-insensitive value "opentelemetry".
 func IsOpenTelemetryTracingEnabled() bool {
+	OpenTelemetryTracingEnabledMu.RLock()
+	defer OpenTelemetryTracingEnabledMu.RUnlock()
 	return OpenTelemetryTracingEnabled
 }
 

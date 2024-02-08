@@ -33,10 +33,16 @@ import (
 func TestSpannerTracesWithOpenTelemetry(t *testing.T) {
 	ctx := context.Background()
 	te := newOpenTelemetryTestExporter(false, true)
+	trace.OpenTelemetryTracingEnabledMu.RLock()
 	old := trace.OpenTelemetryTracingEnabled
+	trace.OpenTelemetryTracingEnabledMu.RUnlock()
+	trace.OpenTelemetryTracingEnabledMu.Lock()
 	trace.OpenTelemetryTracingEnabled = true
+	trace.OpenTelemetryTracingEnabledMu.Unlock()
 
 	t.Cleanup(func() {
+		trace.OpenTelemetryTracingEnabledMu.Lock()
+		defer trace.OpenTelemetryTracingEnabledMu.Unlock()
 		trace.OpenTelemetryTracingEnabled = old
 		te.Unregister(ctx)
 	})
