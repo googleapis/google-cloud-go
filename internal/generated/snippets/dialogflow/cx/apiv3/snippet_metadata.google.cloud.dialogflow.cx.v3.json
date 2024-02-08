@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/cx/apiv3",
-    "version": "1.48.2",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -1524,6 +1524,52 @@
       ]
     },
     {
+      "regionTag": "dialogflow_v3_generated_EntityTypes_ExportEntityTypes_sync",
+      "title": "dialogflow ExportEntityTypes Sample",
+      "description": "ExportEntityTypes exports the selected entity types.",
+      "file": "EntityTypesClient/ExportEntityTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportEntityTypes",
+        "fullName": "google.cloud.dialogflow.cx.v3.EntityTypesClient.ExportEntityTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.ExportEntityTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportEntityTypesOperation",
+        "client": {
+          "shortName": "EntityTypesClient",
+          "fullName": "google.cloud.dialogflow.cx.v3.EntityTypesClient"
+        },
+        "method": {
+          "shortName": "ExportEntityTypes",
+          "fullName": "google.cloud.dialogflow.cx.v3.EntityTypes.ExportEntityTypes",
+          "service": {
+            "shortName": "EntityTypes",
+            "fullName": "google.cloud.dialogflow.cx.v3.EntityTypes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dialogflow_v3_generated_EntityTypes_GetEntityType_sync",
       "title": "dialogflow GetEntityType Sample",
       "description": "GetEntityType retrieves the specified entity type.",
@@ -1657,6 +1703,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v3_generated_EntityTypes_ImportEntityTypes_sync",
+      "title": "dialogflow ImportEntityTypes Sample",
+      "description": "ImportEntityTypes imports the specified entitytypes into the agent.",
+      "file": "EntityTypesClient/ImportEntityTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportEntityTypes",
+        "fullName": "google.cloud.dialogflow.cx.v3.EntityTypesClient.ImportEntityTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cxpb.ImportEntityTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportEntityTypesOperation",
+        "client": {
+          "shortName": "EntityTypesClient",
+          "fullName": "google.cloud.dialogflow.cx.v3.EntityTypesClient"
+        },
+        "method": {
+          "shortName": "ImportEntityTypes",
+          "fullName": "google.cloud.dialogflow.cx.v3.EntityTypes.ImportEntityTypes",
+          "service": {
+            "shortName": "EntityTypes",
+            "fullName": "google.cloud.dialogflow.cx.v3.EntityTypes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

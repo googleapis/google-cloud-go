@@ -21,11 +21,8 @@
 package cxpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -258,7 +257,8 @@ type Agent struct {
 	// Immutable. Name of the start flow in this agent. A start flow will be
 	// automatically created when the agent is created, and can only be deleted by
 	// deleting the agent. Format: `projects/<Project ID>/locations/<Location
-	// ID>/agents/<Agent ID>/flows/<Flow ID>`.
+	// ID>/agents/<Agent ID>/flows/<Flow ID>`. Currently only the default start
+	// flow with id "00000000-0000-0000-0000-000000000000" is allowed.
 	StartFlow string `protobuf:"bytes,16,opt,name=start_flow,json=startFlow,proto3" json:"start_flow,omitempty"`
 	// Name of the
 	// [SecuritySettings][google.cloud.dialogflow.cx.v3.SecuritySettings]
