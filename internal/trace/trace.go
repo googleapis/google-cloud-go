@@ -51,17 +51,17 @@ const (
 )
 
 var (
-	//
+	// openTelemetryTracingEnabledMu guards access to openTelemetryTracingEnabled field
 	openTelemetryTracingEnabledMu = sync.RWMutex{}
-	// OpenTelemetryTracingEnabled is true if the environment variable
+	// openTelemetryTracingEnabled is true if the environment variable
 	// GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING is set to the
 	// case-insensitive value "opentelemetry".
 	openTelemetryTracingEnabled bool = strings.EqualFold(strings.TrimSpace(
 		os.Getenv(TelemetryPlatformTracingVar)), TelemetryPlatformTracingOpenTelemetry)
 )
 
-// Do not invoke SetOpenTelemetryTracingEnabledField directly. Set GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING
-// environment variable instead. Intended for use only in unit tests. Restore original value after each test.
+// SetOpenTelemetryTracingEnabledField programmatically sets the value provided by GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING for the purpose of unit testing.
+// Do not invoke it directly. Intended for use only in unit tests. Restore original value after each test.
 func SetOpenTelemetryTracingEnabledField(enabled bool) {
 	openTelemetryTracingEnabledMu.Lock()
 	defer openTelemetryTracingEnabledMu.Unlock()
