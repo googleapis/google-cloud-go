@@ -13,6 +13,9 @@
 // limitations under the License.
 package genai
 
+// ClientConfig has configurations for the client.
 type ClientConfig struct {
+	// RESTTransport asks the client to use REST as its underlying transport
+	// instead of gRPC.
 	RESTTransport bool
 }
