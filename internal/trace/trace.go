@@ -51,18 +51,22 @@ const (
 )
 
 var (
+	//
+	openTelemetryTracingEnabledMu = sync.RWMutex{}
 	// OpenTelemetryTracingEnabled is true if the environment variable
 	// GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING is set to the
 	// case-insensitive value "opentelemetry".
-	//
-	// Do not access directly. Use instead IsOpenTelemetryTracingEnabled or
-	// IsOpenCensusTracingEnabled. Intended for use only in unit tests. Restore
-	// original value after each test.
-	OpenTelemetryTracingEnabled bool = strings.EqualFold(strings.TrimSpace(
+	openTelemetryTracingEnabled bool = strings.EqualFold(strings.TrimSpace(
 		os.Getenv(TelemetryPlatformTracingVar)), TelemetryPlatformTracingOpenTelemetry)
-
-	OpenTelemetryTracingEnabledMu = sync.RWMutex{}
 )
+
+// Do not invoke SetOpenTelemetryTracingEnabledField directly. Set GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING
+// environment variable instead. Intended for use only in unit tests. Restore original value after each test.
+func SetOpenTelemetryTracingEnabledField(enabled bool) {
+	openTelemetryTracingEnabledMu.Lock()
+	defer openTelemetryTracingEnabledMu.Unlock()
+	openTelemetryTracingEnabled = enabled
+}
 
 // IsOpenCensusTracingEnabled returns true if the environment variable
 // GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING is NOT set to the
@@ -75,9 +79,9 @@ func IsOpenCensusTracingEnabled() bool {
 // GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING is set to the
 // case-insensitive value "opentelemetry".
 func IsOpenTelemetryTracingEnabled() bool {
-	OpenTelemetryTracingEnabledMu.RLock()
-	defer OpenTelemetryTracingEnabledMu.RUnlock()
-	return OpenTelemetryTracingEnabled
+	openTelemetryTracingEnabledMu.RLock()
+	defer openTelemetryTracingEnabledMu.RUnlock()
+	return openTelemetryTracingEnabled
 }
 
 // StartSpan adds a span to the trace with the given name. If IsOpenCensusTracingEnabled
