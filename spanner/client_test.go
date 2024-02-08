@@ -4120,11 +4120,19 @@ type TransactionOptionsTestCase struct {
 }
 
 func transactionOptionsTestCases() []TransactionOptionsTestCase {
+	duration, _ := time.ParseDuration("100ms")
+	otherDuration, _ := time.ParseDuration("50ms")
+
 	return []TransactionOptionsTestCase{
 		{
 			name:   "Client level",
 			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
 			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+		},
+		{
+			name:   "Client level with MaxCommitDelay",
+			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
 		},
 		{
 			name:   "Write level",
@@ -4133,10 +4141,28 @@ func transactionOptionsTestCases() []TransactionOptionsTestCase {
 			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
 		},
 		{
+			name:   "Write level with MaxCommitDelay",
+			client: &TransactionOptions{},
+			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+		},
+		{
 			name:   "Write level has precedence than client level",
 			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: false}, TransactionTag: "clientTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
 			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
 			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+		},
+		{
+			name:   "Write level nil MaxCommitDelay does not unset client level MaxCommitDelay",
+			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: false, MaxCommitDelay: &duration}, TransactionTag: "clientTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+		},
+		{
+			name:   "Write level has precedence than client level MaxCommitDelay",
+			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: false, MaxCommitDelay: &duration}, TransactionTag: "clientTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &otherDuration}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &otherDuration}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
 		},
 		{
 			name:   "Read lock mode is optimistic",
@@ -5030,5 +5056,285 @@ func TestClient_BatchWrite_SpanExported(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			checkBatchWriteSpan(t, tt.errors, tt.code)
 		})
+	}
+}
+
+func TestClient_ReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}})
+
+	var attempts int
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		return tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
+	}, TransactionOptions{TransactionTag: "test-tag1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+
+	attempts = 0
+	_, err = client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		return tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
+	}, TransactionOptions{TransactionTag: "test-tag2"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 1; g != w {
+		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	commit := requests[len(requests)-1].(*sppb.CommitRequest)
+	g, w := len(commit.Mutations), 1
+	if g != w {
+		t.Fatalf("mutations count mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+}
+
+func TestClient_ReadWriteTransactionWithTag_SessionNotFound(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}})
+
+	var attempts int
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		return tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
+	}, TransactionOptions{TransactionTag: "test-tag1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 1; g != w {
+		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+
+	attempts = 0
+	_, err = client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		return tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
+	}, TransactionOptions{TransactionTag: "test-tag2"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 1; g != w {
+		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if g, w := requests[3].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[5].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+}
+
+func TestClient_NestedReadWriteTransactionWithTag_AbortedOnce(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}})
+
+	var attempts int
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if _, err := client.ReadWriteTransactionWithOptions(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+			if _, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
+				return err
+			}
+			return nil
+		}, TransactionOptions{TransactionTag: "test-tag2"}); err != nil {
+			return err
+		}
+		return tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
+	}, TransactionOptions{TransactionTag: "test-tag1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 1; g != w {
+		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if g, w := requests[1].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[2].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[3].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[4].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[6].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+}
+
+func TestClient_NestedReadWriteTransactionWithTag_OuterAbortedOnce(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{Errors: []error{nil, status.Error(codes.Aborted, "Transaction aborted")}})
+
+	var attempts int
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if _, err := client.ReadWriteTransactionWithOptions(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+			if _, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
+				return err
+			}
+			return nil
+		}, TransactionOptions{TransactionTag: "test-tag2"}); err != nil {
+			return err
+		}
+		return tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
+	}, TransactionOptions{TransactionTag: "test-tag1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if g, w := requests[1].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[2].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[4].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[5].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[6].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[8].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+}
+
+func TestClient_NestedReadWriteTransactionWithTag_InnerBlindWrite(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{Errors: []error{nil, status.Error(codes.Aborted, "Transaction aborted")}})
+
+	var attempts int
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if _, err := client.ReadWriteTransactionWithOptions(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+			return tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
+		}, TransactionOptions{TransactionTag: "test-tag2"}); err != nil {
+			return err
+		}
+		if _, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
+			return err
+		}
+		return nil
+	}, TransactionOptions{TransactionTag: "test-tag1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{},
+	}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if g, w := requests[2].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[3].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[4].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[6].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag2"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[7].(*sppb.ExecuteSqlRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+	if g, w := requests[8].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
+		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
 	}
 }

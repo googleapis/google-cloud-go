@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.1.2...telcoautomation/v0.2.0) (2024-02-06)
+
+
+### Features
+
+* **telcoautomation:** Support for the STATUS_NOT_APPLICABLE entity status ([e60a6ba](https://github.com/googleapis/google-cloud-go/commit/e60a6ba01acf2ef2e8d12e23ed5c6e876edeb1b7))
+
+## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.1.1...telcoautomation/v0.1.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **telcoautomation:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.1.0...telcoautomation/v0.1.1) (2023-11-27)
 
 

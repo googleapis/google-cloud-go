@@ -48,7 +48,9 @@ type PublisherCallOptions struct {
 func defaultPublisherGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("eventarcpublishing.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("eventarcpublishing.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("eventarcpublishing.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://eventarcpublishing.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -309,7 +311,9 @@ func NewPublisherRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 func defaultPublisherRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://eventarcpublishing.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://eventarcpublishing.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://eventarcpublishing.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://eventarcpublishing.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

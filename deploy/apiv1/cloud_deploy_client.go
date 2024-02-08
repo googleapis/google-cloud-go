@@ -103,7 +103,9 @@ type CloudDeployCallOptions struct {
 func defaultCloudDeployGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("clouddeploy.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("clouddeploy.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouddeploy.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouddeploy.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -1272,7 +1274,9 @@ func NewCloudDeployRESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultCloudDeployRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://clouddeploy.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://clouddeploy.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://clouddeploy.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouddeploy.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

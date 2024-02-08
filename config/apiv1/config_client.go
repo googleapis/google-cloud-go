@@ -63,6 +63,11 @@ type CallOptions struct {
 	LockDeployment            []gax.CallOption
 	UnlockDeployment          []gax.CallOption
 	ExportLockInfo            []gax.CallOption
+	CreatePreview             []gax.CallOption
+	GetPreview                []gax.CallOption
+	ListPreviews              []gax.CallOption
+	DeletePreview             []gax.CallOption
+	ExportPreviewResult       []gax.CallOption
 	GetLocation               []gax.CallOption
 	ListLocations             []gax.CallOption
 	GetIamPolicy              []gax.CallOption
@@ -77,7 +82,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("config.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("config.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("config.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://config.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -104,6 +111,11 @@ func defaultCallOptions() *CallOptions {
 		LockDeployment:            []gax.CallOption{},
 		UnlockDeployment:          []gax.CallOption{},
 		ExportLockInfo:            []gax.CallOption{},
+		CreatePreview:             []gax.CallOption{},
+		GetPreview:                []gax.CallOption{},
+		ListPreviews:              []gax.CallOption{},
+		DeletePreview:             []gax.CallOption{},
+		ExportPreviewResult:       []gax.CallOption{},
 		GetLocation:               []gax.CallOption{},
 		ListLocations:             []gax.CallOption{},
 		GetIamPolicy:              []gax.CallOption{},
@@ -134,6 +146,11 @@ func defaultRESTCallOptions() *CallOptions {
 		LockDeployment:            []gax.CallOption{},
 		UnlockDeployment:          []gax.CallOption{},
 		ExportLockInfo:            []gax.CallOption{},
+		CreatePreview:             []gax.CallOption{},
+		GetPreview:                []gax.CallOption{},
+		ListPreviews:              []gax.CallOption{},
+		DeletePreview:             []gax.CallOption{},
+		ExportPreviewResult:       []gax.CallOption{},
 		GetLocation:               []gax.CallOption{},
 		ListLocations:             []gax.CallOption{},
 		GetIamPolicy:              []gax.CallOption{},
@@ -172,6 +189,13 @@ type internalClient interface {
 	UnlockDeployment(context.Context, *configpb.UnlockDeploymentRequest, ...gax.CallOption) (*UnlockDeploymentOperation, error)
 	UnlockDeploymentOperation(name string) *UnlockDeploymentOperation
 	ExportLockInfo(context.Context, *configpb.ExportLockInfoRequest, ...gax.CallOption) (*configpb.LockInfo, error)
+	CreatePreview(context.Context, *configpb.CreatePreviewRequest, ...gax.CallOption) (*CreatePreviewOperation, error)
+	CreatePreviewOperation(name string) *CreatePreviewOperation
+	GetPreview(context.Context, *configpb.GetPreviewRequest, ...gax.CallOption) (*configpb.Preview, error)
+	ListPreviews(context.Context, *configpb.ListPreviewsRequest, ...gax.CallOption) *PreviewIterator
+	DeletePreview(context.Context, *configpb.DeletePreviewRequest, ...gax.CallOption) (*DeletePreviewOperation, error)
+	DeletePreviewOperation(name string) *DeletePreviewOperation
+	ExportPreviewResult(context.Context, *configpb.ExportPreviewResultRequest, ...gax.CallOption) (*configpb.ExportPreviewResultResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -335,6 +359,44 @@ func (c *Client) UnlockDeploymentOperation(name string) *UnlockDeploymentOperati
 // ExportLockInfo exports the lock info on a locked deployment.
 func (c *Client) ExportLockInfo(ctx context.Context, req *configpb.ExportLockInfoRequest, opts ...gax.CallOption) (*configpb.LockInfo, error) {
 	return c.internalClient.ExportLockInfo(ctx, req, opts...)
+}
+
+// CreatePreview creates a Preview.
+func (c *Client) CreatePreview(ctx context.Context, req *configpb.CreatePreviewRequest, opts ...gax.CallOption) (*CreatePreviewOperation, error) {
+	return c.internalClient.CreatePreview(ctx, req, opts...)
+}
+
+// CreatePreviewOperation returns a new CreatePreviewOperation from a given name.
+// The name must be that of a previously created CreatePreviewOperation, possibly from a different process.
+func (c *Client) CreatePreviewOperation(name string) *CreatePreviewOperation {
+	return c.internalClient.CreatePreviewOperation(name)
+}
+
+// GetPreview gets details about a Preview.
+func (c *Client) GetPreview(ctx context.Context, req *configpb.GetPreviewRequest, opts ...gax.CallOption) (*configpb.Preview, error) {
+	return c.internalClient.GetPreview(ctx, req, opts...)
+}
+
+// ListPreviews lists Previews in a given project and
+// location.
+func (c *Client) ListPreviews(ctx context.Context, req *configpb.ListPreviewsRequest, opts ...gax.CallOption) *PreviewIterator {
+	return c.internalClient.ListPreviews(ctx, req, opts...)
+}
+
+// DeletePreview deletes a Preview.
+func (c *Client) DeletePreview(ctx context.Context, req *configpb.DeletePreviewRequest, opts ...gax.CallOption) (*DeletePreviewOperation, error) {
+	return c.internalClient.DeletePreview(ctx, req, opts...)
+}
+
+// DeletePreviewOperation returns a new DeletePreviewOperation from a given name.
+// The name must be that of a previously created DeletePreviewOperation, possibly from a different process.
+func (c *Client) DeletePreviewOperation(name string) *DeletePreviewOperation {
+	return c.internalClient.DeletePreviewOperation(name)
+}
+
+// ExportPreviewResult export Preview results.
+func (c *Client) ExportPreviewResult(ctx context.Context, req *configpb.ExportPreviewResultRequest, opts ...gax.CallOption) (*configpb.ExportPreviewResultResponse, error) {
+	return c.internalClient.ExportPreviewResult(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -546,7 +608,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://config.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://config.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://config.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://config.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -945,6 +1009,128 @@ func (c *gRPCClient) ExportLockInfo(ctx context.Context, req *configpb.ExportLoc
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.ExportLockInfo(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreatePreview(ctx context.Context, req *configpb.CreatePreviewRequest, opts ...gax.CallOption) (*CreatePreviewOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreatePreview[0:len((*c.CallOptions).CreatePreview):len((*c.CallOptions).CreatePreview)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreatePreview(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreatePreviewOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetPreview(ctx context.Context, req *configpb.GetPreviewRequest, opts ...gax.CallOption) (*configpb.Preview, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetPreview[0:len((*c.CallOptions).GetPreview):len((*c.CallOptions).GetPreview)], opts...)
+	var resp *configpb.Preview
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetPreview(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListPreviews(ctx context.Context, req *configpb.ListPreviewsRequest, opts ...gax.CallOption) *PreviewIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListPreviews[0:len((*c.CallOptions).ListPreviews):len((*c.CallOptions).ListPreviews)], opts...)
+	it := &PreviewIterator{}
+	req = proto.Clone(req).(*configpb.ListPreviewsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*configpb.Preview, string, error) {
+		resp := &configpb.ListPreviewsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListPreviews(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPreviews(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) DeletePreview(ctx context.Context, req *configpb.DeletePreviewRequest, opts ...gax.CallOption) (*DeletePreviewOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeletePreview[0:len((*c.CallOptions).DeletePreview):len((*c.CallOptions).DeletePreview)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeletePreview(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeletePreviewOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ExportPreviewResult(ctx context.Context, req *configpb.ExportPreviewResultRequest, opts ...gax.CallOption) (*configpb.ExportPreviewResultResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportPreviewResult[0:len((*c.CallOptions).ExportPreviewResult):len((*c.CallOptions).ExportPreviewResult)], opts...)
+	var resp *configpb.ExportPreviewResultResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ExportPreviewResult(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -2306,6 +2492,372 @@ func (c *restClient) ExportLockInfo(ctx context.Context, req *configpb.ExportLoc
 	return resp, nil
 }
 
+// CreatePreview creates a Preview.
+func (c *restClient) CreatePreview(ctx context.Context, req *configpb.CreatePreviewRequest, opts ...gax.CallOption) (*CreatePreviewOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPreview()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/previews", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetPreviewId() != "" {
+		params.Add("previewId", fmt.Sprintf("%v", req.GetPreviewId()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreatePreviewOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetPreview gets details about a Preview.
+func (c *restClient) GetPreview(ctx context.Context, req *configpb.GetPreviewRequest, opts ...gax.CallOption) (*configpb.Preview, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetPreview[0:len((*c.CallOptions).GetPreview):len((*c.CallOptions).GetPreview)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &configpb.Preview{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListPreviews lists Previews in a given project and
+// location.
+func (c *restClient) ListPreviews(ctx context.Context, req *configpb.ListPreviewsRequest, opts ...gax.CallOption) *PreviewIterator {
+	it := &PreviewIterator{}
+	req = proto.Clone(req).(*configpb.ListPreviewsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*configpb.Preview, string, error) {
+		resp := &configpb.ListPreviewsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/previews", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPreviews(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeletePreview deletes a Preview.
+func (c *restClient) DeletePreview(ctx context.Context, req *configpb.DeletePreviewRequest, opts ...gax.CallOption) (*DeletePreviewOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeletePreviewOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ExportPreviewResult export Preview results.
+func (c *restClient) ExportPreviewResult(ctx context.Context, req *configpb.ExportPreviewResultRequest, opts ...gax.CallOption) (*configpb.ExportPreviewResultResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:export", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ExportPreviewResult[0:len((*c.CallOptions).ExportPreviewResult):len((*c.CallOptions).ExportPreviewResult)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &configpb.ExportPreviewResultResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2924,6 +3476,24 @@ func (c *restClient) CreateDeploymentOperation(name string) *CreateDeploymentOpe
 	}
 }
 
+// CreatePreviewOperation returns a new CreatePreviewOperation from a given name.
+// The name must be that of a previously created CreatePreviewOperation, possibly from a different process.
+func (c *gRPCClient) CreatePreviewOperation(name string) *CreatePreviewOperation {
+	return &CreatePreviewOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreatePreviewOperation returns a new CreatePreviewOperation from a given name.
+// The name must be that of a previously created CreatePreviewOperation, possibly from a different process.
+func (c *restClient) CreatePreviewOperation(name string) *CreatePreviewOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreatePreviewOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteDeploymentOperation returns a new DeleteDeploymentOperation from a given name.
 // The name must be that of a previously created DeleteDeploymentOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDeploymentOperation(name string) *DeleteDeploymentOperation {
@@ -2937,6 +3507,24 @@ func (c *gRPCClient) DeleteDeploymentOperation(name string) *DeleteDeploymentOpe
 func (c *restClient) DeleteDeploymentOperation(name string) *DeleteDeploymentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeletePreviewOperation returns a new DeletePreviewOperation from a given name.
+// The name must be that of a previously created DeletePreviewOperation, possibly from a different process.
+func (c *gRPCClient) DeletePreviewOperation(name string) *DeletePreviewOperation {
+	return &DeletePreviewOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeletePreviewOperation returns a new DeletePreviewOperation from a given name.
+// The name must be that of a previously created DeletePreviewOperation, possibly from a different process.
+func (c *restClient) DeletePreviewOperation(name string) *DeletePreviewOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeletePreviewOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

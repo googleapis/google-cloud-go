@@ -330,6 +330,9 @@
         "securitycentermanagement": {
             "component": "securitycentermanagement"
         },
+        "securityposture": {
+            "component": "securityposture"
+        },
         "servicecontrol": {
             "component": "servicecontrol"
         },
@@ -389,6 +392,9 @@
         },
         "vision": {
             "component": "vision"
+        },
+        "visionai": {
+            "component": "visionai"
         },
         "vmmigration": {
             "component": "vmmigration"

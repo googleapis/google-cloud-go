@@ -87,6 +87,7 @@ use (
 	./internal/generated/snippets
 	./internal/godocfx
 	./internal/postprocessor
+	./internal/protoveneer
 	./iot
 	./kms
 	./language
@@ -132,6 +133,7 @@ use (
 	./security
 	./securitycenter
 	./securitycentermanagement
+	./securityposture
 	./servicecontrol
 	./servicedirectory
 	./servicehealth
@@ -156,6 +158,7 @@ use (
 	./video
 	./videointelligence
 	./vision
+	./visionai
 	./vmmigration
 	./vmwareengine
 	./vpcaccess

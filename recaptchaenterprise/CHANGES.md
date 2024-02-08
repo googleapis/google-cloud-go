@@ -1,6 +1,20 @@
 # Changes
 
 
+## [2.9.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.9.1...recaptchaenterprise/v2.9.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [2.9.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.9.0...recaptchaenterprise/v2.9.1) (2024-01-22)
+
+
+### Documentation
+
+* **recaptchaenterprise:** Update comment for `AccountVerificationInfo.username` ([00b9900](https://github.com/googleapis/google-cloud-go/commit/00b990061592a20a181e61faa6964b45205b76a7))
+
 ## [2.9.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.4...recaptchaenterprise/v2.9.0) (2023-11-27)
 
 

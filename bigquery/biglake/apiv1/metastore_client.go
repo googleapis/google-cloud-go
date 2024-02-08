@@ -64,7 +64,9 @@ type MetastoreCallOptions struct {
 func defaultMetastoreGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("biglake.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("biglake.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("biglake.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://biglake.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -740,7 +742,9 @@ func NewMetastoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 func defaultMetastoreRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://biglake.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://biglake.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://biglake.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://biglake.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

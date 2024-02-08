@@ -63,7 +63,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("tpu.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("tpu.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("tpu.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://tpu.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),

@@ -69,11 +69,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &cloudtaskspb.BufferTaskRequest{
+//	req := &cloudtaskspb.CreateQueueRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#BufferTaskRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#CreateQueueRequest.
 //	}
-//	resp, err := c.BufferTask(ctx, req)
+//	resp, err := c.CreateQueue(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

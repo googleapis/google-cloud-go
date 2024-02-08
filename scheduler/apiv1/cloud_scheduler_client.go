@@ -60,7 +60,9 @@ type CloudSchedulerCallOptions struct {
 func defaultCloudSchedulerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudscheduler.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudscheduler.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudscheduler.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudscheduler.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -436,7 +438,9 @@ func NewCloudSchedulerRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultCloudSchedulerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudscheduler.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudscheduler.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudscheduler.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudscheduler.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
