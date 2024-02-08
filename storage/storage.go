@@ -219,6 +219,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 // NewGRPCClient creates a new Storage client using the gRPC transport and API.
 // Client methods which have not been implemented in gRPC will return an error.
 // In particular, methods for Cloud Pub/Sub notifications are not supported.
+// Using a non-default universe domain is also not supported in gRPC.
 //
 // The storage gRPC API is still in preview and not yet publicly available.
 // If you would like to use the API, please first contact your GCP account rep to
