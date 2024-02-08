@@ -116,20 +116,12 @@ func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Pa
 }
 
 func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateContentRequest) (*GenerateContentResponse, error) {
-	streamClient, err := m.c.c.StreamGenerateContent(ctx, req)
-	iter := &GenerateContentResponseIterator{
-		sc:  streamClient,
-		err: err,
+	res, err := m.c.c.GenerateContent(ctx, req)
+
+	if err != nil {
+		return nil, err
 	}
-	for {
-		_, err := iter.Next()
-		if err == iterator.Done {
-			return iter.merged, nil
-		}
-		if err != nil {
-			return nil, err
-		}
-	}
+	return protoToResponse(res)
 }
 
 func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
