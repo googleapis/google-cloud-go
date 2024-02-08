@@ -259,7 +259,7 @@ func TestLive(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		checkMatch(t, responseString(res), "(it's}|weather) .*cold")
+		checkMatch(t, responseString(res), "(it's|it is|weather) .*cold")
 	})
 }
 
