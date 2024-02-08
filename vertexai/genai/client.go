@@ -50,11 +50,7 @@ type Client struct {
 // [google.golang.org/api/option] package. For additional configuration
 // options, see [NewClientWithConfig].
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
-	defaultConfig := ClientConfig{
-		RESTTransport: false,
-	}
-
-	return NewClientWithConfig(ctx, projectID, location, defaultConfig, opts...)
+	return NewClientWithConfig(ctx, projectID, location, ClientConfig{}, opts...)
 }
 
 // NewClientWithConfig creates a new Google Vertex AI client.
@@ -71,7 +67,7 @@ func NewClientWithConfig(ctx context.Context, projectID, location string, config
 
 	var c *aiplatform.PredictionClient
 	var err error
-	if config.RESTTransport {
+	if config.UseREST {
 		c, err = aiplatform.NewPredictionRESTClient(ctx, opts...)
 	} else {
 		c, err = aiplatform.NewPredictionClient(ctx, opts...)

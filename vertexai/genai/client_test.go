@@ -268,7 +268,7 @@ func TestLiveREST(t *testing.T) {
 		t.Skip("need -project and -model")
 	}
 	ctx := context.Background()
-	client, err := NewClientWithConfig(ctx, *projectID, "us-central1", ClientConfig{RESTTransport: true})
+	client, err := NewClientWithConfig(ctx, *projectID, "us-central1", ClientConfig{UseREST: true})
 	if err != nil {
 		t.Fatal(err)
 	}
