@@ -19,20 +19,19 @@ import (
 	"google.golang.org/api/option/internaloption"
 )
 
-// WithUseREST is an option that may be passed to a Vertex AI client on
-// creation. If true, the client will use REST for transport; if false (default),
-// the client will use gRPC for transport.
-func WithUseREST(b bool) option.ClientOption {
-	return &withUseREST{useREST: b}
+// WithREST is an option that enables REST transport for the client.
+// The default transport (if this option isn't provided) is gRPC.
+func WithREST() option.ClientOption {
+	return &withREST{}
 }
 
-func (w *withUseREST) applyVertexaiOpt(c *config) {
-	c.useREST = w.useREST
+func (w *withREST) applyVertexaiOpt(c *config) {
+	c.withREST = true
 }
 
 type config struct {
-	// useREST uses REST as the underlying transport for the client.
-	useREST bool
+	// withREST tells the client to use REST as the underlying transport.
+	withREST bool
 }
 
 // newConfig generates a new config with all the given
@@ -53,7 +52,6 @@ type vertexaiClientOption interface {
 	applyVertexaiOpt(*config)
 }
 
-type withUseREST struct {
+type withREST struct {
 	internaloption.EmbeddableAdapter
-	useREST bool
 }
