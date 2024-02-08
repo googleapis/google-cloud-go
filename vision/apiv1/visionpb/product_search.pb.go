@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,7 +46,8 @@ type ProductSearchParams struct {
 	// The bounding polygon around the area of interest in the image.
 	// If it is not specified, system discretion will be applied.
 	BoundingPoly *BoundingPoly `protobuf:"bytes,9,opt,name=bounding_poly,json=boundingPoly,proto3" json:"bounding_poly,omitempty"`
-	// The resource name of a [ProductSet][google.cloud.vision.v1.ProductSet] to be searched for similar images.
+	// The resource name of a [ProductSet][google.cloud.vision.v1.ProductSet] to
+	// be searched for similar images.
 	//
 	// Format is:
 	// `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.

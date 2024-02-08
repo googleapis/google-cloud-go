@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -173,8 +173,9 @@ func (Block_BlockType) EnumDescriptor() ([]byte, []int) {
 //
 // Each structural component, starting from Page, may further have their own
 // properties. Properties describe detected languages, breaks etc.. Please refer
-// to the [TextAnnotation.TextProperty][google.cloud.vision.v1.TextAnnotation.TextProperty] message definition below for more
-// detail.
+// to the
+// [TextAnnotation.TextProperty][google.cloud.vision.v1.TextAnnotation.TextProperty]
+// message definition below for more detail.
 type TextAnnotation struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
