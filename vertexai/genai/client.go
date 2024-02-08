@@ -46,16 +46,26 @@ type Client struct {
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
 //
-// You may configure the client by passing in options from the [google.golang.org/api/option]
-// package.
+// You may configure the client by passing in options from the
+// [google.golang.org/api/option] package. You may also use options defined in
+// this package, such as [WithREST].
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
 	opts = append([]option.ClientOption{
 		option.WithEndpoint(fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)),
 	}, opts...)
-	c, err := aiplatform.NewPredictionClient(ctx, opts...)
+	conf := newConfig(opts...)
+
+	var c *aiplatform.PredictionClient
+	var err error
+	if conf.withREST {
+		c, err = aiplatform.NewPredictionRESTClient(ctx, opts...)
+	} else {
+		c, err = aiplatform.NewPredictionClient(ctx, opts...)
+	}
 	if err != nil {
 		return nil, err
 	}
+
 	c.SetGoogleClientInfo("gccl", internal.Version)
 	return &Client{
 		c:         c,
