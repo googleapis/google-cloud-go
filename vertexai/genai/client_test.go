@@ -274,7 +274,7 @@ func TestLiveREST(t *testing.T) {
 	}
 	defer client.Close()
 	model := client.GenerativeModel(*modelName)
-	model.Temperature = 0
+	model.SetTemperature(0.0)
 
 	resp, err := model.GenerateContent(ctx, Text("What is the average size of a swallow?"))
 	if err != nil {
