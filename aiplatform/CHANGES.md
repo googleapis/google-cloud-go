@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.60.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.59.0...aiplatform/v1.60.0) (2024-02-09)
+
+
+### Features
+
+* **aiplatform:** Add SearchNearestEntities rpc to FeatureOnlineStoreService in aiplatform v1 ([#9385](https://github.com/googleapis/google-cloud-go/issues/9385)) ([46a5050](https://github.com/googleapis/google-cloud-go/commit/46a50502f033ff0afe2f17b5f1e9812a956e190e))
+
+
+### Bug Fixes
+
+* **aiplatform:** Remove field `max_wait_duration` from message Scheduling ([#9387](https://github.com/googleapis/google-cloud-go/issues/9387)) ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+
 ## [1.59.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.58.2...aiplatform/v1.59.0) (2024-02-06)
 
 
