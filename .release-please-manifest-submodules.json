@@ -116,6 +116,7 @@
     "serviceusage": "1.8.4",
     "shell": "1.7.5",
     "shopping": "0.3.1",
+    "spanner/test/opentelemetry/test": "0.0.0",
     "speech": "1.21.1",
     "storageinsights": "1.0.5",
     "storagetransfer": "1.10.4",
