@@ -22,9 +22,6 @@ package aiplatformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1558,8 +1557,7 @@ type GenerateContentRequest struct {
 	//
 	// A `Tool` is a piece of code that enables the system to interact with
 	// external systems to perform an action, or set of actions, outside of
-	// knowledge and scope of the model. The only supported tool is currently
-	// `Function`
+	// knowledge and scope of the model.
 	Tools []*Tool `protobuf:"bytes,6,rep,name=tools,proto3" json:"tools,omitempty"`
 	// Optional. Per request settings for blocking unsafe content.
 	// Enforced on GenerateContentResponse.candidates.
