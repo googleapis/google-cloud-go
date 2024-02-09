@@ -195,7 +195,7 @@ func (c *tablesServiceClient) BatchDeleteRows(ctx context.Context, in *BatchDele
 }
 
 // TablesServiceServer is the server API for TablesService service.
-// All implementations must embed UnimplementedTablesServiceServer
+// All implementations should embed UnimplementedTablesServiceServer
 // for forward compatibility
 type TablesServiceServer interface {
 	// Gets a table. Returns NOT_FOUND if the table does not exist.
@@ -222,10 +222,9 @@ type TablesServiceServer interface {
 	DeleteRow(context.Context, *DeleteRowRequest) (*emptypb.Empty, error)
 	// Deletes multiple rows.
 	BatchDeleteRows(context.Context, *BatchDeleteRowsRequest) (*emptypb.Empty, error)
-	mustEmbedUnimplementedTablesServiceServer()
 }
 
-// UnimplementedTablesServiceServer must be embedded to have forward compatible implementations.
+// UnimplementedTablesServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedTablesServiceServer struct {
 }
 
@@ -265,7 +264,6 @@ func (UnimplementedTablesServiceServer) DeleteRow(context.Context, *DeleteRowReq
 func (UnimplementedTablesServiceServer) BatchDeleteRows(context.Context, *BatchDeleteRowsRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchDeleteRows not implemented")
 }
-func (UnimplementedTablesServiceServer) mustEmbedUnimplementedTablesServiceServer() {}
 
 // UnsafeTablesServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to TablesServiceServer will
