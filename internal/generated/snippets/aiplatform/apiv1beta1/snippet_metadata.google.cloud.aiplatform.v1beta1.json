@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.59.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -11068,52 +11068,6 @@
       ]
     },
     {
-      "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_CountTokens_sync",
-      "title": "aiplatform CountTokens Sample",
-      "description": "CountTokens perform a token counting.",
-      "file": "LlmUtilityClient/CountTokens/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CountTokens",
-        "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient.CountTokens",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "aiplatformpb.CountTokensRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*aiplatformpb.CountTokensResponse",
-        "client": {
-          "shortName": "LlmUtilityClient",
-          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityClient"
-        },
-        "method": {
-          "shortName": "CountTokens",
-          "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService.CountTokens",
-          "service": {
-            "shortName": "LlmUtilityService",
-            "fullName": "google.cloud.aiplatform.v1beta1.LlmUtilityService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "aiplatform_v1beta1_generated_LlmUtilityService_DeleteOperation_sync",
       "title": "aiplatform DeleteOperation Sample",
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
@@ -17076,6 +17030,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_PipelineService_BatchCancelPipelineJobs_sync",
+      "title": "aiplatform BatchCancelPipelineJobs Sample",
+      "description": "BatchCancelPipelineJobs batch cancel PipelineJobs.\nFirstly the server will check if all the jobs are in non-terminal states,\nand skip the jobs that are already terminated.\nIf the operation failed, none of the pipeline jobs are cancelled.\nThe server will poll the states of all the pipeline jobs periodically\nto check the cancellation status.\nThis operation will return an LRO.",
+      "file": "PipelineClient/BatchCancelPipelineJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCancelPipelineJobs",
+        "fullName": "google.cloud.aiplatform.v1beta1.PipelineClient.BatchCancelPipelineJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchCancelPipelineJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchCancelPipelineJobsOperation",
+        "client": {
+          "shortName": "PipelineClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.PipelineClient"
+        },
+        "method": {
+          "shortName": "BatchCancelPipelineJobs",
+          "fullName": "google.cloud.aiplatform.v1beta1.PipelineService.BatchCancelPipelineJobs",
+          "service": {
+            "shortName": "PipelineService",
+            "fullName": "google.cloud.aiplatform.v1beta1.PipelineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
