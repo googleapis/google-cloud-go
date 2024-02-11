@@ -33,23 +33,6 @@ import (
 
 type cursorBeforeType int
 
-const (
-	cursorBeforeFalse       cursorBeforeType = iota // = 0
-	cursorBeforeTrue                                // = 1
-	cursorBeforeUnspecified                         // = 2
-)
-
-func (cbt cursorBeforeType) not() cursorBeforeType {
-	switch cbt {
-	case cursorBeforeFalse:
-		return cursorBeforeTrue
-	case cursorBeforeTrue:
-		return cursorBeforeFalse
-	default:
-		return cursorBeforeUnspecified
-	}
-}
-
 // Query represents a Firestore query.
 //
 // Query values are immutable. Each Query method creates
@@ -70,7 +53,7 @@ type Query struct {
 
 	// Set startBefore to true when doc in startVals needs to be included in result
 	// Set endBefore to false when doc in endVals needs to be included in result
-	startBefore, endBefore cursorBeforeType
+	startBefore, endBefore bool
 	err                    error
 
 	// allDescendants indicates whether this query is for all collections
@@ -266,7 +249,7 @@ func (q Query) LimitToLast(n int) Query {
 //
 // Calling StartAt overrides a previous call to StartAt or StartAfter.
 func (q Query) StartAt(docSnapshotOrFieldValues ...interface{}) Query {
-	q.startBefore = cursorBeforeTrue
+	q.startBefore = true
 	q.startVals, q.startDoc, q.err = q.processCursorArg("StartAt", docSnapshotOrFieldValues)
 	return q
 }
@@ -276,7 +259,7 @@ func (q Query) StartAt(docSnapshotOrFieldValues ...interface{}) Query {
 //
 // Calling StartAfter overrides a previous call to StartAt or StartAfter.
 func (q Query) StartAfter(docSnapshotOrFieldValues ...interface{}) Query {
-	q.startBefore = cursorBeforeFalse
+	q.startBefore = false
 	q.startVals, q.startDoc, q.err = q.processCursorArg("StartAfter", docSnapshotOrFieldValues)
 	return q
 }
@@ -286,7 +269,7 @@ func (q Query) StartAfter(docSnapshotOrFieldValues ...interface{}) Query {
 //
 // Calling EndAt overrides a previous call to EndAt or EndBefore.
 func (q Query) EndAt(docSnapshotOrFieldValues ...interface{}) Query {
-	q.endBefore = cursorBeforeFalse
+	q.endBefore = false
 	q.endVals, q.endDoc, q.err = q.processCursorArg("EndAt", docSnapshotOrFieldValues)
 	return q
 }
@@ -296,7 +279,7 @@ func (q Query) EndAt(docSnapshotOrFieldValues ...interface{}) Query {
 //
 // Calling EndBefore overrides a previous call to EndAt or EndBefore.
 func (q Query) EndBefore(docSnapshotOrFieldValues ...interface{}) Query {
-	q.endBefore = cursorBeforeTrue
+	q.endBefore = true
 	q.endVals, q.endDoc, q.err = q.processCursorArg("EndBefore", docSnapshotOrFieldValues)
 	return q
 }
@@ -327,23 +310,26 @@ func (q *Query) processLimitToLast() {
 				q.orders[i].dir = Asc
 			}
 		}
+
+		if q.startBefore == q.endBefore && q.startCursorSpecified() && q.endCursorSpecified() {
+			// E.g. query.StartAt(2).EndBefore(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, 6)
+			q.startBefore, q.endBefore = !q.startBefore, !q.endBefore
+		} else if !q.startCursorSpecified() && q.endCursorSpecified() {
+			// E.g. query.EndAt(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are (-inf, 6]
+			q.startBefore = !q.endBefore
+			q.endBefore = false
+			// q.endBefore = cursorBeforeUnspecified
+		} else if q.startCursorSpecified() && !q.endCursorSpecified() {
+			// E.g. query.StartAt(2).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, inf)
+			q.endBefore = !q.startBefore
+			q.startBefore = false
+			// q.startBefore = cursorBeforeUnspecified
+		}
+
 		// Swap cursors.
 		q.startVals, q.endVals = q.endVals, q.startVals
 		q.startDoc, q.endDoc = q.endDoc, q.startDoc
-		fmt.Printf("Before transform: startBefore: %v, endBefore: %v\n", q.startBefore, q.endBefore)
-		if q.startBefore == q.endBefore && q.startBefore != cursorBeforeUnspecified {
-			// E.g. query.StartAt(2).EndBefore(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, 6)
-			q.startBefore, q.endBefore = q.startBefore.not(), q.endBefore.not()
-		} else if q.startBefore == cursorBeforeUnspecified && q.endBefore != cursorBeforeUnspecified {
-			// E.g. query.EndAt(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are (-inf, 6]
-			q.startBefore = q.endBefore.not()
-			q.endBefore = cursorBeforeUnspecified
-		} else if q.startBefore != cursorBeforeUnspecified && q.endBefore == cursorBeforeUnspecified {
-			// E.g. query.StartAt(2).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, inf)
-			q.endBefore = q.startBefore.not()
-			q.startBefore = cursorBeforeUnspecified
-		}
-		fmt.Printf("After transform: startBefore: %v, endBefore: %v\n", q.startBefore, q.endBefore)
+
 		q.limitToLast = false
 	}
 }
@@ -419,11 +405,10 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 
 	// 	startVals, endVals     []interface{}
 	// 	startDoc, endDoc       *DocumentSnapshot
-	// 	startBefore, endBefore cursorBeforeType
-	q.startBefore = cursorBeforeUnspecified
+	// 	startBefore, endBefore bool
 	if startAt := pbq.GetStartAt(); startAt != nil {
 		if startAt.GetBefore() {
-			q.startBefore = cursorBeforeTrue
+			q.startBefore = true
 		}
 		for _, v := range startAt.GetValues() {
 			c, err := createFromProtoValue(v, q.c)
@@ -443,7 +428,6 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 		}
 	}
 
-	q.endBefore = cursorBeforeUnspecified
 	if endAt := pbq.GetEndAt(); endAt != nil {
 		for _, v := range endAt.GetValues() {
 			c, err := createFromProtoValue(v, q.c)
@@ -456,7 +440,7 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 			var newQ Query
 			if endAt.GetBefore() {
 				newQ = q.EndBefore(c)
-				q.endBefore = cursorBeforeTrue
+				q.endBefore = true
 			} else {
 				newQ = q.EndAt(c)
 			}
@@ -500,6 +484,14 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	return q, q.err
 }
 
+func (q Query) startCursorSpecified() bool {
+	return len(q.startVals) != 0 || q.startDoc != nil
+}
+
+func (q Query) endCursorSpecified() bool {
+	return len(q.endVals) != 0 || q.endDoc != nil
+}
+
 func (q Query) toProto() (*pb.StructuredQuery, error) {
 	if q.err != nil {
 		return nil, q.err
@@ -507,13 +499,13 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 	if q.collectionID == "" {
 		return nil, errors.New("firestore: query created without CollectionRef")
 	}
-	if q.startBefore != cursorBeforeUnspecified {
-		if len(q.startVals) == 0 && q.startDoc == nil {
+	if q.startBefore {
+		if !q.startCursorSpecified() {
 			return nil, errors.New("firestore: StartAt/StartAfter must be called with at least one value")
 		}
 	}
-	if q.endBefore != cursorBeforeUnspecified {
-		if len(q.endVals) == 0 && q.endDoc == nil {
+	if q.endBefore {
+		if !q.endCursorSpecified() {
 			return nil, errors.New("firestore: EndAt/EndBefore must be called with at least one value")
 		}
 	}
@@ -569,9 +561,6 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 	}
 	p.EndAt = cursor
 
-	fmt.Printf(
-		"p.StartAt: %+v,\np.EndAt  : %+v,\np.OrderBy: %+v,\np.Limit  : %+v\n",
-		p.StartAt, p.EndAt, p.OrderBy, p.Limit)
 	return p, nil
 }
 
@@ -608,7 +597,7 @@ func (q *Query) adjustOrders() []order {
 	return append(orders, order{fieldPath: FieldPath{DocumentID}, dir: Asc})
 }
 
-func (q *Query) toCursor(fieldValues []interface{}, ds *DocumentSnapshot, before cursorBeforeType, orders []order) (*pb.Cursor, error) {
+func (q *Query) toCursor(fieldValues []interface{}, ds *DocumentSnapshot, before bool, orders []order) (*pb.Cursor, error) {
 	var vals []*pb.Value
 	var err error
 	if ds != nil {
@@ -622,10 +611,7 @@ func (q *Query) toCursor(fieldValues []interface{}, ds *DocumentSnapshot, before
 		return nil, err
 	}
 
-	return &pb.Cursor{
-		Values: vals,
-		Before: before == cursorBeforeTrue,
-	}, nil
+	return &pb.Cursor{Values: vals, Before: before}, nil
 }
 
 // toPositionValues converts the field values to protos.
