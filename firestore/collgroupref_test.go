@@ -36,8 +36,8 @@ func TestCGR_TestQueryPartition_ToQuery(t *testing.T) {
 		collectionID:   "collectionID",
 		startVals:      []interface{}{"documents/start/at"},
 		endVals:        []interface{}{"documents/end/before"},
-		startBefore:    true,
-		endBefore:      true,
+		startBefore:    cursorBeforeTrue,
+		endBefore:      cursorBeforeTrue,
 		allDescendants: true,
 		orders:         []order{{fieldPath: []string{"__name__"}, dir: 1}},
 	}

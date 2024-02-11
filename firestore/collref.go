@@ -67,6 +67,8 @@ func newTopLevelCollRef(c *Client, dbPath, id string) *CollectionRef {
 			collectionID: id,
 			path:         dbPath + "/documents/" + id,
 			parentPath:   dbPath + "/documents",
+			startBefore:  cursorBeforeUnspecified,
+			endBefore:    cursorBeforeUnspecified,
 		},
 		readSettings: &readSettings{},
 	}
@@ -86,6 +88,8 @@ func newCollRefWithParent(c *Client, parent *DocumentRef, id string) *Collection
 			collectionID: id,
 			path:         parent.Path + "/" + id,
 			parentPath:   parent.Path,
+			startBefore:  cursorBeforeUnspecified,
+			endBefore:    cursorBeforeUnspecified,
 		},
 		readSettings: &readSettings{},
 	}
