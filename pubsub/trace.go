@@ -310,7 +310,7 @@ func (c messageCarrier) Keys() []string {
 
 const (
 	// publish span names
-	publisherSpanName  = "create"
+	createSpanName     = "create"
 	publishFCSpanName  = "publisher flow control"
 	batcherSpanName    = "publisher batching"
 	publishRPCSpanName = "publish"
@@ -333,6 +333,8 @@ const (
 	eventAckEnd       = "ack end"
 	eventNackStart    = "nack start"
 	eventNackEnd      = "nack end"
+	eventAckCalled    = "ack called"
+	eventNackCalled   = "nack called"
 
 	// custom pubsub specific attributes
 	pubsubPrefix             = "messaging.gcp_pubsub."
@@ -347,7 +349,7 @@ const (
 
 func startCreateSpan(ctx context.Context, m *Message, topicID string) (context.Context, trace.Span) {
 	opts := getPublishSpanAttributes(topicID, m)
-	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicID, publisherSpanName), opts...)
+	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicID, createSpanName), opts...)
 }
 
 func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
@@ -363,7 +365,6 @@ func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyV
 		trace.WithAttributes(
 			semconv.MessagingSystemKey.String("pubsub"),
 			semconv.MessagingDestinationName(topic),
-			semconv.MessagingDestinationTemplate("projects/{projectID}/subscriptions/{subscriptionID}"),
 			semconv.MessagingMessageID(msg.ID),
 			semconv.MessagingMessagePayloadSizeBytes(msgSize),
 			attribute.String(orderingAttribute, msg.OrderingKey),

@@ -1404,7 +1404,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						c, _ := iter.activeSpan.Load(ackh.ackID)
 						sc := c.(trace.Span)
 						ctx = trace.ContextWithSpanContext(ctx, sc.SpanContext())
-						ctx, fcSpan = startSpan(ctx, fcSpanName, "")
+						_, fcSpan = startSpan(ctx, fcSpanName, "")
 					}
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
@@ -1426,7 +1426,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// constructor level?
 					var schedulerSpan trace.Span
 					if iter.enableTracing {
-						ctx, schedulerSpan = startSpan(ctx, scheduleSpanName, "")
+						_, schedulerSpan = startSpan(ctx, scheduleSpanName, "")
 					}
 					msgLen := len(msg.Data)
 					if err := sched.Add(key, msg, func(msg interface{}) {
@@ -1442,9 +1442,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
 							var eventString string
 							if ack {
-								eventString = "msg.Ack() called"
+								eventString = eventAckCalled
 							} else {
-								eventString = "msg.Nack() called"
+								eventString = eventNackCalled
 							}
 							ps.AddEvent(eventString)
 							ps.SetAttributes(semconv.MessagingOperationProcess)

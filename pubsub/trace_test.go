@@ -17,6 +17,7 @@ package pubsub
 import (
 	"context"
 	"fmt"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -70,13 +71,13 @@ func TestTrace_MessageCarrier(t *testing.T) {
 
 func TestTrace_PublishSpan(t *testing.T) {
 	ctx := context.Background()
-	c, srv := newFake(t)
+	c, srv := newFakeWithTracing(t)
 	defer c.Close()
 	defer srv.Close()
 
 	e := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
-	otel.SetTextMapPropagator(propagation.TraceContext{})
+	g := &incrementIDGenerator{}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e), sdktrace.WithIDGenerator(g))
 	defer tp.Shutdown(ctx)
 	otel.SetTracerProvider(tp)
 
@@ -92,19 +93,27 @@ func TestTrace_PublishSpan(t *testing.T) {
 	})
 
 	topicID := "t"
-	topicName := fmt.Sprintf("projects/P/topics/%s", topicID)
 
 	expectedSpans := tracetest.SpanStubs{
 		tracetest.SpanStub{
-			Name:     fmt.Sprintf("%s %s", topicName, publisherSpanName),
+			Name:     fmt.Sprintf("%s %s", topicID, createSpanName),
 			SpanKind: trace.SpanKindProducer,
 			Attributes: []attribute.KeyValue{
-				semconv.MessagingDestinationName(topicName),
+				semconv.CodeFunction("topic.Publish"),
+				semconv.MessagingDestinationName(topicID),
+				attribute.String(orderingAttribute, m.OrderingKey),
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
-				attribute.String(orderingAttribute, m.OrderingKey),
 				semconv.MessagingSystemKey.String("pubsub"),
+			},
+			Events: []sdktrace.Event{
+				{
+					Name: eventPublishStart,
+				},
+				{
+					Name: eventPublishEnd,
+				},
 			},
 			ChildSpanCount: 2,
 			InstrumentationLibrary: instrumentation.Scope{
@@ -127,13 +136,23 @@ func TestTrace_PublishSpan(t *testing.T) {
 			},
 		},
 		tracetest.SpanStub{
-			Name: publishRPCSpanName,
+			Name: fmt.Sprintf("%s %s", topicID, publishRPCSpanName),
 			Attributes: []attribute.KeyValue{
+				semconv.CodeFunction("topic.publishMessageBundle"),
 				semconv.MessagingBatchMessageCount(1),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
+			},
+			Links: []sdktrace.Link{
+				{
+					SpanContext: trace.NewSpanContext(trace.SpanContextConfig{
+						TraceID:    [16]byte{(byte(1))},
+						SpanID:     [8]byte{(byte(1))},
+						TraceFlags: 1,
+					}),
+				},
 			},
 		},
 	}
@@ -166,7 +185,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 
 func TestTrace_PublishSpanError(t *testing.T) {
 	ctx := context.Background()
-	c, srv := newFake(t)
+	c, srv := newFakeWithTracing(t)
 	defer c.Close()
 	defer srv.Close()
 
@@ -188,7 +207,6 @@ func TestTrace_PublishSpanError(t *testing.T) {
 	})
 
 	topicID := "t"
-	topicName := fmt.Sprintf("projects/P/topics/%s", topicID)
 
 	topic, err := c.CreateTopic(ctx, topicID)
 	if err != nil {
@@ -204,7 +222,7 @@ func TestTrace_PublishSpanError(t *testing.T) {
 			t.Fatal("expected err, got nil")
 		}
 
-		want := getPublishSpanStubsWithError(topicName, m, msgSize, errTopicOrderingNotEnabled)
+		want := getPublishSpanStubsWithError(topicID, m, msgSize, errTopicOrderingNotEnabled)
 
 		got := getSpans(e)
 		opts := []cmp.Option{
@@ -230,7 +248,7 @@ func TestTrace_PublishSpanError(t *testing.T) {
 		}
 
 		got := getSpans(e)
-		want := getPublishSpanStubsWithError(topicName, m, msgSize, ErrTopicStopped)
+		want := getPublishSpanStubsWithError(topicID, m, msgSize, ErrTopicStopped)
 		opts := []cmp.Option{
 			cmp.Comparer(spanStubComparer),
 			cmpopts.SortSlices(sortSpanStub),
@@ -278,7 +296,7 @@ func TestTrace_PublishSpanError(t *testing.T) {
 
 func TestTrace_SubscribeSpans(t *testing.T) {
 	ctx := context.Background()
-	c, srv := newFake(t)
+	c, srv := newFakeWithTracing(t)
 	defer c.Close()
 	defer srv.Close()
 
@@ -297,7 +315,6 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 	})
 
 	topicID := "t"
-	// topicName := fmt.Sprintf("projects/P/topics/%s", topicID)
 
 	topic, err := c.CreateTopic(ctx, topicID)
 	if err != nil {
@@ -305,7 +322,6 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 	}
 
 	subID := "s"
-	subName := fmt.Sprintf("projects/P/subscriptions/%s", subID)
 	enableEOS := false
 
 	sub, err := c.CreateSubscription(ctx, subID, SubscriptionConfig{
@@ -341,7 +357,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 
 	expectedSpans := tracetest.SpanStubs{
 		tracetest.SpanStub{
-			Name: fmt.Sprintf("%s %s", subName, processSpanName),
+			Name: fmt.Sprintf("%s %s", subID, processSpanName),
 			Attributes: []attribute.KeyValue{
 				attribute.String(resultAttribute, "ack"),
 			},
@@ -352,10 +368,10 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			},
 		},
 		tracetest.SpanStub{
-			Name:     fmt.Sprintf("%s %s", subName, subscribeSpanName),
+			Name:     fmt.Sprintf("%s %s", subID, subscribeSpanName),
 			SpanKind: trace.SpanKindConsumer,
 			Attributes: []attribute.KeyValue{
-				semconv.MessagingDestinationName(topicName),
+				semconv.MessagingDestinationName(topicID),
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
@@ -422,16 +438,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 
 func TestTrace_TracingNotEnabled(t *testing.T) {
 	ctx := context.Background()
-	srv := pstest.NewServer()
-	c, err := NewClientWithConfig(ctx, projName,
-		&ClientConfig{EnableOpenTelemetryTracing: false},
-		option.WithEndpoint(srv.Addr),
-		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
+	c, srv := newFakeWithTracing(t)
 	defer c.Close()
 	defer srv.Close()
 
@@ -496,13 +503,13 @@ func getSpans(e *tracetest.InMemoryExporter) tracetest.SpanStubs {
 	return e.GetSpans()
 }
 
-func getPublishSpanStubsWithError(topicName string, m *Message, msgSize int, err error) tracetest.SpanStubs {
+func getPublishSpanStubsWithError(topicID string, m *Message, msgSize int, err error) tracetest.SpanStubs {
 	return tracetest.SpanStubs{
 		tracetest.SpanStub{
-			Name:     fmt.Sprintf("%s %s", topicName, publisherSpanName),
+			Name:     fmt.Sprintf("%s %s", topicID, createSpanName),
 			SpanKind: trace.SpanKindProducer,
 			Attributes: []attribute.KeyValue{
-				semconv.MessagingDestinationName(topicName),
+				semconv.MessagingDestinationName(topicID),
 				semconv.MessagingMessageIDKey.String(""),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
 				attribute.String(orderingAttribute, m.OrderingKey),
@@ -534,4 +541,43 @@ func getFlowControlSpanStubs(err error) tracetest.SpanStubs {
 			},
 		},
 	}
+}
+
+func newFakeWithTracing(t *testing.T) (*Client, *pstest.Server) {
+	ctx := context.Background()
+	srv := pstest.NewServer()
+	client, err := NewClientWithConfig(ctx, projName,
+		&ClientConfig{EnableOpenTelemetryTracing: true},
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithTelemetryDisabled(),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return client, srv
+}
+
+var _ sdktrace.IDGenerator = &incrementIDGenerator{}
+
+type incrementIDGenerator struct {
+	tid int64
+	sid int64
+}
+
+func (i *incrementIDGenerator) NewSpanID(ctx context.Context, traceID trace.TraceID) trace.SpanID {
+	atomic.AddInt64(&i.sid, 1)
+	sid := [8]byte{byte(i.sid)}
+	return sid
+}
+
+// NewIDs returns a non-zero trace ID and a non-zero span ID from a
+// randomly-chosen sequence.
+func (i *incrementIDGenerator) NewIDs(ctx context.Context) (trace.TraceID, trace.SpanID) {
+	atomic.AddInt64(&i.tid, 1)
+	atomic.AddInt64(&i.sid, 1)
+	tid := [16]byte{byte(i.tid)}
+	sid := [8]byte{byte(i.sid)}
+	return tid, sid
 }
