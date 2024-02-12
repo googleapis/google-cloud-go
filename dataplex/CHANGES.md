@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.1...dataplex/v1.14.2) (2024-02-06)
+
+
+### Documentation
+
+* **dataplex:** Fix typo in comment ([e60a6ba](https://github.com/googleapis/google-cloud-go/commit/e60a6ba01acf2ef2e8d12e23ed5c6e876edeb1b7))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.0...dataplex/v1.14.1) (2024-01-30)
 
 
