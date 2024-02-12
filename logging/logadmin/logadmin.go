@@ -223,6 +223,13 @@ type newestFirst struct{}
 
 func (newestFirst) set(r *logpb.ListLogEntriesRequest) { r.OrderBy = "timestamp desc" }
 
+// PageSize provide a way to override number of results to return from each request. Default is 50
+func PageSize(p int32) EntriesOption { return pageSize(p) }
+
+type pageSize int32
+
+func (p pageSize) set(r *logpb.ListLogEntriesRequest) { r.PageSize = int32(p) }
+
 // Entries returns an EntryIterator for iterating over log entries. By default,
 // the log entries will be restricted to those from the project passed to
 // NewClient. This may be overridden by passing a ProjectIDs option. Requires ReadScope or AdminScope.
