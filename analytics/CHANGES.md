@@ -1,5 +1,80 @@
 # Changes
 
+## [0.23.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.22.0...analytics/v0.23.0) (2024-01-30)
+
+
+### Features
+
+* **analytics/admin:** Add `GetCalculatedMetric`, `CreateCalculatedMetric`, `ListCalculatedMetrics`, `UpdateCalculatedMetric`, `DeleteCalculatedMetric` methods to the Admin API v1alpha ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+
+### Bug Fixes
+
+* **analytics:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.22.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.6...analytics/v0.22.0) (2024-01-03)
+
+
+### Features
+
+* **analytics/admin:** Add `GetSubpropertyEventFilter`, `ListSubpropertyEventFilters` methods to the Admin API v1 alpha ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
+## [0.21.6](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.5...analytics/v0.21.6) (2023-11-01)
+
+
+### Bug Fixes
+
+* **analytics:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [0.21.5](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.4...analytics/v0.21.5) (2023-10-26)
+
+
+### Bug Fixes
+
+* **analytics:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [0.21.4](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.3...analytics/v0.21.4) (2023-10-12)
+
+
+### Bug Fixes
+
+* **analytics:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [0.21.3](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.2...analytics/v0.21.3) (2023-07-27)
+
+
+### Bug Fixes
+
+* **analytics/admin:** Update the `ReportingAttributionModel` enum to rename `CROSS_CHANNEL_DATA_DRIVEN` to `PAID_AND_ORGANIC_CHANNELS_DATA_DRIVEN`, `CROSS_CHANNEL_LAST_CLICK` to `PAID_AND_ORGANIC_CHANNELS_LAST_CLICK`, `CROSS_CHANNEL_FIRST_CLICK` to `... ([#8330](https://github.com/googleapis/google-cloud-go/issues/8330)) ([f7939e0](https://github.com/googleapis/google-cloud-go/commit/f7939e093159a40d8be0ca4a60284b5bad524ae5))
+
+## [0.21.2](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.1...analytics/v0.21.2) (2023-06-27)
+
+
+### Documentation
+
+* **analytics/admin:** Announce the deprecation of first-click, linear, time-decay and position-based attribution models ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
+## [0.21.1](https://github.com/googleapis/google-cloud-go/compare/analytics-v0.21.0...analytics/v0.21.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **analytics:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.21.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.20.0...analytics/v0.21.0) (2023-05-30)
+
+
+### Features
+
+* **analytics:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [0.20.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.19.1...analytics/v0.20.0) (2023-05-16)
+
+
+### Features
+
+* **analytics/admin:** Add `GetAdSenseLink`, `CreateAdSenseLink`, `DeleteAdSenseLink`, `ListAdSenseLinks` methods to the Admin API v1alpha ([8c479ac](https://github.com/googleapis/google-cloud-go/commit/8c479acd5ea710629b4b562a4654bc369e828c16))
+
 ## [0.19.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.19.0...analytics/v0.19.1) (2023-05-08)
 
 

@@ -34,10 +34,16 @@ var (
 )
 
 // ModInit creates a new module in the specified directory.
-func ModInit(dir, importPath string) error {
+func ModInit(dir, importPath, goVersion string) error {
 	c := execv.Command("go", "mod", "init", importPath)
 	c.Dir = dir
-	return c.Run()
+	if err := c.Run(); err != nil {
+		return err
+	}
+
+	c2 := execv.Command("go", "get", fmt.Sprintf("go@%s", goVersion))
+	c2.Dir = dir
+	return c2.Run()
 }
 
 // ModTidy tidies go.mod file in the specified directory.
@@ -84,24 +90,6 @@ func ListModName(dir string) (string, error) {
 	return strings.TrimSpace(string(mod)), err
 }
 
-// ListModDirName finds the directory in which the module resides. Returns
-// ErrBuildConstraint if all files in a module are constrained.
-func ListModDirName(dir string) (string, error) {
-	var out []byte
-	var err error
-	c := execv.Command("go", "list", "-f", "'{{.Module.Dir}}'")
-	c.Dir = dir
-	out, err = c.Output()
-	if err != nil {
-		var ee *exec.ExitError
-		if errors.As(err, &ee) && strings.Contains(string(ee.Stderr), "build constraints exclude all Go files") {
-			return "", ErrBuildConstraint
-		}
-		return "", err
-	}
-	return strings.Trim(strings.TrimSpace(string(out)), "'"), nil
-}
-
 // Build attempts to build all packages recursively from the given directory.
 func Build(dir string) error {
 	log.Println("building generated code")
@@ -136,6 +124,7 @@ func CurrentMod(dir string) (string, error) {
 	log.Println("detecting current module")
 	c := execv.Command("go", "list", "-m")
 	c.Dir = dir
+	c.Env = []string{"GOWORK=off"}
 	var out []byte
 	var err error
 	if out, err = c.Output(); err != nil {
@@ -153,5 +142,12 @@ func EditReplace(dir, mod, modPath string) error {
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
 	}
+	return c.Run()
+}
+
+// WorkUse updates the go.work file for added modules.
+func WorkUse(dir string) error {
+	c := execv.Command("go", "work", "use", "-r", ".")
+	c.Dir = dir
 	return c.Run()
 }

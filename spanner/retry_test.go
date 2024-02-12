@@ -63,7 +63,8 @@ func TestRetryInfoTransactionOutcomeUnknownError(t *testing.T) {
 	if gotDelay, ok := ExtractRetryDelay(err); ok {
 		t.Errorf("Got unexpected delay\nGot: %v\nWant: %v", gotDelay, 0)
 	}
-	if !testEqual(err.(*Error).err, &TransactionOutcomeUnknownError{status.FromContextError(context.DeadlineExceeded).Err()}) {
+	want := &TransactionOutcomeUnknownError{status.FromContextError(context.DeadlineExceeded).Err()}
+	if !testEqual(err.(*Error).err.Error(), want.Error()) {
 		t.Errorf("Missing expected TransactionOutcomeUnknownError wrapped error")
 	}
 }

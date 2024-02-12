@@ -22,6 +22,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/apache/arrow/go/v14/arrow"
+	"github.com/apache/arrow/go/v14/arrow/array"
+	"github.com/apache/arrow/go/v14/arrow/ipc"
+	"github.com/apache/arrow/go/v14/arrow/math"
+	"github.com/apache/arrow/go/v14/arrow/memory"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 )
 
@@ -233,15 +239,28 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 			t.Fatal(err)
 		}
 
+		var firstValue S
+		err = it.Next(&firstValue)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if cmp.Equal(firstValue, S{}) {
+			t.Fatalf("user defined struct was not filled with data")
+		}
+
 		total, err := countIteratorRows(it)
 		if err != nil {
 			t.Fatal(err)
 		}
-		bqSession := it.arrowIterator.session.bqSession
+		total++ // as we read the first value separately
+
+		session := it.arrowIterator.(*storageArrowIterator).session
+		bqSession := session.bqSession
 		if len(bqSession.Streams) == 0 {
 			t.Fatalf("%s: expected to use at least one stream but found %d", tc.name, len(bqSession.Streams))
 		}
-		streamSettings := it.arrowIterator.session.settings.maxStreamCount
+		streamSettings := session.settings.maxStreamCount
 		if tc.maxExpectedStreams > 0 {
 			if streamSettings > tc.maxExpectedStreams {
 				t.Fatalf("%s: expected stream settings to be at most %d streams but found %d", tc.name, tc.maxExpectedStreams, streamSettings)
@@ -260,6 +279,56 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		if !it.IsAccelerated() {
 			t.Fatalf("%s: expected query to be accelerated by Storage API", tc.name)
 		}
+	}
+}
+
+func TestIntegration_StorageReadQueryStruct(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := "`bigquery-public-data.samples.wikipedia`"
+	sql := fmt.Sprintf(`SELECT id, title, timestamp, comment FROM %s LIMIT 1000`, table)
+	q := storageOptimizedClient.Query(sql)
+	q.forceStorageAPI = true
+	q.DisableQueryCache = true
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !it.IsAccelerated() {
+		t.Fatal("expected query to use Storage API")
+	}
+
+	type S struct {
+		ID        int64
+		Title     string
+		Timestamp int64
+		Comment   NullString
+	}
+
+	total := uint64(0)
+	for {
+		var dst S
+		err := it.Next(&dst)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("failed to fetch via storage API: %v", err)
+		}
+		if cmp.Equal(dst, S{}) {
+			t.Fatalf("user defined struct was not filled with data")
+		}
+		total++
+	}
+
+	bqSession := it.arrowIterator.(*storageArrowIterator).session.bqSession
+	if len(bqSession.Streams) == 0 {
+		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
+	}
+	if total != it.TotalRows {
+		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, total)
 	}
 }
 
@@ -287,11 +356,23 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 		Forks NullInt64
 	}
 
+	var firstValue S
+	err = it.Next(&firstValue)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if cmp.Equal(firstValue, S{}) {
+		t.Fatalf("user defined struct was not filled with data")
+	}
+
 	total, err := countIteratorRows(it)
 	if err != nil {
 		t.Fatal(err)
 	}
-	bqSession := it.arrowIterator.session.bqSession
+	total++ // as we read the first value separately
+
+	bqSession := it.arrowIterator.(*storageArrowIterator).session.bqSession
 	if len(bqSession.Streams) == 0 {
 		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
 	}
@@ -343,8 +424,85 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 	}
 	// resources are cleaned asynchronously
 	time.Sleep(time.Second)
-	if !it.arrowIterator.isDone() {
+	arrowIt := it.arrowIterator.(*storageArrowIterator)
+	if !arrowIt.isDone() {
 		t.Fatal("expected stream to be done")
+	}
+}
+
+func TestIntegration_StorageReadArrow(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := "`bigquery-public-data.usa_names.usa_1910_current`"
+	sql := fmt.Sprintf(`SELECT name, number, state FROM %s where state = "CA"`, table)
+
+	q := storageOptimizedClient.Query(sql)
+	job, err := q.Run(ctx) // force usage of Storage API by skipping fast paths
+	if err != nil {
+		t.Fatal(err)
+	}
+	it, err := job.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	checkedAllocator := memory.NewCheckedAllocator(memory.DefaultAllocator)
+	it.arrowDecoder.allocator = checkedAllocator
+	defer checkedAllocator.AssertSize(t, 0)
+
+	arrowIt, err := it.ArrowIterator()
+	if err != nil {
+		t.Fatalf("expected iterator to be accelerated: %v", err)
+	}
+	arrowItReader := NewArrowIteratorReader(arrowIt)
+
+	records := []arrow.Record{}
+	r, err := ipc.NewReader(arrowItReader, ipc.WithAllocator(checkedAllocator))
+	numrec := 0
+	for r.Next() {
+		rec := r.Record()
+		rec.Retain()
+		defer rec.Release()
+		records = append(records, rec)
+		numrec += int(rec.NumRows())
+	}
+	r.Release()
+
+	arrowSchema := r.Schema()
+	arrowTable := array.NewTableFromRecords(arrowSchema, records)
+	defer arrowTable.Release()
+	if arrowTable.NumRows() != int64(it.TotalRows) {
+		t.Fatalf("should have a table with %d rows, but found %d", it.TotalRows, arrowTable.NumRows())
+	}
+	if arrowTable.NumCols() != 3 {
+		t.Fatalf("should have a table with 3 columns, but found %d", arrowTable.NumCols())
+	}
+
+	sumSQL := fmt.Sprintf(`SELECT sum(number) as total FROM %s where state = "CA"`, table)
+	sumQuery := client.Query(sumSQL)
+	sumIt, err := sumQuery.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sumValues := []Value{}
+	err = sumIt.Next(&sumValues)
+	if err != nil {
+		t.Fatal(err)
+	}
+	totalFromSQL := sumValues[0].(int64)
+
+	tr := array.NewTableReader(arrowTable, arrowTable.NumRows())
+	defer tr.Release()
+	var totalFromArrow int64
+	for tr.Next() {
+		rec := tr.Record()
+		vec := rec.Column(1).(*array.Int64)
+		totalFromArrow += math.Int64.Sum(vec)
+	}
+	if totalFromArrow != totalFromSQL {
+		t.Fatalf("expected total to be %d, but with arrow we got %d", totalFromSQL, totalFromArrow)
 	}
 }
 

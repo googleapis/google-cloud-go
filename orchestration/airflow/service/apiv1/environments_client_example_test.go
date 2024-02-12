@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,6 +89,114 @@ func ExampleEnvironmentsClient_CreateEnvironment() {
 	_ = resp
 }
 
+func ExampleEnvironmentsClient_DatabaseFailover() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.DatabaseFailoverRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#DatabaseFailoverRequest.
+	}
+	op, err := c.DatabaseFailover(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_DeleteEnvironment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.DeleteEnvironmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#DeleteEnvironmentRequest.
+	}
+	op, err := c.DeleteEnvironment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleEnvironmentsClient_ExecuteAirflowCommand() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.ExecuteAirflowCommandRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#ExecuteAirflowCommandRequest.
+	}
+	resp, err := c.ExecuteAirflowCommand(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_FetchDatabaseProperties() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.FetchDatabasePropertiesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#FetchDatabasePropertiesRequest.
+	}
+	resp, err := c.FetchDatabaseProperties(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleEnvironmentsClient_GetEnvironment() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -145,7 +253,7 @@ func ExampleEnvironmentsClient_ListEnvironments() {
 	}
 }
 
-func ExampleEnvironmentsClient_UpdateEnvironment() {
+func ExampleEnvironmentsClient_LoadSnapshot() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -158,11 +266,11 @@ func ExampleEnvironmentsClient_UpdateEnvironment() {
 	}
 	defer c.Close()
 
-	req := &servicepb.UpdateEnvironmentRequest{
+	req := &servicepb.LoadSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#UpdateEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#LoadSnapshotRequest.
 	}
-	op, err := c.UpdateEnvironment(ctx, req)
+	op, err := c.LoadSnapshot(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -175,7 +283,7 @@ func ExampleEnvironmentsClient_UpdateEnvironment() {
 	_ = resp
 }
 
-func ExampleEnvironmentsClient_DeleteEnvironment() {
+func ExampleEnvironmentsClient_PollAirflowCommand() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -188,19 +296,16 @@ func ExampleEnvironmentsClient_DeleteEnvironment() {
 	}
 	defer c.Close()
 
-	req := &servicepb.DeleteEnvironmentRequest{
+	req := &servicepb.PollAirflowCommandRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#DeleteEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#PollAirflowCommandRequest.
 	}
-	op, err := c.DeleteEnvironment(ctx, req)
+	resp, err := c.PollAirflowCommand(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleEnvironmentsClient_SaveSnapshot() {
@@ -233,7 +338,7 @@ func ExampleEnvironmentsClient_SaveSnapshot() {
 	_ = resp
 }
 
-func ExampleEnvironmentsClient_LoadSnapshot() {
+func ExampleEnvironmentsClient_StopAirflowCommand() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -246,11 +351,36 @@ func ExampleEnvironmentsClient_LoadSnapshot() {
 	}
 	defer c.Close()
 
-	req := &servicepb.LoadSnapshotRequest{
+	req := &servicepb.StopAirflowCommandRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#LoadSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#StopAirflowCommandRequest.
 	}
-	op, err := c.LoadSnapshot(ctx, req)
+	resp, err := c.StopAirflowCommand(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_UpdateEnvironment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.UpdateEnvironmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#UpdateEnvironmentRequest.
+	}
+	op, err := c.UpdateEnvironment(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

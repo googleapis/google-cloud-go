@@ -35,6 +35,21 @@
                 "CreateInstance"
               ]
             },
+            "CreateSecondaryCluster": {
+              "methods": [
+                "CreateSecondaryCluster"
+              ]
+            },
+            "CreateSecondaryInstance": {
+              "methods": [
+                "CreateSecondaryInstance"
+              ]
+            },
+            "CreateUser": {
+              "methods": [
+                "CreateUser"
+              ]
+            },
             "DeleteBackup": {
               "methods": [
                 "DeleteBackup"
@@ -55,9 +70,19 @@
                 "DeleteOperation"
               ]
             },
+            "DeleteUser": {
+              "methods": [
+                "DeleteUser"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
+              ]
+            },
+            "GenerateClientCertificate": {
+              "methods": [
+                "GenerateClientCertificate"
               ]
             },
             "GetBackup": {
@@ -68,6 +93,11 @@
             "GetCluster": {
               "methods": [
                 "GetCluster"
+              ]
+            },
+            "GetConnectionInfo": {
+              "methods": [
+                "GetConnectionInfo"
               ]
             },
             "GetInstance": {
@@ -83,6 +113,16 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetUser": {
+              "methods": [
+                "GetUser"
+              ]
+            },
+            "InjectFault": {
+              "methods": [
+                "InjectFault"
               ]
             },
             "ListBackups": {
@@ -115,6 +155,16 @@
                 "ListSupportedDatabaseFlags"
               ]
             },
+            "ListUsers": {
+              "methods": [
+                "ListUsers"
+              ]
+            },
+            "PromoteCluster": {
+              "methods": [
+                "PromoteCluster"
+              ]
+            },
             "RestartInstance": {
               "methods": [
                 "RestartInstance"
@@ -138,6 +188,11 @@
             "UpdateInstance": {
               "methods": [
                 "UpdateInstance"
+              ]
+            },
+            "UpdateUser": {
+              "methods": [
+                "UpdateUser"
               ]
             }
           }
@@ -170,6 +225,21 @@
                 "CreateInstance"
               ]
             },
+            "CreateSecondaryCluster": {
+              "methods": [
+                "CreateSecondaryCluster"
+              ]
+            },
+            "CreateSecondaryInstance": {
+              "methods": [
+                "CreateSecondaryInstance"
+              ]
+            },
+            "CreateUser": {
+              "methods": [
+                "CreateUser"
+              ]
+            },
             "DeleteBackup": {
               "methods": [
                 "DeleteBackup"
@@ -190,9 +260,19 @@
                 "DeleteOperation"
               ]
             },
+            "DeleteUser": {
+              "methods": [
+                "DeleteUser"
+              ]
+            },
             "FailoverInstance": {
               "methods": [
                 "FailoverInstance"
+              ]
+            },
+            "GenerateClientCertificate": {
+              "methods": [
+                "GenerateClientCertificate"
               ]
             },
             "GetBackup": {
@@ -203,6 +283,11 @@
             "GetCluster": {
               "methods": [
                 "GetCluster"
+              ]
+            },
+            "GetConnectionInfo": {
+              "methods": [
+                "GetConnectionInfo"
               ]
             },
             "GetInstance": {
@@ -218,6 +303,16 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetUser": {
+              "methods": [
+                "GetUser"
+              ]
+            },
+            "InjectFault": {
+              "methods": [
+                "InjectFault"
               ]
             },
             "ListBackups": {
@@ -250,6 +345,16 @@
                 "ListSupportedDatabaseFlags"
               ]
             },
+            "ListUsers": {
+              "methods": [
+                "ListUsers"
+              ]
+            },
+            "PromoteCluster": {
+              "methods": [
+                "PromoteCluster"
+              ]
+            },
             "RestartInstance": {
               "methods": [
                 "RestartInstance"
@@ -273,6 +378,11 @@
             "UpdateInstance": {
               "methods": [
                 "UpdateInstance"
+              ]
+            },
+            "UpdateUser": {
+              "methods": [
+                "UpdateUser"
               ]
             }
           }

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/documentai/apiv1",
-    "version": "1.18.1",
+    "version": "1.24.0",
     "language": "GO",
     "apis": [
       {
@@ -105,7 +105,7 @@
     {
       "regionTag": "documentai_v1_generated_DocumentProcessorService_CreateProcessor_sync",
       "title": "documentai CreateProcessor Sample",
-      "description": "CreateProcessor creates a processor from the type processor that the user chose.\nThe processor will be at \"ENABLED\" state by default after its creation.",
+      "description": "CreateProcessor creates a processor from the\n[ProcessorType][google.cloud.documentai.v1.ProcessorType] provided. The\nprocessor will be at `ENABLED` state by default after its creation.",
       "file": "DocumentProcessorClient/CreateProcessor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -427,7 +427,7 @@
     {
       "regionTag": "documentai_v1_generated_DocumentProcessorService_FetchProcessorTypes_sync",
       "title": "documentai FetchProcessorTypes Sample",
-      "description": "FetchProcessorTypes fetches processor types. Note that we do not use ListProcessorTypes here\nbecause it is not paginated.",
+      "description": "FetchProcessorTypes fetches processor types. Note that we don't use\n[ListProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes]\nhere, because it isn't paginated.",
       "file": "DocumentProcessorClient/FetchProcessorTypes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1163,7 +1163,7 @@
     {
       "regionTag": "documentai_v1_generated_DocumentProcessorService_TrainProcessorVersion_sync",
       "title": "documentai TrainProcessorVersion Sample",
-      "description": "TrainProcessorVersion trains a new processor version.\nOperation metadata is returned as\ncloud_documentai_core.TrainProcessorVersionMetadata.",
+      "description": "TrainProcessorVersion trains a new processor version.\nOperation metadata is returned as\n[TrainProcessorVersionMetadata][google.cloud.documentai.v1.TrainProcessorVersionMetadata].",
       "file": "DocumentProcessorClient/TrainProcessorVersion/main.go",
       "language": "GO",
       "clientMethod": {

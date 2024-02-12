@@ -22,7 +22,7 @@ import (
 
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	dpb "github.com/golang/protobuf/ptypes/duration"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 func TestTopicConfigToProtoConversion(t *testing.T) {

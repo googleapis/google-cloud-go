@@ -12,20 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.20 as builder
+FROM golang:1.21 as builder
 
 # Copy local code to the container image.
-COPY . /internal/
-WORKDIR /internal/postprocessor
+COPY . /postprocessor/
+WORKDIR /postprocessor
 
-# Build the handle_task command inside the container.
-# (You may fetch or manage dependencies here,
-# either manually or with a tool like "godep"go .)
 # go build with no path looks in current directory (/postprocessor) and finds package main
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o post_processor
-
-
-# Install dependencies
 
 # Install tools used in build
 RUN go install honnef.co/go/tools/cmd/staticcheck@latest && \
@@ -33,4 +27,4 @@ RUN go install honnef.co/go/tools/cmd/staticcheck@latest && \
     go install golang.org/x/lint/golint@latest && \
     go install golang.org/x/tools/cmd/goimports@latest
 
-CMD [ "/internal/postprocessor/post_processor"]
+CMD [ "/postprocessor/post_processor"]

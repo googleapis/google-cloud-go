@@ -47,17 +47,17 @@ exit_code=0
 # Run tests in the current directory and tee output to log file,
 # to be pushed to GCS as artifact.
 runPresubmitTests() {
-  if [[ $PWD != *"/internal/"* ]] ||
-    [[ $PWD != *"/third_party/"* ]]; then
+  if [[ $PWD == *"/internal/"* ]] ||
+    [[ $PWD == *"/third_party/"* ]]; then
     # internal tools only expected to work with latest go version
     return
   fi
 
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then
-    go test -race -v -timeout 15m -short ./... 2>&1 |
+    GOWORK=off go test -race -v -timeout 15m -short ./... 2>&1 |
       tee sponge_log.log
   else
-    go test -race -v -timeout 45m ./... 2>&1 |
+    GOWORK=off go test -race -v -timeout 45m ./... 2>&1 |
       tee sponge_log.log
   fi
 
@@ -72,13 +72,19 @@ runPresubmitTests() {
   # Add the exit codes together so we exit non-zero if any module fails.
   exit_code=$(($exit_code + $?))
   if [[ $PWD != *"/internal/"* ]]; then
-    go build ./...
+    GOWORK=off go build ./...
   fi
   exit_code=$(($exit_code + $?))
 }
 
 SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/main...$KOKORO_GIT_COMMIT_google_cloud_go |
   grep -Ev '(\.md$|^\.github)' || true)
+
+if [ -z $SIGNIFICANT_CHANGES ]; then
+  echo "No changes detected, skipping tests"
+  exit 0
+fi
+
 # CHANGED_DIRS is the list of significant top-level directories that changed,
 # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
 CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u |

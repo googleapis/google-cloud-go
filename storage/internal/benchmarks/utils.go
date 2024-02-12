@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/google/uuid"
+	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -108,6 +109,66 @@ func generateRandomFile(path string, size int64) (string, error) {
 	return f.Name(), err
 }
 
+// fillDirectory fills the directory with the number of different files
+// specified on the command line. Each file created will contain random bytes,
+// and will be of the size specified on the command line. No subdirectories are
+// created.
+// The number of bytes across all created files is returned.
+func fillDirectory(dirPath string) (int64, error) {
+	currNumBytes := int64(0)
+
+	for i := opts.numObjectsPerDirectory; i > 0; i-- {
+		size := opts.objectSize
+		if size == 0 {
+			// Choose a different random object size for each file
+			size = randomInt64(opts.minObjectSize, opts.maxObjectSize)
+		}
+
+		if _, err := generateRandomFile(dirPath, size); err != nil {
+			return 0, err
+		}
+		currNumBytes += size
+	}
+
+	return currNumBytes, nil
+}
+
+// generateDirInGCS generates a directory in GCS and fills it with the number of
+// different files specified on the command line. Each file created will contain
+// random bytes, and will be of the size specified on the command line.
+// Only a single file size is supported.
+// A list of object names is returned as a channel.
+func generateDirInGCS(ctx context.Context, dirPath string, objectSize int64) (*chan string, error) {
+	objectNames := make(chan string, opts.numObjectsPerDirectory)
+
+	for i := opts.numObjectsPerDirectory; i > 0; i-- {
+		object, err := generateRandomFileInGCS(ctx, dirPath, objectSize)
+		if err != nil {
+			return nil, err
+		}
+		objectNames <- object
+	}
+
+	return &objectNames, nil
+}
+
+// generateRandomFileInGCS creates a file in GCS and fills it with size random bytes.
+func generateRandomFileInGCS(ctx context.Context, dir string, size int64) (string, error) {
+	c := nonBenchmarkingClients.Get()
+	name := randomName(dir)
+
+	o := c.Bucket(opts.bucket).Object(name).Retryer(storage.WithPolicy(storage.RetryAlways))
+
+	w := o.NewWriter(context.Background())
+
+	if _, err := io.CopyN(w, crand.Reader, size); err != nil {
+		w.Close()
+		return "", err
+	}
+
+	return name, w.Close()
+}
+
 var goVersion string
 var dependencyVersions = map[string]string{
 	"cloud.google.com/go/storage": "",
@@ -138,10 +199,38 @@ func errorIsDeadLineExceeded(err error) bool {
 		return true
 	}
 
-	for err = errors.Unwrap(err); err != nil; {
+	err = errors.Unwrap(err)
+	for err != nil {
 		if status.Code(err) == codes.DeadlineExceeded {
 			return true
 		}
+		err = errors.Unwrap(err)
 	}
 	return false
+}
+
+// deleteDirectoryFromGCS deletes everything under the given root.
+func deleteDirectoryFromGCS(bucketName, root string) error {
+	// Delete uploaded objects
+	c := nonBenchmarkingClients.Get()
+	// List objects under root and delete all
+	it := c.Bucket(bucketName).Objects(context.Background(), &storage.Query{
+		Prefix:     root,
+		Projection: storage.ProjectionNoACL,
+	})
+
+	attrs, err := it.Next()
+
+	for err == nil {
+		o := c.Bucket(bucketName).Object(attrs.Name).Retryer(storage.WithPolicy(storage.RetryAlways))
+		if err := o.Delete(context.Background()); err != nil {
+			return err
+		}
+		attrs, err = it.Next()
+	}
+
+	if err != iterator.Done {
+		return fmt.Errorf("Bucket.Objects: %w", err)
+	}
+	return nil
 }

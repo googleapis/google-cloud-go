@@ -1,6 +1,62 @@
 # Changes
 
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.15.4...functions/v1.16.0) (2024-01-30)
+
+
+### Features
+
+* **functions:** Updated description for `docker_registry` to reflect transition to Artifact Registry ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+
+### Bug Fixes
+
+* **functions:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.15.4](https://github.com/googleapis/google-cloud-go/compare/functions/v1.15.3...functions/v1.15.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **functions:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.15.3](https://github.com/googleapis/google-cloud-go/compare/functions/v1.15.2...functions/v1.15.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **functions:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.15.2](https://github.com/googleapis/google-cloud-go/compare/functions/v1.15.1...functions/v1.15.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **functions:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/functions/v1.15.0...functions/v1.15.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **functions:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.14.0...functions/v1.15.0) (2023-05-30)
+
+
+### Features
+
+* **functions:** ListFunctions now include metadata which indicates whether a function is a `GEN_1` or `GEN_2` function ([ca94e27](https://github.com/googleapis/google-cloud-go/commit/ca94e2724f9e2610b46aefd0a3b5ddc06102e91b))
+* **functions:** ListFunctions now include metadata which indicates whether a function is a `GEN_1` or `GEN_2` function ([#7984](https://github.com/googleapis/google-cloud-go/issues/7984)) ([ca94e27](https://github.com/googleapis/google-cloud-go/commit/ca94e2724f9e2610b46aefd0a3b5ddc06102e91b))
+* **functions:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.13.1...functions/v1.14.0) (2023-05-16)
+
+
+### Features
+
+* **functions:** Added helper methods for long running operations, IAM, and locations ([31421d5](https://github.com/googleapis/google-cloud-go/commit/31421d52c3bf3b7baa235fb6cb18bb8a786398df))
+
 ## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/functions/v1.13.0...functions/v1.13.1) (2023-05-08)
 
 

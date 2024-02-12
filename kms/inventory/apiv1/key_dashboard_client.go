@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@ package inventory
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	inventorypb "cloud.google.com/go/kms/inventory/apiv1/inventorypb"
@@ -34,7 +35,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -49,7 +49,9 @@ type KeyDashboardCallOptions struct {
 func defaultKeyDashboardGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("kmsinventory.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("kmsinventory.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("kmsinventory.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://kmsinventory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -60,13 +62,17 @@ func defaultKeyDashboardGRPCClientOptions() []option.ClientOption {
 
 func defaultKeyDashboardCallOptions() *KeyDashboardCallOptions {
 	return &KeyDashboardCallOptions{
-		ListCryptoKeys: []gax.CallOption{},
+		ListCryptoKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultKeyDashboardRESTCallOptions() *KeyDashboardCallOptions {
 	return &KeyDashboardCallOptions{
-		ListCryptoKeys: []gax.CallOption{},
+		ListCryptoKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -127,9 +133,6 @@ type keyDashboardGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing KeyDashboardClient
 	CallOptions **KeyDashboardCallOptions
 
@@ -137,7 +140,7 @@ type keyDashboardGRPCClient struct {
 	keyDashboardClient inventorypb.KeyDashboardServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewKeyDashboardClient creates a new key dashboard service client based on gRPC.
@@ -154,11 +157,6 @@ func NewKeyDashboardClient(ctx context.Context, opts ...option.ClientOption) (*K
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -167,7 +165,6 @@ func NewKeyDashboardClient(ctx context.Context, opts ...option.ClientOption) (*K
 
 	c := &keyDashboardGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		keyDashboardClient: inventorypb.NewKeyDashboardServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
 	}
@@ -190,9 +187,9 @@ func (c *keyDashboardGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *keyDashboardGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -209,8 +206,8 @@ type keyDashboardRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing KeyDashboardClient
 	CallOptions **KeyDashboardCallOptions
@@ -240,7 +237,9 @@ func NewKeyDashboardRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultKeyDashboardRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://kmsinventory.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://kmsinventory.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://kmsinventory.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://kmsinventory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -250,9 +249,9 @@ func defaultKeyDashboardRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *keyDashboardRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -270,9 +269,10 @@ func (c *keyDashboardRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *keyDashboardGRPCClient) ListCryptoKeys(ctx context.Context, req *inventorypb.ListCryptoKeysRequest, opts ...gax.CallOption) *CryptoKeyIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListCryptoKeys[0:len((*c.CallOptions).ListCryptoKeys):len((*c.CallOptions).ListCryptoKeys)], opts...)
 	it := &CryptoKeyIterator{}
 	req = proto.Clone(req).(*inventorypb.ListCryptoKeysRequest)
@@ -349,7 +349,8 @@ func (c *keyDashboardRESTClient) ListCryptoKeys(ctx context.Context, req *invent
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -370,13 +371,13 @@ func (c *keyDashboardRESTClient) ListCryptoKeys(ctx context.Context, req *invent
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -402,51 +403,4 @@ func (c *keyDashboardRESTClient) ListCryptoKeys(ctx context.Context, req *invent
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// CryptoKeyIterator manages a stream of *kmspb.CryptoKey.
-type CryptoKeyIterator struct {
-	items    []*kmspb.CryptoKey
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*kmspb.CryptoKey, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CryptoKeyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CryptoKeyIterator) Next() (*kmspb.CryptoKey, error) {
-	var item *kmspb.CryptoKey
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CryptoKeyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CryptoKeyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

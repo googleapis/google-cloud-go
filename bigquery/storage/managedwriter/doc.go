@@ -209,6 +209,19 @@ In support of the retry changes, the AppendResult returned as part of an append 
 TotalAttempts(), which returns the number of times that specific append was enqueued to the service.
 Values larger than 1 are indicative of a specific append being enqueued multiple times.
 
+# Usage of Contexts
+
+The underlying rpc mechanism used to transmit requests and responses between this client and
+the service uses a gRPC bidirectional streaming protocol, and the context provided when invoking
+NewClient to instantiate the client is used to maintain those background connections.
+
+This package also exposes context when instantiating a new writer (NewManagedStream), as well as
+allowing a per-request context when invoking the AppendRows function to send a set of rows.  If the
+context becomes invalid on the writer all subsequent AppendRows requests will be blocked.
+
+Finally, there is a per-request context supplied as part of the AppendRows call on the ManagedStream
+writer itself, useful for bounding individual requests.
+
 # Connection Sharing (Multiplexing)
 
 Note: This feature is EXPERIMENTAL and subject to change.
@@ -249,5 +262,21 @@ https://pkg.go.dev/google.golang.org/api/option#WithGRPCConnectionPool
 
 A reasonable upper bound for the connection pool size is the number of concurrent writers for explicit stream
 plus the configured size of the multiplex pool.
+
+# Writing JSON Data
+
+As an example, you can refer to this integration test that demonstrates writing JSON data to a stream:
+https://github.com/googleapis/google-cloud-go/blob/7a46b5428f239871993d66be2c7c667121f60a6f/bigquery/storage/managedwriter/integration_test.go#L397
+
+This integration test assumes the destination table already exists. In addition, it relies upon having a definition of
+a BigQuery schema that is compatible with this table (for this example the schema is defined here:
+https://github.com/googleapis/google-cloud-go/blob/2020edff24e3ffe127248cf9a90c67593c303e18/bigquery/storage/managedwriter/testdata/schemas.go#L31).
+Given the schema, this test first utilizes the function setupDynamicDescriptors() to derive both a MessageDescriptor
+and DescriptorProto from the schema. This function is defined here:
+https://github.com/googleapis/google-cloud-go/blob/7a46b5428f239871993d66be2c7c667121f60a6f/bigquery/storage/managedwriter/integration_test.go#L100
+The test initializes the ManagedStream it will write to with the derived DescriptorProto. The test then iterates
+through each of the JSON rows to be written. For each row, it first dynamically creates an empty Message based on
+the derived MessageDescriptor. Then it loads the JSON row into the Message. Finally it generates protocol buffer
+bytes from the Message. These bytes are then sent to the ManagedStream within an AppendRows request.
 */
 package managedwriter

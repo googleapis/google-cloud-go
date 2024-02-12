@@ -1,5 +1,67 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.14.0...datastore/v1.15.0) (2023-10-06)
+
+
+### Features
+
+* **datastore:** Adding dynamic routing header ([#8364](https://github.com/googleapis/google-cloud-go/issues/8364)) ([d235a42](https://github.com/googleapis/google-cloud-go/commit/d235a427a4e8d84466599cad4a68539a7a57a5db))
+
+
+### Bug Fixes
+
+* **datastore:** Allow saving nested byte slice ([#8540](https://github.com/googleapis/google-cloud-go/issues/8540)) ([8e53787](https://github.com/googleapis/google-cloud-go/commit/8e53787eac6f724ea4282533349abef3cbaffefe))
+* **datastore:** Handle loading nil values ([#8544](https://github.com/googleapis/google-cloud-go/issues/8544)) ([25dbb9c](https://github.com/googleapis/google-cloud-go/commit/25dbb9cf1041d9e19edecd5c48b698b6f81f2d20))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.13.0...datastore/v1.14.0) (2023-08-22)
+
+
+### Features
+
+* **datastore:** SUM and AVG aggregations ([#8307](https://github.com/googleapis/google-cloud-go/issues/8307)) ([a9fff18](https://github.com/googleapis/google-cloud-go/commit/a9fff181e4ea8281ad907e7b2e0d90e70013a4de))
+* **datastore:** Support aggregation query in transaction ([#8439](https://github.com/googleapis/google-cloud-go/issues/8439)) ([37681ff](https://github.com/googleapis/google-cloud-go/commit/37681ff291c0ccf4c908be55b97639c04b9dec48))
+
+
+### Bug Fixes
+
+* **datastore:** Correcting string representation of Key ([#8363](https://github.com/googleapis/google-cloud-go/issues/8363)) ([4cb1211](https://github.com/googleapis/google-cloud-go/commit/4cb12110ba229dfbe21568eb06c243bdffd1fee7))
+* **datastore:** Fix NoIndex for array property ([#7674](https://github.com/googleapis/google-cloud-go/issues/7674)) ([01951e6](https://github.com/googleapis/google-cloud-go/commit/01951e64f3955dc337172a30d78e2f92f65becb2))
+
+
+### Documentation
+
+* **datastore/admin:** Specify limit for `properties` in `Index` message in Datastore Admin API ([b890425](https://github.com/googleapis/google-cloud-go/commit/b8904253a0f8424ea4548469e5feef321bd7396a))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.12.1...datastore/v1.13.0) (2023-07-26)
+
+
+### Features
+
+* **datastore:** Multi DB support ([#8276](https://github.com/googleapis/google-cloud-go/issues/8276)) ([e4d07a0](https://github.com/googleapis/google-cloud-go/commit/e4d07a0dddeab7fe635840f506daf01ceb18c067))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.12.0...datastore/v1.12.1) (2023-07-07)
+
+
+### Bug Fixes
+
+* **datastore:** Return error from RunAggregationQuery ([#8222](https://github.com/googleapis/google-cloud-go/issues/8222)) ([a9b67cf](https://github.com/googleapis/google-cloud-go/commit/a9b67cfc95b567d29358501ec7c5883b1f90bd3e))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.11.0...datastore/v1.12.0) (2023-06-27)
+
+
+### Features
+
+* **datastore:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+
+### Bug Fixes
+
+* **datastore:** Change aggregation result to return generic value ([#8167](https://github.com/googleapis/google-cloud-go/issues/8167)) ([9d3d17b](https://github.com/googleapis/google-cloud-go/commit/9d3d17bee90d010dab99a5a0f1610a777e55cc78))
+* **datastore:** Handling nil slices in save and query ([#8043](https://github.com/googleapis/google-cloud-go/issues/8043)) ([36f01e9](https://github.com/googleapis/google-cloud-go/commit/36f01e99f75f4f07ae10991c52f45115b8180b45))
+* **datastore:** PKG:datastore TYPE:datastoreClient FUNC:RunAggregationQuery ([#7803](https://github.com/googleapis/google-cloud-go/issues/7803)) ([1f050ea](https://github.com/googleapis/google-cloud-go/commit/1f050ea92782e7ec1ecb67fe134a89347a613351))
+* **datastore:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+* **datastore:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.10.0...datastore/v1.11.0) (2023-04-04)
 
 
@@ -119,3 +181,4 @@
 
 This is the first tag to carve out datastore as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+

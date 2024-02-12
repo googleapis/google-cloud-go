@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/kms/apiv1",
-    "version": "1.10.2",
+    "version": "1.15.7",
     "language": "GO",
     "apis": [
       {
@@ -502,6 +502,52 @@
         "method": {
           "shortName": "UpdateEkmConnection",
           "fullName": "google.cloud.kms.v1.EkmService.UpdateEkmConnection",
+          "service": {
+            "shortName": "EkmService",
+            "fullName": "google.cloud.kms.v1.EkmService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_EkmService_VerifyConnectivity_sync",
+      "title": "cloudkms VerifyConnectivity Sample",
+      "description": "VerifyConnectivity verifies that Cloud KMS can successfully connect to the external key\nmanager specified by an [EkmConnection][google.cloud.kms.v1.EkmConnection].\nIf there is an error connecting to the EKM, this method returns a\nFAILED_PRECONDITION status containing structured information as described\nat https: //cloud.google.com/kms/docs/reference/ekm_errors.",
+      "file": "EkmClient/VerifyConnectivity/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "VerifyConnectivity",
+        "fullName": "google.cloud.kms.v1.EkmClient.VerifyConnectivity",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.VerifyConnectivityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.VerifyConnectivityResponse",
+        "client": {
+          "shortName": "EkmClient",
+          "fullName": "google.cloud.kms.v1.EkmClient"
+        },
+        "method": {
+          "shortName": "VerifyConnectivity",
+          "fullName": "google.cloud.kms.v1.EkmService.VerifyConnectivity",
           "service": {
             "shortName": "EkmService",
             "fullName": "google.cloud.kms.v1.EkmService"
@@ -1652,6 +1698,98 @@
         "method": {
           "shortName": "MacVerify",
           "fullName": "google.cloud.kms.v1.KeyManagementService.MacVerify",
+          "service": {
+            "shortName": "KeyManagementService",
+            "fullName": "google.cloud.kms.v1.KeyManagementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_KeyManagementService_RawDecrypt_sync",
+      "title": "cloudkms RawDecrypt Sample",
+      "description": "RawDecrypt decrypts data that was originally encrypted using a raw cryptographic\nmechanism. The [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose]\nmust be\n[RAW_ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.RAW_ENCRYPT_DECRYPT].",
+      "file": "KeyManagementClient/RawDecrypt/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RawDecrypt",
+        "fullName": "google.cloud.kms.v1.KeyManagementClient.RawDecrypt",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.RawDecryptRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.RawDecryptResponse",
+        "client": {
+          "shortName": "KeyManagementClient",
+          "fullName": "google.cloud.kms.v1.KeyManagementClient"
+        },
+        "method": {
+          "shortName": "RawDecrypt",
+          "fullName": "google.cloud.kms.v1.KeyManagementService.RawDecrypt",
+          "service": {
+            "shortName": "KeyManagementService",
+            "fullName": "google.cloud.kms.v1.KeyManagementService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_KeyManagementService_RawEncrypt_sync",
+      "title": "cloudkms RawEncrypt Sample",
+      "description": "RawEncrypt encrypts data using portable cryptographic primitives. Most users should\nchoose [Encrypt][google.cloud.kms.v1.KeyManagementService.Encrypt] and\n[Decrypt][google.cloud.kms.v1.KeyManagementService.Decrypt] rather than\ntheir raw counterparts. The\n[CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] must be\n[RAW_ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.RAW_ENCRYPT_DECRYPT].",
+      "file": "KeyManagementClient/RawEncrypt/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RawEncrypt",
+        "fullName": "google.cloud.kms.v1.KeyManagementClient.RawEncrypt",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.RawEncryptRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.RawEncryptResponse",
+        "client": {
+          "shortName": "KeyManagementClient",
+          "fullName": "google.cloud.kms.v1.KeyManagementClient"
+        },
+        "method": {
+          "shortName": "RawEncrypt",
+          "fullName": "google.cloud.kms.v1.KeyManagementService.RawEncrypt",
           "service": {
             "shortName": "KeyManagementService",
             "fullName": "google.cloud.kms.v1.KeyManagementService"

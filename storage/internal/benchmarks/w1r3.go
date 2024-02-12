@@ -24,6 +24,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // w1r3 or "write one, read three" is a benchmark that uploads a randomly generated
@@ -32,12 +35,12 @@ import (
 //
 // SET UP
 //   - Initialize structs to populate with the benchmark results.
+//   - Select a random API to use to upload and download the object, unless an
+//     API is set in the command-line,
 //   - Select a random size for the object that will be uploaded; this size will
 //     be between two values configured in the command-line.
 //   - Create an object of that size on disk, and fill with random contents.
 //   - Select, for the upload and each download separately, the following parameters:
-//   - a random API to use to upload/download the object, unless it is set in
-//     the command-line,
 //   - the application buffer size set in the command-line
 //   - the chunksize (only for uploads) set in the command-line,
 //   - if the client library will perform CRC32C and/or MD5 hashes on the data.
@@ -59,6 +62,7 @@ type w1r3 struct {
 	objectPath             string
 	writeResult            *benchmarkResult
 	readResults            []*benchmarkResult
+	isWarmup               bool // if true, results should not be recorded
 }
 
 func (r *w1r3) setup(ctx context.Context) error {
@@ -146,10 +150,17 @@ func (r *w1r3) cleanup() error {
 
 func (r *w1r3) run(ctx context.Context) error {
 	// Use the same client for write and reads as the api is the same
-	client := getClient(ctx, r.writeResult.params.api)
+	client := getClient(ctx, r.readResults[0].params.api)
+
+	var span trace.Span
+	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "w1r3")
+	span.SetAttributes(attribute.KeyValue{"workload", attribute.StringValue("w1r3")},
+		attribute.KeyValue{"api", attribute.StringValue(string(r.opts.api))},
+		attribute.KeyValue{"object_size", attribute.Int64Value(r.opts.objectSize)})
+	defer span.End()
 
 	// Upload
-	err := runOneOp(ctx, r.writeResult, func() (time.Duration, error) {
+	err := runOneSample(r.writeResult, func() (time.Duration, error) {
 		return uploadBenchmark(ctx, uploadOpts{
 			client:              client,
 			params:              r.writeResult.params,
@@ -157,8 +168,9 @@ func (r *w1r3) run(ctx context.Context) error {
 			object:              r.objectName,
 			useDefaultChunkSize: opts.minChunkSize == useDefault || opts.maxChunkSize == useDefault,
 			objectPath:          r.objectPath,
+			timeout:             r.opts.timeoutPerOp,
 		})
-	})
+	}, r.isWarmup)
 
 	// Do not attempt to read from a failed upload
 	if err != nil {
@@ -177,7 +189,7 @@ func (r *w1r3) run(ctx context.Context) error {
 		}
 		r.readResults[i].readOffset = rangeStart
 
-		err = runOneOp(ctx, r.readResults[i], func() (time.Duration, error) {
+		err = runOneSample(r.readResults[i], func() (time.Duration, error) {
 			return downloadBenchmark(ctx, downloadOpts{
 				client:              client,
 				objectSize:          r.readResults[i].objectSize,
@@ -186,8 +198,9 @@ func (r *w1r3) run(ctx context.Context) error {
 				rangeStart:          rangeStart,
 				rangeLength:         rangeLength,
 				downloadToDirectory: r.directoryPath,
+				timeout:             r.opts.timeoutPerOp,
 			})
-		})
+		}, r.isWarmup)
 		if err != nil {
 			// We stop additional reads if one fails, as the iteration number would be off
 			return fmt.Errorf("download[%d]: %v", i, err)
@@ -197,7 +210,7 @@ func (r *w1r3) run(ctx context.Context) error {
 	return nil
 }
 
-func runOneOp(ctx context.Context, result *benchmarkResult, doOp func() (time.Duration, error)) error {
+func runOneSample(result *benchmarkResult, doOp func() (time.Duration, error), isWarmup bool) error {
 	var memStats *runtime.MemStats = &runtime.MemStats{}
 
 	// If the option is specified, run the garbage collector before collecting
@@ -222,7 +235,9 @@ func runOneOp(ctx context.Context, result *benchmarkResult, doOp func() (time.Du
 		result.timedOut = true
 	}
 
-	results <- *result
+	if !isWarmup {
+		results <- *result
+	}
 
 	return err
 }

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/functions/apiv2",
-    "version": "1.13.1",
+    "version": "1.16.0",
     "language": "GO",
     "apis": [
       {
@@ -428,7 +428,7 @@
     {
       "regionTag": "cloudfunctions_v2_generated_FunctionService_ListOperations_sync",
       "title": "cloudfunctions ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "FunctionClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {

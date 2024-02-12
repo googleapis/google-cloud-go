@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datacatalog/apiv1beta1",
-    "version": "1.13.1",
+    "version": "1.19.3",
     "language": "GO",
     "apis": [
       {
@@ -745,7 +745,7 @@
     {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListTags_sync",
       "title": "datacatalog ListTags Sample",
-      "description": "ListTags lists the tags on an [Entry][google.cloud.datacatalog.v1beta1.Entry].",
+      "description": "ListTags lists tags assigned to an [Entry][google.cloud.datacatalog.v1beta1.Entry].\nThe [columns][google.cloud.datacatalog.v1beta1.Tag.column] in the response\nare lowercased.",
       "file": "Client/ListTags/main.go",
       "language": "GO",
       "clientMethod": {
@@ -881,9 +881,55 @@
       ]
     },
     {
+      "regionTag": "datacatalog_v1beta1_generated_DataCatalog_RenameTagTemplateFieldEnumValue_sync",
+      "title": "datacatalog RenameTagTemplateFieldEnumValue Sample",
+      "description": "RenameTagTemplateFieldEnumValue renames an enum value in a tag template. The enum values have to be unique\nwithin one enum field. Thus, an enum value cannot be renamed with a name\nused in any other enum value within the same enum field.",
+      "file": "Client/RenameTagTemplateFieldEnumValue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RenameTagTemplateFieldEnumValue",
+        "fullName": "google.cloud.datacatalog.v1beta1.Client.RenameTagTemplateFieldEnumValue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datacatalogpb.RenameTagTemplateFieldEnumValueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datacatalogpb.TagTemplateField",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.datacatalog.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "RenameTagTemplateFieldEnumValue",
+          "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog.RenameTagTemplateFieldEnumValue",
+          "service": {
+            "shortName": "DataCatalog",
+            "fullName": "google.cloud.datacatalog.v1beta1.DataCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_SearchCatalog_sync",
       "title": "datacatalog SearchCatalog Sample",
-      "description": "SearchCatalog searches Data Catalog for multiple resources like entries, tags that\nmatch a query.\n\nThis is a custom method\n(https: //cloud.google.com/apis/design/custom_methods) and does not return\nthe complete resource, only the resource identifier and high level\nfields. Clients can subsequentally call `Get` methods.\n\nNote that Data Catalog search queries do not guarantee full recall. Query\nresults that match your query may not be returned, even in subsequent\nresult pages. Also note that results returned (and not returned) can vary\nacross repeated search queries.\n\nSee [Data Catalog Search\nSyntax](https: //cloud.google.com/data-catalog/docs/how-to/search-reference)\nfor more information.",
+      "description": "SearchCatalog searches Data Catalog for multiple resources like entries, tags that\nmatch a query.\n\nThis is a custom method\n(https: //cloud.google.com/apis/design/custom_methods) and does not return\nthe complete resource, only the resource identifier and high level\nfields. Clients can subsequently call `Get` methods.\n\nNote that Data Catalog search queries do not guarantee full recall. Query\nresults that match your query may not be returned, even in subsequent\nresult pages. Also note that results returned (and not returned) can vary\nacross repeated search queries.\n\nSee [Data Catalog Search\nSyntax](https: //cloud.google.com/data-catalog/docs/how-to/search-reference)\nfor more information.",
       "file": "Client/SearchCatalog/main.go",
       "language": "GO",
       "clientMethod": {

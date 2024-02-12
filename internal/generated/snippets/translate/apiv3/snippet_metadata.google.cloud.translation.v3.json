@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/translate/apiv3",
-    "version": "1.7.1",
+    "version": "1.10.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "translate_v3_generated_TranslationService_AdaptiveMtTranslate_sync",
+      "title": "translate AdaptiveMtTranslate Sample",
+      "description": "AdaptiveMtTranslate translate text using Adaptive MT.",
+      "file": "TranslationClient/AdaptiveMtTranslate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AdaptiveMtTranslate",
+        "fullName": "google.cloud.translation.v3.TranslationClient.AdaptiveMtTranslate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translatepb.AdaptiveMtTranslateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*translatepb.AdaptiveMtTranslateResponse",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3.TranslationClient"
+        },
+        "method": {
+          "shortName": "AdaptiveMtTranslate",
+          "fullName": "google.cloud.translation.v3.TranslationService.AdaptiveMtTranslate",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "translate_v3_generated_TranslationService_BatchTranslateDocument_sync",
       "title": "translate BatchTranslateDocument Sample",
@@ -104,6 +150,52 @@
       ]
     },
     {
+      "regionTag": "translate_v3_generated_TranslationService_CreateAdaptiveMtDataset_sync",
+      "title": "translate CreateAdaptiveMtDataset Sample",
+      "description": "CreateAdaptiveMtDataset creates an Adaptive MT dataset.",
+      "file": "TranslationClient/CreateAdaptiveMtDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAdaptiveMtDataset",
+        "fullName": "google.cloud.translation.v3.TranslationClient.CreateAdaptiveMtDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translatepb.CreateAdaptiveMtDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*translatepb.AdaptiveMtDataset",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3.TranslationClient"
+        },
+        "method": {
+          "shortName": "CreateAdaptiveMtDataset",
+          "fullName": "google.cloud.translation.v3.TranslationService.CreateAdaptiveMtDataset",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "translate_v3_generated_TranslationService_CreateGlossary_sync",
       "title": "translate CreateGlossary Sample",
       "description": "CreateGlossary creates a glossary and returns the long-running operation. Returns\nNOT_FOUND, if the project doesn't exist.",
@@ -145,6 +237,96 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3_generated_TranslationService_DeleteAdaptiveMtDataset_sync",
+      "title": "translate DeleteAdaptiveMtDataset Sample",
+      "description": "DeleteAdaptiveMtDataset deletes an Adaptive MT dataset, including all its entries and associated\nmetadata.",
+      "file": "TranslationClient/DeleteAdaptiveMtDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAdaptiveMtDataset",
+        "fullName": "google.cloud.translation.v3.TranslationClient.DeleteAdaptiveMtDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translatepb.DeleteAdaptiveMtDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3.TranslationClient"
+        },
+        "method": {
+          "shortName": "DeleteAdaptiveMtDataset",
+          "fullName": "google.cloud.translation.v3.TranslationService.DeleteAdaptiveMtDataset",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3_generated_TranslationService_DeleteAdaptiveMtFile_sync",
+      "title": "translate DeleteAdaptiveMtFile Sample",
+      "description": "DeleteAdaptiveMtFile deletes an AdaptiveMtFile along with its sentences.",
+      "file": "TranslationClient/DeleteAdaptiveMtFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAdaptiveMtFile",
+        "fullName": "google.cloud.translation.v3.TranslationClient.DeleteAdaptiveMtFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translatepb.DeleteAdaptiveMtFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3.TranslationClient"
+        },
+        "method": {
+          "shortName": "DeleteAdaptiveMtFile",
+          "fullName": "google.cloud.translation.v3.TranslationService.DeleteAdaptiveMtFile",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -226,6 +408,98 @@
         "method": {
           "shortName": "DetectLanguage",
           "fullName": "google.cloud.translation.v3.TranslationService.DetectLanguage",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3_generated_TranslationService_GetAdaptiveMtDataset_sync",
+      "title": "translate GetAdaptiveMtDataset Sample",
+      "description": "GetAdaptiveMtDataset gets the Adaptive MT dataset.",
+      "file": "TranslationClient/GetAdaptiveMtDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAdaptiveMtDataset",
+        "fullName": "google.cloud.translation.v3.TranslationClient.GetAdaptiveMtDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translatepb.GetAdaptiveMtDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*translatepb.AdaptiveMtDataset",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3.TranslationClient"
+        },
+        "method": {
+          "shortName": "GetAdaptiveMtDataset",
+          "fullName": "google.cloud.translation.v3.TranslationService.GetAdaptiveMtDataset",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3_generated_TranslationService_GetAdaptiveMtFile_sync",
+      "title": "translate GetAdaptiveMtFile Sample",
+      "description": "GetAdaptiveMtFile gets and AdaptiveMtFile",
+      "file": "TranslationClient/GetAdaptiveMtFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAdaptiveMtFile",
+        "fullName": "google.cloud.translation.v3.TranslationClient.GetAdaptiveMtFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translatepb.GetAdaptiveMtFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*translatepb.AdaptiveMtFile",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3.TranslationClient"
+        },
+        "method": {
+          "shortName": "GetAdaptiveMtFile",
+          "fullName": "google.cloud.translation.v3.TranslationService.GetAdaptiveMtFile",
           "service": {
             "shortName": "TranslationService",
             "fullName": "google.cloud.translation.v3.TranslationService"
@@ -329,6 +603,190 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3_generated_TranslationService_ImportAdaptiveMtFile_sync",
+      "title": "translate ImportAdaptiveMtFile Sample",
+      "description": "ImportAdaptiveMtFile imports an AdaptiveMtFile and adds all of its sentences into the\nAdaptiveMtDataset.",
+      "file": "TranslationClient/ImportAdaptiveMtFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportAdaptiveMtFile",
+        "fullName": "google.cloud.translation.v3.TranslationClient.ImportAdaptiveMtFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translatepb.ImportAdaptiveMtFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*translatepb.ImportAdaptiveMtFileResponse",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3.TranslationClient"
+        },
+        "method": {
+          "shortName": "ImportAdaptiveMtFile",
+          "fullName": "google.cloud.translation.v3.TranslationService.ImportAdaptiveMtFile",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3_generated_TranslationService_ListAdaptiveMtDatasets_sync",
+      "title": "translate ListAdaptiveMtDatasets Sample",
+      "description": "ListAdaptiveMtDatasets lists all Adaptive MT datasets for which the caller has read permission.",
+      "file": "TranslationClient/ListAdaptiveMtDatasets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAdaptiveMtDatasets",
+        "fullName": "google.cloud.translation.v3.TranslationClient.ListAdaptiveMtDatasets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translatepb.ListAdaptiveMtDatasetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AdaptiveMtDatasetIterator",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3.TranslationClient"
+        },
+        "method": {
+          "shortName": "ListAdaptiveMtDatasets",
+          "fullName": "google.cloud.translation.v3.TranslationService.ListAdaptiveMtDatasets",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3_generated_TranslationService_ListAdaptiveMtFiles_sync",
+      "title": "translate ListAdaptiveMtFiles Sample",
+      "description": "ListAdaptiveMtFiles lists all AdaptiveMtFiles associated to an AdaptiveMtDataset.",
+      "file": "TranslationClient/ListAdaptiveMtFiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAdaptiveMtFiles",
+        "fullName": "google.cloud.translation.v3.TranslationClient.ListAdaptiveMtFiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translatepb.ListAdaptiveMtFilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AdaptiveMtFileIterator",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3.TranslationClient"
+        },
+        "method": {
+          "shortName": "ListAdaptiveMtFiles",
+          "fullName": "google.cloud.translation.v3.TranslationService.ListAdaptiveMtFiles",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "translate_v3_generated_TranslationService_ListAdaptiveMtSentences_sync",
+      "title": "translate ListAdaptiveMtSentences Sample",
+      "description": "ListAdaptiveMtSentences lists all AdaptiveMtSentences under a given file/dataset.",
+      "file": "TranslationClient/ListAdaptiveMtSentences/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAdaptiveMtSentences",
+        "fullName": "google.cloud.translation.v3.TranslationClient.ListAdaptiveMtSentences",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "translatepb.ListAdaptiveMtSentencesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AdaptiveMtSentenceIterator",
+        "client": {
+          "shortName": "TranslationClient",
+          "fullName": "google.cloud.translation.v3.TranslationClient"
+        },
+        "method": {
+          "shortName": "ListAdaptiveMtSentences",
+          "fullName": "google.cloud.translation.v3.TranslationService.ListAdaptiveMtSentences",
+          "service": {
+            "shortName": "TranslationService",
+            "fullName": "google.cloud.translation.v3.TranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]

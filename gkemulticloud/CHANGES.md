@@ -1,5 +1,63 @@
 # Changelog
 
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.1.0...gkemulticloud/v1.1.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.0.3...gkemulticloud/v1.1.0) (2024-01-03)
+
+
+### Features
+
+* **gkemulticloud:** Added proxy support for Attached Clusters ([#9171](https://github.com/googleapis/google-cloud-go/issues/9171)) ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
+## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.0.2...gkemulticloud/v1.0.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.0.1...gkemulticloud/v1.0.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.0.0...gkemulticloud/v1.0.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v0.6.1...gkemulticloud/v1.0.0) (2023-07-24)
+
+
+### Features
+
+* **gkemulticloud:** Promote to GA ([08ec41a](https://github.com/googleapis/google-cloud-go/commit/08ec41aba981874a7b86a9a941b07f9eb2fc6ce1))
+* **gkemulticloud:** Promote to GA ([#8303](https://github.com/googleapis/google-cloud-go/issues/8303)) ([c79b6cd](https://github.com/googleapis/google-cloud-go/commit/c79b6cde394392623ba6c45b7429c2f0417d221e))
+
+## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v0.6.0...gkemulticloud/v0.6.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v0.5.1...gkemulticloud/v0.6.0) (2023-05-30)
+
+
+### Features
+
+* **gkemulticloud:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v0.5.0...gkemulticloud/v0.5.1) (2023-05-08)
 
 

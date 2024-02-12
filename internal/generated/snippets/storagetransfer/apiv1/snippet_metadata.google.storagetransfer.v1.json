@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/storagetransfer/apiv1",
-    "version": "1.8.1",
+    "version": "1.10.4",
     "language": "GO",
     "apis": [
       {
@@ -653,7 +653,7 @@
     {
       "regionTag": "storagetransfer_v1_generated_StorageTransferService_RunTransferJob_sync",
       "title": "storagetransfer RunTransferJob Sample",
-      "description": "RunTransferJob attempts to start a new TransferOperation for the current TransferJob. A\nTransferJob has a maximum of one active TransferOperation. If this method\nis called while a TransferOperation is active, an error will be returned.",
+      "description": "RunTransferJob starts a new operation for the specified transfer job.\nA `TransferJob` has a maximum of one active `TransferOperation`. If this\nmethod is called while a `TransferOperation` is active, an error is\nreturned.",
       "file": "Client/RunTransferJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -745,7 +745,7 @@
     {
       "regionTag": "storagetransfer_v1_generated_StorageTransferService_UpdateTransferJob_sync",
       "title": "storagetransfer UpdateTransferJob Sample",
-      "description": "UpdateTransferJob updates a transfer job. Updating a job's transfer spec does not affect\ntransfer operations that are running already.\n\n**Note: ** The job's [status][google.storagetransfer.v1.TransferJob.status] field can be modified\nusing this RPC (for example, to set a job's status to\n[DELETED][google.storagetransfer.v1.TransferJob.Status.DELETED],\n[DISABLED][google.storagetransfer.v1.TransferJob.Status.DISABLED], or\n[ENABLED][google.storagetransfer.v1.TransferJob.Status.ENABLED]).",
+      "description": "UpdateTransferJob updates a transfer job. Updating a job's transfer spec does not affect\ntransfer operations that are running already.\n\n**Note: ** The job's [status][google.storagetransfer.v1.TransferJob.status]\nfield can be modified using this RPC (for example, to set a job's status to\n[DELETED][google.storagetransfer.v1.TransferJob.Status.DELETED],\n[DISABLED][google.storagetransfer.v1.TransferJob.Status.DISABLED], or\n[ENABLED][google.storagetransfer.v1.TransferJob.Status.ENABLED]).",
       "file": "Client/UpdateTransferJob/main.go",
       "language": "GO",
       "clientMethod": {

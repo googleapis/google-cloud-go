@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/workstations/apiv1beta",
-    "version": "0.2.1",
+    "version": "0.5.4",
     "language": "GO",
     "apis": [
       {
@@ -748,7 +748,7 @@
     {
       "regionTag": "workstations_v1beta_generated_Workstations_ListUsableWorkstations_sync",
       "title": "workstations ListUsableWorkstations Sample",
-      "description": "ListUsableWorkstations returns all Workstations using the specified config on which the caller has\nthe \"workstations.workstations.use\" permission.",
+      "description": "ListUsableWorkstations returns all workstations using the specified workstation configuration\non which the caller has the \"workstations.workstations.use\" permission.",
       "file": "Client/ListUsableWorkstations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -886,7 +886,7 @@
     {
       "regionTag": "workstations_v1beta_generated_Workstations_ListWorkstations_sync",
       "title": "workstations ListWorkstations Sample",
-      "description": "ListWorkstations returns all Workstations using the specified config.",
+      "description": "ListWorkstations returns all Workstations using the specified workstation configuration.",
       "file": "Client/ListWorkstations/main.go",
       "language": "GO",
       "clientMethod": {

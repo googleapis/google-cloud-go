@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/orchestration/airflow/service/apiv1",
-    "version": "1.6.1",
+    "version": "1.8.5",
     "language": "GO",
     "apis": [
       {
@@ -42,6 +42,52 @@
         "method": {
           "shortName": "CreateEnvironment",
           "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.CreateEnvironment",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_DatabaseFailover_sync",
+      "title": "composer DatabaseFailover Sample",
+      "description": "DatabaseFailover triggers database failover (only for highly resilient environments).",
+      "file": "EnvironmentsClient/DatabaseFailover/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DatabaseFailover",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.DatabaseFailover",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.DatabaseFailoverRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatabaseFailoverOperation",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "DatabaseFailover",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.DatabaseFailover",
           "service": {
             "shortName": "Environments",
             "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
@@ -144,6 +190,98 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_ExecuteAirflowCommand_sync",
+      "title": "composer ExecuteAirflowCommand Sample",
+      "description": "ExecuteAirflowCommand executes Airflow CLI command.",
+      "file": "EnvironmentsClient/ExecuteAirflowCommand/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExecuteAirflowCommand",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.ExecuteAirflowCommand",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.ExecuteAirflowCommandRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.ExecuteAirflowCommandResponse",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "ExecuteAirflowCommand",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.ExecuteAirflowCommand",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_FetchDatabaseProperties_sync",
+      "title": "composer FetchDatabaseProperties Sample",
+      "description": "FetchDatabaseProperties fetches database properties.",
+      "file": "EnvironmentsClient/FetchDatabaseProperties/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchDatabaseProperties",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.FetchDatabaseProperties",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.FetchDatabasePropertiesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.FetchDatabasePropertiesResponse",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "FetchDatabaseProperties",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.FetchDatabaseProperties",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -379,6 +517,52 @@
       ]
     },
     {
+      "regionTag": "composer_v1_generated_Environments_PollAirflowCommand_sync",
+      "title": "composer PollAirflowCommand Sample",
+      "description": "PollAirflowCommand polls Airflow CLI command execution and fetches logs.",
+      "file": "EnvironmentsClient/PollAirflowCommand/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PollAirflowCommand",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.PollAirflowCommand",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.PollAirflowCommandRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.PollAirflowCommandResponse",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "PollAirflowCommand",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.PollAirflowCommand",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "composer_v1_generated_Environments_SaveSnapshot_sync",
       "title": "composer SaveSnapshot Sample",
       "description": "SaveSnapshot creates a snapshots of a Cloud Composer environment.\n\nAs a result of this operation, snapshot of environment's state is stored\nin a location specified in the SaveSnapshotRequest.",
@@ -420,6 +604,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_StopAirflowCommand_sync",
+      "title": "composer StopAirflowCommand Sample",
+      "description": "StopAirflowCommand stops Airflow CLI command execution.",
+      "file": "EnvironmentsClient/StopAirflowCommand/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopAirflowCommand",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.StopAirflowCommand",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.StopAirflowCommandRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.StopAirflowCommandResponse",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "StopAirflowCommand",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.StopAirflowCommand",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/container/apiv1",
-    "version": "1.18.1",
+    "version": "1.30.1",
     "language": "GO",
     "apis": [
       {
@@ -52,6 +52,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_CheckAutopilotCompatibility_sync",
+      "title": "container CheckAutopilotCompatibility Sample",
+      "description": "CheckAutopilotCompatibility checks the cluster compatibility with Autopilot mode, and returns a list of\ncompatibility issues.",
+      "file": "ClusterManagerClient/CheckAutopilotCompatibility/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckAutopilotCompatibility",
+        "fullName": "google.container.v1.ClusterManagerClient.CheckAutopilotCompatibility",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.CheckAutopilotCompatibilityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*containerpb.CheckAutopilotCompatibilityResponse",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "CheckAutopilotCompatibility",
+          "fullName": "google.container.v1.ClusterManager.CheckAutopilotCompatibility",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -380,7 +426,7 @@
     {
       "regionTag": "container_v1_generated_ClusterManager_GetJSONWebKeys_sync",
       "title": "container GetJSONWebKeys Sample",
-      "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.\nThis API is not yet intended for general use, and is not available for all\nclusters.",
+      "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.",
       "file": "ClusterManagerClient/GetJSONWebKeys/main.go",
       "language": "GO",
       "clientMethod": {

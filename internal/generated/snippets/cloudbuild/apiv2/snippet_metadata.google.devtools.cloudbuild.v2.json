@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudbuild/apiv2",
-    "version": "1.9.1",
+    "version": "1.15.1",
     "language": "GO",
     "apis": [
       {
@@ -282,6 +282,52 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbuild_v2_generated_RepositoryManager_FetchGitRefs_sync",
+      "title": "cloudbuild FetchGitRefs Sample",
+      "description": "FetchGitRefs fetch the list of branches or tags for a given repository.",
+      "file": "RepositoryManagerClient/FetchGitRefs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchGitRefs",
+        "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient.FetchGitRefs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudbuildpb.FetchGitRefsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudbuildpb.FetchGitRefsResponse",
+        "client": {
+          "shortName": "RepositoryManagerClient",
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManagerClient"
+        },
+        "method": {
+          "shortName": "FetchGitRefs",
+          "fullName": "google.devtools.cloudbuild.v2.RepositoryManager.FetchGitRefs",
+          "service": {
+            "shortName": "RepositoryManager",
+            "fullName": "google.devtools.cloudbuild.v2.RepositoryManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

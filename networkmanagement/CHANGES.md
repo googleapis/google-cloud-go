@@ -1,5 +1,66 @@
 # Changes
 
+## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.9.3...networkmanagement/v1.9.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.9.2...networkmanagement/v1.9.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.9.1...networkmanagement/v1.9.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.9.0...networkmanagement/v1.9.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.8.0...networkmanagement/v1.9.0) (2023-08-14)
+
+
+### Features
+
+* **networkmanagement:** Add dynamic probing fields to v1 API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **networkmanagement:** Add fields related to Google services to API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **networkmanagement:** Add fields related to load balancers to API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **networkmanagement:** Add fields related to PBR and NCC routes to API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **networkmanagement:** Add new abort and drop causes to API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **networkmanagement:** Add new enum values for network firewall policies to API ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.7.1...networkmanagement/v1.8.0) (2023-06-27)
+
+
+### Features
+
+* **networkmanagement:** Add forwarding_rule field to Connectivity Test Endpoint proto ([#8156](https://github.com/googleapis/google-cloud-go/issues/8156)) ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.7.0...networkmanagement/v1.7.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **networkmanagement:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.6.1...networkmanagement/v1.7.0) (2023-05-30)
+
+
+### Features
+
+* **networkmanagement:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.6.0...networkmanagement/v1.6.1) (2023-05-08)
 
 

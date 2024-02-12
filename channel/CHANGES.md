@@ -1,5 +1,73 @@
 # Changes
 
+## [1.17.5](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.4...channel/v1.17.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **channel:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.3...channel/v1.17.4) (2024-01-03)
+
+
+### Documentation
+
+* **channel:** A comment for service `CloudChannelReportsService` is changed ([cbe96af](https://github.com/googleapis/google-cloud-go/commit/cbe96af778ec9152b528714281de9e534f01c237))
+
+## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.2...channel/v1.17.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **channel:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.1...channel/v1.17.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **channel:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.0...channel/v1.17.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **channel:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.16.0...channel/v1.17.0) (2023-09-11)
+
+
+### Features
+
+* **channel:** Mark ChannelPartnerGranularity as deprecated and offer alternatives ([#8522](https://github.com/googleapis/google-cloud-go/issues/8522)) ([ac10224](https://github.com/googleapis/google-cloud-go/commit/ac102249403e6c1604bff7c537343645c950ae13))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.15.0...channel/v1.16.0) (2023-06-20)
+
+
+### Features
+
+* **channel:** Add support for ListSkuGroups and ListSkuGroupBillableSkus APIs in Cloud Channel APIs ([#8092](https://github.com/googleapis/google-cloud-go/issues/8092)) ([3382ef8](https://github.com/googleapis/google-cloud-go/commit/3382ef81b6bcefe1c7bfc14aa5ff9bbf25850966))
+
+
+### Bug Fixes
+
+* **channel:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.14.0...channel/v1.15.0) (2023-05-30)
+
+
+### Features
+
+* **channel:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.13.0...channel/v1.14.0) (2023-05-16)
+
+
+### Features
+
+* **channel:** Added partition_keys field to filter results from FetchReportResults ([7c2f642](https://github.com/googleapis/google-cloud-go/commit/7c2f642ac308fcdfcb41985aae425785afa27823))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.12.1...channel/v1.13.0) (2023-05-10)
 
 

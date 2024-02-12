@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/spanner/admin/database/apiv1",
-    "version": "1.45.1",
+    "version": "1.56.0",
     "language": "GO",
     "apis": [
       {
@@ -1015,6 +1015,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "spanner_v1_generated_DatabaseAdmin_UpdateDatabase_sync",
+      "title": "spanner UpdateDatabase Sample",
+      "description": "UpdateDatabase updates a Cloud Spanner database. The returned\n[long-running operation][google.longrunning.Operation] can be used to track\nthe progress of updating the database. If the named database does not\nexist, returns `NOT_FOUND`.\n\nWhile the operation is pending: \n\n* The database's\n[reconciling][google.spanner.admin.database.v1.Database.reconciling]\nfield is set to true.\n* Cancelling the operation is best-effort. If the cancellation succeeds,\nthe operation metadata's\n[cancel_time][google.spanner.admin.database.v1.UpdateDatabaseMetadata.cancel_time]\nis set, the updates are reverted, and the operation terminates with a\n`CANCELLED` status.\n* New UpdateDatabase requests will return a `FAILED_PRECONDITION` error\nuntil the pending operation is done (returns successfully or with\nerror).\n* Reading the database via the API continues to give the pre-request\nvalues.\n\nUpon completion of the returned operation: \n\n* The new values are in effect and readable via the API.\n* The database's\n[reconciling][google.spanner.admin.database.v1.Database.reconciling]\nfield becomes false.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format\n`projects/<project>/instances/<instance>/databases/<database>/operations/<operation_id>`\nand can be used to track the database modification. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[UpdateDatabaseMetadata][google.spanner.admin.database.v1.UpdateDatabaseMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Database][google.spanner.admin.database.v1.Database], if successful.",
+      "file": "DatabaseAdminClient/UpdateDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDatabase",
+        "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient.UpdateDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "databasepb.UpdateDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDatabaseOperation",
+        "client": {
+          "shortName": "DatabaseAdminClient",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateDatabase",
+          "fullName": "google.spanner.admin.database.v1.DatabaseAdmin.UpdateDatabase",
+          "service": {
+            "shortName": "DatabaseAdmin",
+            "fullName": "google.spanner.admin.database.v1.DatabaseAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

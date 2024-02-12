@@ -1,5 +1,137 @@
 # Changes
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.30.1...container/v1.31.0) (2024-02-09)
+
+
+### Features
+
+* **container:** Added configuration for the StatefulHA addon to the AddonsConfig ([46a5050](https://github.com/googleapis/google-cloud-go/commit/46a50502f033ff0afe2f17b5f1e9812a956e190e))
+
+## [1.30.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.30.0...container/v1.30.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **container:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.29.0...container/v1.30.0) (2024-01-22)
+
+
+### Features
+
+* **container:** Add fields desired_in_transit_encryption_config and in_transit_encryption_config ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.28.0...container/v1.29.0) (2023-11-27)
+
+
+### Features
+
+* **container:** Add enable_relay field to advanced_datapath_observability_config ([#9037](https://github.com/googleapis/google-cloud-go/issues/9037)) ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+* **container:** Add Provisioning Request API ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.27.1...container/v1.28.0) (2023-11-09)
+
+
+### Features
+
+* **container:** Added EnterpriseConfig ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.27.0...container/v1.27.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **container:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.26.2...container/v1.27.0) (2023-10-31)
+
+
+### Features
+
+* **container:** Add ResourceManagerTags API to attach tags on the underlying Compute Engine VMs of GKE Nodes which can be used to selectively enforce Cloud Firewall network firewall policies ([4d40180](https://github.com/googleapis/google-cloud-go/commit/4d40180da0557c2a2e9e2cb8b0509b429676bfc0))
+
+## [1.26.2](https://github.com/googleapis/google-cloud-go/compare/container/v1.26.1...container/v1.26.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **container:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.26.0...container/v1.26.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **container:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.25.0...container/v1.26.0) (2023-09-11)
+
+
+### Features
+
+* **container:** Add support for NodeConfig Update ([#8461](https://github.com/googleapis/google-cloud-go/issues/8461)) ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.24.0...container/v1.25.0) (2023-08-14)
+
+
+### Features
+
+* **container:** Add APIs for GKE OOTB metrics packages ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.23.0...container/v1.24.0) (2023-07-18)
+
+
+### Features
+
+* **container:** Add Multi-networking API ([#8270](https://github.com/googleapis/google-cloud-go/issues/8270)) ([4a5651c](https://github.com/googleapis/google-cloud-go/commit/4a5651caa472882fe4c7f6be400f782f60f6f258))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.22.1...container/v1.23.0) (2023-07-10)
+
+
+### Features
+
+* **container:** Add `KUBE_DNS` option to `DNSConfig.cluster_dns` ([#8183](https://github.com/googleapis/google-cloud-go/issues/8183)) ([a3ec3cf](https://github.com/googleapis/google-cloud-go/commit/a3ec3cf858c7d9154338ac4cd8a9a068dc7a7f4d))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.22.0...container/v1.22.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **container:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.21.0...container/v1.22.0) (2023-06-13)
+
+
+### Features
+
+* **container:** Add API for GPU driver installation config ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.20.0...container/v1.21.0) (2023-06-07)
+
+
+### Features
+
+* **container:** Add a API field to enable FQDN Network Policy on clusters ([79eac77](https://github.com/googleapis/google-cloud-go/commit/79eac771ecf99172157cc4499ba95536778354e6))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.19.0...container/v1.20.0) (2023-05-31)
+
+
+### Features
+
+* **container:** Add SoleTenantConfig API ([#8015](https://github.com/googleapis/google-cloud-go/issues/8015)) ([01eff11](https://github.com/googleapis/google-cloud-go/commit/01eff11eedb3edde69cc33db23e26be6a7e42f10))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.18.1...container/v1.19.0) (2023-05-30)
+
+
+### Features
+
+* **container:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+
+### Documentation
+
+* **container:** Clarified release channel defaulting behavior for create cluster requests when release channel is unspecified ([2b3e7d9](https://github.com/googleapis/google-cloud-go/commit/2b3e7d9af7d2f500e736e3db77487127cb44ca23))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.18.0...container/v1.18.1) (2023-05-08)
 
 

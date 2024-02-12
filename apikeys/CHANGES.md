@@ -1,6 +1,48 @@
 # Changelog
 
 
+## [1.1.5](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.4...apikeys/v1.1.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **apikeys:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.1.4](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.3...apikeys/v1.1.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **apikeys:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.1.3](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.2...apikeys/v1.1.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **apikeys:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.1.1...apikeys/v1.1.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **apikeys:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/apikeys-v1.1.0...apikeys/v1.1.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **apikeys:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.0.1...apikeys/v1.1.0) (2023-05-30)
+
+
+### Features
+
+* **apikeys:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.0.0...apikeys/v1.0.1) (2023-05-08)
 
 

@@ -24,9 +24,9 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	btspb "google.golang.org/genproto/googleapis/bigtable/v2"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // Indicates that a field in the proto should be omitted, rather than included
@@ -275,7 +275,7 @@ func runTestCase(t *testing.T, test TestCase) {
 	for _, chunkText := range test.Chunks {
 		// Parse and pass each cell chunk to the ChunkReader
 		cc := &btspb.ReadRowsResponse_CellChunk{}
-		err := proto.UnmarshalText(chunkText, cc)
+		err := prototext.Unmarshal([]byte(chunkText), cc)
 		if err != nil {
 			t.Errorf("[%s] failed to unmarshal text proto: %s\n%s", test.Name, chunkText, err)
 			return
@@ -340,16 +340,16 @@ func cc(rk string, fm string, qual string, ts int64, val string, size int32, com
 		rkWrapper = []byte(rk)
 	}
 
-	var fmWrapper *wrappers.StringValue
+	var fmWrapper *wrapperspb.StringValue
 	if fm != nilStr {
-		fmWrapper = &wrappers.StringValue{Value: fm}
+		fmWrapper = &wrapperspb.StringValue{Value: fm}
 	} else {
 		fmWrapper = nil
 	}
 
-	var qualWrapper *wrappers.BytesValue
+	var qualWrapper *wrapperspb.BytesValue
 	if qual != nilStr {
-		qualWrapper = &wrappers.BytesValue{Value: []byte(qual)}
+		qualWrapper = &wrapperspb.BytesValue{Value: []byte(qual)}
 	} else {
 		qualWrapper = nil
 	}

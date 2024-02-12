@@ -503,7 +503,7 @@ func (q *Query) toRunQueryRequest(req *pb.RunQueryRequest) error {
 		return err
 	}
 
-	req.ReadOptions, err = parseReadOptions(q)
+	req.ReadOptions, err = parseReadOptions(q.eventual, q.trans)
 	if err != nil {
 		return err
 	}
@@ -727,8 +727,11 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 		pageCursor:   q.start,
 		entityCursor: q.start,
 		req: &pb.RunQueryRequest{
-			ProjectId: c.dataset,
+			ProjectId:  c.dataset,
+			DatabaseId: c.databaseID,
 		},
+		trans:    q.trans,
+		eventual: q.eventual,
 	}
 
 	if q.namespace != "" {
@@ -744,7 +747,10 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 }
 
 // RunAggregationQuery gets aggregation query (e.g. COUNT) results from the service.
-func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (AggregationResult, error) {
+func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (ar AggregationResult, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.RunAggregationQuery")
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	if aq == nil {
 		return nil, errors.New("datastore: aggregation query cannot be nil")
 	}
@@ -763,7 +769,8 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	}
 
 	req := &pb.RunAggregationQueryRequest{
-		ProjectId: c.dataset,
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
 		QueryType: &pb.RunAggregationQueryRequest_AggregationQuery{
 			AggregationQuery: &pb.AggregationQuery{
 				QueryType: &pb.AggregationQuery_NestedQuery{
@@ -781,7 +788,7 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	}
 
 	// Parse the read options.
-	req.ReadOptions, err = parseReadOptions(aq.query)
+	req.ReadOptions, err = parseReadOptions(aq.query.eventual, aq.query.trans)
 	if err != nil {
 		return nil, err
 	}
@@ -791,7 +798,7 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 		return nil, err
 	}
 
-	ar := make(AggregationResult)
+	ar = make(AggregationResult)
 
 	// TODO(developer): change batch parsing logic if other aggregations are supported.
 	for _, a := range res.Batch.AggregationResults {
@@ -803,21 +810,33 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	return ar, nil
 }
 
+func validateReadOptions(eventual bool, t *Transaction) error {
+	if t == nil {
+		return nil
+	}
+	if t.id == nil {
+		return errExpiredTransaction
+	}
+	if eventual {
+		return errors.New("datastore: cannot use EventualConsistency query in a transaction")
+	}
+	return nil
+}
+
 // parseReadOptions translates Query read options into protobuf format.
-func parseReadOptions(q *Query) (*pb.ReadOptions, error) {
-	if t := q.trans; t != nil {
-		if t.id == nil {
-			return nil, errExpiredTransaction
-		}
-		if q.eventual {
-			return nil, errors.New("datastore: cannot use EventualConsistency query in a transaction")
-		}
+func parseReadOptions(eventual bool, t *Transaction) (*pb.ReadOptions, error) {
+	err := validateReadOptions(eventual, t)
+	if err != nil {
+		return nil, err
+	}
+
+	if t != nil {
 		return &pb.ReadOptions{
 			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
 		}, nil
 	}
 
-	if q.eventual {
+	if eventual {
 		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
 	}
 
@@ -853,6 +872,14 @@ type Iterator struct {
 	pageCursor []byte
 	// entityCursor is the compiled cursor of the next result.
 	entityCursor []byte
+
+	// trans records the transaction in which the query was run
+	// Currently, this value is set but unused
+	trans *Transaction
+
+	// eventual records whether the query was eventual
+	// Currently, this value is set but unused
+	eventual bool
 }
 
 // Next returns the key of the next result. When there are no more results,
@@ -1021,7 +1048,6 @@ func DecodeCursor(s string) (Cursor, error) {
 // NewAggregationQuery returns an AggregationQuery with this query as its
 // base query.
 func (q *Query) NewAggregationQuery() *AggregationQuery {
-	q.eventual = true
 	return &AggregationQuery{
 		query:              q,
 		aggregationQueries: make([]*pb.AggregationQuery_Aggregation, 0),
@@ -1045,6 +1071,50 @@ func (aq *AggregationQuery) WithCount(alias string) *AggregationQuery {
 	aqpb := &pb.AggregationQuery_Aggregation{
 		Alias:    alias,
 		Operator: &pb.AggregationQuery_Aggregation_Count_{},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// WithSum specifies that the aggregation query should provide a sum of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Datastore entity property name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Datastore
+// will autogenerate a key.
+func (aq *AggregationQuery) WithSum(fieldName string, alias string) *AggregationQuery {
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.AggregationQuery_Aggregation_Sum_{
+			Sum: &pb.AggregationQuery_Aggregation_Sum{
+				Property: &pb.PropertyReference{
+					Name: fieldName,
+				},
+			},
+		},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// WithAvg specifies that the aggregation query should provide an average of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Datastore entity property name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Datastore
+// will autogenerate a key.
+func (aq *AggregationQuery) WithAvg(fieldName string, alias string) *AggregationQuery {
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.AggregationQuery_Aggregation_Avg_{
+			Avg: &pb.AggregationQuery_Aggregation_Avg{
+				Property: &pb.PropertyReference{
+					Name: fieldName,
+				},
+			},
+		},
 	}
 
 	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)

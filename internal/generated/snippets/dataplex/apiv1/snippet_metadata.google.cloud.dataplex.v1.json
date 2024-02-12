@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataplex/apiv1",
-    "version": "1.7.1",
+    "version": "1.14.2",
     "language": "GO",
     "apis": [
       {
@@ -1282,6 +1282,970 @@
           "service": {
             "shortName": "DataScanService",
             "fullName": "google.cloud.dataplex.v1.DataScanService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_CancelOperation_sync",
+      "title": "dataplex CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataTaxonomyClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataAttribute_sync",
+      "title": "dataplex CreateDataAttribute Sample",
+      "description": "CreateDataAttribute create a DataAttribute resource.",
+      "file": "DataTaxonomyClient/CreateDataAttribute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataAttribute",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.CreateDataAttribute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateDataAttributeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDataAttributeOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "CreateDataAttribute",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.CreateDataAttribute",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataAttributeBinding_sync",
+      "title": "dataplex CreateDataAttributeBinding Sample",
+      "description": "CreateDataAttributeBinding create a DataAttributeBinding resource.",
+      "file": "DataTaxonomyClient/CreateDataAttributeBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataAttributeBinding",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.CreateDataAttributeBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateDataAttributeBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDataAttributeBindingOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "CreateDataAttributeBinding",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.CreateDataAttributeBinding",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_CreateDataTaxonomy_sync",
+      "title": "dataplex CreateDataTaxonomy Sample",
+      "description": "CreateDataTaxonomy create a DataTaxonomy resource.",
+      "file": "DataTaxonomyClient/CreateDataTaxonomy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataTaxonomy",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.CreateDataTaxonomy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateDataTaxonomyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDataTaxonomyOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "CreateDataTaxonomy",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.CreateDataTaxonomy",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataAttribute_sync",
+      "title": "dataplex DeleteDataAttribute Sample",
+      "description": "DeleteDataAttribute deletes a Data Attribute resource.",
+      "file": "DataTaxonomyClient/DeleteDataAttribute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataAttribute",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.DeleteDataAttribute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteDataAttributeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDataAttributeOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "DeleteDataAttribute",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.DeleteDataAttribute",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataAttributeBinding_sync",
+      "title": "dataplex DeleteDataAttributeBinding Sample",
+      "description": "DeleteDataAttributeBinding deletes a DataAttributeBinding resource. All attributes within the\nDataAttributeBinding must be deleted before the DataAttributeBinding can be\ndeleted.",
+      "file": "DataTaxonomyClient/DeleteDataAttributeBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataAttributeBinding",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.DeleteDataAttributeBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteDataAttributeBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDataAttributeBindingOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "DeleteDataAttributeBinding",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.DeleteDataAttributeBinding",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteDataTaxonomy_sync",
+      "title": "dataplex DeleteDataTaxonomy Sample",
+      "description": "DeleteDataTaxonomy deletes a DataTaxonomy resource. All attributes within the DataTaxonomy\nmust be deleted before the DataTaxonomy can be deleted.",
+      "file": "DataTaxonomyClient/DeleteDataTaxonomy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataTaxonomy",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.DeleteDataTaxonomy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteDataTaxonomyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDataTaxonomyOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "DeleteDataTaxonomy",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.DeleteDataTaxonomy",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_DeleteOperation_sync",
+      "title": "dataplex DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataTaxonomyClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataAttribute_sync",
+      "title": "dataplex GetDataAttribute Sample",
+      "description": "GetDataAttribute retrieves a Data Attribute resource.",
+      "file": "DataTaxonomyClient/GetDataAttribute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataAttribute",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.GetDataAttribute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetDataAttributeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.DataAttribute",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "GetDataAttribute",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.GetDataAttribute",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataAttributeBinding_sync",
+      "title": "dataplex GetDataAttributeBinding Sample",
+      "description": "GetDataAttributeBinding retrieves a DataAttributeBinding resource.",
+      "file": "DataTaxonomyClient/GetDataAttributeBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataAttributeBinding",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.GetDataAttributeBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetDataAttributeBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.DataAttributeBinding",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "GetDataAttributeBinding",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.GetDataAttributeBinding",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetDataTaxonomy_sync",
+      "title": "dataplex GetDataTaxonomy Sample",
+      "description": "GetDataTaxonomy retrieves a DataTaxonomy resource.",
+      "file": "DataTaxonomyClient/GetDataTaxonomy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataTaxonomy",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.GetDataTaxonomy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetDataTaxonomyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.DataTaxonomy",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "GetDataTaxonomy",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.GetDataTaxonomy",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetLocation_sync",
+      "title": "dataplex GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "DataTaxonomyClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_GetOperation_sync",
+      "title": "dataplex GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataTaxonomyClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataAttributeBindings_sync",
+      "title": "dataplex ListDataAttributeBindings Sample",
+      "description": "ListDataAttributeBindings lists DataAttributeBinding resources in a project and location.",
+      "file": "DataTaxonomyClient/ListDataAttributeBindings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataAttributeBindings",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.ListDataAttributeBindings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListDataAttributeBindingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataAttributeBindingIterator",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "ListDataAttributeBindings",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.ListDataAttributeBindings",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataAttributes_sync",
+      "title": "dataplex ListDataAttributes Sample",
+      "description": "ListDataAttributes lists Data Attribute resources in a DataTaxonomy.",
+      "file": "DataTaxonomyClient/ListDataAttributes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataAttributes",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.ListDataAttributes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListDataAttributesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataAttributeIterator",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "ListDataAttributes",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.ListDataAttributes",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListDataTaxonomies_sync",
+      "title": "dataplex ListDataTaxonomies Sample",
+      "description": "ListDataTaxonomies lists DataTaxonomy resources in a project and location.",
+      "file": "DataTaxonomyClient/ListDataTaxonomies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataTaxonomies",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.ListDataTaxonomies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListDataTaxonomiesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataTaxonomyIterator",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "ListDataTaxonomies",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.ListDataTaxonomies",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListLocations_sync",
+      "title": "dataplex ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "DataTaxonomyClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_ListOperations_sync",
+      "title": "dataplex ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataTaxonomyClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataAttribute_sync",
+      "title": "dataplex UpdateDataAttribute Sample",
+      "description": "UpdateDataAttribute updates a DataAttribute resource.",
+      "file": "DataTaxonomyClient/UpdateDataAttribute/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataAttribute",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.UpdateDataAttribute",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateDataAttributeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDataAttributeOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "UpdateDataAttribute",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.UpdateDataAttribute",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataAttributeBinding_sync",
+      "title": "dataplex UpdateDataAttributeBinding Sample",
+      "description": "UpdateDataAttributeBinding updates a DataAttributeBinding resource.",
+      "file": "DataTaxonomyClient/UpdateDataAttributeBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataAttributeBinding",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.UpdateDataAttributeBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateDataAttributeBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDataAttributeBindingOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "UpdateDataAttributeBinding",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.UpdateDataAttributeBinding",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataTaxonomyService_UpdateDataTaxonomy_sync",
+      "title": "dataplex UpdateDataTaxonomy Sample",
+      "description": "UpdateDataTaxonomy updates a DataTaxonomy resource.",
+      "file": "DataTaxonomyClient/UpdateDataTaxonomy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataTaxonomy",
+        "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient.UpdateDataTaxonomy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateDataTaxonomyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDataTaxonomyOperation",
+        "client": {
+          "shortName": "DataTaxonomyClient",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyClient"
+        },
+        "method": {
+          "shortName": "UpdateDataTaxonomy",
+          "fullName": "google.cloud.dataplex.v1.DataTaxonomyService.UpdateDataTaxonomy",
+          "service": {
+            "shortName": "DataTaxonomyService",
+            "fullName": "google.cloud.dataplex.v1.DataTaxonomyService"
           }
         }
       },

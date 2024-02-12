@@ -19,6 +19,7 @@ import (
 	"io"
 	"math/rand"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/googleapis/gax-go/v2"
@@ -82,7 +83,9 @@ func (ur *unaryRetryer) Retry(err error) (time.Duration, bool) {
 // from the receive side of the bidi stream.  An individual item in that process has a notion of an attempt
 // count, and we use maximum retries as a way of evicting bad items.
 type statelessRetryer struct {
-	r                *rand.Rand
+	mu sync.Mutex // guards r
+	r  *rand.Rand
+
 	minBackoff       time.Duration
 	jitter           time.Duration
 	aggressiveFactor int
@@ -101,7 +104,9 @@ func newStatelessRetryer() *statelessRetryer {
 func (sr *statelessRetryer) pause(aggressiveBackoff bool) time.Duration {
 	jitter := sr.jitter.Nanoseconds()
 	if jitter > 0 {
+		sr.mu.Lock()
 		jitter = sr.r.Int63n(jitter)
+		sr.mu.Unlock()
 	}
 	pause := sr.minBackoff.Nanoseconds() + jitter
 	if aggressiveBackoff {

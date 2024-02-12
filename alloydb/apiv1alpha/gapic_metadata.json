@@ -45,6 +45,11 @@
                 "CreateSecondaryInstance"
               ]
             },
+            "CreateUser": {
+              "methods": [
+                "CreateUser"
+              ]
+            },
             "DeleteBackup": {
               "methods": [
                 "DeleteBackup"
@@ -63,6 +68,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteUser": {
+              "methods": [
+                "DeleteUser"
               ]
             },
             "FailoverInstance": {
@@ -105,6 +115,16 @@
                 "GetOperation"
               ]
             },
+            "GetUser": {
+              "methods": [
+                "GetUser"
+              ]
+            },
+            "InjectFault": {
+              "methods": [
+                "InjectFault"
+              ]
+            },
             "ListBackups": {
               "methods": [
                 "ListBackups"
@@ -113,6 +133,11 @@
             "ListClusters": {
               "methods": [
                 "ListClusters"
+              ]
+            },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
               ]
             },
             "ListInstances": {
@@ -133,6 +158,11 @@
             "ListSupportedDatabaseFlags": {
               "methods": [
                 "ListSupportedDatabaseFlags"
+              ]
+            },
+            "ListUsers": {
+              "methods": [
+                "ListUsers"
               ]
             },
             "PromoteCluster": {
@@ -163,6 +193,11 @@
             "UpdateInstance": {
               "methods": [
                 "UpdateInstance"
+              ]
+            },
+            "UpdateUser": {
+              "methods": [
+                "UpdateUser"
               ]
             }
           }
@@ -205,6 +240,11 @@
                 "CreateSecondaryInstance"
               ]
             },
+            "CreateUser": {
+              "methods": [
+                "CreateUser"
+              ]
+            },
             "DeleteBackup": {
               "methods": [
                 "DeleteBackup"
@@ -223,6 +263,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteUser": {
+              "methods": [
+                "DeleteUser"
               ]
             },
             "FailoverInstance": {
@@ -265,6 +310,16 @@
                 "GetOperation"
               ]
             },
+            "GetUser": {
+              "methods": [
+                "GetUser"
+              ]
+            },
+            "InjectFault": {
+              "methods": [
+                "InjectFault"
+              ]
+            },
             "ListBackups": {
               "methods": [
                 "ListBackups"
@@ -273,6 +328,11 @@
             "ListClusters": {
               "methods": [
                 "ListClusters"
+              ]
+            },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
               ]
             },
             "ListInstances": {
@@ -293,6 +353,11 @@
             "ListSupportedDatabaseFlags": {
               "methods": [
                 "ListSupportedDatabaseFlags"
+              ]
+            },
+            "ListUsers": {
+              "methods": [
+                "ListUsers"
               ]
             },
             "PromoteCluster": {
@@ -323,6 +388,11 @@
             "UpdateInstance": {
               "methods": [
                 "UpdateInstance"
+              ]
+            },
+            "UpdateUser": {
+              "methods": [
+                "UpdateUser"
               ]
             }
           }

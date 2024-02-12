@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/apiv2beta1",
-    "version": "1.32.1",
+    "version": "1.48.2",
     "language": "GO",
     "apis": [
       {
@@ -2620,6 +2620,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2beta1_generated_Conversations_SearchKnowledge_sync",
+      "title": "dialogflow SearchKnowledge Sample",
+      "description": "SearchKnowledge get answers for the given query based on knowledge documents.",
+      "file": "ConversationsClient/SearchKnowledge/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchKnowledge",
+        "fullName": "google.cloud.dialogflow.v2beta1.ConversationsClient.SearchKnowledge",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.SearchKnowledgeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.SearchKnowledgeResponse",
+        "client": {
+          "shortName": "ConversationsClient",
+          "fullName": "google.cloud.dialogflow.v2beta1.ConversationsClient"
+        },
+        "method": {
+          "shortName": "SearchKnowledge",
+          "fullName": "google.cloud.dialogflow.v2beta1.Conversations.SearchKnowledge",
+          "service": {
+            "shortName": "Conversations",
+            "fullName": "google.cloud.dialogflow.v2beta1.Conversations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

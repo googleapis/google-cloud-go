@@ -1,5 +1,86 @@
 # Changes
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.15.0...cloudbuild/v1.15.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.3...cloudbuild/v1.15.0) (2023-11-09)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add optional field "SourceFetcher" to choose source fetcher tool ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.2...cloudbuild/v1.14.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.1...cloudbuild/v1.14.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.0...cloudbuild/v1.14.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.13.0...cloudbuild/v1.14.0) (2023-08-08)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add update_mask to UpdateBuildTriggerRequest proto ([#8358](https://github.com/googleapis/google-cloud-go/issues/8358)) ([58b5851](https://github.com/googleapis/google-cloud-go/commit/58b5851b3f38aeeefcdb3507e29b9a02ccfb1bba))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.12.0...cloudbuild/v1.13.0) (2023-07-26)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add automap_substitutions flag to use substitutions as envs in Cloud Build ([327e101](https://github.com/googleapis/google-cloud-go/commit/327e10188a2e22dd7b7e6c12a8cf66729f65974c))
+* **cloudbuild/apiv1:** Add git_file_source and git_repo_source to build_trigger ([7cb7f66](https://github.com/googleapis/google-cloud-go/commit/7cb7f66f0646617c27aa9a9b4fe38b9f368eb3bb))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.11.0...cloudbuild/v1.12.0) (2023-07-24)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add repositoryevent to buildtrigger ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Add routing information in Cloud Build GRPC clients ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Added e2-medium machine type ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Update third party clodubuild.proto library to include git_source ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.10.1...cloudbuild/v1.11.0) (2023-07-10)
+
+
+### Features
+
+* **cloudbuild:** Add GitLabConfig and fetchGitRefs for Cloud Build Repositories ([a3ec3cf](https://github.com/googleapis/google-cloud-go/commit/a3ec3cf858c7d9154338ac4cd8a9a068dc7a7f4d))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.10.0...cloudbuild/v1.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **cloudbuild:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.9.1...cloudbuild/v1.10.0) (2023-05-30)
+
+
+### Features
+
+* **cloudbuild:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.9.0...cloudbuild/v1.9.1) (2023-05-08)
 
 

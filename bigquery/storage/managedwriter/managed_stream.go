@@ -78,13 +78,13 @@ type ManagedStream struct {
 
 	streamSettings *streamSettings
 	// retains the current descriptor for the stream.
-	curDescVersion *descriptorVersion
-	c              *Client
-	retry          *statelessRetryer
+	curTemplate *versionedTemplate
+	c           *Client
+	retry       *statelessRetryer
 
 	// writer state
 	mu     sync.Mutex
-	ctx    context.Context // used solely for stats/instrumentation.
+	ctx    context.Context // used for stats/instrumentation, and to check the writer is live.
 	cancel context.CancelFunc
 	err    error // retains any terminal error (writer was closed)
 }
@@ -196,6 +196,12 @@ func (ms *ManagedStream) Finalize(ctx context.Context, opts ...gax.CallOption) (
 // attached to the pendingWrite.
 func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOption) error {
 	for {
+		ms.mu.Lock()
+		err := ms.err
+		ms.mu.Unlock()
+		if err != nil {
+			return err
+		}
 		conn, err := ms.pool.selectConn(pw)
 		if err != nil {
 			pw.markDone(nil, err)
@@ -284,13 +290,27 @@ func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsReques
 // The size of a single request must be less than 10 MB in size.
 // Requests larger than this return an error, typically `INVALID_ARGUMENT`.
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
+	// before we do anything, ensure the writer isn't closed.
+	ms.mu.Lock()
+	err := ms.err
+	ms.mu.Unlock()
+	if err != nil {
+		return nil, err
+	}
 	// Ensure we build the request and pending write with a consistent schema version.
-	curSchemaVersion := ms.curDescVersion
+	curTemplate := ms.curTemplate
 	req := ms.buildRequest(data)
-	pw := newPendingWrite(ctx, ms, req, curSchemaVersion, ms.streamSettings.streamID, ms.streamSettings.TraceID)
+	pw := newPendingWrite(ctx, ms, req, curTemplate, ms.streamSettings.streamID, ms.streamSettings.TraceID)
 	// apply AppendOption opts
 	for _, opt := range opts {
 		opt(pw)
+	}
+	// Post-request fixup after options are applied.
+	if pw.reqTmpl != nil {
+		if pw.reqTmpl.tmpl != nil {
+			// MVIs must be set on each request, but _default_ MVIs persist across the stream lifetime.  Sigh.
+			pw.req.MissingValueInterpretations = pw.reqTmpl.tmpl.GetMissingValueInterpretations()
+		}
 	}
 
 	// Call the underlying append.  The stream has it's own retained context and will surface expiry on
@@ -301,6 +321,7 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 		select {
 		case errCh <- ms.appendWithRetry(pw):
 		case <-ctx.Done():
+		case <-ms.ctx.Done():
 		}
 		close(errCh)
 	}()
@@ -313,6 +334,17 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 		// This API expresses request idempotency through offset management, so users who care to use offsets
 		// can deal with the dropped request.
 		return nil, ctx.Err()
+	case <-ms.ctx.Done():
+		// Same as the request context being done, this indicates the writer context expired.  For this case,
+		// we also attempt to close the writer.
+		ms.mu.Lock()
+		if ms.err == nil {
+			ms.err = ms.ctx.Err()
+		}
+		ms.mu.Unlock()
+		ms.Close()
+		// Don't relock to fetch the writer terminal error, as we've already ensured that the writer is closed.
+		return nil, ms.err
 	case appendErr = <-errCh:
 		if appendErr != nil {
 			return nil, appendErr

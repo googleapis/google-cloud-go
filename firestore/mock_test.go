@@ -101,6 +101,7 @@ func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 				case *pb.Write_Transform:
 					sort.Sort(ByFieldPath(opTyped.Transform.FieldTransforms))
 				}
+				sort.Sort(ByFieldPath(w.UpdateTransforms))
 			}
 		}
 

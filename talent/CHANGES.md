@@ -1,6 +1,55 @@
 # Changes
 
 
+## [1.6.6](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.5...talent/v1.6.6) (2024-01-30)
+
+
+### Bug Fixes
+
+* **talent:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.6.5](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.4...talent/v1.6.5) (2023-11-01)
+
+
+### Bug Fixes
+
+* **talent:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.6.4](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.3...talent/v1.6.4) (2023-10-26)
+
+
+### Bug Fixes
+
+* **talent:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.2...talent/v1.6.3) (2023-10-12)
+
+
+### Bug Fixes
+
+* **talent:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.1...talent/v1.6.2) (2023-06-20)
+
+
+### Bug Fixes
+
+* **talent:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.0...talent/v1.6.1) (2023-05-31)
+
+
+### Documentation
+
+* **talent:** Add three per company option to diversification levels ([01eff11](https://github.com/googleapis/google-cloud-go/commit/01eff11eedb3edde69cc33db23e26be6a7e42f10))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.5.2...talent/v1.6.0) (2023-05-30)
+
+
+### Features
+
+* **talent:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.5.2](https://github.com/googleapis/google-cloud-go/compare/talent/v1.5.1...talent/v1.5.2) (2023-05-08)
 
 

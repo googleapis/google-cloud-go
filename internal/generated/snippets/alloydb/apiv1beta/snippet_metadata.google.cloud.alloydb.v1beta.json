@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1beta",
-    "version": "1.0.1",
+    "version": "1.8.1",
     "language": "GO",
     "apis": [
       {
@@ -333,6 +333,52 @@
       ]
     },
     {
+      "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_CreateUser_sync",
+      "title": "alloydb CreateUser Sample",
+      "description": "CreateUser creates a new User in a given project, location, and cluster.",
+      "file": "AlloyDBAdminClient/CreateUser/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateUser",
+        "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient.CreateUser",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.CreateUserRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*alloydbpb.User",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "CreateUser",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin.CreateUser",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_DeleteBackup_sync",
       "title": "alloydb DeleteBackup Sample",
       "description": "DeleteBackup deletes a single Backup.",
@@ -516,6 +562,51 @@
       ]
     },
     {
+      "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_DeleteUser_sync",
+      "title": "alloydb DeleteUser Sample",
+      "description": "DeleteUser deletes a single User.",
+      "file": "AlloyDBAdminClient/DeleteUser/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteUser",
+        "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient.DeleteUser",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.DeleteUserRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteUser",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin.DeleteUser",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_FailoverInstance_sync",
       "title": "alloydb FailoverInstance Sample",
       "description": "FailoverInstance forces a Failover for a highly available instance.\nFailover promotes the HA standby instance as the new primary.\nImperative only.",
@@ -564,7 +655,7 @@
     {
       "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_GenerateClientCertificate_sync",
       "title": "alloydb GenerateClientCertificate Sample",
-      "description": "GenerateClientCertificate generate a client certificate signed by a Cluster CA.\nThe sole purpose of this endpoint is to support the Auth Proxy client and\nthe endpoint's behavior is subject to change without notice, so do not rely\non its behavior remaining constant. Future changes will not break the Auth\nProxy client.",
+      "description": "GenerateClientCertificate generate a client certificate signed by a Cluster CA.\nThe sole purpose of this endpoint is to support AlloyDB connectors and the\nAuth Proxy client. The endpoint's behavior is subject to change without\nnotice, so do not rely on its behavior remaining constant. Future changes\nwill not break AlloyDB connectors or the Auth Proxy client.",
       "file": "AlloyDBAdminClient/GenerateClientCertificate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -884,6 +975,98 @@
       ]
     },
     {
+      "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_GetUser_sync",
+      "title": "alloydb GetUser Sample",
+      "description": "GetUser gets details of a single User.",
+      "file": "AlloyDBAdminClient/GetUser/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetUser",
+        "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient.GetUser",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.GetUserRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*alloydbpb.User",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "GetUser",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin.GetUser",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_InjectFault_sync",
+      "title": "alloydb InjectFault Sample",
+      "description": "InjectFault injects fault in an instance.\nImperative only.",
+      "file": "AlloyDBAdminClient/InjectFault/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InjectFault",
+        "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient.InjectFault",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.InjectFaultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InjectFaultOperation",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "InjectFault",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin.InjectFault",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_ListBackups_sync",
       "title": "alloydb ListBackups Sample",
       "description": "ListBackups lists Backups in a given project and location.",
@@ -1144,6 +1327,52 @@
         "method": {
           "shortName": "ListSupportedDatabaseFlags",
           "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin.ListSupportedDatabaseFlags",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_ListUsers_sync",
+      "title": "alloydb ListUsers Sample",
+      "description": "ListUsers lists Users in a given project and location.",
+      "file": "AlloyDBAdminClient/ListUsers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUsers",
+        "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient.ListUsers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.ListUsersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UserIterator",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "ListUsers",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin.ListUsers",
           "service": {
             "shortName": "AlloyDBAdmin",
             "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin"
@@ -1431,6 +1660,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "alloydb_v1beta_generated_AlloyDBAdmin_UpdateUser_sync",
+      "title": "alloydb UpdateUser Sample",
+      "description": "UpdateUser updates the parameters of a single User.",
+      "file": "AlloyDBAdminClient/UpdateUser/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateUser",
+        "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient.UpdateUser",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "alloydbpb.UpdateUserRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*alloydbpb.User",
+        "client": {
+          "shortName": "AlloyDBAdminClient",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateUser",
+          "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin.UpdateUser",
+          "service": {
+            "shortName": "AlloyDBAdmin",
+            "fullName": "google.cloud.alloydb.v1beta.AlloyDBAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

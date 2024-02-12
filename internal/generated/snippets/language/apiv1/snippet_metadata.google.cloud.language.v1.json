@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/language/apiv1",
-    "version": "1.9.1",
+    "version": "1.12.3",
     "language": "GO",
     "apis": [
       {
@@ -272,6 +272,52 @@
         "method": {
           "shortName": "ClassifyText",
           "fullName": "google.cloud.language.v1.LanguageService.ClassifyText",
+          "service": {
+            "shortName": "LanguageService",
+            "fullName": "google.cloud.language.v1.LanguageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "language_v1_generated_LanguageService_ModerateText_sync",
+      "title": "language ModerateText Sample",
+      "description": "ModerateText moderates a document for harmful and sensitive categories.",
+      "file": "Client/ModerateText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ModerateText",
+        "fullName": "google.cloud.language.v1.Client.ModerateText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "languagepb.ModerateTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*languagepb.ModerateTextResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.language.v1.Client"
+        },
+        "method": {
+          "shortName": "ModerateText",
+          "fullName": "google.cloud.language.v1.LanguageService.ModerateText",
           "service": {
             "shortName": "LanguageService",
             "fullName": "google.cloud.language.v1.LanguageService"

@@ -1,10 +1,11 @@
-go 1.18
+go 1.20
 
 use (
 	.
 	./accessapproval
 	./accesscontextmanager
 	./advisorynotifications
+	./ai
 	./aiplatform
 	./alloydb
 	./analytics
@@ -13,10 +14,13 @@ use (
 	./apigeeregistry
 	./apikeys
 	./appengine
+	./apps
 	./area120
 	./artifactregistry
 	./asset
 	./assuredworkloads
+	./auth
+	./auth/oauth2adapt
 	./automl
 	./baremetalsolution
 	./batch
@@ -29,10 +33,14 @@ use (
 	./channel
 	./cloudbuild
 	./clouddms
+	./cloudprofiler
+	./cloudquotas
 	./cloudtasks
+	./commerce
 	./compute
 	./compute/metadata
 	./confidentialcomputing
+	./config
 	./contactcenterinsights
 	./container
 	./containeranalysis
@@ -53,13 +61,13 @@ use (
 	./documentai
 	./domains
 	./edgecontainer
+	./edgenetwork
 	./errorreporting
 	./essentialcontacts
 	./eventarc
 	./filestore
 	./firestore
 	./functions
-	./gaming
 	./gkebackup
 	./gkeconnect
 	./gkehub
@@ -77,9 +85,9 @@ use (
 	./internal/examples/mock
 	./internal/gapicgen
 	./internal/generated/snippets
-	./internal/gensnippets
 	./internal/godocfx
 	./internal/postprocessor
+	./internal/protoveneer
 	./iot
 	./kms
 	./language
@@ -91,7 +99,9 @@ use (
 	./mediatranslation
 	./memcache
 	./metastore
+	./migrationcenter
 	./monitoring
+	./netapp
 	./networkconnectivity
 	./networkmanagement
 	./networksecurity
@@ -102,13 +112,14 @@ use (
 	./osconfig
 	./oslogin
 	./phishingprotection
+	./policysimulator
 	./policytroubleshooter
 	./privatecatalog
 	./profiler
 	./pubsub
 	./pubsublite
+	./rapidmigrationassessment
 	./recaptchaenterprise
-	./recaptchaenterprise/v2
 	./recommendationengine
 	./recommender
 	./redis
@@ -118,27 +129,36 @@ use (
 	./run
 	./scheduler
 	./secretmanager
+	./securesourcemanager
 	./security
 	./securitycenter
+	./securitycentermanagement
+	./securityposture
 	./servicecontrol
 	./servicedirectory
+	./servicehealth
 	./servicemanagement
 	./serviceusage
 	./shell
+	./shopping
 	./spanner
 	./speech
 	./storage
 	./storage/internal/benchmarks
+	./storageinsights
 	./storagetransfer
+	./support
 	./talent
+	./telcoautomation
 	./texttospeech
 	./tpu
 	./trace
 	./translate
+	./vertexai
 	./video
 	./videointelligence
 	./vision
-	./vision/v2
+	./visionai
 	./vmmigration
 	./vmwareengine
 	./vpcaccess
@@ -146,4 +166,5 @@ use (
 	./websecurityscanner
 	./workflows
 	./workstations
+	./spanner/test/opentelemetry/test
 )

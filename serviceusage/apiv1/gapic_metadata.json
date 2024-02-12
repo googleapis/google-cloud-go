@@ -30,9 +30,19 @@
                 "EnableService"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetService": {
               "methods": [
                 "GetService"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListServices": {
@@ -65,9 +75,19 @@
                 "EnableService"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetService": {
               "methods": [
                 "GetService"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListServices": {

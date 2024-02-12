@@ -1,5 +1,63 @@
 # Changelog
 
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.1.0...vmwareengine/v1.1.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.0.3...vmwareengine/v1.1.0) (2024-01-22)
+
+
+### Features
+
+* **vmwareengine:** Adding ManagementDnsZoneBinding, DnsBindPermission, DnsForwarding, ExternalAccessRule, ExternalAddress, LoggingServer, NetworkPeering, Node and stretched PC features ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
+## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.0.2...vmwareengine/v1.0.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.0.1...vmwareengine/v1.0.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.0.0...vmwareengine/v1.0.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.4.1...vmwareengine/v1.0.0) (2023-07-24)
+
+
+### Features
+
+* **vmwareengine:** Promote to GA ([08ec41a](https://github.com/googleapis/google-cloud-go/commit/08ec41aba981874a7b86a9a941b07f9eb2fc6ce1))
+* **vmwareengine:** Promote to GA ([#8306](https://github.com/googleapis/google-cloud-go/issues/8306)) ([2b52374](https://github.com/googleapis/google-cloud-go/commit/2b523749162129c8272a64622b41df079e536c8f))
+
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.4.0...vmwareengine/v0.4.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **vmwareengine:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.3.1...vmwareengine/v0.4.0) (2023-05-30)
+
+
+### Features
+
+* **vmwareengine:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.3.0...vmwareengine/v0.3.1) (2023-05-08)
 
 

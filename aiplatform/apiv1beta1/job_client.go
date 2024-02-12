@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -40,7 +40,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -99,7 +98,9 @@ type JobCallOptions struct {
 func defaultJobGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -110,101 +111,213 @@ func defaultJobGRPCClientOptions() []option.ClientOption {
 
 func defaultJobCallOptions() *JobCallOptions {
 	return &JobCallOptions{
-		CreateCustomJob:                               []gax.CallOption{},
-		GetCustomJob:                                  []gax.CallOption{},
-		ListCustomJobs:                                []gax.CallOption{},
-		DeleteCustomJob:                               []gax.CallOption{},
-		CancelCustomJob:                               []gax.CallOption{},
-		CreateDataLabelingJob:                         []gax.CallOption{},
-		GetDataLabelingJob:                            []gax.CallOption{},
-		ListDataLabelingJobs:                          []gax.CallOption{},
-		DeleteDataLabelingJob:                         []gax.CallOption{},
-		CancelDataLabelingJob:                         []gax.CallOption{},
-		CreateHyperparameterTuningJob:                 []gax.CallOption{},
-		GetHyperparameterTuningJob:                    []gax.CallOption{},
-		ListHyperparameterTuningJobs:                  []gax.CallOption{},
-		DeleteHyperparameterTuningJob:                 []gax.CallOption{},
-		CancelHyperparameterTuningJob:                 []gax.CallOption{},
-		CreateNasJob:                                  []gax.CallOption{},
-		GetNasJob:                                     []gax.CallOption{},
-		ListNasJobs:                                   []gax.CallOption{},
-		DeleteNasJob:                                  []gax.CallOption{},
-		CancelNasJob:                                  []gax.CallOption{},
-		GetNasTrialDetail:                             []gax.CallOption{},
-		ListNasTrialDetails:                           []gax.CallOption{},
-		CreateBatchPredictionJob:                      []gax.CallOption{},
-		GetBatchPredictionJob:                         []gax.CallOption{},
-		ListBatchPredictionJobs:                       []gax.CallOption{},
-		DeleteBatchPredictionJob:                      []gax.CallOption{},
-		CancelBatchPredictionJob:                      []gax.CallOption{},
-		CreateModelDeploymentMonitoringJob:            []gax.CallOption{},
-		SearchModelDeploymentMonitoringStatsAnomalies: []gax.CallOption{},
-		GetModelDeploymentMonitoringJob:               []gax.CallOption{},
-		ListModelDeploymentMonitoringJobs:             []gax.CallOption{},
-		UpdateModelDeploymentMonitoringJob:            []gax.CallOption{},
-		DeleteModelDeploymentMonitoringJob:            []gax.CallOption{},
-		PauseModelDeploymentMonitoringJob:             []gax.CallOption{},
-		ResumeModelDeploymentMonitoringJob:            []gax.CallOption{},
-		GetLocation:                                   []gax.CallOption{},
-		ListLocations:                                 []gax.CallOption{},
-		GetIamPolicy:                                  []gax.CallOption{},
-		SetIamPolicy:                                  []gax.CallOption{},
-		TestIamPermissions:                            []gax.CallOption{},
-		CancelOperation:                               []gax.CallOption{},
-		DeleteOperation:                               []gax.CallOption{},
-		GetOperation:                                  []gax.CallOption{},
-		ListOperations:                                []gax.CallOption{},
-		WaitOperation:                                 []gax.CallOption{},
+		CreateCustomJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetCustomJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListCustomJobs: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteCustomJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CancelCustomJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateDataLabelingJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetDataLabelingJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListDataLabelingJobs: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteDataLabelingJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CancelDataLabelingJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateHyperparameterTuningJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetHyperparameterTuningJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListHyperparameterTuningJobs: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteHyperparameterTuningJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CancelHyperparameterTuningJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateNasJob:        []gax.CallOption{},
+		GetNasJob:           []gax.CallOption{},
+		ListNasJobs:         []gax.CallOption{},
+		DeleteNasJob:        []gax.CallOption{},
+		CancelNasJob:        []gax.CallOption{},
+		GetNasTrialDetail:   []gax.CallOption{},
+		ListNasTrialDetails: []gax.CallOption{},
+		CreateBatchPredictionJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetBatchPredictionJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListBatchPredictionJobs: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteBatchPredictionJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CancelBatchPredictionJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SearchModelDeploymentMonitoringStatsAnomalies: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelDeploymentMonitoringJobs: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		PauseModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ResumeModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
 func defaultJobRESTCallOptions() *JobCallOptions {
 	return &JobCallOptions{
-		CreateCustomJob:                               []gax.CallOption{},
-		GetCustomJob:                                  []gax.CallOption{},
-		ListCustomJobs:                                []gax.CallOption{},
-		DeleteCustomJob:                               []gax.CallOption{},
-		CancelCustomJob:                               []gax.CallOption{},
-		CreateDataLabelingJob:                         []gax.CallOption{},
-		GetDataLabelingJob:                            []gax.CallOption{},
-		ListDataLabelingJobs:                          []gax.CallOption{},
-		DeleteDataLabelingJob:                         []gax.CallOption{},
-		CancelDataLabelingJob:                         []gax.CallOption{},
-		CreateHyperparameterTuningJob:                 []gax.CallOption{},
-		GetHyperparameterTuningJob:                    []gax.CallOption{},
-		ListHyperparameterTuningJobs:                  []gax.CallOption{},
-		DeleteHyperparameterTuningJob:                 []gax.CallOption{},
-		CancelHyperparameterTuningJob:                 []gax.CallOption{},
-		CreateNasJob:                                  []gax.CallOption{},
-		GetNasJob:                                     []gax.CallOption{},
-		ListNasJobs:                                   []gax.CallOption{},
-		DeleteNasJob:                                  []gax.CallOption{},
-		CancelNasJob:                                  []gax.CallOption{},
-		GetNasTrialDetail:                             []gax.CallOption{},
-		ListNasTrialDetails:                           []gax.CallOption{},
-		CreateBatchPredictionJob:                      []gax.CallOption{},
-		GetBatchPredictionJob:                         []gax.CallOption{},
-		ListBatchPredictionJobs:                       []gax.CallOption{},
-		DeleteBatchPredictionJob:                      []gax.CallOption{},
-		CancelBatchPredictionJob:                      []gax.CallOption{},
-		CreateModelDeploymentMonitoringJob:            []gax.CallOption{},
-		SearchModelDeploymentMonitoringStatsAnomalies: []gax.CallOption{},
-		GetModelDeploymentMonitoringJob:               []gax.CallOption{},
-		ListModelDeploymentMonitoringJobs:             []gax.CallOption{},
-		UpdateModelDeploymentMonitoringJob:            []gax.CallOption{},
-		DeleteModelDeploymentMonitoringJob:            []gax.CallOption{},
-		PauseModelDeploymentMonitoringJob:             []gax.CallOption{},
-		ResumeModelDeploymentMonitoringJob:            []gax.CallOption{},
-		GetLocation:                                   []gax.CallOption{},
-		ListLocations:                                 []gax.CallOption{},
-		GetIamPolicy:                                  []gax.CallOption{},
-		SetIamPolicy:                                  []gax.CallOption{},
-		TestIamPermissions:                            []gax.CallOption{},
-		CancelOperation:                               []gax.CallOption{},
-		DeleteOperation:                               []gax.CallOption{},
-		GetOperation:                                  []gax.CallOption{},
-		ListOperations:                                []gax.CallOption{},
-		WaitOperation:                                 []gax.CallOption{},
+		CreateCustomJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetCustomJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListCustomJobs: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteCustomJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CancelCustomJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateDataLabelingJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetDataLabelingJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListDataLabelingJobs: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteDataLabelingJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CancelDataLabelingJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateHyperparameterTuningJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetHyperparameterTuningJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListHyperparameterTuningJobs: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteHyperparameterTuningJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CancelHyperparameterTuningJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateNasJob:        []gax.CallOption{},
+		GetNasJob:           []gax.CallOption{},
+		ListNasJobs:         []gax.CallOption{},
+		DeleteNasJob:        []gax.CallOption{},
+		CancelNasJob:        []gax.CallOption{},
+		GetNasTrialDetail:   []gax.CallOption{},
+		ListNasTrialDetails: []gax.CallOption{},
+		CreateBatchPredictionJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetBatchPredictionJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListBatchPredictionJobs: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteBatchPredictionJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CancelBatchPredictionJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SearchModelDeploymentMonitoringStatsAnomalies: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelDeploymentMonitoringJobs: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		PauseModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ResumeModelDeploymentMonitoringJob: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
@@ -649,9 +762,6 @@ type jobGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing JobClient
 	CallOptions **JobCallOptions
 
@@ -670,7 +780,7 @@ type jobGRPCClient struct {
 	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewJobClient creates a new job service client based on gRPC.
@@ -687,11 +797,6 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -700,7 +805,6 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 
 	c := &jobGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		jobClient:        aiplatformpb.NewJobServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -737,9 +841,9 @@ func (c *jobGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *jobGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -761,8 +865,8 @@ type jobRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing JobClient
 	CallOptions **JobCallOptions
@@ -802,7 +906,9 @@ func NewJobRESTClient(ctx context.Context, opts ...option.ClientOption) (*JobCli
 func defaultJobRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://aiplatform.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://aiplatform.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://aiplatform.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -812,9 +918,9 @@ func defaultJobRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *jobRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -832,14 +938,10 @@ func (c *jobRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *jobGRPCClient) CreateCustomJob(ctx context.Context, req *aiplatformpb.CreateCustomJobRequest, opts ...gax.CallOption) (*aiplatformpb.CustomJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateCustomJob[0:len((*c.CallOptions).CreateCustomJob):len((*c.CallOptions).CreateCustomJob)], opts...)
 	var resp *aiplatformpb.CustomJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -854,14 +956,10 @@ func (c *jobGRPCClient) CreateCustomJob(ctx context.Context, req *aiplatformpb.C
 }
 
 func (c *jobGRPCClient) GetCustomJob(ctx context.Context, req *aiplatformpb.GetCustomJobRequest, opts ...gax.CallOption) (*aiplatformpb.CustomJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetCustomJob[0:len((*c.CallOptions).GetCustomJob):len((*c.CallOptions).GetCustomJob)], opts...)
 	var resp *aiplatformpb.CustomJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -876,9 +974,10 @@ func (c *jobGRPCClient) GetCustomJob(ctx context.Context, req *aiplatformpb.GetC
 }
 
 func (c *jobGRPCClient) ListCustomJobs(ctx context.Context, req *aiplatformpb.ListCustomJobsRequest, opts ...gax.CallOption) *CustomJobIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListCustomJobs[0:len((*c.CallOptions).ListCustomJobs):len((*c.CallOptions).ListCustomJobs)], opts...)
 	it := &CustomJobIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListCustomJobsRequest)
@@ -921,14 +1020,10 @@ func (c *jobGRPCClient) ListCustomJobs(ctx context.Context, req *aiplatformpb.Li
 }
 
 func (c *jobGRPCClient) DeleteCustomJob(ctx context.Context, req *aiplatformpb.DeleteCustomJobRequest, opts ...gax.CallOption) (*DeleteCustomJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteCustomJob[0:len((*c.CallOptions).DeleteCustomJob):len((*c.CallOptions).DeleteCustomJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -945,14 +1040,10 @@ func (c *jobGRPCClient) DeleteCustomJob(ctx context.Context, req *aiplatformpb.D
 }
 
 func (c *jobGRPCClient) CancelCustomJob(ctx context.Context, req *aiplatformpb.CancelCustomJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelCustomJob[0:len((*c.CallOptions).CancelCustomJob):len((*c.CallOptions).CancelCustomJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -963,14 +1054,10 @@ func (c *jobGRPCClient) CancelCustomJob(ctx context.Context, req *aiplatformpb.C
 }
 
 func (c *jobGRPCClient) CreateDataLabelingJob(ctx context.Context, req *aiplatformpb.CreateDataLabelingJobRequest, opts ...gax.CallOption) (*aiplatformpb.DataLabelingJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataLabelingJob[0:len((*c.CallOptions).CreateDataLabelingJob):len((*c.CallOptions).CreateDataLabelingJob)], opts...)
 	var resp *aiplatformpb.DataLabelingJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -985,14 +1072,10 @@ func (c *jobGRPCClient) CreateDataLabelingJob(ctx context.Context, req *aiplatfo
 }
 
 func (c *jobGRPCClient) GetDataLabelingJob(ctx context.Context, req *aiplatformpb.GetDataLabelingJobRequest, opts ...gax.CallOption) (*aiplatformpb.DataLabelingJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataLabelingJob[0:len((*c.CallOptions).GetDataLabelingJob):len((*c.CallOptions).GetDataLabelingJob)], opts...)
 	var resp *aiplatformpb.DataLabelingJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1007,9 +1090,10 @@ func (c *jobGRPCClient) GetDataLabelingJob(ctx context.Context, req *aiplatformp
 }
 
 func (c *jobGRPCClient) ListDataLabelingJobs(ctx context.Context, req *aiplatformpb.ListDataLabelingJobsRequest, opts ...gax.CallOption) *DataLabelingJobIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDataLabelingJobs[0:len((*c.CallOptions).ListDataLabelingJobs):len((*c.CallOptions).ListDataLabelingJobs)], opts...)
 	it := &DataLabelingJobIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListDataLabelingJobsRequest)
@@ -1052,14 +1136,10 @@ func (c *jobGRPCClient) ListDataLabelingJobs(ctx context.Context, req *aiplatfor
 }
 
 func (c *jobGRPCClient) DeleteDataLabelingJob(ctx context.Context, req *aiplatformpb.DeleteDataLabelingJobRequest, opts ...gax.CallOption) (*DeleteDataLabelingJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDataLabelingJob[0:len((*c.CallOptions).DeleteDataLabelingJob):len((*c.CallOptions).DeleteDataLabelingJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1076,14 +1156,10 @@ func (c *jobGRPCClient) DeleteDataLabelingJob(ctx context.Context, req *aiplatfo
 }
 
 func (c *jobGRPCClient) CancelDataLabelingJob(ctx context.Context, req *aiplatformpb.CancelDataLabelingJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelDataLabelingJob[0:len((*c.CallOptions).CancelDataLabelingJob):len((*c.CallOptions).CancelDataLabelingJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1094,14 +1170,10 @@ func (c *jobGRPCClient) CancelDataLabelingJob(ctx context.Context, req *aiplatfo
 }
 
 func (c *jobGRPCClient) CreateHyperparameterTuningJob(ctx context.Context, req *aiplatformpb.CreateHyperparameterTuningJobRequest, opts ...gax.CallOption) (*aiplatformpb.HyperparameterTuningJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateHyperparameterTuningJob[0:len((*c.CallOptions).CreateHyperparameterTuningJob):len((*c.CallOptions).CreateHyperparameterTuningJob)], opts...)
 	var resp *aiplatformpb.HyperparameterTuningJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1116,14 +1188,10 @@ func (c *jobGRPCClient) CreateHyperparameterTuningJob(ctx context.Context, req *
 }
 
 func (c *jobGRPCClient) GetHyperparameterTuningJob(ctx context.Context, req *aiplatformpb.GetHyperparameterTuningJobRequest, opts ...gax.CallOption) (*aiplatformpb.HyperparameterTuningJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetHyperparameterTuningJob[0:len((*c.CallOptions).GetHyperparameterTuningJob):len((*c.CallOptions).GetHyperparameterTuningJob)], opts...)
 	var resp *aiplatformpb.HyperparameterTuningJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1138,9 +1206,10 @@ func (c *jobGRPCClient) GetHyperparameterTuningJob(ctx context.Context, req *aip
 }
 
 func (c *jobGRPCClient) ListHyperparameterTuningJobs(ctx context.Context, req *aiplatformpb.ListHyperparameterTuningJobsRequest, opts ...gax.CallOption) *HyperparameterTuningJobIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListHyperparameterTuningJobs[0:len((*c.CallOptions).ListHyperparameterTuningJobs):len((*c.CallOptions).ListHyperparameterTuningJobs)], opts...)
 	it := &HyperparameterTuningJobIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListHyperparameterTuningJobsRequest)
@@ -1183,14 +1252,10 @@ func (c *jobGRPCClient) ListHyperparameterTuningJobs(ctx context.Context, req *a
 }
 
 func (c *jobGRPCClient) DeleteHyperparameterTuningJob(ctx context.Context, req *aiplatformpb.DeleteHyperparameterTuningJobRequest, opts ...gax.CallOption) (*DeleteHyperparameterTuningJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteHyperparameterTuningJob[0:len((*c.CallOptions).DeleteHyperparameterTuningJob):len((*c.CallOptions).DeleteHyperparameterTuningJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1207,14 +1272,10 @@ func (c *jobGRPCClient) DeleteHyperparameterTuningJob(ctx context.Context, req *
 }
 
 func (c *jobGRPCClient) CancelHyperparameterTuningJob(ctx context.Context, req *aiplatformpb.CancelHyperparameterTuningJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelHyperparameterTuningJob[0:len((*c.CallOptions).CancelHyperparameterTuningJob):len((*c.CallOptions).CancelHyperparameterTuningJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1225,9 +1286,10 @@ func (c *jobGRPCClient) CancelHyperparameterTuningJob(ctx context.Context, req *
 }
 
 func (c *jobGRPCClient) CreateNasJob(ctx context.Context, req *aiplatformpb.CreateNasJobRequest, opts ...gax.CallOption) (*aiplatformpb.NasJob, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateNasJob[0:len((*c.CallOptions).CreateNasJob):len((*c.CallOptions).CreateNasJob)], opts...)
 	var resp *aiplatformpb.NasJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1242,9 +1304,10 @@ func (c *jobGRPCClient) CreateNasJob(ctx context.Context, req *aiplatformpb.Crea
 }
 
 func (c *jobGRPCClient) GetNasJob(ctx context.Context, req *aiplatformpb.GetNasJobRequest, opts ...gax.CallOption) (*aiplatformpb.NasJob, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetNasJob[0:len((*c.CallOptions).GetNasJob):len((*c.CallOptions).GetNasJob)], opts...)
 	var resp *aiplatformpb.NasJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1259,9 +1322,10 @@ func (c *jobGRPCClient) GetNasJob(ctx context.Context, req *aiplatformpb.GetNasJ
 }
 
 func (c *jobGRPCClient) ListNasJobs(ctx context.Context, req *aiplatformpb.ListNasJobsRequest, opts ...gax.CallOption) *NasJobIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListNasJobs[0:len((*c.CallOptions).ListNasJobs):len((*c.CallOptions).ListNasJobs)], opts...)
 	it := &NasJobIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListNasJobsRequest)
@@ -1304,9 +1368,10 @@ func (c *jobGRPCClient) ListNasJobs(ctx context.Context, req *aiplatformpb.ListN
 }
 
 func (c *jobGRPCClient) DeleteNasJob(ctx context.Context, req *aiplatformpb.DeleteNasJobRequest, opts ...gax.CallOption) (*DeleteNasJobOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteNasJob[0:len((*c.CallOptions).DeleteNasJob):len((*c.CallOptions).DeleteNasJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1323,9 +1388,10 @@ func (c *jobGRPCClient) DeleteNasJob(ctx context.Context, req *aiplatformpb.Dele
 }
 
 func (c *jobGRPCClient) CancelNasJob(ctx context.Context, req *aiplatformpb.CancelNasJobRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelNasJob[0:len((*c.CallOptions).CancelNasJob):len((*c.CallOptions).CancelNasJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1336,9 +1402,10 @@ func (c *jobGRPCClient) CancelNasJob(ctx context.Context, req *aiplatformpb.Canc
 }
 
 func (c *jobGRPCClient) GetNasTrialDetail(ctx context.Context, req *aiplatformpb.GetNasTrialDetailRequest, opts ...gax.CallOption) (*aiplatformpb.NasTrialDetail, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetNasTrialDetail[0:len((*c.CallOptions).GetNasTrialDetail):len((*c.CallOptions).GetNasTrialDetail)], opts...)
 	var resp *aiplatformpb.NasTrialDetail
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1353,9 +1420,10 @@ func (c *jobGRPCClient) GetNasTrialDetail(ctx context.Context, req *aiplatformpb
 }
 
 func (c *jobGRPCClient) ListNasTrialDetails(ctx context.Context, req *aiplatformpb.ListNasTrialDetailsRequest, opts ...gax.CallOption) *NasTrialDetailIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListNasTrialDetails[0:len((*c.CallOptions).ListNasTrialDetails):len((*c.CallOptions).ListNasTrialDetails)], opts...)
 	it := &NasTrialDetailIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListNasTrialDetailsRequest)
@@ -1398,14 +1466,10 @@ func (c *jobGRPCClient) ListNasTrialDetails(ctx context.Context, req *aiplatform
 }
 
 func (c *jobGRPCClient) CreateBatchPredictionJob(ctx context.Context, req *aiplatformpb.CreateBatchPredictionJobRequest, opts ...gax.CallOption) (*aiplatformpb.BatchPredictionJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBatchPredictionJob[0:len((*c.CallOptions).CreateBatchPredictionJob):len((*c.CallOptions).CreateBatchPredictionJob)], opts...)
 	var resp *aiplatformpb.BatchPredictionJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1420,14 +1484,10 @@ func (c *jobGRPCClient) CreateBatchPredictionJob(ctx context.Context, req *aipla
 }
 
 func (c *jobGRPCClient) GetBatchPredictionJob(ctx context.Context, req *aiplatformpb.GetBatchPredictionJobRequest, opts ...gax.CallOption) (*aiplatformpb.BatchPredictionJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetBatchPredictionJob[0:len((*c.CallOptions).GetBatchPredictionJob):len((*c.CallOptions).GetBatchPredictionJob)], opts...)
 	var resp *aiplatformpb.BatchPredictionJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1442,9 +1502,10 @@ func (c *jobGRPCClient) GetBatchPredictionJob(ctx context.Context, req *aiplatfo
 }
 
 func (c *jobGRPCClient) ListBatchPredictionJobs(ctx context.Context, req *aiplatformpb.ListBatchPredictionJobsRequest, opts ...gax.CallOption) *BatchPredictionJobIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListBatchPredictionJobs[0:len((*c.CallOptions).ListBatchPredictionJobs):len((*c.CallOptions).ListBatchPredictionJobs)], opts...)
 	it := &BatchPredictionJobIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListBatchPredictionJobsRequest)
@@ -1487,14 +1548,10 @@ func (c *jobGRPCClient) ListBatchPredictionJobs(ctx context.Context, req *aiplat
 }
 
 func (c *jobGRPCClient) DeleteBatchPredictionJob(ctx context.Context, req *aiplatformpb.DeleteBatchPredictionJobRequest, opts ...gax.CallOption) (*DeleteBatchPredictionJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteBatchPredictionJob[0:len((*c.CallOptions).DeleteBatchPredictionJob):len((*c.CallOptions).DeleteBatchPredictionJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1511,14 +1568,10 @@ func (c *jobGRPCClient) DeleteBatchPredictionJob(ctx context.Context, req *aipla
 }
 
 func (c *jobGRPCClient) CancelBatchPredictionJob(ctx context.Context, req *aiplatformpb.CancelBatchPredictionJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelBatchPredictionJob[0:len((*c.CallOptions).CancelBatchPredictionJob):len((*c.CallOptions).CancelBatchPredictionJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1529,14 +1582,10 @@ func (c *jobGRPCClient) CancelBatchPredictionJob(ctx context.Context, req *aipla
 }
 
 func (c *jobGRPCClient) CreateModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.CreateModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateModelDeploymentMonitoringJob[0:len((*c.CallOptions).CreateModelDeploymentMonitoringJob):len((*c.CallOptions).CreateModelDeploymentMonitoringJob)], opts...)
 	var resp *aiplatformpb.ModelDeploymentMonitoringJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1551,9 +1600,10 @@ func (c *jobGRPCClient) CreateModelDeploymentMonitoringJob(ctx context.Context, 
 }
 
 func (c *jobGRPCClient) SearchModelDeploymentMonitoringStatsAnomalies(ctx context.Context, req *aiplatformpb.SearchModelDeploymentMonitoringStatsAnomaliesRequest, opts ...gax.CallOption) *ModelMonitoringStatsAnomaliesIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model_deployment_monitoring_job", url.QueryEscape(req.GetModelDeploymentMonitoringJob())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "model_deployment_monitoring_job", url.QueryEscape(req.GetModelDeploymentMonitoringJob()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SearchModelDeploymentMonitoringStatsAnomalies[0:len((*c.CallOptions).SearchModelDeploymentMonitoringStatsAnomalies):len((*c.CallOptions).SearchModelDeploymentMonitoringStatsAnomalies)], opts...)
 	it := &ModelMonitoringStatsAnomaliesIterator{}
 	req = proto.Clone(req).(*aiplatformpb.SearchModelDeploymentMonitoringStatsAnomaliesRequest)
@@ -1596,14 +1646,10 @@ func (c *jobGRPCClient) SearchModelDeploymentMonitoringStatsAnomalies(ctx contex
 }
 
 func (c *jobGRPCClient) GetModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.GetModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetModelDeploymentMonitoringJob[0:len((*c.CallOptions).GetModelDeploymentMonitoringJob):len((*c.CallOptions).GetModelDeploymentMonitoringJob)], opts...)
 	var resp *aiplatformpb.ModelDeploymentMonitoringJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1618,9 +1664,10 @@ func (c *jobGRPCClient) GetModelDeploymentMonitoringJob(ctx context.Context, req
 }
 
 func (c *jobGRPCClient) ListModelDeploymentMonitoringJobs(ctx context.Context, req *aiplatformpb.ListModelDeploymentMonitoringJobsRequest, opts ...gax.CallOption) *ModelDeploymentMonitoringJobIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListModelDeploymentMonitoringJobs[0:len((*c.CallOptions).ListModelDeploymentMonitoringJobs):len((*c.CallOptions).ListModelDeploymentMonitoringJobs)], opts...)
 	it := &ModelDeploymentMonitoringJobIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListModelDeploymentMonitoringJobsRequest)
@@ -1663,14 +1710,10 @@ func (c *jobGRPCClient) ListModelDeploymentMonitoringJobs(ctx context.Context, r
 }
 
 func (c *jobGRPCClient) UpdateModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.UpdateModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*UpdateModelDeploymentMonitoringJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model_deployment_monitoring_job.name", url.QueryEscape(req.GetModelDeploymentMonitoringJob().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "model_deployment_monitoring_job.name", url.QueryEscape(req.GetModelDeploymentMonitoringJob().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateModelDeploymentMonitoringJob[0:len((*c.CallOptions).UpdateModelDeploymentMonitoringJob):len((*c.CallOptions).UpdateModelDeploymentMonitoringJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1687,14 +1730,10 @@ func (c *jobGRPCClient) UpdateModelDeploymentMonitoringJob(ctx context.Context, 
 }
 
 func (c *jobGRPCClient) DeleteModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.DeleteModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*DeleteModelDeploymentMonitoringJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteModelDeploymentMonitoringJob[0:len((*c.CallOptions).DeleteModelDeploymentMonitoringJob):len((*c.CallOptions).DeleteModelDeploymentMonitoringJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1711,14 +1750,10 @@ func (c *jobGRPCClient) DeleteModelDeploymentMonitoringJob(ctx context.Context, 
 }
 
 func (c *jobGRPCClient) PauseModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.PauseModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).PauseModelDeploymentMonitoringJob[0:len((*c.CallOptions).PauseModelDeploymentMonitoringJob):len((*c.CallOptions).PauseModelDeploymentMonitoringJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1729,14 +1764,10 @@ func (c *jobGRPCClient) PauseModelDeploymentMonitoringJob(ctx context.Context, r
 }
 
 func (c *jobGRPCClient) ResumeModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.ResumeModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ResumeModelDeploymentMonitoringJob[0:len((*c.CallOptions).ResumeModelDeploymentMonitoringJob):len((*c.CallOptions).ResumeModelDeploymentMonitoringJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1747,9 +1778,10 @@ func (c *jobGRPCClient) ResumeModelDeploymentMonitoringJob(ctx context.Context, 
 }
 
 func (c *jobGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1764,9 +1796,10 @@ func (c *jobGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 }
 
 func (c *jobGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -1809,9 +1842,10 @@ func (c *jobGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListL
 }
 
 func (c *jobGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1826,9 +1860,10 @@ func (c *jobGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 }
 
 func (c *jobGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1843,9 +1878,10 @@ func (c *jobGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 }
 
 func (c *jobGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1860,9 +1896,10 @@ func (c *jobGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 }
 
 func (c *jobGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1873,9 +1910,10 @@ func (c *jobGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.
 }
 
 func (c *jobGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1886,9 +1924,10 @@ func (c *jobGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 }
 
 func (c *jobGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1903,9 +1942,10 @@ func (c *jobGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 }
 
 func (c *jobGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1948,9 +1988,10 @@ func (c *jobGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 }
 
 func (c *jobGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1981,9 +2022,11 @@ func (c *jobRESTClient) CreateCustomJob(ctx context.Context, req *aiplatformpb.C
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/customJobs", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateCustomJob[0:len((*c.CallOptions).CreateCustomJob):len((*c.CallOptions).CreateCustomJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.CustomJob{}
@@ -2008,13 +2051,13 @@ func (c *jobRESTClient) CreateCustomJob(ctx context.Context, req *aiplatformpb.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2034,9 +2077,11 @@ func (c *jobRESTClient) GetCustomJob(ctx context.Context, req *aiplatformpb.GetC
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetCustomJob[0:len((*c.CallOptions).GetCustomJob):len((*c.CallOptions).GetCustomJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.CustomJob{}
@@ -2061,13 +2106,13 @@ func (c *jobRESTClient) GetCustomJob(ctx context.Context, req *aiplatformpb.GetC
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2114,13 +2159,14 @@ func (c *jobRESTClient) ListCustomJobs(ctx context.Context, req *aiplatformpb.Li
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2141,13 +2187,13 @@ func (c *jobRESTClient) ListCustomJobs(ctx context.Context, req *aiplatformpb.Li
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2184,9 +2230,11 @@ func (c *jobRESTClient) DeleteCustomJob(ctx context.Context, req *aiplatformpb.D
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2210,13 +2258,13 @@ func (c *jobRESTClient) DeleteCustomJob(ctx context.Context, req *aiplatformpb.D
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2259,9 +2307,11 @@ func (c *jobRESTClient) CancelCustomJob(ctx context.Context, req *aiplatformpb.C
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:cancel", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2301,9 +2351,11 @@ func (c *jobRESTClient) CreateDataLabelingJob(ctx context.Context, req *aiplatfo
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/dataLabelingJobs", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataLabelingJob[0:len((*c.CallOptions).CreateDataLabelingJob):len((*c.CallOptions).CreateDataLabelingJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.DataLabelingJob{}
@@ -2328,13 +2380,13 @@ func (c *jobRESTClient) CreateDataLabelingJob(ctx context.Context, req *aiplatfo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2354,9 +2406,11 @@ func (c *jobRESTClient) GetDataLabelingJob(ctx context.Context, req *aiplatformp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataLabelingJob[0:len((*c.CallOptions).GetDataLabelingJob):len((*c.CallOptions).GetDataLabelingJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.DataLabelingJob{}
@@ -2381,13 +2435,13 @@ func (c *jobRESTClient) GetDataLabelingJob(ctx context.Context, req *aiplatformp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2437,13 +2491,14 @@ func (c *jobRESTClient) ListDataLabelingJobs(ctx context.Context, req *aiplatfor
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2464,13 +2519,13 @@ func (c *jobRESTClient) ListDataLabelingJobs(ctx context.Context, req *aiplatfor
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2507,9 +2562,11 @@ func (c *jobRESTClient) DeleteDataLabelingJob(ctx context.Context, req *aiplatfo
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2533,13 +2590,13 @@ func (c *jobRESTClient) DeleteDataLabelingJob(ctx context.Context, req *aiplatfo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2570,9 +2627,11 @@ func (c *jobRESTClient) CancelDataLabelingJob(ctx context.Context, req *aiplatfo
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:cancel", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2612,9 +2671,11 @@ func (c *jobRESTClient) CreateHyperparameterTuningJob(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/hyperparameterTuningJobs", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateHyperparameterTuningJob[0:len((*c.CallOptions).CreateHyperparameterTuningJob):len((*c.CallOptions).CreateHyperparameterTuningJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.HyperparameterTuningJob{}
@@ -2639,13 +2700,13 @@ func (c *jobRESTClient) CreateHyperparameterTuningJob(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2665,9 +2726,11 @@ func (c *jobRESTClient) GetHyperparameterTuningJob(ctx context.Context, req *aip
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetHyperparameterTuningJob[0:len((*c.CallOptions).GetHyperparameterTuningJob):len((*c.CallOptions).GetHyperparameterTuningJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.HyperparameterTuningJob{}
@@ -2692,13 +2755,13 @@ func (c *jobRESTClient) GetHyperparameterTuningJob(ctx context.Context, req *aip
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2745,13 +2808,14 @@ func (c *jobRESTClient) ListHyperparameterTuningJobs(ctx context.Context, req *a
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2772,13 +2836,13 @@ func (c *jobRESTClient) ListHyperparameterTuningJobs(ctx context.Context, req *a
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2815,9 +2879,11 @@ func (c *jobRESTClient) DeleteHyperparameterTuningJob(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2841,13 +2907,13 @@ func (c *jobRESTClient) DeleteHyperparameterTuningJob(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2891,9 +2957,11 @@ func (c *jobRESTClient) CancelHyperparameterTuningJob(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:cancel", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2933,9 +3001,11 @@ func (c *jobRESTClient) CreateNasJob(ctx context.Context, req *aiplatformpb.Crea
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/nasJobs", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateNasJob[0:len((*c.CallOptions).CreateNasJob):len((*c.CallOptions).CreateNasJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.NasJob{}
@@ -2960,13 +3030,13 @@ func (c *jobRESTClient) CreateNasJob(ctx context.Context, req *aiplatformpb.Crea
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2986,9 +3056,11 @@ func (c *jobRESTClient) GetNasJob(ctx context.Context, req *aiplatformpb.GetNasJ
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetNasJob[0:len((*c.CallOptions).GetNasJob):len((*c.CallOptions).GetNasJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.NasJob{}
@@ -3013,13 +3085,13 @@ func (c *jobRESTClient) GetNasJob(ctx context.Context, req *aiplatformpb.GetNasJ
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3066,13 +3138,14 @@ func (c *jobRESTClient) ListNasJobs(ctx context.Context, req *aiplatformpb.ListN
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -3093,13 +3166,13 @@ func (c *jobRESTClient) ListNasJobs(ctx context.Context, req *aiplatformpb.ListN
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3136,9 +3209,11 @@ func (c *jobRESTClient) DeleteNasJob(ctx context.Context, req *aiplatformpb.Dele
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3162,13 +3237,13 @@ func (c *jobRESTClient) DeleteNasJob(ctx context.Context, req *aiplatformpb.Dele
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3211,9 +3286,11 @@ func (c *jobRESTClient) CancelNasJob(ctx context.Context, req *aiplatformpb.Canc
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:cancel", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3246,9 +3323,11 @@ func (c *jobRESTClient) GetNasTrialDetail(ctx context.Context, req *aiplatformpb
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetNasTrialDetail[0:len((*c.CallOptions).GetNasTrialDetail):len((*c.CallOptions).GetNasTrialDetail)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.NasTrialDetail{}
@@ -3273,13 +3352,13 @@ func (c *jobRESTClient) GetNasTrialDetail(ctx context.Context, req *aiplatformpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3322,7 +3401,8 @@ func (c *jobRESTClient) ListNasTrialDetails(ctx context.Context, req *aiplatform
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -3343,13 +3423,13 @@ func (c *jobRESTClient) ListNasTrialDetails(ctx context.Context, req *aiplatform
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3394,9 +3474,11 @@ func (c *jobRESTClient) CreateBatchPredictionJob(ctx context.Context, req *aipla
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/batchPredictionJobs", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBatchPredictionJob[0:len((*c.CallOptions).CreateBatchPredictionJob):len((*c.CallOptions).CreateBatchPredictionJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.BatchPredictionJob{}
@@ -3421,13 +3503,13 @@ func (c *jobRESTClient) CreateBatchPredictionJob(ctx context.Context, req *aipla
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3447,9 +3529,11 @@ func (c *jobRESTClient) GetBatchPredictionJob(ctx context.Context, req *aiplatfo
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetBatchPredictionJob[0:len((*c.CallOptions).GetBatchPredictionJob):len((*c.CallOptions).GetBatchPredictionJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.BatchPredictionJob{}
@@ -3474,13 +3558,13 @@ func (c *jobRESTClient) GetBatchPredictionJob(ctx context.Context, req *aiplatfo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3527,13 +3611,14 @@ func (c *jobRESTClient) ListBatchPredictionJobs(ctx context.Context, req *aiplat
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -3554,13 +3639,13 @@ func (c *jobRESTClient) ListBatchPredictionJobs(ctx context.Context, req *aiplat
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3598,9 +3683,11 @@ func (c *jobRESTClient) DeleteBatchPredictionJob(ctx context.Context, req *aipla
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3624,13 +3711,13 @@ func (c *jobRESTClient) DeleteBatchPredictionJob(ctx context.Context, req *aipla
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3672,9 +3759,11 @@ func (c *jobRESTClient) CancelBatchPredictionJob(ctx context.Context, req *aipla
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:cancel", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3715,9 +3804,11 @@ func (c *jobRESTClient) CreateModelDeploymentMonitoringJob(ctx context.Context, 
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/modelDeploymentMonitoringJobs", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateModelDeploymentMonitoringJob[0:len((*c.CallOptions).CreateModelDeploymentMonitoringJob):len((*c.CallOptions).CreateModelDeploymentMonitoringJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.ModelDeploymentMonitoringJob{}
@@ -3742,13 +3833,13 @@ func (c *jobRESTClient) CreateModelDeploymentMonitoringJob(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3787,7 +3878,8 @@ func (c *jobRESTClient) SearchModelDeploymentMonitoringStatsAnomalies(ctx contex
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:searchModelDeploymentMonitoringStatsAnomalies", req.GetModelDeploymentMonitoringJob())
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -3808,13 +3900,13 @@ func (c *jobRESTClient) SearchModelDeploymentMonitoringStatsAnomalies(ctx contex
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3851,9 +3943,11 @@ func (c *jobRESTClient) GetModelDeploymentMonitoringJob(ctx context.Context, req
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetModelDeploymentMonitoringJob[0:len((*c.CallOptions).GetModelDeploymentMonitoringJob):len((*c.CallOptions).GetModelDeploymentMonitoringJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.ModelDeploymentMonitoringJob{}
@@ -3878,13 +3972,13 @@ func (c *jobRESTClient) GetModelDeploymentMonitoringJob(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3931,13 +4025,14 @@ func (c *jobRESTClient) ListModelDeploymentMonitoringJobs(ctx context.Context, r
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -3958,13 +4053,13 @@ func (c *jobRESTClient) ListModelDeploymentMonitoringJobs(ctx context.Context, r
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4013,15 +4108,17 @@ func (c *jobRESTClient) UpdateModelDeploymentMonitoringJob(ctx context.Context, 
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model_deployment_monitoring_job.name", url.QueryEscape(req.GetModelDeploymentMonitoringJob().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "model_deployment_monitoring_job.name", url.QueryEscape(req.GetModelDeploymentMonitoringJob().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4045,13 +4142,13 @@ func (c *jobRESTClient) UpdateModelDeploymentMonitoringJob(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4076,9 +4173,11 @@ func (c *jobRESTClient) DeleteModelDeploymentMonitoringJob(ctx context.Context, 
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4102,13 +4201,13 @@ func (c *jobRESTClient) DeleteModelDeploymentMonitoringJob(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4142,9 +4241,11 @@ func (c *jobRESTClient) PauseModelDeploymentMonitoringJob(ctx context.Context, r
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:pause", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4185,9 +4286,11 @@ func (c *jobRESTClient) ResumeModelDeploymentMonitoringJob(ctx context.Context, 
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:resume", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4220,9 +4323,11 @@ func (c *jobRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -4247,13 +4352,13 @@ func (c *jobRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4299,7 +4404,8 @@ func (c *jobRESTClient) ListLocations(ctx context.Context, req *locationpb.ListL
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -4320,13 +4426,13 @@ func (c *jobRESTClient) ListLocations(ctx context.Context, req *locationpb.ListL
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4370,9 +4476,11 @@ func (c *jobRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -4397,13 +4505,13 @@ func (c *jobRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4433,9 +4541,11 @@ func (c *jobRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -4460,13 +4570,13 @@ func (c *jobRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4498,9 +4608,11 @@ func (c *jobRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -4525,13 +4637,13 @@ func (c *jobRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4551,9 +4663,11 @@ func (c *jobRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4586,9 +4700,11 @@ func (c *jobRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4621,9 +4737,11 @@ func (c *jobRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -4648,13 +4766,13 @@ func (c *jobRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4700,7 +4818,8 @@ func (c *jobRESTClient) ListOperations(ctx context.Context, req *longrunningpb.L
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -4721,13 +4840,13 @@ func (c *jobRESTClient) ListOperations(ctx context.Context, req *longrunningpb.L
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4769,15 +4888,17 @@ func (c *jobRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.Wa
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout))
+		params.Add("timeout", string(timeout[1:len(timeout)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -4802,13 +4923,13 @@ func (c *jobRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.Wa
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4817,12 +4938,6 @@ func (c *jobRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.Wa
 		return nil, e
 	}
 	return resp, nil
-}
-
-// DeleteBatchPredictionJobOperation manages a long-running operation from DeleteBatchPredictionJob.
-type DeleteBatchPredictionJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteBatchPredictionJobOperation returns a new DeleteBatchPredictionJobOperation from a given name.
@@ -4843,59 +4958,6 @@ func (c *jobRESTClient) DeleteBatchPredictionJobOperation(name string) *DeleteBa
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteBatchPredictionJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteBatchPredictionJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteBatchPredictionJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteBatchPredictionJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteBatchPredictionJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteCustomJobOperation manages a long-running operation from DeleteCustomJob.
-type DeleteCustomJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteCustomJobOperation returns a new DeleteCustomJobOperation from a given name.
 // The name must be that of a previously created DeleteCustomJobOperation, possibly from a different process.
 func (c *jobGRPCClient) DeleteCustomJobOperation(name string) *DeleteCustomJobOperation {
@@ -4912,59 +4974,6 @@ func (c *jobRESTClient) DeleteCustomJobOperation(name string) *DeleteCustomJobOp
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteCustomJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteCustomJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteCustomJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteCustomJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteCustomJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDataLabelingJobOperation manages a long-running operation from DeleteDataLabelingJob.
-type DeleteDataLabelingJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteDataLabelingJobOperation returns a new DeleteDataLabelingJobOperation from a given name.
@@ -4985,59 +4994,6 @@ func (c *jobRESTClient) DeleteDataLabelingJobOperation(name string) *DeleteDataL
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDataLabelingJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDataLabelingJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDataLabelingJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDataLabelingJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDataLabelingJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteHyperparameterTuningJobOperation manages a long-running operation from DeleteHyperparameterTuningJob.
-type DeleteHyperparameterTuningJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteHyperparameterTuningJobOperation returns a new DeleteHyperparameterTuningJobOperation from a given name.
 // The name must be that of a previously created DeleteHyperparameterTuningJobOperation, possibly from a different process.
 func (c *jobGRPCClient) DeleteHyperparameterTuningJobOperation(name string) *DeleteHyperparameterTuningJobOperation {
@@ -5054,59 +5010,6 @@ func (c *jobRESTClient) DeleteHyperparameterTuningJobOperation(name string) *Del
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteHyperparameterTuningJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteHyperparameterTuningJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteHyperparameterTuningJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteHyperparameterTuningJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteHyperparameterTuningJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteModelDeploymentMonitoringJobOperation manages a long-running operation from DeleteModelDeploymentMonitoringJob.
-type DeleteModelDeploymentMonitoringJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteModelDeploymentMonitoringJobOperation returns a new DeleteModelDeploymentMonitoringJobOperation from a given name.
@@ -5127,59 +5030,6 @@ func (c *jobRESTClient) DeleteModelDeploymentMonitoringJobOperation(name string)
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteModelDeploymentMonitoringJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteModelDeploymentMonitoringJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteModelDeploymentMonitoringJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteModelDeploymentMonitoringJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteModelDeploymentMonitoringJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteNasJobOperation manages a long-running operation from DeleteNasJob.
-type DeleteNasJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteNasJobOperation returns a new DeleteNasJobOperation from a given name.
 // The name must be that of a previously created DeleteNasJobOperation, possibly from a different process.
 func (c *jobGRPCClient) DeleteNasJobOperation(name string) *DeleteNasJobOperation {
@@ -5198,59 +5048,6 @@ func (c *jobRESTClient) DeleteNasJobOperation(name string) *DeleteNasJobOperatio
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteNasJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteNasJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteNasJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteNasJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteNasJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateModelDeploymentMonitoringJobOperation manages a long-running operation from UpdateModelDeploymentMonitoringJob.
-type UpdateModelDeploymentMonitoringJobOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateModelDeploymentMonitoringJobOperation returns a new UpdateModelDeploymentMonitoringJobOperation from a given name.
 // The name must be that of a previously created UpdateModelDeploymentMonitoringJobOperation, possibly from a different process.
 func (c *jobGRPCClient) UpdateModelDeploymentMonitoringJobOperation(name string) *UpdateModelDeploymentMonitoringJobOperation {
@@ -5267,438 +5064,4 @@ func (c *jobRESTClient) UpdateModelDeploymentMonitoringJobOperation(name string)
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateModelDeploymentMonitoringJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp aiplatformpb.ModelDeploymentMonitoringJob
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateModelDeploymentMonitoringJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp aiplatformpb.ModelDeploymentMonitoringJob
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateModelDeploymentMonitoringJobOperation) Metadata() (*aiplatformpb.UpdateModelDeploymentMonitoringJobOperationMetadata, error) {
-	var meta aiplatformpb.UpdateModelDeploymentMonitoringJobOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateModelDeploymentMonitoringJobOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateModelDeploymentMonitoringJobOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BatchPredictionJobIterator manages a stream of *aiplatformpb.BatchPredictionJob.
-type BatchPredictionJobIterator struct {
-	items    []*aiplatformpb.BatchPredictionJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.BatchPredictionJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BatchPredictionJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BatchPredictionJobIterator) Next() (*aiplatformpb.BatchPredictionJob, error) {
-	var item *aiplatformpb.BatchPredictionJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BatchPredictionJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BatchPredictionJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CustomJobIterator manages a stream of *aiplatformpb.CustomJob.
-type CustomJobIterator struct {
-	items    []*aiplatformpb.CustomJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.CustomJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CustomJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CustomJobIterator) Next() (*aiplatformpb.CustomJob, error) {
-	var item *aiplatformpb.CustomJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CustomJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CustomJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DataLabelingJobIterator manages a stream of *aiplatformpb.DataLabelingJob.
-type DataLabelingJobIterator struct {
-	items    []*aiplatformpb.DataLabelingJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DataLabelingJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataLabelingJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataLabelingJobIterator) Next() (*aiplatformpb.DataLabelingJob, error) {
-	var item *aiplatformpb.DataLabelingJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DataLabelingJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataLabelingJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// HyperparameterTuningJobIterator manages a stream of *aiplatformpb.HyperparameterTuningJob.
-type HyperparameterTuningJobIterator struct {
-	items    []*aiplatformpb.HyperparameterTuningJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.HyperparameterTuningJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *HyperparameterTuningJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *HyperparameterTuningJobIterator) Next() (*aiplatformpb.HyperparameterTuningJob, error) {
-	var item *aiplatformpb.HyperparameterTuningJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *HyperparameterTuningJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *HyperparameterTuningJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ModelDeploymentMonitoringJobIterator manages a stream of *aiplatformpb.ModelDeploymentMonitoringJob.
-type ModelDeploymentMonitoringJobIterator struct {
-	items    []*aiplatformpb.ModelDeploymentMonitoringJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.ModelDeploymentMonitoringJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ModelDeploymentMonitoringJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ModelDeploymentMonitoringJobIterator) Next() (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
-	var item *aiplatformpb.ModelDeploymentMonitoringJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ModelDeploymentMonitoringJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ModelDeploymentMonitoringJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ModelMonitoringStatsAnomaliesIterator manages a stream of *aiplatformpb.ModelMonitoringStatsAnomalies.
-type ModelMonitoringStatsAnomaliesIterator struct {
-	items    []*aiplatformpb.ModelMonitoringStatsAnomalies
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.ModelMonitoringStatsAnomalies, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ModelMonitoringStatsAnomaliesIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ModelMonitoringStatsAnomaliesIterator) Next() (*aiplatformpb.ModelMonitoringStatsAnomalies, error) {
-	var item *aiplatformpb.ModelMonitoringStatsAnomalies
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ModelMonitoringStatsAnomaliesIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ModelMonitoringStatsAnomaliesIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NasJobIterator manages a stream of *aiplatformpb.NasJob.
-type NasJobIterator struct {
-	items    []*aiplatformpb.NasJob
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NasJob, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NasJobIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NasJobIterator) Next() (*aiplatformpb.NasJob, error) {
-	var item *aiplatformpb.NasJob
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NasJobIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NasJobIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NasTrialDetailIterator manages a stream of *aiplatformpb.NasTrialDetail.
-type NasTrialDetailIterator struct {
-	items    []*aiplatformpb.NasTrialDetail
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NasTrialDetail, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NasTrialDetailIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NasTrialDetailIterator) Next() (*aiplatformpb.NasTrialDetail, error) {
-	var item *aiplatformpb.NasTrialDetail
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NasTrialDetailIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NasTrialDetailIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

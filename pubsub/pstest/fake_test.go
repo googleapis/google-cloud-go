@@ -29,11 +29,11 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
-	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
+	field_mask "google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -1082,14 +1082,14 @@ func TestUpdateFilter(t *testing.T) {
 		AckDeadlineSeconds: minAckDeadlineSecs,
 		Name:               "projects/P/subscriptions/S",
 		Topic:              top.Name,
-		Filter:             "some-filter",
+		Filter:             "NOT attributes:foo",
 	})
 
 	update := &pb.Subscription{
 		AckDeadlineSeconds: sub.AckDeadlineSeconds,
 		Name:               sub.Name,
 		Topic:              top.Name,
-		Filter:             "new-filter",
+		Filter:             "NOT attributes:bar",
 	}
 
 	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
@@ -1530,6 +1530,7 @@ func TestStreaming_SubscriptionProperties(t *testing.T) {
 	}
 }
 
+// Test switching between the various subscription types: push to endpoint, bigquery, cloud storage, and pull.
 func TestSubscriptionPushPull(t *testing.T) {
 	ctx := context.Background()
 	pclient, sclient, _, cleanup := newFake(ctx, t)
@@ -1542,6 +1543,9 @@ func TestSubscriptionPushPull(t *testing.T) {
 	// Create a push subscription.
 	pc := &pb.PushConfig{
 		PushEndpoint: "some-endpoint",
+		Wrapper: &pb.PushConfig_PubsubWrapper_{
+			PubsubWrapper: &pb.PushConfig_PubsubWrapper{},
+		},
 	}
 	got := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
 		AckDeadlineSeconds: minAckDeadlineSecs,
@@ -1575,7 +1579,7 @@ func TestSubscriptionPushPull(t *testing.T) {
 	}
 
 	// Switch back to a pull subscription.
-	updateSub.BigqueryConfig = &pb.BigQueryConfig{}
+	updateSub.BigqueryConfig = nil
 	got = mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
 		Subscription: updateSub,
 		UpdateMask:   &field_mask.FieldMask{Paths: []string{"bigquery_config"}},
@@ -1583,8 +1587,23 @@ func TestSubscriptionPushPull(t *testing.T) {
 	if diff := testutil.Diff(got.PushConfig, new(pb.PushConfig)); diff != "" {
 		t.Errorf("sub.PushConfig should be zero value\n%s", diff)
 	}
-	if diff := testutil.Diff(got.BigqueryConfig, new(pb.BigQueryConfig)); diff != "" {
-		t.Errorf("sub.BigqueryConfig should be zero value\n%s", diff)
+	if got.BigqueryConfig != nil {
+		t.Errorf("sub.BigqueryConfig should be nil, got %s", got.BigqueryConfig)
+	}
+
+	// Update the subscription to write to Cloud Storage.
+	csc := &pb.CloudStorageConfig{
+		Bucket: "fake-bucket",
+	}
+	updateSub.CloudStorageConfig = csc
+	got = mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: updateSub,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"cloud_storage_config"}},
+	})
+	want2 := csc
+	want2.State = pb.CloudStorageConfig_ACTIVE
+	if diff := testutil.Diff(got.CloudStorageConfig, want2); diff != "" {
+		t.Errorf("sub.CloudStorageConfig mismatch: %s", diff)
 	}
 }
 

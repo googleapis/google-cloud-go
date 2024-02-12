@@ -16,10 +16,9 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"log"
 	"net/http"
-	"os"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -87,7 +86,10 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 
 	nonBenchmarkingClients, closeNonBenchmarking = newClientPool(
 		func() (*storage.Client, error) {
-			return initializeHTTPClient(ctx, useDefault, useDefault, false)
+			return initializeHTTPClient(ctx, clientConfig{
+				writeBufferSize: useDefault,
+				readBufferSize:  useDefault,
+			})
 		},
 		1,
 	)
@@ -96,7 +98,13 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 	if opts.api == mixedAPIs || opts.api == xmlAPI {
 		xmlClients, closeXML = newClientPool(
 			func() (*storage.Client, error) {
-				return initializeHTTPClient(ctx, opts.writeBufferSize, opts.readBufferSize, false)
+				return initializeHTTPClient(ctx, clientConfig{
+					writeBufferSize: opts.writeBufferSize,
+					readBufferSize:  opts.readBufferSize,
+					useJSON:         false,
+					setGCSFuseOpts:  opts.useGCSFuseConfig,
+					endpoint:        opts.endpoint,
+				})
 			},
 			opts.numClients,
 		)
@@ -108,7 +116,13 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 	if opts.api == mixedAPIs || opts.api == jsonAPI || opts.api == xmlAPI {
 		jsonClients, closeJSON = newClientPool(
 			func() (*storage.Client, error) {
-				return initializeHTTPClient(ctx, opts.writeBufferSize, opts.readBufferSize, true)
+				return initializeHTTPClient(ctx, clientConfig{
+					writeBufferSize: opts.writeBufferSize,
+					readBufferSize:  opts.readBufferSize,
+					useJSON:         true,
+					setGCSFuseOpts:  opts.useGCSFuseConfig,
+					endpoint:        opts.endpoint,
+				})
 			},
 			opts.numClients,
 		)
@@ -118,7 +132,12 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 	if opts.api == mixedAPIs || opts.api == grpcAPI || opts.api == directPath {
 		gRPCClients, closeGRPC = newClientPool(
 			func() (*storage.Client, error) {
-				return initializeGRPCClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, opts.connPoolSize)
+				return initializeGRPCClient(context.Background(), clientConfig{
+					writeBufferSize:    opts.writeBufferSize,
+					readBufferSize:     opts.readBufferSize,
+					connectionPoolSize: opts.connPoolSize,
+					endpoint:           opts.endpoint,
+				})
 			},
 			opts.numClients,
 		)
@@ -153,24 +172,48 @@ func getClient(ctx context.Context, api benchmarkAPI) *storage.Client {
 	return nil
 }
 
-// mutex on starting a client so that we can set an env variable for GRPC clients
-var clientMu sync.Mutex
+// Client config
+type clientConfig struct {
+	writeBufferSize, readBufferSize int
+	endpoint                        string
+	useJSON                         bool // only applicable to HTTP Clients
+	setGCSFuseOpts                  bool // only applicable to HTTP Clients
+	connectionPoolSize              int  // only applicable to GRPC Clients
+}
 
-func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize int, json bool) (*storage.Client, error) {
+func initializeHTTPClient(ctx context.Context, config clientConfig) (*storage.Client, error) {
 	opts := []option.ClientOption{}
 
-	if writeBufferSize != useDefault || readBufferSize != useDefault {
+	if len(config.endpoint) > 0 {
+		opts = append(opts, option.WithEndpoint(config.endpoint))
+	}
+
+	if config.writeBufferSize != useDefault || config.readBufferSize != useDefault || config.setGCSFuseOpts {
 		// We need to modify the underlying HTTP client
-
 		base := http.DefaultTransport.(*http.Transport).Clone()
-		base.MaxIdleConnsPerHost = 100 // this is set in Storage as well
-		base.WriteBufferSize = writeBufferSize
-		base.ReadBufferSize = readBufferSize
 
-		http2Trans, err := http2.ConfigureTransports(base)
-		if err == nil {
-			http2Trans.ReadIdleTimeout = time.Second * 31
+		// Set MaxIdleConnsPerHost for parity with the Storage library, as it
+		// sets this as well
+		base.MaxIdleConnsPerHost = 100
+
+		if config.setGCSFuseOpts {
+			base = &http.Transport{
+				MaxConnsPerHost:     100,
+				MaxIdleConnsPerHost: 100,
+				// This disables HTTP/2 in transport.
+				TLSNextProto: make(
+					map[string]func(string, *tls.Conn) http.RoundTripper,
+				),
+			}
+		} else {
+			http2Trans, err := http2.ConfigureTransports(base)
+			if err == nil {
+				http2Trans.ReadIdleTimeout = time.Second * 31
+			}
 		}
+
+		base.WriteBufferSize = config.writeBufferSize
+		base.ReadBufferSize = config.readBufferSize
 
 		trans, err := htransport.NewTransport(ctx, base,
 			option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"))
@@ -181,33 +224,31 @@ func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize i
 		opts = append(opts, option.WithHTTPClient(&http.Client{Transport: trans}))
 	}
 
-	if json {
+	if config.useJSON {
 		opts = append(opts, storage.WithJSONReads())
 	}
 
 	// Init client
-	clientMu.Lock()
 	client, err := storage.NewClient(ctx, opts...)
-	clientMu.Unlock()
 
 	return client, err
 }
 
-func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize int, connectionPoolSize int) (*storage.Client, error) {
-	opts := []option.ClientOption{option.WithGRPCConnectionPool(connectionPoolSize)}
+func initializeGRPCClient(ctx context.Context, config clientConfig) (*storage.Client, error) {
+	opts := []option.ClientOption{option.WithGRPCConnectionPool(config.connectionPoolSize)}
 
-	if writeBufferSize != useDefault {
-		opts = append(opts, option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)))
-	}
-	if readBufferSize != useDefault {
-		opts = append(opts, option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)))
+	if len(config.endpoint) > 0 {
+		opts = append(opts, option.WithEndpoint(config.endpoint))
 	}
 
-	clientMu.Lock()
-	os.Setenv("STORAGE_USE_GRPC", "true")
-	client, err := storage.NewClient(ctx, opts...)
-	os.Unsetenv("STORAGE_USE_GRPC")
-	clientMu.Unlock()
+	if config.writeBufferSize != useDefault {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithWriteBufferSize(config.writeBufferSize)))
+	}
+	if config.readBufferSize != useDefault {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithReadBufferSize(config.readBufferSize)))
+	}
+
+	client, err := storage.NewGRPCClient(ctx, opts...)
 
 	return client, err
 }

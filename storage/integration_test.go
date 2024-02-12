@@ -38,8 +38,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
-	"path/filepath"
-	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -59,6 +57,7 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
+	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -80,7 +79,6 @@ var (
 	record = flag.Bool("record", false, "record RPCs")
 
 	uidSpace        *uid.Space
-	uidSpaceGRPC    *uid.Space
 	uidSpaceObjects *uid.Space
 	bucketName      string
 	grpcBucketName  string
@@ -209,11 +207,10 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t, Short: true})
-	bucketName = uidSpace.New()
+	uidSpace = uid.NewSpace("", &uid.Options{Time: t, Short: true})
+	bucketName = testPrefix + uidSpace.New()
 	uidSpaceObjects = uid.NewSpace("obj", &uid.Options{Time: t})
-	uidSpaceGRPC = uid.NewSpace(grpcTestPrefix, &uid.Options{Time: t, Short: true})
-	grpcBucketName = uidSpaceGRPC.New()
+	grpcBucketName = grpcTestPrefix + uidSpace.New()
 	// Use our own random source, to avoid other parts of the program taking
 	// random numbers from the global source and putting record and replay
 	// out of sync.
@@ -245,9 +242,9 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	gc, err := newGRPCClient(ctx, opts...)
+	gc, err := NewGRPCClient(ctx, opts...)
 	if err != nil {
-		t.Fatalf("newHybridClient: %v", err)
+		t.Fatalf("NewGRPCClient: %v", err)
 	}
 
 	return
@@ -274,17 +271,19 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 	opts ...option.ClientOption) {
 	for transport, client := range initTransportClients(ctx, t, opts...) {
 		t.Run(transport, func(t *testing.T) {
-			defer client.Close()
+			t.Cleanup(func() {
+				client.Close()
+			})
 
 			if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
 				t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
 			}
 
 			bucket := bucketName
-			var prefix string
+			prefix := testPrefix
 			if transport == "grpc" {
 				bucket = grpcBucketName
-				prefix = grpcTestPrefix + "-"
+				prefix = grpcTestPrefix
 			}
 
 			test(t, ctx, bucket, prefix, client)
@@ -293,7 +292,7 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("with attrs: https://github.com/googleapis/google-cloud-go/issues/6205"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		projectID := testutil.ProjID()
 
@@ -447,8 +446,8 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 				if got, want := gotAttrs.Labels, test.wantAttrs.Labels; !testutil.Equal(got, want) {
 					t.Errorf("labels: got %v, want %v", got, want)
 				}
-				if got, want := gotAttrs.Lifecycle, test.wantAttrs.Lifecycle; !testutil.Equal(got, want) {
-					t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
+				if diff := cmp.Diff(gotAttrs.Lifecycle, test.wantAttrs.Lifecycle); diff != "" {
+					t.Errorf("lifecycle: diff got vs. want: %v", diff)
 				}
 				if gotAttrs.LocationType != test.wantAttrs.LocationType {
 					t.Errorf("location type: got %s, want %s", gotAttrs.LocationType, test.wantAttrs.LocationType)
@@ -885,11 +884,13 @@ func TestIntegration_Autoclass(t *testing.T) {
 		defer h.mustDeleteBucket(bkt)
 
 		// Get Autoclass configuration from bucket attrs.
+		// Autoclass.TerminalStorageClass is defaulted to NEARLINE if not specified.
 		attrs, err := bkt.Attrs(ctx)
 		if err != nil {
 			t.Fatalf("get bucket attrs failed: %v", err)
 		}
 		var toggleTime time.Time
+		var tscUpdateTime time.Time
 		if attrs != nil && attrs.Autoclass != nil {
 			if got, want := attrs.Autoclass.Enabled, true; got != want {
 				t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
@@ -897,10 +898,33 @@ func TestIntegration_Autoclass(t *testing.T) {
 			if toggleTime = attrs.Autoclass.ToggleTime; toggleTime.IsZero() {
 				t.Error("got a zero time value, want a populated value")
 			}
+			if got, want := attrs.Autoclass.TerminalStorageClass, "NEARLINE"; got != want {
+				t.Errorf("attr.Autoclass.TerminalStorageClass = %v, want %v", got, want)
+			}
+			if tscUpdateTime := attrs.Autoclass.TerminalStorageClassUpdateTime; tscUpdateTime.IsZero() {
+				t.Error("got a zero time value, want a populated value")
+			}
+		}
+
+		// Update TerminalStorageClass on the bucket.
+		ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: true, TerminalStorageClass: "ARCHIVE"}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.Autoclass.Enabled, true; got != want {
+			t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
+		}
+		if got, want := attrs.Autoclass.TerminalStorageClass, "ARCHIVE"; got != want {
+			t.Errorf("attr.Autoclass.TerminalStorageClass = %v, want %v", got, want)
+		}
+		latestTSCUpdateTime := attrs.Autoclass.TerminalStorageClassUpdateTime
+		if latestTSCUpdateTime.IsZero() {
+			t.Error("got a zero time value, want a populated value")
+		}
+		if !latestTSCUpdateTime.After(tscUpdateTime) {
+			t.Error("latestTSCUpdateTime should be newer than bucket creation tscUpdateTime")
 		}
 
 		// Disable Autoclass on the bucket.
-		ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
+		ua = BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
 		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
 		if got, want := attrs.Autoclass.Enabled, false; got != want {
 			t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
@@ -909,7 +933,7 @@ func TestIntegration_Autoclass(t *testing.T) {
 		if latestToggleTime.IsZero() {
 			t.Error("got a zero time value, want a populated value")
 		}
-		if latestToggleTime.Before(toggleTime) {
+		if !latestToggleTime.After(toggleTime) {
 			t.Error("latestToggleTime should be newer than bucket creation toggleTime")
 		}
 	})
@@ -1293,6 +1317,172 @@ func TestIntegration_ObjectIteration(t *testing.T) {
 	})
 }
 
+func TestIntegration_ObjectIterationMatchGlob(t *testing.T) {
+	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		// Reset testTime, 'cause object last modification time should be within 5 min
+		// from test (test iteration if -count passed) start time.
+		testTime = time.Now().UTC()
+		newBucketName := prefix + uidSpace.New()
+		h := testHelper{t}
+		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
+
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer func() {
+			if err := killBucket(ctx, client, newBucketName); err != nil {
+				log.Printf("deleting %q: %v", newBucketName, err)
+			}
+		}()
+		const defaultType = "text/plain"
+
+		// Populate object names and make a map for their contents.
+		objects := []string{
+			"obj1",
+			"obj2",
+			"obj/with/slashes",
+			"obj/",
+			"other/obj1",
+		}
+		contents := make(map[string][]byte)
+
+		// Test Writer.
+		for _, obj := range objects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+			contents[obj] = c
+		}
+		query := &Query{MatchGlob: "**obj1"}
+
+		var gotNames []string
+		it := bkt.Objects(context.Background(), query)
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			if attrs.Name != "" {
+				gotNames = append(gotNames, attrs.Name)
+			}
+		}
+
+		sortedNames := []string{"obj1", "other/obj1"}
+		if !cmp.Equal(sortedNames, gotNames) {
+			t.Errorf("names = %v, want %v", gotNames, sortedNames)
+		}
+	})
+}
+
+func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
+	ctx := skipGRPC("not yet implemented in gRPC")
+	multiTransportTest(skipJSONReads(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		newBucketName := prefix + uidSpace.New()
+		h := testHelper{t}
+		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
+
+		// Create bucket with UBLA enabled as this is necessary for managed folders.
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			UniformBucketLevelAccess: UniformBucketLevelAccess{
+				Enabled: true,
+			},
+		})
+
+		t.Cleanup(func() {
+			if err := killBucket(ctx, client, newBucketName); err != nil {
+				log.Printf("deleting %q: %v", newBucketName, err)
+			}
+		})
+		const defaultType = "text/plain"
+
+		// Populate object names and make a map for their contents.
+		objects := []string{
+			"obj1",
+			"obj2",
+			"obj/with/slashes",
+			"obj/",
+			"other/obj1",
+		}
+		contents := make(map[string][]byte)
+
+		// Test Writer.
+		for _, obj := range objects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+			contents[obj] = c
+		}
+
+		// Create a managed folder. This requires using the Apiary client as this is not available
+		// in the veneer layer.
+		// TODO: change to use storage control client once available.
+		call := client.raw.ManagedFolders.Insert(newBucketName, &raw.ManagedFolder{Name: "mf"})
+		mf, err := call.Context(ctx).Do()
+		if err != nil {
+			t.Fatalf("creating managed folder: %v", err)
+		}
+
+		t.Cleanup(func() {
+			// TODO: add this cleanup logic to killBucket as well once gRPC support is available.
+			call := client.raw.ManagedFolders.Delete(newBucketName, mf.Name)
+			call.Context(ctx).Do()
+		})
+
+		// Test that managed folders are only included when IncludeFoldersAsPrefixes is set.
+		cases := []struct {
+			name  string
+			query *Query
+			want  []string
+		}{
+			{
+				name:  "include folders",
+				query: &Query{Delimiter: "/", IncludeFoldersAsPrefixes: true},
+				want:  []string{"mf/", "obj/", "other/"},
+			},
+			{
+				name:  "no folders",
+				query: &Query{Delimiter: "/"},
+				want:  []string{"obj/", "other/"},
+			},
+		}
+
+		for _, c := range cases {
+			t.Run(c.name, func(t *testing.T) {
+				var gotNames []string
+				var gotPrefixes []string
+				it := bkt.Objects(context.Background(), c.query)
+				for {
+					attrs, err := it.Next()
+					if err == iterator.Done {
+						break
+					}
+					if err != nil {
+						t.Fatalf("iterator.Next: %v", err)
+					}
+					if attrs.Name != "" {
+						gotNames = append(gotNames, attrs.Name)
+					}
+					if attrs.Prefix != "" {
+						gotPrefixes = append(gotPrefixes, attrs.Prefix)
+					}
+				}
+
+				sortedNames := []string{"obj1", "obj2"}
+				if !cmp.Equal(sortedNames, gotNames) {
+					t.Errorf("names = %v, want %v", gotNames, sortedNames)
+				}
+
+				if !cmp.Equal(c.want, gotPrefixes) {
+					t.Errorf("prefixes = %v, want %v", gotPrefixes, c.want)
+				}
+			})
+		}
+	})
+}
+
 func TestIntegration_ObjectUpdate(t *testing.T) {
 	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
@@ -1420,11 +1610,11 @@ func TestIntegration_ObjectChecksums(t *testing.T) {
 			wc := b.Object(c.name + uidSpaceObjects.New()).NewWriter(ctx)
 			for _, data := range c.contents {
 				if _, err := wc.Write(data); err != nil {
-					t.Errorf("Write(%q) failed with %q", data, err)
+					t.Fatalf("Write(%q) failed with %q", data, err)
 				}
 			}
 			if err := wc.Close(); err != nil {
-				t.Errorf("%q: close failed with %q", c.name, err)
+				t.Fatalf("%q: close failed with %q", c.name, err)
 			}
 			obj := wc.Attrs()
 			if got, want := obj.Size, c.size; got != want {
@@ -1517,6 +1707,8 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 func TestIntegration_Copy(t *testing.T) {
 	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		h := testHelper{t}
+
 		bucketFrom := client.Bucket(bucket)
 		bucketInSameRegion := client.Bucket(prefix + uidSpace.New())
 		bucketInDifferentRegion := client.Bucket(prefix + uidSpace.New())
@@ -1525,13 +1717,17 @@ func TestIntegration_Copy(t *testing.T) {
 		if err := bucketInSameRegion.Create(ctx, testutil.ProjID(), nil); err != nil {
 			t.Fatalf("bucket.Create: %v", err)
 		}
-		defer bucketInSameRegion.Delete(ctx)
+		t.Cleanup(func() {
+			h.mustDeleteBucket(bucketInSameRegion)
+		})
 
 		// Create new bucket
 		if err := bucketInDifferentRegion.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "NORTHAMERICA-NORTHEAST2"}); err != nil {
 			t.Fatalf("bucket.Create: %v", err)
 		}
-		defer bucketInDifferentRegion.Delete(ctx)
+		t.Cleanup(func() {
+			h.mustDeleteBucket(bucketInDifferentRegion)
+		})
 
 		// We use a larger object size to be able to trigger multiple rewrite calls
 		minObjectSize := 2500000 // 2.5 Mb
@@ -1550,12 +1746,9 @@ func TestIntegration_Copy(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("w.Close: %v", err)
 		}
-
-		defer func() {
-			if err := obj.Delete(ctx); err != nil {
-				t.Errorf("obj.Delete: %v", err)
-			}
-		}()
+		t.Cleanup(func() {
+			h.mustDeleteObject(obj)
+		})
 
 		attrs, err := obj.Attrs(ctx)
 		if err != nil {
@@ -1627,11 +1820,9 @@ func TestIntegration_Copy(t *testing.T) {
 				if err != nil {
 					t.Fatalf("Copier.Run failed with %v", err)
 				}
-				defer func() {
-					if err := copyObj.Delete(ctx); err != nil {
-						t.Errorf("copyObj.Delete: %v", err)
-					}
-				}()
+				t.Cleanup(func() {
+					h.mustDeleteObject(copyObj)
+				})
 
 				// Check copied object is in the correct bucket with the correct name
 				if attrs.Bucket != test.toBucket.name || attrs.Name != test.toObj {
@@ -1938,6 +2129,22 @@ func TestIntegration_SignedURL(t *testing.T) {
 				headers: map[string][]string{"X-Goog-Foo": {"bar baz"}},
 				fail:    true,
 			},
+			{
+				desc: "Virtual hosted style with custom hostname",
+				opts: SignedURLOptions{
+					Style:    VirtualHostedStyle(),
+					Hostname: "storage.googleapis.com:443",
+				},
+				fail: false,
+			},
+			{
+				desc: "Hostname v4",
+				opts: SignedURLOptions{
+					Hostname: "storage.googleapis.com:443",
+					Scheme:   SigningSchemeV4,
+				},
+				fail: false,
+			},
 		} {
 			opts := test.opts
 			opts.GoogleAccessID = jwtConf.Email
@@ -2146,12 +2353,10 @@ func TestIntegration_BucketACL(t *testing.T) {
 		}
 
 		var bACL []ACLRule
-		ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
-		defer cancel()
 
 		// Retry to account for propagation delay in metadata update.
 		err = retry(ctx, func() error {
-			bACL, err = bkt.ACL().List(ctxWithTimeout)
+			bACL, err = bkt.ACL().List(ctx)
 			return err
 		}, func() error {
 			if !containsACLRule(bACL, testACLRule(rule2)) {
@@ -2332,6 +2537,15 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 				if callbacks != test.wantCallbacks {
 					t.Errorf("ProgressFunc was called %d times, expected %d", callbacks, test.wantCallbacks)
 				}
+
+				// Confirm all bytes were uploaded.
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("obj.Attrs: %v", err)
+				}
+				if attrs.Size != int64(objSize) {
+					t.Errorf("incorrect number of bytes written; got %v, want %v", attrs.Size, objSize)
+				}
 			})
 		}
 	})
@@ -2444,9 +2658,13 @@ func TestIntegration_Encryption(t *testing.T) {
 
 		checkRead("first object", obj, key, contents)
 
+		// We create 2 objects here and we can interleave operations to get around
+		// the rate limit for object mutation operations (create, update, and delete).
 		obj2 := client.Bucket(bucket).Object("customer-encryption-2")
+		obj4 := client.Bucket(bucket).Object("customer-encryption-4")
+
 		// Copying an object without the key should fail.
-		if _, err := obj2.CopierFrom(obj).Run(ctx); err == nil {
+		if _, err := obj4.CopierFrom(obj).Run(ctx); err == nil {
 			t.Fatal("want error, got nil")
 		}
 		// Copying an object with the key should succeed.
@@ -2495,11 +2713,11 @@ func TestIntegration_Encryption(t *testing.T) {
 
 		// You can't compose one or more unencrypted source objects into an
 		// encrypted destination object.
-		_, err := obj2.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
+		_, err := obj4.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := obj3.Key(key).ComposerFrom(obj2).Run(ctx); err == nil {
+		if _, err := obj3.Key(key).ComposerFrom(obj4).Run(ctx); err == nil {
 			t.Fatal("got nil, want error")
 		}
 	})
@@ -2979,7 +3197,6 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
-				h := testHelper{t}
 				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 				t.Cleanup(cancel)
 
@@ -3038,9 +3255,9 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 				// Retry to account for propagation delay to objects in metadata update
 				// (we updated the metadata to add the otherUserEmail as owner on the bucket)
 				o := bucket.Object(objectName)
-				ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
+				ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*15)
 				defer cancel()
-				// Only retry when we expect success to avoid retrying for 10 seconds
+				// Only retry when we expect success to avoid retrying
 				// when we know it will fail
 				if test.expectSuccess {
 					o = o.Retryer(WithErrorFunc(retryOnTransient400and403))
@@ -3067,22 +3284,28 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 				checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
 
 				// Copy
-				_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
+				copyObj := bucket.Object("copy")
+				_, err = copyObj.CopierFrom(bucket.Object(objectName)).Run(ctx)
 				checkforErrors("copy", err)
 				// Delete "copy" object, if created
 				if err == nil {
 					t.Cleanup(func() {
-						h.mustDeleteObject(bucket.Object("copy"))
+						if err := deleteObjectIfExists(copyObj, WithErrorFunc(retryOnTransient400and403)); err != nil {
+							t.Error(err)
+						}
 					})
 				}
 
 				// Compose
-				_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
+				composeObj := bucket.Object("compose")
+				_, err = composeObj.ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
 				checkforErrors("compose", err)
 				// Delete "compose" object, if created
 				if err == nil {
 					t.Cleanup(func() {
-						h.mustDeleteObject(bucket.Object("compose"))
+						if err := deleteObjectIfExists(composeObj, WithErrorFunc(retryOnTransient400and403)); err != nil {
+							t.Error(err)
+						}
 					})
 				}
 
@@ -3790,6 +4013,200 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 	})
 }
 
+func TestIntegration_BucketObjectRetention(t *testing.T) {
+	ctx := skipJSONReads(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		setTrue, setFalse := true, false
+
+		for _, test := range []struct {
+			desc              string
+			enable            *bool
+			wantRetentionMode string
+		}{
+			{
+				desc:              "ObjectRetentionMode is not enabled by default",
+				wantRetentionMode: "",
+			},
+			{
+				desc:              "Enable retention",
+				enable:            &setTrue,
+				wantRetentionMode: "Enabled",
+			},
+			{
+				desc:              "Set object retention to false",
+				enable:            &setFalse,
+				wantRetentionMode: "",
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				b := client.Bucket(prefix + uidSpace.New())
+				if test.enable != nil {
+					b = b.SetObjectRetention(*test.enable)
+				}
+
+				err := b.Create(ctx, testutil.ProjID(), nil)
+				if err != nil {
+					t.Fatalf("error creating bucket: %v", err)
+				}
+				t.Cleanup(func() { b.Delete(ctx) })
+
+				attrs, err := b.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("b.Attrs: %v", err)
+				}
+				if got, want := attrs.ObjectRetentionMode, test.wantRetentionMode; got != want {
+					t.Errorf("expected ObjectRetentionMode to be %q, got %q", want, got)
+				}
+			})
+		}
+	})
+}
+
+func TestIntegration_ObjectRetention(t *testing.T) {
+	ctx := skipJSONReads(skipGRPC("not yet available in gRPC - b/308194853"), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		b := client.Bucket(prefix + uidSpace.New()).SetObjectRetention(true)
+
+		if err := b.Create(ctx, testutil.ProjID(), nil); err != nil {
+			t.Fatalf("error creating bucket: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(b) })
+
+		retentionUnlocked := &ObjectRetention{
+			Mode:        "Unlocked",
+			RetainUntil: time.Now().Add(time.Minute * 20).Truncate(time.Second),
+		}
+		retentionUnlockedExtended := &ObjectRetention{
+			Mode:        "Unlocked",
+			RetainUntil: time.Now().Add(time.Hour).Truncate(time.Second),
+		}
+
+		// Create an object with future retain until time
+		o := b.Object("retention-on-create" + uidSpaceObjects.New())
+		w := o.NewWriter(ctx)
+		w.Retention = retentionUnlocked
+		h.mustWrite(w, []byte("contents"))
+		t.Cleanup(func() {
+			if _, err := o.OverrideUnlockedRetention(true).Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{}}); err != nil {
+				t.Fatalf("failed to remove retention from object: %v", err)
+			}
+			h.mustDeleteObject(o)
+		})
+
+		if got, want := w.Attrs().Retention, retentionUnlocked; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
+			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
+		}
+
+		// Delete object under retention returns 403
+		if err := o.Delete(ctx); err == nil || extractErrCode(err) != http.StatusForbidden {
+			t.Fatalf("delete should have failed with: %v, instead got:%v", http.StatusForbidden, err)
+		}
+
+		// Extend retain until time of Unlocked object is possible
+		attrs, err := o.Update(ctx, ObjectAttrsToUpdate{Retention: retentionUnlockedExtended})
+		if err != nil {
+			t.Fatalf("failed to add retention to object: %v", err)
+		}
+
+		if got, want := attrs.Retention, retentionUnlockedExtended; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
+			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
+		}
+
+		// Reduce retain until time of Unlocked object without
+		// override_unlocked_retention=True returns 403
+		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: retentionUnlocked})
+		if err == nil || extractErrCode(err) != http.StatusForbidden {
+			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		// Remove retention of Unlocked object without
+		// override_unlocked_retention=True returns 403
+		_, err = o.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{}})
+		if err == nil || extractErrCode(err) != http.StatusForbidden {
+			t.Fatalf("o.Update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		// Reduce retain until time of Unlocked object with override_unlocked_retention=True
+		attrs, err = o.OverrideUnlockedRetention(true).Update(ctx, ObjectAttrsToUpdate{
+			Retention: retentionUnlocked,
+		})
+		if err != nil {
+			t.Fatalf("failed to add retention to object: %v", err)
+		}
+
+		if got, want := attrs.Retention, retentionUnlocked; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
+			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
+		}
+
+		// Create a new object
+		objectWithRetentionOnUpdate := b.Object("retention-on-update" + uidSpaceObjects.New())
+		w = objectWithRetentionOnUpdate.NewWriter(ctx)
+		h.mustWrite(w, []byte("contents"))
+
+		// Retention should not be set
+		if got := w.Attrs().Retention; got != nil {
+			t.Errorf("expected no ObjectRetention, got: %+v", got)
+		}
+
+		// Update object with only one of (retain until time, retention mode) returns 400
+		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{Mode: "Locked"}})
+		if err == nil || extractErrCode(err) != http.StatusBadRequest {
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{RetainUntil: time.Now().Add(time.Second)}})
+		if err == nil || extractErrCode(err) != http.StatusBadRequest {
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		// Update object with future retain until time
+		attrs, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: retentionUnlocked})
+		if err != nil {
+			t.Errorf("o.Update: %v", err)
+		}
+
+		if got, want := attrs.Retention, retentionUnlocked; got.Mode != want.Mode || !got.RetainUntil.Equal(want.RetainUntil) {
+			t.Errorf("mismatching retention config, got: %+v, want:%+v", got, want)
+		}
+
+		// Update/Patch object with retain until time in the past returns 400
+		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{RetainUntil: time.Now().Add(-time.Second)}})
+		if err == nil || extractErrCode(err) != http.StatusBadRequest {
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		// Update object with only one of (retain until time, retention mode) returns 400
+		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{Mode: "Locked"}})
+		if err == nil || extractErrCode(err) != http.StatusBadRequest {
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		_, err = objectWithRetentionOnUpdate.Update(ctx, ObjectAttrsToUpdate{Retention: &ObjectRetention{RetainUntil: time.Now().Add(time.Second)}})
+		if err == nil || extractErrCode(err) != http.StatusBadRequest {
+			t.Errorf("update should have failed with: %v, instead got:%v", http.StatusBadRequest, err)
+		}
+
+		// Remove retention of Unlocked object with override_unlocked_retention=True
+		attrs, err = objectWithRetentionOnUpdate.OverrideUnlockedRetention(true).Update(ctx, ObjectAttrsToUpdate{
+			Retention: &ObjectRetention{},
+		})
+		if err != nil {
+			t.Fatalf("failed to remove retention from object: %v", err)
+		}
+
+		if got := attrs.Retention; got != nil {
+			t.Errorf("mismatching retention config, got: %+v, wanted nil", got)
+		}
+
+		// We should be able to delete the object as normal since retention was removed
+		if err := objectWithRetentionOnUpdate.Delete(ctx); err != nil {
+			t.Errorf("object.Delete:%v", err)
+		}
+	})
+}
+
 func TestIntegration_KMS(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
 		h := testHelper{t}
@@ -3924,11 +4341,38 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 		w.PredefinedACL = "authenticatedRead"
 		h.mustWrite(w, []byte("hello"))
 		defer h.mustDeleteObject(obj)
-		if acl, want := w.Attrs().ACL, userOwner; !containsACLRule(acl, want) {
-			t.Fatalf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+		var acl []ACLRule
+		err := retry(ctx, func() error {
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				return fmt.Errorf("Object.Attrs: object metadata get failed: %v", err)
+			}
+			acl = attrs.ACL
+			return nil
+		}, func() error {
+			if want := userOwner; !containsACLRule(acl, want) {
+				return fmt.Errorf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
 		}
-		if acl, want := w.Attrs().ACL, authenticatedRead; !containsACLRule(acl, want) {
-			t.Fatalf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+		err = retry(ctx, func() error {
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				return fmt.Errorf("Object.Attrs: object metadata get failed: %v", err)
+			}
+			acl = attrs.ACL
+			return nil
+		}, func() error {
+			if want := authenticatedRead; !containsACLRule(acl, want) {
+				return fmt.Errorf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
 		}
 
 		// Object update
@@ -3944,7 +4388,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 		dst := bkt.Object("dst")
 		copier := dst.CopierFrom(obj)
 		copier.PredefinedACL = "publicRead"
-		oattrs, err := copier.Run(ctx)
+		oattrs, err = copier.Run(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -4002,7 +4446,8 @@ func TestIntegration_Reader(t *testing.T) {
 			"obj2",
 			"obj/with/slashes",
 			"obj/",
-			// "./obj", // does not work with XML
+			"./obj",
+			"!#$&'()*+,/:;=,?@,[] and spaces",
 		}
 		contents := make(map[string][]byte)
 
@@ -4749,11 +5194,9 @@ func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 			t.Fatalf("problem with the signed URL: %v", err)
 		}
 	}, option.WithCredentials(creds))
-
 }
 
 func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
-
 	ctx := context.Background()
 
 	// Create another client to test the sign byte function as well
@@ -5100,81 +5543,110 @@ type testHelper struct {
 }
 
 func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttrs) {
+	h.t.Helper()
 	if err := b.Create(context.Background(), projID, attrs); err != nil {
-		h.t.Fatalf("%s: bucket create: %v", loc(), err)
+		h.t.Fatalf("bucket create: %v", err)
 	}
 }
 
 func (h testHelper) mustDeleteBucket(b *BucketHandle) {
+	h.t.Helper()
 	if err := b.Delete(context.Background()); err != nil {
-		h.t.Fatalf("%s: bucket delete: %v", loc(), err)
+		h.t.Fatalf("bucket delete: %v", err)
 	}
 }
 
 func (h testHelper) mustBucketAttrs(b *BucketHandle) *BucketAttrs {
+	h.t.Helper()
 	attrs, err := b.Attrs(context.Background())
 	if err != nil {
-		h.t.Fatalf("%s: bucket attrs: %v", loc(), err)
+		h.t.Fatalf("bucket attrs: %v", err)
 	}
 	return attrs
 }
 
 // updating a bucket is conditionally idempotent on metageneration, so we pass that in to enable retries
 func (h testHelper) mustUpdateBucket(b *BucketHandle, ua BucketAttrsToUpdate, metageneration int64) *BucketAttrs {
+	h.t.Helper()
 	attrs, err := b.If(BucketConditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
-		h.t.Fatalf("%s: update: %v", loc(), err)
+		h.t.Fatalf("update: %v", err)
 	}
 	return attrs
 }
 
 func (h testHelper) mustObjectAttrs(o *ObjectHandle) *ObjectAttrs {
+	h.t.Helper()
 	attrs, err := o.Attrs(context.Background())
 	if err != nil {
-		h.t.Fatalf("%s: object attrs: %v", loc(), err)
+		h.t.Fatalf("object attrs: %v", err)
 	}
 	return attrs
 }
 
 func (h testHelper) mustDeleteObject(o *ObjectHandle) {
-	if err := o.Delete(context.Background()); err != nil {
-		h.t.Fatalf("%s: delete object %s from bucket %s: %v", loc(), o.ObjectName(), o.BucketName(), err)
+	h.t.Helper()
+	if err := o.Retryer(WithPolicy(RetryAlways)).Delete(context.Background()); err != nil {
+		var apiErr *apierror.APIError
+		if ok := errors.As(err, &apiErr); ok {
+			// Object may already be deleted with retry; if so skip.
+			if apiErr.HTTPCode() == 404 || apiErr.GRPCStatus().Code() == codes.NotFound {
+				return
+			}
+		}
+		h.t.Fatalf("delete object %s from bucket %s: %v", o.ObjectName(), o.BucketName(), err)
 	}
 }
 
 // updating an object is conditionally idempotent on metageneration, so we pass that in to enable retries
 func (h testHelper) mustUpdateObject(o *ObjectHandle, ua ObjectAttrsToUpdate, metageneration int64) *ObjectAttrs {
+	h.t.Helper()
 	attrs, err := o.If(Conditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
-		h.t.Fatalf("%s: update: %v", loc(), err)
+		h.t.Fatalf("update: %v", err)
 	}
 	return attrs
 }
 
 func (h testHelper) mustWrite(w *Writer, data []byte) {
+	h.t.Helper()
 	if _, err := w.Write(data); err != nil {
 		w.Close()
-		h.t.Fatalf("%s: write: %v", loc(), err)
+		h.t.Fatalf("write: %v", err)
 	}
 	if err := w.Close(); err != nil {
-		h.t.Fatalf("%s: close write: %v", loc(), err)
+		h.t.Fatalf("close write: %v", err)
 	}
 }
 
 func (h testHelper) mustRead(obj *ObjectHandle) []byte {
+	h.t.Helper()
 	data, err := readObject(context.Background(), obj)
 	if err != nil {
-		h.t.Fatalf("%s: read: %v", loc(), err)
+		h.t.Fatalf("read: %v", err)
 	}
 	return data
 }
 
-func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
-	r, err := obj.NewReader(context.Background())
-	if err != nil {
-		h.t.Fatalf("%s: new reader: %v", loc(), err)
+// deleteObjectIfExists deletes an object with a RetryAlways policy (unless another
+// policy is supplied in the options). It will not return an error if the object
+// is already deleted/doesn't exist. It will time out after 15 seconds.
+func deleteObjectIfExists(o *ObjectHandle, retryOpts ...RetryOption) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	defer cancel()
+	retryOpts = append([]RetryOption{WithPolicy(RetryAlways)}, retryOpts...)
+
+	if err := o.Retryer(retryOpts...).Delete(ctx); err != nil {
+		var apiErr *apierror.APIError
+		if ok := errors.As(err, &apiErr); ok {
+			// Object may already be deleted with retry; if so, return no error.
+			if apiErr.HTTPCode() == 404 || apiErr.GRPCStatus().Code() == codes.NotFound {
+				return nil
+			}
+		}
+		return fmt.Errorf("delete object %s from bucket %s: %v", o.ObjectName(), o.BucketName(), err)
 	}
-	return r
+	return nil
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
@@ -5188,18 +5660,6 @@ func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, con
 		}
 	}
 	return w.Close()
-}
-
-// loc returns a string describing the file and line of its caller's call site. In
-// other words, if a test function calls a helper, and the helper calls loc, then the
-// string will refer to the line on which the test function called the helper.
-// TODO(jba): use t.Helper once we drop go 1.6.
-func loc() string {
-	_, file, line, ok := runtime.Caller(2)
-	if !ok {
-		return "???"
-	}
-	return fmt.Sprintf("%s:%d", filepath.Base(file), line)
 }
 
 func readObject(ctx context.Context, obj *ObjectHandle) ([]byte, error) {

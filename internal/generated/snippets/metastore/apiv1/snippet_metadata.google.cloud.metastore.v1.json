@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/metastore/apiv1",
-    "version": "1.10.1",
+    "version": "1.13.4",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "metastore_v1_generated_DataprocMetastore_AlterMetadataResourceLocation_sync",
+      "title": "metastore AlterMetadataResourceLocation Sample",
+      "description": "AlterMetadataResourceLocation alter metadata resource location. The metadata resource can be a database,\ntable, or partition. This functionality only updates the parent directory\nfor the respective metadata resource and does not transfer any existing\ndata to the new location.",
+      "file": "DataprocMetastoreClient/AlterMetadataResourceLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AlterMetadataResourceLocation",
+        "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient.AlterMetadataResourceLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.AlterMetadataResourceLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AlterMetadataResourceLocationOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "AlterMetadataResourceLocation",
+          "fullName": "google.cloud.metastore.v1.DataprocMetastore.AlterMetadataResourceLocation",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "metastore_v1_generated_DataprocMetastore_CancelOperation_sync",
       "title": "metastore CancelOperation Sample",
@@ -879,6 +925,98 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1_generated_DataprocMetastore_MoveTableToDatabase_sync",
+      "title": "metastore MoveTableToDatabase Sample",
+      "description": "MoveTableToDatabase move a table to another database.",
+      "file": "DataprocMetastoreClient/MoveTableToDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MoveTableToDatabase",
+        "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient.MoveTableToDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.MoveTableToDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MoveTableToDatabaseOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "MoveTableToDatabase",
+          "fullName": "google.cloud.metastore.v1.DataprocMetastore.MoveTableToDatabase",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1_generated_DataprocMetastore_QueryMetadata_sync",
+      "title": "metastore QueryMetadata Sample",
+      "description": "QueryMetadata query DPMS metadata.",
+      "file": "DataprocMetastoreClient/QueryMetadata/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryMetadata",
+        "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient.QueryMetadata",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "metastorepb.QueryMetadataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QueryMetadataOperation",
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "QueryMetadata",
+          "fullName": "google.cloud.metastore.v1.DataprocMetastore.QueryMetadata",
+          "service": {
+            "shortName": "DataprocMetastore",
+            "fullName": "google.cloud.metastore.v1.DataprocMetastore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

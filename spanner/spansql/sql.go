@@ -38,7 +38,11 @@ func buildSQL(x interface{ addSQL(*strings.Builder) }) string {
 }
 
 func (ct CreateTable) SQL() string {
-	str := "CREATE TABLE " + ct.Name.SQL() + " (\n"
+	str := "CREATE TABLE "
+	if ct.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ct.Name.SQL() + " (\n"
 	for _, c := range ct.Columns {
 		str += "  " + c.SQL() + ",\n"
 	}
@@ -70,7 +74,11 @@ func (ci CreateIndex) SQL() string {
 	if ci.NullFiltered {
 		str += " NULL_FILTERED"
 	}
-	str += " INDEX " + ci.Name.SQL() + " ON " + ci.Table.SQL() + "("
+	str += " INDEX "
+	if ci.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ci.Name.SQL() + " ON " + ci.Table.SQL() + "("
 	for i, c := range ci.Columns {
 		if i > 0 {
 			str += ", "
@@ -92,8 +100,18 @@ func (cv CreateView) SQL() string {
 	if cv.OrReplace {
 		str += " OR REPLACE"
 	}
-	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY INVOKER AS " + cv.Query.SQL()
+	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY " + cv.SecurityType.SQL() + " AS " + cv.Query.SQL()
 	return str
+}
+
+func (st SecurityType) SQL() string {
+	switch st {
+	case Invoker:
+		return "INVOKER"
+	case Definer:
+		return "DEFINER"
+	}
+	panic("unknown SecurityType")
 }
 
 func (cr CreateRole) SQL() string {
@@ -138,11 +156,21 @@ func (w WatchDef) SQL() string {
 }
 
 func (dt DropTable) SQL() string {
-	return "DROP TABLE " + dt.Name.SQL()
+	str := "DROP TABLE "
+	if dt.IfExists {
+		str += "IF EXISTS "
+	}
+	str += dt.Name.SQL()
+	return str
 }
 
 func (di DropIndex) SQL() string {
-	return "DROP INDEX " + di.Name.SQL()
+	str := "DROP INDEX "
+	if di.IfExists {
+		str += "IF EXISTS "
+	}
+	str += di.Name.SQL()
+	return str
 }
 
 func (dv DropView) SQL() string {
@@ -258,7 +286,12 @@ func (at AlterTable) SQL() string {
 }
 
 func (ac AddColumn) SQL() string {
-	return "ADD COLUMN " + ac.Def.SQL()
+	str := "ADD COLUMN "
+	if ac.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ac.Def.SQL()
+	return str
 }
 
 func (dc DropColumn) SQL() string {
@@ -436,6 +469,61 @@ func (dsc DropStoredColumn) SQL() string {
 	return "DROP STORED COLUMN " + dsc.Name.SQL()
 }
 
+func (cs CreateSequence) SQL() string {
+	str := "CREATE SEQUENCE "
+	if cs.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	return str + cs.Name.SQL() + " " + cs.Options.SQL()
+}
+
+func (as AlterSequence) SQL() string {
+	return "ALTER SEQUENCE " + as.Name.SQL() + " " + as.Alteration.SQL()
+}
+
+func (sa SetSequenceOptions) SQL() string {
+	return "SET " + sa.Options.SQL()
+}
+
+func (so SequenceOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if so.SequenceKind != nil {
+		hasOpt = true
+		str += fmt.Sprintf("sequence_kind='%s'", *so.SequenceKind)
+	}
+	if so.SkipRangeMin != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("skip_range_min=%v", *so.SkipRangeMin)
+	}
+	if so.SkipRangeMax != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("skip_range_max=%v", *so.SkipRangeMax)
+	}
+	if so.StartWithCounter != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("start_with_counter=%v", *so.StartWithCounter)
+	}
+	return str + ")"
+}
+
+func (do DropSequence) SQL() string {
+	str := "DROP SEQUENCE "
+	if do.IfExists {
+		str += "IF EXISTS "
+	}
+	return str + do.Name.SQL()
+}
+
 func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
 }
@@ -523,6 +611,7 @@ func (fk ForeignKey) SQL() string {
 	str := "FOREIGN KEY (" + idList(fk.Columns, ", ")
 	str += ") REFERENCES " + fk.RefTable.SQL() + " ("
 	str += idList(fk.RefColumns, ", ") + ")"
+	str += " ON DELETE " + fk.OnDelete.SQL()
 	return str
 }
 
@@ -834,7 +923,27 @@ func (f Func) SQL() string { return buildSQL(f) }
 func (f Func) addSQL(sb *strings.Builder) {
 	sb.WriteString(f.Name)
 	sb.WriteString("(")
+	if f.Distinct {
+		sb.WriteString("DISTINCT ")
+	}
 	addExprList(sb, f.Args, ", ")
+	switch f.NullsHandling {
+	case RespectNulls:
+		sb.WriteString(" RESPECT NULLS")
+	case IgnoreNulls:
+		sb.WriteString(" IGNORE NULLS")
+	}
+	if ah := f.Having; ah != nil {
+		sb.WriteString(" HAVING")
+		switch ah.Condition {
+		case HavingMax:
+			sb.WriteString(" MAX")
+		case HavingMin:
+			sb.WriteString(" MIN")
+		}
+		sb.WriteString(" ")
+		sb.WriteString(ah.Expr.SQL())
+	}
 	sb.WriteString(")")
 }
 
@@ -866,6 +975,12 @@ func (ie IntervalExpr) addSQL(sb *strings.Builder) {
 	ie.Expr.addSQL(sb)
 	sb.WriteString(" ")
 	sb.WriteString(ie.DatePart)
+}
+
+func (se SequenceExpr) SQL() string { return buildSQL(se) }
+func (se SequenceExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString("SEQUENCE ")
+	sb.WriteString(se.Name.SQL())
 }
 
 func idList(l []ID, join string) string {

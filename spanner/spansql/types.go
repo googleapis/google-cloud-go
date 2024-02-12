@@ -34,6 +34,7 @@ import (
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
 type CreateTable struct {
 	Name              ID
+	IfNotExists       bool
 	Columns           []ColumnDef
 	Constraints       []TableConstraint
 	PrimaryKey        []KeyPart
@@ -106,6 +107,7 @@ type CreateIndex struct {
 
 	Unique       bool
 	NullFiltered bool
+	IfNotExists  bool
 
 	Storing    []ID
 	Interleave ID
@@ -121,9 +123,10 @@ func (ci *CreateIndex) clearOffset()   { ci.Position.Offset = 0 }
 // CreateView represents a CREATE [OR REPLACE] VIEW statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#view_statements
 type CreateView struct {
-	Name      ID
-	OrReplace bool
-	Query     Query
+	Name         ID
+	OrReplace    bool
+	SecurityType SecurityType
+	Query        Query
 
 	Position Position // position of the "CREATE" token
 }
@@ -132,6 +135,13 @@ func (cv *CreateView) String() string { return fmt.Sprintf("%#v", cv) }
 func (*CreateView) isDDLStmt()        {}
 func (cv *CreateView) Pos() Position  { return cv.Position }
 func (cv *CreateView) clearOffset()   { cv.Position.Offset = 0 }
+
+type SecurityType int
+
+const (
+	Invoker SecurityType = iota
+	Definer
+)
 
 // CreateRole represents a CREATE Role statement.
 // https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#create_role
@@ -149,7 +159,8 @@ func (cr *CreateRole) clearOffset()   { cr.Position.Offset = 0 }
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
 type DropTable struct {
-	Name ID
+	Name     ID
+	IfExists bool
 
 	Position Position // position of the "DROP" token
 }
@@ -162,7 +173,8 @@ func (dt *DropTable) clearOffset()   { dt.Position.Offset = 0 }
 // DropIndex represents a DROP INDEX statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop-index
 type DropIndex struct {
-	Name ID
+	Name     ID
+	IfExists bool
 
 	Position Position // position of the "DROP" token
 }
@@ -284,7 +296,10 @@ func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (DropRowDeletionPolicy) isTableAlteration()    {}
 
 type (
-	AddColumn      struct{ Def ColumnDef }
+	AddColumn struct {
+		IfNotExists bool
+		Def         ColumnDef
+	}
 	DropColumn     struct{ Name ID }
 	AddConstraint  struct{ Constraint TableConstraint }
 	DropConstraint struct{ Name ID }
@@ -454,6 +469,7 @@ type ForeignKey struct {
 	Columns    []ID
 	RefTable   ID
 	RefColumns []ID
+	OnDelete   OnDelete
 
 	Position Position // position of the "FOREIGN" token
 }
@@ -749,7 +765,9 @@ type Func struct {
 	Name string // not ID
 	Args []Expr
 
-	// TODO: various functions permit as-expressions, which might warrant different types in here.
+	Distinct      bool
+	NullsHandling NullsHandling
+	Having        *AggregateHaving
 }
 
 func (Func) isBoolExpr() {} // possibly bool
@@ -789,6 +807,35 @@ type IntervalExpr struct {
 
 func (IntervalExpr) isBoolExpr() {} // possibly bool
 func (IntervalExpr) isExpr()     {}
+
+type SequenceExpr struct {
+	Name ID
+}
+
+func (SequenceExpr) isExpr() {}
+
+// NullsHandling represents the method of dealing with NULL values in aggregate functions.
+type NullsHandling int
+
+const (
+	NullsHandlingUnspecified NullsHandling = iota
+	RespectNulls
+	IgnoreNulls
+)
+
+// AggregateHaving represents the HAVING clause specific to aggregate functions, restricting rows based on a maximal or minimal value.
+type AggregateHaving struct {
+	Condition AggregateHavingCondition
+	Expr      Expr
+}
+
+// AggregateHavingCondition represents the condition (MAX or MIN) for the AggregateHaving clause.
+type AggregateHavingCondition int
+
+const (
+	HavingMax AggregateHavingCondition = iota
+	HavingMin
+)
 
 // Paren represents a parenthesised expression.
 type Paren struct {
@@ -1254,3 +1301,63 @@ type (
 	AddStoredColumn  struct{ Name ID }
 	DropStoredColumn struct{ Name ID }
 )
+
+// CreateSequence represents an ALTER SEQUENCE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#create-sequence
+type CreateSequence struct {
+	Name        ID
+	IfNotExists bool
+	Options     SequenceOptions
+
+	Position Position
+}
+
+func (cs *CreateSequence) String() string { return fmt.Sprintf("%#v", cs) }
+func (*CreateSequence) isDDLStmt()        {}
+func (cs *CreateSequence) Pos() Position  { return cs.Position }
+func (cs *CreateSequence) clearOffset()   { cs.Position.Offset = 0 }
+
+// AlterSequence represents an ALTER SEQUENCE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#alter-sequence
+type AlterSequence struct {
+	Name       ID
+	Alteration SequenceAlteration
+
+	Position Position
+}
+
+func (as *AlterSequence) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterSequence) isDDLStmt()        {}
+func (as *AlterSequence) Pos() Position  { return as.Position }
+func (as *AlterSequence) clearOffset()   { as.Position.Offset = 0 }
+
+type SequenceAlteration interface {
+	isSequenceAlteration()
+	SQL() string
+}
+
+type SetSequenceOptions struct{ Options SequenceOptions }
+
+func (SetSequenceOptions) isSequenceAlteration() {}
+
+// SequenceOptions represents options on a sequence as part of a CREATE SEQUENCE and ALTER SEQUENCE statement.
+type SequenceOptions struct {
+	SequenceKind     *string
+	SkipRangeMin     *int
+	SkipRangeMax     *int
+	StartWithCounter *int
+}
+
+// DropSequence represents a DROP SEQUENCE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#drop-sequence
+type DropSequence struct {
+	Name     ID
+	IfExists bool
+
+	Position Position
+}
+
+func (ds *DropSequence) String() string { return fmt.Sprintf("%#v", ds) }
+func (*DropSequence) isDDLStmt()        {}
+func (ds *DropSequence) Pos() Position  { return ds.Position }
+func (ds *DropSequence) clearOffset()   { ds.Position.Offset = 0 }

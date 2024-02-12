@@ -12,6 +12,9 @@
         "advisorynotifications": {
             "component": "advisorynotifications"
         },
+        "ai": {
+            "component": "ai"
+        },
         "aiplatform": {
             "component": "aiplatform"
         },
@@ -35,6 +38,9 @@
         },
         "appengine": {
             "component": "appengine"
+        },
+        "apps": {
+            "component": "apps"
         },
         "area120": {
             "component": "area120"
@@ -78,8 +84,17 @@
         "clouddms": {
             "component": "clouddms"
         },
+        "cloudprofiler": {
+            "component": "cloudprofiler"
+        },
+        "cloudquotas": {
+            "component": "cloudquotas"
+        },
         "cloudtasks": {
             "component": "cloudtasks"
+        },
+        "commerce": {
+            "component": "commerce"
         },
         "compute": {
             "component": "compute"
@@ -89,6 +104,9 @@
         },
         "confidentialcomputing": {
             "component": "confidentialcomputing"
+        },
+        "config": {
+            "component": "config"
         },
         "contactcenterinsights": {
             "component": "contactcenterinsights"
@@ -147,6 +165,9 @@
         "edgecontainer": {
             "component": "edgecontainer"
         },
+        "edgenetwork": {
+            "component": "edgenetwork"
+        },
         "essentialcontacts": {
             "component": "essentialcontacts"
         },
@@ -158,9 +179,6 @@
         },
         "functions": {
             "component": "functions"
-        },
-        "gaming": {
-            "component": "gaming"
         },
         "gkebackup": {
             "component": "gkebackup"
@@ -219,8 +237,14 @@
         "metastore": {
             "component": "metastore"
         },
+        "migrationcenter": {
+            "component": "migrationcenter"
+        },
         "monitoring": {
             "component": "monitoring"
+        },
+        "netapp": {
+            "component": "netapp"
         },
         "networkconnectivity": {
             "component": "networkconnectivity"
@@ -252,13 +276,19 @@
         "phishingprotection": {
             "component": "phishingprotection"
         },
+        "policysimulator": {
+            "component": "policysimulator"
+        },
         "policytroubleshooter": {
             "component": "policytroubleshooter"
         },
         "privatecatalog": {
             "component": "privatecatalog"
         },
-        "recaptchaenterprise/v2": {
+        "rapidmigrationassessment": {
+            "component": "rapidmigrationassessment"
+        },
+        "recaptchaenterprise": {
             "component": "recaptchaenterprise"
         },
         "recommendationengine": {
@@ -288,17 +318,29 @@
         "secretmanager": {
             "component": "secretmanager"
         },
+        "securesourcemanager": {
+            "component": "securesourcemanager"
+        },
         "security": {
             "component": "security"
         },
         "securitycenter": {
             "component": "securitycenter"
         },
+        "securitycentermanagement": {
+            "component": "securitycentermanagement"
+        },
+        "securityposture": {
+            "component": "securityposture"
+        },
         "servicecontrol": {
             "component": "servicecontrol"
         },
         "servicedirectory": {
             "component": "servicedirectory"
+        },
+        "servicehealth": {
+            "component": "servicehealth"
         },
         "servicemanagement": {
             "component": "servicemanagement"
@@ -309,6 +351,12 @@
         "shell": {
             "component": "shell"
         },
+        "shopping": {
+            "component": "shopping"
+        },
+        "spanner/test/opentelemetry/test": {
+            "component": "spanner/test/opentelemetry/test"
+        },
         "speech": {
             "component": "speech"
         },
@@ -318,11 +366,14 @@
         "storagetransfer": {
             "component": "storagetransfer"
         },
+        "support": {
+            "component": "support"
+        },
         "talent": {
             "component": "talent"
         },
-        "support": {
-            "component": "support"
+        "telcoautomation": {
+            "component": "telcoautomation"
         },
         "texttospeech": {
             "component": "texttospeech"
@@ -342,8 +393,11 @@
         "videointelligence": {
             "component": "videointelligence"
         },
-        "vision/v2": {
+        "vision": {
             "component": "vision"
+        },
+        "visionai": {
+            "component": "visionai"
         },
         "vmmigration": {
             "component": "vmmigration"
@@ -367,5 +421,7 @@
             "component": "workstations"
         }
     },
-    "plugins": ["sentence-case"]
+    "plugins": [
+        "sentence-case"
+    ]
 }

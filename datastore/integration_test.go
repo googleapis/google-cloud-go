@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"reflect"
 	"sort"
@@ -33,9 +34,11 @@ import (
 	"cloud.google.com/go/rpcreplay"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // TODO(djd): Make test entity clean up more robust: some test entities may
@@ -48,7 +51,11 @@ var timeNow = time.Now()
 // when the tests are run in parallel.
 var suffix string
 
-const replayFilename = "datastore.replay"
+const (
+	replayFilename = "datastore.replay"
+	envDatabases   = "GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES"
+	keyPrefix      = "TestIntegration_"
+)
 
 type replayInfo struct {
 	ProjectID string
@@ -61,6 +68,11 @@ var (
 	newTestClient = func(ctx context.Context, t *testing.T) *Client {
 		return newClient(ctx, t, nil)
 	}
+	testParams map[string]interface{}
+
+	// xGoogReqParamsHeaderChecker is a HeaderChecker that ensures that the "x-goog-request-params"
+	// header is present on outgoing metadata.
+	xGoogReqParamsHeaderChecker *testutil.HeaderChecker
 )
 
 func TestMain(m *testing.M) {
@@ -102,7 +114,43 @@ func testMain(m *testing.M) int {
 		log.Printf("recording to %s", replayFilename)
 	}
 	suffix = fmt.Sprintf("-t%d", timeNow.UnixNano())
-	return m.Run()
+
+	// Run tests on multiple databases
+	databaseIDs := []string{DefaultDatabaseID}
+	databasesStr, ok := os.LookupEnv(envDatabases)
+	if ok {
+		databaseIDs = append(databaseIDs, strings.Split(databasesStr, ",")...)
+	}
+
+	testParams = make(map[string]interface{})
+	for _, databaseID := range databaseIDs {
+		log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
+		testParams["databaseID"] = databaseID
+		xGoogReqParamsHeaderChecker = &testutil.HeaderChecker{
+			Key: reqParamsHeader,
+			ValuesValidator: func(values ...string) error {
+				if len(values) == 0 {
+					return fmt.Errorf("missing values")
+				}
+				wantValue := fmt.Sprintf("project_id=%s", url.QueryEscape(testutil.ProjID()))
+				if databaseID != DefaultDatabaseID && databaseID != "" {
+					wantValue = fmt.Sprintf("%s&database_id=%s", wantValue, url.QueryEscape(databaseID))
+				}
+				for _, gotValue := range values {
+					if gotValue != wantValue {
+						return fmt.Errorf("got %s, want %s", gotValue, wantValue)
+					}
+				}
+				return nil
+			},
+		}
+		status := m.Run()
+		if status != 0 {
+			return status
+		}
+	}
+
+	return 0
 }
 
 func initReplay() {
@@ -128,13 +176,14 @@ func initReplay() {
 			OnFailure: t.Fatalf,
 			Checkers: []*testutil.HeaderChecker{
 				testutil.XGoogClientHeaderChecker,
+				xGoogReqParamsHeaderChecker,
 			},
 		}
 
 		opts := append(grpcHeadersEnforcer.CallOptions(), option.WithGRPCConn(conn))
-		client, err := NewClient(ctx, ri.ProjectID, opts...)
+		client, err := NewClientWithDatabase(ctx, ri.ProjectID, testParams["databaseID"].(string), opts...)
 		if err != nil {
-			t.Fatalf("NewClient: %v", err)
+			t.Fatalf("NewClientWithDatabase: %v", err)
 		}
 		return client
 	}
@@ -154,17 +203,32 @@ func newClient(ctx context.Context, t *testing.T, dialOpts []grpc.DialOption) *C
 		OnFailure: t.Fatalf,
 		Checkers: []*testutil.HeaderChecker{
 			testutil.XGoogClientHeaderChecker,
+			xGoogReqParamsHeaderChecker,
 		},
 	}
 	opts := append(grpcHeadersEnforcer.CallOptions(), option.WithTokenSource(ts))
 	for _, opt := range dialOpts {
 		opts = append(opts, option.WithGRPCDialOption(opt))
 	}
-	client, err := NewClient(ctx, testutil.ProjID(), opts...)
+	client, err := NewClientWithDatabase(ctx, testutil.ProjID(), testParams["databaseID"].(string), opts...)
+	if err != nil {
+		t.Fatalf("NewClientWithDatabase: %v", err)
+	}
+	return client
+}
+
+func TestIntegration_NewClient(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+	client, err := NewClient(ctx, testutil.ProjID())
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
-	return client
+	if client.databaseID != DefaultDatabaseID {
+		t.Fatalf("NewClient: got %s, want %s", client.databaseID, DefaultDatabaseID)
+	}
 }
 
 func TestIntegration_Basics(t *testing.T) {
@@ -303,6 +367,34 @@ func TestIntegration_ListValues(t *testing.T) {
 	}
 }
 
+func TestIntegration_PutGetUntypedNil(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	type X struct {
+		I interface{} `json:"i"`
+	}
+
+	putX := &X{
+		I: nil,
+	}
+	key, err := client.Put(ctx, IncompleteKey("X", nil), putX)
+	if err != nil {
+		t.Fatalf("client.Put got: %v, want: nil", err)
+	}
+
+	getX := &X{}
+	err = client.Get(ctx, key, getX)
+	if err != nil {
+		t.Fatalf("client.Get got: %v, want: nil", err)
+	}
+
+	if !reflect.DeepEqual(getX, putX) {
+		t.Fatalf("got: %v, want: %v", getX, putX)
+	}
+}
+
 func TestIntegration_GetMulti(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
@@ -314,23 +406,27 @@ func TestIntegration_GetMulti(t *testing.T) {
 	p := NameKey("X", "x"+suffix, nil)
 
 	cases := []struct {
-		key *Key
-		put bool
+		desc string
+		key  *Key
+		put  bool
+		x    *X
 	}{
-		{key: NameKey("X", "item1", p), put: true},
-		{key: NameKey("X", "item2", p), put: false},
-		{key: NameKey("X", "item3", p), put: false},
-		{key: NameKey("X", "item3", p), put: false},
-		{key: NameKey("X", "item4", p), put: true},
+		{desc: "Successful get", key: NameKey("X", "item1", p), put: true, x: &X{I: 1}},
+		{desc: "No such entity error", key: NameKey("X", "item2", p), put: false},
+		{desc: "No such entity error", key: NameKey("X", "item3", p), put: false},
+		{desc: "Duplicate keys in GetMulti with no such entity error", key: NameKey("X", "item3", p), put: false},
+		{desc: "First key in the pair of keys with same Kind and Name but different Namespace", key: &Key{Kind: "X", Name: "item5", Namespace: "nm1"}, put: true, x: &X{I: 5}},
+		{desc: "Second key in the pair of keys with same Kind and Name but different Namespace", key: &Key{Kind: "X", Name: "item5", Namespace: "nm2"}, put: true, x: &X{I: 6}},
 	}
 
-	var src, dst []*X
+	var src, dst, wantDst []*X
 	var srcKeys, dstKeys []*Key
 	for _, c := range cases {
 		dst = append(dst, &X{})
 		dstKeys = append(dstKeys, c.key)
+		wantDst = append(wantDst, c.x)
 		if c.put {
-			src = append(src, &X{})
+			src = append(src, c.x)
 			srcKeys = append(srcKeys, c.key)
 		}
 	}
@@ -352,7 +448,11 @@ func TestIntegration_GetMulti(t *testing.T) {
 			got, want = err, ErrNoSuchEntity
 		}
 		if got != want {
-			t.Errorf("MultiError[%d] == %v, want %v", i, got, want)
+			t.Errorf("%s: MultiError[%d] == %v, want %v", cases[i].desc, i, got, want)
+		}
+
+		if got == nil && *dst[i] != *wantDst[i] {
+			t.Errorf("%s: client.GetMulti got %+v, want %+v", cases[i].desc, dst[i], wantDst[i])
 		}
 	}
 }
@@ -426,6 +526,8 @@ func TestIntegration_NilKey(t *testing.T) {
 type SQChild struct {
 	I, J int
 	T, U int64
+	V    float64
+	W    string
 }
 
 type SQTestCase struct {
@@ -649,6 +751,243 @@ func TestIntegration_Filters(t *testing.T) {
 			t.Errorf("compare: got=%v, want=%v", got, want)
 		}
 	})
+}
+
+func TestIntegration_AggregationQueriesInTransaction(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	parent := NameKey("SQParent", keyPrefix+"AggregationQueriesInTransaction"+suffix, nil)
+	now := timeNow.Truncate(time.Millisecond).Unix()
+	children := []*SQChild{
+		{I: 0, T: now, U: now, V: 1.5, W: "str"},
+		{I: 1, T: now, U: now, V: 1.5, W: "str"},
+		{I: 2, T: now, U: now, V: 1.5, W: "str"},
+	}
+
+	keys := make([]*Key, len(children))
+	for i := range keys {
+		keys[i] = IncompleteKey("SQChild", parent)
+	}
+
+	keys, err := client.PutMulti(ctx, keys, children)
+	if err != nil {
+		t.Fatalf("client.PutMulti: %v", err)
+	}
+	defer func() {
+		err := client.DeleteMulti(ctx, keys)
+		if err != nil {
+			t.Errorf("client.DeleteMulti: %v", err)
+		}
+	}()
+
+	testcases := []struct {
+		desc          string
+		readTime      time.Time
+		wantAggResult AggregationResult
+	}{
+		{
+			desc:     "Aggregations in transaction before creating entities",
+			readTime: time.Now().Add(-59 * time.Minute).Truncate(time.Microsecond),
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
+				"sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 0}},
+				"avg":   &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+			},
+		},
+		{
+			desc: "Aggregations in transaction after creating entities",
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 3}},
+				"sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 3}},
+				"avg":   &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 1}},
+			},
+		},
+	}
+	for _, tc := range testcases {
+		testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
+			readTime := tc.readTime
+			if readTime.IsZero() {
+				// Use current time as read time if read time is not specified in test case
+				readTime = time.Now().Truncate(time.Microsecond)
+
+				// Read time is truncated to microseconds. If immediately used in NewTransaction call,
+				// it leads to "read_time cannot be in the future" error
+				time.Sleep(time.Second)
+			}
+
+			tx, err := client.NewTransaction(ctx, []TransactionOption{ReadOnly, WithReadTime(readTime)}...)
+			if err != nil {
+				r.Errorf("client.NewTransaction: %v", err)
+				return
+			}
+			aggQuery := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Transaction(tx).NewAggregationQuery().
+				WithCount("count").
+				WithSum("I", "sum").
+				WithAvg("I", "avg")
+
+			gotAggResult, gotErr := client.RunAggregationQuery(ctx, aggQuery)
+			if gotErr != nil {
+				r.Errorf("got: %v, want: nil", gotErr)
+				return
+			}
+			if !reflect.DeepEqual(gotAggResult, tc.wantAggResult) {
+				r.Errorf("%q: Mismatch in aggregation result got: %+v, want: %+v", tc.desc, gotAggResult, tc.wantAggResult)
+				return
+			}
+		})
+	}
+}
+
+func TestIntegration_AggregationQueries(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	parent := NameKey("SQParent", keyPrefix+"AggregationQueries"+suffix, nil)
+	now := timeNow.Truncate(time.Millisecond).Unix()
+	children := []*SQChild{
+		{I: 0, T: now, U: now, V: 1.5, W: "str"},
+		{I: 1, T: now, U: now, V: 1.5, W: "str"},
+		{I: 2, T: now, U: now, V: 1.5, W: "str"},
+		{I: 3, T: now, U: now, V: 1.5, W: "str"},
+		{I: 4, T: now, U: now, V: 1.5, W: "str"},
+		{I: 5, T: now, U: now, V: 1.5, W: "str"},
+		{I: 6, T: now, U: now, V: 1.5, W: "str"},
+		{I: 7, T: now, U: now, V: 1.5, W: "str"},
+	}
+
+	keys := make([]*Key, len(children))
+	for i := range keys {
+		keys[i] = IncompleteKey("SQChild", parent)
+	}
+
+	keys, err := client.PutMulti(ctx, keys, children)
+	if err != nil {
+		t.Fatalf("client.PutMulti: %v", err)
+	}
+	defer func() {
+		err := client.DeleteMulti(ctx, keys)
+		if err != nil {
+			t.Errorf("client.DeleteMulti: %v", err)
+		}
+	}()
+
+	testCases := []struct {
+		desc            string
+		aggQuery        *AggregationQuery
+		transactionOpts []TransactionOption
+		wantFailure     bool
+		wantErrMsg      string
+		wantAggResult   AggregationResult
+	}{
+
+		{
+			desc: "Count Failure - Missing index",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T>=", now).
+				NewAggregationQuery().
+				WithCount("count"),
+			wantFailure: true,
+			wantErrMsg:  "no matching index found",
+		},
+		{
+			desc: "Count Success",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).
+				NewAggregationQuery().
+				WithCount("count"),
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+			},
+		},
+		{
+			desc: "Multiple aggregations",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				NewAggregationQuery().
+				WithSum("I", "i_sum").
+				WithAvg("I", "avg").
+				WithSum("V", "v_sum"),
+			wantAggResult: map[string]interface{}{
+				"i_sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 28}},
+				"v_sum": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 12}},
+				"avg":   &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
+			},
+		},
+		{
+			desc: "Multiple aggregations with limit ",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Limit(2).
+				NewAggregationQuery().
+				WithSum("I", "sum").
+				WithAvg("I", "avg"),
+			wantAggResult: map[string]interface{}{
+				"sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+				"avg": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 0.5}},
+			},
+		},
+		{
+			desc: "Multiple aggregations on non-numeric field",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Limit(2).
+				NewAggregationQuery().
+				WithSum("W", "sum").
+				WithAvg("W", "avg"),
+			wantAggResult: map[string]interface{}{
+				"sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+				"avg": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+			},
+		},
+		{
+			desc: "Sum aggregation without alias",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				NewAggregationQuery().
+				WithSum("I", ""),
+			wantAggResult: map[string]interface{}{
+				"property_1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 28}},
+			},
+		},
+		{
+			desc: "Average aggregation without alias",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				NewAggregationQuery().
+				WithAvg("I", ""),
+			wantAggResult: map[string]interface{}{
+				"property_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
+			},
+		},
+		{
+			desc: "Sum aggregation on '__key__'",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				NewAggregationQuery().
+				WithSum("__key__", ""),
+			wantFailure: true,
+			wantErrMsg:  "Aggregations are not supported for the property",
+		},
+		{
+			desc: "Average aggregation on '__key__'",
+			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).
+				NewAggregationQuery().
+				WithAvg("__key__", ""),
+			wantFailure: true,
+			wantErrMsg:  "Aggregations are not supported for the property",
+		},
+	}
+
+	for _, testCase := range testCases {
+		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+			gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
+			gotFailure := gotErr != nil
+
+			if gotFailure != testCase.wantFailure ||
+				(gotErr != nil && !strings.Contains(gotErr.Error(), testCase.wantErrMsg)) {
+				r.Errorf("%q: Mismatch in error got: %v, want: %q", testCase.desc, gotErr, testCase.wantErrMsg)
+				return
+			}
+			if gotErr == nil && !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
+				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
+				return
+			}
+		})
+	}
+
 }
 
 type ckey struct{}
@@ -883,6 +1222,21 @@ func TestIntegration_Projection(t *testing.T) {
 			0,
 		},
 	})
+}
+
+func TestIntegration_ReserveIDs(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	keys := make([]*Key, 3)
+	for i := range keys {
+		keys[i] = NameKey("ReserveIDs", "id-"+fmt.Sprint(i), nil)
+	}
+	err := client.ReserveIDs(ctx, keys)
+	if err != nil {
+		t.Fatalf("ReserveIDs failed: %v", err)
+	}
 }
 
 func TestIntegration_AllocateIDs(t *testing.T) {
@@ -1410,13 +1764,13 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 	}
 
 	// Use creds with project ID.
-	if _, err := NewClient(ctx, DetectProjectID, option.WithCredentials(creds)); err != nil {
-		t.Errorf("NewClient: %v", err)
+	if _, err := NewClientWithDatabase(ctx, DetectProjectID, testParams["databaseID"].(string), option.WithCredentials(creds)); err != nil {
+		t.Errorf("NewClientWithDatabase: %v", err)
 	}
 
 	ts := testutil.ErroringTokenSource{}
 	// Try to use creds without project ID.
-	_, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(ts))
+	_, err := NewClientWithDatabase(ctx, DetectProjectID, testParams["databaseID"].(string), option.WithTokenSource(ts))
 	if err == nil || err.Error() != "datastore: see the docs on DetectProjectID" {
 		t.Errorf("expected an error while using TokenSource that does not have a project ID")
 	}
