@@ -1107,36 +1107,36 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 			t.Errorf("#%d %v: %+v %v", i, test.desc, test.q, docsNotEqualErr)
 		}
 	}
-	// _, err := coll.Select("q").Where("x", "==", 1).OrderBy("q", Asc).Documents(ctx).GetAll()
-	// codeEq(t, "Where and OrderBy on different fields without an index", codes.FailedPrecondition, err)
+	_, err := coll.Select("q").Where("x", "==", 1).OrderBy("q", Asc).Documents(ctx).GetAll()
+	codeEq(t, "Where and OrderBy on different fields without an index", codes.FailedPrecondition, err)
 
-	// // Using the collection itself as the query should return the full documents.
-	// allDocs, err := coll.Documents(ctx).GetAll()
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
-	// seen := map[int64]bool{} // "q" values we see.
-	// for _, d := range allDocs {
-	// 	data := d.Data()
-	// 	q, ok := data["q"]
-	// 	if !ok {
-	// 		// A document from another test.
-	// 		continue
-	// 	}
-	// 	if seen[q.(int64)] {
-	// 		t.Errorf("%v: duplicate doc", data)
-	// 	}
-	// 	seen[q.(int64)] = true
-	// 	if data["x"] != int64(1) {
-	// 		t.Errorf("%v: wrong or missing 'x'", data)
-	// 	}
-	// 	if len(data) != 2 {
-	// 		t.Errorf("%v: want two keys", data)
-	// 	}
-	// }
-	// if got, want := len(seen), len(wants); got != want {
-	// 	t.Errorf("got %d docs with 'q', want %d", len(seen), len(wants))
-	// }
+	// Using the collection itself as the query should return the full documents.
+	allDocs, err := coll.Documents(ctx).GetAll()
+	if err != nil {
+		t.Fatal(err)
+	}
+	seen := map[int64]bool{} // "q" values we see.
+	for _, d := range allDocs {
+		data := d.Data()
+		q, ok := data["q"]
+		if !ok {
+			// A document from another test.
+			continue
+		}
+		if seen[q.(int64)] {
+			t.Errorf("%v: duplicate doc", data)
+		}
+		seen[q.(int64)] = true
+		if data["x"] != int64(1) {
+			t.Errorf("%v: wrong or missing 'x'", data)
+		}
+		if len(data) != 2 {
+			t.Errorf("%v: want two keys", data)
+		}
+	}
+	if got, want := len(seen), len(wants); got != want {
+		t.Errorf("got %d docs with 'q', want %d", len(seen), len(wants))
+	}
 
 	t.Cleanup(func() {
 		deleteDocuments(createdDocRefs)

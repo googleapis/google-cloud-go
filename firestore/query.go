@@ -31,8 +31,6 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-type cursorBeforeType int
-
 // Query represents a Firestore query.
 //
 // Query values are immutable. Each Query method creates
@@ -427,7 +425,6 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 			q.startVals = append(q.startVals, newQ.startVals...)
 		}
 	}
-
 	if endAt := pbq.GetEndAt(); endAt != nil {
 		for _, v := range endAt.GetValues() {
 			c, err := createFromProtoValue(v, q.c)
@@ -560,7 +557,6 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 		return nil, err
 	}
 	p.EndAt = cursor
-
 	return p, nil
 }
 
@@ -610,7 +606,6 @@ func (q *Query) toCursor(fieldValues []interface{}, ds *DocumentSnapshot, before
 	if err != nil {
 		return nil, err
 	}
-
 	return &pb.Cursor{Values: vals, Before: before}, nil
 }
 
