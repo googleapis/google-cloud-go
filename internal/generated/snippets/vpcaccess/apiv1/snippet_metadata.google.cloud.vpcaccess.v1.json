@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/vpcaccess/apiv1",
-    "version": "1.7.5",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
