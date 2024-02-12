@@ -311,17 +311,16 @@ func (q *Query) processLimitToLast() {
 
 		if q.startBefore == q.endBefore && q.startCursorSpecified() && q.endCursorSpecified() {
 			// E.g. query.StartAt(2).EndBefore(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, 6)
+			// E.g. query.StartAfter(2).EndAt(6).LimitToLast(3).OrderBy(Asc)  i.e. cursors are (2, 6]
 			q.startBefore, q.endBefore = !q.startBefore, !q.endBefore
 		} else if !q.startCursorSpecified() && q.endCursorSpecified() {
 			// E.g. query.EndAt(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are (-inf, 6]
 			q.startBefore = !q.endBefore
 			q.endBefore = false
-			// q.endBefore = cursorBeforeUnspecified
 		} else if q.startCursorSpecified() && !q.endCursorSpecified() {
 			// E.g. query.StartAt(2).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, inf)
 			q.endBefore = !q.startBefore
 			q.startBefore = false
-			// q.startBefore = cursorBeforeUnspecified
 		}
 
 		// Swap cursors.
