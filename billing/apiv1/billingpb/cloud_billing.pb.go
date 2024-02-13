@@ -21,11 +21,8 @@
 package billingpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -447,8 +446,6 @@ type CreateBillingAccountRequest struct {
 	BillingAccount *BillingAccount `protobuf:"bytes,1,opt,name=billing_account,json=billingAccount,proto3" json:"billing_account,omitempty"`
 	// Optional. The parent to create a billing account from.
 	// Format:
-	//   - `organizations/{organization_id}`, for example,
-	//     `organizations/12345678`
 	//   - `billingAccounts/{billing_account_id}`, for example,
 	//     `billingAccounts/012345-567890-ABCDEF`
 	Parent string `protobuf:"bytes,2,opt,name=parent,proto3" json:"parent,omitempty"`
