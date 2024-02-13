@@ -2068,7 +2068,7 @@ func TestSelectAll(t *testing.T) {
 					mockIterator.On("Next").Once().Return(&Row{
 						[]*sppb.StructType_Field{
 							{Name: "Col1", Type: intType()},
-							{Name: "COL2", Type: floatType()},
+							{Name: "Col2", Type: floatType()},
 							{Name: "Col3", Type: stringType()},
 							{Name: "Col4", Type: timeType()},
 						},
