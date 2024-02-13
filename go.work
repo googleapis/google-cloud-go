@@ -87,6 +87,7 @@ use (
 	./internal/generated/snippets
 	./internal/godocfx
 	./internal/postprocessor
+	./internal/protoveneer
 	./iot
 	./kms
 	./language
@@ -165,4 +166,5 @@ use (
 	./websecurityscanner
 	./workflows
 	./workstations
+	./spanner/test/opentelemetry/test
 )

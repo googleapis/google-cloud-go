@@ -4246,6 +4246,11 @@
                 "Explain"
               ]
             },
+            "GenerateContent": {
+              "methods": [
+                "GenerateContent"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -4289,6 +4294,16 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamDirectPredict": {
+              "methods": [
+                "StreamDirectPredict"
+              ]
+            },
+            "StreamDirectRawPredict": {
+              "methods": [
+                "StreamDirectRawPredict"
               ]
             },
             "StreamGenerateContent": {
@@ -4351,6 +4366,11 @@
                 "Explain"
               ]
             },
+            "GenerateContent": {
+              "methods": [
+                "GenerateContent"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -4394,6 +4414,16 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamDirectPredict": {
+              "methods": [
+                "StreamDirectPredict"
+              ]
+            },
+            "StreamDirectRawPredict": {
+              "methods": [
+                "StreamDirectRawPredict"
               ]
             },
             "StreamGenerateContent": {
