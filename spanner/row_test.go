@@ -2003,7 +2003,7 @@ func TestSelectAll(t *testing.T) {
 	}
 	type testStruct struct {
 		Col1 int64
-		// declaring second columns in upper case here to make sure SelectAll is case-insensitive
+		// declaring second column in upper case here to verify SelectAll does case-insensitive matching
 		COL2 float64
 		Col3 string
 		Col4 time.Time
