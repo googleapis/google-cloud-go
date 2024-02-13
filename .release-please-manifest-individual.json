@@ -10,7 +10,7 @@
   "profiler": "0.4.0",
   "pubsub": "1.36.1",
   "pubsublite": "1.8.1",
-  "spanner": "1.56.0",
+  "spanner": "1.57.0",
   "storage": "1.38.0",
   "vertexai": "0.7.1"
 }
