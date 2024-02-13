@@ -2003,7 +2003,8 @@ func TestSelectAll(t *testing.T) {
 	}
 	type testStruct struct {
 		Col1 int64
-		Col2 float64
+		// declaring second columns in upper case here to make sure SelectAll is case-insensitive
+		COL2 float64
 		Col3 string
 		Col4 time.Time
 	}
@@ -2067,7 +2068,7 @@ func TestSelectAll(t *testing.T) {
 					mockIterator.On("Next").Once().Return(&Row{
 						[]*sppb.StructType_Field{
 							{Name: "Col1", Type: intType()},
-							{Name: "Col2", Type: floatType()},
+							{Name: "COL2", Type: floatType()},
 							{Name: "Col3", Type: stringType()},
 							{Name: "Col4", Type: timeType()},
 						},
@@ -2087,8 +2088,8 @@ func TestSelectAll(t *testing.T) {
 				},
 			},
 			want: &[]testStruct{
-				{Col1: 1, Col2: 1.1, Col3: "value", Col4: tm},
-				{Col1: 2, Col2: 2.2, Col3: "value2", Col4: tm.Add(24 * time.Hour)},
+				{Col1: 1, COL2: 1.1, Col3: "value", Col4: tm},
+				{Col1: 2, COL2: 2.2, Col3: "value2", Col4: tm.Add(24 * time.Hour)},
 			},
 		},
 		{
@@ -2117,8 +2118,8 @@ func TestSelectAll(t *testing.T) {
 				},
 			},
 			want: &[]*testStruct{
-				{Col1: 1, Col2: 1.1, Col3: "value"},
-				{Col1: 2, Col2: 2.2, Col3: "value2"},
+				{Col1: 1, COL2: 1.1, Col3: "value"},
+				{Col1: 2, COL2: 2.2, Col3: "value2"},
 			}},
 		{
 			name: "success: when spanner row contains more columns than declared in Go struct but called WithLenient",
@@ -2142,13 +2143,13 @@ func TestSelectAll(t *testing.T) {
 				options: []DecodeOptions{WithLenient()},
 			},
 			want: &[]*testStruct{
-				{Col1: 1, Col2: 1.1, Col3: "value", Col4: tm},
+				{Col1: 1, COL2: 1.1, Col3: "value", Col4: tm},
 			},
 		},
 		{
 			name: "success: using prefilled destination should append to the destination",
 			args: args{
-				destination: &[]*testStruct{{Col1: 3, Col2: 3.3, Col3: "value3"}},
+				destination: &[]*testStruct{{Col1: 3, COL2: 3.3, Col3: "value3"}},
 				mock: func(mockIterator *mockRowIterator) {
 					mockIterator.On("Next").Once().Return(&Row{
 						[]*sppb.StructType_Field{
@@ -2171,14 +2172,14 @@ func TestSelectAll(t *testing.T) {
 				},
 			},
 			want: &[]*testStruct{
-				{Col1: 3, Col2: 3.3, Col3: "value3"},
-				{Col1: 1, Col2: 1.1, Col3: "value"},
-				{Col1: 2, Col2: 2.2, Col3: "value2"},
+				{Col1: 3, COL2: 3.3, Col3: "value3"},
+				{Col1: 1, COL2: 1.1, Col3: "value"},
+				{Col1: 2, COL2: 2.2, Col3: "value2"},
 			}},
 		{
 			name: "failure: in case of error destination will have the partial result",
 			args: args{
-				destination: &[]*testStruct{{Col1: 3, Col2: 3.3, Col3: "value3"}},
+				destination: &[]*testStruct{{Col1: 3, COL2: 3.3, Col3: "value3"}},
 				mock: func(mockIterator *mockRowIterator) {
 					mockIterator.On("Next").Once().Return(&Row{
 						[]*sppb.StructType_Field{
@@ -2194,15 +2195,15 @@ func TestSelectAll(t *testing.T) {
 				},
 			},
 			want: &[]*testStruct{
-				{Col1: 3, Col2: 3.3, Col3: "value3"},
-				{Col1: 1, Col2: 1.1, Col3: "value"},
+				{Col1: 3, COL2: 3.3, Col3: "value3"},
+				{Col1: 1, COL2: 1.1, Col3: "value"},
 			},
 			wantErr: true,
 		},
 		{
 			name: "failure: when spanner row contains more columns than declared in Go struct",
 			args: args{
-				destination: &[]*testStruct{{Col1: 3, Col2: 3.3, Col3: "value3"}},
+				destination: &[]*testStruct{{Col1: 3, COL2: 3.3, Col3: "value3"}},
 				mock: func(mockIterator *mockRowIterator) {
 					mockIterator.On("Next").Once().Return(&Row{
 						[]*sppb.StructType_Field{
@@ -2219,7 +2220,7 @@ func TestSelectAll(t *testing.T) {
 				},
 			},
 			want: &[]*testStruct{
-				{Col1: 3, Col2: 3.3, Col3: "value3"},
+				{Col1: 3, COL2: 3.3, Col3: "value3"},
 			},
 			wantErr: true,
 		},
