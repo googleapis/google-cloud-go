@@ -533,17 +533,19 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 		// Use of anonymous local function allows span.End to be deferred to end of each loop.
 		func() {
 			numBatch := len(toSend)
-			links := make([]trace.Link, 0, numBatch)
-			for _, ackID := range toSend {
-				// get the parent span context for this ackID for otel tracing.
-				s, _ := it.activeSpan.Load(ackID)
-				parentSpan := s.(trace.Span)
-				defer parentSpan.End()
-				defer parentSpan.SetAttributes(attribute.String(resultAttribute, "ack"))
-				parentSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
-				defer parentSpan.AddEvent(eventAckEnd)
-				if parentSpan.SpanContext().IsSampled() {
-					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
+			var links []trace.Link
+			if it.enableTracing {
+				for _, ackID := range toSend {
+					// get the parent span context for this ackID for otel tracing.
+					s, _ := it.activeSpan.Load(ackID)
+					parentSpan := s.(trace.Span)
+					defer parentSpan.End()
+					defer parentSpan.SetAttributes(attribute.String(resultAttribute, "ack"))
+					parentSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
+					defer parentSpan.AddEvent(eventAckEnd)
+					if parentSpan.SpanContext().IsSampled() {
+						links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
+					}
 				}
 			}
 			ctx := context.Background()

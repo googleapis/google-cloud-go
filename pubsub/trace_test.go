@@ -438,7 +438,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 
 func TestTrace_TracingNotEnabled(t *testing.T) {
 	ctx := context.Background()
-	c, srv := newFakeWithTracing(t)
+	c, srv := newFake(t)
 	defer c.Close()
 	defer srv.Close()
 
@@ -452,21 +452,35 @@ func TestTrace_TracingNotEnabled(t *testing.T) {
 	}
 
 	topicID := "t"
+	subID := "s"
 
 	topic, err := c.CreateTopic(ctx, topicID)
 	if err != nil {
 		t.Fatalf("failed to create topic: %v", err)
 	}
+	sub, err := c.CreateSubscription(ctx, subID, SubscriptionConfig{
+		Topic: topic,
+	})
+	if err != nil {
+		t.Fatalf("failed to create subscription: %v", err)
+	}
+
 	r := topic.Publish(ctx, m)
 	_, err = r.Get(ctx)
 	if err != nil {
 		t.Fatalf("failed to publish message: %v", err)
 	}
-	defer topic.Stop()
+
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+		msg.Ack()
+		cancel()
+	})
 
 	got := getSpans(e)
 	if len(got) != 0 {
-		t.Fatalf("expected no spans to be exported when tracing is disabled")
+		t.Fatalf("expected no spans, got %d", len(got))
 	}
 }
 
@@ -509,6 +523,7 @@ func getPublishSpanStubsWithError(topicID string, m *Message, msgSize int, err e
 			Name:     fmt.Sprintf("%s %s", topicID, createSpanName),
 			SpanKind: trace.SpanKindProducer,
 			Attributes: []attribute.KeyValue{
+				semconv.CodeFunction("topic.Publish"),
 				semconv.MessagingDestinationName(topicID),
 				semconv.MessagingMessageIDKey.String(""),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),

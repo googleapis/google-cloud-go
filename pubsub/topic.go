@@ -600,7 +600,9 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		Attributes:  msg.Attributes,
 		OrderingKey: msg.OrderingKey,
 	})
-	createSpan.SetAttributes(semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize))
+	if t.enableTracing {
+		createSpan.SetAttributes(semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize))
+	}
 
 	t.initBundler()
 	t.mu.RLock()
@@ -713,11 +715,13 @@ func (t *Topic) initBundler() {
 			defer cancel()
 		}
 		bmsgs := bundle.([]*bundledMessage)
-		for _, m := range bmsgs {
-			m.batcherSpan.End()
-			m.createSpan.AddEvent(eventPublishStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(bmsgs))))
-			defer m.createSpan.End()
-			defer m.createSpan.AddEvent(eventPublishEnd)
+		if t.enableTracing {
+			for _, m := range bmsgs {
+				m.batcherSpan.End()
+				m.createSpan.AddEvent(eventPublishStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(bmsgs))))
+				defer m.createSpan.End()
+				defer m.createSpan.AddEvent(eventPublishEnd)
+			}
 		}
 		t.publishMessageBundle(ctx2, bmsgs)
 	})
@@ -782,14 +786,14 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		orderingKey = bms[0].msg.OrderingKey
 	}
 
-	links := make([]trace.Link, 0, numMsgs)
-	for _, bm := range bms {
-		links = append(links, trace.Link{SpanContext: bm.createSpan.SpanContext()})
-	}
-
-	topicID := strings.Split(t.name, "/")[3]
-	var pSpan trace.Span
 	if t.enableTracing {
+		links := make([]trace.Link, 0, numMsgs)
+		for _, bm := range bms {
+			links = append(links, trace.Link{SpanContext: bm.createSpan.SpanContext()})
+		}
+
+		topicID := strings.Split(t.name, "/")[3]
+		var pSpan trace.Span
 		ctx, pSpan = startSpan(ctx, publishRPCSpanName, topicID, trace.WithLinks(links...))
 		pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("topic.publishMessageBundle"))
 		defer pSpan.End()
@@ -842,7 +846,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			bm.createSpan.SetStatus(otelcodes.Error, err.Error())
 		} else {
 			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
-			bm.createSpan.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
+			if t.enableTracing {
+				bm.createSpan.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
+			}
 		}
 	}
 }
