@@ -76,7 +76,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("edgecontainer.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("edgecontainer.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("edgecontainer.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://edgecontainer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -737,7 +739,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://edgecontainer.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://edgecontainer.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://edgecontainer.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://edgecontainer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

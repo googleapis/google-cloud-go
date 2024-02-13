@@ -2720,7 +2720,7 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		}
 	}
 
-	tm := time.Now()
+	tm := time.Now().Add(-time.Minute)
 	c.WithReadOptions(ReadTime(tm))
 
 	ds, err := c.GetAll(ctx, docs)
@@ -2728,10 +2728,9 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// TODO(6894): Re-enable this test when snapshot reads is available on test project.
-	t.SkipNow()
+	wantReadTime := tm.Truncate(time.Second)
 	for _, d := range ds {
-		if !tm.Equal(d.ReadTime) {
+		if !wantReadTime.Equal(d.ReadTime) {
 			t.Errorf("wanted read time: %v; got: %v",
 				tm.UnixNano(), d.ReadTime.UnixNano())
 		}

@@ -1,5 +1,19 @@
 # Changes
 
+## [2.8.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.7.6...vision/v2.8.0) (2024-02-09)
+
+
+### Features
+
+* **vision:** Added option for user to set labels ([#9359](https://github.com/googleapis/google-cloud-go/issues/9359)) ([2fcf55c](https://github.com/googleapis/google-cloud-go/commit/2fcf55ccb24749cf5387e707b0212bca722f2e96))
+
+## [2.7.6](https://github.com/googleapis/google-cloud-go/compare/vision/v2.7.5...vision/v2.7.6) (2024-01-30)
+
+
+### Bug Fixes
+
+* **vision:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [2.7.5](https://github.com/googleapis/google-cloud-go/compare/vision/v2.7.4...vision/v2.7.5) (2023-11-01)
 
 

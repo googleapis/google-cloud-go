@@ -93,7 +93,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("telcoautomation.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("telcoautomation.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("telcoautomation.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://telcoautomation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -690,7 +692,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://telcoautomation.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://telcoautomation.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://telcoautomation.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://telcoautomation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

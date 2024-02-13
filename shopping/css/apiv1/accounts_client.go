@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,7 +52,9 @@ type AccountsCallOptions struct {
 func defaultAccountsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("css.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("css.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("css.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://css.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -295,7 +297,9 @@ func NewAccountsRESTClient(ctx context.Context, opts ...option.ClientOption) (*A
 func defaultAccountsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://css.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://css.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://css.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://css.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

@@ -116,9 +116,10 @@ modules:
   - security
   - securitycenter
   - securitycentermanagement
+  - securityposture
   - servicecontrol
   - servicedirectory
-  - serviceusage
+  - servicehealth
   - servicemanagement
   - serviceusage
   - shell
@@ -138,6 +139,7 @@ modules:
   - video
   - videointelligence
   - vision
+  - visionai
   - vmmigration
   - vmwareengine
   - vpcaccess
@@ -284,15 +286,12 @@ service-configs:
   - input-directory: google/api/apikeys/v2
     service-config: apikeys_v2.yaml
     import-path: cloud.google.com/go/apikeys/apiv2
-  - input-directory: google/api/servicecontrol/v1
-    service-config: servicecontrol.yaml
-    import-path: cloud.google.com/go/servicecontrol/apiv1
-  - input-directory: google/api/servicemanagement/v1
-    service-config: servicemanagement_v1.yaml
-    import-path: cloud.google.com/go/servicemanagement/apiv1
   - input-directory: google/appengine/v1
     service-config: appengine_v1.yaml
     import-path: cloud.google.com/go/appengine/apiv1
+  - input-directory: google/apps/meet/v2
+    service-config: meet_v2.yaml
+    import-path: cloud.google.com/go/apps/meet/apiv2
   - input-directory: google/apps/meet/v2beta
     service-config: meet_v2beta.yaml
     import-path: cloud.google.com/go/apps/meet/apiv2beta
@@ -792,12 +791,24 @@ service-configs:
   - input-directory: google/cloud/securitycentermanagement/v1
     service-config: securitycentermanagement_v1.yaml
     import-path: cloud.google.com/go/securitycentermanagement/apiv1
+  - input-directory: google/cloud/securityposture/v1
+    service-config: securityposture_v1.yaml
+    import-path: cloud.google.com/go/securityposture/apiv1
+  - input-directory: google/api/servicecontrol/v1
+    service-config: servicecontrol.yaml
+    import-path: cloud.google.com/go/servicecontrol/apiv1
   - input-directory: google/cloud/servicedirectory/v1
     service-config: servicedirectory_v1.yaml
     import-path: cloud.google.com/go/servicedirectory/apiv1
   - input-directory: google/cloud/servicedirectory/v1beta1
     service-config: servicedirectory_v1beta1.yaml
     import-path: cloud.google.com/go/servicedirectory/apiv1beta1
+  - input-directory: google/cloud/servicehealth/v1
+    service-config: servicehealth_v1.yaml
+    import-path: cloud.google.com/go/servicehealth/apiv1
+  - input-directory: google/api/servicemanagement/v1
+    service-config: servicemanagement_v1.yaml
+    import-path: cloud.google.com/go/servicemanagement/apiv1
   - input-directory: google/api/serviceusage/v1
     service-config: serviceusage_v1.yaml
     import-path: cloud.google.com/go/serviceusage/apiv1
@@ -890,6 +901,9 @@ service-configs:
     service-config: vision_v1p1beta1.yaml
     import-path: cloud.google.com/go/vision/v2/apiv1p1beta1
     rel-path: /vision/apiv1p1beta1
+  - input-directory: google/cloud/visionai/v1
+    service-config: visionai_v1.yaml
+    import-path: cloud.google.com/go/visionai/apiv1
   - input-directory: google/cloud/vmmigration/v1
     service-config: vmmigration_v1.yaml
     import-path: cloud.google.com/go/vmmigration/apiv1

@@ -17,8 +17,7 @@
 // Package telcoautomation is an auto-generated package for the
 // Telco Automation API.
 //
-// APIs to automate 5G deployment and management of cloud infrastructure and
-// network functions.
+// APIs to automate management of cloud infrastructure for network functions.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,9 @@ type SpacesCallOptions struct {
 func defaultSpacesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("meet.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("meet.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("meet.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://meet.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -292,7 +294,9 @@ func NewSpacesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Spa
 func defaultSpacesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://meet.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://meet.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://meet.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://meet.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

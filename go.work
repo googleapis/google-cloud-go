@@ -87,6 +87,7 @@ use (
 	./internal/generated/snippets
 	./internal/godocfx
 	./internal/postprocessor
+	./internal/protoveneer
 	./iot
 	./kms
 	./language
@@ -132,8 +133,10 @@ use (
 	./security
 	./securitycenter
 	./securitycentermanagement
+	./securityposture
 	./servicecontrol
 	./servicedirectory
+	./servicehealth
 	./servicemanagement
 	./serviceusage
 	./shell
@@ -155,6 +158,7 @@ use (
 	./video
 	./videointelligence
 	./vision
+	./visionai
 	./vmmigration
 	./vmwareengine
 	./vpcaccess
@@ -162,4 +166,5 @@ use (
 	./websecurityscanner
 	./workflows
 	./workstations
+	./spanner/test/opentelemetry/test
 )

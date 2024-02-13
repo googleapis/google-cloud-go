@@ -1322,6 +1322,21 @@ func TestIntegration_Projection(t *testing.T) {
 	})
 }
 
+func TestIntegration_ReserveIDs(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	keys := make([]*Key, 3)
+	for i := range keys {
+		keys[i] = NameKey("ReserveIDs", "id-"+fmt.Sprint(i), nil)
+	}
+	err := client.ReserveIDs(ctx, keys)
+	if err != nil {
+		t.Fatalf("ReserveIDs failed: %v", err)
+	}
+}
+
 func TestIntegration_AllocateIDs(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.12.0...orgpolicy/v1.12.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.11.4...orgpolicy/v1.12.0) (2024-01-03)
 
 

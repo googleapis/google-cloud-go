@@ -73,7 +73,9 @@ type VideoStitcherCallOptions struct {
 func defaultVideoStitcherGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("videostitcher.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("videostitcher.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("videostitcher.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://videostitcher.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),

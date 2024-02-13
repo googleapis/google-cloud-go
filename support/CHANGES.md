@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.4](https://github.com/googleapis/google-cloud-go/compare/support/v1.0.3...support/v1.0.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **support:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/support/v1.0.2...support/v1.0.3) (2023-11-01)
 
 

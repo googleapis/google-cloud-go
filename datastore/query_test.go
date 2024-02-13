@@ -764,8 +764,8 @@ func TestReadOptions(t *testing.T) {
 	}
 	// Test errors.
 	for _, q := range []*Query{
-		NewQuery("").Transaction(&Transaction{id: nil}),
-		NewQuery("").Transaction(&Transaction{id: tid}).EventualConsistency(),
+		NewQuery("").Transaction(&Transaction{id: nil, state: transactionStateExpired}),
+		NewQuery("").Transaction(&Transaction{id: tid, state: transactionStateInProgress}).EventualConsistency(),
 	} {
 		req := &pb.RunQueryRequest{}
 		if err := q.toRunQueryRequest(req); err == nil {
@@ -913,6 +913,61 @@ func TestNewRunQuerySettings(t *testing.T) {
 		if (gotErr == nil && testcase.wantErrMsg != "") ||
 			(gotErr != nil && !strings.Contains(gotErr.Error(), testcase.wantErrMsg)) {
 			t.Errorf("%v: newRunQuerySettings got: %v want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
+    }
+	}
+}
+
+func TestValidateReadOptions(t *testing.T) {
+	for _, test := range []struct {
+		desc     string
+		eventual bool
+		trans    *Transaction
+		wantErr  error
+	}{
+		{
+			desc:     "EventualConsistency query in a transaction",
+			eventual: true,
+			trans: &Transaction{
+				id: []byte("test id"),
+			},
+			wantErr: errors.New("datastore: cannot use EventualConsistency query in a transaction"),
+		},
+		{
+			desc: "Expired transaction in non-eventual query",
+			trans: &Transaction{
+				id: nil,
+			},
+			wantErr: errExpiredTransaction,
+		},
+		{
+			desc: "Expired transaction in eventual query",
+			trans: &Transaction{
+				id: nil,
+			},
+			eventual: true,
+			wantErr:  errExpiredTransaction,
+		},
+		{
+			desc: "No transaction in non-eventual query",
+		},
+		{
+			desc:     "No transaction in eventual query",
+			eventual: true,
+		},
+	} {
+		gotErr := validateReadOptions(test.eventual, test.trans)
+		gotErrMsg := ""
+		if gotErr != nil {
+			gotErrMsg = gotErr.Error()
+		}
+
+		wantErrMsg := ""
+		if test.wantErr != nil {
+			wantErrMsg = test.wantErr.Error()
+		}
+
+		if gotErrMsg != wantErrMsg {
+			t.Errorf("%q: got: %v, want: %v", test.desc, gotErr, test.wantErr)
 		}
 	}
 }

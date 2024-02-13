@@ -2482,6 +2482,22 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 						Type: "TIMESTAMP",
 					},
 					ParameterValue: &bq.QueryParameterValue{
+						Value: ts.Format(dateTimeFormat),
+					},
+				},
+			},
+			[]Value{ts},
+			ts,
+		},
+		{
+			"SELECT @val",
+			[]*bq.QueryParameter{
+				{
+					Name: "val",
+					ParameterType: &bq.QueryParameterType{
+						Type: "TIMESTAMP",
+					},
+					ParameterValue: &bq.QueryParameterValue{
 						Value: ts.Format(time.RFC3339),
 					},
 				},
@@ -2743,6 +2759,78 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	md.ExternalDataConfig.Schema = md.Schema
 	if diff := testutil.Diff(md.ExternalDataConfig, edc); diff != "" {
 		t.Errorf("got=-, want=+\n%s", diff)
+	}
+}
+
+func TestIntegration_ExportDataStatistics(t *testing.T) {
+	// Create a table, extract it to GCS using EXPORT DATA statement.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	schema := Schema{
+		{Name: "name", Type: StringFieldType},
+		{Name: "num", Type: IntegerFieldType},
+	}
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	// Extract to a GCS object as CSV.
+	bucketName := testutil.ProjID()
+	uri := fmt.Sprintf("gs://%s/bq-export-test-*.csv", bucketName)
+	defer func() {
+		it := storageClient.Bucket(bucketName).Objects(ctx, &storage.Query{
+			MatchGlob: "bq-export-test-*.csv",
+		})
+		for {
+			obj, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Logf("failed to delete bucket: %v", err)
+				continue
+			}
+			err = storageClient.Bucket(bucketName).Object(obj.Name).Delete(ctx)
+			t.Logf("deleted object %s: %v", obj.Name, err)
+		}
+	}()
+
+	// EXPORT DATA to GCS object.
+	sql := fmt.Sprintf(`EXPORT DATA 
+		OPTIONS (
+			uri = '%s',
+			format = 'CSV',
+			overwrite = true,
+			header = true,
+			field_delimiter = ';'
+		)
+		AS (
+			SELECT 'a' as name, 1 as num
+			UNION ALL
+			SELECT 'b' as name, 2 as num
+			UNION ALL  
+			SELECT 'c' as name, 3 as num
+		);`,
+		uri)
+	stats, _, err := runQuerySQL(ctx, sql)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	qStats, ok := stats.Details.(*QueryStatistics)
+	if !ok {
+		t.Fatalf("expected query statistics not present")
+	}
+
+	if qStats.ExportDataStatistics == nil {
+		t.Fatal("jobStatus missing ExportDataStatistics")
+	}
+	if qStats.ExportDataStatistics.FileCount != 1 {
+		t.Fatalf("expected ExportDataStatistics to have 1 file, but got %d files", qStats.ExportDataStatistics.FileCount)
+	}
+	if qStats.ExportDataStatistics.RowCount != 3 {
+		t.Fatalf("expected ExportDataStatistics to have 3 rows, got %d rows", qStats.ExportDataStatistics.RowCount)
 	}
 }
 
