@@ -9,7 +9,7 @@ replace (
 
 require (
 	cloud.google.com/go v0.112.0
-	cloud.google.com/go/spanner v1.55.0
+	cloud.google.com/go/spanner v1.57.0
 	github.com/golang/protobuf v1.5.3
 	go.opentelemetry.io/otel v1.23.1
 	go.opentelemetry.io/otel/sdk v1.23.1
