@@ -3,6 +3,13 @@
 
 
 
+## [1.59.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.59.0...bigquery/v1.59.1) (2024-02-12)
+
+
+### Bug Fixes
+
+* **bigquery:** Align return time.Time values to UTC ([#9411](https://github.com/googleapis/google-cloud-go/issues/9411)) ([4ac005d](https://github.com/googleapis/google-cloud-go/commit/4ac005d77f1e19981c7e1ab1cebec1302e0840ca))
+
 ## [1.59.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.58.0...bigquery/v1.59.0) (2024-02-06)
 
 
