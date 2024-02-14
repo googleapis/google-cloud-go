@@ -32,6 +32,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/rpcreplay"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
@@ -1005,6 +1006,7 @@ func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
 		"i_avg": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 2}},
 		"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 3}},
 	}
+
 	testCases := []struct {
 		desc        string
 		wantFailure bool
@@ -1013,59 +1015,46 @@ func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
 		opts        []RunOption
 	}{
 		{
-			desc: "No mode",
+			desc: "No options",
 			wantRes: AggregationWithOptionsResult{
 				Result: wantAggResult,
 			},
 		},
 		{
-			desc: "Normal mode",
+			desc: "ExplainOptions.Analyze is false",
 			wantRes: AggregationWithOptionsResult{
-				Result: wantAggResult,
-			},
-			opts: []RunOption{QueryModeNormal},
-		},
-		{
-			desc: "Explain mode",
-			wantRes: AggregationWithOptionsResult{
-				Stats: &ResultSetStats{
-					QueryPlan: &QueryPlan{
-						PlanInfo: map[string]interface{}{
-							"indexes_used": []interface{}{
-								map[string]interface{}{
-									"properties":  "(T ASC, I ASC, __name__ ASC)",
-									"query_scope": "Includes Ancestors",
-								},
-							},
+				Plan: &Plan{
+					IndexesUsed: []*map[string]interface{}{
+						{
+							"properties":  "(T ASC, I ASC, __name__ ASC)",
+							"query_scope": "Includes Ancestors",
 						},
 					},
 				},
 			},
-			opts: []RunOption{QueryModeExplain},
+			opts: []RunOption{ExplainOptions{}},
 		},
 		{
-			desc: "ExplainAnalyze mode",
+			desc: "ExplainAnalyze.Analyze is true",
 			wantRes: AggregationWithOptionsResult{
 				Result: wantAggResult,
-				Stats: &ResultSetStats{
-					QueryPlan: &QueryPlan{
-						PlanInfo: map[string]interface{}{
-							"indexes_used": []interface{}{
-								map[string]interface{}{
-									"properties":  "(T ASC, I ASC, __name__ ASC)",
-									"query_scope": "Includes Ancestors",
-								},
-							},
+				Plan: &Plan{
+					IndexesUsed: []*map[string]interface{}{
+						{
+							"properties":  "(T ASC, I ASC, __name__ ASC)",
+							"query_scope": "Includes Ancestors",
 						},
 					},
-					QueryStats: map[string]interface{}{
+				},
+				ExecutionStats: &ExecutionStats{
+					ResultsReturned: 1,
+					DebugStats: &map[string]interface{}{
 						"documents_scanned":     "0",
 						"index_entries_scanned": "3",
-						"results_returned":      "1",
 					},
 				},
 			},
-			opts: []RunOption{QueryModeExplainAnalyze},
+			opts: []RunOption{ExplainOptions{Analyze: true}},
 		},
 	}
 
@@ -1081,7 +1070,11 @@ func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
 				return
 			}
 
-			if err := isEqualResultSetStats(gotRes.Stats, testcase.wantRes.Stats); err != nil {
+			if !testutil.Equal(gotRes.Plan, testcase.wantRes.Plan) {
+				t.Errorf("%v Plan: got: %+v, want: %+v", testcase.desc, gotRes.Plan, testcase.wantRes.Plan)
+			}
+
+			if err := isEqualExecutionStats(gotRes.ExecutionStats, testcase.wantRes.ExecutionStats); err != nil {
 				r.Errorf("%q: Mismatch in stats %+v", testcase.desc, err)
 			}
 		})
@@ -1432,62 +1425,51 @@ func createTestEntities(ctx context.Context, t *testing.T, client *Client, parti
 }
 
 type runWithOptionsTestcase struct {
-	desc         string
-	wantKeys     []*Key
-	wantStats    *ResultSetStats
-	wantEntities []SQChild
-	opts         []RunOption
+	desc               string
+	wantKeys           []*Key
+	wantExecutionStats *ExecutionStats
+	wantPlan           *Plan
+	wantEntities       []SQChild
+	opts               []RunOption
 }
 
 func getRunWithOptionsTestcases(ctx context.Context, t *testing.T, client *Client, partialNameKey string, count int) ([]runWithOptionsTestcase, int64, *Key, func()) {
 	keys, entities, now, parent, cleanup := createTestEntities(ctx, t, client, partialNameKey, count)
 	return []runWithOptionsTestcase{
 		{
-			desc:         "No mode",
+			desc:         "No ExplainOptions",
 			wantKeys:     keys,
 			wantEntities: entities,
 		},
 		{
-			desc:         "Normal query mode",
-			opts:         []RunOption{QueryModeNormal},
-			wantKeys:     keys,
-			wantEntities: entities,
-		},
-		{
-			desc: "Explain query mode",
-			opts: []RunOption{QueryModeExplain},
-			wantStats: &ResultSetStats{
-				QueryPlan: &QueryPlan{
-					PlanInfo: map[string]interface{}{
-						"indexes_used": []interface{}{
-							map[string]interface{}{
-								"properties":  "(T ASC, I ASC, __name__ ASC)",
-								"query_scope": "Includes Ancestors",
-							},
-						},
+			desc: "ExplainOptions.Analyze is false",
+			opts: []RunOption{ExplainOptions{}},
+			wantPlan: &Plan{
+				IndexesUsed: []*map[string]interface{}{
+					{
+						"properties":  "(T ASC, I ASC, __name__ ASC)",
+						"query_scope": "Includes Ancestors",
 					},
 				},
 			},
 		},
 		{
-			desc:     "ExplainAnalyze query mode",
-			opts:     []RunOption{QueryModeExplainAnalyze},
+			desc:     "ExplainAnalyze.Analyze is true",
+			opts:     []RunOption{ExplainOptions{Analyze: true}},
 			wantKeys: keys,
-			wantStats: &ResultSetStats{
-				QueryPlan: &QueryPlan{
-					PlanInfo: map[string]interface{}{
-						"indexes_used": []interface{}{
-							map[string]interface{}{
-								"properties":  "(T ASC, I ASC, __name__ ASC)",
-								"query_scope": "Includes Ancestors",
-							},
-						},
-					},
-				},
-				QueryStats: map[string]interface{}{
+			wantExecutionStats: &ExecutionStats{
+				ResultsReturned: 1,
+				DebugStats: &map[string]interface{}{
 					"documents_scanned":     "3",
 					"index_entries_scanned": "3",
-					"results_returned":      "3",
+				},
+			},
+			wantPlan: &Plan{
+				IndexesUsed: []*map[string]interface{}{
+					{
+						"properties":  "(T ASC, I ASC, __name__ ASC)",
+						"query_scope": "Includes Ancestors",
+					},
 				},
 			},
 			wantEntities: entities,
@@ -1514,7 +1496,10 @@ func TestIntegration_GetAllWithOptions(t *testing.T) {
 		if !testutil.Equal(gotRes.Keys, testcase.wantKeys) {
 			t.Errorf("%v keys: got: %+v, want: %+v", testcase.desc, gotRes.Keys, testcase.wantKeys)
 		}
-		if err := isEqualResultSetStats(gotRes.Stats, testcase.wantStats); err != nil {
+		if !testutil.Equal(gotRes.Plan, testcase.wantPlan) {
+			t.Errorf("%v Plan: got: %+v, want: %+v", testcase.desc, gotRes.Plan, testcase.wantPlan)
+		}
+		if err := isEqualExecutionStats(gotRes.ExecutionStats, testcase.wantExecutionStats); err != nil {
 			t.Errorf("%v %+v", testcase.desc, err)
 		}
 	}
@@ -1544,28 +1529,39 @@ func TestIntegration_RunWithOptions(t *testing.T) {
 		if !testutil.Equal(gotSQChildsFromRun, testcase.wantEntities) {
 			t.Errorf("%v entities: got: %+v, want: %+v", testcase.desc, gotSQChildsFromRun, testcase.wantEntities)
 		}
-		if err := isEqualResultSetStats(iter.Stats, testcase.wantStats); err != nil {
+		if !testutil.Equal(iter.Plan, testcase.wantPlan) {
+			t.Errorf("%v Plan: got: %+v, want: %+v", testcase.desc, iter.Plan, testcase.wantPlan)
+		}
+		if err := isEqualExecutionStats(iter.ExecutionStats, testcase.wantExecutionStats); err != nil {
 			t.Errorf("%v %+v", testcase.desc, err)
 		}
 	}
 }
 
-func isEqualResultSetStats(got *ResultSetStats, want *ResultSetStats) error {
+func isEqualExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
 	if (got != nil && want == nil) || (got == nil && want != nil) {
-		return fmt.Errorf("Stats: got: %+v, want: %+v", got, want)
+		return fmt.Errorf("ExecutionStats: got: %+v, want: %+v", got, want)
 	}
-	if got != nil {
-		if !testutil.Equal(got.QueryPlan, want.QueryPlan) {
-			return fmt.Errorf("Stats.QueryPlan.PlanInfo: got: %+v, want: %+v", got.QueryPlan, want.QueryPlan)
-		}
+	if got == nil {
+		return nil
+	}
 
-		for wantK, wantV := range want.QueryStats {
-			gotV, ok := got.QueryStats[wantK]
-			if !ok || !testutil.Equal(gotV, wantV) {
-				return fmt.Errorf("Stats.QueryPlan.QueryStats: got: %+v, want: %+v", got.QueryStats, want.QueryStats)
-			}
+	// Compare all fields except DebugStats
+	if !testutil.Equal(want, got, cmpopts.IgnoreFields(&ExecutionStats{}, "DebugStats")) {
+		return fmt.Errorf("ExecutionStats: mismatch (-want +got):\n%s:", testutil.Diff(want, got, cmpopts.IgnoreFields(&ExecutionStats{}, "DebugStats")))
+	}
+
+	// Compare DebugStats
+	gotDebugStats := *got.DebugStats
+	for wantK, wantV := range *want.DebugStats {
+		// ExecutionStats.Debugstats has some keys whose values cannot be predicted. So, those values have not been included in want
+		// Here, compare only those values included in want
+		gotV, ok := gotDebugStats[wantK]
+		if !ok || !testutil.Equal(gotV, wantV) {
+			return fmt.Errorf("ExecutionStats.DebugStats: wantKey: %v  gotValue: %+v, wantValue: %+v", wantK, gotV, wantV)
 		}
 	}
+
 	return nil
 }
 

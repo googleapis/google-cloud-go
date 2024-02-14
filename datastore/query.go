@@ -23,6 +23,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/internal/protostruct"
 	"cloud.google.com/go/internal/trace"
@@ -626,36 +627,31 @@ func (c *Client) Count(ctx context.Context, q *Query) (n int, err error) {
 	}
 }
 
-const (
-	// QueryModeNormal is the default mode. Only the query results are returned.
-	QueryModeNormal QueryMode = iota // = 0
-	// QueryModeExplain returns only the query plan, without any results or execution
-	// statistics information.
-	QueryModeExplain // = 1
-	// QueryModeExplainAnalyze returns both the query plan and the execution statistics along
-	// with the results.
-	QueryModeExplainAnalyze // = 2
-)
-
 // RunOption lets the user provide options while running a query
 type RunOption interface {
 	apply(*runQuerySettings) error
 }
 
-// QueryMode is the mode in which the query request must be processed.
-type QueryMode int32
+// ExplainOptions is explain options for the query.
+type ExplainOptions struct {
+	// When true, the query will be planned and executed, returning the full
+	// query results along with both planning and execution stage metrics.
+	Analyze bool
+}
 
-func (m QueryMode) apply(s *runQuerySettings) error {
-	if s.mode != nil {
-		return errors.New("datastore: only one mode can be specified")
+func (e ExplainOptions) apply(s *runQuerySettings) error {
+	if s.explainOptions != nil {
+		return errors.New("datastore: ExplainOptions can be specified can be specified only once")
 	}
-	pbQueryMode := pb.QueryMode(m)
-	s.mode = &pbQueryMode
+	pbExplainOptions := pb.ExplainOptions{
+		Analyze: e.Analyze,
+	}
+	s.explainOptions = &pbExplainOptions
 	return nil
 }
 
 type runQuerySettings struct {
-	mode *pb.QueryMode
+	explainOptions *pb.ExplainOptions
 }
 
 // newRunQuerySettings creates a runQuerySettings with a given RunOption slice.
@@ -673,21 +669,55 @@ func newRunQuerySettings(opts []RunOption) (*runQuerySettings, error) {
 	return s, nil
 }
 
-// ResultSetStats is planning and execution statistics for the query.
-type ResultSetStats struct {
-	QueryPlan  *QueryPlan
-	QueryStats map[string]interface{}
+// Planning phase information for the query.
+type Plan struct {
+	// The indexes selected for the query. For example:
+	//
+	//	[
+	//	  {"query_scope": "Collection", "properties": "(foo ASC, __name__ ASC)"},
+	//	  {"query_scope": "Collection", "properties": "(bar ASC, __name__ ASC)"}
+	//	]
+	IndexesUsed []*map[string]interface{}
 }
 
-// QueryPlan is plan for the query.
-type QueryPlan struct {
-	PlanInfo map[string]interface{}
+// Execution statistics for the query.
+type ExecutionStats struct {
+	// Total number of results returned, including documents, projections,
+	// aggregation results, keys.
+	ResultsReturned int64
+	// Total number of the bytes of the results returned.
+	BytesReturned int64
+	// Total time to execute the query in the backend.
+	ExecutionDuration *time.Duration
+	// Total billable read operations.
+	ReadOperations int64
+	// Debugging statistics from the execution of the query. Note that the
+	// debugging stats are subject to change as Firestore evolves. It could
+	// include:
+	//
+	//	{
+	//	  "indexes_entries_scanned": "1000",
+	//	  "documents_scanned": "20",
+	//	  "billing_details" : {
+	//	     "documents_billable": "20",
+	//	     "index_entries_billable": "1000",
+	//	     "min_query_cost": "0"
+	//	  }
+	//	}
+	DebugStats *map[string]interface{}
 }
 
 // GetAllWithOptionsResult is the result of call to GetAllWithOptions method
 type GetAllWithOptionsResult struct {
-	Keys  []*Key
-	Stats *ResultSetStats
+	Keys []*Key
+
+	// Planning phase information for the query.
+	// This is only present when ExplainOptions is used
+	Plan *Plan
+
+	// Aggregated stats from the execution of the query.
+	// This is only present when ExplainOptions with Analyze as true is used
+	ExecutionStats *ExecutionStats
 }
 
 // GetAll runs the provided query in the given context and returns all keys
@@ -743,7 +773,8 @@ func (c *Client) GetAllWithOptions(ctx context.Context, q *Query, dst interface{
 
 	for t := c.Run(ctx, q, opts...); ; {
 		k, e, err := t.next()
-		res.Stats = t.Stats
+		res.ExecutionStats = t.ExecutionStats
+		res.Plan = t.Plan
 		if err == iterator.Done {
 			break
 		}
@@ -821,8 +852,8 @@ func (c *Client) Run(ctx context.Context, q *Query, opts ...RunOption) *Iterator
 		return t
 	}
 
-	if runSettings.mode != nil {
-		t.req.Mode = *runSettings.mode
+	if runSettings.explainOptions != nil {
+		t.req.ExplainOptions = runSettings.explainOptions
 	}
 
 	if err := q.toRunQueryRequest(t.req); err != nil {
@@ -884,8 +915,8 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 	if err != nil {
 		return ar, err
 	}
-	if runSettings.mode != nil {
-		req.Mode = *runSettings.mode
+	if runSettings.explainOptions != nil {
+		req.ExplainOptions = runSettings.explainOptions
 	}
 
 	// Parse the read options.
@@ -899,7 +930,7 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 		return ar, err
 	}
 
-	if req.Mode != pb.QueryMode_PLAN {
+	if req.ExplainOptions != nil && req.ExplainOptions.Analyze {
 		ar.Result = make(AggregationResult)
 		// TODO(developer): change batch parsing logic if other aggregations are supported.
 		for _, a := range resp.Batch.AggregationResults {
@@ -908,7 +939,8 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 			}
 		}
 	}
-	ar.Stats = fromPbResultSetStats(resp.Stats)
+	ar.ExecutionStats = fromPbExecutionStats(resp.ExecutionStats)
+	ar.Plan = fromPbPlan(resp.Plan)
 
 	return ar, nil
 }
@@ -976,8 +1008,13 @@ type Iterator struct {
 	// entityCursor is the compiled cursor of the next result.
 	entityCursor []byte
 
-	// Stats contains query plan and execution statistics.
-	Stats *ResultSetStats
+	// Planning phase information for the query.
+	// This is only present when ExplainOptions is used
+	Plan *Plan
+
+	// Aggregated stats from the execution of the query.
+	// This is only present when ExplainOptions with Analyze as true is used
+	ExecutionStats *ExecutionStats
 
 	// trans records the transaction in which the query was run
 	// Currently, this value is set but unused
@@ -1058,10 +1095,10 @@ func (t *Iterator) nextBatch() error {
 		return err
 	}
 
-	if t.req.Mode == pb.QueryMode_PLAN {
+	if t.req.ExplainOptions != nil && !t.req.ExplainOptions.Analyze {
 		// No results to process
 		t.limit = 0
-		t.Stats = fromPbResultSetStats(resp.Stats)
+		t.Plan = fromPbPlan(resp.Plan)
 		return nil
 	}
 
@@ -1104,22 +1141,45 @@ func (t *Iterator) nextBatch() error {
 	t.pageCursor = resp.Batch.EndCursor
 
 	t.results = resp.Batch.EntityResults
-	t.Stats = fromPbResultSetStats(resp.Stats)
+	t.ExecutionStats = fromPbExecutionStats(resp.ExecutionStats)
+	t.Plan = fromPbPlan(resp.Plan)
 	return nil
 }
 
-func fromPbResultSetStats(pbstats *pb.ResultSetStats) *ResultSetStats {
+func fromPbPlan(pbplan *pb.Plan) *Plan {
+	if pbplan == nil {
+		return nil
+	}
+
+	plan := &Plan{}
+	indexesUsed := []*map[string]interface{}{}
+	for _, pbIndexUsed := range pbplan.GetIndexesUsed() {
+		indexUsed := protostruct.DecodeToMap(pbIndexUsed)
+		indexesUsed = append(indexesUsed, &indexUsed)
+	}
+
+	plan.IndexesUsed = indexesUsed
+	return plan
+}
+
+func fromPbExecutionStats(pbstats *pb.ExecutionStats) *ExecutionStats {
 	if pbstats == nil {
 		return nil
 	}
-	planInfo := protostruct.DecodeToMap(pbstats.QueryPlan.PlanInfo)
-	queryStats := protostruct.DecodeToMap(pbstats.QueryStats)
-	return &ResultSetStats{
-		QueryPlan: &QueryPlan{
-			PlanInfo: planInfo,
-		},
-		QueryStats: queryStats,
+
+	executionStats := &ExecutionStats{
+		ResultsReturned: pbstats.GetResultsReturned(),
+		BytesReturned:   pbstats.GetBytesReturned(),
+		ReadOperations:  pbstats.GetReadOperations(),
 	}
+
+	executionDuration := pbstats.GetExecutionDuration().AsDuration()
+	executionStats.ExecutionDuration = &executionDuration
+
+	debugStats := protostruct.DecodeToMap(pbstats.GetDebugStats())
+	executionStats.DebugStats = &debugStats
+
+	return executionStats
 }
 
 // Cursor returns a cursor for the iterator's current location.
@@ -1256,5 +1316,12 @@ type AggregationResult map[string]interface{}
 // AggregationWithOptionsResult contains the results of an aggregation query run with options.
 type AggregationWithOptionsResult struct {
 	Result AggregationResult
-	Stats  *ResultSetStats
+
+	// Planning phase information for the query.
+	// This is only present when ExplainOptions is used
+	Plan *Plan
+
+	// Aggregated stats from the execution of the query.
+	// This is only present when ExplainOptions with Analyze as true is used
+	ExecutionStats *ExecutionStats
 }

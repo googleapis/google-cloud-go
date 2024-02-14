@@ -860,27 +860,33 @@ func TestAggregationQueryIsNil(t *testing.T) {
 	}
 }
 
-func TestQueryModeApply(t *testing.T) {
-	pbNormal := pb.QueryMode(QueryModeNormal)
+func TestExplainOptionsApply(t *testing.T) {
+	pbExplainOptions := pb.ExplainOptions{
+		Analyze: true,
+	}
 	for _, testcase := range []struct {
-		desc         string
-		existingMode *pb.QueryMode
-		newMode      QueryMode
-		wantErrMsg   string
+		desc            string
+		existingOptions *pb.ExplainOptions
+		newOptions      ExplainOptions
+		wantErrMsg      string
 	}{
 		{
-			desc:         "Multiple modes",
-			existingMode: &pbNormal,
-			newMode:      QueryModeExplain,
-			wantErrMsg:   "only one mode can be specified",
+			desc:            "ExplainOptions specified multiple times",
+			existingOptions: &pbExplainOptions,
+			newOptions: ExplainOptions{
+				Analyze: true,
+			},
+			wantErrMsg: "ExplainOptions can be specified can be specified only once",
 		},
 		{
-			desc:         "Single mode",
-			existingMode: nil,
-			newMode:      QueryModeExplain,
+			desc:            "ExplainOptions specified once",
+			existingOptions: nil,
+			newOptions: ExplainOptions{
+				Analyze: true,
+			},
 		},
 	} {
-		gotErr := testcase.newMode.apply(&runQuerySettings{mode: testcase.existingMode})
+		gotErr := testcase.newOptions.apply(&runQuerySettings{explainOptions: testcase.existingOptions})
 		if (gotErr == nil && testcase.wantErrMsg != "") ||
 			(gotErr != nil && !strings.Contains(gotErr.Error(), testcase.wantErrMsg)) {
 			t.Errorf("%v: apply got: %v want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
@@ -896,24 +902,24 @@ func TestNewRunQuerySettings(t *testing.T) {
 	}{
 		{
 			desc:       "nil RunOption",
-			opts:       []RunOption{QueryModeNormal, nil},
+			opts:       []RunOption{ExplainOptions{Analyze: true}, nil},
 			wantErrMsg: "cannot be nil",
 		},
 		{
 			desc: "success RunOption",
-			opts: []RunOption{QueryModeNormal},
+			opts: []RunOption{ExplainOptions{Analyze: true}},
 		},
 		{
-			desc:       "multiple modes",
-			opts:       []RunOption{QueryModeNormal, QueryModeExplainAnalyze},
-			wantErrMsg: "only one mode can be specified",
+			desc:       "ExplainOptions specified multiple times",
+			opts:       []RunOption{ExplainOptions{Analyze: true}, ExplainOptions{Analyze: false}, ExplainOptions{Analyze: true}},
+			wantErrMsg: "ExplainOptions can be specified can be specified only once",
 		},
 	} {
 		_, gotErr := newRunQuerySettings(testcase.opts)
 		if (gotErr == nil && testcase.wantErrMsg != "") ||
 			(gotErr != nil && !strings.Contains(gotErr.Error(), testcase.wantErrMsg)) {
 			t.Errorf("%v: newRunQuerySettings got: %v want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
-    }
+		}
 	}
 }
 
