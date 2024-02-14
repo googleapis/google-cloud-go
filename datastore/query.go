@@ -671,7 +671,7 @@ func newRunQuerySettings(opts []RunOption) (*runQuerySettings, error) {
 	return s, nil
 }
 
-// Planning phase information for the query.
+// Plan represents planning phase information for the query.
 type Plan struct {
 	// The indexes selected for the query. For example:
 	//
@@ -682,7 +682,7 @@ type Plan struct {
 	IndexesUsed []*map[string]interface{}
 }
 
-// Execution statistics for the query.
+// ExecutionStats represents execution statistics for the query.
 type ExecutionStats struct {
 	// Total number of results returned, including documents, projections,
 	// aggregation results, keys.

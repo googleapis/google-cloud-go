@@ -1548,7 +1548,7 @@ func isEqualExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
 
 	// Compare all fields except DebugStats
 	if !testutil.Equal(want, got, cmpopts.IgnoreFields(&ExecutionStats{}, "DebugStats")) {
-		return fmt.Errorf("ExecutionStats: mismatch (-want +got):\n%s:", testutil.Diff(want, got, cmpopts.IgnoreFields(&ExecutionStats{}, "DebugStats")))
+		return fmt.Errorf("ExecutionStats: mismatch (-want +got):\n%s", testutil.Diff(want, got, cmpopts.IgnoreFields(&ExecutionStats{}, "DebugStats")))
 	}
 
 	// Compare DebugStats
