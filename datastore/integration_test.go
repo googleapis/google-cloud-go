@@ -1035,7 +1035,7 @@ func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
 			opts: []RunOption{ExplainOptions{}},
 		},
 		{
-			desc: "ExplainAnalyze.Analyze is true",
+			desc: "ExplainOptions.Analyze is true",
 			wantRes: AggregationWithOptionsResult{
 				Result: wantAggResult,
 				Plan: &Plan{
@@ -1454,7 +1454,7 @@ func getRunWithOptionsTestcases(ctx context.Context, t *testing.T, client *Clien
 			},
 		},
 		{
-			desc:     "ExplainAnalyze.Analyze is true",
+			desc:     "ExplainOptions.Analyze is true",
 			opts:     []RunOption{ExplainOptions{Analyze: true}},
 			wantKeys: keys,
 			wantExecutionStats: &ExecutionStats{
