@@ -634,6 +634,8 @@ type RunOption interface {
 
 // ExplainOptions is explain options for the query.
 type ExplainOptions struct {
+	// When false (the default), the query will be planned, returning only
+	// metrics from the planning stages.
 	// When true, the query will be planned and executed, returning the full
 	// query results along with both planning and execution stage metrics.
 	Analyze bool
