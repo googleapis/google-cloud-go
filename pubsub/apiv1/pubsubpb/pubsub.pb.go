@@ -22,9 +22,6 @@ package pubsubpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -44,7 +43,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Possible states for managed ingestion from Amazon Kinesis Data Streams.
+// Possible states for ingestion from Amazon Kinesis Data Streams.
 type IngestionDataSourceSettings_AwsKinesis_State int32
 
 const (
@@ -626,8 +625,7 @@ type Topic struct {
 	MessageRetentionDuration *durationpb.Duration `protobuf:"bytes,8,opt,name=message_retention_duration,json=messageRetentionDuration,proto3" json:"message_retention_duration,omitempty"`
 	// Output only. An output-only field indicating the state of the topic.
 	State Topic_State `protobuf:"varint,9,opt,name=state,proto3,enum=google.pubsub.v1.Topic_State" json:"state,omitempty"`
-	// Optional. Settings for managed ingestion from a data source into this
-	// topic.
+	// Optional. Settings for ingestion from a data source into this topic.
 	IngestionDataSourceSettings *IngestionDataSourceSettings `protobuf:"bytes,10,opt,name=ingestion_data_source_settings,json=ingestionDataSourceSettings,proto3" json:"ingestion_data_source_settings,omitempty"`
 }
 
