@@ -716,7 +716,7 @@ func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (keys []
 // Run runs the given query in the given context.
 func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 	if q.err != nil {
-		return &Iterator{err: q.err}
+		return &Iterator{ctx: ctx, err: q.err}
 	}
 	t := &Iterator{
 		ctx:          ctx,
