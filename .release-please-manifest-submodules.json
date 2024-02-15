@@ -89,6 +89,7 @@
     "orgpolicy": "1.12.1",
     "osconfig": "1.12.5",
     "oslogin": "1.13.1",
+    "parallelstore": "0.0.0",
     "phishingprotection": "0.8.5",
     "policysimulator": "0.2.3",
     "policytroubleshooter": "1.10.3",
