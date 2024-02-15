@@ -1022,7 +1022,7 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 
 func reverseSlice(s []map[string]interface{}) []map[string]interface{} {
 	reversed := make([]map[string]interface{}, len(s))
-	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+	for i, j := 0, len(s)-1; i <= j; i, j = i+1, j-1 {
 		reversed[i] = s[j]
 		reversed[j] = s[i]
 	}
@@ -1067,6 +1067,7 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 		{"StartAfter", q.StartAfter(1), wants[2:], true, Asc},
 		{"EndAt", q.EndAt(1), wants[:2], true, Asc},
 		{"EndBefore", q.EndBefore(1), wants[:1], true, Asc},
+		{"Open range with DESC order", q.StartAfter(6).EndBefore(2), reverseSlice(wants[3:6]), true, Desc},
 		{"LimitToLast", q.LimitToLast(2), wants[len(wants)-2:], true, Asc},
 		{"StartAfter with LimitToLast", q.StartAfter(2).LimitToLast(2), wants[len(wants)-2:], true, Asc},
 		{"StartAt with LimitToLast", q.StartAt(2).LimitToLast(2), wants[len(wants)-2:], true, Asc},
@@ -1094,6 +1095,8 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 			t.Errorf("#%d %v: %+v: got %d docs, want %d", i, test.desc, test.q, len(gotDocs), len(test.want))
 			continue
 		}
+
+		fmt.Printf("test.want: %+v\n", test.want)
 
 		docsEqual := true
 		docsNotEqualErr := ""
