@@ -250,6 +250,7 @@ type ListEndpointsRequest struct {
 	//   - A key including a space must be quoted. `labels."a key"`.
 	//
 	// Some examples:
+	//
 	//   - `endpoint=1`
 	//   - `displayName="myDisplayName"`
 	//   - `labels.myKey="myValue"`
