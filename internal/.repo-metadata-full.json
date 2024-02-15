@@ -1795,7 +1795,7 @@
     "description": "Parallelstore API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/parallelstore/apiv1beta",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/parallelstore/latest/apiv1beta",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
