@@ -1,5 +1,26 @@
 # Changes
 
+## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.56.0...spanner/v1.57.0) (2024-02-13)
+
+
+### Features
+
+* **spanner:** Add OpenTelemetry implementation ([#9254](https://github.com/googleapis/google-cloud-go/issues/9254)) ([fc51cc2](https://github.com/googleapis/google-cloud-go/commit/fc51cc2ac71e8fb0b3e381379dc343630ed441e7))
+* **spanner:** Support max_commit_delay in Spanner transactions ([#9299](https://github.com/googleapis/google-cloud-go/issues/9299)) ([a8078f0](https://github.com/googleapis/google-cloud-go/commit/a8078f0b841281bd439c548db9d303f6b5ce54e6))
+
+
+### Bug Fixes
+
+* **spanner:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+* **spanner:** Internal test package should import local version ([#9416](https://github.com/googleapis/google-cloud-go/issues/9416)) ([f377281](https://github.com/googleapis/google-cloud-go/commit/f377281a73553af9a9a2bee2181efe2e354e1c68))
+* **spanner:** SelectAll struct fields match should be case-insensitive ([#9417](https://github.com/googleapis/google-cloud-go/issues/9417)) ([7ff5356](https://github.com/googleapis/google-cloud-go/commit/7ff535672b868e6cba54abdf5dd92b9199e4d1d4))
+* **spanner:** Support time.Time and other custom types using SelectAll ([#9382](https://github.com/googleapis/google-cloud-go/issues/9382)) ([dc21234](https://github.com/googleapis/google-cloud-go/commit/dc21234268b08a4a21b2b3a1ed9ed74d65a289f0))
+
+
+### Documentation
+
+* **spanner:** Update the comment regarding eligible SQL shapes for PartitionQuery ([e60a6ba](https://github.com/googleapis/google-cloud-go/commit/e60a6ba01acf2ef2e8d12e23ed5c6e876edeb1b7))
+
 ## [1.56.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.55.0...spanner/v1.56.0) (2024-01-30)
 
 
@@ -899,4 +920,3 @@
 
 This is the first tag to carve out spanner as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
