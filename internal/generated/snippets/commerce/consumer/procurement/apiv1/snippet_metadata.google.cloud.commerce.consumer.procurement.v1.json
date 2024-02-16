@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/commerce/consumer/procurement/apiv1",
-    "version": "0.1.4",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
