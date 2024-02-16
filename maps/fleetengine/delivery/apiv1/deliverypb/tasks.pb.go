@@ -21,14 +21,13 @@
 package deliverypb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -281,7 +280,7 @@ func (Task_TaskOutcomeLocationSource) EnumDescriptor() ([]byte, []int) {
 //
 // Note: gRPC and REST APIs use different field naming conventions. For example,
 // the `Task.journey_sharing_info` field in the gRPC API and the
-// `DeliveryVehicle.journeySharingInfo` field in the REST API refer to the same
+// `Task.journeySharingInfo` field in the REST API refer to the same
 // field.
 type Task struct {
 	state         protoimpl.MessageState
