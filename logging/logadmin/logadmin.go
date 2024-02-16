@@ -223,7 +223,7 @@ type newestFirst struct{}
 
 func (newestFirst) set(r *logpb.ListLogEntriesRequest) { r.OrderBy = "timestamp desc" }
 
-// PageSize provide a way to override number of results to return from each request. Default is 50
+// PageSize provide a way to override number of results to return from each request.
 func PageSize(p int32) EntriesOption { return pageSize(p) }
 
 type pageSize int32
