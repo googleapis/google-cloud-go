@@ -336,6 +336,10 @@ const (
 	eventAckCalled    = "ack called"
 	eventNackCalled   = "nack called"
 
+	resultAcked   = "acked"
+	resultNacked  = "nacked"
+	resultExpired = "expired"
+
 	// custom pubsub specific attributes
 	pubsubPrefix             = "messaging.gcp_pubsub."
 	orderingAttribute        = pubsubPrefix + "message.ordering_key"

@@ -17,6 +17,7 @@ package pubsub
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -26,7 +27,6 @@ import (
 	"cloud.google.com/go/pubsub/internal"
 	"cloud.google.com/go/pubsub/pstest"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -172,15 +172,10 @@ func TestTrace_PublishSpan(t *testing.T) {
 	defer topic.Stop()
 
 	got := getSpans(e)
-	opts := []cmp.Option{
-		cmp.Comparer(spanStubComparer),
-		cmpopts.SortSlices(sortSpanStub),
-	}
-	if diff := testutil.Diff(got, expectedSpans, opts...); diff != "" {
-		t.Logf("got spans: %+v\n", got)
-		t.Logf("expected spans: %+v\n", expectedSpans)
-		t.Errorf("diff: -got, +want:\n%s\n", diff)
-	}
+	slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
+		return sortSpanStub(a, b)
+	})
+	compareSpans(t, got, expectedSpans)
 }
 
 func TestTrace_PublishSpanError(t *testing.T) {
@@ -192,7 +187,6 @@ func TestTrace_PublishSpanError(t *testing.T) {
 	e := tracetest.NewInMemoryExporter()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
 	defer tp.Shutdown(ctx)
-	otel.SetTextMapPropagator(propagation.TraceContext{})
 	otel.SetTracerProvider(tp)
 
 	m := &Message{
@@ -227,7 +221,6 @@ func TestTrace_PublishSpanError(t *testing.T) {
 		got := getSpans(e)
 		opts := []cmp.Option{
 			cmp.Comparer(spanStubComparer),
-			cmpopts.SortSlices(sortSpanStub),
 		}
 		if diff := testutil.Diff(got, want, opts...); diff != "" {
 			t.Errorf("diff: -got, +want:\n%s\n", diff)
@@ -251,7 +244,6 @@ func TestTrace_PublishSpanError(t *testing.T) {
 		want := getPublishSpanStubsWithError(topicID, m, msgSize, ErrTopicStopped)
 		opts := []cmp.Option{
 			cmp.Comparer(spanStubComparer),
-			cmpopts.SortSlices(sortSpanStub),
 		}
 		if diff := testutil.Diff(got, want, opts...); diff != "" {
 			t.Errorf("diff: -got, +want:\n%s\n", diff)
@@ -286,7 +278,6 @@ func TestTrace_PublishSpanError(t *testing.T) {
 		want := getFlowControlSpanStubs(ErrFlowControllerMaxOutstandingBytes)
 		opts := []cmp.Option{
 			cmp.Comparer(spanStubComparer),
-			cmpopts.SortSlices(sortSpanStub),
 		}
 		if diff := testutil.Diff(got, want, opts...); diff != "" {
 			t.Errorf("diff: -got, +want:\n%s\n", diff)
@@ -343,9 +334,9 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 	}
 
 	e := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	g := &incrementIDGenerator{}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e), sdktrace.WithIDGenerator(g))
 	defer tp.Shutdown(ctx)
-	otel.SetTextMapPropagator(propagation.TraceContext{})
 	otel.SetTracerProvider(tp)
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -357,11 +348,16 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 
 	expectedSpans := tracetest.SpanStubs{
 		tracetest.SpanStub{
-			Name: fmt.Sprintf("%s %s", subID, processSpanName),
+			Name:     fmt.Sprintf("%s %s", subID, processSpanName),
+			SpanKind: trace.SpanKindInternal,
 			Attributes: []attribute.KeyValue{
-				attribute.String(resultAttribute, "ack"),
+				semconv.MessagingOperationProcess,
 			},
-			Events: []sdktrace.Event{},
+			Events: []sdktrace.Event{
+				{
+					Name: eventAckCalled,
+				},
+			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
@@ -371,19 +367,40 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			Name:     fmt.Sprintf("%s %s", subID, subscribeSpanName),
 			SpanKind: trace.SpanKindConsumer,
 			Attributes: []attribute.KeyValue{
-				semconv.MessagingDestinationName(topicID),
+				semconv.CodeFunction("iterator.receive"),
+				semconv.MessagingBatchMessageCount(1),
+				semconv.MessagingDestinationName(subID),
+				attribute.Bool(eosAttribute, enableEOS),
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
-				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
-				semconv.MessagingOperationReceive,
 				// The fake server uses message ID as ackID, this is not the case with live service.
 				attribute.String(ackIDAttribute, "m0"),
-				attribute.Bool(eosAttribute, enableEOS),
-				attribute.String(resultAttribute, "ack"),
 				attribute.String(orderingAttribute, m.OrderingKey),
+				attribute.String(resultAttribute, resultAcked),
+				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
 				semconv.MessagingSystemKey.String("pubsub"),
-				semconv.MessagingBatchMessageCount(1),
 			},
+			Events: []sdktrace.Event{
+				{
+					Name: eventModackStart,
+					Attributes: []attribute.KeyValue{
+						semconv.MessagingBatchMessageCount(1),
+					},
+				},
+				{
+					Name: eventModackEnd,
+				},
+				{
+					Name: eventAckStart,
+					Attributes: []attribute.KeyValue{
+						semconv.MessagingBatchMessageCount(1),
+					},
+				},
+				{
+					Name: eventAckEnd,
+				},
+			},
+			// ChildSpanCount: 3,
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
@@ -404,19 +421,42 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			},
 		},
 		tracetest.SpanStub{
-			Name: ackSpanName,
+			Name: fmt.Sprintf("%s %s", subID, ackSpanName),
+			Links: []sdktrace.Link{
+				{
+					SpanContext: trace.NewSpanContext(trace.SpanContextConfig{
+						TraceID:    [16]byte{(byte(1))},
+						SpanID:     [8]byte{(byte(1))},
+						TraceFlags: 1,
+					}),
+				},
+			},
+			Attributes: []attribute.KeyValue{
+				semconv.CodeFunction("messageIterator.sendAck"),
+				semconv.MessagingBatchMessageCount(1),
+			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
 			},
 		},
 		tracetest.SpanStub{
-			Name: modackSpanName,
+			Name: fmt.Sprintf("%s %s", subID, modackSpanName),
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
 			},
+			Links: []sdktrace.Link{
+				{
+					SpanContext: trace.NewSpanContext(trace.SpanContextConfig{
+						TraceID:    [16]byte{(byte(1))},
+						SpanID:     [8]byte{(byte(1))},
+						TraceFlags: 1,
+					}),
+				},
+			},
 			Attributes: []attribute.KeyValue{
+				semconv.CodeFunction("messageIterator.sendModAck"),
 				attribute.Bool(receiptModackAttribute, true),
 				attribute.Int(ackDeadlineSecAttribute, 10),
 				semconv.MessagingBatchMessageCount(1),
@@ -425,15 +465,10 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 	}
 
 	got := getSpans(e)
-	opts := []cmp.Option{
-		cmp.Comparer(spanStubComparer),
-		cmpopts.SortSlices(sortSpanStub),
-	}
-	if diff := testutil.Diff(got, expectedSpans, opts...); diff != "" {
-		t.Logf("got spans: %+v\n", got)
-		t.Logf("expected spans: %+v\n", expectedSpans)
-		t.Errorf("diff: -got, +want:\n%s\n", diff)
-	}
+	slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
+		return sortSpanStub(a, b)
+	})
+	compareSpans(t, got, expectedSpans)
 }
 
 func TestTrace_TracingNotEnabled(t *testing.T) {
@@ -506,15 +541,42 @@ func spanStubComparer(a, b tracetest.SpanStub) bool {
 
 }
 
-func sortSpanStub(a, b tracetest.SpanStub) bool {
-	return a.Name < b.Name
+func sortSpanStub(a, b tracetest.SpanStub) int {
+	if a.Name == b.Name {
+		return 0
+	} else if a.Name < b.Name {
+		return -1
+	} else {
+		return 1
+	}
 }
 
 func getSpans(e *tracetest.InMemoryExporter) tracetest.SpanStubs {
 	// Wait a fixed amount for spans to be fully exported.
 	time.Sleep(100 * time.Millisecond)
 
-	return e.GetSpans()
+	s := e.GetSpans()
+	slices.SortFunc(s, func(a, b tracetest.SpanStub) int {
+		return sortSpanStub(a, b)
+	})
+	return s
+}
+
+func compareSpans(t *testing.T, got, want tracetest.SpanStubs) {
+	if len(got) != len(want) {
+		t.Logf("got spans: %+v\n", got)
+		t.Logf("expected spans: %+v\n", want)
+		t.Errorf("got %d spans, want %d", len(got), len(want))
+	}
+	opts := []cmp.Option{
+		cmp.Comparer(spanStubComparer),
+	}
+	for i, span := range got {
+		wanti := want[i]
+		if diff := testutil.Diff(span, wanti, opts...); diff != "" {
+			t.Errorf("diff: -got, +want:\n%s\n", diff)
+		}
+	}
 }
 
 func getPublishSpanStubsWithError(topicID string, m *Message, msgSize int, err error) tracetest.SpanStubs {

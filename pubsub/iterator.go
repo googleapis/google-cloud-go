@@ -315,12 +315,9 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			span.SetAttributes(
 				attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
 				attribute.String(ackIDAttribute, ackID),
-				semconv.MessagingBatchMessageCount(len(pendingMessages)),
+				semconv.MessagingBatchMessageCount(len(msgs)),
 				semconv.CodeFunction("iterator.receive"),
 			)
-			if m.DeliveryAttempt != nil {
-				span.SetAttributes(attribute.Int(deliveryAttemptAttribute, *m.DeliveryAttempt))
-			}
 			it.activeSpan.Store(ackID, span)
 		}
 	}
@@ -505,7 +502,7 @@ func (it *messageIterator) handleKeepAlives() {
 			// get the parent span context for this ackID for otel tracing.
 			s, _ := it.activeSpan.LoadAndDelete(id)
 			span := s.(trace.Span)
-			span.SetAttributes(attribute.String(resultAttribute, "expired"))
+			span.SetAttributes(attribute.String(resultAttribute, resultExpired))
 			span.End()
 		} else {
 			// Use a success AckResult since we don't propagate ModAcks back to the user.
@@ -540,7 +537,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 					s, _ := it.activeSpan.Load(ackID)
 					parentSpan := s.(trace.Span)
 					defer parentSpan.End()
-					defer parentSpan.SetAttributes(attribute.String(resultAttribute, "ack"))
+					defer parentSpan.SetAttributes(attribute.String(resultAttribute, resultAcked))
 					parentSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
 					defer parentSpan.AddEvent(eventAckEnd)
 					if parentSpan.SpanContext().IsSampled() {
@@ -629,7 +626,7 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 					parentSpan := s.(trace.Span)
 					if isNack {
 						defer parentSpan.End()
-						defer parentSpan.SetAttributes(attribute.String(resultAttribute, "nack"))
+						defer parentSpan.SetAttributes(attribute.String(resultAttribute, resultNacked))
 					}
 					parentSpan.AddEvent(eventStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
 					defer parentSpan.AddEvent(eventEnd)
