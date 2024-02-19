@@ -21,9 +21,6 @@
 package placespb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -31,6 +28,8 @@ import (
 	localized_text "google.golang.org/genproto/googleapis/type/localized_text"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -265,8 +264,8 @@ type Place struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// An ID representing this place which may be used to look up this place
-	// again (a.k.a. the API "resource" name: places/place_id).
+	// This Place's resource name, in `places/{place_id}` format.  Can be used to
+	// look up the Place.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The unique identifier of a place.
 	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
