@@ -60,6 +60,7 @@ type CallOptions struct {
 	ListTransferLogs        []gax.CallOption
 	CheckValidCreds         []gax.CallOption
 	EnrollDataSources       []gax.CallOption
+	UnenrollDataSources     []gax.CallOption
 	GetLocation             []gax.CallOption
 	ListLocations           []gax.CallOption
 }
@@ -220,9 +221,10 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		EnrollDataSources: []gax.CallOption{},
-		GetLocation:       []gax.CallOption{},
-		ListLocations:     []gax.CallOption{},
+		EnrollDataSources:   []gax.CallOption{},
+		UnenrollDataSources: []gax.CallOption{},
+		GetLocation:         []gax.CallOption{},
+		ListLocations:       []gax.CallOption{},
 	}
 }
 
@@ -358,9 +360,10 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		EnrollDataSources: []gax.CallOption{},
-		GetLocation:       []gax.CallOption{},
-		ListLocations:     []gax.CallOption{},
+		EnrollDataSources:   []gax.CallOption{},
+		UnenrollDataSources: []gax.CallOption{},
+		GetLocation:         []gax.CallOption{},
+		ListLocations:       []gax.CallOption{},
 	}
 }
 
@@ -384,6 +387,7 @@ type internalClient interface {
 	ListTransferLogs(context.Context, *datatransferpb.ListTransferLogsRequest, ...gax.CallOption) *TransferMessageIterator
 	CheckValidCreds(context.Context, *datatransferpb.CheckValidCredsRequest, ...gax.CallOption) (*datatransferpb.CheckValidCredsResponse, error)
 	EnrollDataSources(context.Context, *datatransferpb.EnrollDataSourcesRequest, ...gax.CallOption) error
+	UnenrollDataSources(context.Context, *datatransferpb.UnenrollDataSourcesRequest, ...gax.CallOption) error
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
@@ -516,6 +520,14 @@ func (c *Client) CheckValidCreds(ctx context.Context, req *datatransferpb.CheckV
 // Service (at https://cloud.google.com/bigquery/docs/working-with-transfers).
 func (c *Client) EnrollDataSources(ctx context.Context, req *datatransferpb.EnrollDataSourcesRequest, opts ...gax.CallOption) error {
 	return c.internalClient.EnrollDataSources(ctx, req, opts...)
+}
+
+// UnenrollDataSources unenroll data sources in a user project. This allows users to remove
+// transfer configurations for these data sources. They will no longer appear
+// in the ListDataSources RPC and will also no longer appear in the BigQuery
+// UI (at https://console.cloud.google.com/bigquery).
+func (c *Client) UnenrollDataSources(ctx context.Context, req *datatransferpb.UnenrollDataSourcesRequest, opts ...gax.CallOption) error {
+	return c.internalClient.UnenrollDataSources(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -1038,6 +1050,20 @@ func (c *gRPCClient) EnrollDataSources(ctx context.Context, req *datatransferpb.
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.EnrollDataSources(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) UnenrollDataSources(ctx context.Context, req *datatransferpb.UnenrollDataSourcesRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UnenrollDataSources[0:len((*c.CallOptions).UnenrollDataSources):len((*c.CallOptions).UnenrollDataSources)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.UnenrollDataSources(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	return err
@@ -2135,6 +2161,57 @@ func (c *restClient) EnrollDataSources(ctx context.Context, req *datatransferpb.
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:enrollDataSources", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// UnenrollDataSources unenroll data sources in a user project. This allows users to remove
+// transfer configurations for these data sources. They will no longer appear
+// in the ListDataSources RPC and will also no longer appear in the BigQuery
+// UI (at https://console.cloud.google.com/bigquery).
+func (c *restClient) UnenrollDataSources(ctx context.Context, req *datatransferpb.UnenrollDataSourcesRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:unenrollDataSources", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
