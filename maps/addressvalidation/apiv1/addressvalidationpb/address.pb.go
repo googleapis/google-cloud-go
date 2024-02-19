@@ -21,13 +21,12 @@
 package addressvalidationpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	postaladdress "google.golang.org/genproto/googleapis/type/postaladdress"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -240,9 +239,11 @@ type AddressComponent struct {
 	// inferred it for the address location and believe it should be provided
 	// for a complete address.
 	Inferred bool `protobuf:"varint,4,opt,name=inferred,proto3" json:"inferred,omitempty"`
-	// Indicates the spelling of the component name was corrected in a minor way,
-	// for example by switching two characters that appeared in the wrong order.
-	// This indicates a cosmetic change.
+	// Indicates a correction to a misspelling in the component name.  The API
+	// does not always flag changes from one spelling variant to another, such as
+	// when changing "centre" to "center". It also does not always flag common
+	// misspellings, such as when changing "Amphitheater Pkwy" to "Amphitheatre
+	// Pkwy".
 	SpellCorrected bool `protobuf:"varint,5,opt,name=spell_corrected,json=spellCorrected,proto3" json:"spell_corrected,omitempty"`
 	// Indicates the name of the component was replaced with a completely
 	// different one, for example a wrong postal code being replaced with one that
