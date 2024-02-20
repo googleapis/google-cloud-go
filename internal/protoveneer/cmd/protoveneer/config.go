@@ -55,7 +55,10 @@ type typeConfig struct {
 	// Custom conversion functions: "tofunc, fromfunc"
 	ConvertToFrom string `yaml:"convertToFrom"`
 	// Doc string for the type, omitting the initial type name.
+	// This replaces the first line of the doc.
 	Doc string
+	// Remove all but the first line of the doc.
+	RemoveOtherDoc bool `yaml:"removeOtherDoc"`
 	// Verb to place after type name in doc. Default: "is".
 	// Ignored if Doc is non-empty.
 	DocVerb string `yaml:"docVerb"`
