@@ -22,7 +22,9 @@ To use a Server, create it, and then connect to it with no security:
 
 	srv, err := bttest.NewServer("localhost:0")
 	...
-	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(
+		srv.Addr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	...
 	client, err := bigtable.NewClient(ctx, proj, instance,
 	        option.WithGRPCConn(conn))
