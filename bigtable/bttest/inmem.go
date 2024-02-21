@@ -1072,6 +1072,13 @@ func (s *server) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequest) 
 // fam should be a snapshot of the keys of tbl.families.
 // It assumes r.mu is locked.
 func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*columnFamily) error {
+	if len(r.key) == 0 {
+		return status.Errorf(
+			codes.InvalidArgument,
+			"Row keys must be non-empty",
+		)
+	}
+
 	for _, mut := range muts {
 		switch mut := mut.Mutation.(type) {
 		default:
