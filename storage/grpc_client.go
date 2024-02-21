@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/internal/trace"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -39,8 +40,6 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protowire"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-
-	"github.com/golang/protobuf/proto"
 )
 
 const (
@@ -926,8 +925,8 @@ func (bytesCodec) Marshal(v any) ([]byte, error) {
 func (bytesCodec) Unmarshal(data []byte, v any) error {
 	switch v := v.(type) {
 	case *[]byte:
-		// gRPC can recycle the data []byte after unmarshaling,
-		// so we need to make a copy here.
+		// If gRPC could recycle the data []byte after unmarshaling (through
+		// buffer pools), we would need to make a copy here.
 		*v = data
 		return nil
 	case proto.Message:
@@ -949,7 +948,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 	s := callSettings(c.settings, opts...)
 
-	s.gax = append(s.gax[:len(s.gax)], gax.WithGRPCOptions(
+	s.gax = append(s.gax, gax.WithGRPCOptions(
 		grpc.ForceCodec(bytesCodec{}),
 	))
 
