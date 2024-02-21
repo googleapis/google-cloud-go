@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v0.1.1...servicehealth/v0.1.2) (2024-02-21)
+
+
+### Documentation
+
+* **servicehealth:** Update proto comments ([7e6c208](https://github.com/googleapis/google-cloud-go/commit/7e6c208c5d97d3f6e2f7fd7aca09b8ae98dc0bf2))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v0.1.0...servicehealth/v0.1.1) (2024-01-30)
 
 

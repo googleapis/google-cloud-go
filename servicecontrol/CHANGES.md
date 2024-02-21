@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.12.5...servicecontrol/v1.13.0) (2024-02-21)
+
+
+### Features
+
+* **servicecontrol:** Include api_key_uid in service control check response ([#9437](https://github.com/googleapis/google-cloud-go/issues/9437)) ([0195fe9](https://github.com/googleapis/google-cloud-go/commit/0195fe9292274ff9d86c71079a8e96ed2e5f9331))
+
 ## [1.12.5](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.12.4...servicecontrol/v1.12.5) (2024-01-30)
 
 

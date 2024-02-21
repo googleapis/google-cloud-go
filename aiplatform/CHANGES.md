@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.61.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.60.0...aiplatform/v1.61.0) (2024-02-21)
+
+
+### Features
+
+* **aiplatform:** Add Grounding feature to PredictionService.GenerateContent ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+
+
+### Bug Fixes
+
+* **aiplatform:** Remove field `max_wait_duration` from message Scheduling ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+
 ## [1.60.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.59.0...aiplatform/v1.60.0) (2024-02-09)
 
 
