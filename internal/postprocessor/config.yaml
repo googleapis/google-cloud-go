@@ -290,6 +290,9 @@ service-configs:
   - input-directory: google/appengine/v1
     service-config: appengine_v1.yaml
     import-path: cloud.google.com/go/appengine/apiv1
+  - input-directory: google/apps/events/subscriptions/v1
+    service-config: workspaceevents_v1.yaml
+    import-path: cloud.google.com/go/apps/events/subscriptions/apiv1
   - input-directory: google/apps/meet/v2
     service-config: meet_v2.yaml
     import-path: cloud.google.com/go/apps/meet/apiv2

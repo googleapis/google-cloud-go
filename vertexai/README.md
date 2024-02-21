@@ -31,6 +31,8 @@ for the Vertex AI Go SDK in the Google Cloud documentation.
 You can find complete documentation for the Vertex AI SDKs and the Gemini
 model in the Google Cloud documentation: https://cloud.google.com/vertex-ai/docs/generative-ai/learn/overview
 
+For a list of the supported models and their capabilities, see https://cloud.google.com/vertex-ai/docs/generative-ai/learn/model-versioning
+
 You can also find information about this SDK in the
 [Go package documentation](https://pkg.go.dev/cloud.google.com/go/vertexai).
 
