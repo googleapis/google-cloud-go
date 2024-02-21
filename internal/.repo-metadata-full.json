@@ -199,6 +199,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/apps/events/subscriptions/apiv1": {
+    "api_shortname": "workspaceevents",
+    "distribution_name": "cloud.google.com/go/apps/events/subscriptions/apiv1",
+    "description": "Google Workspace Events API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apps/latest/events/subscriptions/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/apps/meet/apiv2": {
     "api_shortname": "meet",
     "distribution_name": "cloud.google.com/go/apps/meet/apiv2",
