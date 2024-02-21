@@ -63,7 +63,7 @@ func TestLive(t *testing.T) {
 	t.Run("streaming", func(t *testing.T) {
 		iter := model.GenerateContentStream(ctx, Text("Are you hungry?"))
 		got := responsesString(t, iter)
-		checkMatch(t, got, `(don't|do\s+not) (have|possess) .*(a .* body|the ability)`)
+		checkMatch(t, got, `(capable.+experienc.+hunger)|((don't|do\s+not) (have|possess) .*(a .* body|the ability))`)
 	})
 
 	t.Run("chat", func(t *testing.T) {
