@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.3.0...apps/v0.4.0) (2024-02-21)
+
+
+### Features
+
+* **apps/meet:** Add outh_scope values to services ([0195fe9](https://github.com/googleapis/google-cloud-go/commit/0195fe9292274ff9d86c71079a8e96ed2e5f9331))
+* **apps:** New client(s) ([#9451](https://github.com/googleapis/google-cloud-go/issues/9451)) ([a53b7b7](https://github.com/googleapis/google-cloud-go/commit/a53b7b795f2f2011e7c498d2317d487052ef0a47))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.2.1...apps/v0.3.0) (2024-02-06)
 
 
@@ -29,4 +37,3 @@
 * **apps:** New clients ([#9142](https://github.com/googleapis/google-cloud-go/issues/9142)) ([8095c6e](https://github.com/googleapis/google-cloud-go/commit/8095c6ee342d9cca812c966b708ba48398fd91ed))
 
 ## Changes
-
