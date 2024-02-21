@@ -22,9 +22,6 @@ package datatransferpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3603,7 +3602,8 @@ type DataTransferServiceClient interface {
 	// Unenroll data sources in a user project. This allows users to remove
 	// transfer configurations for these data sources. They will no longer appear
 	// in the ListDataSources RPC and will also no longer appear in the [BigQuery
-	// UI](https://console.cloud.google.com/bigquery).
+	// UI](https://console.cloud.google.com/bigquery). Data transfers
+	// configurations of unenrolled data sources will not be scheduled.
 	UnenrollDataSources(ctx context.Context, in *UnenrollDataSourcesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -3814,7 +3814,8 @@ type DataTransferServiceServer interface {
 	// Unenroll data sources in a user project. This allows users to remove
 	// transfer configurations for these data sources. They will no longer appear
 	// in the ListDataSources RPC and will also no longer appear in the [BigQuery
-	// UI](https://console.cloud.google.com/bigquery).
+	// UI](https://console.cloud.google.com/bigquery). Data transfers
+	// configurations of unenrolled data sources will not be scheduled.
 	UnenrollDataSources(context.Context, *UnenrollDataSourcesRequest) (*emptypb.Empty, error)
 }
 
