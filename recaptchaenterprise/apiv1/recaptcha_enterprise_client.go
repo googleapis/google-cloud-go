@@ -52,6 +52,7 @@ type CallOptions struct {
 	GetFirewallPolicy                    []gax.CallOption
 	UpdateFirewallPolicy                 []gax.CallOption
 	DeleteFirewallPolicy                 []gax.CallOption
+	ReorderFirewallPolicies              []gax.CallOption
 	ListRelatedAccountGroups             []gax.CallOption
 	ListRelatedAccountGroupMemberships   []gax.CallOption
 	SearchRelatedAccountGroupMemberships []gax.CallOption
@@ -102,6 +103,7 @@ func defaultCallOptions() *CallOptions {
 		GetFirewallPolicy:                    []gax.CallOption{},
 		UpdateFirewallPolicy:                 []gax.CallOption{},
 		DeleteFirewallPolicy:                 []gax.CallOption{},
+		ReorderFirewallPolicies:              []gax.CallOption{},
 		ListRelatedAccountGroups:             []gax.CallOption{},
 		ListRelatedAccountGroupMemberships:   []gax.CallOption{},
 		SearchRelatedAccountGroupMemberships: []gax.CallOption{},
@@ -128,6 +130,7 @@ type internalClient interface {
 	GetFirewallPolicy(context.Context, *recaptchaenterprisepb.GetFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
 	UpdateFirewallPolicy(context.Context, *recaptchaenterprisepb.UpdateFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
 	DeleteFirewallPolicy(context.Context, *recaptchaenterprisepb.DeleteFirewallPolicyRequest, ...gax.CallOption) error
+	ReorderFirewallPolicies(context.Context, *recaptchaenterprisepb.ReorderFirewallPoliciesRequest, ...gax.CallOption) (*recaptchaenterprisepb.ReorderFirewallPoliciesResponse, error)
 	ListRelatedAccountGroups(context.Context, *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, ...gax.CallOption) *RelatedAccountGroupIterator
 	ListRelatedAccountGroupMemberships(context.Context, *recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest, ...gax.CallOption) *RelatedAccountGroupMembershipIterator
 	SearchRelatedAccountGroupMemberships(context.Context, *recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest, ...gax.CallOption) *RelatedAccountGroupMembershipIterator
@@ -252,6 +255,11 @@ func (c *Client) UpdateFirewallPolicy(ctx context.Context, req *recaptchaenterpr
 // DeleteFirewallPolicy deletes the specified firewall policy.
 func (c *Client) DeleteFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.DeleteFirewallPolicyRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteFirewallPolicy(ctx, req, opts...)
+}
+
+// ReorderFirewallPolicies reorders all firewall policies.
+func (c *Client) ReorderFirewallPolicies(ctx context.Context, req *recaptchaenterprisepb.ReorderFirewallPoliciesRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.ReorderFirewallPoliciesResponse, error) {
+	return c.internalClient.ReorderFirewallPolicies(ctx, req, opts...)
 }
 
 // ListRelatedAccountGroups list groups of related accounts.
@@ -657,6 +665,24 @@ func (c *gRPCClient) DeleteFirewallPolicy(ctx context.Context, req *recaptchaent
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) ReorderFirewallPolicies(ctx context.Context, req *recaptchaenterprisepb.ReorderFirewallPoliciesRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.ReorderFirewallPoliciesResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ReorderFirewallPolicies[0:len((*c.CallOptions).ReorderFirewallPolicies):len((*c.CallOptions).ReorderFirewallPolicies)], opts...)
+	var resp *recaptchaenterprisepb.ReorderFirewallPoliciesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ReorderFirewallPolicies(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, opts ...gax.CallOption) *RelatedAccountGroupIterator {

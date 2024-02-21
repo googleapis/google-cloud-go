@@ -94,6 +94,7 @@ modules:
   - orgpolicy
   - osconfig
   - oslogin
+  - parallelstore
   - phishingprotection
   - policysimulator
   - policytroubleshooter
@@ -289,6 +290,9 @@ service-configs:
   - input-directory: google/appengine/v1
     service-config: appengine_v1.yaml
     import-path: cloud.google.com/go/appengine/apiv1
+  - input-directory: google/apps/events/subscriptions/v1
+    service-config: workspaceevents_v1.yaml
+    import-path: cloud.google.com/go/apps/events/subscriptions/apiv1
   - input-directory: google/apps/meet/v2
     service-config: meet_v2.yaml
     import-path: cloud.google.com/go/apps/meet/apiv2
@@ -690,6 +694,9 @@ service-configs:
   - input-directory: google/cloud/oslogin/common
     service-config:
     import-path: cloud.google.com/go/oslogin/common
+  - input-directory: google/cloud/parallelstore/v1beta
+    service-config: parallelstore_v1beta.yaml
+    import-path: cloud.google.com/go/parallelstore/apiv1beta
   - input-directory: google/cloud/phishingprotection/v1beta1
     service-config: phishingprotection_v1beta1.yaml
     import-path: cloud.google.com/go/phishingprotection/apiv1beta1

@@ -22,6 +22,7 @@ deep-remove-regex:
   - /apigeeregistry/apiv1/
   - /apikeys/apiv2/
   - /appengine/apiv1/
+  - /apps/events/subscriptions/apiv1/
   - /apps/meet/apiv2/
   - /apps/meet/apiv2beta/
   - /area120/tables/apiv1alpha1/
@@ -146,6 +147,7 @@ deep-remove-regex:
   - /internal/generated/snippets/apigeeregistry/apiv1/
   - /internal/generated/snippets/apikeys/apiv2/
   - /internal/generated/snippets/appengine/apiv1/
+  - /internal/generated/snippets/apps/events/subscriptions/apiv1/
   - /internal/generated/snippets/apps/meet/apiv2/
   - /internal/generated/snippets/apps/meet/apiv2beta/
   - /internal/generated/snippets/area120/tables/apiv1alpha1/
@@ -295,6 +297,7 @@ deep-remove-regex:
   - /internal/generated/snippets/osconfig/apiv1beta/
   - /internal/generated/snippets/oslogin/apiv1/
   - /internal/generated/snippets/oslogin/apiv1beta/
+  - /internal/generated/snippets/parallelstore/apiv1beta/
   - /internal/generated/snippets/phishingprotection/apiv1beta1/
   - /internal/generated/snippets/policysimulator/apiv1/
   - /internal/generated/snippets/policytroubleshooter/apiv1/
@@ -424,6 +427,7 @@ deep-remove-regex:
   - /oslogin/apiv1/
   - /oslogin/apiv1beta/
   - /oslogin/common/
+  - /parallelstore/apiv1beta/
   - /phishingprotection/apiv1beta1/
   - /policysimulator/apiv1/
   - /policytroubleshooter/apiv1/
@@ -596,6 +600,8 @@ deep-copy-regex:
   - source: /google/api/cloudquotas/v1/cloud.google.com/go
     dest: /
   - source: /google/appengine/v1/cloud.google.com/go
+    dest: /
+  - source: /google/apps/events/subscriptions/v1/cloud.google.com/go
     dest: /
   - source: /google/apps/meet/v2/cloud.google.com/go
     dest: /
@@ -894,6 +900,8 @@ deep-copy-regex:
   - source: /google/cloud/oslogin/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/oslogin/common/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/parallelstore/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/phishingprotection/v1beta1/cloud.google.com/go
     dest: /

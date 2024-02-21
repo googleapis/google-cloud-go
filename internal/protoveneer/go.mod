@@ -1,4 +1,4 @@
-module golang.org/x/exp/protoveneer
+module cloud.google.com/go/internal/protoveneer
 
 go 1.20
 
