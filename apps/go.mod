@@ -3,6 +3,7 @@ module cloud.google.com/go/apps
 go 1.19
 
 require (
+	cloud.google.com/go/longrunning v0.5.5
 	github.com/googleapis/gax-go/v2 v2.12.0
 	google.golang.org/api v0.164.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240213162025-012b6fc9bca9
@@ -11,6 +12,7 @@ require (
 )
 
 require (
+	cloud.google.com/go v0.112.0 // indirect
 	cloud.google.com/go/compute v1.23.4 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
