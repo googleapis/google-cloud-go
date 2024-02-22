@@ -49,7 +49,9 @@ type WebRiskServiceV1Beta1CallOptions struct {
 func defaultWebRiskServiceV1Beta1GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("webrisk.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("webrisk.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("webrisk.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://webrisk.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -321,7 +323,9 @@ func NewWebRiskServiceV1Beta1RESTClient(ctx context.Context, opts ...option.Clie
 func defaultWebRiskServiceV1Beta1RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://webrisk.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://webrisk.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://webrisk.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://webrisk.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

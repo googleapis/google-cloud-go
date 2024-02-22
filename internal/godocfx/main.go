@@ -49,7 +49,7 @@ import (
 	"time"
 
 	"golang.org/x/tools/go/packages"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 func main() {

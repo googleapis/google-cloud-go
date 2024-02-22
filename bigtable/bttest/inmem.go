@@ -907,10 +907,6 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) (bool, error) {
 		}
 		return inRangeStart() && inRangeEnd(), nil
 	case *btpb.RowFilter_TimestampRangeFilter:
-		// Server should only support millisecond precision.
-		if f.TimestampRangeFilter.StartTimestampMicros%int64(time.Millisecond/time.Microsecond) != 0 || f.TimestampRangeFilter.EndTimestampMicros%int64(time.Millisecond/time.Microsecond) != 0 {
-			return false, status.Errorf(codes.InvalidArgument, "Error in field 'timestamp_range_filter'. Maximum precision allowed in filter is millisecond.\nGot:\nStart: %v\nEnd: %v", f.TimestampRangeFilter.StartTimestampMicros, f.TimestampRangeFilter.EndTimestampMicros)
-		}
 		// Lower bound is inclusive and defaults to 0, upper bound is exclusive and defaults to infinity.
 		return cell.ts >= f.TimestampRangeFilter.StartTimestampMicros &&
 			(f.TimestampRangeFilter.EndTimestampMicros == 0 || cell.ts < f.TimestampRangeFilter.EndTimestampMicros), nil
@@ -1440,6 +1436,27 @@ func (t *table) mutableRow(key string) *row {
 }
 
 func (t *table) gc() {
+	toDelete := t.gcReadOnly()
+	if len(toDelete) == 0 {
+		return
+	}
+
+	// We delete rows that no longer have any cells
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	for _, i := range toDelete {
+		r := i.(*row)
+		// Make sure the row still has no cells. We've not been holding a lock
+		// so it could have changed since we checked it.
+		r.mu.Lock()
+		if len(r.families) == 0 {
+			t.rows.Delete(i)
+		}
+		r.mu.Unlock()
+	}
+}
+
+func (t *table) gcReadOnly() (toDelete []btree.Item) {
 	// This method doesn't add or remove rows, so we only need a read lock for the table.
 	t.mu.RLock()
 	defer t.mu.RUnlock()
@@ -1452,16 +1469,23 @@ func (t *table) gc() {
 		}
 	}
 	if len(rules) == 0 {
-		return
+		return nil
 	}
 
+	// It isn't clear whether it's safe to delete within the iterator, so we do
+	// not
 	t.rows.Ascend(func(i btree.Item) bool {
 		r := i.(*row)
 		r.mu.Lock()
 		r.gc(rules)
+		if len(r.families) == 0 {
+			toDelete = append(toDelete, i)
+		}
 		r.mu.Unlock()
 		return true
 	})
+
+	return toDelete
 }
 
 type byRowKey []*row
@@ -1547,7 +1571,15 @@ func (r *row) gc(rules map[string]*btapb.GcRule) {
 			continue
 		}
 		for col, cs := range fam.cells {
-			r.families[fam.name].cells[col] = applyGC(cs, rule)
+			cs = applyGC(cs, rule)
+			if len(cs) == 0 {
+				delete(fam.cells, col)
+			} else {
+				fam.cells[col] = cs
+			}
+		}
+		if len(fam.cells) == 0 {
+			delete(r.families, fam.name)
 		}
 	}
 }

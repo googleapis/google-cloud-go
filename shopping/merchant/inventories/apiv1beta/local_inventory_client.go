@@ -52,7 +52,9 @@ type LocalInventoryCallOptions struct {
 func defaultLocalInventoryGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("merchantapi.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("merchantapi.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("merchantapi.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://merchantapi.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -328,7 +330,9 @@ func NewLocalInventoryRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultLocalInventoryRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://merchantapi.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://merchantapi.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://merchantapi.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://merchantapi.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

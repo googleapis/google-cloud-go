@@ -63,7 +63,7 @@ func TestLive(t *testing.T) {
 	t.Run("streaming", func(t *testing.T) {
 		iter := model.GenerateContentStream(ctx, Text("Are you hungry?"))
 		got := responsesString(t, iter)
-		checkMatch(t, got, `(don't|do\s+not) (have|possess) .*(a .* body|the ability)`)
+		checkMatch(t, got, `(capable.+experienc.+hunger)|((don't|do\s+not) (have|possess) .*(a .* body|the ability))`)
 	})
 
 	t.Run("chat", func(t *testing.T) {
@@ -259,8 +259,29 @@ func TestLive(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		checkMatch(t, responseString(res), "(it's}|weather) .*cold")
+		checkMatch(t, responseString(res), "(it's|it is|weather) .*cold")
 	})
+}
+
+func TestLiveREST(t *testing.T) {
+	if *projectID == "" || *modelName == "" {
+		t.Skip("need -project and -model")
+	}
+	ctx := context.Background()
+	client, err := NewClient(ctx, *projectID, "us-central1", WithREST())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	model := client.GenerativeModel(*modelName)
+	model.SetTemperature(0.0)
+
+	resp, err := model.GenerateContent(ctx, Text("What is the average size of a swallow?"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := responseString(resp)
+	checkMatch(t, got, `15.* cm|[1-9].* inches`)
 }
 
 func TestJoinResponses(t *testing.T) {

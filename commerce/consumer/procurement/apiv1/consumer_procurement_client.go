@@ -56,7 +56,9 @@ type ConsumerProcurementCallOptions struct {
 func defaultConsumerProcurementGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudcommerceconsumerprocurement.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudcommerceconsumerprocurement.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudcommerceconsumerprocurement.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudcommerceconsumerprocurement.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -385,7 +387,9 @@ func NewConsumerProcurementRESTClient(ctx context.Context, opts ...option.Client
 func defaultConsumerProcurementRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudcommerceconsumerprocurement.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudcommerceconsumerprocurement.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudcommerceconsumerprocurement.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudcommerceconsumerprocurement.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

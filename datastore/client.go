@@ -137,6 +137,17 @@ func (dc *datastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateIdsRe
 	return res, err
 }
 
+func (dc *datastoreClient) ReserveIds(ctx context.Context, in *pb.ReserveIdsRequest, opts ...grpc.CallOption) (res *pb.ReserveIdsResponse, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.ReserveIds")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	err = dc.invoke(ctx, func(ctx context.Context) error {
+		res, err = dc.c.ReserveIds(ctx, in, opts...)
+		return err
+	})
+	return res, err
+}
+
 func (dc *datastoreClient) invoke(ctx context.Context, f func(ctx context.Context) error) error {
 	ctx = metadata.NewOutgoingContext(ctx, dc.md)
 	return cloudinternal.Retry(ctx, gax.Backoff{Initial: 100 * time.Millisecond}, func() (stop bool, err error) {

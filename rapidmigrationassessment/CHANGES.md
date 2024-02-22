@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.5](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.0.4...rapidmigrationassessment/v1.0.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **rapidmigrationassessment:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.0.4](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.0.3...rapidmigrationassessment/v1.0.4) (2023-11-01)
 
 
