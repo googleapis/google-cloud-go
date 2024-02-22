@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/talent/apiv4beta1",
-    "version": "1.6.6",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
