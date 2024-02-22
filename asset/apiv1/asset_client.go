@@ -76,7 +76,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudasset.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudasset.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudasset.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -794,9 +796,8 @@ func (c *Client) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req *as
 //
 //	compute.disableNestedVirtualization
 //
-// This RPC only returns either resources of types supported by searchable
-// asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types),
+// This RPC only returns either resources of types supported by search
+// APIs (at https://cloud.google.com/asset-inventory/docs/supported-asset-types)
 // or IAM policies.
 func (c *Client) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	return c.internalClient.AnalyzeOrgPolicyGovernedAssets(ctx, req, opts...)
@@ -952,7 +953,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudasset.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudasset.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudasset.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -3340,9 +3343,8 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 //
 //	compute.disableNestedVirtualization
 //
-// This RPC only returns either resources of types supported by searchable
-// asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types),
+// This RPC only returns either resources of types supported by search
+// APIs (at https://cloud.google.com/asset-inventory/docs/supported-asset-types)
 // or IAM policies.
 func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	it := &AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator{}

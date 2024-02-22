@@ -56,7 +56,9 @@ type MapsPlatformDatasetsV1AlphaCallOptions struct {
 func defaultMapsPlatformDatasetsV1AlphaGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("mapsplatformdatasets.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("mapsplatformdatasets.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("mapsplatformdatasets.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://mapsplatformdatasets.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -360,7 +362,9 @@ func NewMapsPlatformDatasetsV1AlphaRESTClient(ctx context.Context, opts ...optio
 func defaultMapsPlatformDatasetsV1AlphaRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://mapsplatformdatasets.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://mapsplatformdatasets.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://mapsplatformdatasets.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://mapsplatformdatasets.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

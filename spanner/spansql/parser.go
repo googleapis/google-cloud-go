@@ -1355,7 +1355,7 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 
 	/*
 		{ CREATE VIEW | CREATE OR REPLACE VIEW } view_name
-		SQL SECURITY INVOKER
+		SQL SECURITY {INVOKER | DEFINER}
 		AS query
 	*/
 
@@ -1372,7 +1372,23 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 		return nil, err
 	}
 	vname, err := p.parseTableOrIndexOrColumnName()
-	if err := p.expect("SQL", "SECURITY", "INVOKER", "AS"); err != nil {
+	if err := p.expect("SQL", "SECURITY"); err != nil {
+		return nil, err
+	}
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	var securityType SecurityType
+	switch {
+	case tok.caseEqual("INVOKER"):
+		securityType = Invoker
+	case tok.caseEqual("DEFINER"):
+		securityType = Definer
+	default:
+		return nil, p.errorf("got %q, want INVOKER or DEFINER", tok.value)
+	}
+	if err := p.expect("AS"); err != nil {
 		return nil, err
 	}
 	query, err := p.parseQuery()
@@ -1381,9 +1397,10 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 	}
 
 	return &CreateView{
-		Name:      vname,
-		OrReplace: orReplace,
-		Query:     query,
+		Name:         vname,
+		OrReplace:    orReplace,
+		SecurityType: securityType,
+		Query:        query,
 
 		Position: pos,
 	}, nil

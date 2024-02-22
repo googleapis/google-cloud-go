@@ -49,7 +49,9 @@ type EventCallOptions struct {
 func defaultEventGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("jobs.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -250,7 +252,9 @@ func NewEventRESTClient(ctx context.Context, opts ...option.ClientOption) (*Even
 func defaultEventRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://jobs.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://jobs.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://jobs.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

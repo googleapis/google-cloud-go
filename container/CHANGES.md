@@ -1,5 +1,26 @@
 # Changes
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.30.1...container/v1.31.0) (2024-02-09)
+
+
+### Features
+
+* **container:** Added configuration for the StatefulHA addon to the AddonsConfig ([46a5050](https://github.com/googleapis/google-cloud-go/commit/46a50502f033ff0afe2f17b5f1e9812a956e190e))
+
+## [1.30.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.30.0...container/v1.30.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **container:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.29.0...container/v1.30.0) (2024-01-22)
+
+
+### Features
+
+* **container:** Add fields desired_in_transit_encryption_config and in_transit_encryption_config ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
 ## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.28.0...container/v1.29.0) (2023-11-27)
 
 

@@ -103,8 +103,18 @@ func (cv CreateView) SQL() string {
 	if cv.OrReplace {
 		str += " OR REPLACE"
 	}
-	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY INVOKER AS " + cv.Query.SQL()
+	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY " + cv.SecurityType.SQL() + " AS " + cv.Query.SQL()
 	return str
+}
+
+func (st SecurityType) SQL() string {
+	switch st {
+	case Invoker:
+		return "INVOKER"
+	case Definer:
+		return "DEFINER"
+	}
+	panic("unknown SecurityType")
 }
 
 func (cr CreateRole) SQL() string {

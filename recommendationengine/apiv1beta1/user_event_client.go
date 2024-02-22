@@ -58,7 +58,9 @@ type UserEventCallOptions struct {
 func defaultUserEventGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("recommendationengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("recommendationengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("recommendationengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recommendationengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -448,7 +450,9 @@ func NewUserEventRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 func defaultUserEventRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://recommendationengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://recommendationengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://recommendationengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recommendationengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

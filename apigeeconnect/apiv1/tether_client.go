@@ -38,7 +38,9 @@ type TetherCallOptions struct {
 func defaultTetherGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("apigeeconnect.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("apigeeconnect.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("apigeeconnect.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://apigeeconnect.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),

@@ -1,5 +1,19 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.4...securitycenter/v1.25.0) (2024-02-21)
+
+
+### Features
+
+* **securitycenter:** Add application field to finding's list of attributes ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+
+## [1.24.4](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.3...securitycenter/v1.24.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **securitycenter:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.24.3](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.2...securitycenter/v1.24.3) (2023-11-27)
 
 

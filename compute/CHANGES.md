@@ -1,5 +1,19 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.4...compute/v1.24.0) (2024-02-09)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20240130 ([#881](https://github.com/googleapis/google-cloud-go/issues/881)) ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+
+## [1.23.4](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.3...compute/v1.23.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **compute:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.23.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.2...compute/v1.23.3) (2023-11-01)
 
 

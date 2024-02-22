@@ -87,6 +87,7 @@ use (
 	./internal/generated/snippets
 	./internal/godocfx
 	./internal/postprocessor
+	./internal/protoveneer
 	./iot
 	./kms
 	./language
@@ -110,6 +111,7 @@ use (
 	./orgpolicy
 	./osconfig
 	./oslogin
+	./parallelstore
 	./phishingprotection
 	./policysimulator
 	./policytroubleshooter
@@ -132,6 +134,7 @@ use (
 	./security
 	./securitycenter
 	./securitycentermanagement
+	./securityposture
 	./servicecontrol
 	./servicedirectory
 	./servicehealth
@@ -140,6 +143,7 @@ use (
 	./shell
 	./shopping
 	./spanner
+	./spanner/test/opentelemetry/test
 	./speech
 	./storage
 	./storage/internal/benchmarks
@@ -156,6 +160,7 @@ use (
 	./video
 	./videointelligence
 	./vision
+	./visionai
 	./vmmigration
 	./vmwareengine
 	./vpcaccess

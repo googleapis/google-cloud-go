@@ -251,7 +251,6 @@ situations, including:
 [Vertex AI - Locations]: https://cloud.google.com/vertex-ai/docs/general/locations
 [Google Application Default Credentials]: https://cloud.google.com/docs/authentication/external/set-up-adc
 [Testing Guide]: https://github.com/googleapis/google-cloud-go/blob/main/testing.md
-
-[Logging, Debugging and Telemetry Guide]: https://github.com/googleapis/google-cloud-go/blob/main/debug.md
+[Debugging Guide]: https://github.com/googleapis/google-cloud-go/blob/main/debug.md
 */
 package cloud // import "cloud.google.com/go"

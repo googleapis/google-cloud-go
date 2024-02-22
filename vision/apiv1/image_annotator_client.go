@@ -49,12 +49,15 @@ type ImageAnnotatorCallOptions struct {
 	BatchAnnotateFiles       []gax.CallOption
 	AsyncBatchAnnotateImages []gax.CallOption
 	AsyncBatchAnnotateFiles  []gax.CallOption
+	GetOperation             []gax.CallOption
 }
 
 func defaultImageAnnotatorGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("vision.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("vision.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("vision.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://vision.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -117,6 +120,7 @@ func defaultImageAnnotatorCallOptions() *ImageAnnotatorCallOptions {
 				})
 			}),
 		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
@@ -170,6 +174,7 @@ func defaultImageAnnotatorRESTCallOptions() *ImageAnnotatorCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
@@ -184,6 +189,7 @@ type internalImageAnnotatorClient interface {
 	AsyncBatchAnnotateImagesOperation(name string) *AsyncBatchAnnotateImagesOperation
 	AsyncBatchAnnotateFiles(context.Context, *visionpb.AsyncBatchAnnotateFilesRequest, ...gax.CallOption) (*AsyncBatchAnnotateFilesOperation, error)
 	AsyncBatchAnnotateFilesOperation(name string) *AsyncBatchAnnotateFilesOperation
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // ImageAnnotatorClient is a client for interacting with Cloud Vision API.
@@ -279,6 +285,11 @@ func (c *ImageAnnotatorClient) AsyncBatchAnnotateFilesOperation(name string) *As
 	return c.internalClient.AsyncBatchAnnotateFilesOperation(name)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *ImageAnnotatorClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // imageAnnotatorGRPCClient is a client for interacting with Cloud Vision API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -296,6 +307,8 @@ type imageAnnotatorGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
@@ -327,6 +340,7 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 		connPool:             connPool,
 		imageAnnotatorClient: visionpb.NewImageAnnotatorClient(connPool),
 		CallOptions:          &client.CallOptions,
+		operationsClient:     longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -425,7 +439,9 @@ func NewImageAnnotatorRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultImageAnnotatorRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://vision.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://vision.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://vision.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://vision.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -528,6 +544,24 @@ func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateFiles(ctx context.Context, 
 	return &AsyncBatchAnnotateFilesOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *imageAnnotatorGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // BatchAnnotateImages run image detection and annotation for a batch of images.
@@ -819,6 +853,66 @@ func (c *imageAnnotatorRESTClient) AsyncBatchAnnotateFiles(ctx context.Context, 
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *imageAnnotatorRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // AsyncBatchAnnotateFilesOperation returns a new AsyncBatchAnnotateFilesOperation from a given name.

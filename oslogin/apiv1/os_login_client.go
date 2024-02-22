@@ -55,7 +55,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("oslogin.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("oslogin.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("oslogin.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://oslogin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -434,7 +436,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://oslogin.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://oslogin.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://oslogin.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://oslogin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

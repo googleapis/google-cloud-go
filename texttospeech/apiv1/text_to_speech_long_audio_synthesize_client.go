@@ -54,7 +54,9 @@ type TextToSpeechLongAudioSynthesizeCallOptions struct {
 func defaultTextToSpeechLongAudioSynthesizeGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("texttospeech.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("texttospeech.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("texttospeech.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://texttospeech.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -300,7 +302,9 @@ func NewTextToSpeechLongAudioSynthesizeRESTClient(ctx context.Context, opts ...o
 func defaultTextToSpeechLongAudioSynthesizeRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://texttospeech.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://texttospeech.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://texttospeech.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://texttospeech.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
