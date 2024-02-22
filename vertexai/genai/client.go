@@ -324,3 +324,19 @@ func mergeTexts(in []Part) []Part {
 	}
 	return out
 }
+
+func int32pToFloat32p(x *int32) *float32 {
+	if x == nil {
+		return nil
+	}
+	f := float32(*x)
+	return &f
+}
+
+func float32pToInt32p(x *float32) *int32 {
+	if x == nil {
+		return nil
+	}
+	i := int32(*x)
+	return &i
+}
