@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.8.5...orchestration/v1.9.0) (2024-02-21)
+
+
+### Features
+
+* **orchestration/airflow/service:** Added ListWorkloads RPC ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+
 ## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.8.4...orchestration/v1.8.5) (2024-01-30)
 
 

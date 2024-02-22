@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.3...securitycentermanagement/v0.1.4) (2024-02-21)
+
+
+### Documentation
+
+* **securitycentermanagement:** Finish a sentence with a period ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+
 ## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.2...securitycentermanagement/v0.1.3) (2024-01-30)
 
 
