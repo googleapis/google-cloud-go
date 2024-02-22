@@ -73,7 +73,8 @@ types:
       fields:
         FinishMessage:
           type: string
-
+        GroundingMetadata:
+          omit: true
 
     GenerateContentResponse:
       doc: 'is the response from a GenerateContent or GenerateContentStream call.'
@@ -89,6 +90,11 @@ types:
 
     Tool:
       docVerb: contains
+      fields:
+        Retrieval:
+          omit: true
+        GoogleSearchRetrieval:
+          omit: true
 
     Schema:
       fields:
