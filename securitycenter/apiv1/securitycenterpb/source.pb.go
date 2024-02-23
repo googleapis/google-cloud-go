@@ -21,12 +21,11 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -64,9 +63,9 @@ type Source struct {
 	// (XSS), Flash injection, mixed content (HTTP in HTTPS), and
 	// outdated or insecure libraries."
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	// The canonical name of the finding. It's either
+	// The canonical name of the finding source. It's either
 	// "organizations/{organization_id}/sources/{source_id}",
-	// "folders/{folder_id}/sources/{source_id}" or
+	// "folders/{folder_id}/sources/{source_id}", or
 	// "projects/{project_number}/sources/{source_id}",
 	// depending on the closest CRM ancestor of the resource associated with the
 	// finding.
