@@ -443,10 +443,24 @@ const (
 // IngestionDataSourceAWSKinesis are ingestion settings for Amazon Kinesis Data Streams.
 type IngestionDataSourceAWSKinesis struct {
 	// State is an output-only field indicating the state of the kinesis connection.
-	State             AWSKinesisState
-	StreamARN         string
-	ConsumerARN       string
-	AWSRoleARN        string
+	State AWSKinesisState
+
+	// StreamARN is the Kinesis stream ARN to ingest data from.
+	StreamARN string
+
+	// ConsumerARn is the Kinesis consumer ARN to used for ingestion in Enhanced
+	// Fan-Out mode. The consumer must be already created and ready to be used.
+	ConsumerARN string
+
+	// AWSRoleARn is the AWS role ARN to be used for Federated Identity authentication
+	// with Kinesis. Check the Pub/Sub docs for how to set up this role and the
+	// required permissions that need to be attached to it.
+	AWSRoleARN string
+
+	// GCPServiceAccount is the GCP service account to be used for Federated Identity
+	// authentication with Kinesis (via a `AssumeRoleWithWebIdentity` call for
+	// the provided role). The `aws_role_arn` must be set up with
+	// `accounts.google.com:sub` equals to this service account number.
 	GCPServiceAccount string
 }
 

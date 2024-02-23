@@ -320,7 +320,7 @@ func (s *GServer) CreateTopic(_ context.Context, t *pb.Topic) (*pb.Topic, error)
 	if err := checkTopicMessageRetention(t.MessageRetentionDuration); err != nil {
 		return nil, err
 	}
-	// Consider any ingestion data source settings to mean the topic is active
+	// Take any ingestion setting to mean the topic is active.
 	if t.IngestionDataSourceSettings != nil {
 		t.State = pb.Topic_ACTIVE
 	}
@@ -393,6 +393,10 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 				t.proto.IngestionDataSourceSettings = &pb.IngestionDataSourceSettings{}
 			}
 			t.proto.IngestionDataSourceSettings = req.Topic.IngestionDataSourceSettings
+			// Take any ingestion setting to mean the topic is active.
+			if t.proto.IngestionDataSourceSettings != nil {
+				t.proto.State = pb.Topic_ACTIVE
+			}
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
