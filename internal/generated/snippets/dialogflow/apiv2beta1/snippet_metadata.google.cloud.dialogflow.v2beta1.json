@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/apiv2beta1",
-    "version": "1.49.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
