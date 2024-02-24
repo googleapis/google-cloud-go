@@ -260,6 +260,9 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.eoMu.RUnlock()
 	it.mu.Lock()
 
+	// TODO(hongalex): fix the out of order map when appending to pendingMessages
+	// This makes ordering keys logic wrong
+
 	// pendingMessages maps ackID -> message, and is used
 	// only when exactly once delivery is enabled.
 	// At first, all messages are pending, and they
@@ -313,9 +316,13 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			}
 		}
 		// Only return for processing messages that were successfully modack'ed.
+		// Iterate over the original messages slice for ordering.
 		v := make([]*ipubsub.Message, 0, len(pendingMessages))
-		for _, m := range pendingMessages {
-			v = append(v, m)
+		for _, m := range msgs {
+			ackID := msgAckID(m)
+			if _, ok := pendingMessages[ackID]; ok {
+				v = append(v, m)
+			}
 		}
 		return v, nil
 	}
