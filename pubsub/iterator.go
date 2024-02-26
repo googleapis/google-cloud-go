@@ -260,9 +260,6 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.eoMu.RUnlock()
 	it.mu.Lock()
 
-	// TODO(hongalex): fix the out of order map when appending to pendingMessages
-	// This makes ordering keys logic wrong
-
 	// pendingMessages maps ackID -> message, and is used
 	// only when exactly once delivery is enabled.
 	// At first, all messages are pending, and they
