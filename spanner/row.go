@@ -566,8 +566,8 @@ func initFieldTag(sliceItem reflect.Value, fieldTagMap *map[string]reflect.Value
 			continue
 		}
 		if name == "" {
-			name = strings.ToLower(fieldType.Name)
+			name = fieldType.Name
 		}
-		(*fieldTagMap)[name] = sliceItem.Field(i)
+		(*fieldTagMap)[strings.ToLower(name)] = sliceItem.Field(i)
 	}
 }
