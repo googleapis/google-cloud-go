@@ -1,6 +1,7 @@
 # Default owner for all directories not owned by others
 *                       @googleapis/yoshi-go-admins
 
+/alloydb                @googleapis/infra-db-sdk @googleapis/yoshi-go-admins
 /bigtable/              @googleapis/cloud-native-db-dpes @googleapis/api-bigtable @googleapis/yoshi-go-admins
 /bigtable/cmd/cbt       @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/yoshi-go-admins
 /bigtable/cmd/emulator  @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/yoshi-go-admins
