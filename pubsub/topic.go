@@ -253,7 +253,7 @@ type TopicConfig struct {
 	// State is an output-only field indicating the state of the topic.
 	State TopicState
 
-	// IngestionDataSourceSettings manage ingestion from a
+	// IngestionDataSourceSettings are settings for ingestion from a
 	// data source into this topic.
 	IngestionDataSourceSettings *IngestionDataSourceSettings
 }
@@ -322,10 +322,10 @@ type TopicConfigToUpdate struct {
 	// Use the zero value &SchemaSettings{} to remove the schema from the topic.
 	SchemaSettings *SchemaSettings
 
-	// IngestionDataSourceSettings manage ingestion from a data source into this
-	// topic.
+	// IngestionDataSourceSettings are settings for ingestion from a
+	// data source into this topic.
 	//
-	// Use the zero value &IngestionDataSourceSettings{} to remove the schema from the topic.
+	// Use the zero value &IngestionDataSourceSettings{} to remove the ingestion settings from the topic.
 	IngestionDataSourceSettings *IngestionDataSourceSettings
 }
 
@@ -397,7 +397,7 @@ func messageStoragePolicyToProto(msp *MessageStoragePolicy) *pb.MessageStoragePo
 	return &pb.MessageStoragePolicy{AllowedPersistenceRegions: msp.AllowedPersistenceRegions}
 }
 
-// IngestionDataSourceSettings manage ingestion from a data source into this topic.
+// IngestionDataSourceSettings enables ingestion from a data source into this topic.
 type IngestionDataSourceSettings struct {
 	Source IngestionDataSource
 }
@@ -407,7 +407,7 @@ type IngestionDataSource interface {
 	isIngestionDataSource() bool
 }
 
-// AWSKinesisState denotes the possible states for managed ingestion from Amazon Kinesis Data Streams.
+// AWSKinesisState denotes the possible states for ingestion from Amazon Kinesis Data Streams.
 type AWSKinesisState int
 
 const (
@@ -433,7 +433,7 @@ const (
 	// permissions https://cloud.google.com/pubsub/docs/access-control#pubsub.publisher
 	AWSKinesisStatePublishPermissionDenied
 
-	// AWSKinesisStateStreamNotFound means the kinesis stream does not exist.
+	// AWSKinesisStateStreamNotFound means the Kinesis stream does not exist.
 	AWSKinesisStateStreamNotFound
 
 	// AWSKinesisStateConsumerNotFound means the kinesis consumer does not exist.
