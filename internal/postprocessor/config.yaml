@@ -26,7 +26,6 @@ modules:
   - binaryauthorization
   - certificatemanager
   - channel
-  - chat
   - cloudbuild
   - clouddms
   - cloudprofiler
@@ -451,9 +450,6 @@ service-configs:
   - input-directory: google/cloud/channel/v1
     service-config: cloudchannel_v1.yaml
     import-path: cloud.google.com/go/channel/apiv1
-  - input-directory: google/cloud/chat/v1
-    service-config: chat_v1.yaml
-    import-path: cloud.google.com/go/chat/apiv1
   - input-directory: google/cloud/clouddms/v1
     service-config: datamigration_v1.yaml
     import-path: cloud.google.com/go/clouddms/apiv1
