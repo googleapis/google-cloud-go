@@ -1177,7 +1177,7 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 	}
 
 	received := make(chan string, numItems)
-	ctx, cancel := context.WithCancel(ctx)
+	ctx2, cancel := context.WithCancel(ctx)
 	go func() {
 		for i := 0; i < numItems; i++ {
 			select {
@@ -1193,7 +1193,7 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 		cancel()
 	}()
 
-	if err := sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+	if err := sub.Receive(ctx2, func(ctx context.Context, msg *Message) {
 		defer msg.Ack()
 		if msg.OrderingKey != orderingKey {
 			t.Errorf("got ordering key %s, expected %s", msg.OrderingKey, orderingKey)
@@ -1502,7 +1502,7 @@ func TestIntegration_OrderingWithExactlyOnce(t *testing.T) {
 	}
 
 	received := make(chan string, numItems)
-	ctx, cancel := context.WithCancel(ctx)
+	ctx2, cancel := context.WithCancel(ctx)
 	go func() {
 		for i := 0; i < numItems; i++ {
 			select {
@@ -1518,7 +1518,7 @@ func TestIntegration_OrderingWithExactlyOnce(t *testing.T) {
 		cancel()
 	}()
 
-	if err := sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+	if err := sub.Receive(ctx2, func(ctx context.Context, msg *Message) {
 		defer msg.Ack()
 		if msg.OrderingKey != orderingKey {
 			t.Errorf("got ordering key %s, expected %s", msg.OrderingKey, orderingKey)
