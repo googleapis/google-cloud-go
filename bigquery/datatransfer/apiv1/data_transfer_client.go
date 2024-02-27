@@ -525,7 +525,8 @@ func (c *Client) EnrollDataSources(ctx context.Context, req *datatransferpb.Enro
 // UnenrollDataSources unenroll data sources in a user project. This allows users to remove
 // transfer configurations for these data sources. They will no longer appear
 // in the ListDataSources RPC and will also no longer appear in the BigQuery
-// UI (at https://console.cloud.google.com/bigquery).
+// UI (at https://console.cloud.google.com/bigquery). Data transfers
+// configurations of unenrolled data sources will not be scheduled.
 func (c *Client) UnenrollDataSources(ctx context.Context, req *datatransferpb.UnenrollDataSourcesRequest, opts ...gax.CallOption) error {
 	return c.internalClient.UnenrollDataSources(ctx, req, opts...)
 }
@@ -2199,7 +2200,8 @@ func (c *restClient) EnrollDataSources(ctx context.Context, req *datatransferpb.
 // UnenrollDataSources unenroll data sources in a user project. This allows users to remove
 // transfer configurations for these data sources. They will no longer appear
 // in the ListDataSources RPC and will also no longer appear in the BigQuery
-// UI (at https://console.cloud.google.com/bigquery).
+// UI (at https://console.cloud.google.com/bigquery). Data transfers
+// configurations of unenrolled data sources will not be scheduled.
 func (c *restClient) UnenrollDataSources(ctx context.Context, req *datatransferpb.UnenrollDataSourcesRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

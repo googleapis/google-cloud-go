@@ -747,7 +747,7 @@
     {
       "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_UnenrollDataSources_sync",
       "title": "bigquerydatatransfer UnenrollDataSources Sample",
-      "description": "UnenrollDataSources unenroll data sources in a user project. This allows users to remove\ntransfer configurations for these data sources. They will no longer appear\nin the ListDataSources RPC and will also no longer appear in the [BigQuery\nUI](https: //console.cloud.google.com/bigquery).",
+      "description": "UnenrollDataSources unenroll data sources in a user project. This allows users to remove\ntransfer configurations for these data sources. They will no longer appear\nin the ListDataSources RPC and will also no longer appear in the [BigQuery\nUI](https: //console.cloud.google.com/bigquery). Data transfers\nconfigurations of unenrolled data sources will not be scheduled.",
       "file": "Client/UnenrollDataSources/main.go",
       "language": "GO",
       "clientMethod": {
