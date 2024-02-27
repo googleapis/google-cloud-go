@@ -436,7 +436,7 @@ const (
 	// AWSKinesisStateStreamNotFound means the Kinesis stream does not exist.
 	AWSKinesisStateStreamNotFound
 
-	// AWSKinesisStateConsumerNotFound means the kinesis consumer does not exist.
+	// AWSKinesisStateConsumerNotFound means the Kinesis consumer does not exist.
 	AWSKinesisStateConsumerNotFound
 )
 
