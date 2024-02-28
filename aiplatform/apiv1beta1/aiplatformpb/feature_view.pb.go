@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -201,11 +200,10 @@ type FeatureView struct {
 	VectorSearchConfig *FeatureView_VectorSearchConfig `protobuf:"bytes,8,opt,name=vector_search_config,json=vectorSearchConfig,proto3" json:"vector_search_config,omitempty"`
 	// Optional. Service agent type used during data sync. By default, the Vertex
 	// AI Service Agent is used. When using an IAM Policy to isolate this
-	// FeatureView within a project
-	// (https://cloud.google.com/vertex-ai/docs/featurestore/latest/resource-policy)
-	// a separate service account should be provisioned by
-	// setting this field to `SERVICE_AGENT_TYPE_FEATURE_VIEW`. This will generate
-	// a separate service account to access the BigQuery source table.
+	// FeatureView within a project, a separate service account should be
+	// provisioned by setting this field to `SERVICE_AGENT_TYPE_FEATURE_VIEW`.
+	// This will generate a separate service account to access the BigQuery source
+	// table.
 	ServiceAgentType FeatureView_ServiceAgentType `protobuf:"varint,14,opt,name=service_agent_type,json=serviceAgentType,proto3,enum=google.cloud.aiplatform.v1beta1.FeatureView_ServiceAgentType" json:"service_agent_type,omitempty"`
 	// Output only. A Service Account unique to this FeatureView. The role
 	// bigquery.dataViewer should be granted to this service account to allow
