@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securitycentermanagement/apiv1",
-    "version": "0.1.4",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -472,7 +472,7 @@
     {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListDescendantSecurityHealthAnalyticsCustomModules_sync",
       "title": "securitycentermanagement ListDescendantSecurityHealthAnalyticsCustomModules Sample",
-      "description": "ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident SecurityHealthAnalyticsCustomModules under\nthe given CRM parent and all of the parent’s CRM descendants.",
+      "description": "ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident SecurityHealthAnalyticsCustomModules under\nthe given CRM parent and all of the parent's CRM descendants.",
       "file": "Client/ListDescendantSecurityHealthAnalyticsCustomModules/main.go",
       "language": "GO",
       "clientMethod": {
