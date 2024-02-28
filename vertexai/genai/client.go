@@ -15,7 +15,7 @@
 // To get the protoveneer tool:
 //    go install golang.org/x/exp/protoveneer/cmd/protoveneer@latest
 
-//go:generate protoveneer config.yaml ../../aiplatform/apiv1beta1/aiplatformpb
+//go:generate protoveneer -license license.txt config.yaml ../../aiplatform/apiv1beta1/aiplatformpb
 
 // Package genai is a client for the generative VertexAI model.
 package genai
