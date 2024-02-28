@@ -1461,6 +1461,64 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 	return n, nil
 }
 
+func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
+	// The entire object has been read by this reader, return EOF.
+	if r.size == r.seen || r.zeroRange {
+		return 0, io.EOF
+	}
+
+	// No stream to read from, either never initialized or Close was called.
+	// Note: There is a potential concurrency issue if multiple routines are
+	// using the same reader. One encounters an error and the stream is closed
+	// and then reopened while the other routine attempts to read from it.
+	if r.stream == nil {
+		return 0, fmt.Errorf("reader has been closed")
+	}
+
+	// Track bytes written during before call.
+	var alreadySeen = r.seen
+
+	// Write any leftovers to the stream. There will be some leftovers from the
+	// original NewRangeReader call.
+	if len(r.leftovers) > 0 {
+		// Write() will write the entire leftovers slice unless there is an error.
+		written, err := w.Write(r.leftovers)
+		r.seen += int64(written)
+		r.leftovers = nil
+		if err != nil {
+			return r.seen - alreadySeen, err
+		}
+	}
+
+	// Loop and receive additional messages until the entire data is written.
+	for {
+		// Attempt to Recv the next message on the stream.
+		// Will terminate with io.EOF once data has all come through.
+		msg, err := r.recv()
+		if err != nil {
+			if err == io.EOF {
+				err = nil
+			}
+			return r.seen - alreadySeen, err
+		}
+
+		// TODO: Determine if we need to capture incremental CRC32C for this
+		// chunk. The Object CRC32C checksum is captured when directed to read
+		// the entire Object. If directed to read a range, we may need to
+		// calculate the range's checksum for verification if the checksum is
+		// present in the response here.
+		// TODO: Figure out if we need to support decompressive transcoding
+		// https://cloud.google.com/storage/docs/transcoding.
+		content := msg.GetChecksummedData().GetContent()
+		written, err := w.Write(content)
+		r.seen += int64(written)
+		if err != nil {
+			return r.seen - alreadySeen, err
+		}
+	}
+
+}
+
 // Close cancels the read stream's context in order for it to be closed and
 // collected.
 func (r *gRPCReader) Close() error {
