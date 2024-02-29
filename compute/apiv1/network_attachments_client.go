@@ -173,7 +173,7 @@ func (c *NetworkAttachmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *NetworkAttachmentsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkAttachmentsRequest, opts ...gax.CallOption) *NetworkAttachmentsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -305,7 +305,7 @@ func (c *networkAttachmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *networkAttachmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkAttachmentsRequest, opts ...gax.CallOption) *NetworkAttachmentsScopedListPairIterator {
 	it := &NetworkAttachmentsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNetworkAttachmentsRequest)

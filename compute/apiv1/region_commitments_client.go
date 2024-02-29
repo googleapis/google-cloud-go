@@ -144,7 +144,7 @@ func (c *RegionCommitmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of commitments by region.
+// AggregatedList retrieves an aggregated list of commitments by region. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *RegionCommitmentsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionCommitmentsRequest, opts ...gax.CallOption) *CommitmentsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -256,7 +256,7 @@ func (c *regionCommitmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of commitments by region.
+// AggregatedList retrieves an aggregated list of commitments by region. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *regionCommitmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionCommitmentsRequest, opts ...gax.CallOption) *CommitmentsScopedListPairIterator {
 	it := &CommitmentsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListRegionCommitmentsRequest)
