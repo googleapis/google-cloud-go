@@ -233,7 +233,7 @@ func (c *InstanceGroupManagersClient) AbandonInstances(ctx context.Context, req 
 	return c.internalClient.AbandonInstances(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of managed instance groups and groups them by zone.
+// AggregatedList retrieves the list of managed instance groups and groups them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *InstanceGroupManagersClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupManagersRequest, opts ...gax.CallOption) *InstanceGroupManagersScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -492,7 +492,7 @@ func (c *instanceGroupManagersRESTClient) AbandonInstances(ctx context.Context, 
 	return op, nil
 }
 
-// AggregatedList retrieves the list of managed instance groups and groups them by zone.
+// AggregatedList retrieves the list of managed instance groups and groups them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *instanceGroupManagersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupManagersRequest, opts ...gax.CallOption) *InstanceGroupManagersScopedListPairIterator {
 	it := &InstanceGroupManagersScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInstanceGroupManagersRequest)
