@@ -291,23 +291,77 @@ func TestListLogEntriesRequest(t *testing.T) {
 		pageSize      int32
 	}{
 		// Timestamp default does not override user's filter
-		{[]EntriesOption{NewestFirst(), Filter(`timestamp > "2020-10-30T15:39:09Z"`)},
-			[]string{"projects/PROJECT_ID"}, `timestamp > "2020-10-30T15:39:09Z"`, "timestamp desc", 0},
-		{[]EntriesOption{NewestFirst(), Filter("f")},
-			[]string{"projects/PROJECT_ID"}, "f AND timestamp >= \"", "timestamp desc", 0},
-		{[]EntriesOption{ProjectIDs([]string{"foo"})},
-			[]string{"projects/foo"}, "timestamp >= \"", "", 0},
-		{[]EntriesOption{ResourceNames([]string{"folders/F", "organizations/O"})},
-			[]string{"folders/F", "organizations/O"}, "timestamp >= \"", "", 0},
-		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"projects/foo"}, "f AND timestamp >= \"", "timestamp desc", 0},
-		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"projects/foo"}, "f AND timestamp >= \"", "timestamp desc", 0},
-		// If there are repeats, last one wins.
-		{[]EntriesOption{NewestFirst(), Filter("no"), ProjectIDs([]string{"foo"}), Filter("f")},
-			[]string{"projects/foo"}, "f AND timestamp >= \"", "timestamp desc", 0},
-		{[]EntriesOption{ProjectIDs([]string{"foo"}), PageSize(100)},
-			[]string{"projects/foo"}, "timestamp >= \"", "", 100},
+		{
+			// default resource name and timestamp filter
+			opts: []EntriesOption{
+				NewestFirst(),
+				Filter(`timestamp > "2020-10-30T15:39:09Z"`),
+			},
+			resourceNames: []string{"projects/PROJECT_ID"},
+			filterPrefix:  `timestamp > "2020-10-30T15:39:09Z"`,
+			orderBy:       "timestamp desc",
+		},
+		{
+			// default resource name and user's filter
+			opts: []EntriesOption{
+				NewestFirst(),
+				Filter("f"),
+			},
+			resourceNames: []string{"projects/PROJECT_ID"},
+			filterPrefix:  "f AND timestamp >= \"",
+			orderBy:       "timestamp desc",
+		},
+		{
+			// user's project id and default timestamp filter
+			opts: []EntriesOption{
+				ProjectIDs([]string{"foo"}),
+			},
+			resourceNames: []string{"projects/foo"},
+			filterPrefix:  "timestamp >= \"",
+			orderBy:       "",
+		},
+		{
+			// user's resource name and default timestamp filter
+			opts: []EntriesOption{
+				ResourceNames([]string{"folders/F", "organizations/O"}),
+			},
+			resourceNames: []string{"folders/F", "organizations/O"},
+			filterPrefix:  "timestamp >= \"",
+			orderBy:       "",
+		},
+		{
+			// user's project id and user's options
+			opts: []EntriesOption{
+				NewestFirst(),
+				Filter("f"),
+				ProjectIDs([]string{"foo"}),
+			},
+			resourceNames: []string{"projects/foo"},
+			filterPrefix:  "f AND timestamp >= \"",
+			orderBy:       "timestamp desc",
+		},
+		{
+			// user's project id with multiple filter options
+			opts: []EntriesOption{
+				NewestFirst(),
+				Filter("no"),
+				ProjectIDs([]string{"foo"}),
+				Filter("f"),
+			},
+			resourceNames: []string{"projects/foo"},
+			filterPrefix:  "f AND timestamp >= \"",
+			orderBy:       "timestamp desc",
+		},
+		{
+			// user's project id and custom page size
+			opts: []EntriesOption{
+				ProjectIDs([]string{"foo"}),
+				PageSize(100),
+			},
+			resourceNames: []string{"projects/foo"},
+			filterPrefix:  "timestamp >= \"",
+			pageSize:      100,
+		},
 	} {
 		got := listLogEntriesRequest("projects/PROJECT_ID", test.opts)
 		want := &logpb.ListLogEntriesRequest{
