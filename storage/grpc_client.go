@@ -1543,7 +1543,7 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 	for {
 		// Attempt to Recv the next message on the stream.
 		// Will terminate with io.EOF once data has all come through.
-		msg, err := r.recv()
+		content, err := r.recv()
 		if err != nil {
 			if err == io.EOF {
 				err = nil
@@ -1558,7 +1558,6 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 		// present in the response here.
 		// TODO: Figure out if we need to support decompressive transcoding
 		// https://cloud.google.com/storage/docs/transcoding.
-		content := msg.GetChecksummedData().GetContent()
 		written, err := w.Write(content)
 		r.seen += int64(written)
 		if err != nil {
