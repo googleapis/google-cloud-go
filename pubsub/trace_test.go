@@ -414,7 +414,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			},
 		},
 		tracetest.SpanStub{
-			Name: fcSpanName,
+			Name: ccSpanName,
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
 				Version: internal.Version,
@@ -644,17 +644,18 @@ type incrementIDGenerator struct {
 }
 
 func (i *incrementIDGenerator) NewSpanID(ctx context.Context, traceID trace.TraceID) trace.SpanID {
-	atomic.AddInt64(&i.sid, 1)
-	sid := [8]byte{byte(i.sid)}
+	id := atomic.AddInt64(&i.sid, 1)
+	sid := [8]byte{byte(id)}
 	return sid
 }
 
 // NewIDs returns a non-zero trace ID and a non-zero span ID from a
 // randomly-chosen sequence.
 func (i *incrementIDGenerator) NewIDs(ctx context.Context) (trace.TraceID, trace.SpanID) {
-	atomic.AddInt64(&i.tid, 1)
-	atomic.AddInt64(&i.sid, 1)
-	tid := [16]byte{byte(i.tid)}
-	sid := [8]byte{byte(i.sid)}
+	id1 := atomic.AddInt64(&i.tid, 1)
+	id2 := atomic.AddInt64(&i.sid, 1)
+
+	tid := [16]byte{byte(id1)}
+	sid := [8]byte{byte(id2)}
 	return tid, sid
 }
