@@ -168,7 +168,7 @@ func (c *VpnGatewaysClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of VPN gateways.
+// AggregatedList retrieves an aggregated list of VPN gateways. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *VpnGatewaysClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnGatewaysRequest, opts ...gax.CallOption) *VpnGatewaysScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -295,7 +295,7 @@ func (c *vpnGatewaysRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of VPN gateways.
+// AggregatedList retrieves an aggregated list of VPN gateways. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *vpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnGatewaysRequest, opts ...gax.CallOption) *VpnGatewaysScopedListPairIterator {
 	it := &VpnGatewaysScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListVpnGatewaysRequest)
