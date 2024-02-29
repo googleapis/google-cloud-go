@@ -158,6 +158,7 @@ type FeatureViewDataKey struct {
 	// Types that are assignable to KeyOneof:
 	//
 	//	*FeatureViewDataKey_Key
+	//	*FeatureViewDataKey_CompositeKey_
 	KeyOneof isFeatureViewDataKey_KeyOneof `protobuf_oneof:"key_oneof"`
 }
 
@@ -207,6 +208,13 @@ func (x *FeatureViewDataKey) GetKey() string {
 	return ""
 }
 
+func (x *FeatureViewDataKey) GetCompositeKey() *FeatureViewDataKey_CompositeKey {
+	if x, ok := x.GetKeyOneof().(*FeatureViewDataKey_CompositeKey_); ok {
+		return x.CompositeKey
+	}
+	return nil
+}
+
 type isFeatureViewDataKey_KeyOneof interface {
 	isFeatureViewDataKey_KeyOneof()
 }
@@ -216,7 +224,15 @@ type FeatureViewDataKey_Key struct {
 	Key string `protobuf:"bytes,1,opt,name=key,proto3,oneof"`
 }
 
+type FeatureViewDataKey_CompositeKey_ struct {
+	// The actual Entity ID will be composed from this struct. This should match
+	// with the way ID is defined in the FeatureView spec.
+	CompositeKey *FeatureViewDataKey_CompositeKey `protobuf:"bytes,2,opt,name=composite_key,json=compositeKey,proto3,oneof"`
+}
+
 func (*FeatureViewDataKey_Key) isFeatureViewDataKey_KeyOneof() {}
+
+func (*FeatureViewDataKey_CompositeKey_) isFeatureViewDataKey_KeyOneof() {}
 
 // Request message for
 // [FeatureOnlineStoreService.FetchFeatureValues][google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.FetchFeatureValues].
@@ -723,6 +739,56 @@ func (x *SearchNearestEntitiesResponse) GetNearestNeighbors() *NearestNeighbors 
 	return nil
 }
 
+// ID that is comprised from several parts (columns).
+type FeatureViewDataKey_CompositeKey struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Parts to construct Entity ID. Should match with the same ID columns as
+	// defined in FeatureView in the same order.
+	Parts []string `protobuf:"bytes,1,rep,name=parts,proto3" json:"parts,omitempty"`
+}
+
+func (x *FeatureViewDataKey_CompositeKey) Reset() {
+	*x = FeatureViewDataKey_CompositeKey{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FeatureViewDataKey_CompositeKey) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FeatureViewDataKey_CompositeKey) ProtoMessage() {}
+
+func (x *FeatureViewDataKey_CompositeKey) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FeatureViewDataKey_CompositeKey.ProtoReflect.Descriptor instead.
+func (*FeatureViewDataKey_CompositeKey) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *FeatureViewDataKey_CompositeKey) GetParts() []string {
+	if x != nil {
+		return x.Parts
+	}
+	return nil
+}
+
 // Response structure in the format of key (feature name) and (feature) value
 // pair.
 type FetchFeatureValuesResponse_FeatureNameValuePairList struct {
@@ -737,7 +803,7 @@ type FetchFeatureValuesResponse_FeatureNameValuePairList struct {
 func (x *FetchFeatureValuesResponse_FeatureNameValuePairList) Reset() {
 	*x = FetchFeatureValuesResponse_FeatureNameValuePairList{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[7]
+		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -750,7 +816,7 @@ func (x *FetchFeatureValuesResponse_FeatureNameValuePairList) String() string {
 func (*FetchFeatureValuesResponse_FeatureNameValuePairList) ProtoMessage() {}
 
 func (x *FetchFeatureValuesResponse_FeatureNameValuePairList) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[7]
+	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -790,7 +856,7 @@ type FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair st
 func (x *FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair) Reset() {
 	*x = FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[8]
+		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -803,7 +869,7 @@ func (x *FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePai
 func (*FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair) ProtoMessage() {}
 
 func (x *FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[8]
+	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -865,7 +931,7 @@ type NearestNeighborQuery_Embedding struct {
 func (x *NearestNeighborQuery_Embedding) Reset() {
 	*x = NearestNeighborQuery_Embedding{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[9]
+		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -878,7 +944,7 @@ func (x *NearestNeighborQuery_Embedding) String() string {
 func (*NearestNeighborQuery_Embedding) ProtoMessage() {}
 
 func (x *NearestNeighborQuery_Embedding) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[9]
+	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -925,7 +991,7 @@ type NearestNeighborQuery_StringFilter struct {
 func (x *NearestNeighborQuery_StringFilter) Reset() {
 	*x = NearestNeighborQuery_StringFilter{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[10]
+		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -938,7 +1004,7 @@ func (x *NearestNeighborQuery_StringFilter) String() string {
 func (*NearestNeighborQuery_StringFilter) ProtoMessage() {}
 
 func (x *NearestNeighborQuery_StringFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[10]
+	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -996,7 +1062,7 @@ type NearestNeighborQuery_Parameters struct {
 func (x *NearestNeighborQuery_Parameters) Reset() {
 	*x = NearestNeighborQuery_Parameters{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[11]
+		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1009,7 +1075,7 @@ func (x *NearestNeighborQuery_Parameters) String() string {
 func (*NearestNeighborQuery_Parameters) ProtoMessage() {}
 
 func (x *NearestNeighborQuery_Parameters) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[11]
+	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1059,7 +1125,7 @@ type NearestNeighbors_Neighbor struct {
 func (x *NearestNeighbors_Neighbor) Reset() {
 	*x = NearestNeighbors_Neighbor{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[12]
+		mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1072,7 +1138,7 @@ func (x *NearestNeighbors_Neighbor) String() string {
 func (*NearestNeighbors_Neighbor) ProtoMessage() {}
 
 func (x *NearestNeighbors_Neighbor) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[12]
+	mi := &file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1131,10 +1197,19 @@ var file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_rawD
 	0x65, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x5f, 0x6f, 0x6e, 0x6c, 0x69, 0x6e, 0x65, 0x5f, 0x73, 0x65,
 	0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x35, 0x0a, 0x12, 0x46, 0x65, 0x61,
-	0x74, 0x75, 0x72, 0x65, 0x56, 0x69, 0x65, 0x77, 0x44, 0x61, 0x74, 0x61, 0x4b, 0x65, 0x79, 0x12,
-	0x12, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52, 0x03,
-	0x6b, 0x65, 0x79, 0x42, 0x0b, 0x0a, 0x09, 0x6b, 0x65, 0x79, 0x5f, 0x6f, 0x6e, 0x65, 0x6f, 0x66,
+	0x75, 0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xc4, 0x01, 0x0a, 0x12, 0x46, 0x65,
+	0x61, 0x74, 0x75, 0x72, 0x65, 0x56, 0x69, 0x65, 0x77, 0x44, 0x61, 0x74, 0x61, 0x4b, 0x65, 0x79,
+	0x12, 0x12, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52,
+	0x03, 0x6b, 0x65, 0x79, 0x12, 0x67, 0x0a, 0x0d, 0x63, 0x6f, 0x6d, 0x70, 0x6f, 0x73, 0x69, 0x74,
+	0x65, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x40, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61,
+	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x46, 0x65,
+	0x61, 0x74, 0x75, 0x72, 0x65, 0x56, 0x69, 0x65, 0x77, 0x44, 0x61, 0x74, 0x61, 0x4b, 0x65, 0x79,
+	0x2e, 0x43, 0x6f, 0x6d, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x65, 0x4b, 0x65, 0x79, 0x48, 0x00, 0x52,
+	0x0c, 0x63, 0x6f, 0x6d, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x65, 0x4b, 0x65, 0x79, 0x1a, 0x24, 0x0a,
+	0x0c, 0x43, 0x6f, 0x6d, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x65, 0x4b, 0x65, 0x79, 0x12, 0x14, 0x0a,
+	0x05, 0x70, 0x61, 0x72, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x70, 0x61,
+	0x72, 0x74, 0x73, 0x42, 0x0b, 0x0a, 0x09, 0x6b, 0x65, 0x79, 0x5f, 0x6f, 0x6e, 0x65, 0x6f, 0x66,
 	0x22, 0xe9, 0x03, 0x0a, 0x19, 0x46, 0x65, 0x74, 0x63, 0x68, 0x46, 0x65, 0x61, 0x74, 0x75, 0x72,
 	0x65, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14,
 	0x0a, 0x02, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x02, 0x18, 0x01, 0x48, 0x00,
@@ -1371,7 +1446,7 @@ func file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_raw
 }
 
 var file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_goTypes = []interface{}{
 	(FeatureViewDataFormat)(0),                                                       // 0: google.cloud.aiplatform.v1beta1.FeatureViewDataFormat
 	(FetchFeatureValuesRequest_Format)(0),                                            // 1: google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest.Format
@@ -1382,39 +1457,41 @@ var file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_goTy
 	(*SearchNearestEntitiesRequest)(nil),                                             // 6: google.cloud.aiplatform.v1beta1.SearchNearestEntitiesRequest
 	(*NearestNeighbors)(nil),                                                         // 7: google.cloud.aiplatform.v1beta1.NearestNeighbors
 	(*SearchNearestEntitiesResponse)(nil),                                            // 8: google.cloud.aiplatform.v1beta1.SearchNearestEntitiesResponse
-	(*FetchFeatureValuesResponse_FeatureNameValuePairList)(nil),                      // 9: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList
-	(*FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair)(nil), // 10: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList.FeatureNameValuePair
-	(*NearestNeighborQuery_Embedding)(nil),                                           // 11: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.Embedding
-	(*NearestNeighborQuery_StringFilter)(nil),                                        // 12: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.StringFilter
-	(*NearestNeighborQuery_Parameters)(nil),                                          // 13: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.Parameters
-	(*NearestNeighbors_Neighbor)(nil),                                                // 14: google.cloud.aiplatform.v1beta1.NearestNeighbors.Neighbor
-	(*structpb.Struct)(nil),                                                          // 15: google.protobuf.Struct
-	(*FeatureValue)(nil),                                                             // 16: google.cloud.aiplatform.v1beta1.FeatureValue
+	(*FeatureViewDataKey_CompositeKey)(nil),                                          // 9: google.cloud.aiplatform.v1beta1.FeatureViewDataKey.CompositeKey
+	(*FetchFeatureValuesResponse_FeatureNameValuePairList)(nil),                      // 10: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList
+	(*FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair)(nil), // 11: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList.FeatureNameValuePair
+	(*NearestNeighborQuery_Embedding)(nil),                                           // 12: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.Embedding
+	(*NearestNeighborQuery_StringFilter)(nil),                                        // 13: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.StringFilter
+	(*NearestNeighborQuery_Parameters)(nil),                                          // 14: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.Parameters
+	(*NearestNeighbors_Neighbor)(nil),                                                // 15: google.cloud.aiplatform.v1beta1.NearestNeighbors.Neighbor
+	(*structpb.Struct)(nil),                                                          // 16: google.protobuf.Struct
+	(*FeatureValue)(nil),                                                             // 17: google.cloud.aiplatform.v1beta1.FeatureValue
 }
 var file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_depIdxs = []int32{
-	2,  // 0: google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest.data_key:type_name -> google.cloud.aiplatform.v1beta1.FeatureViewDataKey
-	0,  // 1: google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest.data_format:type_name -> google.cloud.aiplatform.v1beta1.FeatureViewDataFormat
-	1,  // 2: google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest.format:type_name -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest.Format
-	9,  // 3: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.key_values:type_name -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList
-	15, // 4: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.proto_struct:type_name -> google.protobuf.Struct
-	11, // 5: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.embedding:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighborQuery.Embedding
-	12, // 6: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.string_filters:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighborQuery.StringFilter
-	13, // 7: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.parameters:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighborQuery.Parameters
-	5,  // 8: google.cloud.aiplatform.v1beta1.SearchNearestEntitiesRequest.query:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighborQuery
-	14, // 9: google.cloud.aiplatform.v1beta1.NearestNeighbors.neighbors:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighbors.Neighbor
-	7,  // 10: google.cloud.aiplatform.v1beta1.SearchNearestEntitiesResponse.nearest_neighbors:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighbors
-	10, // 11: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList.features:type_name -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList.FeatureNameValuePair
-	16, // 12: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList.FeatureNameValuePair.value:type_name -> google.cloud.aiplatform.v1beta1.FeatureValue
-	4,  // 13: google.cloud.aiplatform.v1beta1.NearestNeighbors.Neighbor.entity_key_values:type_name -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse
-	3,  // 14: google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.FetchFeatureValues:input_type -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest
-	6,  // 15: google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.SearchNearestEntities:input_type -> google.cloud.aiplatform.v1beta1.SearchNearestEntitiesRequest
-	4,  // 16: google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.FetchFeatureValues:output_type -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse
-	8,  // 17: google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.SearchNearestEntities:output_type -> google.cloud.aiplatform.v1beta1.SearchNearestEntitiesResponse
-	16, // [16:18] is the sub-list for method output_type
-	14, // [14:16] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	9,  // 0: google.cloud.aiplatform.v1beta1.FeatureViewDataKey.composite_key:type_name -> google.cloud.aiplatform.v1beta1.FeatureViewDataKey.CompositeKey
+	2,  // 1: google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest.data_key:type_name -> google.cloud.aiplatform.v1beta1.FeatureViewDataKey
+	0,  // 2: google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest.data_format:type_name -> google.cloud.aiplatform.v1beta1.FeatureViewDataFormat
+	1,  // 3: google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest.format:type_name -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest.Format
+	10, // 4: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.key_values:type_name -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList
+	16, // 5: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.proto_struct:type_name -> google.protobuf.Struct
+	12, // 6: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.embedding:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighborQuery.Embedding
+	13, // 7: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.string_filters:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighborQuery.StringFilter
+	14, // 8: google.cloud.aiplatform.v1beta1.NearestNeighborQuery.parameters:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighborQuery.Parameters
+	5,  // 9: google.cloud.aiplatform.v1beta1.SearchNearestEntitiesRequest.query:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighborQuery
+	15, // 10: google.cloud.aiplatform.v1beta1.NearestNeighbors.neighbors:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighbors.Neighbor
+	7,  // 11: google.cloud.aiplatform.v1beta1.SearchNearestEntitiesResponse.nearest_neighbors:type_name -> google.cloud.aiplatform.v1beta1.NearestNeighbors
+	11, // 12: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList.features:type_name -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList.FeatureNameValuePair
+	17, // 13: google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse.FeatureNameValuePairList.FeatureNameValuePair.value:type_name -> google.cloud.aiplatform.v1beta1.FeatureValue
+	4,  // 14: google.cloud.aiplatform.v1beta1.NearestNeighbors.Neighbor.entity_key_values:type_name -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse
+	3,  // 15: google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.FetchFeatureValues:input_type -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesRequest
+	6,  // 16: google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.SearchNearestEntities:input_type -> google.cloud.aiplatform.v1beta1.SearchNearestEntitiesRequest
+	4,  // 17: google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.FetchFeatureValues:output_type -> google.cloud.aiplatform.v1beta1.FetchFeatureValuesResponse
+	8,  // 18: google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.SearchNearestEntities:output_type -> google.cloud.aiplatform.v1beta1.SearchNearestEntitiesResponse
+	17, // [17:19] is the sub-list for method output_type
+	15, // [15:17] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_init() }
@@ -1509,7 +1586,7 @@ func file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_ini
 			}
 		}
 		file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FetchFeatureValuesResponse_FeatureNameValuePairList); i {
+			switch v := v.(*FeatureViewDataKey_CompositeKey); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1521,7 +1598,7 @@ func file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_ini
 			}
 		}
 		file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair); i {
+			switch v := v.(*FetchFeatureValuesResponse_FeatureNameValuePairList); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1533,7 +1610,7 @@ func file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_ini
 			}
 		}
 		file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NearestNeighborQuery_Embedding); i {
+			switch v := v.(*FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1545,7 +1622,7 @@ func file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_ini
 			}
 		}
 		file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NearestNeighborQuery_StringFilter); i {
+			switch v := v.(*NearestNeighborQuery_Embedding); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1557,7 +1634,7 @@ func file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_ini
 			}
 		}
 		file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NearestNeighborQuery_Parameters); i {
+			switch v := v.(*NearestNeighborQuery_StringFilter); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1569,6 +1646,18 @@ func file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_ini
 			}
 		}
 		file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NearestNeighborQuery_Parameters); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*NearestNeighbors_Neighbor); i {
 			case 0:
 				return &v.state
@@ -1583,6 +1672,7 @@ func file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_ini
 	}
 	file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[0].OneofWrappers = []interface{}{
 		(*FeatureViewDataKey_Key)(nil),
+		(*FeatureViewDataKey_CompositeKey_)(nil),
 	}
 	file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[1].OneofWrappers = []interface{}{
 		(*FetchFeatureValuesRequest_Id)(nil),
@@ -1595,7 +1685,7 @@ func file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_ini
 		(*NearestNeighborQuery_EntityId)(nil),
 		(*NearestNeighborQuery_Embedding_)(nil),
 	}
-	file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[8].OneofWrappers = []interface{}{
+	file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_msgTypes[9].OneofWrappers = []interface{}{
 		(*FetchFeatureValuesResponse_FeatureNameValuePairList_FeatureNameValuePair_Value)(nil),
 	}
 	type x struct{}
@@ -1604,7 +1694,7 @@ func file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_ini
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1beta1_feature_online_store_service_proto_rawDesc,
 			NumEnums:      2,
-			NumMessages:   13,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

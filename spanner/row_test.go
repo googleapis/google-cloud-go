@@ -2008,6 +2008,12 @@ func TestSelectAll(t *testing.T) {
 		Col3 string
 		Col4 time.Time
 	}
+	type testStructWithTag struct {
+		Col1 int64     `spanner:"tag1"`
+		Col2 float64   `spanner:"Tag2"`
+		Col3 string    `spanner:"taG3"`
+		Col4 time.Time `spanner:"TAG4"`
+	}
 	tests := []struct {
 		name    string
 		args    args
@@ -2175,7 +2181,40 @@ func TestSelectAll(t *testing.T) {
 				{Col1: 3, COL2: 3.3, Col3: "value3"},
 				{Col1: 1, COL2: 1.1, Col3: "value"},
 				{Col1: 2, COL2: 2.2, Col3: "value2"},
-			}},
+			},
+		},
+		{
+			name: "success: using slice of structs with spanner tag annotations",
+			args: args{
+				destination: &[]testStructWithTag{},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag2", Type: floatType()},
+							{Name: "Tag3", Type: stringType()},
+							{Name: "Tag4", Type: timeType()},
+						},
+						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm)},
+					}, nil)
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag2", Type: floatType()},
+							{Name: "Tag3", Type: stringType()},
+							{Name: "Tag4", Type: timeType()},
+						},
+						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), timeProto(tm.Add(24 * time.Hour))},
+					}, nil)
+					mockIterator.On("Next").Once().Return(nil, iterator.Done)
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+			},
+			want: &[]testStructWithTag{
+				{Col1: 1, Col2: 1.1, Col3: "value", Col4: tm},
+				{Col1: 2, Col2: 2.2, Col3: "value2", Col4: tm.Add(24 * time.Hour)},
+			},
+		},
 		{
 			name: "failure: in case of error destination will have the partial result",
 			args: args{

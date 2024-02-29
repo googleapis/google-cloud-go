@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.0...batch/v1.8.1) (2024-02-21)
+
+
+### Documentation
+
+* **batch:** Refine proto comment for run_as_non_root ([0195fe9](https://github.com/googleapis/google-cloud-go/commit/0195fe9292274ff9d86c71079a8e96ed2e5f9331))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.7.0...batch/v1.8.0) (2024-01-30)
 
 

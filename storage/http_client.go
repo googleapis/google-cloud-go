@@ -885,7 +885,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	mediaOpts := []googleapi.MediaOption{
 		googleapi.ChunkSize(params.chunkSize),
 	}
-	if c := attrs.ContentType; c != "" {
+	if c := attrs.ContentType; c != "" || params.forceEmptyContentType {
 		mediaOpts = append(mediaOpts, googleapi.ContentType(c))
 	}
 	if params.chunkRetryDeadline != 0 {
@@ -1248,6 +1248,32 @@ func (r *httpReader) Read(p []byte) (int, error) {
 
 func (r *httpReader) Close() error {
 	return r.body.Close()
+}
+
+func (r *httpReader) WriteTo(w io.Writer) (int64, error) {
+	// TODO: implement WriteTo for HTTP reads
+	return 0, nil
+	// var n int64 = 0
+	// w.Write()
+	// for {
+	// 	m, err := r.body.Read(p[n:])
+	// 	n += m
+	// 	r.seen += int64(m)
+	// 	if err == nil || err == io.EOF {
+	// 		return n, err
+	// 	}
+	// 	// Read failed (likely due to connection issues), but we will try to reopen
+	// 	// the pipe and continue. Send a ranged read request that takes into account
+	// 	// the number of bytes we've already seen.
+	// 	res, err := r.reopen(r.seen)
+	// 	if err != nil {
+	// 		// reopen already retries
+	// 		return n, err
+	// 	}
+	// 	r.body.Close()
+	// 	r.body = res.Body
+	// }
+	// return n, nil
 }
 
 func setRangeReaderHeaders(h http.Header, params *newRangeReaderParams) error {
