@@ -470,10 +470,14 @@ func inferStruct(t reflect.Type) (Schema, error) {
 }
 
 // inferFieldSchema infers the FieldSchema for a Go type
-func inferFieldSchema(fieldName string, rt reflect.Type, nullable bool) (*FieldSchema, error) {
+func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool) (*FieldSchema, error) {
 	// Only []byte and struct pointers can be tagged nullable.
 	if nullable && !(rt == typeOfByteSlice || rt.Kind() == reflect.Ptr && rt.Elem().Kind() == reflect.Struct) {
 		return nil, badNullableError{fieldName, rt}
+	}
+	// Only structs and struct pointers can be tagged as json.
+	if json && !(rt.Kind() == reflect.Struct || rt.Kind() == reflect.Ptr && rt.Elem().Kind() == reflect.Struct) {
+		return nil, badJSONError{fieldName, rt}
 	}
 	switch rt {
 	case typeOfByteSlice:
@@ -510,7 +514,7 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable bool) (*FieldS
 			// Repeated nullable types are not supported by BigQuery.
 			return nil, unsupportedFieldTypeError{fieldName, rt}
 		}
-		f, err := inferFieldSchema(fieldName, et, false)
+		f, err := inferFieldSchema(fieldName, et, false, false)
 		if err != nil {
 			return nil, err
 		}
@@ -523,6 +527,10 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable bool) (*FieldS
 		}
 		fallthrough
 	case reflect.Struct:
+		if json {
+			return &FieldSchema{Required: !nullable, Type: JSONFieldType}, nil
+		}
+
 		nested, err := inferStruct(rt)
 		if err != nil {
 			return nil, err
@@ -552,14 +560,16 @@ func inferFields(rt reflect.Type) (Schema, error) {
 		return nil, err
 	}
 	for _, field := range fields {
-		var nullable bool
+		var nullable, json bool
 		for _, opt := range field.ParsedTag.([]string) {
 			if opt == nullableTagOption {
 				nullable = true
-				break
+			}
+			if opt == jsonTagOption {
+				json = true
 			}
 		}
-		f, err := inferFieldSchema(field.Name, field.Type, nullable)
+		f, err := inferFieldSchema(field.Name, field.Type, nullable, json)
 		if err != nil {
 			return nil, err
 		}
@@ -698,6 +708,15 @@ type badNullableError struct {
 
 func (e badNullableError) Error() string {
 	return fmt.Sprintf(`bigquery: field %q of type %s: use "nullable" only for []byte and struct pointers; for all other types, use a NullXXX type`, e.name, e.typ)
+}
+
+type badJSONError struct {
+	name string
+	typ  reflect.Type
+}
+
+func (e badJSONError) Error() string {
+	return fmt.Sprintf(`bigquery: field %q of type %s: use "json" only for struct and struct pointers`, e.name, e.typ)
 }
 
 type unsupportedFieldTypeError struct {

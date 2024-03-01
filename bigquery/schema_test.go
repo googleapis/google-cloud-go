@@ -846,12 +846,14 @@ func TestRecursiveInference(t *testing.T) {
 
 type withTags struct {
 	NoTag         int
-	ExcludeTag    int      `bigquery:"-"`
-	SimpleTag     int      `bigquery:"simple_tag"`
-	UnderscoreTag int      `bigquery:"_id"`
-	MixedCase     int      `bigquery:"MIXEDcase"`
-	Nullable      []byte   `bigquery:",nullable"`
-	NullNumeric   *big.Rat `bigquery:",nullable"`
+	ExcludeTag    int              `bigquery:"-"`
+	SimpleTag     int              `bigquery:"simple_tag"`
+	UnderscoreTag int              `bigquery:"_id"`
+	MixedCase     int              `bigquery:"MIXEDcase"`
+	Nullable      []byte           `bigquery:",nullable"`
+	NullNumeric   *big.Rat         `bigquery:",nullable"`
+	JSON          struct{ X int }  `bigquery:",json"`
+	JSONPtr       *struct{ X int } `bigquery:",json"`
 }
 
 type withTagsNested struct {
@@ -883,6 +885,8 @@ var withTagsSchema = Schema{
 	reqField("MIXEDcase", "INTEGER"),
 	optField("Nullable", "BYTES"),
 	optField("NullNumeric", "NUMERIC"),
+	reqField("JSON", "JSON"),
+	reqField("JSONPtr", "JSON"),
 }
 
 func TestTagInference(t *testing.T) {
@@ -1082,6 +1086,12 @@ func TestSchemaErrors(t *testing.T) {
 				X []int `bigquery:",nullable"`
 			}{},
 			want: badNullableError{},
+		},
+		{
+			in: struct {
+				X int `bigquery:",json"`
+			}{},
+			want: badJSONError{},
 		},
 		{
 			in:   struct{ X *[]byte }{},
