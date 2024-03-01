@@ -511,6 +511,12 @@ func optField(name, typ string) *FieldSchema {
 	}
 }
 
+type jsonFields struct {
+	IntMap      map[string]int
+	StructMap   map[string]allTime
+	SliceOfMaps []map[string]int
+}
+
 func TestSimpleInference(t *testing.T) {
 	testCases := []struct {
 		in   interface{}
@@ -575,15 +581,22 @@ func TestSimpleInference(t *testing.T) {
 				reqField("ByteSlice", "BYTES"),
 			},
 		},
+		{
+			in: jsonFields{},
+			want: Schema{
+				reqField("IntMap", "JSON"),
+				reqField("StructMap", "JSON"),
+				repField("SliceOfMaps", "JSON"),
+			},
+		},
 	}
 	for _, tc := range testCases {
 		got, err := InferSchema(tc.in)
 		if err != nil {
 			t.Fatalf("%T: error inferring TableSchema: %v", tc.in, err)
 		}
-		if !testutil.Equal(got, tc.want) {
-			t.Errorf("%T: inferring TableSchema: got:\n%#v\nwant:\n%#v", tc.in,
-				pretty.Value(got), pretty.Value(tc.want))
+		if d := testutil.Diff(got, tc.want); d != "" {
+			t.Errorf("%T: inferring TableSchema: %s", tc.in, d)
 		}
 	}
 }
@@ -1011,10 +1024,6 @@ func TestSchemaErrors(t *testing.T) {
 			want: unsupportedFieldTypeError{},
 		},
 		{
-			in:   struct{ Map map[string]int }{},
-			want: unsupportedFieldTypeError{},
-		},
-		{
 			in:   struct{ Chan chan bool }{},
 			want: unsupportedFieldTypeError{},
 		},
@@ -1084,6 +1093,10 @@ func TestSchemaErrors(t *testing.T) {
 		},
 		{
 			in:   struct{ X *int }{},
+			want: unsupportedFieldTypeError{},
+		},
+		{
+			in:   struct{ X map[struct{}]interface{} }{},
 			want: unsupportedFieldTypeError{},
 		},
 	}

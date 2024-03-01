@@ -339,8 +339,6 @@ func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) 
 		return stringParamType, nil
 	case typeOfNullGeography:
 		return geographyParamType, nil
-	case typeOfNullJSON:
-		return jsonParamType, nil
 	case typeOfQueryParameterValue:
 		return v.Interface().(*QueryParameterValue).toBQParamType(), nil
 	}

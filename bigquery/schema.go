@@ -353,16 +353,17 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 // (This is the same mapping as that used for RowIterator.Next.) Fields inferred
 // from these types are marked required (non-nullable).
 //
-//	STRING      string
-//	BOOL        bool
-//	INTEGER     int, int8, int16, int32, int64, uint8, uint16, uint32
-//	FLOAT       float32, float64
-//	BYTES       []byte
-//	TIMESTAMP   time.Time
-//	DATE        civil.Date
-//	TIME        civil.Time
-//	DATETIME    civil.DateTime
-//	NUMERIC     *big.Rat
+//		STRING      string
+//		BOOL        bool
+//		INTEGER     int, int8, int16, int32, int64, uint8, uint16, uint32
+//		FLOAT       float32, float64
+//		BYTES       []byte
+//		TIMESTAMP   time.Time
+//		DATE        civil.Date
+//		TIME        civil.Time
+//		DATETIME    civil.DateTime
+//		NUMERIC     *big.Rat
+//	    JSON        json.RawMessage, map[string]interface{}
 //
 // The big.Rat type supports numbers of arbitrary size and precision. Values
 // will be rounded to 9 digits after the decimal point before being transmitted
@@ -533,6 +534,11 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable bool) (*FieldS
 		return &FieldSchema{Required: !nullable, Type: BooleanFieldType}, nil
 	case reflect.Float32, reflect.Float64:
 		return &FieldSchema{Required: !nullable, Type: FloatFieldType}, nil
+	case reflect.Map:
+		if rt.Key().Kind() != reflect.String {
+			return nil, unsupportedFieldTypeError{fieldName, rt}
+		}
+		return &FieldSchema{Required: !nullable, Type: JSONFieldType}, nil
 	default:
 		return nil, unsupportedFieldTypeError{fieldName, rt}
 	}

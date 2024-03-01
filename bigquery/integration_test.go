@@ -75,9 +75,9 @@ var (
 // modifies the client.
 
 func TestMain(m *testing.M) {
-	cleanup := initIntegrationTest()
+	//cleanup := initIntegrationTest()
 	r := m.Run()
-	cleanup()
+	//cleanup()
 	os.Exit(r)
 }
 
@@ -2797,7 +2797,7 @@ func TestIntegration_ExportDataStatistics(t *testing.T) {
 	}()
 
 	// EXPORT DATA to GCS object.
-	sql := fmt.Sprintf(`EXPORT DATA 
+	sql := fmt.Sprintf(`EXPORT DATA
 		OPTIONS (
 			uri = '%s',
 			format = 'CSV',
@@ -2809,7 +2809,7 @@ func TestIntegration_ExportDataStatistics(t *testing.T) {
 			SELECT 'a' as name, 1 as num
 			UNION ALL
 			SELECT 'b' as name, 2 as num
-			UNION ALL  
+			UNION ALL
 			SELECT 'c' as name, 3 as num
 		);`,
 		uri)
