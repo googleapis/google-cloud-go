@@ -75,9 +75,9 @@ var (
 // modifies the client.
 
 func TestMain(m *testing.M) {
-	//cleanup := initIntegrationTest()
+	cleanup := initIntegrationTest()
 	r := m.Run()
-	//cleanup()
+	cleanup()
 	os.Exit(r)
 }
 
