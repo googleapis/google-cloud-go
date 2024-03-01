@@ -363,7 +363,7 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 //		TIME        civil.Time
 //		DATETIME    civil.DateTime
 //		NUMERIC     *big.Rat
-//	    JSON        json.RawMessage, map[string]interface{}
+//	    JSON        map[string]interface{}
 //
 // The big.Rat type supports numbers of arbitrary size and precision. Values
 // will be rounded to 9 digits after the decimal point before being transmitted
