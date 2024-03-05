@@ -317,7 +317,7 @@ const (
 
 	// subscribe span names
 	subscribeSpanName = "subscribe"
-	fcSpanName        = "subscriber flow control"
+	ccSpanName        = "subscriber concurrency control"
 	processSpanName   = "process"
 	scheduleSpanName  = "subscribe scheduler"
 	modackSpanName    = "modack"

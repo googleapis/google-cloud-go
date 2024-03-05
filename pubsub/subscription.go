@@ -1399,12 +1399,12 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
 					ctx := context.Background()
-					var fcSpan trace.Span
+					var ccSpan trace.Span
 					if iter.enableTracing {
 						c, _ := iter.activeSpan.Load(ackh.ackID)
 						sc := c.(trace.Span)
 						ctx = trace.ContextWithSpanContext(ctx, sc.SpanContext())
-						_, fcSpan = startSpan(ctx, fcSpanName, "")
+						ctx, ccSpan = startSpan(ctx, ccSpanName, "")
 					}
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
@@ -1415,7 +1415,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						return nil
 					}
 					if iter.enableTracing {
-						fcSpan.End()
+						ccSpan.End()
 					}
 
 					wg.Add(1)
