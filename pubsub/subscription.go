@@ -1440,7 +1440,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						var ps trace.Span
 						if iter.enableTracing {
 							_, ps = startSpan(ctx, processSpanName, s.ID())
-							defer ps.End()
 							old := ackh.doneFunc
 							ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
 								var eventString string
@@ -1451,6 +1450,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 								}
 								ps.AddEvent(eventString)
 								ps.SetAttributes(semconv.MessagingOperationProcess)
+								ps.End()
 								old(ackID, ack, r, receiveTime)
 							}
 						}
