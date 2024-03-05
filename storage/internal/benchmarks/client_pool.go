@@ -19,8 +19,6 @@ import (
 	"crypto/tls"
 	"log"
 	"net/http"
-	"os"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -174,9 +172,6 @@ func getClient(ctx context.Context, api benchmarkAPI) *storage.Client {
 	return nil
 }
 
-// mutex on starting a client so that we can set an env variable for GRPC clients
-var clientMu sync.Mutex
-
 // Client config
 type clientConfig struct {
 	writeBufferSize, readBufferSize int
@@ -234,9 +229,7 @@ func initializeHTTPClient(ctx context.Context, config clientConfig) (*storage.Cl
 	}
 
 	// Init client
-	clientMu.Lock()
 	client, err := storage.NewClient(ctx, opts...)
-	clientMu.Unlock()
 
 	return client, err
 }
@@ -255,11 +248,7 @@ func initializeGRPCClient(ctx context.Context, config clientConfig) (*storage.Cl
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithReadBufferSize(config.readBufferSize)))
 	}
 
-	clientMu.Lock()
-	os.Setenv("STORAGE_USE_GRPC", "true")
-	client, err := storage.NewClient(ctx, opts...)
-	os.Unsetenv("STORAGE_USE_GRPC")
-	clientMu.Unlock()
+	client, err := storage.NewGRPCClient(ctx, opts...)
 
 	return client, err
 }

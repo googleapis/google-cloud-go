@@ -1058,6 +1058,16 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 				return nil, err
 			}
 			return &DropChangeStream{Name: name, Position: pos}, nil
+		case tok.caseEqual("SEQUENCE"):
+			var ifExists bool
+			if p.eat("IF", "EXISTS") {
+				ifExists = true
+			}
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			return &DropSequence{Name: name, IfExists: ifExists, Position: pos}, nil
 		}
 	} else if p.sniff("ALTER", "DATABASE") {
 		a, err := p.parseAlterDatabase()
@@ -1080,6 +1090,12 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.sniff("ALTER", "INDEX") {
 		ai, err := p.parseAlterIndex()
 		return ai, err
+	} else if p.sniff("CREATE", "SEQUENCE") {
+		cs, err := p.parseCreateSequence()
+		return cs, err
+	} else if p.sniff("ALTER", "SEQUENCE") {
+		as, err := p.parseAlterSequence()
+		return as, err
 	}
 
 	return nil, p.errorf("unknown DDL statement")
@@ -1295,7 +1311,7 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 
 	/*
 		{ CREATE VIEW | CREATE OR REPLACE VIEW } view_name
-		SQL SECURITY INVOKER
+		SQL SECURITY {INVOKER | DEFINER}
 		AS query
 	*/
 
@@ -1312,7 +1328,23 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 		return nil, err
 	}
 	vname, err := p.parseTableOrIndexOrColumnName()
-	if err := p.expect("SQL", "SECURITY", "INVOKER", "AS"); err != nil {
+	if err := p.expect("SQL", "SECURITY"); err != nil {
+		return nil, err
+	}
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	var securityType SecurityType
+	switch {
+	case tok.caseEqual("INVOKER"):
+		securityType = Invoker
+	case tok.caseEqual("DEFINER"):
+		securityType = Definer
+	default:
+		return nil, p.errorf("got %q, want INVOKER or DEFINER", tok.value)
+	}
+	if err := p.expect("AS"); err != nil {
 		return nil, err
 	}
 	query, err := p.parseQuery()
@@ -1321,9 +1353,10 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 	}
 
 	return &CreateView{
-		Name:      vname,
-		OrReplace: orReplace,
-		Query:     query,
+		Name:         vname,
+		OrReplace:    orReplace,
+		SecurityType: securityType,
+		Query:        query,
 
 		Position: pos,
 	}, nil
@@ -2673,6 +2706,159 @@ func (p *parser) parseAlterIndex() (*AlterIndex, *parseError) {
 	return nil, p.errorf("got %q, expected ADD or DROP", tok.value)
 }
 
+func (p *parser) parseCreateSequence() (*CreateSequence, *parseError) {
+	debugf("parseCreateSequence: %v", p)
+
+	/*
+		CREATE SEQUENCE
+		  [ IF NOT EXISTS ] sequence_name
+		  [ OPTIONS ( sequence_options ) ]
+	*/
+
+	if err := p.expect("CREATE"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("SEQUENCE"); err != nil {
+		return nil, err
+	}
+	var ifNotExists bool
+	if p.eat("IF", "NOT", "EXISTS") {
+		ifNotExists = true
+	}
+	sname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+
+	cs := &CreateSequence{Name: sname, IfNotExists: ifNotExists, Position: pos}
+
+	if p.sniff("OPTIONS") {
+		cs.Options, err = p.parseSequenceOptions()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return cs, nil
+}
+
+func (p *parser) parseAlterSequence() (*AlterSequence, *parseError) {
+	debugf("parseAlterSequence: %v", p)
+
+	/*
+		ALTER SEQUENCE sequence_name
+		SET OPTIONS sequence_options
+	*/
+
+	if err := p.expect("ALTER"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("SEQUENCE"); err != nil {
+		return nil, err
+	}
+	sname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+
+	as := &AlterSequence{Name: sname, Position: pos}
+
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	switch {
+	default:
+		return nil, p.errorf("got %q, expected SET", tok.value)
+	case tok.caseEqual("SET"):
+		options, err := p.parseSequenceOptions()
+		if err != nil {
+			return nil, err
+		}
+		as.Alteration = SetSequenceOptions{Options: options}
+		return as, nil
+	}
+}
+
+func (p *parser) parseSequenceOptions() (SequenceOptions, *parseError) {
+	debugf("parseSequenceOptions: %v", p)
+
+	if err := p.expect("OPTIONS", "("); err != nil {
+		return SequenceOptions{}, err
+	}
+
+	// We ignore case for the key (because it is easier) but not the value.
+	var so SequenceOptions
+	for {
+		if p.eat("sequence_kind", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SequenceOptions{}, tok.err
+			}
+			if tok.typ != stringToken {
+				return SequenceOptions{}, p.errorf("invalid sequence_kind value: %v", tok.value)
+			}
+			sequenceKind := tok.string
+			so.SequenceKind = &sequenceKind
+		} else if p.eat("skip_range_min", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SequenceOptions{}, tok.err
+			}
+			if tok.typ != int64Token {
+				return SequenceOptions{}, p.errorf("invalid skip_range_min value: %v", tok.value)
+			}
+			value, err := strconv.Atoi(tok.value)
+			if err != nil {
+				return SequenceOptions{}, p.errorf("invalid skip_range_min value: %v", tok.value)
+			}
+			so.SkipRangeMin = &value
+		} else if p.eat("skip_range_max", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SequenceOptions{}, tok.err
+			}
+			if tok.typ != int64Token {
+				return SequenceOptions{}, p.errorf("invalid skip_range_max value: %v", tok.value)
+			}
+			value, err := strconv.Atoi(tok.value)
+			if err != nil {
+				return SequenceOptions{}, p.errorf("invalid skip_range_max value: %v", tok.value)
+			}
+			so.SkipRangeMax = &value
+		} else if p.eat("start_with_counter", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return SequenceOptions{}, tok.err
+			}
+			if tok.typ != int64Token {
+				return SequenceOptions{}, p.errorf("invalid start_with_counter value: %v", tok.value)
+			}
+			value, err := strconv.Atoi(tok.value)
+			if err != nil {
+				return SequenceOptions{}, p.errorf("invalid start_with_counter value: %v", tok.value)
+			}
+			so.StartWithCounter = &value
+		} else {
+			tok := p.next()
+			return SequenceOptions{}, p.errorf("unknown sequence option: %v", tok.value)
+		}
+		if p.sniff(")") {
+			break
+		}
+		if !p.eat(",") {
+			return SequenceOptions{}, p.errorf("missing ',' in options list")
+		}
+	}
+	if err := p.expect(")"); err != nil {
+		return SequenceOptions{}, err
+	}
+
+	return so, nil
+}
+
 var baseTypes = map[string]TypeBase{
 	"BOOL":      Bool,
 	"INT64":     Int64,
@@ -3386,6 +3572,76 @@ var dateIntervalArgParser = intervalArgParser((*parser).parseDateIntervalDatePar
 // Special argument parser for TIMESTAMP_ADD, TIMESTAMP_SUB
 var timestampIntervalArgParser = intervalArgParser((*parser).parseTimestampIntervalDatePart)
 
+var sequenceArgParser = func(p *parser) (Expr, *parseError) {
+	if p.eat("SEQUENCE") {
+		name, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		return SequenceExpr{Name: name}, nil
+	}
+	return p.parseExpr()
+}
+
+func (p *parser) parseAggregateFunc() (Func, *parseError) {
+	tok := p.next()
+	if tok.err != nil {
+		return Func{}, tok.err
+	}
+	name := strings.ToUpper(tok.value)
+	if err := p.expect("("); err != nil {
+		return Func{}, err
+	}
+	var distinct bool
+	if p.eat("DISTINCT") {
+		distinct = true
+	}
+	args, err := p.parseExprList()
+	if err != nil {
+		return Func{}, err
+	}
+	var nullsHandling NullsHandling
+	if p.eat("IGNORE", "NULLS") {
+		nullsHandling = IgnoreNulls
+	} else if p.eat("RESPECT", "NULLS") {
+		nullsHandling = RespectNulls
+	}
+	var having *AggregateHaving
+	if p.eat("HAVING") {
+		tok := p.next()
+		if tok.err != nil {
+			return Func{}, tok.err
+		}
+		var cond AggregateHavingCondition
+		switch tok.value {
+		case "MAX":
+			cond = HavingMax
+		case "MIN":
+			cond = HavingMin
+		default:
+			return Func{}, p.errorf("got %q, want MAX or MIN", tok.value)
+		}
+		expr, err := p.parseExpr()
+		if err != nil {
+			return Func{}, err
+		}
+		having = &AggregateHaving{
+			Condition: cond,
+			Expr:      expr,
+		}
+	}
+	if err := p.expect(")"); err != nil {
+		return Func{}, err
+	}
+	return Func{
+		Name:          name,
+		Args:          args,
+		Distinct:      distinct,
+		NullsHandling: nullsHandling,
+		Having:        having,
+	}, nil
+}
+
 /*
 Expressions
 
@@ -3738,6 +3994,10 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	// this is a function invocation.
 	// The `funcs` map is keyed by upper case strings.
 	if name := strings.ToUpper(tok.value); funcs[name] && p.sniff("(") {
+		if aggregateFuncs[name] {
+			p.back()
+			return p.parseAggregateFunc()
+		}
 		var list []Expr
 		var err *parseError
 		if f, ok := funcArgParsers[name]; ok {

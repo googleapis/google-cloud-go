@@ -1,5 +1,49 @@
 # Changes
 
+
+
+## [1.10.3](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.10.2...policytroubleshooter/v1.10.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **policytroubleshooter:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.10.1...policytroubleshooter/v1.10.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **policytroubleshooter:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.10.0...policytroubleshooter/v1.10.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **policytroubleshooter:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.9.1...policytroubleshooter/v1.10.0) (2023-10-17)
+
+
+### Features
+
+* **policytroubleshooter/iam:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.9.0...policytroubleshooter/v1.9.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **policytroubleshooter:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.8.0...policytroubleshooter/v1.9.0) (2023-08-18)
+
+
+### Features
+
+* **policytroubleshooter/iam:** Start generating apiv3 ([#8444](https://github.com/googleapis/google-cloud-go/issues/8444)) ([fb1a8cc](https://github.com/googleapis/google-cloud-go/commit/fb1a8ccfa81b8b36658207e333ee83666c87be75))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.7.1...policytroubleshooter/v1.8.0) (2023-07-24)
 
 

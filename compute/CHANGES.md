@@ -1,5 +1,47 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.24.0...compute/v1.25.0) (2024-03-04)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20240220 ([#886](https://github.com/googleapis/google-cloud-go/issues/886)) ([#9485](https://github.com/googleapis/google-cloud-go/issues/9485)) ([ae1f547](https://github.com/googleapis/google-cloud-go/commit/ae1f5472bff1b476c3fd58e590ec135185446daf))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.4...compute/v1.24.0) (2024-02-09)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20240130 ([#881](https://github.com/googleapis/google-cloud-go/issues/881)) ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+
+## [1.23.4](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.3...compute/v1.23.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **compute:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.23.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.2...compute/v1.23.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **compute:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.1...compute/v1.23.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **compute:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.0...compute/v1.23.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **compute:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.22.0...compute/v1.23.0) (2023-07-26)
 
 

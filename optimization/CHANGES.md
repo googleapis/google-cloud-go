@@ -1,6 +1,60 @@
 # Changes
 
 
+## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.2...optimization/v1.6.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **optimization:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.1...optimization/v1.6.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **optimization:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.0...optimization/v1.6.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **optimization:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.5.1...optimization/v1.6.0) (2023-10-17)
+
+
+### Features
+
+* **optimization:** Added the route modifiers ([56ce871](https://github.com/googleapis/google-cloud-go/commit/56ce87195320634b07ae0b012efcc5f2b3813fb0))
+
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.5.0...optimization/v1.5.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **optimization:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.4.2...optimization/v1.5.0) (2023-09-11)
+
+
+### Features
+
+* **optimization:** Added support for walking mode and cost_per_kilometer_below_soft_max ([ac10224](https://github.com/googleapis/google-cloud-go/commit/ac102249403e6c1604bff7c537343645c950ae13))
+
+
+### Documentation
+
+* **optimization:** Minor formatting fix ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
+## [1.4.2](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.4.1...optimization/v1.4.2) (2023-08-17)
+
+
+### Documentation
+
+* **optimization:** Minor formatting ([#8417](https://github.com/googleapis/google-cloud-go/issues/8417)) ([b3dbdde](https://github.com/googleapis/google-cloud-go/commit/b3dbdde48ddfa215c3c3bb110e0051fd8158f451))
+
 ## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.4.0...optimization/v1.4.1) (2023-06-20)
 
 

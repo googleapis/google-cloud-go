@@ -353,7 +353,7 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 		return err
 	}
 
-	var statsOnExit func()
+	var statsOnExit func(ctx context.Context)
 
 	// critical section:  Things that need to happen inside the critical section:
 	//
@@ -362,9 +362,10 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	// * add the pending write to the channel for the connection (ordering for the response)
 	co.mu.Lock()
 	defer func() {
+		sCtx := co.ctx
 		co.mu.Unlock()
-		if statsOnExit != nil {
-			statsOnExit()
+		if statsOnExit != nil && sCtx != nil {
+			statsOnExit(sCtx)
 		}
 	}()
 
@@ -376,8 +377,22 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	// Additionally, we check multiplex status as schema changes for explicit streams
 	// require reconnect, whereas multiplex does not.
 	forceReconnect := false
-	if pw.writer != nil && pw.descVersion != nil && pw.descVersion.isNewer(pw.writer.curDescVersion) {
-		pw.writer.curDescVersion = pw.descVersion
+	promoted := false
+	if pw.writer != nil && pw.reqTmpl != nil {
+		if !pw.reqTmpl.Compatible(pw.writer.curTemplate) {
+			if pw.writer.curTemplate == nil {
+				// promote because there's no current template
+				pw.writer.curTemplate = pw.reqTmpl
+				promoted = true
+			} else {
+				if pw.writer.curTemplate.versionTime.Before(pw.reqTmpl.versionTime) {
+					pw.writer.curTemplate = pw.reqTmpl
+					promoted = true
+				}
+			}
+		}
+	}
+	if promoted {
 		if co.optimizer == nil {
 			forceReconnect = true
 		} else {
@@ -427,12 +442,12 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 			numRows = int64(len(pr.GetSerializedRows()))
 		}
 	}
-	statsOnExit = func() {
+	statsOnExit = func(ctx context.Context) {
 		// these will get recorded once we exit the critical section.
 		// TODO: resolve open questions around what labels should be attached (connection, streamID, etc)
-		recordStat(co.ctx, AppendRequestRows, numRows)
-		recordStat(co.ctx, AppendRequests, 1)
-		recordStat(co.ctx, AppendRequestBytes, int64(pw.reqSize))
+		recordStat(ctx, AppendRequestRows, numRows)
+		recordStat(ctx, AppendRequests, 1)
+		recordStat(ctx, AppendRequestBytes, int64(pw.reqSize))
 	}
 	ch <- pw
 	return nil

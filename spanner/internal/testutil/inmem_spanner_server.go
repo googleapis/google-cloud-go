@@ -18,8 +18,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"math/rand"
+	"reflect"
 	"sort"
 	"strings"
 	"sync"
@@ -87,6 +89,7 @@ const (
 	MethodExecuteStreamingSql string = "EXECUTE_STREAMING_SQL"
 	MethodExecuteBatchDml     string = "EXECUTE_BATCH_DML"
 	MethodStreamingRead       string = "EXECUTE_STREAMING_READ"
+	MethodBatchWrite          string = "BATCH_WRITE"
 )
 
 // StatementResult represents a mocked result on the test server. The result is
@@ -206,11 +209,12 @@ func (s StatementResult) getResultSetWithTransactionSet(selector *spannerpb.Tran
 		ResumeTokens: s.ResumeTokens,
 	}
 	if s.ResultSet != nil {
-		res.ResultSet = &spannerpb.ResultSet{
-			Metadata: s.ResultSet.Metadata,
-			Rows:     s.ResultSet.Rows,
-			Stats:    s.ResultSet.Stats,
+		p, err := deepCopy(s.ResultSet)
+		if err != nil {
+			// panic here as this should never happen.
+			panic(err)
 		}
+		res.ResultSet = p.(*spannerpb.ResultSet)
 	}
 	if _, ok := selector.GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
 		if res.ResultSet == nil {
@@ -222,6 +226,20 @@ func (s StatementResult) getResultSetWithTransactionSet(selector *spannerpb.Tran
 		res.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: tx}
 	}
 	return res
+}
+
+func deepCopy(v interface{}) (interface{}, error) {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+
+	vptr := reflect.New(reflect.TypeOf(v))
+	err = json.Unmarshal(data, vptr.Interface())
+	if err != nil {
+		return nil, err
+	}
+	return vptr.Elem().Interface(), err
 }
 
 // SimulatedExecutionTime represents the time the execution of a method
@@ -581,13 +599,17 @@ func (s *inMemSpannerServer) beginTransaction(session *spannerpb.Session, option
 	return res
 }
 
-func (s *inMemSpannerServer) getTransactionByID(id []byte) (*spannerpb.Transaction, error) {
+func (s *inMemSpannerServer) getTransactionByID(session *spannerpb.Session, id []byte) (*spannerpb.Transaction, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	tx, ok := s.transactions[string(id)]
 	if !ok {
 		return nil, gstatus.Error(codes.NotFound, "Transaction not found")
 	}
+	if !strings.HasPrefix(string(id), session.Name) {
+		return nil, gstatus.Error(codes.InvalidArgument, "Transaction was started in a different session.")
+	}
+
 	aborted, ok := s.abortedTransactions[string(id)]
 	if ok && aborted {
 		return nil, newAbortedErrorWithMinimalRetryDelay()
@@ -813,7 +835,7 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 	var id []byte
 	s.updateSessionLastUseTime(session.Name)
 	if id = s.getTransactionID(session, req.Transaction); id != nil {
-		_, err = s.getTransactionByID(id)
+		_, err = s.getTransactionByID(session, id)
 		if err != nil {
 			return nil, err
 		}
@@ -860,7 +882,7 @@ func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlReques
 	s.updateSessionLastUseTime(session.Name)
 	var id []byte
 	if id = s.getTransactionID(session, req.Transaction); id != nil {
-		_, err = s.getTransactionByID(id)
+		_, err = s.getTransactionByID(session, id)
 		if err != nil {
 			return err
 		}
@@ -875,7 +897,7 @@ func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlReques
 		return err
 	}
 	s.mu.Lock()
-	statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
+	statementResult = statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
 	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
 	s.mu.Unlock()
 	switch statementResult.Type {
@@ -932,7 +954,7 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 	s.updateSessionLastUseTime(session.Name)
 	var id []byte
 	if id = s.getTransactionID(session, req.Transaction); id != nil {
-		_, err = s.getTransactionByID(id)
+		_, err = s.getTransactionByID(session, id)
 		if err != nil {
 			return nil, err
 		}
@@ -1031,7 +1053,7 @@ func (s *inMemSpannerServer) Commit(ctx context.Context, req *spannerpb.CommitRe
 	if req.GetSingleUseTransaction() != nil {
 		tx = s.beginTransaction(session, req.GetSingleUseTransaction())
 	} else if req.GetTransactionId() != nil {
-		tx, err = s.getTransactionByID(req.GetTransactionId())
+		tx, err = s.getTransactionByID(session, req.GetTransactionId())
 		if err != nil {
 			return nil, err
 		}
@@ -1064,7 +1086,7 @@ func (s *inMemSpannerServer) Rollback(ctx context.Context, req *spannerpb.Rollba
 		return nil, err
 	}
 	s.updateSessionLastUseTime(session.Name)
-	tx, err := s.getTransactionByID(req.TransactionId)
+	tx, err := s.getTransactionByID(session, req.TransactionId)
 	if err != nil {
 		return nil, err
 	}
@@ -1091,7 +1113,7 @@ func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.
 	var tx *spannerpb.Transaction
 	s.updateSessionLastUseTime(session.Name)
 	if id = s.getTransactionID(session, req.Transaction); id != nil {
-		tx, err = s.getTransactionByID(id)
+		tx, err = s.getTransactionByID(session, id)
 		if err != nil {
 			return nil, err
 		}
@@ -1139,4 +1161,37 @@ func DecodeResumeToken(t []byte) (uint64, error) {
 		return 0, fmt.Errorf("invalid resume token: %v", t)
 	}
 	return s, nil
+}
+
+func (s *inMemSpannerServer) BatchWrite(req *spannerpb.BatchWriteRequest, stream spannerpb.Spanner_BatchWriteServer) error {
+	if err := s.simulateExecutionTime(MethodBatchWrite, req); err != nil {
+		return err
+	}
+	return s.batchWrite(req, stream)
+}
+
+func (s *inMemSpannerServer) batchWrite(req *spannerpb.BatchWriteRequest, stream spannerpb.Spanner_BatchWriteServer) error {
+	if req.Session == "" {
+		return gstatus.Error(codes.InvalidArgument, "Missing session name")
+	}
+	session, err := s.findSession(req.Session)
+	if err != nil {
+		return err
+	}
+	s.updateSessionLastUseTime(session.Name)
+	if len(req.GetMutationGroups()) == 0 {
+		return gstatus.Error(codes.InvalidArgument, "No mutations in Batch Write")
+	}
+	// For each MutationGroup, write a BatchWriteResponse to the response stream
+	for idx := range req.GetMutationGroups() {
+		res := &spannerpb.BatchWriteResponse{
+			Indexes:         []int32{int32(idx)},
+			CommitTimestamp: getCurrentTimestamp(),
+			Status:          &status.Status{},
+		}
+		if err = stream.Send(res); err != nil {
+			return err
+		}
+	}
+	return nil
 }

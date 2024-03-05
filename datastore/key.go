@@ -105,6 +105,10 @@ func (k *Key) marshal(b *bytes.Buffer) {
 	} else {
 		b.WriteString(strconv.FormatInt(k.ID, 10))
 	}
+	if k.Namespace != "" {
+		b.WriteByte(',')
+		b.WriteString(k.Namespace)
+	}
 }
 
 // String returns a string representation of the key.
@@ -257,6 +261,22 @@ func (c *Client) AllocateIDs(ctx context.Context, keys []*Key) ([]*Key, error) {
 	}
 
 	return multiProtoToKey(resp.Keys)
+}
+
+// ReserveIDs accepts a slice of keys and prevents them from being auto-allocated by Datastore
+func (c *Client) ReserveIDs(ctx context.Context, keys []*Key) error {
+	if keys == nil {
+		return nil
+	}
+
+	req := &pb.ReserveIdsRequest{
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+		Keys:       multiKeyToProto(keys),
+	}
+
+	_, err := c.client.ReserveIds(ctx, req)
+	return err
 }
 
 // IncompleteKey creates a new incomplete key.

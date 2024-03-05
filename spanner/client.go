@@ -19,6 +19,7 @@ package spanner
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"regexp"
@@ -26,6 +27,10 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -97,14 +102,22 @@ type Client struct {
 	ro                   ReadOptions
 	ao                   []ApplyOption
 	txo                  TransactionOptions
+	bwo                  BatchWriteOptions
 	ct                   *commonTags
 	disableRouteToLeader bool
+	dro                  *sppb.DirectedReadOptions
+	otConfig             *openTelemetryConfig
 }
 
 // DatabaseName returns the full name of a database, e.g.,
 // "projects/spanner-cloud-test/instances/foo/databases/foodb".
 func (c *Client) DatabaseName() string {
 	return c.sc.database
+}
+
+// ClientID returns the id of the Client. This is not recommended for customer applications and used internally for testing.
+func (c *Client) ClientID() string {
+	return c.sc.id
 }
 
 // ClientConfig has configurations for the client.
@@ -137,6 +150,9 @@ type ClientConfig struct {
 
 	// TransactionOptions is the configuration for a transaction.
 	TransactionOptions TransactionOptions
+
+	// BatchWriteOptions is the configuration for a BatchWrite request.
+	BatchWriteOptions BatchWriteOptions
 
 	// CallOptions is the configuration for providing custom retry settings that
 	// override the default values.
@@ -179,6 +195,28 @@ type ClientConfig struct {
 
 	// BatchTimeout specifies the timeout for a batch of sessions managed sessionClient.
 	BatchTimeout time.Duration
+
+	// ClientConfig options used to set the DirectedReadOptions for all ReadRequests
+	// and ExecuteSqlRequests for the Client which indicate which replicas or regions
+	// should be used for non-transactional reads or queries.
+	DirectedReadOptions *sppb.DirectedReadOptions
+
+	OpenTelemetryMeterProvider metric.MeterProvider
+}
+
+type openTelemetryConfig struct {
+	meterProvider           metric.MeterProvider
+	attributeMap            []attribute.KeyValue
+	otMetricRegistration    metric.Registration
+	openSessionCount        metric.Int64ObservableGauge
+	maxAllowedSessionsCount metric.Int64ObservableGauge
+	sessionsCount           metric.Int64ObservableGauge
+	maxInUseSessionsCount   metric.Int64ObservableGauge
+	getSessionTimeoutsCount metric.Int64Counter
+	acquiredSessionsCount   metric.Int64Counter
+	releasedSessionsCount   metric.Int64Counter
+	gfeLatency              metric.Int64Histogram
+	gfeHeaderMissingCount   metric.Int64Counter
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -232,6 +270,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if err != nil {
 		return nil, err
 	}
+
 	if hasNumChannelsConfig && pool.Num() != config.NumChannels {
 		pool.Close()
 		return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
@@ -263,8 +302,20 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
 	}
+
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
+
+	// Create a OpenTelemetry configuration
+	otConfig, err := createOpenTelemetryConfig(config.OpenTelemetryMeterProvider, config.Logger, sc.id, database)
+	if err != nil {
+		// The error returned here will be due to database name parsing
+		return nil, err
+	}
+	// To prevent data race in unit tests (ex: TestClient_SessionNotFound)
+	sc.mu.Lock()
+	sc.otConfig = otConfig
+	sc.mu.Unlock()
 
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
@@ -273,6 +324,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		sc.close()
 		return nil, err
 	}
+
 	c = &Client{
 		sc:                   sc,
 		idleSessions:         sp,
@@ -281,8 +333,11 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		ro:                   config.ReadOptions,
 		ao:                   config.ApplyOptions,
 		txo:                  config.TransactionOptions,
+		bwo:                  config.BatchWriteOptions,
 		ct:                   getCommonTags(sc),
 		disableRouteToLeader: config.DisableRouteToLeader,
+		dro:                  config.DirectedReadOptions,
+		otConfig:             otConfig,
 	}
 	return c, nil
 }
@@ -296,6 +351,7 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
 		internaloption.EnableDirectPath(true),
+		internaloption.AllowNonDefaultServiceAccount(true),
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -365,7 +421,10 @@ func (c *Client) Single() *ReadOnlyTransaction {
 		t.sh = sh
 		return nil
 	}
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t
 }
 
@@ -388,7 +447,10 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t
 }
 
@@ -418,6 +480,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		return nil, err
 	}
 	sh = &sessionHandle{session: s}
+	sh.updateLastUseTime()
 
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.BeginTransactionRequest{
@@ -438,10 +501,11 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 
 	t := &BatchReadOnlyTransaction{
 		ReadOnlyTransaction: ReadOnlyTransaction{
-			tx:              tx,
-			txReadyOrClosed: make(chan struct{}),
-			state:           txActive,
-			rts:             rts,
+			tx:                       tx,
+			txReadyOrClosed:          make(chan struct{}),
+			state:                    txActive,
+			rts:                      rts,
+			isLongRunningTransaction: true,
 		},
 		ID: BatchReadOnlyTransactionID{
 			tid: tx,
@@ -454,7 +518,10 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t, nil
 }
 
@@ -472,10 +539,11 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 
 	t := &BatchReadOnlyTransaction{
 		ReadOnlyTransaction: ReadOnlyTransaction{
-			tx:              tid.tid,
-			txReadyOrClosed: make(chan struct{}),
-			state:           txActive,
-			rts:             tid.rts,
+			tx:                       tid.tid,
+			txReadyOrClosed:          make(chan struct{}),
+			state:                    txActive,
+			rts:                      tid.rts,
+			isLongRunningTransaction: true,
 		},
 		ID: tid,
 	}
@@ -484,7 +552,10 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t
 }
 
@@ -561,8 +632,15 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 				// If session retrieval fails, just fail the transaction.
 				return err
 			}
+
+			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
+			t.setSessionEligibilityForLongRunning(sh)
 		}
 		if t.shouldExplicitBegin(attempt) {
+			// Make sure we set the current session handle before calling BeginTransaction.
+			// Note that the t.begin(ctx) call could change the session that is being used by the transaction, as the
+			// BeginTransaction RPC invocation will be retried on a new session if it returns SessionNotFound.
+			t.txReadOnly.sh = sh
 			if err = t.begin(ctx); err != nil {
 				trace.TracePrintf(ctx, nil, "Error while BeginTransaction during retrying a ReadWrite transaction: %v", ToSpannerError(err))
 				return ToSpannerError(err)
@@ -571,16 +649,18 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			t = &ReadWriteTransaction{
 				txReadyOrClosed: make(chan struct{}),
 			}
+			t.txReadOnly.sh = sh
 		}
 		attempt++
-		t.txReadOnly.sh = sh
 		t.txReadOnly.sp = c.idleSessions
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
 		t.txReadOnly.ro = c.ro
 		t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
+		t.wb = []*Mutation{}
 		t.txOpts = c.txo.merge(options)
 		t.ct = c.ct
+		t.otConfig = c.otConfig
 
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionSelector": t.getTransactionSelector().String()},
 			"Starting transaction attempt")
@@ -661,6 +741,221 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	}
 	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader}
 	return t.applyAtLeastOnce(ctx, ms...)
+}
+
+// BatchWriteOptions provides options for a BatchWriteRequest.
+type BatchWriteOptions struct {
+	// Priority is the RPC priority to use for this request.
+	Priority sppb.RequestOptions_Priority
+
+	// The transaction tag to use for this request.
+	TransactionTag string
+}
+
+// merge combines two BatchWriteOptions such that the input parameter will have higher
+// order of precedence.
+func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
+	merged := BatchWriteOptions{
+		TransactionTag: bwo.TransactionTag,
+		Priority:       bwo.Priority,
+	}
+	if opts.TransactionTag != "" {
+		merged.TransactionTag = opts.TransactionTag
+	}
+	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		merged.Priority = opts.Priority
+	}
+	return merged
+}
+
+// BatchWriteResponseIterator is an iterator over BatchWriteResponse structures returned from BatchWrite RPC.
+type BatchWriteResponseIterator struct {
+	ctx            context.Context
+	stream         sppb.Spanner_BatchWriteClient
+	err            error
+	dataReceived   bool
+	replaceSession func(ctx context.Context) error
+	rpc            func(ctx context.Context) (sppb.Spanner_BatchWriteClient, error)
+	release        func(error)
+	cancel         func()
+}
+
+// Next returns the next result. Its second return value is iterator.Done if
+// there are no more results. Once Next returns Done, all subsequent calls
+// will return Done.
+func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
+	for {
+		// Stream finished or in error state.
+		if r.err != nil {
+			return nil, r.err
+		}
+
+		// RPC not made yet.
+		if r.stream == nil {
+			r.stream, r.err = r.rpc(r.ctx)
+			continue
+		}
+
+		// Read from the stream.
+		var response *sppb.BatchWriteResponse
+		response, r.err = r.stream.Recv()
+
+		// Return an item.
+		if r.err == nil {
+			r.dataReceived = true
+			return response, nil
+		}
+
+		// Stream finished.
+		if r.err == io.EOF {
+			r.err = iterator.Done
+			return nil, r.err
+		}
+
+		// Retry request on session not found error only if no data has been received before.
+		if !r.dataReceived && r.replaceSession != nil && isSessionNotFoundError(r.err) {
+			r.err = r.replaceSession(r.ctx)
+			r.stream = nil
+		}
+	}
+}
+
+// Stop terminates the iteration. It should be called after you finish using the
+// iterator.
+func (r *BatchWriteResponseIterator) Stop() {
+	if r.stream != nil {
+		err := r.err
+		if err == iterator.Done {
+			err = nil
+		}
+		defer trace.EndSpan(r.ctx, err)
+	}
+	if r.cancel != nil {
+		r.cancel()
+		r.cancel = nil
+	}
+	if r.release != nil {
+		r.release(r.err)
+		r.release = nil
+	}
+	if r.err == nil {
+		r.err = spannerErrorf(codes.FailedPrecondition, "Next called after Stop")
+	}
+}
+
+// Do calls the provided function once in sequence for each item in the
+// iteration. If the function returns a non-nil error, Do immediately returns
+// that error.
+//
+// If there are no items in the iterator, Do will return nil without calling the
+// provided function.
+//
+// Do always calls Stop on the iterator.
+func (r *BatchWriteResponseIterator) Do(f func(r *sppb.BatchWriteResponse) error) error {
+	defer r.Stop()
+	for {
+		row, err := r.Next()
+		switch err {
+		case iterator.Done:
+			return nil
+		case nil:
+			if err = f(row); err != nil {
+				return err
+			}
+		default:
+			return err
+		}
+	}
+}
+
+// BatchWrite applies a list of mutation groups in a collection of efficient
+// transactions. The mutation groups are applied non-atomically in an
+// unspecified order and thus, they must be independent of each other. Partial
+// failure is possible, i.e., some mutation groups may have been applied
+// successfully, while some may have failed. The results of individual batches
+// are streamed into the response as the batches are applied.
+//
+// BatchWrite requests are not replay protected, meaning that each mutation
+// group may be applied more than once. Replays of non-idempotent mutations
+// may have undesirable effects. For example, replays of an insert mutation
+// may produce an already exists error or if you use generated or commit
+// timestamp-based keys, it may result in additional rows being added to the
+// mutation's table. We recommend structuring your mutation groups to be
+// idempotent to avoid this issue.
+func (c *Client) BatchWrite(ctx context.Context, mgs []*MutationGroup) *BatchWriteResponseIterator {
+	return c.BatchWriteWithOptions(ctx, mgs, BatchWriteOptions{})
+}
+
+// BatchWriteWithOptions is same as BatchWrite. It accepts additional options to customize the request.
+func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup, opts BatchWriteOptions) *BatchWriteResponseIterator {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchWrite")
+
+	var err error
+	defer func() {
+		trace.EndSpan(ctx, err)
+	}()
+
+	opts = c.bwo.merge(opts)
+
+	mgsPb, err := mutationGroupsProto(mgs)
+	if err != nil {
+		return &BatchWriteResponseIterator{err: err}
+	}
+
+	var sh *sessionHandle
+	sh, err = c.idleSessions.take(ctx)
+	if err != nil {
+		return &BatchWriteResponseIterator{err: err}
+	}
+
+	rpc := func(ct context.Context) (sppb.Spanner_BatchWriteClient, error) {
+		var md metadata.MD
+		sh.updateLastUseTime()
+		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
+			Session:        sh.getID(),
+			MutationGroups: mgsPb,
+			RequestOptions: createRequestOptions(opts.Priority, "", opts.TransactionTag),
+		}, gax.WithGRPCOptions(grpc.Header(&md)))
+
+		if getGFELatencyMetricsFlag() && md != nil && c.ct != nil {
+			if metricErr := createContextAndCaptureGFELatencyMetrics(ct, c.ct, md, "BatchWrite"); metricErr != nil {
+				trace.TracePrintf(ct, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
+			}
+		}
+		if metricErr := recordGFELatencyMetricsOT(ct, md, "BatchWrite", c.otConfig); metricErr != nil {
+			trace.TracePrintf(ct, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", err)
+		}
+		return stream, rpcErr
+	}
+
+	replaceSession := func(ct context.Context) error {
+		if sh != nil {
+			sh.destroy()
+		}
+		var sessionErr error
+		sh, sessionErr = c.idleSessions.take(ct)
+		return sessionErr
+	}
+
+	release := func(err error) {
+		if sh == nil {
+			return
+		}
+		if isSessionNotFoundError(err) {
+			sh.destroy()
+		}
+		sh.recycle()
+	}
+
+	ctx, cancel := context.WithCancel(ctx)
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchWriteResponseIterator")
+	return &BatchWriteResponseIterator{
+		ctx:            ctx,
+		rpc:            rpc,
+		replaceSession: replaceSession,
+		release:        release,
+		cancel:         cancel,
+	}
 }
 
 // logf logs the given message to the given logger, or the standard logger if

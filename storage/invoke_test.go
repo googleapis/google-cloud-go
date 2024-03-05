@@ -26,8 +26,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/googleapis/gax-go/v2/callctx"
 	"golang.org/x/xerrors"
-
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -105,7 +105,6 @@ func TestInvoke(t *testing.T) {
 			expectFinalErr:    false,
 		},
 		{
-
 			desc:              "non-idempotent retriable error retried when policy is RetryAlways",
 			count:             2,
 			initialErr:        &googleapi.Error{Code: 500},
@@ -132,7 +131,6 @@ func TestInvoke(t *testing.T) {
 			retry:             &retryConfig{policy: RetryAlways},
 			expectFinalErr:    false,
 		},
-
 		{
 			desc:              "non-retriable error retried with custom fn",
 			count:             2,
@@ -173,34 +171,99 @@ func TestInvoke(t *testing.T) {
 			},
 			expectFinalErr: false,
 		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(2)},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-idempotent retriable error not retried when policy is RetryNever with maxAttempts set",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryNever, maxAttempts: expectedAttempts(2)},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-retriable error retried with custom fn till maxAttempts",
+			count:             4,
+			initialErr:        io.ErrNoProgress,
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry: &retryConfig{
+				shouldRetry: func(err error) bool {
+					return err == io.ErrNoProgress
+				},
+				maxAttempts: expectedAttempts(2),
+			},
+			expectFinalErr: false,
+		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts where count equals to maxAttempts-1",
+			count:             3,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(4)},
+			expectFinalErr:    true,
+		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts where count equals to maxAttempts",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(4)},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-idempotent retriable error not retried when policy is RetryAlways with maxAttempts equals to zero",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry:             &retryConfig{maxAttempts: expectedAttempts(0), policy: RetryAlways},
+			expectFinalErr:    false,
+		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
 			counter := 0
-			req := &fakeApiaryRequest{header: http.Header{}}
 			var initialClientHeader, initialIdempotencyHeader string
-			call := func() error {
+			var gotClientHeader, gotIdempotencyHeader string
+			call := func(ctx context.Context) error {
 				if counter == 0 {
-					initialClientHeader = req.Header()["X-Goog-Api-Client"][0]
-					initialIdempotencyHeader = req.Header()["X-Goog-Gcs-Idempotency-Token"][0]
+					headers := callctx.HeadersFromContext(ctx)
+					initialClientHeader = headers["x-goog-api-client"][0]
+					initialIdempotencyHeader = headers["x-goog-gcs-idempotency-token"][0]
 				}
 				counter++
+				headers := callctx.HeadersFromContext(ctx)
+				gotClientHeader = headers["x-goog-api-client"][0]
+				gotIdempotencyHeader = headers["x-goog-gcs-idempotency-token"][0]
 				if counter <= test.count {
 					return test.initialErr
 				}
 				return test.finalErr
 			}
-			got := run(ctx, call, test.retry, test.isIdempotentValue, setRetryHeaderHTTP(req))
+			got := run(ctx, call, test.retry, test.isIdempotentValue)
 			if test.expectFinalErr && got != test.finalErr {
 				s.Errorf("got %v, want %v", got, test.finalErr)
 			} else if !test.expectFinalErr && got != test.initialErr {
 				s.Errorf("got %v, want %v", got, test.initialErr)
 			}
-			gotClientHeader := req.Header()["X-Goog-Api-Client"][0]
-			gotIdempotencyHeader := req.Header()["X-Goog-Gcs-Idempotency-Token"][0]
 			wantAttempts := 1 + test.count
 			if !test.expectFinalErr {
 				wantAttempts = 1
 			}
+			if test.retry != nil && test.retry.maxAttempts != nil && *test.retry.maxAttempts != 0 && test.retry.policy != RetryNever {
+				wantAttempts = *test.retry.maxAttempts
+			}
+
 			wantClientHeader := strings.ReplaceAll(initialClientHeader, "gccl-attempt-count/1", fmt.Sprintf("gccl-attempt-count/%v", wantAttempts))
 			if gotClientHeader != wantClientHeader {
 				t.Errorf("case %q, retry header:\ngot %v\nwant %v", test.desc, gotClientHeader, wantClientHeader)

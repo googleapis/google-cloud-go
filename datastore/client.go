@@ -17,6 +17,7 @@ package datastore
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"cloud.google.com/go/datastore/internal"
@@ -43,14 +44,18 @@ type datastoreClient struct {
 }
 
 func newDatastoreClient(conn grpc.ClientConnInterface, projectID, databaseID string) pb.DatastoreClient {
-	resourcePrefixValue := "projects/" + projectID
-	if databaseID != "" {
-		resourcePrefixValue += "/databases/" + databaseID
+	resourcePrefixValue := "projects/" + url.QueryEscape(projectID)
+	reqParamsHeaderValue := "project_id=" + url.QueryEscape(projectID)
+
+	if databaseID != DefaultDatabaseID && databaseID != "" {
+		resourcePrefixValue += "/databases/" + url.QueryEscape(databaseID)
+		reqParamsHeaderValue += "&database_id=" + url.QueryEscape(databaseID)
 	}
 	return &datastoreClient{
 		c: pb.NewDatastoreClient(conn),
 		md: metadata.Pairs(
 			resourcePrefixHeader, resourcePrefixValue,
+			reqParamsHeader, reqParamsHeaderValue,
 			"x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s grpc/", version.Go(), internal.Version)),
 	}
 }
@@ -127,6 +132,17 @@ func (dc *datastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateIdsRe
 
 	err = dc.invoke(ctx, func(ctx context.Context) error {
 		res, err = dc.c.AllocateIds(ctx, in, opts...)
+		return err
+	})
+	return res, err
+}
+
+func (dc *datastoreClient) ReserveIds(ctx context.Context, in *pb.ReserveIdsRequest, opts ...grpc.CallOption) (res *pb.ReserveIdsResponse, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.ReserveIds")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	err = dc.invoke(ctx, func(ctx context.Context) error {
+		res, err = dc.c.ReserveIds(ctx, in, opts...)
 		return err
 	})
 	return res, err

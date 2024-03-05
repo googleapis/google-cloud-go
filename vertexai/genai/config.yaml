@@ -1,0 +1,114 @@
+# Configuration for the protoveneer tool.
+
+package: genai
+
+protoImportPath: cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb
+supportImportPath: cloud.google.com/go/vertexai/internal/support
+
+types:
+    HarmCategory:
+      protoPrefix: HarmCategory_HARM_CATEGORY_
+      docVerb: specifies
+
+    SafetySetting_HarmBlockThreshold:
+      name: HarmBlockThreshold
+      protoPrefix: SafetySetting_BLOCK_
+      veneerPrefix: HarmBlock
+      docVerb: specifies
+      valueNames:
+        SafetySetting_HARM_BLOCK_THRESHOLD_UNSPECIFIED: HarmBlockUnspecified
+
+    SafetyRating_HarmProbability:
+      name: HarmProbability
+      protoPrefix: SafetyRating_
+      docVerb: specifies
+      valueNames:
+        SafetyRating_HARM_PROBABILITY_UNSPECIFIED: HarmProbabilityUnspecified
+
+    Candidate_FinishReason:
+      name: FinishReason
+      protoPrefix: Candidate_
+
+    GenerateContentResponse_PromptFeedback_BlockedReason:
+      name: BlockedReason
+      protoPrefix: GenerateContentResponse_PromptFeedback_
+
+    Type:
+      protoPrefix: Type_
+
+    Content:
+      fields:
+        Parts:
+          type: '[]Part'
+
+    Blob:
+      fields:
+        MimeType:
+          name: MIMEType
+      docVerb: contains
+
+    FileData:
+      fields:
+        MimeType:
+          name: MIMEType
+        FileUri:
+          name: FileURI
+
+    FunctionCall:
+
+    FunctionResponse:
+
+    GenerationConfig:
+
+    SafetyRating:
+      docVerb: 'is the'
+
+    Citation:
+      docVerb: contains
+      fields:
+        Uri:
+          name: URI
+
+    Candidate:
+      fields:
+        FinishMessage:
+          type: string
+        GroundingMetadata:
+          omit: true
+
+    GenerateContentResponse:
+      doc: 'is the response from a GenerateContent or GenerateContentStream call.'
+
+    GenerateContentResponse_PromptFeedback:
+      name: PromptFeedback
+      docVerb: contains
+
+    GenerateContentResponse_UsageMetadata:
+      name: UsageMetadata
+
+    CountTokensResponse:
+
+    Tool:
+      docVerb: contains
+      fields:
+        Retrieval:
+          omit: true
+        GoogleSearchRetrieval:
+          omit: true
+
+    Schema:
+      fields:
+        Example:
+          omit: true
+
+    CitationMetadata:
+    FunctionDeclaration:
+    SafetySetting:
+
+# Omit everything that is not explicitly configured.
+omitTypes:
+  - '*'
+
+
+converters:
+  Part: partToProto, partFromProto

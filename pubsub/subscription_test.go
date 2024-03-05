@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"testing"
 	"time"
 
@@ -689,12 +690,11 @@ func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 
 	s.ReceiveSettings = ReceiveSettings{
 		NumGoroutines: 1,
-		// This needs to be greater than total deadline otherwise the message will be redelivered.
-		MinExtensionPeriod: 30 * time.Second,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
 	exactlyOnceDeliveryRetryDeadline = 10 * time.Second
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		log.Printf("received message: %v\n", msg)
 		ar := msg.AckWithResult()
 		s, err := ar.Get(ctx)
 		if s != AcknowledgeStatusOther {
@@ -786,4 +786,54 @@ func TestExactlyOnceDelivery_ReceiptModackError(t *testing.T) {
 	s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		t.Fatal("expected message to not have been delivered when exactly once enabled")
 	})
+}
+
+func TestSubscribeMessageExpirationFlowControl(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic: topic,
+	}
+	s, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatalf("create sub err: %v", err)
+	}
+
+	s.ReceiveSettings.NumGoroutines = 1
+	s.ReceiveSettings.MaxOutstandingMessages = 1
+	s.ReceiveSettings.MaxExtension = 10 * time.Second
+	s.ReceiveSettings.MaxExtensionPeriod = 10 * time.Second
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("redelivered-message"),
+	})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+
+	deliveryCount := 0
+	ctx, cancel = context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		// Only acknowledge the message on the 2nd invocation of the callback (2nd delivery).
+		if deliveryCount == 1 {
+			msg.Ack()
+		}
+		// Otherwise, do nothing and let the message expire.
+		deliveryCount++
+		if deliveryCount == 2 {
+			cancel()
+		}
+	})
+	if deliveryCount != 2 {
+		t.Fatalf("expected 2 iterations of the callback, got %d", deliveryCount)
+	}
+	if err != nil {
+		t.Fatalf("s.Receive err: %v", err)
+	}
 }

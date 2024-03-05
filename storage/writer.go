@@ -22,6 +22,8 @@ import (
 	"sync"
 	"time"
 	"unicode/utf8"
+
+	"cloud.google.com/go/internal/trace"
 )
 
 // A Writer writes a Cloud Storage object.
@@ -85,6 +87,11 @@ type Writer struct {
 	// To set a deadline on the entire upload, use context timeout or
 	// cancellation.
 	ChunkRetryDeadline time.Duration
+
+	// ForceEmptyContentType is an optional parameter that is used to disable
+	// auto-detection of Content-Type. By default, if a blank Content-Type
+	// is provided, then gax.DetermineContentType is called to sniff the type.
+	ForceEmptyContentType bool
 
 	// ProgressFunc can be used to monitor the progress of a large write
 	// operation. If ProgressFunc is not nil and writing requires multiple
@@ -163,6 +170,7 @@ func (w *Writer) Close() error {
 	<-w.donec
 	w.mu.Lock()
 	defer w.mu.Unlock()
+	trace.EndSpan(w.ctx, w.err)
 	return w.err
 }
 
@@ -177,18 +185,19 @@ func (w *Writer) openWriter() (err error) {
 	isIdempotent := w.o.conds != nil && (w.o.conds.GenerationMatch >= 0 || w.o.conds.DoesNotExist == true)
 	opts := makeStorageOpts(isIdempotent, w.o.retry, w.o.userProject)
 	params := &openWriterParams{
-		ctx:                w.ctx,
-		chunkSize:          w.ChunkSize,
-		chunkRetryDeadline: w.ChunkRetryDeadline,
-		bucket:             w.o.bucket,
-		attrs:              &w.ObjectAttrs,
-		conds:              w.o.conds,
-		encryptionKey:      w.o.encryptionKey,
-		sendCRC32C:         w.SendCRC32C,
-		donec:              w.donec,
-		setError:           w.error,
-		progress:           w.progress,
-		setObj:             func(o *ObjectAttrs) { w.obj = o },
+		ctx:                   w.ctx,
+		chunkSize:             w.ChunkSize,
+		chunkRetryDeadline:    w.ChunkRetryDeadline,
+		bucket:                w.o.bucket,
+		attrs:                 &w.ObjectAttrs,
+		conds:                 w.o.conds,
+		encryptionKey:         w.o.encryptionKey,
+		sendCRC32C:            w.SendCRC32C,
+		donec:                 w.donec,
+		setError:              w.error,
+		progress:              w.progress,
+		setObj:                func(o *ObjectAttrs) { w.obj = o },
+		forceEmptyContentType: w.ForceEmptyContentType,
 	}
 	if err := w.ctx.Err(); err != nil {
 		return err // short-circuit

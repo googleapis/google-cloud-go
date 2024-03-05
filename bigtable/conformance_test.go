@@ -17,7 +17,6 @@ limitations under the License.
 package bigtable
 
 import (
-	"bytes"
 	"context"
 	"io/ioutil"
 	"path/filepath"
@@ -28,10 +27,10 @@ import (
 
 	pb "cloud.google.com/go/bigtable/internal/conformance"
 	"cloud.google.com/go/bigtable/internal/mockserver"
-	"github.com/golang/protobuf/jsonpb"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func TestConformance(t *testing.T) {
@@ -66,7 +65,7 @@ func TestConformance(t *testing.T) {
 		}
 
 		var tf pb.TestFile
-		if err := jsonpb.Unmarshal(bytes.NewReader(inBytes), &tf); err != nil {
+		if err := protojson.Unmarshal(inBytes, &tf); err != nil {
 			t.Fatalf("unmarshalling %s: %v", f, err)
 		}
 

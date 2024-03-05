@@ -21,11 +21,14 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/pretty"
+	"cloud.google.com/go/internal/testutil"
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/go-cmp/cmp"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type mockTableAdminClock struct {
@@ -35,6 +38,9 @@ type mockTableAdminClock struct {
 	updateTableReq   *btapb.UpdateTableRequest
 	createTableResp  *btapb.Table
 	updateTableError error
+
+	copyBackupReq   *btapb.CopyBackupRequest
+	copyBackupError error
 }
 
 func (c *mockTableAdminClock) CreateTable(
@@ -54,6 +60,14 @@ func (c *mockTableAdminClock) UpdateTable(
 			Response: &anypb.Any{TypeUrl: "google.bigtable.admin.v2.Table"},
 		},
 	}, c.updateTableError
+}
+
+func (c *mockTableAdminClock) CopyBackup(
+	ctx context.Context, in *btapb.CopyBackupRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.copyBackupReq = in
+	c.copyBackupError = fmt.Errorf("Mock error from client API")
+	return nil, c.copyBackupError
 }
 
 func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminClient {
@@ -120,6 +134,28 @@ func TestTableAdmin_CreateTableFromConf_ChangeStream_Valid(t *testing.T) {
 	}
 	if !cmp.Equal(createTableReq.Table.ChangeStreamConfig.RetentionPeriod.Seconds, int64(changeStreamRetention.Seconds())) {
 		t.Errorf("Unexpected table change stream retention: %v, expected %v", createTableReq.Table.ChangeStreamConfig.RetentionPeriod.Seconds, changeStreamRetention.Seconds())
+	}
+}
+
+func TestTableAdmin_CopyBackup_ErrorFromClient(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	currTime := time.Now()
+	err := c.CopyBackup(context.Background(), "source-cluster", "source-backup", "dest-project", "dest-instance", "dest-cluster", "dest-backup", currTime)
+	if err == nil {
+		t.Errorf("CopyBackup got: nil, want: non-nil error")
+	}
+
+	got := mock.copyBackupReq
+	want := &btapb.CopyBackupRequest{
+		Parent:       "projects/dest-project/instances/dest-instance/clusters/dest-cluster",
+		BackupId:     "dest-backup",
+		SourceBackup: "projects/my-cool-project/instances/my-cool-instance/clusters/source-cluster/backups/source-backup",
+		ExpireTime:   timestamppb.New(currTime),
+	}
+	if diff := testutil.Diff(got, want, cmp.AllowUnexported(btapb.CopyBackupRequest{})); diff != "" {
+		t.Errorf("CopyBackupRequest \ngot:\n%v,\nwant:\n%v,\ndiff:\n%v", pretty.Value(got), pretty.Value(want), diff)
 	}
 }
 

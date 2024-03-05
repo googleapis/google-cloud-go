@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -31,6 +32,7 @@ import (
 	proto "github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/iterator"
 )
 
 var (
@@ -1909,6 +1911,30 @@ func TestColumnNameAndIndex(t *testing.T) {
 	}
 }
 
+// Test helpers for getting column type and value.
+func TestColumnTypeAndValue(t *testing.T) {
+	// Test Row.ColumnType()
+	for i, col := range row.fields {
+		if ct := row.ColumnType(i); ct != col.Type {
+			t.Errorf("row.ColumnType(%v) returns %q, want %q", i, ct, col.Type)
+		}
+	}
+	// Test Row.ColumnValue()
+	for i, val := range row.vals {
+		if cv := row.ColumnValue(i); cv != val {
+			t.Errorf("row.ColumnValue(%v) returns %q, want %q", i, cv, val)
+		}
+	}
+	// Test Row.ColumnType on empty Row.
+	if ct := (&Row{}).ColumnType(0); ct != nil {
+		t.Errorf("empty_row.ColumnType(%v) returns %v, want %v", 0, ct, nil)
+	}
+	// Test Row.ColumnValue on empty Row.
+	if cv := (&Row{}).ColumnValue(0); cv != nil {
+		t.Errorf("empty_row.ColumnValue(%v) returns %v, want %v", 0, cv, nil)
+	}
+}
+
 func TestNewRow(t *testing.T) {
 	for _, test := range []struct {
 		names   []string
@@ -1966,4 +1992,339 @@ func BenchmarkColumn(b *testing.B) {
 			b.Fatal(err)
 		}
 	}
+}
+
+func TestSelectAll(t *testing.T) {
+	skipForPGTest(t)
+	type args struct {
+		destination interface{}
+		options     []DecodeOptions
+		mock        func(mockIterator *mockRowIterator)
+	}
+	type testStruct struct {
+		Col1 int64
+		// declaring second column in upper case here to verify SelectAll does case-insensitive matching
+		COL2 float64
+		Col3 string
+		Col4 time.Time
+	}
+	type testStructWithTag struct {
+		Col1 int64     `spanner:"tag1"`
+		Col2 float64   `spanner:"Tag2"`
+		Col3 string    `spanner:"taG3"`
+		Col4 time.Time `spanner:"TAG4"`
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+		want    interface{}
+	}{
+		{
+			name: "success: using slice of primitives",
+			args: args{
+				destination: &[]string{},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col0", Type: stringType()},
+						},
+						[]*proto3.Value{stringProto("value")},
+					}, nil)
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col0", Type: stringType()},
+						},
+						[]*proto3.Value{stringProto("value2")},
+					}, nil)
+					mockIterator.On("Next").Once().Return(nil, iterator.Done)
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+			},
+			want: &[]string{"value", "value2"},
+		},
+		{
+			name: "success: using slice of pointer to primitives",
+			args: args{
+				destination: &[]*string{},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col0", Type: stringType()},
+						},
+						[]*proto3.Value{stringProto("value")},
+					}, nil)
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col0", Type: stringType()},
+						},
+						[]*proto3.Value{stringProto("value2")},
+					}, nil)
+					mockIterator.On("Next").Once().Return(nil, iterator.Done)
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+			},
+			want: &[]*string{stringPointer("value"), stringPointer("value2")},
+		},
+		{
+			name: "success: using slice of structs",
+			args: args{
+				destination: &[]testStruct{},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+							{Name: "Col4", Type: timeType()},
+						},
+						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm)},
+					}, nil)
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+							{Name: "Col4", Type: timeType()},
+						},
+						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), timeProto(tm.Add(24 * time.Hour))},
+					}, nil)
+					mockIterator.On("Next").Once().Return(nil, iterator.Done)
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+			},
+			want: &[]testStruct{
+				{Col1: 1, COL2: 1.1, Col3: "value", Col4: tm},
+				{Col1: 2, COL2: 2.2, Col3: "value2", Col4: tm.Add(24 * time.Hour)},
+			},
+		},
+		{
+			name: "success: using slice of pointer to structs",
+			args: args{
+				destination: &[]*testStruct{},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+					}, nil)
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2")},
+					}, nil)
+					mockIterator.On("Next").Once().Return(nil, iterator.Done)
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+			},
+			want: &[]*testStruct{
+				{Col1: 1, COL2: 1.1, Col3: "value"},
+				{Col1: 2, COL2: 2.2, Col3: "value2"},
+			}},
+		{
+			name: "success: when spanner row contains more columns than declared in Go struct but called WithLenient",
+			args: args{
+				destination: &[]*testStruct{},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+							{Name: "Col4", Type: timeType()},
+							{Name: "Col5", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm), stringProto("value2")},
+					}, nil)
+					// failure case
+					mockIterator.On("Next").Once().Return(nil, iterator.Done)
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+				options: []DecodeOptions{WithLenient()},
+			},
+			want: &[]*testStruct{
+				{Col1: 1, COL2: 1.1, Col3: "value", Col4: tm},
+			},
+		},
+		{
+			name: "success: using prefilled destination should append to the destination",
+			args: args{
+				destination: &[]*testStruct{{Col1: 3, COL2: 3.3, Col3: "value3"}},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+					}, nil)
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2")},
+					}, nil)
+					mockIterator.On("Next").Once().Return(nil, iterator.Done)
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+			},
+			want: &[]*testStruct{
+				{Col1: 3, COL2: 3.3, Col3: "value3"},
+				{Col1: 1, COL2: 1.1, Col3: "value"},
+				{Col1: 2, COL2: 2.2, Col3: "value2"},
+			},
+		},
+		{
+			name: "success: using slice of structs with spanner tag annotations",
+			args: args{
+				destination: &[]testStructWithTag{},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag2", Type: floatType()},
+							{Name: "Tag3", Type: stringType()},
+							{Name: "Tag4", Type: timeType()},
+						},
+						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm)},
+					}, nil)
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Tag1", Type: intType()},
+							{Name: "Tag2", Type: floatType()},
+							{Name: "Tag3", Type: stringType()},
+							{Name: "Tag4", Type: timeType()},
+						},
+						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), timeProto(tm.Add(24 * time.Hour))},
+					}, nil)
+					mockIterator.On("Next").Once().Return(nil, iterator.Done)
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+			},
+			want: &[]testStructWithTag{
+				{Col1: 1, Col2: 1.1, Col3: "value", Col4: tm},
+				{Col1: 2, Col2: 2.2, Col3: "value2", Col4: tm.Add(24 * time.Hour)},
+			},
+		},
+		{
+			name: "failure: in case of error destination will have the partial result",
+			args: args{
+				destination: &[]*testStruct{{Col1: 3, COL2: 3.3, Col3: "value3"}},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+					}, nil)
+					// failure case
+					mockIterator.On("Next").Once().Return(nil, errors.New("some error"))
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+			},
+			want: &[]*testStruct{
+				{Col1: 3, COL2: 3.3, Col3: "value3"},
+				{Col1: 1, COL2: 1.1, Col3: "value"},
+			},
+			wantErr: true,
+		},
+		{
+			name: "failure: when spanner row contains more columns than declared in Go struct",
+			args: args{
+				destination: &[]*testStruct{{Col1: 3, COL2: 3.3, Col3: "value3"}},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+							{Name: "Col4", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+					}, nil)
+					// failure case
+					mockIterator.On("Next").Once().Return(nil, iterator.Done)
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+			},
+			want: &[]*testStruct{
+				{Col1: 3, COL2: 3.3, Col3: "value3"},
+			},
+			wantErr: true,
+		},
+		{
+			name: "failure: when spanner row contains more columns and destination is primitive slice",
+			args: args{
+				destination: &[]int64{},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+							{Name: "Col4", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+					}, nil)
+					// failure case
+					mockIterator.On("Next").Once().Return(nil, iterator.Done)
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+			},
+			want:    &[]int64{},
+			wantErr: true,
+		},
+		{
+			name: "failure: when spanner row contains more columns and destination is primitive slice using WithLenient",
+			args: args{
+				destination: &[]int64{},
+				mock: func(mockIterator *mockRowIterator) {
+					mockIterator.On("Next").Once().Return(&Row{
+						[]*sppb.StructType_Field{
+							{Name: "Col1", Type: intType()},
+							{Name: "Col2", Type: floatType()},
+							{Name: "Col3", Type: stringType()},
+							{Name: "Col4", Type: stringType()},
+						},
+						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+					}, nil)
+					// failure case
+					mockIterator.On("Next").Once().Return(nil, iterator.Done)
+					mockIterator.On("Stop").Once().Return(nil)
+				},
+				options: []DecodeOptions{WithLenient()},
+			},
+			want:    &[]int64{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockIterator := &mockRowIterator{}
+			if tt.args.mock != nil {
+				tt.args.mock(mockIterator)
+			}
+			if err := SelectAll(mockIterator, tt.args.destination, tt.args.options...); (err != nil) != tt.wantErr {
+				t.Errorf("SelectAll() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if !testEqual(tt.args.destination, tt.want) {
+				t.Errorf("SelectAll() = %v, want %v", tt.args.destination, tt.want)
+			}
+		})
+	}
+}
+
+func stringPointer(s string) *string {
+	return &s
 }

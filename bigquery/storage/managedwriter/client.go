@@ -60,6 +60,9 @@ type Client struct {
 }
 
 // NewClient instantiates a new client.
+//
+// The context provided here is retained and used for background connection management
+// between the client and the BigQuery Storage service.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (c *Client, err error) {
 	// Set a reasonable default for the gRPC connection pool size.
 	numConns := runtime.GOMAXPROCS(0)
@@ -148,6 +151,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		id:             newUUID(writerIDPrefix),
 		c:              c,
 		streamSettings: defaultStreamSettings(),
+		curTemplate:    newVersionedTemplate(),
 	}
 	// apply writer options.
 	for _, opt := range opts {

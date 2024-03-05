@@ -10,9 +10,29 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateActiveDirectory": {
               "methods": [
                 "CreateActiveDirectory"
+              ]
+            },
+            "CreateBackup": {
+              "methods": [
+                "CreateBackup"
+              ]
+            },
+            "CreateBackupPolicy": {
+              "methods": [
+                "CreateBackupPolicy"
+              ]
+            },
+            "CreateBackupVault": {
+              "methods": [
+                "CreateBackupVault"
               ]
             },
             "CreateKmsConfig": {
@@ -45,9 +65,29 @@
                 "DeleteActiveDirectory"
               ]
             },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteBackupPolicy": {
+              "methods": [
+                "DeleteBackupPolicy"
+              ]
+            },
+            "DeleteBackupVault": {
+              "methods": [
+                "DeleteBackupVault"
+              ]
+            },
             "DeleteKmsConfig": {
               "methods": [
                 "DeleteKmsConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DeleteReplication": {
@@ -80,9 +120,34 @@
                 "GetActiveDirectory"
               ]
             },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupPolicy": {
+              "methods": [
+                "GetBackupPolicy"
+              ]
+            },
+            "GetBackupVault": {
+              "methods": [
+                "GetBackupVault"
+              ]
+            },
             "GetKmsConfig": {
               "methods": [
                 "GetKmsConfig"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetReplication": {
@@ -110,9 +175,34 @@
                 "ListActiveDirectories"
               ]
             },
+            "ListBackupPolicies": {
+              "methods": [
+                "ListBackupPolicies"
+              ]
+            },
+            "ListBackupVaults": {
+              "methods": [
+                "ListBackupVaults"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
             "ListKmsConfigs": {
               "methods": [
                 "ListKmsConfigs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListReplications": {
@@ -158,6 +248,21 @@
             "UpdateActiveDirectory": {
               "methods": [
                 "UpdateActiveDirectory"
+              ]
+            },
+            "UpdateBackup": {
+              "methods": [
+                "UpdateBackup"
+              ]
+            },
+            "UpdateBackupPolicy": {
+              "methods": [
+                "UpdateBackupPolicy"
+              ]
+            },
+            "UpdateBackupVault": {
+              "methods": [
+                "UpdateBackupVault"
               ]
             },
             "UpdateKmsConfig": {
@@ -195,9 +300,29 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateActiveDirectory": {
               "methods": [
                 "CreateActiveDirectory"
+              ]
+            },
+            "CreateBackup": {
+              "methods": [
+                "CreateBackup"
+              ]
+            },
+            "CreateBackupPolicy": {
+              "methods": [
+                "CreateBackupPolicy"
+              ]
+            },
+            "CreateBackupVault": {
+              "methods": [
+                "CreateBackupVault"
               ]
             },
             "CreateKmsConfig": {
@@ -230,9 +355,29 @@
                 "DeleteActiveDirectory"
               ]
             },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteBackupPolicy": {
+              "methods": [
+                "DeleteBackupPolicy"
+              ]
+            },
+            "DeleteBackupVault": {
+              "methods": [
+                "DeleteBackupVault"
+              ]
+            },
             "DeleteKmsConfig": {
               "methods": [
                 "DeleteKmsConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DeleteReplication": {
@@ -265,9 +410,34 @@
                 "GetActiveDirectory"
               ]
             },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupPolicy": {
+              "methods": [
+                "GetBackupPolicy"
+              ]
+            },
+            "GetBackupVault": {
+              "methods": [
+                "GetBackupVault"
+              ]
+            },
             "GetKmsConfig": {
               "methods": [
                 "GetKmsConfig"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetReplication": {
@@ -295,9 +465,34 @@
                 "ListActiveDirectories"
               ]
             },
+            "ListBackupPolicies": {
+              "methods": [
+                "ListBackupPolicies"
+              ]
+            },
+            "ListBackupVaults": {
+              "methods": [
+                "ListBackupVaults"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
             "ListKmsConfigs": {
               "methods": [
                 "ListKmsConfigs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListReplications": {
@@ -343,6 +538,21 @@
             "UpdateActiveDirectory": {
               "methods": [
                 "UpdateActiveDirectory"
+              ]
+            },
+            "UpdateBackup": {
+              "methods": [
+                "UpdateBackup"
+              ]
+            },
+            "UpdateBackupPolicy": {
+              "methods": [
+                "UpdateBackupPolicy"
+              ]
+            },
+            "UpdateBackupVault": {
+              "methods": [
+                "UpdateBackupVault"
               ]
             },
             "UpdateKmsConfig": {

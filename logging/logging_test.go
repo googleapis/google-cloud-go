@@ -282,17 +282,17 @@ func TestToLogEntry(t *testing.T) {
 	tests := []struct {
 		name      string
 		in        logging.Entry
-		want      logpb.LogEntry
+		want      *logpb.LogEntry
 		wantError error
 	}{
 		{
 			name: "BlankLogEntry",
 			in:   logging.Entry{},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "Already set Trace",
 			in:   logging.Entry{Trace: "t1"},
-			want: logpb.LogEntry{Trace: "t1"},
+			want: &logpb.LogEntry{Trace: "t1"},
 		}, {
 			name: "No X-Trace-Context header",
 			in: logging.Entry{
@@ -300,7 +300,7 @@ func TestToLogEntry(t *testing.T) {
 					Request: &http.Request{URL: u, Header: http.Header{"foo": {"bar"}}},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "X-Trace-Context header with all fields",
 			in: logging.Entry{
@@ -312,7 +312,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -328,7 +328,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -343,7 +343,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -358,7 +358,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "X-Trace-Context header with blank span",
 			in: logging.Entry{
@@ -369,7 +369,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
 			},
 		}, {
@@ -382,7 +382,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
 			},
 		}, {
@@ -395,7 +395,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "Invalid X-Trace-Context header but already set TraceID",
 			in: logging.Entry{
@@ -407,13 +407,13 @@ func TestToLogEntry(t *testing.T) {
 				},
 				Trace: "t4",
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace: "t4",
 			},
 		}, {
 			name: "Already set TraceID and SpanID",
 			in:   logging.Entry{Trace: "t1", SpanID: "007"},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:  "t1",
 				SpanId: "007",
 			},
@@ -436,7 +436,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:  "projects/P/traces/105445aa7843bc8bf206b12000100012",
 				SpanId: "000000000000004a",
 			},
@@ -452,7 +452,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100012",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -470,7 +470,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:  "projects/P/traces/105445aa7843bc8bf206b1200010aaaa",
 				SpanId: "0000000000000aaa",
 			},
@@ -485,7 +485,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header short trace field",
@@ -497,7 +497,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header long trace field",
@@ -509,7 +509,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header invalid trace field",
@@ -521,7 +521,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header trace field all 0s",
@@ -533,7 +533,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header short span field",
@@ -545,7 +545,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header long span field",
@@ -557,7 +557,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header invalid span field",
@@ -569,7 +569,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header span field all 0s",
@@ -581,7 +581,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 	}
 	for _, test := range tests {
@@ -1033,6 +1033,74 @@ func TestNonProjectParent(t *testing.T) {
 	}
 }
 
+func TestDetectProjectIdParent(t *testing.T) {
+	ctx := context.Background()
+	initLogs()
+	addr, err := ltesting.NewServer()
+	if err != nil {
+		t.Fatalf("creating fake server: %v", err)
+	}
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("dialing %q: %v", addr, err)
+	}
+
+	tests := []struct {
+		name      string
+		resource  *mrpb.MonitoredResource
+		want      string
+		wantError error
+	}{
+		{
+			name: "Test DetectProjectId parent properly set up resource detection",
+			resource: &mrpb.MonitoredResource{
+				Labels: map[string]string{"project_id": testProjectID},
+			},
+			want: "projects/" + testProjectID,
+		},
+		{
+			name:      "Test DetectProjectId parent no resource detected",
+			resource:  nil,
+			wantError: errors.New("could not determine project ID from environment"),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// Check if toLogEntryInternal was called with the right parent
+			toLogEntryInternalMock := func(got logging.Entry, l *logging.Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
+				if parent != test.want {
+					t.Errorf("toLogEntryInternal called with wrong parent. got: %s want: %s", parent, test.want)
+				}
+				return &logpb.LogEntry{}, nil
+			}
+
+			detectResourceMock := func() *mrpb.MonitoredResource {
+				return test.resource
+			}
+
+			realToLogEntryInternal := logging.SetToLogEntryInternal(toLogEntryInternalMock)
+			defer func() { logging.SetToLogEntryInternal(realToLogEntryInternal) }()
+
+			realDetectResourceInternal := logging.SetDetectResourceInternal(detectResourceMock)
+			defer func() { logging.SetDetectResourceInternal(realDetectResourceInternal) }()
+
+			cli, err := logging.NewClient(ctx, logging.DetectProjectID, option.WithGRPCConn(conn))
+			if err != nil && test.wantError == nil {
+				t.Fatalf("Unexpected error: %+v: %v", test.resource, err)
+			}
+			if err == nil && test.wantError != nil {
+				t.Fatalf("Error is expected: %+v: %v", test.resource, test.wantError)
+			}
+			if test.wantError != nil {
+				return
+			}
+
+			cli.Logger(testLogID).LogSync(ctx, logging.Entry{Payload: "hello"})
+		})
+	}
+}
+
 // waitFor calls f repeatedly with exponential backoff, blocking until it returns true.
 // It returns false after a while (if it times out).
 func waitFor(f func() bool) bool {
@@ -1438,7 +1506,7 @@ func TestRedirectOutputFormats(t *testing.T) {
 			},
 			want: `{"httpRequest":{"requestMethod":"POST","requestUrl":"https://example.com/test"},"logging.googleapis.com/insertId":"0000AAA01",` +
 				`"logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},` +
-				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":100},"logging.googleapis.com/spanId":"000000000001",` +
+				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":"100"},"logging.googleapis.com/spanId":"000000000001",` +
 				`"logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true,` +
 				`"message":"this is text payload","severity":"DEBUG","timestamp":"seconds:1000"}`,
 		},
@@ -1474,7 +1542,7 @@ func TestRedirectOutputFormats(t *testing.T) {
 			},
 			want: `{"httpRequest":{"requestMethod":"POST","requestUrl":"https://example.com/test"},"logging.googleapis.com/insertId":"0000AAA01",` +
 				`"logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},` +
-				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":100},"logging.googleapis.com/spanId":"000000000001",` +
+				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":"100"},"logging.googleapis.com/spanId":"000000000001",` +
 				`"logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true,` +
 				`"message":{"Latency":321,"Message":"message part of the payload"},"severity":"DEBUG","timestamp":"seconds:1000"}`,
 		},
@@ -1506,7 +1574,21 @@ func TestRedirectOutputFormats(t *testing.T) {
 					t.Errorf("Expected error: %+v, want: %v\n", tc.in, tc.wantError)
 				}
 				got := strings.TrimSpace(buffer.String())
-				if got != tc.want {
+
+				// Compare structure equivalence of the outputs, not string equivalence, as order doesn't matter.
+				var gotJson, wantJson interface{}
+
+				err = json.Unmarshal([]byte(got), &gotJson)
+				if err != nil {
+					t.Errorf("Error when serializing JSON output: %v", err)
+				}
+
+				err = json.Unmarshal([]byte(tc.want), &wantJson)
+				if err != nil {
+					t.Fatalf("Error unmarshalling JSON input for want: %v", err)
+				}
+
+				if !reflect.DeepEqual(gotJson, wantJson) {
 					t.Errorf("TestRedirectOutputFormats: %+v: got %v, want %v", tc.in, got, tc.want)
 				}
 			}

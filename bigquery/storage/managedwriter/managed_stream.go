@@ -78,9 +78,9 @@ type ManagedStream struct {
 
 	streamSettings *streamSettings
 	// retains the current descriptor for the stream.
-	curDescVersion *descriptorVersion
-	c              *Client
-	retry          *statelessRetryer
+	curTemplate *versionedTemplate
+	c           *Client
+	retry       *statelessRetryer
 
 	// writer state
 	mu     sync.Mutex
@@ -197,10 +197,11 @@ func (ms *ManagedStream) Finalize(ctx context.Context, opts ...gax.CallOption) (
 func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOption) error {
 	for {
 		ms.mu.Lock()
-		if ms.err != nil {
-			return ms.err
-		}
+		err := ms.err
 		ms.mu.Unlock()
+		if err != nil {
+			return err
+		}
 		conn, err := ms.pool.selectConn(pw)
 		if err != nil {
 			pw.markDone(nil, err)
@@ -291,17 +292,25 @@ func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsReques
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
 	// before we do anything, ensure the writer isn't closed.
 	ms.mu.Lock()
-	if ms.err != nil {
-		return nil, ms.err
-	}
+	err := ms.err
 	ms.mu.Unlock()
+	if err != nil {
+		return nil, err
+	}
 	// Ensure we build the request and pending write with a consistent schema version.
-	curSchemaVersion := ms.curDescVersion
+	curTemplate := ms.curTemplate
 	req := ms.buildRequest(data)
-	pw := newPendingWrite(ctx, ms, req, curSchemaVersion, ms.streamSettings.streamID, ms.streamSettings.TraceID)
+	pw := newPendingWrite(ctx, ms, req, curTemplate, ms.streamSettings.streamID, ms.streamSettings.TraceID)
 	// apply AppendOption opts
 	for _, opt := range opts {
 		opt(pw)
+	}
+	// Post-request fixup after options are applied.
+	if pw.reqTmpl != nil {
+		if pw.reqTmpl.tmpl != nil {
+			// MVIs must be set on each request, but _default_ MVIs persist across the stream lifetime.  Sigh.
+			pw.req.MissingValueInterpretations = pw.reqTmpl.tmpl.GetMissingValueInterpretations()
+		}
 	}
 
 	// Call the underlying append.  The stream has it's own retained context and will surface expiry on

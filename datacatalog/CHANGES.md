@@ -1,5 +1,80 @@
 # Changes
 
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.2...datacatalog/v1.19.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **datacatalog:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.1...datacatalog/v1.19.2) (2024-01-11)
+
+
+### Bug Fixes
+
+* **datacatalog:** Change field behavior of the property "name" to IDENTIFIER ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.0...datacatalog/v1.19.1) (2024-01-08)
+
+
+### Documentation
+
+* **datacatalog:** Change field behavior of the property "name" to IDENTIFIER ([bd30055](https://github.com/googleapis/google-cloud-go/commit/bd3005532fbffa9894b11149e9693b7c33227d79))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.3...datacatalog/v1.19.0) (2023-11-09)
+
+
+### Features
+
+* **datacatalog/lineage:** Add open lineage support ([#8974](https://github.com/googleapis/google-cloud-go/issues/8974)) ([1a16cbf](https://github.com/googleapis/google-cloud-go/commit/1a16cbf260bb673e07a05e1014868b236e510499))
+
+## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.2...datacatalog/v1.18.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **datacatalog:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.1...datacatalog/v1.18.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.18.0...datacatalog/v1.18.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **datacatalog:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.17.1...datacatalog/v1.18.0) (2023-10-04)
+
+
+### Features
+
+* **datacatalog:** Enable Vertex AI Ingestion on DataPlex ([e9ae601](https://github.com/googleapis/google-cloud-go/commit/e9ae6018983ae09781740e4ff939e6e365863dbb))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.17.0...datacatalog/v1.17.1) (2023-09-11)
+
+
+### Documentation
+
+* **datacatalog:** Fix typo ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.16.0...datacatalog/v1.17.0) (2023-08-08)
+
+
+### Features
+
+* **datacatalog:** Add support for admin_search in SearchCatalog() API method ([4b68747](https://github.com/googleapis/google-cloud-go/commit/4b6874762ca3e5ebef76f72496753650cdf39523))
+
+
+### Documentation
+
+* **datacatalog:** Minor formatting ([e3f8c89](https://github.com/googleapis/google-cloud-go/commit/e3f8c89429a207c05fee36d5d93efe76f9e29efe))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.15.0...datacatalog/v1.16.0) (2023-07-18)
 
 

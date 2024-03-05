@@ -416,6 +416,15 @@ func TestParseExpr(t *testing.T) {
 		{`GENERATE_DATE_ARRAY('2022-01-01', CURRENT_DATE(), INTERVAL 1 MONTH)`, Func{Name: "GENERATE_DATE_ARRAY", Args: []Expr{StringLiteral("2022-01-01"), Func{Name: "CURRENT_DATE"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "MONTH"}}}},
 		{`TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)`, Func{Name: "TIMESTAMP_ADD", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "HOUR"}}}},
 		{`TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 MINUTE)`, Func{Name: "TIMESTAMP_SUB", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "MINUTE"}}}},
+		{`GET_NEXT_SEQUENCE_VALUE(SEQUENCE MySequence)`, Func{Name: "GET_NEXT_SEQUENCE_VALUE", Args: []Expr{SequenceExpr{Name: ID("MySequence")}}}},
+		{`GET_INTERNAL_SEQUENCE_STATE(SEQUENCE MySequence)`, Func{Name: "GET_INTERNAL_SEQUENCE_STATE", Args: []Expr{SequenceExpr{Name: ID("MySequence")}}}},
+
+		// Aggregate Functions
+		{`COUNT(*)`, Func{Name: "COUNT", Args: []Expr{Star}}},
+		{`COUNTIF(DISTINCT cname)`, Func{Name: "COUNTIF", Args: []Expr{ID("cname")}, Distinct: true}},
+		{`ARRAY_AGG(Foo IGNORE NULLS)`, Func{Name: "ARRAY_AGG", Args: []Expr{ID("Foo")}, NullsHandling: IgnoreNulls}},
+		{`ANY_VALUE(Foo HAVING MAX Bar)`, Func{Name: "ANY_VALUE", Args: []Expr{ID("Foo")}, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}}},
+		{`STRING_AGG(DISTINCT Foo, "," IGNORE NULLS HAVING MAX Bar)`, Func{Name: "STRING_AGG", Args: []Expr{ID("Foo"), StringLiteral(",")}, Distinct: true, NullsHandling: IgnoreNulls, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}}},
 
 		// Conditional expressions
 		{
@@ -691,6 +700,20 @@ func TestParseDDL(t *testing.T) {
 		ALTER INDEX MyFirstIndex ADD STORED COLUMN UpdatedAt;
 		ALTER INDEX MyFirstIndex DROP STORED COLUMN UpdatedAt;
 
+		CREATE SEQUENCE MySequence OPTIONS (
+			sequence_kind='bit_reversed_positive',
+			skip_range_min = 1,
+			skip_range_max = 1000,
+			start_with_counter = 50
+		);
+		ALTER SEQUENCE MySequence SET OPTIONS (
+			sequence_kind='bit_reversed_positive',
+			skip_range_min = 1,
+			skip_range_max = 1000,
+			start_with_counter = 50
+		);
+		DROP SEQUENCE MySequence;
+
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
 			&CreateTable{
@@ -881,8 +904,9 @@ func TestParseDDL(t *testing.T) {
 				Position: line(58),
 			},
 			&CreateView{
-				Name:      "SingersView",
-				OrReplace: false,
+				Name:         "SingersView",
+				OrReplace:    false,
+				SecurityType: Invoker,
 				Query: Query{
 					Select: Select{
 						List: []Expr{ID("SingerId"), ID("FullName")},
@@ -1117,6 +1141,29 @@ func TestParseDDL(t *testing.T) {
 				Alteration: DropStoredColumn{Name: "UpdatedAt"},
 				Position:   line(106),
 			},
+			&CreateSequence{
+				Name: "MySequence",
+				Options: SequenceOptions{
+					SequenceKind:     stringAddr("bit_reversed_positive"),
+					SkipRangeMin:     intAddr(1),
+					SkipRangeMax:     intAddr(1000),
+					StartWithCounter: intAddr(50),
+				},
+				Position: line(108),
+			},
+			&AlterSequence{
+				Name: "MySequence",
+				Alteration: SetSequenceOptions{
+					Options: SequenceOptions{
+						SequenceKind:     stringAddr("bit_reversed_positive"),
+						SkipRangeMin:     intAddr(1),
+						SkipRangeMax:     intAddr(1000),
+						StartWithCounter: intAddr(50),
+					},
+				},
+				Position: line(114),
+			},
+			&DropSequence{Name: "MySequence", Position: line(120)},
 		}, Comments: []*Comment{
 			{
 				Marker: "#", Start: line(2), End: line(2),
@@ -1152,7 +1199,7 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Table has a column with a default value."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(108), End: line(108), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(122), End: line(122), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -1252,8 +1299,9 @@ func TestParseDDL(t *testing.T) {
 			&DDL{
 				Filename: "filename", List: []DDLStmt{
 					&CreateView{
-						Name:      "SingersView",
-						OrReplace: true,
+						Name:         "SingersView",
+						OrReplace:    true,
+						SecurityType: Invoker,
 						Query: Query{
 							Select: Select{
 								List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
@@ -1604,6 +1652,60 @@ func TestParseDDL(t *testing.T) {
 							Constraint: TableConstraint{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: NoActionOnDelete, Position: line(4)}, Position: line(4)},
 						},
 						Position: line(4),
+					},
+				},
+			},
+		},
+		{
+			`CREATE SEQUENCE IF NOT EXISTS sname OPTIONS (sequence_kind='bit_reversed_positive');
+			ALTER SEQUENCE sname SET OPTIONS (start_with_counter=1);
+			DROP SEQUENCE IF EXISTS sname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateSequence{
+						Name:        "sname",
+						IfNotExists: true,
+						Options: SequenceOptions{
+							SequenceKind: stringAddr("bit_reversed_positive"),
+						},
+						Position: line(1),
+					},
+					&AlterSequence{
+						Name: "sname",
+						Alteration: SetSequenceOptions{
+							Options: SequenceOptions{
+								StartWithCounter: intAddr(1),
+							},
+						},
+						Position: line(2),
+					},
+					&DropSequence{
+						Name:     "sname",
+						IfExists: true,
+						Position: line(3),
+					},
+				},
+			},
+		},
+		{
+			`CREATE VIEW vname SQL SECURITY DEFINER AS SELECT cname FROM tname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateView{
+						Name:         "vname",
+						OrReplace:    false,
+						SecurityType: Definer,
+						Query: Query{
+							Select: Select{
+								List: []Expr{ID("cname")},
+								From: []SelectFrom{SelectFromTable{
+									Table: "tname",
+								}},
+							},
+						},
+						Position: line(1),
 					},
 				},
 			},

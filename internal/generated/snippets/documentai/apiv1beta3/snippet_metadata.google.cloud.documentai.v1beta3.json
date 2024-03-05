@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/documentai/apiv1beta3",
-    "version": "1.22.0",
+    "version": "1.26.0",
     "language": "GO",
     "apis": [
       {
@@ -1615,6 +1615,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentService_ListDocuments_sync",
+      "title": "documentai ListDocuments Sample",
+      "description": "ListDocuments returns a list of documents present in the dataset.",
+      "file": "DocumentClient/ListDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDocuments",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentClient.ListDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ListDocumentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DocumentMetadataIterator",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentClient"
+        },
+        "method": {
+          "shortName": "ListDocuments",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentService.ListDocuments",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]

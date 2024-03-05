@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1",
-    "version": "1.1.0",
+    "version": "1.5.0",
     "language": "GO",
     "apis": [
       {
@@ -104,6 +104,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1_generated_CompletionService_ImportSuggestionDenyListEntries_sync",
+      "title": "discoveryengine ImportSuggestionDenyListEntries Sample",
+      "description": "ImportSuggestionDenyListEntries imports all\n[SuggestionDenyListEntry][google.cloud.discoveryengine.v1.SuggestionDenyListEntry]\nfor a DataStore.",
+      "file": "CompletionClient/ImportSuggestionDenyListEntries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportSuggestionDenyListEntries",
+        "fullName": "google.cloud.discoveryengine.v1.CompletionClient.ImportSuggestionDenyListEntries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ImportSuggestionDenyListEntriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportSuggestionDenyListEntriesOperation",
+        "client": {
+          "shortName": "CompletionClient",
+          "fullName": "google.cloud.discoveryengine.v1.CompletionClient"
+        },
+        "method": {
+          "shortName": "ImportSuggestionDenyListEntries",
+          "fullName": "google.cloud.discoveryengine.v1.CompletionService.ImportSuggestionDenyListEntries",
+          "service": {
+            "shortName": "CompletionService",
+            "fullName": "google.cloud.discoveryengine.v1.CompletionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1_generated_CompletionService_ListOperations_sync",
       "title": "discoveryengine ListOperations Sample",
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
@@ -145,6 +191,741 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_CompletionService_PurgeSuggestionDenyListEntries_sync",
+      "title": "discoveryengine PurgeSuggestionDenyListEntries Sample",
+      "description": "PurgeSuggestionDenyListEntries permanently deletes all\n[SuggestionDenyListEntry][google.cloud.discoveryengine.v1.SuggestionDenyListEntry]\nfor a DataStore.",
+      "file": "CompletionClient/PurgeSuggestionDenyListEntries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PurgeSuggestionDenyListEntries",
+        "fullName": "google.cloud.discoveryengine.v1.CompletionClient.PurgeSuggestionDenyListEntries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.PurgeSuggestionDenyListEntriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PurgeSuggestionDenyListEntriesOperation",
+        "client": {
+          "shortName": "CompletionClient",
+          "fullName": "google.cloud.discoveryengine.v1.CompletionClient"
+        },
+        "method": {
+          "shortName": "PurgeSuggestionDenyListEntries",
+          "fullName": "google.cloud.discoveryengine.v1.CompletionService.PurgeSuggestionDenyListEntries",
+          "service": {
+            "shortName": "CompletionService",
+            "fullName": "google.cloud.discoveryengine.v1.CompletionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_ConverseConversation_sync",
+      "title": "discoveryengine ConverseConversation Sample",
+      "description": "ConverseConversation converses a conversation.",
+      "file": "ConversationalSearchClient/ConverseConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ConverseConversation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.ConverseConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ConverseConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.ConverseConversationResponse",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "ConverseConversation",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.ConverseConversation",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_CreateConversation_sync",
+      "title": "discoveryengine CreateConversation Sample",
+      "description": "CreateConversation creates a Conversation.\n\nIf the [Conversation][google.cloud.discoveryengine.v1.Conversation] to\ncreate already exists, an ALREADY_EXISTS error is returned.",
+      "file": "ConversationalSearchClient/CreateConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConversation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.CreateConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Conversation",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "CreateConversation",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.CreateConversation",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_DeleteConversation_sync",
+      "title": "discoveryengine DeleteConversation Sample",
+      "description": "DeleteConversation deletes a Conversation.\n\nIf the [Conversation][google.cloud.discoveryengine.v1.Conversation] to\ndelete does not exist, a NOT_FOUND error is returned.",
+      "file": "ConversationalSearchClient/DeleteConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConversation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.DeleteConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "DeleteConversation",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.DeleteConversation",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_GetConversation_sync",
+      "title": "discoveryengine GetConversation Sample",
+      "description": "GetConversation gets a Conversation.",
+      "file": "ConversationalSearchClient/GetConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConversation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.GetConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Conversation",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "GetConversation",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.GetConversation",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ConversationalSearchClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_ListConversations_sync",
+      "title": "discoveryengine ListConversations Sample",
+      "description": "ListConversations lists all Conversations by their parent\n[DataStore][google.cloud.discoveryengine.v1.DataStore].",
+      "file": "ConversationalSearchClient/ListConversations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConversations",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.ListConversations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListConversationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConversationIterator",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "ListConversations",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.ListConversations",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ConversationalSearchClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_ConversationalSearchService_UpdateConversation_sync",
+      "title": "discoveryengine UpdateConversation Sample",
+      "description": "UpdateConversation updates a Conversation.\n\n[Conversation][google.cloud.discoveryengine.v1.Conversation] action type\ncannot be changed. If the\n[Conversation][google.cloud.discoveryengine.v1.Conversation] to update does\nnot exist, a NOT_FOUND error is returned.",
+      "file": "ConversationalSearchClient/UpdateConversation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConversation",
+        "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient.UpdateConversation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.UpdateConversationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Conversation",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "UpdateConversation",
+          "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService.UpdateConversation",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_DataStoreService_CreateDataStore_sync",
+      "title": "discoveryengine CreateDataStore Sample",
+      "description": "CreateDataStore creates a [DataStore][google.cloud.discoveryengine.v1.DataStore].\n\nDataStore is for storing\n[Documents][google.cloud.discoveryengine.v1.Document]. To serve these\ndocuments for Search, or Recommendation use case, an\n[Engine][google.cloud.discoveryengine.v1.Engine] needs to be created\nseparately.",
+      "file": "DataStoreClient/CreateDataStore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataStore",
+        "fullName": "google.cloud.discoveryengine.v1.DataStoreClient.CreateDataStore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateDataStoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDataStoreOperation",
+        "client": {
+          "shortName": "DataStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreClient"
+        },
+        "method": {
+          "shortName": "CreateDataStore",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreService.CreateDataStore",
+          "service": {
+            "shortName": "DataStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.DataStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_DataStoreService_DeleteDataStore_sync",
+      "title": "discoveryengine DeleteDataStore Sample",
+      "description": "DeleteDataStore deletes a [DataStore][google.cloud.discoveryengine.v1.DataStore].",
+      "file": "DataStoreClient/DeleteDataStore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataStore",
+        "fullName": "google.cloud.discoveryengine.v1.DataStoreClient.DeleteDataStore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteDataStoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDataStoreOperation",
+        "client": {
+          "shortName": "DataStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreClient"
+        },
+        "method": {
+          "shortName": "DeleteDataStore",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreService.DeleteDataStore",
+          "service": {
+            "shortName": "DataStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.DataStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_DataStoreService_GetDataStore_sync",
+      "title": "discoveryengine GetDataStore Sample",
+      "description": "GetDataStore gets a [DataStore][google.cloud.discoveryengine.v1.DataStore].",
+      "file": "DataStoreClient/GetDataStore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataStore",
+        "fullName": "google.cloud.discoveryengine.v1.DataStoreClient.GetDataStore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetDataStoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.DataStore",
+        "client": {
+          "shortName": "DataStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreClient"
+        },
+        "method": {
+          "shortName": "GetDataStore",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreService.GetDataStore",
+          "service": {
+            "shortName": "DataStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.DataStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_DataStoreService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataStoreClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.DataStoreClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "DataStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_DataStoreService_ListDataStores_sync",
+      "title": "discoveryengine ListDataStores Sample",
+      "description": "ListDataStores lists all the [DataStore][google.cloud.discoveryengine.v1.DataStore]s\nassociated with the project.",
+      "file": "DataStoreClient/ListDataStores/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataStores",
+        "fullName": "google.cloud.discoveryengine.v1.DataStoreClient.ListDataStores",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListDataStoresRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataStoreIterator",
+        "client": {
+          "shortName": "DataStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreClient"
+        },
+        "method": {
+          "shortName": "ListDataStores",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreService.ListDataStores",
+          "service": {
+            "shortName": "DataStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.DataStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_DataStoreService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DataStoreClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.DataStoreClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "DataStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_DataStoreService_UpdateDataStore_sync",
+      "title": "discoveryengine UpdateDataStore Sample",
+      "description": "UpdateDataStore updates a [DataStore][google.cloud.discoveryengine.v1.DataStore]",
+      "file": "DataStoreClient/UpdateDataStore/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataStore",
+        "fullName": "google.cloud.discoveryengine.v1.DataStoreClient.UpdateDataStore",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.UpdateDataStoreRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.DataStore",
+        "client": {
+          "shortName": "DataStoreClient",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreClient"
+        },
+        "method": {
+          "shortName": "UpdateDataStore",
+          "fullName": "google.cloud.discoveryengine.v1.DataStoreService.UpdateDataStore",
+          "service": {
+            "shortName": "DataStoreService",
+            "fullName": "google.cloud.discoveryengine.v1.DataStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -550,6 +1331,328 @@
           "service": {
             "shortName": "DocumentService",
             "fullName": "google.cloud.discoveryengine.v1.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_EngineService_CreateEngine_sync",
+      "title": "discoveryengine CreateEngine Sample",
+      "description": "CreateEngine creates a [Engine][google.cloud.discoveryengine.v1.Engine].",
+      "file": "EngineClient/CreateEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEngine",
+        "fullName": "google.cloud.discoveryengine.v1.EngineClient.CreateEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEngineOperation",
+        "client": {
+          "shortName": "EngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.EngineClient"
+        },
+        "method": {
+          "shortName": "CreateEngine",
+          "fullName": "google.cloud.discoveryengine.v1.EngineService.CreateEngine",
+          "service": {
+            "shortName": "EngineService",
+            "fullName": "google.cloud.discoveryengine.v1.EngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_EngineService_DeleteEngine_sync",
+      "title": "discoveryengine DeleteEngine Sample",
+      "description": "DeleteEngine deletes a [Engine][google.cloud.discoveryengine.v1.Engine].",
+      "file": "EngineClient/DeleteEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEngine",
+        "fullName": "google.cloud.discoveryengine.v1.EngineClient.DeleteEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteEngineOperation",
+        "client": {
+          "shortName": "EngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.EngineClient"
+        },
+        "method": {
+          "shortName": "DeleteEngine",
+          "fullName": "google.cloud.discoveryengine.v1.EngineService.DeleteEngine",
+          "service": {
+            "shortName": "EngineService",
+            "fullName": "google.cloud.discoveryengine.v1.EngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_EngineService_GetEngine_sync",
+      "title": "discoveryengine GetEngine Sample",
+      "description": "GetEngine gets a [Engine][google.cloud.discoveryengine.v1.Engine].",
+      "file": "EngineClient/GetEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEngine",
+        "fullName": "google.cloud.discoveryengine.v1.EngineClient.GetEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Engine",
+        "client": {
+          "shortName": "EngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.EngineClient"
+        },
+        "method": {
+          "shortName": "GetEngine",
+          "fullName": "google.cloud.discoveryengine.v1.EngineService.GetEngine",
+          "service": {
+            "shortName": "EngineService",
+            "fullName": "google.cloud.discoveryengine.v1.EngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_EngineService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "EngineClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.EngineClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "EngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.EngineClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_EngineService_ListEngines_sync",
+      "title": "discoveryengine ListEngines Sample",
+      "description": "ListEngines lists all the [Engine][google.cloud.discoveryengine.v1.Engine]s associated\nwith the project.",
+      "file": "EngineClient/ListEngines/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEngines",
+        "fullName": "google.cloud.discoveryengine.v1.EngineClient.ListEngines",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListEnginesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EngineIterator",
+        "client": {
+          "shortName": "EngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.EngineClient"
+        },
+        "method": {
+          "shortName": "ListEngines",
+          "fullName": "google.cloud.discoveryengine.v1.EngineService.ListEngines",
+          "service": {
+            "shortName": "EngineService",
+            "fullName": "google.cloud.discoveryengine.v1.EngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_EngineService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "EngineClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.EngineClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "EngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.EngineClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_EngineService_UpdateEngine_sync",
+      "title": "discoveryengine UpdateEngine Sample",
+      "description": "UpdateEngine updates an [Engine][google.cloud.discoveryengine.v1.Engine]",
+      "file": "EngineClient/UpdateEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEngine",
+        "fullName": "google.cloud.discoveryengine.v1.EngineClient.UpdateEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.UpdateEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Engine",
+        "client": {
+          "shortName": "EngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.EngineClient"
+        },
+        "method": {
+          "shortName": "UpdateEngine",
+          "fullName": "google.cloud.discoveryengine.v1.EngineService.UpdateEngine",
+          "service": {
+            "shortName": "EngineService",
+            "fullName": "google.cloud.discoveryengine.v1.EngineService"
           }
         }
       },
@@ -1023,9 +2126,653 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_BatchCreateTargetSites_sync",
+      "title": "discoveryengine BatchCreateTargetSites Sample",
+      "description": "BatchCreateTargetSites creates [TargetSite][google.cloud.discoveryengine.v1.TargetSite] in a\nbatch.",
+      "file": "SiteSearchEngineClient/BatchCreateTargetSites/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateTargetSites",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.BatchCreateTargetSites",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.BatchCreateTargetSitesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchCreateTargetSitesOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "BatchCreateTargetSites",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.BatchCreateTargetSites",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_BatchVerifyTargetSites_sync",
+      "title": "discoveryengine BatchVerifyTargetSites Sample",
+      "description": "BatchVerifyTargetSites verify target sites' ownership and validity.\nThis API sends all the target sites under site search engine for\nverification.",
+      "file": "SiteSearchEngineClient/BatchVerifyTargetSites/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchVerifyTargetSites",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.BatchVerifyTargetSites",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.BatchVerifyTargetSitesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchVerifyTargetSitesOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "BatchVerifyTargetSites",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.BatchVerifyTargetSites",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_CreateTargetSite_sync",
+      "title": "discoveryengine CreateTargetSite Sample",
+      "description": "CreateTargetSite creates a [TargetSite][google.cloud.discoveryengine.v1.TargetSite].",
+      "file": "SiteSearchEngineClient/CreateTargetSite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTargetSite",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.CreateTargetSite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateTargetSiteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateTargetSiteOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "CreateTargetSite",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.CreateTargetSite",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_DeleteTargetSite_sync",
+      "title": "discoveryengine DeleteTargetSite Sample",
+      "description": "DeleteTargetSite deletes a [TargetSite][google.cloud.discoveryengine.v1.TargetSite].",
+      "file": "SiteSearchEngineClient/DeleteTargetSite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTargetSite",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.DeleteTargetSite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteTargetSiteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteTargetSiteOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "DeleteTargetSite",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.DeleteTargetSite",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_DisableAdvancedSiteSearch_sync",
+      "title": "discoveryengine DisableAdvancedSiteSearch Sample",
+      "description": "DisableAdvancedSiteSearch downgrade from advanced site search to basic site search.",
+      "file": "SiteSearchEngineClient/DisableAdvancedSiteSearch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DisableAdvancedSiteSearch",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.DisableAdvancedSiteSearch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DisableAdvancedSiteSearchRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DisableAdvancedSiteSearchOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "DisableAdvancedSiteSearch",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.DisableAdvancedSiteSearch",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_EnableAdvancedSiteSearch_sync",
+      "title": "discoveryengine EnableAdvancedSiteSearch Sample",
+      "description": "EnableAdvancedSiteSearch upgrade from basic site search to advanced site search.",
+      "file": "SiteSearchEngineClient/EnableAdvancedSiteSearch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EnableAdvancedSiteSearch",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.EnableAdvancedSiteSearch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.EnableAdvancedSiteSearchRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EnableAdvancedSiteSearchOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "EnableAdvancedSiteSearch",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.EnableAdvancedSiteSearch",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_FetchDomainVerificationStatus_sync",
+      "title": "discoveryengine FetchDomainVerificationStatus Sample",
+      "description": "FetchDomainVerificationStatus returns list of target sites with its domain verification status.\nThis method can only be called under data store with BASIC_SITE_SEARCH\nstate at the moment.",
+      "file": "SiteSearchEngineClient/FetchDomainVerificationStatus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchDomainVerificationStatus",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.FetchDomainVerificationStatus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.FetchDomainVerificationStatusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TargetSiteIterator",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "FetchDomainVerificationStatus",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.FetchDomainVerificationStatus",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SiteSearchEngineClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_GetSiteSearchEngine_sync",
+      "title": "discoveryengine GetSiteSearchEngine Sample",
+      "description": "GetSiteSearchEngine gets the\n[SiteSearchEngine][google.cloud.discoveryengine.v1.SiteSearchEngine].",
+      "file": "SiteSearchEngineClient/GetSiteSearchEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSiteSearchEngine",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.GetSiteSearchEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetSiteSearchEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.SiteSearchEngine",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "GetSiteSearchEngine",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.GetSiteSearchEngine",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_GetTargetSite_sync",
+      "title": "discoveryengine GetTargetSite Sample",
+      "description": "GetTargetSite gets a [TargetSite][google.cloud.discoveryengine.v1.TargetSite].",
+      "file": "SiteSearchEngineClient/GetTargetSite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTargetSite",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.GetTargetSite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetTargetSiteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.TargetSite",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "GetTargetSite",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.GetTargetSite",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SiteSearchEngineClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_ListTargetSites_sync",
+      "title": "discoveryengine ListTargetSites Sample",
+      "description": "ListTargetSites gets a list of [TargetSite][google.cloud.discoveryengine.v1.TargetSite]s.",
+      "file": "SiteSearchEngineClient/ListTargetSites/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTargetSites",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.ListTargetSites",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListTargetSitesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TargetSiteIterator",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "ListTargetSites",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.ListTargetSites",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_RecrawlUris_sync",
+      "title": "discoveryengine RecrawlUris Sample",
+      "description": "RecrawlUris request on-demand recrawl for a list of URIs.",
+      "file": "SiteSearchEngineClient/RecrawlUris/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RecrawlUris",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.RecrawlUris",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.RecrawlUrisRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RecrawlUrisOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "RecrawlUris",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.RecrawlUris",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1_generated_SiteSearchEngineService_UpdateTargetSite_sync",
+      "title": "discoveryengine UpdateTargetSite Sample",
+      "description": "UpdateTargetSite updates a [TargetSite][google.cloud.discoveryengine.v1.TargetSite].",
+      "file": "SiteSearchEngineClient/UpdateTargetSite/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTargetSite",
+        "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient.UpdateTargetSite",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.UpdateTargetSiteRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateTargetSiteOperation",
+        "client": {
+          "shortName": "SiteSearchEngineClient",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineClient"
+        },
+        "method": {
+          "shortName": "UpdateTargetSite",
+          "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService.UpdateTargetSite",
+          "service": {
+            "shortName": "SiteSearchEngineService",
+            "fullName": "google.cloud.discoveryengine.v1.SiteSearchEngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1_generated_UserEventService_CollectUserEvent_sync",
       "title": "discoveryengine CollectUserEvent Sample",
-      "description": "CollectUserEvent writes a single user event from the browser. This uses a GET request to\ndue to browser restriction of POST-ing to a 3rd party domain.\n\nThis method is used only by the Discovery Engine API JavaScript pixel and\nGoogle Tag Manager. Users should not call this method directly.",
+      "description": "CollectUserEvent writes a single user event from the browser. This uses a GET request to\ndue to browser restriction of POST-ing to a third-party domain.\n\nThis method is used only by the Discovery Engine API JavaScript pixel and\nGoogle Tag Manager. Users should not call this method directly.",
       "file": "UserEventClient/CollectUserEvent/main.go",
       "language": "GO",
       "clientMethod": {

@@ -19,7 +19,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -28,9 +28,7 @@ import (
 	"time"
 
 	_ "cloud.google.com/go/bigquery" // Implicitly required by test.
-	_ "cloud.google.com/go/storage"  // Implicitly required by test.
 	"github.com/google/go-cmp/cmp"
-	_ "golang.org/x/sync/semaphore" // Implicitly required by test.
 	"golang.org/x/tools/go/packages"
 )
 
@@ -70,8 +68,8 @@ func TestParse(t *testing.T) {
 	if got, want := len(r.toc), 1; got != want {
 		t.Fatalf("Parse got len(toc) = %d, want %d", got, want)
 	}
-	if got, want := len(r.pages), 29; got != want {
-		t.Errorf("Parse got len(pages) = %d, want %d", got, want)
+	if got, want := len(r.pages), 33; got < want {
+		t.Errorf("Parse got len(pages) = %d, want at least %d", got, want)
 	}
 	if got := r.module.Path; got != mod {
 		t.Fatalf("Parse got module = %q, want %q", got, mod)
@@ -124,77 +122,77 @@ func TestParse(t *testing.T) {
 }
 
 func TestGoldens(t *testing.T) {
-	t.Skip("test is too flaky with dep bumps, consider removing")
 	gotDir := "testdata/out"
 	goldenDir := "testdata/golden"
+	if updateGoldens {
+		os.RemoveAll(gotDir)
+		os.RemoveAll(goldenDir)
+		gotDir = goldenDir
+	}
 	extraFiles := []string{"README.md"}
 
-	testPath := "cloud.google.com/go/storage"
+	testMod := indexEntry{Path: "cloud.google.com/go/storage", Version: "v1.33.0"}
 	metaServer := fakeMetaServer()
 	defer metaServer.Close()
-	r, err := parse(testPath, ".", extraFiles, nil, &friendlyAPINamer{metaURL: metaServer.URL})
-	if err != nil {
-		t.Fatalf("parse: %v", err)
+	namer := &friendlyAPINamer{metaURL: metaServer.URL}
+	ok := processMods([]indexEntry{testMod}, gotDir, namer, extraFiles, false)
+	if !ok {
+		t.Fatalf("failed to process modules")
 	}
 
-	ignoreFiles := map[string]bool{"docs.metadata": true}
+	ignoreGoldens := []string{fmt.Sprintf("%s@%s/docs.metadata", testMod.Path, testMod.Version)}
 
 	if updateGoldens {
-		os.RemoveAll(goldenDir)
-
-		if err := write(goldenDir, r); err != nil {
-			t.Fatalf("write: %v", err)
-		}
-
-		for ignore := range ignoreFiles {
+		for _, ignore := range ignoreGoldens {
 			if err := os.Remove(filepath.Join(goldenDir, ignore)); err != nil {
 				t.Fatalf("Remove: %v", err)
 			}
 		}
-
 		t.Logf("Successfully updated goldens in %s", goldenDir)
-
 		return
 	}
 
-	if err := write(gotDir, r); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-
-	gotFiles, err := ioutil.ReadDir(gotDir)
-	if err != nil {
-		t.Fatalf("ReadDir: %v", err)
-	}
-
-	goldens, err := ioutil.ReadDir(goldenDir)
-	if err != nil {
-		t.Fatalf("ReadDir: %v", err)
-	}
-
-	if got, want := len(gotFiles)-len(ignoreFiles), len(goldens); got != want {
-		t.Fatalf("parse & write got %d files in %s, want %d ignoring %v", got, gotDir, want, ignoreFiles)
-	}
-
-	for _, golden := range goldens {
-		if golden.IsDir() {
-			continue
+	goldenCount := 0
+	err := filepath.WalkDir(goldenDir, func(goldenPath string, d fs.DirEntry, err error) error {
+		goldenCount++
+		if d.IsDir() {
+			return nil
 		}
-		gotPath := filepath.Join(gotDir, golden.Name())
-		goldenPath := filepath.Join(goldenDir, golden.Name())
-
-		gotContent, err := ioutil.ReadFile(gotPath)
 		if err != nil {
-			t.Fatalf("ReadFile: %v", err)
+			return err
 		}
 
-		goldenContent, err := ioutil.ReadFile(goldenPath)
+		gotPath := filepath.Join(gotDir, goldenPath[len(goldenDir):])
+
+		gotContent, err := os.ReadFile(gotPath)
 		if err != nil {
-			t.Fatalf("ReadFile: %v", err)
+			t.Fatalf("failed to read got: %v", err)
+		}
+
+		goldenContent, err := os.ReadFile(goldenPath)
+		if err != nil {
+			t.Fatalf("failed to read golden: %v", err)
 		}
 
 		if string(gotContent) != string(goldenContent) {
 			t.Errorf("got %s is different from expected %s", gotPath, goldenPath)
 		}
+
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("failed to compare goldens: %v", err)
+	}
+	gotCount := 0
+	err = filepath.WalkDir(gotDir, func(_ string, _ fs.DirEntry, _ error) error {
+		gotCount++
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("failed to count got: %v", err)
+	}
+	if gotCount-len(ignoreGoldens) != goldenCount {
+		t.Fatalf("processMods got %d files in %s, want %d ignoring %v", gotCount, gotDir, goldenCount, ignoreGoldens)
 	}
 }
 

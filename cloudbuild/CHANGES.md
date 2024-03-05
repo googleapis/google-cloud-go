@@ -1,5 +1,47 @@
 # Changes
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.15.0...cloudbuild/v1.15.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.3...cloudbuild/v1.15.0) (2023-11-09)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add optional field "SourceFetcher" to choose source fetcher tool ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.2...cloudbuild/v1.14.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.1...cloudbuild/v1.14.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.0...cloudbuild/v1.14.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.13.0...cloudbuild/v1.14.0) (2023-08-08)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add update_mask to UpdateBuildTriggerRequest proto ([#8358](https://github.com/googleapis/google-cloud-go/issues/8358)) ([58b5851](https://github.com/googleapis/google-cloud-go/commit/58b5851b3f38aeeefcdb3507e29b9a02ccfb1bba))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.12.0...cloudbuild/v1.13.0) (2023-07-26)
 
 

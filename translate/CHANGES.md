@@ -1,5 +1,47 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.0...translate/v1.10.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **translate:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/translate/v1.9.3...translate/v1.10.0) (2024-01-03)
+
+
+### Features
+
+* **translate:** Add Adaptive MT API ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/translate/v1.9.2...translate/v1.9.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **translate:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/translate/v1.9.1...translate/v1.9.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **translate:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/translate/v1.9.0...translate/v1.9.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **translate:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/translate/v1.8.2...translate/v1.9.0) (2023-08-08)
+
+
+### Features
+
+* **translate:** Added shadow removal and rotation correction options to Document Translation and Batch Document Translation API ([#8391](https://github.com/googleapis/google-cloud-go/issues/8391)) ([c38e910](https://github.com/googleapis/google-cloud-go/commit/c38e910f4a3114cd92e2bdceb18e53f1689f3bf8))
+
 ## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/translate/v1.8.1...translate/v1.8.2) (2023-07-31)
 
 
