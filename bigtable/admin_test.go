@@ -41,6 +41,11 @@ type mockTableAdminClock struct {
 
 	copyBackupReq   *btapb.CopyBackupRequest
 	copyBackupError error
+
+	createAuthorizedViewReq   *btapb.CreateAuthorizedViewRequest
+	createAuthorizedViewError error
+	updateAuthorizedViewReq   *btapb.UpdateAuthorizedViewRequest
+	updateAuthorizedViewError error
 }
 
 func (c *mockTableAdminClock) CreateTable(
@@ -68,6 +73,30 @@ func (c *mockTableAdminClock) CopyBackup(
 	c.copyBackupReq = in
 	c.copyBackupError = fmt.Errorf("Mock error from client API")
 	return nil, c.copyBackupError
+}
+
+func (c *mockTableAdminClock) CreateAuthorizedView(
+	ctx context.Context, in *btapb.CreateAuthorizedViewRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.createAuthorizedViewReq = in
+	return &longrunning.Operation{
+		Done: true,
+		Result: &longrunning.Operation_Response{
+			Response: &anypb.Any{TypeUrl: "google.bigtable.admin.v2.AuthorizedView"},
+		},
+	}, c.createAuthorizedViewError
+}
+
+func (c *mockTableAdminClock) UpdateAuthorizedView(
+	ctx context.Context, in *btapb.UpdateAuthorizedViewRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.updateAuthorizedViewReq = in
+	return &longrunning.Operation{
+		Done: true,
+		Result: &longrunning.Operation_Response{
+			Response: &anypb.Any{TypeUrl: "google.bigtable.admin.v2.AuthorizedView"},
+		},
+	}, c.updateAuthorizedViewError
 }
 
 func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminClient {
@@ -274,6 +303,101 @@ func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
 	}
 	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "change_stream_config") {
 		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_CreateAuthorizedView_DeletionProtection_Protected(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "my-cool-table"})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+
+	deletionProtection := Protected
+	err = c.CreateAuthorizedView(context.Background(), &AuthorizedViewConf{
+		TableID:          "my-cool-table",
+		AuthorizedViewID: "my-cool-authorized-view",
+		AuthorizedViewTypeConf: AuthorizedViewTypeConf{
+			AuthorizedViewType: AuthorizedViewTypeSubsetView,
+			SubsetView:         &SubsetViewConf{},
+		},
+		DeletionProtection: deletionProtection,
+	})
+	if err != nil {
+		t.Fatalf("CreateAuthorizedView failed: %v", err)
+	}
+	createAuthorizedViewReq := mock.createAuthorizedViewReq
+	if !cmp.Equal(createAuthorizedViewReq.Parent, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table") {
+		t.Errorf("Unexpected parent: %v, expected %v", createAuthorizedViewReq.Parent, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table")
+	}
+	if !cmp.Equal(createAuthorizedViewReq.AuthorizedViewId, "my-cool-authorized-view") {
+		t.Errorf("Unexpected authorized view ID: %v, expected %v", createAuthorizedViewReq.Parent, "my-cool-authorized-view")
+	}
+	if !cmp.Equal(createAuthorizedViewReq.AuthorizedView.DeletionProtection, true) {
+		t.Errorf("Unexpected authorized view deletion protection: %v, expected %v", createAuthorizedViewReq.AuthorizedView.DeletionProtection, true)
+	}
+}
+
+func TestTableAdmin_CreateAuthorizedView_DeletionProtection_Unprotected(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	deletionProtection := Unprotected
+	err := c.CreateAuthorizedView(context.Background(), &AuthorizedViewConf{
+		TableID:          "my-cool-table",
+		AuthorizedViewID: "my-cool-authorized-view",
+		AuthorizedViewTypeConf: AuthorizedViewTypeConf{
+			AuthorizedViewType: AuthorizedViewTypeSubsetView,
+			SubsetView:         &SubsetViewConf{},
+		},
+		DeletionProtection: deletionProtection,
+	})
+	if err != nil {
+		t.Fatalf("CreateAuthorizedView failed: %v", err)
+	}
+	createAuthorizedViewReq := mock.createAuthorizedViewReq
+	if !cmp.Equal(createAuthorizedViewReq.Parent, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table") {
+		t.Errorf("Unexpected parent: %v, expected %v", createAuthorizedViewReq.Parent, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table")
+	}
+	if !cmp.Equal(createAuthorizedViewReq.AuthorizedViewId, "my-cool-authorized-view") {
+		t.Errorf("Unexpected authorized view ID: %v, expected %v", createAuthorizedViewReq.Parent, "my-cool-authorized-view")
+	}
+	if !cmp.Equal(createAuthorizedViewReq.AuthorizedView.DeletionProtection, false) {
+		t.Errorf("Unexpected authorized view deletion protection: %v, expected %v", createAuthorizedViewReq.AuthorizedView.DeletionProtection, false)
+	}
+}
+
+func TestTableAdmin_UpdateAuthorizedViewWithDeletionProtection(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	deletionProtection := Protected
+
+	// Check if the deletion protection updates correctly
+	err := c.UpdateAuthorizedView(context.Background(), UpdateAuthorizedViewConf{
+		AuthorizedViewConf: AuthorizedViewConf{
+			TableID:            "my-cool-table",
+			AuthorizedViewID:   "my-cool-authorized-view",
+			DeletionProtection: deletionProtection,
+		},
+		UpdateMask: []string{"deletion_protection"},
+	})
+	if err != nil {
+		t.Fatalf("UpdateAuthorizedView failed: %v", err)
+	}
+	updateAuthorizedViewReq := mock.updateAuthorizedViewReq
+	if !cmp.Equal(updateAuthorizedViewReq.AuthorizedView.Name, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table/authorizedViews/my-cool-authorized-view") {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: AuthorizedViewName: %v, expected %v", updateAuthorizedViewReq.AuthorizedView.Name, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table/authorizedViews/my-cool-authorized-view")
+	}
+	if !cmp.Equal(updateAuthorizedViewReq.AuthorizedView.DeletionProtection, true) {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: DeletionProtection: %v, expected %v", updateAuthorizedViewReq.AuthorizedView.DeletionProtection, true)
+	}
+	if !cmp.Equal(len(updateAuthorizedViewReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: UpdateMask has length of %d, expected %v", len(updateAuthorizedViewReq.UpdateMask.Paths), 1)
+	}
+	if !cmp.Equal(updateAuthorizedViewReq.UpdateMask.Paths[0], "deletion_protection") {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: updateAuthorizedViewReq.UpdateMask.Paths[0]: %v, expected: %v", updateAuthorizedViewReq.UpdateMask.Paths[0], "deletion_protection")
 	}
 }
 

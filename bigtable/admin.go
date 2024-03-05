@@ -2175,3 +2175,242 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	_, err := ac.tClient.UpdateBackup(ctx, req)
 	return err
 }
+
+// Authorized View APIs
+type AuthorizedViewConf struct {
+	TableID          string
+	AuthorizedViewID string
+
+	AuthorizedViewTypeConf AuthorizedViewTypeConf
+	DeletionProtection     DeletionProtection
+}
+
+type AuthorizedViewTypeConf struct {
+	AuthorizedViewType AuthorizedViewType
+
+	SubsetView *SubsetViewConf
+}
+
+type AuthorizedViewType int
+
+const (
+	AuthorizedViewTypeUnspecified AuthorizedViewType = iota
+	AuthorizedViewTypeSubsetView
+)
+
+func (av AuthorizedViewConf) proto() *btapb.AuthorizedView {
+	var avp btapb.AuthorizedView
+
+	switch dp := av.DeletionProtection; dp {
+	case Protected:
+		avp.DeletionProtection = true
+	case Unprotected:
+		avp.DeletionProtection = false
+	default:
+		break
+	}
+
+	switch avt := av.AuthorizedViewTypeConf.AuthorizedViewType; avt {
+	case AuthorizedViewTypeSubsetView:
+		avp.AuthorizedView = &btapb.AuthorizedView_SubsetView_{
+			SubsetView: av.AuthorizedViewTypeConf.SubsetView.proto(),
+		}
+	default:
+		break
+	}
+	return &avp
+}
+
+// Sets the AuthorizedViewType to AuthorizedViewTypeSubsetView and the subsetView pointer accordingly
+func (av *AuthorizedViewTypeConf) SetSubsetView(s SubsetViewConf) error {
+	av.AuthorizedViewType = AuthorizedViewTypeSubsetView
+	av.SubsetView = &s
+	return nil
+}
+
+// Returns an error if the type is not AuthorizedViewTypeSubsetView.
+func (av *AuthorizedViewTypeConf) GetSubsetView() (*SubsetViewConf, error) {
+	if av.AuthorizedViewType != AuthorizedViewTypeSubsetView {
+		return nil, fmt.Errorf("not a subset view: :%v", av.AuthorizedViewType)
+	}
+	return av.SubsetView, nil
+}
+
+type familySubset struct {
+	Qualifiers        [][]byte
+	QualifierPrefixes [][]byte
+}
+
+type SubsetViewConf struct {
+	RowPrefixes   [][]byte
+	FamilySubsets map[string]familySubset
+}
+
+func (s *SubsetViewConf) AddRowPrefix(prefix []byte) {
+	s.RowPrefixes = append(s.RowPrefixes, prefix)
+}
+
+func (s *SubsetViewConf) getFamilySubset(familyName string) familySubset {
+	if s.FamilySubsets == nil {
+		s.FamilySubsets = make(map[string]familySubset)
+	}
+	if _, ok := s.FamilySubsets[familyName]; !ok {
+		s.FamilySubsets[familyName] = familySubset{
+			Qualifiers:        [][]byte{},
+			QualifierPrefixes: [][]byte{},
+		}
+	}
+	return s.FamilySubsets[familyName]
+}
+
+func (s SubsetViewConf) proto() *btapb.AuthorizedView_SubsetView {
+	var p btapb.AuthorizedView_SubsetView
+	p.RowPrefixes = append(p.RowPrefixes, s.RowPrefixes...)
+	if p.FamilySubsets == nil {
+		p.FamilySubsets = make(map[string]*btapb.AuthorizedView_FamilySubsets)
+	}
+	for familyName, subset := range s.FamilySubsets {
+		p.FamilySubsets[familyName] = &btapb.AuthorizedView_FamilySubsets{
+			Qualifiers:        subset.Qualifiers,
+			QualifierPrefixes: subset.QualifierPrefixes,
+		}
+	}
+	return &p
+}
+
+func (s *SubsetViewConf) fillConf(internal *btapb.AuthorizedView_SubsetView) {
+	s.RowPrefixes = [][]byte{}
+	s.RowPrefixes = append(s.RowPrefixes, internal.RowPrefixes...)
+	if s.FamilySubsets == nil {
+		s.FamilySubsets = make(map[string]familySubset)
+	}
+	for k, v := range internal.FamilySubsets {
+		s.FamilySubsets[k] = familySubset{
+			Qualifiers:        v.Qualifiers,
+			QualifierPrefixes: v.QualifierPrefixes,
+		}
+	}
+}
+
+func (s *SubsetViewConf) AddFamilySubsetQualifier(familyName string, qualifier []byte) {
+	fs := s.getFamilySubset(familyName)
+	fs.Qualifiers = append(fs.Qualifiers, qualifier)
+	s.FamilySubsets[familyName] = fs
+}
+
+func (s *SubsetViewConf) AddFamilySubsetQualifierPrefix(familyName string, qualifierPrefix []byte) {
+	fs := s.getFamilySubset(familyName)
+	fs.QualifierPrefixes = append(fs.QualifierPrefixes, qualifierPrefix)
+	s.FamilySubsets[familyName] = fs
+}
+
+func (ac *AdminClient) CreateAuthorizedView(ctx context.Context, conf *AuthorizedViewConf) error {
+	if conf.TableID == "" || conf.AuthorizedViewID == "" {
+		return errors.New("both AuthorizedViewID and TableID are required")
+	}
+	if conf.AuthorizedViewTypeConf.AuthorizedViewType == AuthorizedViewTypeUnspecified {
+		return errors.New("AuthorizedViewType must be specified")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	req := &btapb.CreateAuthorizedViewRequest{
+		Parent:           fmt.Sprintf("%s/tables/%s", ac.instancePrefix(), conf.TableID),
+		AuthorizedViewId: conf.AuthorizedViewID,
+		AuthorizedView:   conf.proto(),
+	}
+	_, err := ac.tClient.CreateAuthorizedView(ctx, req)
+	return err
+}
+
+func (ac *AdminClient) GetAuthorizedView(ctx context.Context, tableID, authorizedViewID string) (*AuthorizedViewConf, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	req := &btapb.GetAuthorizedViewRequest{
+		Name: fmt.Sprintf("%s/tables/%s/authorizedViews/%s", ac.instancePrefix(), tableID, authorizedViewID),
+	}
+	var res *btapb.AuthorizedView
+	av := &AuthorizedViewConf{TableID: tableID, AuthorizedViewID: authorizedViewID}
+
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = ac.tClient.GetAuthorizedView(ctx, req)
+		return err
+	}, retryOptions...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if res.DeletionProtection {
+		av.DeletionProtection = Protected
+	} else {
+		av.DeletionProtection = Unprotected
+	}
+	if res.GetSubsetView() != nil {
+		s := SubsetViewConf{}
+		s.fillConf(res.GetSubsetView())
+		av.AuthorizedViewTypeConf.SetSubsetView(s)
+	}
+	return av, nil
+}
+
+// AuthorizedViews returns a list of the authorized views in the table. The names returned are fully
+// qualified as projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorizedView>
+func (ac *AdminClient) AuthorizedViews(ctx context.Context, tableID string) ([]string, error) {
+	names := []string{}
+
+	req := &btapb.ListAuthorizedViewsRequest{
+		Parent: fmt.Sprintf("%s/tables/%s", ac.instancePrefix(), tableID),
+		View:   btapb.AuthorizedView_NAME_ONLY,
+	}
+	var res *btapb.ListAuthorizedViewsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = ac.tClient.ListAuthorizedViews(ctx, req)
+		return err
+	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, av := range res.AuthorizedViews {
+		names = append(names, av.Name)
+	}
+	return names, nil
+}
+
+type UpdateAuthorizedViewConf struct {
+	AuthorizedViewConf AuthorizedViewConf
+	UpdateMask         []string
+}
+
+func (ac *AdminClient) UpdateAuthorizedView(ctx context.Context, conf UpdateAuthorizedViewConf) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	if conf.AuthorizedViewConf.TableID == "" || conf.AuthorizedViewConf.AuthorizedViewID == "" {
+		return errors.New("both AuthorizedViewID and TableID is required")
+	}
+	av := conf.AuthorizedViewConf.proto()
+	av.Name = fmt.Sprintf("%s/tables/%s/authorizedViews/%v", ac.instancePrefix(), conf.AuthorizedViewConf.TableID, conf.AuthorizedViewConf.AuthorizedViewID)
+	req := &btapb.UpdateAuthorizedViewRequest{
+		AuthorizedView: av,
+		UpdateMask:     &field_mask.FieldMask{Paths: conf.UpdateMask},
+	}
+	lro, err := ac.tClient.UpdateAuthorizedView(ctx, req)
+	if err != nil {
+		return fmt.Errorf("error from update authorized view: %w", err)
+	}
+	var res btapb.AuthorizedView
+	op := longrunning.InternalNewOperation(ac.lroClient, lro)
+	if err = op.Wait(ctx, &res); err != nil {
+		return fmt.Errorf("error from operation: %v", err)
+	}
+	return nil
+}
+
+func (ac *AdminClient) DeleteAuthorizedView(ctx context.Context, tableID, authorizedViewID string) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	req := &btapb.DeleteAuthorizedViewRequest{
+		Name: fmt.Sprintf("%s/tables/%s/authorizedViews/%s", ac.instancePrefix(), tableID, authorizedViewID),
+	}
+	_, err := ac.tClient.DeleteAuthorizedView(ctx, req)
+	return err
+}
