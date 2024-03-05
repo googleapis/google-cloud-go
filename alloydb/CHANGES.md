@@ -2,6 +2,13 @@
 
 
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.9.0...alloydb/v1.10.0) (2024-03-04)
+
+
+### Features
+
+* **alloydb:** Support for obtaining the public IP address of an Instance ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.8.1...alloydb/v1.9.0) (2024-02-26)
 
 

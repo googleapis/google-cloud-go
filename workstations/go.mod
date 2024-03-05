@@ -5,11 +5,11 @@ go 1.19
 require (
 	cloud.google.com/go/iam v1.1.6
 	cloud.google.com/go/longrunning v0.5.5
-	github.com/googleapis/gax-go/v2 v2.12.1
-	google.golang.org/api v0.166.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20240221002015-b0ce06bbee7c
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240221002015-b0ce06bbee7c
-	google.golang.org/grpc v1.61.1
+	github.com/googleapis/gax-go/v2 v2.12.2
+	google.golang.org/api v0.167.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20240304161311-37d4d3c04a78
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240304161311-37d4d3c04a78
+	google.golang.org/grpc v1.62.0
 	google.golang.org/protobuf v1.32.0
 )
 

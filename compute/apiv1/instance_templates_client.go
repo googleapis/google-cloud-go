@@ -168,7 +168,7 @@ func (c *InstanceTemplatesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *InstanceTemplatesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceTemplatesRequest, opts ...gax.CallOption) *InstanceTemplatesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -295,7 +295,7 @@ func (c *instanceTemplatesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *instanceTemplatesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceTemplatesRequest, opts ...gax.CallOption) *InstanceTemplatesScopedListPairIterator {
 	it := &InstanceTemplatesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInstanceTemplatesRequest)
