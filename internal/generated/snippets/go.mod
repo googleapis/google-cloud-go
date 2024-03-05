@@ -148,7 +148,6 @@ require (
 	cloud.google.com/go/parallelstore v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/policysimulator v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/rapidmigrationassessment v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/recaptchaenterprise v1.3.1
 	cloud.google.com/go/securesourcemanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/securitycentermanagement v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/securityposture v0.0.0-00010101000000-000000000000
