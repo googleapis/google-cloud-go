@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -184,8 +183,8 @@ type FeatureGroup_BigQuery struct {
 	// Required. Immutable. The BigQuery source URI that points to either a
 	// BigQuery Table or View.
 	BigQuerySource *BigQuerySource `protobuf:"bytes,1,opt,name=big_query_source,json=bigQuerySource,proto3" json:"big_query_source,omitempty"`
-	// Optional. Columns to construct entity_id / row keys. Currently only
-	// supports 1 entity_id_column. If not provided defaults to `entity_id`.
+	// Optional. Columns to construct entity_id / row keys.
+	// If not provided defaults to `entity_id`.
 	EntityIdColumns []string `protobuf:"bytes,2,rep,name=entity_id_columns,json=entityIdColumns,proto3" json:"entity_id_columns,omitempty"`
 }
 
