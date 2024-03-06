@@ -898,6 +898,7 @@ type ObjectHandle struct {
 	readCompressed    bool   // Accept-Encoding: gzip
 	retry             *retryConfig
 	overrideRetention *bool
+	softDeleted       bool
 }
 
 // ACL provides access to the object's access control list.
@@ -952,7 +953,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 		return nil, err
 	}
 	opts := makeStorageOpts(true, o.retry, o.userProject)
-	return o.c.tc.GetObject(ctx, o.bucket, o.object, o.gen, o.encryptionKey, o.conds, opts...)
+	return o.c.tc.GetObject(ctx, &getObjectParams{o.bucket, o.object, o.gen, o.encryptionKey, o.conds, o.softDeleted}, opts...)
 }
 
 // Update updates an object with the provided attributes. See
@@ -1055,6 +1056,37 @@ func (o *ObjectHandle) OverrideUnlockedRetention(override bool) *ObjectHandle {
 	o2 := *o
 	o2.overrideRetention = &override
 	return &o2
+}
+
+// SoftDeleted returns an object handle that can be used to get an object that
+// has been soft deleted. To get a soft deleted object, the generation must be
+// set on the object using ObjectHandle.Generation.
+// Note that an error will be returned if a live object is queried using this.
+func (o *ObjectHandle) SoftDeleted() *ObjectHandle {
+	o2 := *o
+	o2.softDeleted = true
+	return &o2
+}
+
+// Restore will restore a soft-deleted object to full object status.
+// Note that you must specify a generation to use this method.
+// copySourceACL indicates whether the restored object should copy the
+// access controls of the source object.
+func (o *ObjectHandle) Restore(ctx context.Context, copySourceACL bool) (*ObjectAttrs, error) {
+	if err := o.validate(); err != nil {
+		return nil, err
+	}
+	// Restore is idempotent if GenerationMatch or Generation have been passed in.
+	// The default generation is negative to get the latest version of the object.
+	isIdempotent := (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0
+	opts := makeStorageOpts(isIdempotent, o.retry, o.userProject)
+	return o.c.tc.RestoreObject(ctx, &restoreObjectParams{
+		bucket:        o.bucket,
+		object:        o.object,
+		gen:           o.gen,
+		conds:         o.conds,
+		copySourceACL: copySourceACL,
+	}, opts...)
 }
 
 // NewWriter returns a storage Writer that writes to the GCS object
@@ -1386,6 +1418,19 @@ type ObjectAttrs struct {
 	// Retention contains the retention configuration for this object.
 	// ObjectRetention cannot be configured or reported through the gRPC API.
 	Retention *ObjectRetention
+
+	// SoftDeleteTime is the time when the object became soft-deleted.
+	// Soft-deleted objects are only accessible on an object handle returned by
+	// ObjectHandle.SoftDeleted.
+	// This field is read-only.
+	SoftDeleteTime time.Time
+
+	// HardDeleteTime is the time when the object will be permanently deleted.
+	// Only set when an object becomes soft-deleted with a soft delete policy.
+	// Soft-deleted objects are only accessible on an object handle returned by
+	// ObjectHandle.SoftDeleted.
+	// This field is read-only.
+	HardDeleteTime time.Time
 }
 
 // ObjectRetention contains the retention configuration for this object.
@@ -1490,6 +1535,8 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		CustomTime:              convertTime(o.CustomTime),
 		ComponentCount:          o.ComponentCount,
 		Retention:               toObjectRetention(o.Retention),
+		SoftDeleteTime:          convertTime(o.SoftDeleteTime),
+		HardDeleteTime:          convertTime(o.HardDeleteTime),
 	}
 }
 
@@ -1525,6 +1572,8 @@ func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
 		Updated:           convertProtoTime(o.GetUpdateTime()),
 		CustomTime:        convertProtoTime(o.GetCustomTime()),
 		ComponentCount:    int64(o.ComponentCount),
+		SoftDeleteTime:    convertProtoTime(o.GetSoftDeleteTime()),
+		HardDeleteTime:    convertProtoTime(o.GetHardDeleteTime()),
 	}
 }
 
@@ -1668,6 +1717,8 @@ var attrToFieldMap = map[string]string{
 	"CustomTime":              "customTime",
 	"ComponentCount":          "componentCount",
 	"Retention":               "retention",
+	"HardDeleteTime":          "hardDeleteTime",
+	"SoftDeleteTime":          "softDeleteTime",
 }
 
 // attrToProtoFieldMap maps the field names of ObjectAttrs to the underlying field
@@ -1700,6 +1751,8 @@ var attrToProtoFieldMap = map[string]string{
 	"CustomerKeySHA256":       "customer_encryption",
 	"CustomTime":              "custom_time",
 	"ComponentCount":          "component_count",
+	"HardDeleteTime":          "hard_delete_time",
+	"SoftDeleteTime":          "soft_delete_time",
 	// MediaLink was explicitly excluded from the proto as it is an HTTP-ism.
 	// "MediaLink":               "mediaLink",
 	// TODO: add object retention - b/308194853

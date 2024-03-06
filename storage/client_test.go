@@ -267,7 +267,7 @@ func TestGetObjectEmulated(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		got, err := client.GetObject(context.Background(), bucket, want.Name, defaultGen, nil, nil)
+		got, err := client.GetObject(context.Background(), &getObjectParams{bucket: bucket, object: want.Name, gen: defaultGen})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -425,7 +425,7 @@ func TestListObjectsEmulated(t *testing.T) {
 		}
 
 		// Simple list, no query.
-		it := client.ListObjects(context.Background(), bucket, nil)
+		it := client.ListObjects(context.Background(), bucket, nil, false)
 		var o *ObjectAttrs
 		var got int
 		for i := 0; err == nil && i <= len(want); i++ {
@@ -483,7 +483,7 @@ func TestListObjectsWithPrefixEmulated(t *testing.T) {
 		}
 
 		// Query with Prefix.
-		it := client.ListObjects(context.Background(), bucket, &Query{Prefix: strconv.Itoa(prefix)})
+		it := client.ListObjects(context.Background(), bucket, &Query{Prefix: strconv.Itoa(prefix)}, false)
 		var o *ObjectAttrs
 		var got int
 		want = want[:2]
@@ -1327,7 +1327,7 @@ func TestObjectConditionsEmulated(t *testing.T) {
 					if err != nil {
 						return fmt.Errorf("creating object: %w", err)
 					}
-					_, err = client.GetObject(ctx, bucket, objName, gen, nil, &Conditions{GenerationMatch: gen, MetagenerationMatch: metaGen})
+					_, err = client.GetObject(ctx, &getObjectParams{bucket: bucket, object: objName, gen: gen, conds: &Conditions{GenerationMatch: gen, MetagenerationMatch: metaGen}})
 					return err
 				},
 			},
