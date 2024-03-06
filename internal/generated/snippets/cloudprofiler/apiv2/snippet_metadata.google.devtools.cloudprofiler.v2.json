@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudprofiler/apiv2",
-    "version": "0.3.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
