@@ -201,7 +201,7 @@ func (c *RoutersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of routers.
+// AggregatedList retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *RoutersClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRoutersRequest, opts ...gax.CallOption) *RoutersScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -343,7 +343,7 @@ func (c *routersRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of routers.
+// AggregatedList retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRoutersRequest, opts ...gax.CallOption) *RoutersScopedListPairIterator {
 	it := &RoutersScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListRoutersRequest)
