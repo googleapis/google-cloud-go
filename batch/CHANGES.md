@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.1...batch/v1.8.2) (2024-03-04)
+
+
+### Documentation
+
+* **batch:** Update description of Job uid field ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.0...batch/v1.8.1) (2024-02-21)
 
 

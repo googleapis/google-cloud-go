@@ -1,5 +1,19 @@
 # Changes
 
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.26.0...securitycenter/v1.27.0) (2024-03-04)
+
+
+### Features
+
+* **securitycenter:** Add container.create_time, vulnerability.offending_package, vulnerability.fixed_package, vulnerability.security_bulletin, vulnerability.cve.impact, vulnerability.cve.exploitation_activity, vulnerability.cve.observed_in_the_wild, v... ([#9473](https://github.com/googleapis/google-cloud-go/issues/9473)) ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.25.0...securitycenter/v1.26.0) (2024-02-26)
+
+
+### Features
+
+* **securitycenter:** Add Backup DR field to finding's list of attributes ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.4...securitycenter/v1.25.0) (2024-02-21)
 
 

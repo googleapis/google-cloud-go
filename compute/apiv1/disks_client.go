@@ -223,7 +223,7 @@ func (c *DisksClient) AddResourcePolicies(ctx context.Context, req *computepb.Ad
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of persistent disks.
+// AggregatedList retrieves an aggregated list of persistent disks. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *DisksClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDisksRequest, opts ...gax.CallOption) *DisksScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -472,7 +472,7 @@ func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computep
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of persistent disks.
+// AggregatedList retrieves an aggregated list of persistent disks. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDisksRequest, opts ...gax.CallOption) *DisksScopedListPairIterator {
 	it := &DisksScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListDisksRequest)

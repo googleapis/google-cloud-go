@@ -432,7 +432,7 @@ func (c *InstancesClient) AddResourcePolicies(ctx context.Context, req *computep
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances.
+// AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *InstancesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) *InstancesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -904,7 +904,7 @@ func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *comp
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances.
+// AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) *InstancesScopedListPairIterator {
 	it := &InstancesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInstancesRequest)

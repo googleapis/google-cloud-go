@@ -143,7 +143,7 @@ func (c *GlobalOperationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of all operations.
+// AggregatedList retrieves an aggregated list of all operations. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *GlobalOperationsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListGlobalOperationsRequest, opts ...gax.CallOption) *OperationsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -239,7 +239,7 @@ func (c *globalOperationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of all operations.
+// AggregatedList retrieves an aggregated list of all operations. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *globalOperationsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListGlobalOperationsRequest, opts ...gax.CallOption) *OperationsScopedListPairIterator {
 	it := &OperationsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListGlobalOperationsRequest)

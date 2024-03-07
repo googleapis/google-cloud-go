@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.2.1...cloudprofiler/v0.3.0) (2024-02-26)
+
+
+### Features
+
+* **cloudprofiler:** Add `start_time` to Profile proto ([#9461](https://github.com/googleapis/google-cloud-go/issues/9461)) ([748f065](https://github.com/googleapis/google-cloud-go/commit/748f065cccfd6d407b9cc4df6715bf8e6d50171c))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.2.0...cloudprofiler/v0.2.1) (2024-01-30)
 
 

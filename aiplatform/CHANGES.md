@@ -1,6 +1,32 @@
 # Changes
 
 
+## [1.62.2](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.62.1...aiplatform/v1.62.2) (2024-03-07)
+
+
+### Bug Fixes
+
+* **aiplatform:** An existing field `preflight_validations` is removed from message `.google.cloud.aiplatform.v1beta1.CreatePipelineJobRequest` ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
+## [1.62.1](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.62.0...aiplatform/v1.62.1) (2024-03-04)
+
+
+### Documentation
+
+* **aiplatform:** Update docs for FeatureView Service Agents ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
+## [1.62.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.61.0...aiplatform/v1.62.0) (2024-02-26)
+
+
+### Features
+
+* **aiplatform:** Add `point_of_contact` to `Feature` message ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+* **aiplatform:** Add CompositeKey message and composite_key field to FeatureViewDataKey ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+* **aiplatform:** Add CompositeKey message and composite_key field to FeatureViewDataKey ([#9452](https://github.com/googleapis/google-cloud-go/issues/9452)) ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+* **aiplatform:** Add point_of_contact to feature ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+* **aiplatform:** Add RayMetricSpec to persistent resource ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+* **aiplatform:** Enable FeatureView Service Agents ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+
 ## [1.61.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.60.0...aiplatform/v1.61.0) (2024-02-21)
 
 
