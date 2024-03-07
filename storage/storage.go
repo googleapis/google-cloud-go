@@ -1098,7 +1098,7 @@ func (o *ObjectHandle) validate() error {
 	}
 	// Names . and .. are not valid; see https://cloud.google.com/storage/docs/objects#naming
 	if o.object == "." || o.object == ".." {
-		return fmt.Errorf("Object name %v is not valid", o.object)
+		return fmt.Errorf("storage: object name %v is not valid", o.object)
 	}
 	return nil
 }
