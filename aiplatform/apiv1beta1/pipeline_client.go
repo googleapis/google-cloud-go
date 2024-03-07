@@ -1450,9 +1450,6 @@ func (c *pipelineRESTClient) CreatePipelineJob(ctx context.Context, req *aiplatf
 	if req.GetPipelineJobId() != "" {
 		params.Add("pipelineJobId", fmt.Sprintf("%v", req.GetPipelineJobId()))
 	}
-	if req.GetPreflightValidations() {
-		params.Add("preflightValidations", fmt.Sprintf("%v", req.GetPreflightValidations()))
-	}
 
 	baseUrl.RawQuery = params.Encode()
 
