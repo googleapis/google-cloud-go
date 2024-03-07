@@ -1,5 +1,13 @@
 # Changes
 
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.32.0...container/v1.33.0) (2024-03-07)
+
+
+### Features
+
+* **container:** Add API to enable/disable secret manager csi component on GKE clusters ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+* **container:** Add secondary boot disks field to NodePool API ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
 ## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.31.0...container/v1.32.0) (2024-02-26)
 
 
