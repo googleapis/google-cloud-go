@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.4...securitycentermanagement/v0.1.5) (2024-03-04)
+
+
+### Documentation
+
+* **securitycentermanagement:** Clarify documentation for ListDescendantSecurityHealthAnalyticsCustomModules RPC and CostumConfig message ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.3...securitycentermanagement/v0.1.4) (2024-02-21)
 
 
