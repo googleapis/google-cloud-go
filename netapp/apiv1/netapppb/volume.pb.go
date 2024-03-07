@@ -21,14 +21,13 @@
 package netapppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -879,8 +878,8 @@ type Volume struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Required. Share name of the volume
 	ShareName string `protobuf:"bytes,5,opt,name=share_name,json=shareName,proto3" json:"share_name,omitempty"`
-	// Output only. Name of the Private Service Access allocated range. This is
-	// optional. If not provided, any available range will be chosen.
+	// Output only. This field is currently not implemented. Currently values
+	// provided in this field will be ignored.
 	PsaRange string `protobuf:"bytes,6,opt,name=psa_range,json=psaRange,proto3" json:"psa_range,omitempty"`
 	// Required. StoragePool name of the volume
 	StoragePool string `protobuf:"bytes,7,opt,name=storage_pool,json=storagePool,proto3" json:"storage_pool,omitempty"`

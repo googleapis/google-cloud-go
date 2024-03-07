@@ -21,11 +21,10 @@
 package netapppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -35,7 +34,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// The service levels - Storage Pool, Volumes
+// The service level of a storage pool and its volumes.
 type ServiceLevel int32
 
 const (
@@ -45,7 +44,7 @@ const (
 	ServiceLevel_PREMIUM ServiceLevel = 1
 	// Extreme service level.
 	ServiceLevel_EXTREME ServiceLevel = 2
-	// Standard (Software offering)
+	// Standard service level.
 	ServiceLevel_STANDARD ServiceLevel = 3
 )
 
@@ -92,11 +91,11 @@ func (ServiceLevel) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_netapp_v1_common_proto_rawDescGZIP(), []int{0}
 }
 
-// Defined the current volume encryption key source.
+// The volume encryption key source.
 type EncryptionType int32
 
 const (
-	// The source of encryption key is not specified.
+	// The source of the encryption key is not specified.
 	EncryptionType_ENCRYPTION_TYPE_UNSPECIFIED EncryptionType = 0
 	// Google managed encryption key.
 	EncryptionType_SERVICE_MANAGED EncryptionType = 1
