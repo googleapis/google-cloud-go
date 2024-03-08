@@ -967,6 +967,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		req.Generation = params.gen
 	}
 
+	var databuf []byte
+
 	// Define a function that initiates a Read with offset and length, assuming
 	// we have already read seen bytes.
 	reopen := func(seen int64) (*readStreamResponse, context.CancelFunc, error) {
@@ -1001,17 +1003,23 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 				return err
 			}
 
-			// This receive still goes through protobuf unmarshaling.
-			// Subsequent receives in Read calls will skip protobuf unmarshaling
-			// and directly read the content from the gRPC []byte response.
-			//
-			// We could also use a custom decoder here.
-			msg, err = stream.Recv()
+			// Receive the message as a wire-encoded message so we can use a
+			// custom decoder to avoid an extra copy at the protobuf layer.
+			err := stream.RecvMsg(&databuf)
 			// These types of errors show up on the Recv call, rather than the
 			// initialization of the stream via ReadObject above.
 			if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
 				return ErrObjectNotExist
 			}
+			if err != nil {
+				return err
+			}
+			// Use a custom decoder that uses protobuf unmarshalling for all
+			// fields except the checksummed data content.
+			// Subsequent receives in Read calls will skip all protobuf
+			// unmarshalling and directly read the content from the gRPC []byte
+			// response, since only the first call will contain other fields.
+			msg, err = readFullObjectResponse(databuf)
 
 			return err
 		}, s.retry, s.idempotent)
@@ -1057,6 +1065,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			leftovers: msg.GetChecksummedData().GetContent(),
 			settings:  s,
 			zeroRange: params.length == 0,
+			databuf:   databuf,
 		},
 	}
 
@@ -1554,48 +1563,132 @@ func (r *gRPCReader) recv() ([]byte, error) {
 }
 
 // readObjectResponseContent returns the checksummed_data.content field of a
-// ReadObjectResponse message.
+// ReadObjectResponse message, or an error if the message is invalid.
+// This can be used on recvs of objects after the first recv, since only the
+// first message will contain non-data fields.
 func readObjectResponseContent(b []byte) ([]byte, error) {
 	const (
 		readObjectResponse_checksummedData = protowire.Number(1)
 		checksummedData_content            = protowire.Number(1)
 	)
-	checksummedData := readProtoBytes(b, readObjectResponse_checksummedData)
-	content := readProtoBytes(checksummedData, checksummedData_content)
-	if content == nil {
-		return nil, errors.New("invalid ReadObjectResponse")
+
+	checksummedData, err := readProtoBytes(b, readObjectResponse_checksummedData)
+	if err != nil {
+		return b, fmt.Errorf("invalid ReadObjectResponse: %v", err)
 	}
+	content, err := readProtoBytes(checksummedData, checksummedData_content)
+	if err != nil {
+		return content, fmt.Errorf("invalid ReadObjectResponse: %v", err)
+	}
+
 	return content, nil
 }
 
+// readFullObjectResponse returns the ReadObjectResponse encoded in the
+// wire-encoded message buffer b, or an error if the message is invalid.
+// This is used on the first recv of an object as it may contain all fields of
+// ReadObjectResponse.
+func readFullObjectResponse(b []byte) (*storagepb.ReadObjectResponse, error) {
+	const (
+		checksummedDataField        = protowire.Number(1)
+		checksummedDataContentField = protowire.Number(1)
+		checksummedDataCRC32CField  = protowire.Number(2)
+		objectChecksumsField        = protowire.Number(2)
+		contentRangeField           = protowire.Number(3)
+		metadataField               = protowire.Number(4)
+	)
+
+	checksummedData, err := readProtoBytes(b, checksummedDataField)
+	if err != nil {
+		return nil, fmt.Errorf("invalid ReadObjectResponse: %v", err)
+	}
+	content, err := readProtoBytes(checksummedData, checksummedDataContentField)
+	if err != nil {
+		return nil, fmt.Errorf("invalid ReadObjectResponse: %v", err)
+	}
+
+	// TODO: add unmarshalling for crc32c here
+	//crc32c := readProtoBytes(checksummedData, checksummedDataCRC32CField)
+
+	// Unmarshal remaining fields.
+	var checksums *storagepb.ObjectChecksums
+	bytes, err := readProtoBytes(b, objectChecksumsField)
+	if err != nil {
+		return nil, fmt.Errorf("invalid ReadObjectResponse: %v", err)
+	}
+	// If the field is not empty, unmarshal its contents
+	if len(bytes) > 0 {
+		checksums = &storagepb.ObjectChecksums{}
+		if err := proto.Unmarshal(bytes, checksums); err != nil {
+			return nil, err
+		}
+	}
+
+	var contentRange *storagepb.ContentRange
+	bytes, err = readProtoBytes(b, contentRangeField)
+	if err != nil {
+		return nil, fmt.Errorf("invalid ReadObjectResponse: %v", "err")
+	}
+	if len(bytes) > 0 {
+		contentRange = &storagepb.ContentRange{}
+		if err := proto.Unmarshal(bytes, contentRange); err != nil {
+			return nil, err
+		}
+	}
+
+	var metadata *storagepb.Object
+	bytes, err = readProtoBytes(b, metadataField)
+	if err != nil {
+		return nil, fmt.Errorf("invalid ReadObjectResponse: %v", err)
+	}
+	if len(bytes) > 0 {
+		metadata = &storagepb.Object{}
+		if err := proto.Unmarshal(bytes, metadata); err != nil {
+			return nil, err
+		}
+	}
+
+	msg := &storagepb.ReadObjectResponse{
+		ChecksummedData: &storagepb.ChecksummedData{
+			Content: content,
+		},
+		ObjectChecksums: checksums,
+		ContentRange:    contentRange,
+		Metadata:        metadata,
+	}
+
+	return msg, nil
+}
+
 // readProtoBytes returns the contents of the protobuf field with number num
-// and type bytes from a wire-encoded message, or nil if the field can not be found.
+// and type bytes from a wire-encoded message. If the field cannot be found,
+// the returned slice will be nil and no error will be returned.
 //
 // It does not handle field concatenation, in which the contents of a single field
 // are split across multiple protobuf tags. Encoded data containing split fields
 // of this form is technically permissable, but uncommon.
-func readProtoBytes(b []byte, num protowire.Number) []byte {
+func readProtoBytes(b []byte, num protowire.Number) ([]byte, error) {
 	off := 0
 	for off < len(b) {
 		gotNum, gotTyp, n := protowire.ConsumeTag(b[off:])
 		if n < 0 {
-			return nil
+			return nil, protowire.ParseError(n)
 		}
 		off += n
 		if gotNum == num && gotTyp == protowire.BytesType {
 			b, n := protowire.ConsumeBytes(b[off:])
 			if n < 0 {
-				return nil
+				return nil, protowire.ParseError(n)
 			}
-			return b
+			return b, nil
 		}
 		n = protowire.ConsumeFieldValue(gotNum, gotTyp, b[off:])
 		if n < 0 {
-			return nil
+			return nil, protowire.ParseError(n)
 		}
 		off += n
 	}
-	return nil
+	return nil, nil
 }
 
 // reopenStream "closes" the existing stream and attempts to reopen a stream and
