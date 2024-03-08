@@ -4138,6 +4138,10 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(float64(0.0))))
 	case spannerTypeNullFloat64:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullFloat64{})))
+	case spannerTypeNonNullFloat32:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(float32(0.0))))
+	case spannerTypeNullFloat32:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullFloat32{})))
 	case spannerTypeNonNullTime:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(time.Time{})))
 	case spannerTypeNullTime:
@@ -4201,6 +4205,16 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 			return []NullFloat64(nil), nil
 		}
 		destination = reflect.MakeSlice(reflect.TypeOf([]NullFloat64{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNonNullFloat32:
+		if reflect.ValueOf(v).IsNil() {
+			return []float32(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]float32{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNullFloat32:
+		if reflect.ValueOf(v).IsNil() {
+			return []NullFloat32(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]NullFloat32{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
 	case spannerTypeArrayOfNonNullTime:
 		if reflect.ValueOf(v).IsNil() {
 			return []time.Time(nil), nil
