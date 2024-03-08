@@ -220,6 +220,9 @@ func generate(conf *config, pkg *ast.Package, fset *token.FileSet) (src []byte, 
 	// Use the converters map to give every field a converter.
 	for _, ti := range toWrite {
 		for _, f := range ti.fields {
+			if f.converter != nil {
+				continue
+			}
 			f.converter, err = makeConverter(f.af.Type, f.protoType, converters)
 			if err != nil {
 				return nil, fmt.Errorf("%s.%s: %w", ti.protoName, f.protoName, err)
@@ -481,6 +484,13 @@ func processField(af *ast.Field, tc *typeConfig, typeInfos map[string]*typeInfo)
 					return nil, err
 				}
 				af.Type = expr
+			}
+			if fc.ConvertToFrom != "" {
+				c, err := parseCustomConverter(id.Name, fc.ConvertToFrom)
+				if err != nil {
+					return nil, err
+				}
+				fi.converter = c
 			}
 		}
 	}

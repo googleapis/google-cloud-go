@@ -100,6 +100,19 @@ func TestConvertParams(t *testing.T) {
 		{[]NullFloat64(nil), nullProto(), listType(floatType())},
 		{[]NullFloat64{}, listProto(), listType(floatType())},
 		{[]NullFloat64{{2.72, true}, {}}, listProto(floatProto(2.72), nullProto()), listType(floatType())},
+		// float32
+		{float32(0.0), float32Proto(0.0), float32Type()},
+		{float32(math.Inf(1)), float32Proto(float32(math.Inf(1))), float32Type()},
+		{float32(math.Inf(-1)), float32Proto(float32(math.Inf(-1))), float32Type()},
+		{float32(math.NaN()), float32Proto(float32(math.NaN())), float32Type()},
+		{NullFloat32{3.14, true}, float32Proto(3.14), float32Type()},
+		{NullFloat32{-99.99, false}, nullProto(), float32Type()},
+		{[]float32(nil), nullProto(), listType(float32Type())},
+		{[]float32{}, listProto(), listType(float32Type())},
+		{[]float32{3.14, float32(math.Inf(1))}, listProto(float32Proto(3.14), float32Proto(float32(math.Inf(1)))), listType(float32Type())},
+		{[]NullFloat32(nil), nullProto(), listType(float32Type())},
+		{[]NullFloat32{}, listProto(), listType(float32Type())},
+		{[]NullFloat32{{3.14, true}, {}}, listProto(float32Proto(3.14), nullProto()), listType(float32Type())},
 		// string
 		{"", stringProto(""), stringType()},
 		{"foo", stringProto("foo"), stringType()},
@@ -178,11 +191,14 @@ func TestConvertParams(t *testing.T) {
 			if test.wantType.Code == floatType().Code && proto.MarshalTextString(gotParamField) == proto.MarshalTextString(test.wantField) {
 				continue
 			}
-			t.Errorf("%#v: got %v, want %v\n", test.val, gotParamField, test.wantField)
+			if test.wantType.Code == float32Type().Code && proto.MarshalTextString(gotParamField) == proto.MarshalTextString(test.wantField) {
+				continue
+			}
+			t.Errorf("%#v:\n got: %v\nwant: %v\n", test.val, gotParamField, test.wantField)
 		}
 		gotParamType := gotParamTypes["var"]
 		if !proto.Equal(gotParamType, test.wantType) {
-			t.Errorf("%#v: got %v, want %v\n", test.val, gotParamType, test.wantField)
+			t.Errorf("%#v:\n got: %v\nwant: %v\n", test.val, gotParamType, test.wantField)
 		}
 	}
 }

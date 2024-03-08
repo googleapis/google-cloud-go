@@ -147,6 +147,7 @@ type GenerationConfig struct {
 	HarmCat       HarmCategory
 	FinishReason  FinishReason
 	CitMet        *CitationMetadata
+	TopK          *int32
 }
 
 func (v *GenerationConfig) toProto() *pb.GenerationConfig {
@@ -160,6 +161,7 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 		HarmCat:        pb.HarmCategory(v.HarmCat),
 		FinishReason:   pb.Candidate_FinishReason(v.FinishReason),
 		CitMet:         v.CitMet.toProto(),
+		TopK:           int32pToFloat32p(v.TopK),
 	}
 }
 
@@ -174,6 +176,7 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 		HarmCat:        HarmCategory(p.HarmCat),
 		FinishReason:   FinishReason(p.FinishReason),
 		CitMet:         (CitationMetadata{}).fromProto(p.CitMet),
+		TopK:           float32pToInt32p(p.TopK),
 	}
 }
 

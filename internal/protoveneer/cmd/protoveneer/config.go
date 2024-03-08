@@ -69,6 +69,8 @@ type fieldConfig struct {
 	Type string // veneer type
 	// Omit from output.
 	Omit bool
+	// Custom conversion functions: "tofunc, fromfunc"
+	ConvertToFrom string `yaml:"convertToFrom"`
 }
 
 func (c *config) init() {
