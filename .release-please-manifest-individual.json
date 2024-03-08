@@ -8,9 +8,9 @@
   "firestore": "1.15.0",
   "logging": "1.9.0",
   "profiler": "0.4.0",
-  "pubsub": "1.36.2",
+  "pubsub": "1.37.0",
   "pubsublite": "1.8.1",
-  "spanner": "1.57.0",
+  "spanner": "1.58.0",
   "storage": "1.39.0",
   "vertexai": "0.7.1"
 }
