@@ -960,6 +960,21 @@ func (m *Mutation) DeleteRow() {
 	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromRow_{DeleteFromRow: &btpb.Mutation_DeleteFromRow{}}})
 }
 
+// AddIntToCell adds an int64 value to a cell in an aggregate column family. The column family must
+// have an input type of Int64 or this mutation will fail.
+func (m *Mutation) AddIntToCell(family, column string, ts Timestamp, value int64) {
+	m.addToCell(family, column, ts, &btpb.Value{Kind: &btpb.Value_IntValue{IntValue: value}})
+}
+
+func (m *Mutation) addToCell(family, column string, ts Timestamp, value *btpb.Value) {
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_AddToCell_{AddToCell: &btpb.Mutation_AddToCell{
+		FamilyName:      family,
+		ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte(column)}},
+		Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: int64(ts.TruncateToMilliseconds())}},
+		Input:           value,
+	}}})
+}
+
 // entryErr is a container that combines an entry with the error that was returned for it.
 // Err may be nil if no error was returned for the Entry, or if the Entry has not yet been processed.
 type entryErr struct {
