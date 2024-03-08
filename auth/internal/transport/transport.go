@@ -36,6 +36,7 @@ func CloneDetectOptions(oldDo *detect.Options) *detect.Options {
 		STSAudience:       oldDo.STSAudience,
 		CredentialsFile:   oldDo.CredentialsFile,
 		UseSelfSignedJWT:  oldDo.UseSelfSignedJWT,
+		UniverseDomain:    oldDo.UniverseDomain,
 
 		// These fields are are pointer types that we just want to use exactly
 		// as the user set, copy the ref

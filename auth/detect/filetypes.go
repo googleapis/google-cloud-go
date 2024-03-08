@@ -32,8 +32,9 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 		return nil, err
 	}
 
-	var projectID, quotaProjectID, universeDomain string
+	var projectID, quotaProjectID string
 	var tp auth.TokenProvider
+	universeDomain := opts.UniverseDomain
 	switch fileType {
 	case internaldetect.ServiceAccountKey:
 		f, err := internaldetect.ParseServiceAccount(b)
@@ -45,7 +46,9 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 			return nil, err
 		}
 		projectID = f.ProjectID
-		universeDomain = f.UniverseDomain
+		if universeDomain == "" {
+			universeDomain = f.UniverseDomain
+		}
 	case internaldetect.UserCredentialsKey:
 		f, err := internaldetect.ParseUserCredentials(b)
 		if err != nil {
@@ -66,7 +69,9 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 			return nil, err
 		}
 		quotaProjectID = f.QuotaProjectID
-		universeDomain = f.UniverseDomain
+		if universeDomain == "" {
+			universeDomain = f.UniverseDomain
+		}
 	case internaldetect.ExternalAccountAuthorizedUserKey:
 		f, err := internaldetect.ParseExternalAccountAuthorizedUser(b)
 		if err != nil {
@@ -86,7 +91,9 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		universeDomain = f.UniverseDomain
+		if universeDomain == "" {
+			universeDomain = f.UniverseDomain
+		}
 	case internaldetect.GDCHServiceAccountKey:
 		f, err := internaldetect.ParseGDCHServiceAccount(b)
 		if err != nil {

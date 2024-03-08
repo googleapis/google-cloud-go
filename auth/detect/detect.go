@@ -39,7 +39,7 @@ const (
 	// Help on default credentials
 	adcSetupURL = "https://cloud.google.com/docs/authentication/external/set-up-adc"
 
-	universeDomainDefault = "googleapis.com"
+	defaultUniverseDomain = "googleapis.com"
 )
 
 var (
@@ -91,7 +91,7 @@ func (c *Credentials) QuotaProjectID() string {
 // The default value is "googleapis.com".
 func (c *Credentials) UniverseDomain() string {
 	if c.universeDomain == "" {
-		return universeDomainDefault
+		return defaultUniverseDomain
 	}
 	return c.universeDomain
 }
@@ -139,7 +139,7 @@ func DefaultCredentials(opts *Options) (*Credentials, error) {
 
 	if OnGCE() {
 		id, _ := metadata.ProjectID()
-		return newCredentials(computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...), nil, id, "", ""), nil
+		return newCredentials(computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...), nil, id, "", opts.UniverseDomain), nil
 	}
 
 	return nil, fmt.Errorf("detect: could not find default credentials. See %v for more information", adcSetupURL)
@@ -186,6 +186,9 @@ type Options struct {
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Optional.
 	Client *http.Client
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com".
+	UniverseDomain string
 }
 
 func (o *Options) validate() error {
@@ -240,7 +243,7 @@ func readCredentialsFileJSON(b []byte, opts *Options) (*Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		return newCredentials(tp, b, "", "", ""), nil
+		return newCredentials(tp, b, "", "", opts.UniverseDomain), nil
 	}
 	return fileCredentials(b, opts)
 }
