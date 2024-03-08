@@ -59,6 +59,10 @@ types:
     FunctionResponse:
 
     GenerationConfig:
+      fields:
+        TopK:
+          type: '*int32'
+          convertToFrom: int32pToFloat32p, float32pToInt32p
 
     SafetyRating:
       docVerb: 'is the'
