@@ -45,6 +45,8 @@ type Client struct {
 //
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
+// projectID is your GCP project; location is GCP region/location per
+// https://cloud.google.com/vertex-ai/docs/general/locations
 //
 // You may configure the client by passing in options from the
 // [google.golang.org/api/option] package. You may also use options defined in
