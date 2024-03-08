@@ -429,16 +429,16 @@ func (n NullFloat64) GormDataType() string {
 
 // NullFloat32 represents a Cloud Spanner FLOAT32 that may be NULL.
 type NullFloat32 struct {
-	Float32 float32 // Float64 contains the value when it is non-NULL, and zero when NULL.
+	Float32 float32 // Float32 contains the value when it is non-NULL, and zero when NULL.
 	Valid   bool    // Valid is true if FLOAT32 is not NULL.
 }
 
-// IsNull implements NullableValue.IsNull for NullFloat64.
+// IsNull implements NullableValue.IsNull for NullFloat32.
 func (n NullFloat32) IsNull() bool {
 	return !n.Valid
 }
 
-// String implements Stringer.String for NullFloat64
+// String implements Stringer.String for NullFloat32
 func (n NullFloat32) String() string {
 	if !n.Valid {
 		return nullString
@@ -446,7 +446,7 @@ func (n NullFloat32) String() string {
 	return fmt.Sprintf("%v", n.Float32)
 }
 
-// MarshalJSON implements json.Marshaler.MarshalJSON for NullFloat64.
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullFloat32.
 func (n NullFloat32) MarshalJSON() ([]byte, error) {
 	return nulljson(n.Valid, n.Float32)
 }
@@ -2945,7 +2945,7 @@ func errUnexpectedFloat32Str(s string) error {
 	return spannerErrorf(codes.FailedPrecondition, "unexpected string value %q for float32 number", s)
 }
 
-// getFloat64Value returns the float32 value encoded in proto3.Value v whose
+// getFloat32Value returns the float32 value encoded in proto3.Value v whose
 // kind is proto3.Value_NumberValue / proto3.Value_StringValue.
 // Cloud Spanner uses string to encode NaN, Infinity and -Infinity.
 func getFloat32Value(v *proto3.Value) (float32, error) {
